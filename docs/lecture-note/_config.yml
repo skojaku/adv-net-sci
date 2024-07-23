@@ -17,6 +17,9 @@ sphinx:
         .Rmd:
             - jupytext.reads
             - fmt: Rmd
+        .md:
+            - jupytext.reads
+            - fmt: md
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -30,7 +33,7 @@ bibtex_bibfiles:
 # Information about where the book exists on the web
 repository:
   url: https://github.com/skojaku/adv-net-sci  # Online location of your book
-  path_to_book: docs  # Optional path to your book, relative to the repository root
+  #path_to_book: docs  # Optional path to your book, relative to the repository root
   branch: gh-pages  # Which branch of the repository should be used when creating links (optional)
 
 # Add GitHub buttons to your book
