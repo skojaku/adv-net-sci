@@ -13,6 +13,7 @@ kernelspec:
   name: python3
 launch_buttons:
   thebe: true
+  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
 ---
 
 
