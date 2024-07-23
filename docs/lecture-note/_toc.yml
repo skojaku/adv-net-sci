@@ -3,7 +3,15 @@
 
 format: jb-book
 root: home
-chapters:
-- file: intro/intro.md
-- file: notebooks
-- file: markdown-notebooks
+parts:
+  - caption: "Intro"
+    numbered: False
+    chapters:
+    - file: intro/why-networks
+    - file: intro/zoo-of-networks
+  - caption: "Seven Bridges of Konigsberg"
+    numbered: False
+    chapters:
+    - file: seven-bridges-of-konigsberg/what-to-learn
+    - file: seven-bridges-of-konigsberg/puzzle
+    - file: seven-bridges-of-konigsberg/euler-path
