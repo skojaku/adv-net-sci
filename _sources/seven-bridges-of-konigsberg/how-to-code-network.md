@@ -91,3 +91,20 @@ The result is an array of length 4, where the i-th entry is the number of edges 
 :::{important}
 The number of edges connected to a node is called the ***degree*** of the node.
 :::
+:::{tip}
+The `np.sum(A, axis = 1)` is the column sum of `A`. Alternatively, `np.sum(A, axis = 0)` is the row sum of `A`.
+Check out the numpy [documentation](https://numpy.org/doc/stable/reference/generated/numpy.sum.html) for more details.
+:::
+
+We can check the number of nodes with odd degree by taking the modulus of the degree by 2.
+```{code-cell} ipython3
+deg = np.sum(A, axis = 1)
+is_odd = deg % 2 == 1
+is_odd
+```
+```{code-cell} ipython3
+if np.sum(is_odd) == 2 or np.sum(is_odd) == 0:
+    print("The graph has a Euler path.")
+else:
+    print("The graph does not have a Euler path.")
+```

@@ -558,6 +558,41 @@ In this form, one regard the node index as a coordinate in the matrix. For insta
 <p class="admonition-title">Important</p>
 <p>The number of edges connected to a node is called the <em><strong>degree</strong></em> of the node.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">np.sum(A,</span> <span class="pre">axis</span> <span class="pre">=</span> <span class="pre">1)</span></code> is the column sum of <code class="docutils literal notranslate"><span class="pre">A</span></code>. Alternatively, <code class="docutils literal notranslate"><span class="pre">np.sum(A,</span> <span class="pre">axis</span> <span class="pre">=</span> <span class="pre">0)</span></code> is the row sum of <code class="docutils literal notranslate"><span class="pre">A</span></code>.
+Check out the numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html">documentation</a> for more details.</p>
+</div>
+<p>We can check the number of nodes with odd degree by taking the modulus of the degree by 2.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">is_odd</span> <span class="o">=</span> <span class="n">deg</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="n">is_odd</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ True,  True,  True,  True])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">is_odd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">is_odd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph has a Euler path.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph does not have a Euler path.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The graph does not have a Euler path.
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
