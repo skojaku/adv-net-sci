@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>How to describe a network using mathematics and code &#8212; Advanced Topics on Network Science</title>
+    <title>Compute with networks &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -191,7 +191,7 @@
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="puzzle.html">A puzzle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="euler-path.html">Euler’s solution</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">How to describe a network using mathematics and code</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute with networks</a></li>
 </ul>
 
     </div>
@@ -430,7 +430,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -441,11 +443,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>How to describe a network using mathematics and code</h1>
+    <h1>Compute with networks</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-representation">Network representation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-counting">Edge counting</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -455,10 +466,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="how-to-describe-a-network-using-mathematics-and-code">
-<h1>How to describe a network using mathematics and code<a class="headerlink" href="#how-to-describe-a-network-using-mathematics-and-code" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="compute-with-networks">
+<h1>Compute with networks<a class="headerlink" href="#compute-with-networks" title="Link to this heading">#</a></h1>
 <p>So far we worked out the network of bridges of Konigsberg by illustrating the network with points and lines.
-From now, we will work with the mathematical description of the network.</p>
+From now, we will work with a representation of the network that can be easily computed with code.</p>
+<section id="network-representation">
+<h2>Network representation<a class="headerlink" href="#network-representation" title="Link to this heading">#</a></h2>
 <p>An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes.
 We <em>label</em> a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>.</p>
 <figure class="align-default" id="numbered-koningsberg-graph">
@@ -500,10 +513,52 @@ In this form, one regard the node index as a coordinate in the matrix. For insta
 <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
     <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 </div>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the Konigsberg graph, the edges are <em>undirected</em>, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries <span class="math notranslate nohighlight">\((i,j)\)</span> and <span class="math notranslate nohighlight">\((j,i)\)</span> in the for loop. If the edges are <em>directed</em>, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).</p>
+</div>
+</section>
+<section id="edge-counting">
+<h2>Edge counting<a class="headerlink" href="#edge-counting" title="Link to this heading">#</a></h2>
+<p>Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.</p>
+<p>The total number of edges in the network is the sum of the entities in the</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider</p>
+<p>It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([3., 5., 3., 3.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>The result is an array of length 4, where the i-th entry is the number of edges connected to node i.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The number of edges connected to a node is called the <em><strong>degree</strong></em> of the node.</p>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -551,6 +606,22 @@ In this form, one regard the node index as a coordinate in the matrix. For insta
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-representation">Network representation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-counting">Edge counting</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

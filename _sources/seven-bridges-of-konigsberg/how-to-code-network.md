@@ -17,10 +17,12 @@ launch_buttons:
 ---
 
 
-# How to describe a network using mathematics and code
+# Compute with networks
 
 So far we worked out the network of bridges of Konigsberg by illustrating the network with points and lines.
-From now, we will work with the mathematical description of the network.
+From now, we will work with a representation of the network that can be easily computed with code.
+
+## Network representation
 
 An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes.
 We *label* a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair `(0, 1)`.
@@ -63,4 +65,29 @@ import numpy as np
 A = np.zeros((4, 4))
 for i, j in edges:
     A[i][j] += 1
+    A[j][i] += 1
 ```
+
+:::{note}
+In the Konigsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).
+:::
+
+## Edge counting
+
+Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.
+
+The total number of edges in the network is the sum of the entities in the
+```{code-cell} ipython3
+np.sum(A) / 2
+```
+We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider
+
+It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.
+```{code-cell} ipython3
+np.sum(A, axis = 1)
+```
+The result is an array of length 4, where the i-th entry is the number of edges connected to node i.
+
+:::{important}
+The number of edges connected to a node is called the ***degree*** of the node.
+:::
