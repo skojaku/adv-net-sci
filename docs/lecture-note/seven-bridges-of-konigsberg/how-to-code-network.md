@@ -80,4 +80,14 @@ The total number of edges in the network is the sum of the entities in the
 ```{code-cell} ipython3
 np.sum(A) / 2
 ```
-We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider 
+We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider
+
+It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.
+```{code-cell} ipython3
+np.sum(A, axis = 1)
+```
+The result is an array of length 4, where the i-th entry is the number of edges connected to node i.
+
+:::{important}
+The number of edges connected to a node is called the ***degree*** of the node.
+:::
