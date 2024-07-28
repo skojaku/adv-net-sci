@@ -1,0 +1,114 @@
+\documentclass[a4paper, 17pt]{extarticle}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{fontspec}
+%\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing}
+\definecolor{pltblue}{HTML}{1F77B4}
+\tikzset{every picture/.style={/utils/exec={\fontspec{Humor Sans}}}}
+
+\makeatletter
+\pgfset{
+  /pgf/decoration/randomness/.initial=2,
+  /pgf/decoration/wavelength/.initial=100
+}
+\pgfdeclaredecoration{sketch}{init}{
+  \state{init}[width=0pt,next state=draw,persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t0
+  }]{}
+  \state{draw}[width=\pgfdecorationsegmentlength,
+  auto corner on length=\pgfdecorationsegmentlength,
+  persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}
+  }]{
+    \pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}
+    \pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}
+  }
+  \state{final}{}
+}
+\tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
+\makeatother
+
+\usepackage{etoolbox}
+\AtBeginEnvironment{tabular}{\fontspec{Humor Sans}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{adjustbox}
+\usepackage{titling}
+
+\begin{document}
+
+\subsection*{Build it, Break it, and Build it back!}
+
+
+\begin{minipage}{0.6\textwidth}
+    {\bf Question 1}:
+    Let us design a small power grid network with nine stations A--I (nodes).
+    Initially, these stations are isolated.
+    The cost associated with each connection is provided in the table.
+    Minimize the total cost of the lines to build a single connected network.
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\textwidth}
+\begin{center}
+    \scalebox{0.65}{
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+               & A  & B  & C  & D  & E  & F  & G  & H  & I  \\ \hline
+            A  & 0  & 2  & 8  & 12 & 4  & 10 & 14 & 6  & 16 \\ \hline
+            B  & -  & 0  & 3  & 2  & 1  & 5  & 11 & 15 & 7  \\ \hline
+            C  & -  & -  & 0  & 4  & 10 & 14 & 6  & 12 & 16 \\ \hline
+            D  & -  & -  & -  & 0  & 5  & 11 & 15 & 7  & 13 \\ \hline
+            E  & -  & -  & -  & -  & 0  & 6  & 12 & 16 & 8  \\ \hline
+            F  & -  & -  & -  & -  & -  & 0  & 7  & 13 & 9  \\ \hline
+            G  & -  & -  & -  & -  & -  & -  & 0  & 8  & 10 \\ \hline
+            H  & -  & -  & -  & -  & -  & -  & -  & 0  & 11 \\ \hline
+            I  & -  & -  & -  & -  & -  & -  & -  & -  & 0  \\ \hline
+            \end{tabular}
+}
+\end{center}
+\end{minipage}
+
+\ \\
+
+\begin{tikzpicture}[scale=0.9]
+  \node[xkcd,draw, circle, inner sep=0.1cm] at (0.5, 1) {I};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (D) at (3, 1) {D};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (C) at (4.2, -0.2) {C};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (B) at (2, -0.5) {B};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (E) at (0.5, -1.6) {E};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (A) at (3, -2.5) {A};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (F) at (-0.5, -0.5) {F};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (H) at (1, -3) {H};
+  \node[xkcd,draw, circle, inner sep=0.1cm] (G) at (4.5, -2) {G};
+\end{tikzpicture}
+\ \\
+
+{\bf Question 2}:
+Consider the scenario where a single station fails and disconnects from the network. On average, how many stations remain connected? Enumerate all possible cases, compute the size of the largest connected component in each case, and then compute the average.
+
+\clearpage
+
+{\bf Question 3}:
+A power-grid network is subjected to a \textit{targeted attack} that breaks the network by removing one node. The attacker targets a single station whose removal minimizes the size of the largest connected component in the resulting network.
+Which station is most susceptible to this attack?
+
+{\bf Question 4}:
+Redesign the network so that it is as strong as possible against targeted attacks.
+To simplify, ignore the cost of the lines but keep the number of connections the same. You can change the pre-existing lines completely. The attacker can remove only one station.
+
+\clearpage
+
+{\bf Question 5}:
+Now the attacker can remove two stations at once, and you have additional budget to add two extra lines to protect the network.
+Design a network of \underline{\textbf{10}} edges so that it is as strong as possible against the targeted attacks.
+
+
+\end{document}
