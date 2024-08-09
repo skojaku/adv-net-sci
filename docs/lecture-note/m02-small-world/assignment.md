@@ -9,3 +9,9 @@ We will compute the average path length of a network of scientists. The network 
   - This repository does not offer auto-grading. But you can grade the assignment by yourself by
     - `bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`
     - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
+
+
+```{bibliography}
+:style: unsrt
+:filter: docname in docnames
+```
