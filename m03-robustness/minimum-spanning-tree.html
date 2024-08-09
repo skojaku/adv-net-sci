@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Why should we care networks? &#8212; Advanced Topics on Network Science</title>
+    <title>Minimum spanning tree &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -57,11 +57,13 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/why-networks';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm03-robustness/minimum-spanning-tree';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Zoo of networks" href="zoo-of-networks.html" />
-    <link rel="prev" title="Welcome to SSIE 641 Advanced Topics in Network Science" href="../home.html" />
+    <link rel="next" title="Network Robustness" href="robustness.html" />
+    <link rel="prev" title="Building a cost-effective power grid network" href="exercise-power-grid.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,10 +182,10 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Why should we care networks?</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
 <ul class="nav bd-sidenav">
@@ -205,12 +207,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">What to learn in this module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robustness-hands-on.html">Hands-on: Robustness</a></li>
 </ul>
 
     </div>
@@ -257,6 +259,55 @@
 
 
 
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m03-robustness/minimum-spanning-tree.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-source-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
     <i class="fab fa-github"></i>
@@ -282,7 +333,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fintro/why-networks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm03-robustness/minimum-spanning-tree.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +363,24 @@
       
       
       
-      <li><a href="../_sources/intro/why-networks.md" target="_blank"
+      <li><a href="../_sources/m03-robustness/minimum-spanning-tree.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m03-robustness/minimum-spanning-tree.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -396,7 +464,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Why should we care networks?</h1>
+    <h1>Minimum spanning tree</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -406,13 +474,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-find-the-minimum-spanning-tree">How to find the minimum spanning tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code">Code</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -423,24 +487,80 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="why-should-we-care-networks">
-<h1>Why should we care networks?<a class="headerlink" href="#why-should-we-care-networks" title="Link to this heading">#</a></h1>
-<p>From the vast expanse of the Internet to social networks and protein-protein interactions, <em>networks</em> are all around us in nature and society. And, their <em>connections</em> do matter in our daily lives. A virus goes viral by going through the <em>physical contacts</em> of people. The economics are driven by <em>trades</em> between companies. Proteins function by <em>interacting</em> with each other.
-Networks are the key drivers of many interesting phenomena that do not arise without the networks!</p>
-<section id="zoo-of-networks">
-<h2>Zoo of networks<a class="headerlink" href="#zoo-of-networks" title="Link to this heading">#</a></h2>
-<p>Can you find networks around you? Find out what networks are like in nature and society.</p>
-<p><a class="reference internal" href="zoo-of-networks.html"><span class="std std-doc">Zoo 🐆🐘🦆 of networks</span></a></p>
+  <section class="tex2jax_ignore mathjax_ignore" id="minimum-spanning-tree">
+<h1>Minimum spanning tree<a class="headerlink" href="#minimum-spanning-tree" title="Link to this heading">#</a></h1>
+<p>Many networks are surprisingly sparse, with most nodes having only a few connections, in part because connections are costly.
+Like cables in power grids and human-to-human communications, networks are often built with cost constraints, and it is often of a great interest to find the most cost-effective structure.</p>
+<p><strong>Minimum spanning tree</strong> is a tree that connects all the nodes in a network with the minimum total weight of edges.
+The term involves the following two concepts:</p>
+<ul class="simple">
+<li><p><strong>Tree</strong>: A network is a tree if it is connected and has no cycles.</p></li>
+<li><p><strong>Spanning tree</strong>: A spanning tree is a tree that spans all the nodes in a network.</p></li>
+</ul>
+<p>The minimum spanning tree may not be unique, meaning there can be multiple spanning trees with the same minimum total weight of edges for a network.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/minimum-spanning-tree.jpg"><img alt="Minimum spanning tree" src="../_images/minimum-spanning-tree.jpg" style="width: 80%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Minimum spanning tree of a network.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="how-to-find-the-minimum-spanning-tree">
+<h2>How to find the minimum spanning tree<a class="headerlink" href="#how-to-find-the-minimum-spanning-tree" title="Link to this heading">#</a></h2>
+<p><strong>Kruskal’s algorithm</strong> and <strong>Prim’s algorithms</strong> are two common methods to find a minimum spanning tree.
+Both start with an empty edge set and add the smallest weight edge iteratively, while ensuring that the edges form a tree, until all nodes are included.
+The difference between the two algorithms lies in the order of edge addition.</p>
+<p><strong>Kruskal’s algorithm</strong> operates as follows:</p>
+<ol class="arabic simple">
+<li><p>Sort the edges by <em>the increasing order of the edge weights</em>.</p></li>
+<li><p>Select the edge with the smallest weight that does not form a cycle with the edges already in the tree.</p></li>
+<li><p>Repeat step 2 until all the nodes are connected.</p></li>
+</ol>
+<p><strong>Prim’s algorithm</strong>:</p>
+<ol class="arabic simple">
+<li><p>Start with a singleton network <span class="math notranslate nohighlight">\(G\)</span> consisting of a randomly chosen node.</p></li>
+<li><p>Add the smallest weight edge connecting <span class="math notranslate nohighlight">\(G\)</span> to a node not in <span class="math notranslate nohighlight">\(G\)</span>.</p></li>
+<li><p>Repeat step 2 until all nodes are connected.</p></li>
+</ol>
+<p><a class="reference download internal" download="" href="../_downloads/1db41054cea02e81f08d9c69aa9e3100/kruskal-vs-prime.html"><span class="xref download myst">Check out the Demo for Kruskal’s and Prim’s algorithm</span></a></p>
+<p>Kruskal’s algorithm sorts the edges globally at the beginning, while Prim’s algorithm sorts the edges locally at each step.
+Both algorithms find the same minimum spanning tree, provided that all edge weights are distinct.
+Otherwise, they may yield different trees.</p>
 </section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">igraph</span></code> provides a function <code class="docutils literal notranslate"><span class="pre">igraph.Graph.spanning_tree</span></code> to find a minimum spanning tree in a given network.</p>
+<p>Let’s first create a network with random edge weights.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Famous</span><span class="p">(</span><span class="s1">&#39;Zachary&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">edge_width</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7c5c1f492346552f4adf56a2bdbcd88109218637546dfd091003d4d7b76c5f11.svg" src="../_images/7c5c1f492346552f4adf56a2bdbcd88109218637546dfd091003d4d7b76c5f11.svg" /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Zachary%27s_karate_club">Zachary’s karate club</a> is a famous network of 34 members of a karate club and documents of their links between friends.
+The network is undirected and unweighted.</p>
+</div>
+<p>The minimum spanning tree of the network can be found by the following code.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmst</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">spanning_tree</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span> <span class="c1"># If not `weights` are not specified, the edges are assumed to be unweighted</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gmst</span><span class="p">,</span> <span class="n">edge_width</span> <span class="o">=</span> <span class="n">gmst</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c16f2f43b61024f78465c7e6d6fb340e441830ca9ab2d4144abfb2db211ffd6a.svg" src="../_images/c16f2f43b61024f78465c7e6d6fb340e441830ca9ab2d4144abfb2db211ffd6a.svg" /></div>
+</div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="what-is-a-network">
-<h1>What is a network?<a class="headerlink" href="#what-is-a-network" title="Link to this heading">#</a></h1>
-<p>Networks, in the simplest form, consist of a set of points, called <em>nodes</em>, and lines connecting them, called <em>edges</em>.
-This representation is quite simple. So simple that it is versatile to represent many systems of different kinds.
-While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</p>
-<p align="center">
-  <img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" width="50%">
-</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -456,7 +576,7 @@ While representing complex, real-world systems by points and lines is crude, it 
         },
         kernelOptions: {
             name: "python3",
-            path: "./intro"
+            path: "./m03-robustness"
         },
         predefinedOutput: true
     }
@@ -474,20 +594,20 @@ While representing complex, real-world systems by points and lines is crude, it 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../home.html"
+       href="exercise-power-grid.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to SSIE 641 Advanced Topics in Network Science</p>
+        <p class="prev-next-title">Building a cost-effective power grid network</p>
       </div>
     </a>
     <a class="right-next"
-       href="zoo-of-networks.html"
+       href="robustness.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Zoo of networks</p>
+        <p class="prev-next-title">Network Robustness</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -507,13 +627,9 @@ While representing complex, real-world systems by points and lines is crude, it 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-find-the-minimum-spanning-tree">How to find the minimum spanning tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code">Code</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
   </nav></div>
 
 </div></div>

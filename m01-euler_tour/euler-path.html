@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Why should we care networks? &#8212; Advanced Topics on Network Science</title>
+    <title>Euler’s solution &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -57,11 +57,13 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/why-networks';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm01-euler_tour/euler-path';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Zoo of networks" href="zoo-of-networks.html" />
-    <link rel="prev" title="Welcome to SSIE 641 Advanced Topics in Network Science" href="../home.html" />
+    <link rel="next" title="Compute with networks" href="how-to-code-network.html" />
+    <link rel="prev" title="A puzzle" href="puzzle.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,17 +182,17 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Why should we care networks?</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">What to learn in this module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="puzzle.html">A puzzle</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how-to-code-network.html">Compute with networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
 <ul class="nav bd-sidenav">
@@ -257,6 +259,55 @@
 
 
 
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m01-euler_tour/euler-path.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-source-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
     <i class="fab fa-github"></i>
@@ -282,7 +333,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fintro/why-networks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm01-euler_tour/euler-path.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +363,24 @@
       
       
       
-      <li><a href="../_sources/intro/why-networks.md" target="_blank"
+      <li><a href="../_sources/m01-euler_tour/euler-path.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m01-euler_tour/euler-path.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -383,9 +451,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
       
     </div>
@@ -396,24 +462,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Why should we care networks?</h1>
+    <h1>Euler’s solution</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
-            </nav>
         </div>
     </div>
 </div>
@@ -423,24 +476,28 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="why-should-we-care-networks">
-<h1>Why should we care networks?<a class="headerlink" href="#why-should-we-care-networks" title="Link to this heading">#</a></h1>
-<p>From the vast expanse of the Internet to social networks and protein-protein interactions, <em>networks</em> are all around us in nature and society. And, their <em>connections</em> do matter in our daily lives. A virus goes viral by going through the <em>physical contacts</em> of people. The economics are driven by <em>trades</em> between companies. Proteins function by <em>interacting</em> with each other.
-Networks are the key drivers of many interesting phenomena that do not arise without the networks!</p>
-<section id="zoo-of-networks">
-<h2>Zoo of networks<a class="headerlink" href="#zoo-of-networks" title="Link to this heading">#</a></h2>
-<p>Can you find networks around you? Find out what networks are like in nature and society.</p>
-<p><a class="reference internal" href="zoo-of-networks.html"><span class="std std-doc">Zoo 🐆🐘🦆 of networks</span></a></p>
-</section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="what-is-a-network">
-<h1>What is a network?<a class="headerlink" href="#what-is-a-network" title="Link to this heading">#</a></h1>
-<p>Networks, in the simplest form, consist of a set of points, called <em>nodes</em>, and lines connecting them, called <em>edges</em>.
-This representation is quite simple. So simple that it is versatile to represent many systems of different kinds.
-While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</p>
-<p align="center">
-  <img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" width="50%">
-</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="euler-s-solution">
+<h1>Euler’s solution<a class="headerlink" href="#euler-s-solution" title="Link to this heading">#</a></h1>
+<p>Euler consider two cases:</p>
+<ul class="simple">
+<li><p>a node has an even number of edges, or</p></li>
+<li><p>a node has an odd number of edges.</p></li>
+</ul>
+<p>When a node has an even number <span class="math notranslate nohighlight">\(2k\)</span> of edges, one can enter and leave the node <span class="math notranslate nohighlight">\(k\)</span> times by crossing different edges.</p>
+<p>When a node has an odd number <span class="math notranslate nohighlight">\(2k+1\)</span> of edges, one can enter and leave the node <span class="math notranslate nohighlight">\(k\)</span> times by crossing different edges but leave one last edge to cross. The only way to cross this last edge is that one starts or ends at the node.</p>
+<p>Based up on the above reasoning, Euler leads to the following necessary (and later shown as sufficient) conditions:</p>
+<div class="admonition-euler-s-path admonition">
+<p class="admonition-title">Euler’s path</p>
+<p>There exists a walk that crosses all edges exactly once if and only if all nodes have even number of edges, or exactly two nodes have an odd number of edges.</p>
+</div>
+<p><img alt="alt text" src="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600" /></p>
+<p>Back to the Konigsberg bridge problem, every node has an odd number of edges, meaning that there is no way to cross all edges exactly once. What a sad story for the citizens of Konigsberg. But the problem was solved during World War II, where Koingberg was bombarded by Soviet Union, losing two of the seven bridges 🫠.</p>
+<figure class="align-default" id="markdown-fig">
+<a class="reference internal image-reference" href="../_images/seven-bridge-bombared.png"><img alt="fishy" src="../_images/seven-bridge-bombared.png" style="width: 50%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Two bridges were bombed by Soviet Union, which allows the Euler path to exist.</span><a class="headerlink" href="#markdown-fig" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 
     <script type="text/x-thebe-config">
@@ -456,7 +513,7 @@ While representing complex, real-world systems by points and lines is crude, it 
         },
         kernelOptions: {
             name: "python3",
-            path: "./intro"
+            path: "./m01-euler_tour"
         },
         predefinedOutput: true
     }
@@ -474,20 +531,20 @@ While representing complex, real-world systems by points and lines is crude, it 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../home.html"
+       href="puzzle.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to SSIE 641 Advanced Topics in Network Science</p>
+        <p class="prev-next-title">A puzzle</p>
       </div>
     </a>
     <a class="right-next"
-       href="zoo-of-networks.html"
+       href="how-to-code-network.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Zoo of networks</p>
+        <p class="prev-next-title">Compute with networks</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -497,26 +554,6 @@ While representing complex, real-world systems by points and lines is crude, it 
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
-  </nav></div>
-
-</div></div>
               
             
           </div>

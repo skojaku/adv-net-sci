@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Why should we care networks? &#8212; Advanced Topics on Network Science</title>
+    <title>Network Robustness &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -57,11 +57,13 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/why-networks';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm03-robustness/robustness';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Zoo of networks" href="zoo-of-networks.html" />
-    <link rel="prev" title="Welcome to SSIE 641 Advanced Topics in Network Science" href="../home.html" />
+    <link rel="next" title="Hands-on: Robustness" href="robustness-hands-on.html" />
+    <link rel="prev" title="Minimum spanning tree" href="minimum-spanning-tree.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,10 +182,10 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Why should we care networks?</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
 <ul class="nav bd-sidenav">
@@ -205,12 +207,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">What to learn in this module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robustness-hands-on.html">Hands-on: Robustness</a></li>
 </ul>
 
     </div>
@@ -257,6 +259,55 @@
 
 
 
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m03-robustness/robustness.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-source-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
     <i class="fab fa-github"></i>
@@ -282,7 +333,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fintro/why-networks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm03-robustness/robustness.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +363,24 @@
       
       
       
-      <li><a href="../_sources/intro/why-networks.md" target="_blank"
+      <li><a href="../_sources/m03-robustness/robustness.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m03-robustness/robustness.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -396,7 +464,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Why should we care networks?</h1>
+    <h1>Network Robustness</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -406,13 +474,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-node-failures">Random node failures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#targeted-attack">Targeted attack</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next?</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -423,24 +488,51 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="why-should-we-care-networks">
-<h1>Why should we care networks?<a class="headerlink" href="#why-should-we-care-networks" title="Link to this heading">#</a></h1>
-<p>From the vast expanse of the Internet to social networks and protein-protein interactions, <em>networks</em> are all around us in nature and society. And, their <em>connections</em> do matter in our daily lives. A virus goes viral by going through the <em>physical contacts</em> of people. The economics are driven by <em>trades</em> between companies. Proteins function by <em>interacting</em> with each other.
-Networks are the key drivers of many interesting phenomena that do not arise without the networks!</p>
-<section id="zoo-of-networks">
-<h2>Zoo of networks<a class="headerlink" href="#zoo-of-networks" title="Link to this heading">#</a></h2>
-<p>Can you find networks around you? Find out what networks are like in nature and society.</p>
-<p><a class="reference internal" href="zoo-of-networks.html"><span class="std std-doc">Zoo 🐆🐘🦆 of networks</span></a></p>
+  <section class="tex2jax_ignore mathjax_ignore" id="network-robustness">
+<h1>Network Robustness<a class="headerlink" href="#network-robustness" title="Link to this heading">#</a></h1>
+<p>Nodes and edges can fail or be attacked, which disrupt the connectivity of a network.
+Roughly speaking, we say a network is robust if it maintain most of its connectivity after failures or attacks.
+There are different types of attacks, together with how we quantify the damage they cause. So let us first showcase a case study with code.</p>
+<section id="random-node-failures">
+<h2>Random node failures<a class="headerlink" href="#random-node-failures" title="Link to this heading">#</a></h2>
+<p>Nodes can fail and disconnect from networks, such as power station closures in power grids. This is modeled as a <strong>random failure</strong>, where randomly chosen nodes are removed from the network. When a node fails, it and its edges are removed.</p>
+<p>The damage varies depending on the node to be removed. The damage to the network can be measued in many different ways, but an accepted measure is the loss of <strong>connectivity</strong>, defined as the fraction of nodes left in the largest connected part of the network after the failure.</p>
+<figure class="align-default" id="single-node-failure">
+<a class="reference internal image-reference" href="../_images/single-node-failure.jpg"><img alt="Single node failure" src="../_images/single-node-failure.jpg" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 11 </span><span class="caption-text">The impact of removing a single node varies based on which node is removed.</span><a class="headerlink" href="#single-node-failure" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Multiple nodes can fail simultaneously, e.g., due to natural disasters like earthquakes or tsunamis.
+Thus it is often useful to assess the robustness of the network against such failures.
+<strong>Robustness profile</strong> is a plot of the connectivity drop as a function of the number of nodes removed. It provides a visual summary of the robustness of the network against <em>a given sequential failure of nodes</em>.
+In random failure, the order of nodes removed is random.</p>
+<figure class="align-default" id="multiple-node-failure">
+<a class="reference internal image-reference" href="../_images/robustness-profile.jpg"><img alt="Multiple node failure" src="../_images/robustness-profile.jpg" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 12 </span><span class="caption-text">Robustness profile of a network for a sequential failure of nodes.</span><a class="headerlink" href="#multiple-node-failure" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Beyond the qualitative observation, it is useful to quantify the robustness of the network.
+The <strong><span class="math notranslate nohighlight">\(R\)</span>-index</strong> is a single number that summarizes the robustness of the network.
+It is defined as the area under the connectivity curve with integral approximation.</p>
+<div class="math notranslate nohighlight">
+\[
+R = \frac{1}{N} \sum_{k=1}^{N-1} y_k
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(y_k\)</span> is the connectivity at fraction <span class="math notranslate nohighlight">\(k/N\)</span> of nodes removed, where <span class="math notranslate nohighlight">\(N\)</span> is the total number of nodes in the network. A higher value indicates that the network is robust against the attack. The <span class="math notranslate nohighlight">\(R\)</span>-index has a maximum value of 1/2 (i.e., which corresponds to a diagonal line in the plot above).</p>
 </section>
+<section id="targeted-attack">
+<h2>Targeted attack<a class="headerlink" href="#targeted-attack" title="Link to this heading">#</a></h2>
+<p>A network robust against random failures can still be fragmented by <strong>targeted attacks</strong>.
+In targeted attacks, nodes are removed based on specific criteria rather than randomly.
+For example, nodes can be removed in order of their degree, starting with the largest degree to the smallest degree. The rationale for this attack strategy is that large-degree nodes have many connections, so removing them disrupts the network more significantly.</p>
+<p>Degree-based attack is not the only form of targeted attacks. Other forms of targeted attacks include removing nodes based on their centrality (closeness centrality, betweenness centrality) and those based on proximity.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="what-is-a-network">
-<h1>What is a network?<a class="headerlink" href="#what-is-a-network" title="Link to this heading">#</a></h1>
-<p>Networks, in the simplest form, consist of a set of points, called <em>nodes</em>, and lines connecting them, called <em>edges</em>.
-This representation is quite simple. So simple that it is versatile to represent many systems of different kinds.
-While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</p>
-<p align="center">
-  <img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" width="50%">
-</p>
+<section id="what-s-next">
+<h2>What’s next?<a class="headerlink" href="#what-s-next" title="Link to this heading">#</a></h2>
+<p>In the next section, we will code up a simple example to compute the robustness profile of a network using Python.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -456,7 +548,7 @@ While representing complex, real-world systems by points and lines is crude, it 
         },
         kernelOptions: {
             name: "python3",
-            path: "./intro"
+            path: "./m03-robustness"
         },
         predefinedOutput: true
     }
@@ -474,20 +566,20 @@ While representing complex, real-world systems by points and lines is crude, it 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../home.html"
+       href="minimum-spanning-tree.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to SSIE 641 Advanced Topics in Network Science</p>
+        <p class="prev-next-title">Minimum spanning tree</p>
       </div>
     </a>
     <a class="right-next"
-       href="zoo-of-networks.html"
+       href="robustness-hands-on.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Zoo of networks</p>
+        <p class="prev-next-title">Hands-on: Robustness</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -507,13 +599,10 @@ While representing complex, real-world systems by points and lines is crude, it 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-node-failures">Random node failures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#targeted-attack">Targeted attack</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next?</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
   </nav></div>
 
 </div></div>

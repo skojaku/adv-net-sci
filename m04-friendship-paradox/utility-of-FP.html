@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Why should we care networks? &#8212; Advanced Topics on Network Science</title>
+    <title>Application of the Friendship Paradox &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -57,11 +57,10 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/why-networks';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm04-friendship-paradox/utility-of-FP';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Zoo of networks" href="zoo-of-networks.html" />
-    <link rel="prev" title="Welcome to SSIE 641 Advanced Topics in Network Science" href="../home.html" />
+    <link rel="prev" title="Friendship Paradox" href="friendship-paradox.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,10 +179,10 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Why should we care networks?</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
 <ul class="nav bd-sidenav">
@@ -211,6 +210,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Application of the Friendship Paradox</a></li>
 </ul>
 
     </div>
@@ -282,7 +288,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fintro/why-networks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm04-friendship-paradox/utility-of-FP.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +318,7 @@
       
       
       
-      <li><a href="../_sources/intro/why-networks.md" target="_blank"
+      <li><a href="../_sources/m04-friendship-paradox/utility-of-FP.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -396,7 +402,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Why should we care networks?</h1>
+    <h1>Application of the Friendship Paradox</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -406,13 +412,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#epidemiology">Epidemiology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marketing-and-user-surveys">Marketing and User Surveys</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -423,24 +425,24 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="why-should-we-care-networks">
-<h1>Why should we care networks?<a class="headerlink" href="#why-should-we-care-networks" title="Link to this heading">#</a></h1>
-<p>From the vast expanse of the Internet to social networks and protein-protein interactions, <em>networks</em> are all around us in nature and society. And, their <em>connections</em> do matter in our daily lives. A virus goes viral by going through the <em>physical contacts</em> of people. The economics are driven by <em>trades</em> between companies. Proteins function by <em>interacting</em> with each other.
-Networks are the key drivers of many interesting phenomena that do not arise without the networks!</p>
-<section id="zoo-of-networks">
-<h2>Zoo of networks<a class="headerlink" href="#zoo-of-networks" title="Link to this heading">#</a></h2>
-<p>Can you find networks around you? Find out what networks are like in nature and society.</p>
-<p><a class="reference internal" href="zoo-of-networks.html"><span class="std std-doc">Zoo 🐆🐘🦆 of networks</span></a></p>
+  <section class="tex2jax_ignore mathjax_ignore" id="application-of-the-friendship-paradox">
+<h1>Application of the Friendship Paradox<a class="headerlink" href="#application-of-the-friendship-paradox" title="Link to this heading">#</a></h1>
+<p>Beyond an interesting trivia, the friendship paradox has many practical applications.</p>
+<section id="epidemiology">
+<h2>Epidemiology<a class="headerlink" href="#epidemiology" title="Link to this heading">#</a></h2>
+<p>One of the cleverest applications is in context of epidemiology. Let’s think about the following question:</p>
+<p><strong>Question 1</strong>:</p>
+<ul class="simple">
+<li><p>A disease is spreading through edges (physical contacts) in a social network. A person is infected if at least one of their friends is infected. What is the implication of the friendship paradox on the disease spreading?</p></li>
+<li><p><strong>Question 2</strong>: The disease spreading is predicted and we have a limited number of vaccine to prepare for. Who should we vaccinate first?</p></li>
+<li><p><strong>Question 3</strong>: We do not anything about the structure of social network. How do find out these people without knowning the network structure?</p></li>
+</ul>
 </section>
+<section id="marketing-and-user-surveys">
+<h2>Marketing and User Surveys<a class="headerlink" href="#marketing-and-user-surveys" title="Link to this heading">#</a></h2>
+<p><strong>Question 1</strong>: We have developed a new social networking app but lack the resources to launch it to the public. We want to limit the number of users while targeting influential individuals to maximize the app’s impact. How can we use the friendship paradox to achieve this goal?</p>
+<p><strong>Question 2</strong>: We decided to conduct a survey to understand the preferences of our users. We adopt so-called “snow-ball sampling”, where we start with a small number of users and expand the sample by inviting friends of the users who have responded to the survey. What is the implication of the friendship paradox on the survey design? Would the results be representative of the population?</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="what-is-a-network">
-<h1>What is a network?<a class="headerlink" href="#what-is-a-network" title="Link to this heading">#</a></h1>
-<p>Networks, in the simplest form, consist of a set of points, called <em>nodes</em>, and lines connecting them, called <em>edges</em>.
-This representation is quite simple. So simple that it is versatile to represent many systems of different kinds.
-While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</p>
-<p align="center">
-  <img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" width="50%">
-</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -456,7 +458,7 @@ While representing complex, real-world systems by points and lines is crude, it 
         },
         kernelOptions: {
             name: "python3",
-            path: "./intro"
+            path: "./m04-friendship-paradox"
         },
         predefinedOutput: true
     }
@@ -474,22 +476,13 @@ While representing complex, real-world systems by points and lines is crude, it 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../home.html"
+       href="friendship-paradox.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to SSIE 641 Advanced Topics in Network Science</p>
+        <p class="prev-next-title">Friendship Paradox</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="zoo-of-networks.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Zoo of networks</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -507,13 +500,9 @@ While representing complex, real-world systems by points and lines is crude, it 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Why should we care networks?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zoo-of-networks">Zoo of networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#epidemiology">Epidemiology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marketing-and-user-surveys">Marketing and User Surveys</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-network">What is a network?</a></li>
-</ul>
-
   </nav></div>
 
 </div></div>
