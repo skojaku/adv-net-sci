@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -650,7 +650,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9e17ce68f10b80d8aa20639ec3328cf887411b94ae34be4f2b15aa00044c5e8d.png" src="../_images/9e17ce68f10b80d8aa20639ec3328cf887411b94ae34be4f2b15aa00044c5e8d.png" />
+<img alt="../_images/bdbf518eb3cf6adac40f0dccd083106359c85dfd93be2cf6e922279749fd5fab.png" src="../_images/bdbf518eb3cf6adac40f0dccd083106359c85dfd93be2cf6e922279749fd5fab.png" />
 </div>
 </div>
 <p>How should we interpret the robustness profile? Consider the most robust network consisting of <span class="math notranslate nohighlight">\(N\)</span> nodes, where all <span class="math notranslate nohighlight">\(N\)</span> nodes are fully connected. Regardless of how many nodes are removed, there will always be a single connected component, and the size of this component will be <span class="math notranslate nohighlight">\(N-k\)</span> if <span class="math notranslate nohighlight">\(k\)</span> nodes are removed. Therefore, the connectivity is <span class="math notranslate nohighlight">\((N-k)/N=1-k/N\)</span>, which corresponds to the diagonal line in the plot above.
@@ -739,7 +739,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/429d05be7a747e2a5d63ff1dc88da0304423aeb705bbd705d89908dcce1febbf.png" src="../_images/429d05be7a747e2a5d63ff1dc88da0304423aeb705bbd705d89908dcce1febbf.png" />
+<img alt="../_images/461f08bd190384877c3e467a13ea433215cc53d206aebcc8e6e486aef43fa8dd.png" src="../_images/461f08bd190384877c3e467a13ea433215cc53d206aebcc8e6e486aef43fa8dd.png" />
 </div>
 </div>
 <p>While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack.</p>
@@ -754,7 +754,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.365
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.425
 R-index (targeted): 0.140
 </pre></div>
 </div>

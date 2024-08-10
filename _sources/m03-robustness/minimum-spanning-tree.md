@@ -46,8 +46,6 @@ The difference between the two algorithms lies in the order of edge addition.
 3. Repeat step 2 until all nodes are connected.
 
 {{ '[🚀 Check out the Demo for Kruskal\'s and Prim\'s algorithm 🌐]( BASE_URL/vis/kruskal-vs-prime.html)'.replace('BASE_URL', base_url) }}
-{{ '[🚀 Check out the Demo for Kruskal\'s and Prim\'s algorithm 🌐]( BASE_URL/vis/kruskal-vs-prime.html)'.replace('BASE_URL', base_url) }}
-{{ '[Friendship Paradox Game! 🎮✨]( BASE_URL/vis/friendship-paradox-game.html)'.replace('BASE_URL', base_url) }}
 
 Kruskal's algorithm sorts the edges globally at the beginning, while Prim's algorithm sorts the edges locally at each step.
 Both algorithms find the same minimum spanning tree, provided that all edge weights are distinct.
