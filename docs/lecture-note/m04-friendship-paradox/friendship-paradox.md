@@ -7,6 +7,6 @@ The paradox arises not because of the way we form friendships. It's about measur
 
 In network terms, cards represent edges and people represent nodes. The friendship paradox arises because we measure at different levels: nodes or edges. The average friend count at the node level is lower than at the edge level because popular people are counted more often at the edge level.
 
-- **🎉 Fun Challenge**: Can you create a network where your friends have the most friends? 🤔💡 Give it a try in this [Friendship Paradox Game!](./friendship-paradox-game.html) 🎮✨
+- **🎉 Fun Challenge**: Can you create a network where your friends have the most friends? 🤔💡 Give it a try in this [Friendship Paradox Game! 🎮✨](https://github.com/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/assets/vis/friendship-paradox-game.html)
 
 - **Question**: Can you create a network where the friendship paradox is absent? In other words, can you create a graph, where your friends have the same number of friends as you?

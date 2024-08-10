@@ -1,4 +1,4 @@
-# Application of the Friendship Paradox
+# Utility of the Friendship Paradox
 
 Beyond an interesting trivia, the friendship paradox has many practical applications.
 
@@ -7,11 +7,11 @@ Beyond an interesting trivia, the friendship paradox has many practical applicat
 One of the cleverest applications is in context of epidemiology. Let's think about the following question:
 
 **Question 1**:
-- A disease is spreading through edges (physical contacts) in a social network. A person is infected if at least one of their friends is infected. What is the implication of the friendship paradox on the disease spreading?
+A disease is spreading through edges (physical contacts) in a social network. A person is infected if at least one of their friends is infected. What is the implication of the friendship paradox on the disease spreading?
 
-- **Question 2**: The disease spreading is predicted and we have a limited number of vaccine to prepare for. Who should we vaccinate first?
+**Question 2**: The disease spreading is predicted and we have a limited number of vaccine to prepare for. Who should we vaccinate first?
 
-- **Question 3**: We do not anything about the structure of social network. How do find out these people without knowning the network structure?
+**Question 3**: We do not anything about the structure of social network. How do find out these people without knowning the network structure?
 
 ### Marketing and User Surveys
 
