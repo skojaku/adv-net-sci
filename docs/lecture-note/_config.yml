@@ -21,6 +21,31 @@ sphinx:
             - jupytext.reads
             - fmt: md
 
+sphinx:
+  config:
+    html_extra_path: ['assets']
+    html_theme_options:
+      use_download_button: false
+
+# Substitutions
+sphinx:
+  config:
+    html_show_copyright: false
+    html_extra_path: ['files']
+    myst_enable_extensions:
+      - amsmath
+      - colon_fence
+      - deflist
+      - dollarmath
+      - html_image
+      - linkify
+      - replacements
+      - smartquotes
+      - substitution
+
+    myst_substitutions:
+      base_url: 'https://skojaku.github.io/adv-net-sci'
+
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
@@ -45,9 +70,3 @@ html:
 launch_buttons:
   thebe: true
   binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
-
-sphinx:
-  config:
-    html_extra_path: ['assets']
-    html_theme_options:
-      use_download_button: false
