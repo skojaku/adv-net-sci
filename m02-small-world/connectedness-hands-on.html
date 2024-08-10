@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -211,6 +211,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/utility-of-FP.html">Utility of the Friendship Paradox</a></li>
 </ul>
 
     </div>
@@ -576,7 +583,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/599cff4f9e448c8aca1a1115da77c196cce8911133d25d8b9ce71f3b9c4d1129.svg" src="../_images/599cff4f9e448c8aca1a1115da77c196cce8911133d25d8b9ce71f3b9c4d1129.svg" /></div>
+<img alt="../_images/ff8ba8785eb5c34df4ff3e11c3c0024e17c27de30668b2347eb52168e2b00d3b.svg" src="../_images/ff8ba8785eb5c34df4ff3e11c3c0024e17c27de30668b2347eb52168e2b00d3b.svg" /></div>
 </div>
 <p>What happens if we query the shortest path between nodes in the different component?</p>
 <div class="cell docutils container">
@@ -586,7 +593,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_76996/3289741389.py:1: RuntimeWarning: Couldn&#39;t reach some vertices at src/paths/unweighted.c:444
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_74815/3289741389.py:1: RuntimeWarning: Couldn&#39;t reach some vertices at src/paths/unweighted.c:444
   g.get_shortest_paths(0, to=5)
 </pre></div>
 </div>
@@ -678,7 +685,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b496316ef7d357e2e35fbe53ad66c0ad92927dea5df0d00535009e904490e598.svg" src="../_images/b496316ef7d357e2e35fbe53ad66c0ad92927dea5df0d00535009e904490e598.svg" /></div>
+<img alt="../_images/ca9355c19ee83b67ad4000814266637b719db627ef1186b71eeba855bfeb6fd4.svg" src="../_images/ca9355c19ee83b67ad4000814266637b719db627ef1186b71eeba855bfeb6fd4.svg" /></div>
 </div>
 <p>In a directed graph, we know that an edge from one node to another does not necessarily mean that there is an edge in the opposite direction. This asymmetry also applies to paths in directed graphs. For example, in the given graph, there is a path from node 0 to node 3, but not in the reverse direction.</p>
 <div class="cell docutils container">

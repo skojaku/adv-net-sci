@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'm03-robustness/robustness-hands-on';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="What to learn in this module" href="../m04-friendship-paradox/what-to-learn.html" />
     <link rel="prev" title="Network Robustness" href="robustness.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -212,6 +213,13 @@
 <li class="toctree-l1"><a class="reference internal" href="minimum-spanning-tree.html">Minimum spanning tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robustness.html">Network Robustness</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Hands-on: Robustness</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/utility-of-FP.html">Utility of the Friendship Paradox</a></li>
 </ul>
 
     </div>
@@ -537,7 +545,7 @@ It is useful to create a copy of the network to keep the original network unchan
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 31
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 0
 Nodes remaining: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
 </pre></div>
 </div>
@@ -566,7 +574,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[33]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[27, 5, 1]
 </pre></div>
 </div>
 </div>
@@ -581,7 +589,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.9705882352941176
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.7941176470588235
 </pre></div>
 </div>
 </div>
@@ -642,7 +650,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/30570b0b4cbc1c652942d2ddee13c861dd2c5541fe2ec7722d58bbbb80ebb1ff.png" src="../_images/30570b0b4cbc1c652942d2ddee13c861dd2c5541fe2ec7722d58bbbb80ebb1ff.png" />
+<img alt="../_images/003f1be64d7840a7b8d9181e82df5c1d00987c83e8020e6ca183c19f8bda1732.png" src="../_images/003f1be64d7840a7b8d9181e82df5c1d00987c83e8020e6ca183c19f8bda1732.png" />
 </div>
 </div>
 <p>How should we interpret the robustness profile? Consider the most robust network consisting of <span class="math notranslate nohighlight">\(N\)</span> nodes, where all <span class="math notranslate nohighlight">\(N\)</span> nodes are fully connected. Regardless of how many nodes are removed, there will always be a single connected component, and the size of this component will be <span class="math notranslate nohighlight">\(N-k\)</span> if <span class="math notranslate nohighlight">\(k\)</span> nodes are removed. Therefore, the connectivity is <span class="math notranslate nohighlight">\((N-k)/N=1-k/N\)</span>, which corresponds to the diagonal line in the plot above.
@@ -731,7 +739,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d9e5154b029a479a43c4c1239c66d7c505a5c39cc9eff4020c27be7ccfd3d8b8.png" src="../_images/d9e5154b029a479a43c4c1239c66d7c505a5c39cc9eff4020c27be7ccfd3d8b8.png" />
+<img alt="../_images/7c28204c7071e63226ad2af87f170c0ece82a48d0385dd016bf799a2562f6f07.png" src="../_images/7c28204c7071e63226ad2af87f170c0ece82a48d0385dd016bf799a2562f6f07.png" />
 </div>
 </div>
 <p>While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack.</p>
@@ -746,7 +754,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.414
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.390
 R-index (targeted): 0.140
 </pre></div>
 </div>
@@ -794,6 +802,15 @@ R-index (targeted): 0.140
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Network Robustness</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../m04-friendship-paradox/what-to-learn.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">What to learn in this module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
