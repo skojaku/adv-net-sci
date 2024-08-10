@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics in Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -253,6 +261,167 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m03-robustness/minimum-spanning-tree.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm03-robustness/minimum-spanning-tree.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m03-robustness/minimum-spanning-tree.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m03-robustness/minimum-spanning-tree.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -359,7 +528,9 @@ The difference between the two algorithms lies in the order of edge addition.</p
 <li><p>Add the smallest weight edge connecting <span class="math notranslate nohighlight">\(G\)</span> to a node not in <span class="math notranslate nohighlight">\(G\)</span>.</p></li>
 <li><p>Repeat step 2 until all nodes are connected.</p></li>
 </ol>
-<p><a class="reference download internal" download="" href="../_downloads/1db41054cea02e81f08d9c69aa9e3100/kruskal-vs-prime.html"><span class="xref download myst">Check out the Demo for Kruskal’s and Prim’s algorithm</span></a></p>
+<p><a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/kruskal-vs-prime.html">🚀 Check out the Demo for Kruskal’s and Prim’s algorithm 🌐</a></p>
+<p><a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/kruskal-vs-prime.html">🚀 Check out the Demo for Kruskal’s and Prim’s algorithm 🌐</a></p>
+<p><a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/friendship-paradox-game.html">Friendship Paradox Game! 🎮✨</a></p>
 <p>Kruskal’s algorithm sorts the edges globally at the beginning, while Prim’s algorithm sorts the edges locally at each step.
 Both algorithms find the same minimum spanning tree, provided that all edge weights are distinct.
 Otherwise, they may yield different trees.</p>
@@ -380,7 +551,7 @@ Otherwise, they may yield different trees.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2dad8c29e5e42214af6ab68e1a26aad1a5e36e90efa271f9d9da6fd277c29fb3.svg" src="../_images/2dad8c29e5e42214af6ab68e1a26aad1a5e36e90efa271f9d9da6fd277c29fb3.svg" /></div>
+<img alt="../_images/6875a4bed8f73ccdede918abb8f0d5a0b4e10f0dff79342dea7d1a118e073173.svg" src="../_images/6875a4bed8f73ccdede918abb8f0d5a0b4e10f0dff79342dea7d1a118e073173.svg" /></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -396,7 +567,7 @@ The network is undirected and unweighted.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/29c98bd250b17711e1846f10b9d43a0a64ef311a86a3f88b5c2c42167063525f.svg" src="../_images/29c98bd250b17711e1846f10b9d43a0a64ef311a86a3f88b5c2c42167063525f.svg" /></div>
+<img alt="../_images/e699752210e5565a78dbf204392c988e357ce31b2e6b141caac39dbc56c09761.svg" src="../_images/e699752210e5565a78dbf204392c988e357ce31b2e6b141caac39dbc56c09761.svg" /></div>
 </div>
 </section>
 </section>
@@ -405,8 +576,8 @@ The network is undirected and unweighted.</p>
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",
@@ -488,13 +659,6 @@ By Sadamori Kojaku
   
   <div class="footer-item">
     
-
-  <p class="copyright">
-    
-      © Copyright 2023.
-      <br/>
-    
-  </p>
 
   </div>
   
