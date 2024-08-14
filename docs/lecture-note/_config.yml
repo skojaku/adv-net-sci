@@ -20,16 +20,6 @@ sphinx:
         .md:
             - jupytext.reads
             - fmt: md
-
-sphinx:
-  config:
-    html_extra_path: ['assets']
-    html_theme_options:
-      use_download_button: false
-
-# Substitutions
-sphinx:
-  config:
     html_show_copyright: false
     html_extra_path: ['files']
     myst_enable_extensions:
@@ -45,6 +35,9 @@ sphinx:
 
     myst_substitutions:
       base_url: 'https://skojaku.github.io/adv-net-sci'
+    html_extra_path: ['assets']
+    html_theme_options:
+      use_download_button: false
 
 # Define the name of the latex output file for PDF builds
 latex:
