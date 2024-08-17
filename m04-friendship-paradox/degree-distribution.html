@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Degree distribution &#8212; Advanced Topics on Network Science</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm04-friendship-paradox/degree-distribution';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Degree distribution of a friend" href="excess-degree-distribution.html" />
+    <link rel="prev" title="Vaccination Game" href="vaccination-game.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../home.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Degree distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="excess-degree-distribution.html">Degree distribution of a friend</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/community-detection-pattern-matching.html">Community detection (pattern matching)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Degree distribution</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="degree-distribution">
+<h1>Degree distribution<a class="headerlink" href="#degree-distribution" title="Link to this heading">#</a></h1>
+<p>The degree distribution is crucial to understand the friendship paradox.
+We will first introduce a formal definition of the degree distribution. Then, we will learn how to plot the degree distribution of a network.</p>
+<p>The degree of a node <span class="math notranslate nohighlight">\(i\)</span>, denoted by <span class="math notranslate nohighlight">\(d_i\)</span>, is the number of edges connected to it. With the adjacency matrix <span class="math notranslate nohighlight">\(A\)</span>, the degree of node <span class="math notranslate nohighlight">\(i\)</span> is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+d_i = \sum_{j=1}^N A_{ij}.
+\]</div>
+<p>The degree distribution <span class="math notranslate nohighlight">\(p(d)\)</span> is the probability that a node has <span class="math notranslate nohighlight">\(d\)</span> edges.</p>
+<p>Let us compute the degree distribution of a network. We will create a Barabási-Albert network with <span class="math notranslate nohighlight">\(N=10,000\)</span> nodes and <span class="math notranslate nohighlight">\(m=1\)</span> edge per node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Barabasi</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Create a Barabási-Albert network</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_adjacency</span><span class="p">()</span> <span class="c1"># Get the adjacency matrix</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Compute the degree of each node by summing the elements of the adjacency matrix along the rows.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">deg</span> <span class="o">=</span> <span class="n">deg</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The degree distribution <span class="math notranslate nohighlight">\(p(d)\)</span> can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us plot the degree distribution. This is not as trivial as you might think… 🤔</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p_deg</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">p_deg</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Degree&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probability&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
+</pre></div>
+</div>
+<img alt="../_images/8b5f6f34927a8c50f7a2ef6f58a16c2c66d5d378e3a1e23a331e84c64f629ff4.png" src="../_images/8b5f6f34927a8c50f7a2ef6f58a16c2c66d5d378e3a1e23a331e84c64f629ff4.png" />
+</div>
+</div>
+<p>While it clearly shows that most nodes have small degree, it does not show the tail of the distribution clearly, and often it is this tail that is of great interest (e.g., hub nodes). To show the tail of the distribution more clearly, we can use a log-log plot.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p_deg</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">p_deg</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">p_deg</span><span class="p">[</span><span class="n">p_deg</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="mf">0.01</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Degree&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probability&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
+</pre></div>
+</div>
+<img alt="../_images/669f24a2c28e007d09320c23765e1230ce471afb7f7e9aacdc2985fbc5698590.png" src="../_images/669f24a2c28e007d09320c23765e1230ce471afb7f7e9aacdc2985fbc5698590.png" />
+</div>
+</div>
+<p>We see fluctuations for large degree nodes because of the small number of nodes with large degree.
+One can use “binning” to smooth the plot. Binning involves grouping the data into bins and calculating the fraction of data within each bin. However, selecting an appropriate bin size can be challenging, and even with a well-chosen bin size, some information may be lost.</p>
+<p>A more convenient way is to use the complementary cumulative distribution function (CCDF).
+The CCDF at degree <span class="math notranslate nohighlight">\(d\)</span> is the probability that a randomly chosen node has degree <span class="math notranslate nohighlight">\(d'\)</span> greater than <span class="math notranslate nohighlight">\(d\)</span> (<span class="math notranslate nohighlight">\(d' &gt; d\)</span>).</p>
+<div class="math notranslate nohighlight">
+\[
+\text{CCDF}(d) = P(d' &gt; d) = \sum_{d'=d+1}^\infty p(d')
+\]</div>
+<ul class="simple">
+<li><p>CCDF is a monotonically decreasing function of <span class="math notranslate nohighlight">\(d\)</span>.</p></li>
+<li><p>CCDF encompasses the full information of <span class="math notranslate nohighlight">\(p(d)\)</span>, i.e., taking the derivative of CCDF gives <span class="math notranslate nohighlight">\(p(d)\)</span>.</p></li>
+<li><p>CCDF can be plotted as a smooth curve on a log-log scale without binning.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ccdf_deg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">p_deg</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># 1 - CDF (cumulative distribution function).</span>
+<span class="c1"># The last element is excluded because it is always 1, resulting in CCDF=0, which cannot be plotted on a log-log scale.</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ccdf_deg</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">ccdf_deg</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Degree&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;CCDF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;CCDF&#39;)
+</pre></div>
+</div>
+<img alt="../_images/8eac31784bd0d49f99106e31c6ae40bb82d2ced0ed6aa067dfb059ff61aa33ea.png" src="../_images/8eac31784bd0d49f99106e31c6ae40bb82d2ced0ed6aa067dfb059ff61aa33ea.png" />
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CCDF is the complement of CDF (cumulative distribution function). We use CCDF instead of CDF because CCDF shows the tail of the distribution more clearly in a log-log plot.
+Specifically, a logarithmic scale enlarges the range of small values, while compressing the range of large values.
+In CDF (shown in the figure below), large degree nodes have CDF values close to 1, and thus, the tail of the distribution is compressed into a small range.
+In CCDF, on the other hand, large degree nodes have a small CCDF values, which are then enlarged and thus more visible.
+For a visual comparison of CCDF and CDF, refer to Figure 3 in <span id="id1">[<a class="reference internal" href="#id12" title="Mark EJ Newman. Power laws, pareto distributions and zipf's law. Contemporary physics, 46(5):323–351, 2005.">1</a>]</span>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a>.</p>
+<img alt="../_images/8e6ec847404c6e4e9b94ed122eadc49aa88c5f8892f3483b3d4a490ad7e0f400.png" src="../_images/8e6ec847404c6e4e9b94ed122eadc49aa88c5f8892f3483b3d4a490ad7e0f400.png" />
+</div>
+<p>The slope of the CCDF tells us the heterogeneity of the degree distribution.</p>
+<ul class="simple">
+<li><p>Steep slope: more <strong>homogeneous</strong> degree distribution (similar degrees)</p></li>
+<li><p>Flat slope: more <strong>heterogeneous</strong> degree distribution (wide range of degrees)</p></li>
+</ul>
+<p>The slope of the CCDF is related to the power-law exponent of the degree distribution.
+A power-law degree distribution is described by <em>a continuous distribution</em> with the <em>density function</em> (not the probability mass) <span class="math notranslate nohighlight">\(p(d)\)</span> given by <span id="id2">[<a class="reference internal" href="#id11" title="Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. SIAM review, 51(4):661–703, 2009.">2</a>]</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p(d)\)</span> is the probability <em>density</em> of a node having degree <span class="math notranslate nohighlight">\(d\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\gamma\)</span> is the power-law exponent</p></li>
+<li><p><span class="math notranslate nohighlight">\(d_{\min}\)</span> is the minimum degree</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The degree distribution is <em>discrete</em> but often approximated by a <em>continuous</em> distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See <span id="id3">[<a class="reference internal" href="#id11" title="Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. SIAM review, 51(4):661–703, 2009.">2</a>]</span> for more details.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The power-law distribution is ill-defined for <span class="math notranslate nohighlight">\(d=0\)</span>, which is why there must be a minimum degree <span class="math notranslate nohighlight">\(d_{\min}\)</span> to avoid this issue.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There has been a long-standing debate in network science as to whether the power-law well represents the real-world networks. Power-law is just one of many possible distributions with a heavy tail (i.e., a long tail on the right side of the distribution), and other distributions may also fit the data well such as log-normal distribution.
+This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See <span id="id4">[<a class="reference internal" href="#id13" title="Igor Artico, I Smolyarenko, Veronica Vinciotti, and Ernst C Wit. How rare are power-law networks really? Proceedings of the Royal Society A, 476(2241):20190742, 2020.">3</a>, <a class="reference internal" href="#id15" title="Petter Holme. Rare and everywhere: perspectives on scale-free networks. Nature communications, 10(1):1016, 2019.">4</a>, <a class="reference internal" href="#id16" title="Ivan Voitalov, Pim Van Der Hoorn, Remco Van Der Hofstad, and Dmitri Krioukov. Scale-free networks well done. Physical Review Research, 1(3):033034, 2019.">5</a>, <a class="reference internal" href="#id14" title="Albert-László Barabási and Eric Bonabeau. Scale-free networks. Scientific american, 288(5):60–69, 2003.">6</a>]</span> for the debate.</p>
+</div>
+<p>The CCDF for the power-law distribution is given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\text{CCDF}(d) &amp;= 1 - \int_{d_{\min}}^d p(x) {\rm d}x \\
+  &amp;= 1 - \frac{\gamma -1}{d_{\min}}\cdot \frac{1}{1 - \gamma} \left[
+\left(\frac{d^{-\gamma + 1}}{d_{\min}^{-\gamma}}\right) - \left(\frac{d_{\min} ^{-\gamma + 1}}{d_{\min} ^{-
+\gamma}}\right)\right] \\
+&amp;= \left( \frac{d}{d_{\min}}\right)^{-\gamma + 1}
+\end{aligned}
+\end{split}\]</div>
+<p>Taking the logarithm:</p>
+<div class="math notranslate nohighlight">
+\[
+\log \left[ \text{CCDF}(d) \right] = (-\gamma + 1) \cdot \log d + \text{const.}
+\]</div>
+<p>Thus, the slope of the CCDF in a log-log plot is related to the power-law exponent <span class="math notranslate nohighlight">\(\gamma\)</span>.
+Specifically, a steeper negative slope (i.e., a more negative value of <span class="math notranslate nohighlight">\(-\gamma + 1\)</span>) corresponds to a larger <span class="math notranslate nohighlight">\(\gamma\)</span>.
+A larger <span class="math notranslate nohighlight">\(\gamma\)</span> indicates a more homogeneous degree distribution, where the probability of finding nodes with very high degrees decreases more rapidly.
+Conversely, a flatter slope (i.e., a value of <span class="math notranslate nohighlight">\(-\gamma + 1\)</span> being closer to zero) corresponds to a smaller <span class="math notranslate nohighlight">\(\gamma\)</span>.
+A smaller <span class="math notranslate nohighlight">\(\gamma\)</span> indicates a more heterogeneous degree distribution, where there’s a high probability of finding nodes with high degrees compared to that with a large <span class="math notranslate nohighlight">\(\gamma\)</span> value.</p>
+<p>For students interested in real-world examples of the CCDF plot, refer to Figure 4 in <span id="id5">[<a class="reference internal" href="#id12" title="Mark EJ Newman. Power laws, pareto distributions and zipf's law. Contemporary physics, 46(5):323–351, 2005.">1</a>]</span>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a></p>
+<p>In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.</p>
+<div class="docutils container" id="id6">
+<div role="list" class="citation-list">
+<div class="citation" id="id12" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Mark EJ Newman. Power laws, pareto distributions and zipf's law. <em>Contemporary physics</em>, 46(5):323–351, 2005.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. <em>SIAM review</em>, 51(4):661–703, 2009.</p>
+</div>
+<div class="citation" id="id13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>Igor Artico, I Smolyarenko, Veronica Vinciotti, and Ernst C Wit. How rare are power-law networks really? <em>Proceedings of the Royal Society A</em>, 476(2241):20190742, 2020.</p>
+</div>
+<div class="citation" id="id15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Petter Holme. Rare and everywhere: perspectives on scale-free networks. <em>Nature communications</em>, 10(1):1016, 2019.</p>
+</div>
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">5</a><span class="fn-bracket">]</span></span>
+<p>Ivan Voitalov, Pim Van Der Hoorn, Remco Van Der Hofstad, and Dmitri Krioukov. Scale-free networks well done. <em>Physical Review Research</em>, 1(3):033034, 2019.</p>
+</div>
+<div class="citation" id="id14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">6</a><span class="fn-bracket">]</span></span>
+<p>Albert-László Barabási and Eric Bonabeau. Scale-free networks. <em>Scientific american</em>, 288(5):60–69, 2003.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./m04-friendship-paradox"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="vaccination-game.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Vaccination Game</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="excess-degree-distribution.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Degree distribution of a friend</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sadamori Kojaku
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
