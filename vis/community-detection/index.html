@@ -163,7 +163,7 @@
             }));
 
             // Create a copy of nodes for user interaction
-            let userNodes = JSON.parse(JSON.stringify(nodes));
+            userNodes = JSON.parse(JSON.stringify(nodes));
             maxClicks = nodes.length;
 
             // Set up the graph SVG
@@ -213,15 +213,15 @@
                 d.community = (d.community + 1) % numCommunities; // Cycle through communities
                 d3.select(this).attr("fill", colorScale(d.community));
                 userNodes[d.id].community = d.community; // Update user's assignment
+                let score = calculateScore(userNodes, links);
                 if (d == lastClickedNode) {
-                    scoreData[scoreData.length - 1].score = calculateScore(userNodes, links);
+                    scoreData[scoreData.length - 1].score = score;
                     scoreData[scoreData.length - 1].communities = JSON.parse(JSON.stringify(userNodes));
-                    updateScore(true);
+                    document.getElementById("score").textContent = score.toFixed(2);
                 } else{
-                    console.log("update tr")
                     clickCount++;
                     lastClickedNode = d;
-                    updateScore(false);
+                    scoreData.push({clicks: clickCount, score: score, communities: JSON.parse(JSON.stringify(userNodes))});
                 }
                 updateScoreChart();
                 checkGameEnd();
@@ -312,14 +312,6 @@
             return Q;
         }
 
-        // Function to check if the game has ended
-        function checkGameEnd() {
-            if (clickCount >= 10) {
-                const userScore = calculateScore(userNodes, links);
-                let gameResultMessage = "Game Over. Your final score: " + userScore.toFixed(2);
-                document.getElementById("gameResult").textContent = gameResultMessage;
-            }
-        }
 
         // Drag functions
         function drag(simulation) {
@@ -348,9 +340,7 @@
 
         // Calculate and update score
         function updateScore(overwrite = false) {
-            console.log(userNodes);
             let score = calculateScore(userNodes, links);
-            console.log(userNodes, score)
             document.getElementById("score").textContent = score.toFixed(2);
             if (overwrite) {
                 scoreData[scoreData.length - 1].score = score;
@@ -564,7 +554,6 @@
                 .attr("text-anchor", "start")
                 .attr("fill", "white")
                 .text(d => `Target Score: ${d.toFixed(2)}`);
-                console.log(scoreData[scoreData.length - 1].score);
         }
 
         function showCommunityAssignment(communities, isBaseline) {

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -387,7 +387,7 @@ It is useful to create a copy of the network to keep the original network unchan
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 18
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 14
 Nodes remaining: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
 </pre></div>
 </div>
@@ -492,7 +492,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/62ae5cf0af00972199439da6d8dee1d638df5a05a6b5139864216808d64f3612.png" src="../_images/62ae5cf0af00972199439da6d8dee1d638df5a05a6b5139864216808d64f3612.png" />
+<img alt="../_images/f97261cfa1d68850070ef7f94757a26c7a2622e6167dd797407e9140f38be965.png" src="../_images/f97261cfa1d68850070ef7f94757a26c7a2622e6167dd797407e9140f38be965.png" />
 </div>
 </div>
 <p>How should we interpret the robustness profile? Consider the most robust network consisting of <span class="math notranslate nohighlight">\(N\)</span> nodes, where all <span class="math notranslate nohighlight">\(N\)</span> nodes are fully connected. Regardless of how many nodes are removed, there will always be a single connected component, and the size of this component will be <span class="math notranslate nohighlight">\(N-k\)</span> if <span class="math notranslate nohighlight">\(k\)</span> nodes are removed. Therefore, the connectivity is <span class="math notranslate nohighlight">\((N-k)/N=1-k/N\)</span>, which corresponds to the diagonal line in the plot above.
@@ -581,7 +581,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4489c8e8417a222bc65b6701c7292e42265e96444764644218112716e72bae0b.png" src="../_images/4489c8e8417a222bc65b6701c7292e42265e96444764644218112716e72bae0b.png" />
+<img alt="../_images/fcec3e9ec17d950fbf94bb7cbd6675dc38f446743090704bed6bf18fc640ebbb.png" src="../_images/fcec3e9ec17d950fbf94bb7cbd6675dc38f446743090704bed6bf18fc640ebbb.png" />
 </div>
 </div>
 <p>While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack.</p>
@@ -596,7 +596,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.493
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.496
 R-index (targeted): 0.140
 </pre></div>
 </div>
