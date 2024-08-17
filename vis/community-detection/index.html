@@ -213,15 +213,15 @@
                 d.community = (d.community + 1) % numCommunities; // Cycle through communities
                 d3.select(this).attr("fill", colorScale(d.community));
                 userNodes[d.id].community = d.community; // Update user's assignment
-
                 if (d == lastClickedNode) {
                     scoreData[scoreData.length - 1].score = calculateScore(userNodes, links);
                     scoreData[scoreData.length - 1].communities = JSON.parse(JSON.stringify(userNodes));
                     updateScore(true);
                 } else{
+                    console.log("update tr")
                     clickCount++;
                     lastClickedNode = d;
-                    updateScore();
+                    updateScore(false);
                 }
                 updateScoreChart();
                 checkGameEnd();
@@ -269,7 +269,8 @@
 
         function calculateScore(nodes, links) {
             if (scoreType === "graphcut") {
-                return calculateGraphCutScore(nodes, links);
+                score = calculateGraphCutScore(nodes, links);
+                return score;
             } else if (scoreType === "modularity") {
                 return calculateModularityScore(nodes, links);
             }
@@ -284,7 +285,6 @@
         function calculateModularityScore(nodes, links) {
             let m = links.length;
             let Win = 0;
-            console.log(nodes);
             // Calculate the degree of each node
             // Count the number of edges within the same communities
             let degrees = new Array(nodes.length).fill(0);
@@ -348,7 +348,9 @@
 
         // Calculate and update score
         function updateScore(overwrite = false) {
+            console.log(userNodes);
             let score = calculateScore(userNodes, links);
+            console.log(userNodes, score)
             document.getElementById("score").textContent = score.toFixed(2);
             if (overwrite) {
                 scoreData[scoreData.length - 1].score = score;

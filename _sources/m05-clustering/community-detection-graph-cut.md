@@ -10,7 +10,7 @@ kernelspec:
   name: python3
 ---
 
-# Community detection (optimization)
+# Graph cut
 
 Another approach from computer science is to treat a community detection problem as an *optimization* problem.
 An early example is the **graph cut** problem, which asks to find the minimum number of edges to cut in a graph into two disconnected components.
@@ -32,4 +32,4 @@ Now, the community detection problem is translated into **an optimization proble
 
 The description of this problem is not complete 😈. Let's find out what is missing by playing with the optimization problem.
 
-- **Interactive Demo**: Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. {{ '[Graph Cut Problem 🎮]( BASE_URL/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json)'.replace('BASE_URL', base_url) }}
+- **Interactive Demo**: Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a>".replace('BASE_URL', base_url) }}

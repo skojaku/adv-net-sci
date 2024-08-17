@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Community detection (optimization) &#8212; Advanced Topics on Network Science</title>
+    <title>Graph cut &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -59,9 +59,10 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/community-detection-pattern-optimization';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/community-detection-graph-cut';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Community detection (optimization)" href="community-detection-ratio-normalized-cut.html" />
     <link rel="prev" title="Community detection (pattern matching)" href="community-detection-pattern-matching.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -220,7 +221,8 @@
 <li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="community-detection-pattern-matching.html">Community detection (pattern matching)</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Community detection (optimization)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community-detection-ratio-normalized-cut.html">Community detection (optimization)</a></li>
 </ul>
 
     </div>
@@ -309,7 +311,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Community detection (optimization)</h1>
+    <h1>Graph cut</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -323,8 +325,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="community-detection-optimization">
-<h1>Community detection (optimization)<a class="headerlink" href="#community-detection-optimization" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="graph-cut">
+<h1>Graph cut<a class="headerlink" href="#graph-cut" title="Link to this heading">#</a></h1>
 <p>Another approach from computer science is to treat a community detection problem as an <em>optimization</em> problem.
 An early example is the <strong>graph cut</strong> problem, which asks to find the minimum number of edges to cut in a graph into two disconnected components.</p>
 <p>Specifically, let us first represent a binary label for each node, <span class="math notranslate nohighlight">\(x_i \in \{0, 1\}\)</span>, where nodes with the same label are in the same community.
@@ -343,7 +345,7 @@ The number of edges between the two communities is given by</p>
 <p>Now, the community detection problem is translated into <strong>an optimization problem</strong>, with the goal being to find a cut <span class="math notranslate nohighlight">\(x\)</span> that minimizes <span class="math notranslate nohighlight">\(\text{Cut}(x)\)</span>.</p>
 <p>The description of this problem is not complete 😈. Let’s find out what is missing by playing with the optimization problem.</p>
 <ul class="simple">
-<li><p><strong>Interactive Demo</strong>: Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. <a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=graphcut&amp;amp;numCommunities=2&amp;amp;randomness=1&amp;amp;dataFile=two-cliques.json">Graph Cut Problem 🎮</a></p></li>
+<li><p><strong>Interactive Demo</strong>: Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a></p></li>
 </ul>
 </section>
 
@@ -385,6 +387,15 @@ The number of edges between the two communities is given by</p>
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Community detection (pattern matching)</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="community-detection-ratio-normalized-cut.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Community detection (optimization)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
