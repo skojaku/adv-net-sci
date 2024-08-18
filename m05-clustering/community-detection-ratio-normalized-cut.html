@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Community detection (optimization) &#8212; Advanced Topics on Network Science</title>
+    <title>Balanced cut &#8212; Advanced Topics on Network Science</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -57,6 +57,8 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/community-detection-ratio-normalized-cut';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -219,7 +221,7 @@
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="community-detection-pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="community-detection-graph-cut.html">Graph cut</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Community detection (optimization)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Balanced cut</a></li>
 </ul>
 
     </div>
@@ -297,7 +299,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -308,11 +312,23 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Community detection (optimization)</h1>
+    <h1>Balanced cut</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ratio-cut">Ratio Cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-cut">Normalized cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cut-into-more-than-two-communities">Cut into more than two communities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithms-to-find-the-best-cut">Algorithms to find the best cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issue-of-ratio-cut-and-normalized-cut">Issue of Ratio cut and Normalized cut</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -322,8 +338,205 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="community-detection-optimization">
-<h1>Community detection (optimization)<a class="headerlink" href="#community-detection-optimization" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="balanced-cut">
+<h1>Balanced cut<a class="headerlink" href="#balanced-cut" title="Link to this heading">#</a></h1>
+<section id="ratio-cut">
+<h2>Ratio Cut<a class="headerlink" href="#ratio-cut" title="Link to this heading">#</a></h2>
+<p>Graph cut often provide unbalanced communities, e.g., a community consisting of a single node, and another consisting of all other nodes. For example, if the network has a node with degree one (e.g., one edge), an optimal cut will be to place this node in its own community, resulting in a cut of one.</p>
+<p><strong>Ratio cut</strong> addresses this issue by introducing a normalization factor to balance the cut.
+Suppose we cut the network into two communities <span class="math notranslate nohighlight">\(V_1\)</span> and <span class="math notranslate nohighlight">\(V_2\)</span>, then the ratio cut is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+\text{Ratio cut}(V_1, V_2) = \frac{1}{|V_1| \cdot |V_2|} \sum_{i \in V_1} \sum_{j \in V_2} A_{ij}
+\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(|V_1|\)</span> (or |V_2|) is the number of nodes in the community <span class="math notranslate nohighlight">\(V_1\)</span> (or <span class="math notranslate nohighlight">\(V_2\)</span>).</p></li>
+</ul>
+<p>The normalization factor <span class="math notranslate nohighlight">\(1/(|V_1| |V_2|)\)</span> balances the community sizes. It’s smallest when communities are equal (<span class="math notranslate nohighlight">\(|V_1| = |V_2|\)</span>) and largest when one community has only one node (<span class="math notranslate nohighlight">\(|V_1| = 1\)</span> or <span class="math notranslate nohighlight">\(|V_2| = 1\)</span>).</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Total number of nodes</span>
+<span class="n">total_nodes</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># Create an array of possible sizes for V1</span>
+<span class="n">V1_sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_nodes</span><span class="p">)</span>
+
+<span class="c1"># Calculate corresponding sizes for V2</span>
+<span class="n">V2_sizes</span> <span class="o">=</span> <span class="n">total_nodes</span> <span class="o">-</span> <span class="n">V1_sizes</span>
+
+<span class="c1"># Calculate the normalization factor</span>
+<span class="n">normalization_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">V1_sizes</span> <span class="o">*</span> <span class="n">V2_sizes</span><span class="p">)</span>
+
+<span class="c1"># Create the plot</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">V1_sizes</span><span class="p">,</span> <span class="n">normalization_factor</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Normalization Factor vs. Community Size&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Size of V1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;1 / (|V1| * |V2|)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>  <span class="c1"># Use log scale for y-axis due to large range of values</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/68c13033cd89f7fce564c7c79cbdf286e1bdf0b9c29f58ab3121eda22fd6d2d6.png" src="../_images/68c13033cd89f7fce564c7c79cbdf286e1bdf0b9c29f58ab3121eda22fd6d2d6.png" />
+</div>
+</div>
+</section>
+<section id="normalized-cut">
+<h2>Normalized cut<a class="headerlink" href="#normalized-cut" title="Link to this heading">#</a></h2>
+<p><strong>Normalized cut</strong><span id="id1">[<a class="reference internal" href="#id26" title="Jianbo Shi and Jitendra Malik. Normalized cuts and image segmentation. IEEE Transactions on pattern analysis and machine intelligence, 22(8):888–905, 2000.">1</a>]</span> balances communities based on edge count, unlike Ratio cut which uses node count. It is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{Normalized cut}(V_1, V_2) = \frac{1}{|E_1| \cdot |E_2|} \sum_{i \in V_1} \sum_{j \in V_2} A_{ij}
+\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(|E_1|\)</span> and <span class="math notranslate nohighlight">\(|E_2|\)</span> are the number of edges in the communities <span class="math notranslate nohighlight">\(V_1\)</span> and <span class="math notranslate nohighlight">\(V_2\)</span>, respectively.</p></li>
+</ul>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>Compute the ratio cut and normalized cut for the following network. The red edges should be cut.</p>
+<figure class="align-default" id="fig-graph-cut">
+<img alt="../_images/3b97cde837a5965c4fd9890b8037f4cd8c2f89fb11eebeadb7fcf961d7b200d2.png" src="../_images/3b97cde837a5965c4fd9890b8037f4cd8c2f89fb11eebeadb7fcf961d7b200d2.png" />
+</figure>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click here to reveal the answer<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The graph consists of two cliques, each with 5 nodes (<span class="math notranslate nohighlight">\(|V_1| = |V_2| = 5\)</span>).
+Each clique has 10 internal edges and 2 edges connecting to the other clique.
+Therefore, <span class="math notranslate nohighlight">\(|E_1| = |E_2| = 10 + 2 = 12\)</span>.
+We can now calculate:</p>
+<ul class="simple">
+<li><p class="sd-card-text"><strong>Ratio cut</strong>: <span class="math notranslate nohighlight">\(2 / (5 \times 5) = 0.08\)</span>.</p></li>
+<li><p class="sd-card-text"><strong>Normalized cut</strong>: <span class="math notranslate nohighlight">\(2 / (12 \times 12) = 0.01388889\)</span>.</p></li>
+</ul>
+</div>
+</details><div class="cell tag_hide-input tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span> <span class="k">as</span> <span class="nn">ig</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
+
+<span class="c1"># Create two cliques of size 5</span>
+<span class="n">G1</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Full</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">G2</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Full</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Combine the two cliques</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">G1</span> <span class="o">+</span> <span class="n">G2</span>
+
+<span class="c1"># Add an edge between the two cliques</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># Draw the graph</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">layout_fruchterman_reingold</span><span class="p">()</span>
+
+<span class="c1"># Set up the plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Draw the connecting edge in red</span>
+<span class="n">ig</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+    <span class="n">vertex_color</span><span class="o">=</span><span class="s1">&#39;lightblue&#39;</span><span class="p">,</span>
+    <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span>
+    <span class="n">edge_width</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Draw the connecting edge in red behind the graph</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">layout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">layout</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">layout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">layout</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">layout</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">layout</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">layout</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">layout</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">ig</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+    <span class="n">vertex_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
+    <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+    <span class="n">edge_width</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Add labels to the nodes</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">coords</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Two Cliques Connected by One Edge&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="n">glue</span><span class="p">(</span><span class="s2">&quot;fig-graph-cut&quot;</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+</section>
+<section id="cut-into-more-than-two-communities">
+<h2>Cut into more than two communities<a class="headerlink" href="#cut-into-more-than-two-communities" title="Link to this heading">#</a></h2>
+<p>Ratio cut and Normalized cut can be extended to cut into more than two communities. Specifically, we can extend them to cut into <span class="math notranslate nohighlight">\(k\)</span> communities, i.e., <span class="math notranslate nohighlight">\(V_1, V_2, \dots, V_k\)</span> by defining</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\text{Ratio cut}(V_1, V_2, \dots, V_k) &amp;= \sum_{k=1}^K \frac{1}{|V_k|} \left(\sum_{i \in V_k} \sum_{j \notin V_{k}} A_{ij} \right) \\
+\text{Normalized cut}(V_1, V_2, \dots, V_k) &amp;= \sum_{k=1}^K \frac{1}{|E_k|} \left(\sum_{i \in V_k} \sum_{j \notin V_{k}} A_{ij} \right)
+\end{align}
+\end{split}\]</div>
+</section>
+<section id="algorithms-to-find-the-best-cut">
+<h2>Algorithms to find the best cut<a class="headerlink" href="#algorithms-to-find-the-best-cut" title="Link to this heading">#</a></h2>
+<p>For both ratio and normalized cut, finding the best cut is a NP-hard problem. Yet, there are some heuristics to find a good cut.
+Interested students are encouraged to refer to <a class="reference external" href="https://arxiv.org/abs/0711.0189">Ulrike von Luxburg “A Tutorial on Spectral Clustering”</a> for more details.</p>
+</section>
+<section id="issue-of-ratio-cut-and-normalized-cut">
+<h2>Issue of Ratio cut and Normalized cut<a class="headerlink" href="#issue-of-ratio-cut-and-normalized-cut" title="Link to this heading">#</a></h2>
+<p>While Ratio cut and Normalized cut methods are clever approaches, they do come with a couple of challenges we should be aware of.</p>
+<p>Firstly, these methods ask us to decide upfront how many communities we want to find. This can be tricky because, in real-world networks, we often don’t know this number in advance. It requires us to make a guess on how many different groups of friends we have before actually looking at our social circle.</p>
+<p>Secondly, and perhaps more critically, these methods <em>favor</em> communities of roughly the same size.
+It’s as if they’re assuming all our friend groups should have about the same number of people.
+But as we know from real life, that’s not always the case.
+Some of us might have a large group of college friends and a smaller group of childhood buddies.
+Research has shown that in many real-world networks, communities can indeed be quite different in size <span id="id2">[<a class="reference internal" href="#id27" title="Gergely Palla, Imre Derényi, Illés Farkas, and Tamás Vicsek. Uncovering the overlapping community structure of complex networks in nature and society. nature, 435(7043):814–818, 2005.">2</a>, <a class="reference internal" href="#id28" title="Aaron Clauset, Mark EJ Newman, and Cristopher Moore. Finding community structure in very large networks. Physical Review E—Statistical, Nonlinear, and Soft Matter Physics, 70(6):066111, 2004.">3</a>]</span>.</p>
+<p>These limitations don’t mean these methods should not be used, but they do remind us the importance of understanding the underlying assumptions and limitations of methods we use 😉.
+It’s always good to keep these points in mind when we’re working with network data. 🕸️💡</p>
+<div class="docutils container" id="id3">
+<div role="list" class="citation-list">
+<div class="citation" id="id26" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Jianbo Shi and Jitendra Malik. Normalized cuts and image segmentation. <em>IEEE Transactions on pattern analysis and machine intelligence</em>, 22(8):888–905, 2000.</p>
+</div>
+<div class="citation" id="id27" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Gergely Palla, Imre Derényi, Illés Farkas, and Tamás Vicsek. Uncovering the overlapping community structure of complex networks in nature and society. <em>nature</em>, 435(7043):814–818, 2005.</p>
+</div>
+<div class="citation" id="id28" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
+<p>Aaron Clauset, Mark EJ Newman, and Cristopher Moore. Finding community structure in very large networks. <em>Physical Review E—Statistical, Nonlinear, and Soft Matter Physics</em>, 70(6):066111, 2004.</p>
+</div>
+</div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -371,6 +584,25 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ratio-cut">Ratio Cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-cut">Normalized cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cut-into-more-than-two-communities">Cut into more than two communities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithms-to-find-the-best-cut">Algorithms to find the best cut</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issue-of-ratio-cut-and-normalized-cut">Issue of Ratio cut and Normalized cut</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

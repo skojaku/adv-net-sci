@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/community-detection-graph-cut';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Community detection (optimization)" href="community-detection-ratio-normalized-cut.html" />
+    <link rel="next" title="Balanced cut" href="community-detection-ratio-normalized-cut.html" />
     <link rel="prev" title="Community detection (pattern matching)" href="community-detection-pattern-matching.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -222,7 +222,7 @@
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="community-detection-pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Graph cut</a></li>
-<li class="toctree-l1"><a class="reference internal" href="community-detection-ratio-normalized-cut.html">Community detection (optimization)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community-detection-ratio-normalized-cut.html">Balanced cut</a></li>
 </ul>
 
     </div>
@@ -328,25 +328,30 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="graph-cut">
 <h1>Graph cut<a class="headerlink" href="#graph-cut" title="Link to this heading">#</a></h1>
 <p>Another approach from computer science is to treat a community detection problem as an <em>optimization</em> problem.
-An early example is the <strong>graph cut</strong> problem, which asks to find the minimum number of edges to cut in a graph into two disconnected components.</p>
-<p>Specifically, let us first represent a binary label for each node, <span class="math notranslate nohighlight">\(x_i \in \{0, 1\}\)</span>, where nodes with the same label are in the same community.
-The number of edges between the two communities is given by</p>
+An early example is the <strong>graph cut</strong> problem, which asks to find the minimum number of edges to cut the graph into two disconnected components.</p>
+<p>Specifically, let us consider cutting the network into two communities. Let <span class="math notranslate nohighlight">\(V_1\)</span> and <span class="math notranslate nohighlight">\(V_2\)</span> be the set of nodes in the two communities.
+Then, the cut is the number of edges between the two communities, which is given by</p>
 <div class="math notranslate nohighlight">
 \[
 \begin{align}
-\text{Cut}(x)
-&amp;= \frac{1}{2}\sum_{i=1}^{N} \sum_{j=1}^{N} A_{ij} \cdot \left( 1- \delta(x_i, x_j) \right)
+\text{Cut}(V_1, V_2) = \sum_{i \in V_1} \sum_{j \in V_2} A_{ij}
 \end{align}
 \]</div>
-<ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\delta(x_i, x_j)\)</span> is <em>the Kronecker delta function</em>, which is 1 if <span class="math notranslate nohighlight">\(x_i = x_j\)</span> and 0 otherwise.</p></li>
-<li><p>The factor <span class="math notranslate nohighlight">\(1/2\)</span> corrects for double counting of edges due to the double summation.</p></li>
-</ul>
-<p>Now, the community detection problem is translated into <strong>an optimization problem</strong>, with the goal being to find a cut <span class="math notranslate nohighlight">\(x\)</span> that minimizes <span class="math notranslate nohighlight">\(\text{Cut}(x)\)</span>.</p>
+<p>Now, the community detection problem is translated into <strong>an optimization problem</strong>, with the goal of finding a cut <span class="math notranslate nohighlight">\(V_1, V_2\)</span> that minimizes <span class="math notranslate nohighlight">\(\text{Cut}(V_1, V_2)\)</span>.</p>
 <p>The description of this problem is not complete 😈. Let’s find out what is missing by playing with the optimization problem.</p>
-<ul class="simple">
-<li><p><strong>Interactive Demo</strong>: Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a></p></li>
-</ul>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a></p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to reveal the answer!<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The missing element is a constraint: each community must contain at least one node. Without this, the trivial solution of placing all nodes in a single community would always yield a cut of zero.</p>
+</div>
+</details></div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -393,7 +398,7 @@ The number of edges between the two communities is given by</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Community detection (optimization)</p>
+        <p class="prev-next-title">Balanced cut</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
