@@ -57,9 +57,12 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/modularity';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modularity (Cont.)" href="modularity-02.html" />
     <link rel="prev" title="Balanced cut" href="ratio-normalized-cut.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -152,8 +155,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
   
   
 </a></div>
@@ -221,6 +224,9 @@
 <li class="toctree-l1"><a class="reference internal" href="graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ratio-normalized-cut.html">Balanced cut</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Modularity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modularity-02.html">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
 </ul>
 
     </div>
@@ -298,7 +304,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -314,6 +322,15 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assortativity">Assortativity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deriving-modularity">Deriving Modularity</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -325,6 +342,85 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="modularity">
 <h1>Modularity<a class="headerlink" href="#modularity" title="Link to this heading">#</a></h1>
+<p><strong>Modularity</strong> is by far the most widely used method for community detection.
+Modularity can be derived in many ways, but we will follow the one derived from assortativity.</p>
+<section id="assortativity">
+<h2>Assortativity<a class="headerlink" href="#assortativity" title="Link to this heading">#</a></h2>
+<p><strong>Assortativity</strong> is a measure of the tendency of nodes to connect with nodes of the same attribute.
+The attribute, in our case, is the community that the node belongs to, and we say that a network is assortative if nodes of the same community are more likely to connect with each other than nodes of different communities.</p>
+<p>Let’s think about assortativity by using color balls and strings! 🎨🧵</p>
+<p>Imagine we’re playing a game as follows:</p>
+<ol class="arabic simple">
+<li><p>Picture each connection in our network as two colored balls joined by a piece of string. 🔴🟢–🔵🟡</p></li>
+<li><p>The color of each ball shows which community it belongs to.</p></li>
+<li><p>Now, let’s toss all these ball-and-string pairs into a big bag.</p></li>
+<li><p>We’ll keep pulling out strings with replacement and checking if the balls on each end match colors.</p></li>
+</ol>
+<p>The more color matches we find, the more assortative our network is. But, there’s a catch!
+What if we got lots of matches just by luck? For example, if all our balls were the same color, we’d always get a match. But that doesn’t tell us much about our communities.
+So, to be extra clever, we compare our results to a “random” version (null model):</p>
+<ol class="arabic simple">
+<li><p>We snip all the strings and mix up all the balls.</p></li>
+<li><p>Then we draw pairs of balls at random <em>with replacement</em> and see how often the colors match.</p></li>
+</ol>
+<p>By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we’d expect by chance.
+This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity <em>relative</em> to <em>a null model</em>.</p>
+<figure class="align-default" id="fig-modularity-game">
+<a class="reference internal image-reference" href="../_images/modularity.jpg"><img alt="Single node failure" src="../_images/modularity.jpg" style="width: 100%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 15 </span><span class="caption-text">Illustration of how modularity measures assortativity relative to a null model.</span><a class="headerlink" href="#fig-modularity-game" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="deriving-modularity">
+<h2>Deriving Modularity<a class="headerlink" href="#deriving-modularity" title="Link to this heading">#</a></h2>
+<p>Now, let’s put on our math hats and make this colorful game a bit more precise.</p>
+<p>Let’s introduce some helpful symbols to describe our network:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N\)</span>: This is our total number of nodes (or balls in our game)</p></li>
+<li><p><span class="math notranslate nohighlight">\(M\)</span>: The number of edges (or strings) connecting our nodes</p></li>
+<li><p><span class="math notranslate nohighlight">\(A_{ij}\)</span>: Adjacency matrix. If <span class="math notranslate nohighlight">\(A_{ij} = 1\)</span>, it means node <span class="math notranslate nohighlight">\(i\)</span> and node <span class="math notranslate nohighlight">\(j\)</span> are connected. If <span class="math notranslate nohighlight">\(A_{ij} = 0\)</span>, they’re not connected.</p></li>
+<li><p><span class="math notranslate nohighlight">\(k_i\)</span>: Degree of node <span class="math notranslate nohighlight">\(i\)</span>, i.e., how many edges a node has.</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_i\)</span>: Community of node <span class="math notranslate nohighlight">\(i\)</span>, i.e., which community a node belongs to.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\delta(c_i, c_j)\)</span>: Kronecker delta function. It gives us 1 if nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> are the same color, and 0 if they’re different.</p></li>
+</ul>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>What is the probability of color matches for a given network? Derive the probability by using <span class="math notranslate nohighlight">\(\sum, M, A_{ij}, \delta(c_i, c_j)\)</span>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Hint<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Let’s think about our colorful bag of balls and strings! 🎨🧵
+First, ask yourself:</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">How many strings do we have in total? (This is our M!)</p></li>
+<li><p class="sd-card-text">Now, out of all these strings, how many are the same color on both ends?</p></li>
+</ol>
+</div>
+</details></div>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>What is the probability of color matches for the random version? Derive the probability by using <span class="math notranslate nohighlight">\(\sum, M, \delta(c_i, c_j), k_i,k_j\)</span>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Hint<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<ol class="arabic simple">
+<li><p class="sd-card-text">Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡</p></li>
+<li><p class="sd-card-text">Now, think about picking one ball out of the bag. What are the chances of picking a specific color?</p></li>
+<li><p class="sd-card-text">Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?</p></li>
+</ol>
+</div>
+</details></div>
+<p>The full modularity formula is on the next page 😉.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -366,12 +462,37 @@ document.write(`
         <p class="prev-next-title">Balanced cut</p>
       </div>
     </a>
+    <a class="right-next"
+       href="modularity-02.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Modularity (Cont.)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assortativity">Assortativity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deriving-modularity">Deriving Modularity</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

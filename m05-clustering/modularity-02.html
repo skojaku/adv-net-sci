@@ -1,0 +1,653 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modularity (Cont.) &#8212; Advanced Topics on Network Science</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/modularity-02';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modularity maximization with Python" href="modularity-03.html" />
+    <link rel="prev" title="Modularity" href="modularity.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../home.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pattern-matching.html">Community detection (pattern matching)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph-cut.html">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ratio-normalized-cut.html">Balanced cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modularity.html">Modularity</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Modularity (Cont.)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modularity-demo">Modularity Demo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitation-of-modularity">Limitation of Modularity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resolution-limit">Resolution limit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spurious-communities">Spurious communities</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#so-should-we-avoid-modularity">So should we avoid modularity?</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modularity-cont">
+<h1>Modularity (Cont.)<a class="headerlink" href="#modularity-cont" title="Link to this heading">#</a></h1>
+<figure class="align-default" id="fig-modularity-game">
+<a class="reference internal image-reference" href="../_images/modularity.jpg"><img alt="Single node failure" src="../_images/modularity.jpg" style="width: 100%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 16 </span><span class="caption-text">Illustration of how modularity measures assortativity relative to a null model.</span><a class="headerlink" href="#fig-modularity-game" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Let’s dive into the modularity formula! To put modularity into math terms, we need a few ingredients:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(m\)</span>: The total number of strings (edges) in our bag</p></li>
+<li><p><span class="math notranslate nohighlight">\(n\)</span>: The total number of balls (nodes) we have</p></li>
+<li><p><span class="math notranslate nohighlight">\(A_{ij}\)</span>: This tells us if ball <span class="math notranslate nohighlight">\(i\)</span> and ball <span class="math notranslate nohighlight">\(j\)</span> are connected by a string</p></li>
+<li><p><span class="math notranslate nohighlight">\(\delta(c_i,c_j)\)</span>: This is our color-checker. It gives us a 1 if balls <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> are the same color (same community), and 0 if they’re different.</p></li>
+</ul>
+<p>Now, the probability of pulling out a string out of <span class="math notranslate nohighlight">\(m\)</span> string and finding matching colors on both ends is:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{m} \sum_{i=1}^n \sum_{j=i+1}^n A_{ij} \delta(c_i,c_j) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j)
+\]</div>
+<p>We set <span class="math notranslate nohighlight">\(A_{ii} = 0\)</span> by assuming our network doesn’t have any “selfie strings” (where a ball is connected to itself). Also, we changed our edge counting a bit. Instead of counting each string once (which gave us <span class="math notranslate nohighlight">\(m\)</span>), we’re now counting each string twice (once from each end). That’s why we use <span class="math notranslate nohighlight">\(2m\)</span> in the equation.</p>
+<p>Now, imagine we’ve cut all the strings, and we’re going to draw two balls at random with replacement.
+Here’s how our new bag looks:</p>
+<ul class="simple">
+<li><p>We have <span class="math notranslate nohighlight">\(2m\)</span> balls in total (<span class="math notranslate nohighlight">\(1\)</span> string has <span class="math notranslate nohighlight">\(2\)</span> balls, and thus <span class="math notranslate nohighlight">\(m\)</span> strings have <span class="math notranslate nohighlight">\(2m\)</span> balls in total).</p></li>
+<li><p>A node with <span class="math notranslate nohighlight">\(k\)</span> edges correspond to the <span class="math notranslate nohighlight">\(k\)</span> of <span class="math notranslate nohighlight">\(2m\)</span> balls in the bag.</p></li>
+<li><p>The color of each ball in our bag matches the color (or community) of its node in the network.</p></li>
+</ul>
+<p>Now, what’s the chance of pulling out two balls of the same color?</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{c=1}^C \left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(k_i\)</span> is the degree (i.e., the number of edges) of node <span class="math notranslate nohighlight">\(i\)</span>, and <span class="math notranslate nohighlight">\(C\)</span> is the total number of communities (i.e., colors).</p>
+<p>Here’s what it means in simple terms:</p>
+<ul class="simple">
+<li><p>We look at each color (<span class="math notranslate nohighlight">\(c\)</span>) one by one (the outer sum).</p></li>
+<li><p>For each color, we figure out how many balls of that color are in our bag (<span class="math notranslate nohighlight">\(\frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i)\)</span>).</p></li>
+<li><p>We divide by <span class="math notranslate nohighlight">\(2m\)</span> to get the probability of drawing a ball of that color.</p></li>
+<li><p>We then calculate the chance of grabbing that color twice in a row (<span class="math notranslate nohighlight">\(\left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2\)</span>).</p></li>
+<li><p>Finally, we add up these chances for all <span class="math notranslate nohighlight">\(C\)</span> colors.</p></li>
+</ul>
+<p>Putting altogether, the modularity is defined by</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align}
+Q &amp;=\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \sum_{c=1}^C \left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2
+\end{align}
+\]</div>
+<p>Equivalently, a standard expression is given by</p>
+<div class="math notranslate nohighlight">
+\[
+Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \right]\delta(c_i,c_j)
+\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Are the two forms of modularity the same formula? Let’s see how we can transform one into the other:</p>
+<ol class="arabic">
+<li><p>We start with our first form of modularity:</p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \sum_{c=1}^C \left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2
+   \]</div>
+</li>
+<li><p>First, let’s factor out <span class="math notranslate nohighlight">\(\frac{1}{2m}\)</span> from both terms:</p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n k_i \delta(c, c_i) \right)^2 \right]
+   \]</div>
+</li>
+<li><p>Now, here’s a neat trick: <span class="math notranslate nohighlight">\((\sum_i a_i)^2 = (\sum_i a_i)( \sum_j a_j)\)</span>. We can use this to expand the squared term:</p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n k_i \delta(c, c_i) \right) \left( \sum_{j=1}^n k_j \delta(c, c_j) \right)\right]
+   \]</div>
+</li>
+<li><p>And here is another trick <span class="math notranslate nohighlight">\((\sum_i a_i)( \sum_j a_j) = \sum_i a_i \sum_j a_j = \sum_i \sum_j a_ia_j\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n \sum_{j=1}^n k_i k_j  \delta(c, c_i)  \delta(c, c_j) \right)\right]
+   \]</div>
+</li>
+<li><p>Here’s yet another cool trick, <span class="math notranslate nohighlight">\(\delta(c,c_i) \delta(c, c_j) = \delta(c_i,c_j)\)</span>. This means we can simplify our expression:</p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) -  \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n k_i k_j  \delta(c_i,c_j) \right]
+   \]</div>
+</li>
+<li><p>Finally, we can factor out the common parts:</p>
+<div class="math notranslate nohighlight">
+\[
+   Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \right]\delta(c_i,c_j)
+   \]</div>
+</li>
+</ol>
+</div>
+<section id="modularity-demo">
+<h2>Modularity Demo<a class="headerlink" href="#modularity-demo" title="Link to this heading">#</a></h2>
+<p>Let’s learn how the modularity works by playing with a community detection game!</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise 1</p>
+<p>Find communities by maximizing the modularity. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Modularity maximization (two communities) 🎮</a></p>
+</div>
+<p>One of the good things about modularity is that it can figure out how many communities there should be all by itself! 🕵️‍♀️ Let’s have some fun with this idea. We’re going to play the same game again, but this time, we’ll start with a different number of communities. See how the modularity score changes as we move things around.</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise 2</p>
+<p>Find communities by maximizing the modularity. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json'>Modularity maximization (four communities) 🎮</a></p>
+</div>
+<p>Now, let’s take our modularity maximization for a real-world example! 🥋 We’re going to use the famous karate club network. This network represents friendships between members of a university karate club. It’s a classic in the world of network science, and it’s perfect for seeing how modularity works in practice.</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise 3</p>
+<p>Find communities by maximizing the modularity. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json'>Modularity maximization (four communities) 🎮</a></p>
+</div>
+</section>
+<section id="limitation-of-modularity">
+<h2>Limitation of Modularity<a class="headerlink" href="#limitation-of-modularity" title="Link to this heading">#</a></h2>
+<p>Like many other community detection methods, modularity is not a silver bullet. Thanks to extensive research, we know many limitations of modularity. Let’s take a look at a few of them.</p>
+<section id="resolution-limit">
+<h3>Resolution limit<a class="headerlink" href="#resolution-limit" title="Link to this heading">#</a></h3>
+<p>The modularity finds two cliques connected by a single edge as two separate communities.
+But what if we add another community to this network?
+Our intuition tells us that, because communities are <em>local</em> structure, the two cliques should remain separated by the modularity. But is this the case?</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise 4</p>
+<p>Find communities by maximizing the modularity. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json'>Modularity maximization (four communities) 🎮</a></p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click here to see the solution<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the <strong>Resolution limit</strong> <span id="id1">[<a class="reference internal" href="#id30" title="Santo Fortunato and Marc Barthelemy. Resolution limit in community detection. Proceedings of the national academy of sciences, 104(1):36–41, 2007.">1</a>]</span>. Modularity can’t quite make out communities that are smaller than a certain size!</p>
+<p class="sd-card-text">Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges <span class="math notranslate nohighlight">\(m_c\)</span> in a community <span class="math notranslate nohighlight">\(c\)</span> has to be bigger than a certain size. This size is related to the total number of edges <span class="math notranslate nohighlight">\(m\)</span> in the whole network. We write this mathematically as <span class="math notranslate nohighlight">\({\cal O}(m)\)</span>.</p>
+</div>
+</details></div>
+</section>
+<section id="spurious-communities">
+<h3>Spurious communities<a class="headerlink" href="#spurious-communities" title="Link to this heading">#</a></h3>
+<p>What if the network does not have any communities at all? Does the modularity find no communities? To find out, let’s run the modularity on a random network, where each pair of nodes is connected randomly with the same probability.</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise 5</p>
+<p>Find communities by maximizing the modularity. <a href='https://skojaku.github.io/adv-net-sci/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json'>Modularity maximization (four communities) 🎮</a></p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click here to see the solution<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Surprise, surprise! 😮 Modularity finds communities even in our random network, and with a very high score too! It’s like finding shapes in clouds - sometimes our brains (or algorithms) see patterns where there aren’t any.</p>
+<p class="sd-card-text">The wild thing is that the modularity score for this random network is even higher than what we saw for our network with two clear cliques!</p>
+<p class="sd-card-text">This teaches us two important lessons:</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">We can’t compare modularity scores between different networks. It’s like comparing apples and oranges! 🍎🍊</p></li>
+<li><p class="sd-card-text">A high modularity score doesn’t always mean we’ve found communities.</p></li>
+</ol>
+<p class="sd-card-text">Interested readers can read more about this in <a class="reference external" href="https://twitter.com/tiagopeixoto/status/1466352013856358400">this tweet by Tiago Peixoto</a> and the discussion <a class="reference external" href="https://reticular.hypotheses.org/1924">here</a>.</p>
+<blockquote class="twitter-tweet" style="max-width: 550px;"><p lang="en" dir="ltr">Modularity maximization is not a reliable method to find communities in networks. Here&#39;s a simple example showing why:<br><br>1. Generate an Erdős-Rényi random graph with N nodes and average degree &lt;k&gt;.<br><br>2. Find the maximum modularity partition. <a href="https://t.co/MTt5DdFXSX">pic.twitter.com/MTt5DdFXSX</a></p>&mdash; Tiago Peixoto (@tiagopeixoto) <a href="https://twitter.com/tiagopeixoto/status/1466352013856358400?ref_src=twsrc%5Etfw">December 2, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+</details></div>
+</section>
+</section>
+<section id="so-should-we-avoid-modularity">
+<h2>So should we avoid modularity?<a class="headerlink" href="#so-should-we-avoid-modularity" title="Link to this heading">#</a></h2>
+<p>The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is “free lunch” in community detection <span id="id2">[<a class="reference internal" href="#id32" title="Leto Peel, Daniel B Larremore, and Aaron Clauset. The ground truth about metadata and community detection in networks. Science advances, 3(5):e1602548, 2017.">2</a>]</span>.</p>
+<p>When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an “optimal” method for a certain class of networks <span id="id3">[<a class="reference internal" href="#id33" title="Raj Rao Nadakuditi and Mark EJ Newman. Graph spectra and the detectability of community structure in networks. Physical review letters, 108(18):188701, 2012.">3</a>]</span>.</p>
+<p>So, keep modularity in your toolbox. Just remember to use it wisely!</p>
+<div class="docutils container" id="id4">
+<div role="list" class="citation-list">
+<div class="citation" id="id30" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Santo Fortunato and Marc Barthelemy. Resolution limit in community detection. <em>Proceedings of the national academy of sciences</em>, 104(1):36–41, 2007.</p>
+</div>
+<div class="citation" id="id32" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Leto Peel, Daniel B Larremore, and Aaron Clauset. The ground truth about metadata and community detection in networks. <em>Science advances</em>, 3(5):e1602548, 2017.</p>
+</div>
+<div class="citation" id="id33" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Raj Rao Nadakuditi and Mark EJ Newman. Graph spectra and the detectability of community structure in networks. <em>Physical review letters</em>, 108(18):188701, 2012.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./m05-clustering"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="modularity.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Modularity</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="modularity-03.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Modularity maximization with Python</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modularity-demo">Modularity Demo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitation-of-modularity">Limitation of Modularity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resolution-limit">Resolution limit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spurious-communities">Spurious communities</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#so-should-we-avoid-modularity">So should we avoid modularity?</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sadamori Kojaku
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

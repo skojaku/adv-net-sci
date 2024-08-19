@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -155,8 +155,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
   
   
 </a></div>
@@ -220,9 +220,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">What to learn in this module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/community-detection-pattern-matching.html">Community detection (pattern matching)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/community-detection-graph-cut.html">Graph cut</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/community-detection-ratio-normalized-cut.html">Community detection (optimization)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
 </ul>
 
     </div>
@@ -387,7 +391,7 @@ It is useful to create a copy of the network to keep the original network unchan
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 14
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Node removed: 8
 Nodes remaining: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
 </pre></div>
 </div>
@@ -492,7 +496,7 @@ We can get the connected components of the network by using <code class="docutil
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f97261cfa1d68850070ef7f94757a26c7a2622e6167dd797407e9140f38be965.png" src="../_images/f97261cfa1d68850070ef7f94757a26c7a2622e6167dd797407e9140f38be965.png" />
+<img alt="../_images/0b5a6e5f3256e7afcbd9cc75e0f6e63340d890e3e33c60e41e93009018e02745.png" src="../_images/0b5a6e5f3256e7afcbd9cc75e0f6e63340d890e3e33c60e41e93009018e02745.png" />
 </div>
 </div>
 <p>How should we interpret the robustness profile? Consider the most robust network consisting of <span class="math notranslate nohighlight">\(N\)</span> nodes, where all <span class="math notranslate nohighlight">\(N\)</span> nodes are fully connected. Regardless of how many nodes are removed, there will always be a single connected component, and the size of this component will be <span class="math notranslate nohighlight">\(N-k\)</span> if <span class="math notranslate nohighlight">\(k\)</span> nodes are removed. Therefore, the connectivity is <span class="math notranslate nohighlight">\((N-k)/N=1-k/N\)</span>, which corresponds to the diagonal line in the plot above.
@@ -581,7 +585,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fcec3e9ec17d950fbf94bb7cbd6675dc38f446743090704bed6bf18fc640ebbb.png" src="../_images/fcec3e9ec17d950fbf94bb7cbd6675dc38f446743090704bed6bf18fc640ebbb.png" />
+<img alt="../_images/0d46a32e3fe3eee8762f2e61c29bc89f6640ec42e1d4d656a1f839a020daea81.png" src="../_images/0d46a32e3fe3eee8762f2e61c29bc89f6640ec42e1d4d656a1f839a020daea81.png" />
 </div>
 </div>
 <p>While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack.</p>
@@ -596,7 +600,7 @@ One common strategy is to remove nodes from the largest node degree to the small
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.496
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R-index (random): 0.423
 R-index (targeted): 0.140
 </pre></div>
 </div>
