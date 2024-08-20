@@ -15,6 +15,11 @@ launch_buttons:
   colab_url: "https://colab.research.google.com"
   thebe: true
   binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
+  binder_repo_base                 : "https://github.com/"  # The site on which the textbook repository is hosted
+  binder_repo_org                  : "skojaku"  # The username or organization that owns this repository
+  binder_repo_name                 : "adv-net-sci"  # The name of the repository on the web
+  binder_repo_branch               : "main"  # The branch on which your textbook is hosted.
+  binderhub_interact_text          : "Interact"  # The text that interact buttons will contain.
 
 # Execute notebooks on each build
 sphinx:
@@ -43,8 +48,7 @@ sphinx:
       - substitution
     myst_substitutions:
       base_url: 'https://skojaku.github.io/adv-net-sci'
-    html_extra_path: ['assets']
-
+    html_extra_path: ['assets', "environment.yml"]
 
 # Define the name of the latex output file for PDF builds
 latex:

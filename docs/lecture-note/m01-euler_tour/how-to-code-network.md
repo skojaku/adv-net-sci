@@ -17,18 +17,18 @@ An atomic element of a network is a node, i.e., a network is a collection of edg
 We *label* a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair `(0, 1)`.
 
 
-:::{figure-md} numbered-koningsberg-graph
+```{figure-md} numbered-koningsberg-graph
 
 <img src= "../figs/labeled-koningsberg.jpg" width="30%">
 
 Labeled Knigsberg graph
 
-:::
+```
 
-:::{note}
+```{note}
 :name: node-labeling
 We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is *not the only way* to label nodes.
-:::
+```
 
 The Konigsberg graph can be represented by a list of edges.
 
