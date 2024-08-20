@@ -4,6 +4,14 @@ theme: default
 paginate: true
 ---
 
+Check list
+- [ ] Microphone turned on
+- [ ] Zoom room open
+- [ ] MyBinder launched
+- [ ] Sound Volume on
+
+---
+
 # Advanced Topics in Network Science
 
 Lecture 01: Introduction & Seven Bridges of Königsberg

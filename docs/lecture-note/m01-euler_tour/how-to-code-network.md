@@ -5,6 +5,9 @@ kernelspec:
   name: python3
 ---
 
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/doc/lecture-note/m01-euler_tour/how-to-code-network.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
 
 # Compute with networks
 
@@ -19,7 +22,7 @@ We *label* a unique integer as an identifier for each node. For instance, the br
 
 ```{figure-md} numbered-koningsberg-graph
 
-<img src= "../figs/labeled-koningsberg.jpg" width="30%">
+![file](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true)
 
 Labeled Knigsberg graph
 
@@ -101,3 +104,28 @@ else:
     print("The graph does not have a Euler path.")
 ```
 
+```{admonition} Exercise
+:class: tip
+
+1. Create a network of landmasses and bridges of Binghamton, NY.
+2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
+
+![](../../lecture-note/figs/binghamton-map.jpg)
+
+```
+
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```
