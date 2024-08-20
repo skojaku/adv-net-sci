@@ -100,8 +100,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -171,6 +171,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -225,6 +233,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
 </ul>
 
     </div>
@@ -266,6 +275,101 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm02-small-world/assignment.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m02-small-world/assignment.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -329,7 +433,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="assignment">
 <h1>Assignment<a class="headerlink" href="#assignment" title="Link to this heading">#</a></h1>
-<p>We will compute the average path length of a network of scientists. The network is constructed from <span id="id1">[<a class="reference internal" href="#id6" title="Roberta Sinatra, Dashun Wang, Pierre Deville, Chaoming Song, and Albert-László Barabási. Quantifying the evolution of individual scientific impact. Science, 354(6312):aaf5239, 2016.">1</a>]</span>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</p>
+<p>We will compute the average path length of a network of scientists. The network is constructed from <a class="footnote-reference brackets" href="#footcite-sinatra2016quantifying" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</p>
 <ul class="simple">
 <li><p><strong>For students enrolled in SSIE 641</strong></p>
 <ul>
@@ -349,12 +453,12 @@ document.write(`
 </li>
 </ul>
 <div class="docutils container" id="id2">
-<div role="list" class="citation-list">
-<div class="citation" id="id6" role="doc-biblioentry">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-sinatra2016quantifying" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Roberta Sinatra, Dashun Wang, Pierre Deville, Chaoming Song, and Albert-László Barabási. Quantifying the evolution of individual scientific impact. <em>Science</em>, 354(6312):aaf5239, 2016.</p>
-</div>
-</div>
+</aside>
+</aside>
 </div>
 </section>
 
@@ -362,8 +466,8 @@ document.write(`
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

@@ -28,7 +28,7 @@ Two of the most popular ones are the `Louvain` and `Leiden` algorithms, both of 
 communities = g.community_leiden(resolution=1, objective_function= "modularity")
 ```
 
-What is `resolution`? It is a parameter that helps us tackle the resolution limit of the modularity maximization algorithm {cite:p}`fortunato2007resolution`!
+What is `resolution`? It is a parameter that helps us tackle the resolution limit of the modularity maximization algorithm {footcite}`fortunato2007resolution`!
 In simple terms, when we use the resolution parameter $\rho$, the modularity formula can be rewritten as
  follow:
 
@@ -64,4 +64,7 @@ igraph.plot(g, vertex_color=[palette[i] for i in community_membership])
 
 Let's try out different values of the resolution parameter and observe how the community structure changes.
 
+```
+
+```{footbibliography}
 ```

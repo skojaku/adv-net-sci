@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -227,6 +235,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
 </ul>
 
     </div>
@@ -268,6 +277,185 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m04-friendship-paradox/excess-degree-distribution.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m04-friendship-paradox/excess-degree-distribution.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm04-friendship-paradox/excess-degree-distribution.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m04-friendship-paradox/excess-degree-distribution.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m04-friendship-paradox/excess-degree-distribution.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -451,10 +639,10 @@ We first get the edges in the network, from which we sample a friend.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x15119aa10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x138692050&gt;
 </pre></div>
 </div>
-<img alt="../_images/35dfd65789fbe6a0fe7623ca00de455e1fdc8cfe1d0697b3fcb41b13d08a3b7a.png" src="../_images/35dfd65789fbe6a0fe7623ca00de455e1fdc8cfe1d0697b3fcb41b13d08a3b7a.png" />
+<img alt="../_images/23a711d94299d4388ed222fc96ab2a49c4cc21fbb33b2e5525025619339e0047.png" src="../_images/23a711d94299d4388ed222fc96ab2a49c4cc21fbb33b2e5525025619339e0047.png" />
 </div>
 </div>
 <p>The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.</p>
@@ -465,8 +653,8 @@ We first get the edges in the network, from which we sample a friend.</p>
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

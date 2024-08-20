@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -227,6 +235,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Modularity (Cont.)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
 </ul>
 
     </div>
@@ -268,6 +277,185 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/modularity-02.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m05-clustering/modularity-02.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/modularity-02.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/modularity-02.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/modularity-02.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -477,7 +665,7 @@ Click here to see the solution<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the <strong>Resolution limit</strong> <span id="id1">[<a class="reference internal" href="#id30" title="Santo Fortunato and Marc Barthelemy. Resolution limit in community detection. Proceedings of the national academy of sciences, 104(1):36–41, 2007.">1</a>]</span>. Modularity can’t quite make out communities that are smaller than a certain size!</p>
+<p class="sd-card-text">The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the <strong>Resolution limit</strong> <a class="footnote-reference brackets" href="#footcite-fortunato2007resolution" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Modularity can’t quite make out communities that are smaller than a certain size!</p>
 <p class="sd-card-text">Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges <span class="math notranslate nohighlight">\(m_c\)</span> in a community <span class="math notranslate nohighlight">\(c\)</span> has to be bigger than a certain size. This size is related to the total number of edges <span class="math notranslate nohighlight">\(m\)</span> in the whole network. We write this mathematically as <span class="math notranslate nohighlight">\({\cal O}(m)\)</span>.</p>
 </div>
 </details></div>
@@ -510,24 +698,24 @@ Click here to see the solution<div class="sd-summary-down docutils">
 </section>
 <section id="so-should-we-avoid-modularity">
 <h2>So should we avoid modularity?<a class="headerlink" href="#so-should-we-avoid-modularity" title="Link to this heading">#</a></h2>
-<p>The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is “free lunch” in community detection <span id="id2">[<a class="reference internal" href="#id32" title="Leto Peel, Daniel B Larremore, and Aaron Clauset. The ground truth about metadata and community detection in networks. Science advances, 3(5):e1602548, 2017.">2</a>]</span>.</p>
-<p>When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an “optimal” method for a certain class of networks <span id="id3">[<a class="reference internal" href="#id33" title="Raj Rao Nadakuditi and Mark EJ Newman. Graph spectra and the detectability of community structure in networks. Physical review letters, 108(18):188701, 2012.">3</a>]</span>.</p>
+<p>The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is “free lunch” in community detection <a class="footnote-reference brackets" href="#footcite-peel2017ground" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+<p>When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an “optimal” method for a certain class of networks <a class="footnote-reference brackets" href="#footcite-nadakuditi2012graph" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 <p>So, keep modularity in your toolbox. Just remember to use it wisely!</p>
 <div class="docutils container" id="id4">
-<div role="list" class="citation-list">
-<div class="citation" id="id30" role="doc-biblioentry">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-fortunato2007resolution" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Santo Fortunato and Marc Barthelemy. Resolution limit in community detection. <em>Proceedings of the national academy of sciences</em>, 104(1):36–41, 2007.</p>
-</div>
-<div class="citation" id="id32" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-peel2017ground" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Leto Peel, Daniel B Larremore, and Aaron Clauset. The ground truth about metadata and community detection in networks. <em>Science advances</em>, 3(5):e1602548, 2017.</p>
-</div>
-<div class="citation" id="id33" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-nadakuditi2012graph" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Raj Rao Nadakuditi and Mark EJ Newman. Graph spectra and the detectability of community structure in networks. <em>Physical review letters</em>, 108(18):188701, 2012.</p>
-</div>
-</div>
+</aside>
+</aside>
 </div>
 </section>
 </section>
@@ -536,8 +724,8 @@ Click here to see the solution<div class="sd-summary-down docutils">
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

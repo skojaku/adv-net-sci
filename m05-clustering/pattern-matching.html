@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -227,6 +235,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modularity-02.html">Modularity (Cont.)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
 </ul>
 
     </div>
@@ -271,6 +280,185 @@
 
 
 
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/pattern-matching.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m05-clustering/pattern-matching.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/pattern-matching.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/pattern-matching.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/pattern-matching.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
 <button onclick="toggleFullScreen()"
   class="btn btn-sm btn-fullscreen-button"
   title="Fullscreen mode"
@@ -304,9 +492,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
       
     </div>
@@ -322,14 +508,6 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -357,86 +535,83 @@ This leads to the idea of relaxed versions of cliques, called <strong>pseudo-cli
 <ol class="arabic simple">
 <li><p>Degree: Not all nodes need to connect to every other node.</p>
 <ul class="simple">
-<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-plex</strong>: each node connects to all but <span class="math notranslate nohighlight">\(k\)</span> others in the group <span id="id1">[<a class="reference internal" href="#id20" title="Stephen B Seidman and Brian L Foster. A graph-theoretic generalization of the clique concept. Journal of Mathematical sociology, 6(1):139–154, 1978.">1</a>]</span>.</p></li>
-<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-core</strong>: each node connects to <span class="math notranslate nohighlight">\(k\)</span> others in the group <span id="id2">[<a class="reference internal" href="#id22" title="Stephen B Seidman. Network structure and minimum degree. Social networks, 5(3):269–287, 1983.">2</a>]</span>.</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-plex</strong>: each node connects to all but <span class="math notranslate nohighlight">\(k\)</span> others in the group <a class="footnote-reference brackets" href="#footcite-seidman1978graph" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-core</strong>: each node connects to <span class="math notranslate nohighlight">\(k\)</span> others in the group <a class="footnote-reference brackets" href="#footcite-seidman1983network" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 </li>
 <li><p>Density: The overall connection density can be lower.</p>
 <ul class="simple">
-<li><p><strong><span class="math notranslate nohighlight">\(\rho\)</span>-dense subgraphs</strong>, with a minimum edge density of <span class="math notranslate nohighlight">\(\rho\)</span> <span id="id3">[<a class="reference internal" href="#id23" title="Andrew V Goldberg. Finding a maximum density subgraph. Technical report, 1984.">3</a>]</span>.</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(\rho\)</span>-dense subgraphs</strong>, with a minimum edge density of <span class="math notranslate nohighlight">\(\rho\)</span> <a class="footnote-reference brackets" href="#footcite-goldberg1984finding" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 </li>
 <li><p>Distance: Nodes can be further apart.</p>
 <ul class="simple">
-<li><p><strong><span class="math notranslate nohighlight">\(n\)</span>-clique</strong>, where all nodes are within n steps of each other <span id="id4">[<a class="reference internal" href="#id21" title="R Duncan Luce. Connectivity and generalized cliques in sociometric group structure. Psychometrika, 15(2):169–190, 1950.">4</a>]</span>.</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(n\)</span>-clique</strong>, where all nodes are within n steps of each other <a class="footnote-reference brackets" href="#footcite-luce1950connectivity" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 </li>
 <li><p>Combination of the above:</p>
 <ul class="simple">
-<li><p><strong>n-clan</strong> and <strong>n-club</strong> <span id="id5">[<a class="reference internal" href="#id27" title="Robert J Mokken and others. Cliques, clubs and clans. Quality &amp; Quantity, 13(2):161–173, 1979.">5</a>]</span></p></li>
-<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-truss</strong>, a maximal subgraph where all edges participate in at least <span class="math notranslate nohighlight">\(k-2\)</span> triangles <span id="id6">[<a class="reference internal" href="#id24" title="Kazumi Saito, Takeshi Yamada, and Kazuhiro Kazama. Extracting communities from complex networks by the k-dense method. IEICE Transactions on Fundamentals of Electronics, Communications and Computer Sciences, 91(11):3304–3311, 2008.">6</a>, <a class="reference internal" href="#id25" title="Jonathan Cohen. Graph twiddling in a mapreduce world. Computing in Science &amp; Engineering, 11(4):29–41, 2009.">7</a>, <a class="reference internal" href="#id26" title="Nan Wang, Jingbo Zhang, Kian-Lee Tan, and Anthony KH Tung. On triangulation-based dense neighborhood graph discovery. Proceedings of the VLDB Endowment, 4(2):58–68, 2010.">8</a>]</span>.</p></li>
-<li><p><strong><span class="math notranslate nohighlight">\(\rho\)</span>-dense core</strong>, a subgraph with minimum conductance <span class="math notranslate nohighlight">\(\rho\)</span> <span id="id7">[<a class="reference internal" href="#id28" title="Sadamori Koujaku, Ichigaku Takigawa, Mineichi Kudo, and Hideyuki Imai. Dense core model for cohesive subgraph discovery. Social Networks, 44:143–152, 2016.">9</a>]</span>.</p></li>
+<li><p><strong>n-clan</strong> and <strong>n-club</strong> <a class="footnote-reference brackets" href="#footcite-mokken1979cliques" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a></p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(k\)</span>-truss</strong>, a maximal subgraph where all edges participate in at least <span class="math notranslate nohighlight">\(k-2\)</span> triangles <a class="footnote-reference brackets" href="#footcite-saito2008extracting" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-cohen2009graph" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-wang2010triangulation" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>.</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(\rho\)</span>-dense core</strong>, a subgraph with minimum conductance <span class="math notranslate nohighlight">\(\rho\)</span> <a class="footnote-reference brackets" href="#footcite-koujaku2016dense" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 </li>
 </ol>
 <figure class="align-default" id="clique-pattern">
 <a class="reference internal image-reference" href="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg"><img alt="Pseudo-clique patterns" src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" style="width: 80%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Illustation of different pseudo cliques. Taken from <span id="id8">[<a class="reference internal" href="#id28" title="Sadamori Koujaku, Ichigaku Takigawa, Mineichi Kudo, and Hideyuki Imai. Dense core model for cohesive subgraph discovery. Social Networks, 44:143–152, 2016.">9</a>]</span>.</span><a class="headerlink" href="#clique-pattern" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Illustation of different pseudo cliques. Taken from <a class="footnote-reference brackets" href="#footcite-koujaku2016dense" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#clique-pattern" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<div class="docutils container" id="id9">
-<div role="list" class="citation-list">
-<div class="citation" id="id20" role="doc-biblioentry">
+<div class="docutils container" id="id11">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-seidman1978graph" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Stephen B Seidman and Brian L Foster. A graph-theoretic generalization of the clique concept. <em>Journal of Mathematical sociology</em>, 6(1):139–154, 1978.</p>
-</div>
-<div class="citation" id="id22" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-seidman1983network" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Stephen B Seidman. Network structure and minimum degree. <em>Social networks</em>, 5(3):269–287, 1983.</p>
-</div>
-<div class="citation" id="id23" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-goldberg1984finding" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Andrew V Goldberg. Finding a maximum density subgraph. <em>Technical report</em>, 1984.</p>
-</div>
-<div class="citation" id="id21" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-luce1950connectivity" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
 <p>R Duncan Luce. Connectivity and generalized cliques in sociometric group structure. <em>Psychometrika</em>, 15(2):169–190, 1950.</p>
-</div>
-<div class="citation" id="id27" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-mokken1979cliques" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
 <p>Robert J Mokken and others. Cliques, clubs and clans. <em>Quality &amp; Quantity</em>, 13(2):161–173, 1979.</p>
-</div>
-<div class="citation" id="id24" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-saito2008extracting" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">6</a><span class="fn-bracket">]</span></span>
 <p>Kazumi Saito, Takeshi Yamada, and Kazuhiro Kazama. Extracting communities from complex networks by the k-dense method. <em>IEICE Transactions on Fundamentals of Electronics, Communications and Computer Sciences</em>, 91(11):3304–3311, 2008.</p>
-</div>
-<div class="citation" id="id25" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">7</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-cohen2009graph" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">7</a><span class="fn-bracket">]</span></span>
 <p>Jonathan Cohen. Graph twiddling in a mapreduce world. <em>Computing in Science &amp; Engineering</em>, 11(4):29–41, 2009.</p>
-</div>
-<div class="citation" id="id26" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">8</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-wang2010triangulation" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">8</a><span class="fn-bracket">]</span></span>
 <p>Nan Wang, Jingbo Zhang, Kian-Lee Tan, and Anthony KH Tung. On triangulation-based dense neighborhood graph discovery. <em>Proceedings of the VLDB Endowment</em>, 4(2):58–68, 2010.</p>
-</div>
-<div class="citation" id="id28" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-koujaku2016dense" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id10">2</a>)</span>
 <p>Sadamori Koujaku, Ichigaku Takigawa, Mineichi Kudo, and Hideyuki Imai. Dense core model for cohesive subgraph discovery. <em>Social Networks</em>, 44:143–152, 2016.</p>
+</aside>
+</aside>
 </div>
-</div>
-</div>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",
@@ -485,21 +660,6 @@ This leads to the idea of relaxed versions of cliques, called <strong>pseudo-cli
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

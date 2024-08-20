@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -227,6 +235,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
 </ul>
 
     </div>
@@ -268,6 +277,185 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m04-friendship-paradox/degree-distribution.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m04-friendship-paradox/degree-distribution.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm04-friendship-paradox/degree-distribution.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m04-friendship-paradox/degree-distribution.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m04-friendship-paradox/degree-distribution.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -383,7 +571,7 @@ d_i = \sum_{j=1}^N A_{ij}.
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
 </pre></div>
 </div>
-<img alt="../_images/27b0be59d748acb931ddcbf002d23fa3dd0950bf30ce6ce306dbac009b5c222a.png" src="../_images/27b0be59d748acb931ddcbf002d23fa3dd0950bf30ce6ce306dbac009b5c222a.png" />
+<img alt="../_images/87a164bc15b571ede492f7b5669464fe58dc6958783d6060ebe11443b0f1e443.png" src="../_images/87a164bc15b571ede492f7b5669464fe58dc6958783d6060ebe11443b0f1e443.png" />
 </div>
 </div>
 <p>While it clearly shows that most nodes have small degree, it does not show the tail of the distribution clearly, and often it is this tail that is of great interest (e.g., hub nodes). To show the tail of the distribution more clearly, we can use a log-log plot.</p>
@@ -402,7 +590,7 @@ d_i = \sum_{j=1}^N A_{ij}.
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
 </pre></div>
 </div>
-<img alt="../_images/aff231cad624b05ecd7446c75c245d03b60f8245fac38944a45add3db9992bf1.png" src="../_images/aff231cad624b05ecd7446c75c245d03b60f8245fac38944a45add3db9992bf1.png" />
+<img alt="../_images/9f14565449fec93b65a42e894bc69fb46ddbad12876ceaf1ad889dab9fe812f2.png" src="../_images/9f14565449fec93b65a42e894bc69fb46ddbad12876ceaf1ad889dab9fe812f2.png" />
 </div>
 </div>
 <p>We see fluctuations for large degree nodes because of the small number of nodes with large degree.
@@ -435,7 +623,7 @@ The CCDF at degree <span class="math notranslate nohighlight">\(d\)</span> is th
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;CCDF&#39;)
 </pre></div>
 </div>
-<img alt="../_images/f5c238c3a60e0a7b958ae42e9192508f9adc8a0e51e3edcb162468675ee10b08.png" src="../_images/f5c238c3a60e0a7b958ae42e9192508f9adc8a0e51e3edcb162468675ee10b08.png" />
+<img alt="../_images/b9f80326bf3b463e62e81e209a1af4da7646612d91289c893127cd191063d45a.png" src="../_images/b9f80326bf3b463e62e81e209a1af4da7646612d91289c893127cd191063d45a.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -444,8 +632,8 @@ The CCDF at degree <span class="math notranslate nohighlight">\(d\)</span> is th
 Specifically, a logarithmic scale enlarges the range of small values, while compressing the range of large values.
 In CDF (shown in the figure below), large degree nodes have CDF values close to 1, and thus, the tail of the distribution is compressed into a small range.
 In CCDF, on the other hand, large degree nodes have a small CCDF values, which are then enlarged and thus more visible.
-For a visual comparison of CCDF and CDF, refer to Figure 3 in <span id="id1">[<a class="reference internal" href="#id12" title="Mark EJ Newman. Power laws, pareto distributions and zipf's law. Contemporary physics, 46(5):323–351, 2005.">1</a>]</span>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a>.</p>
-<img alt="../_images/661605db13d65fde93266830dff5768914ccf9233990c187280dbbb47315565b.png" src="../_images/661605db13d65fde93266830dff5768914ccf9233990c187280dbbb47315565b.png" />
+For a visual comparison of CCDF and CDF, refer to Figure 3 in <a class="footnote-reference brackets" href="#footcite-newman2005power" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a>.</p>
+<img alt="../_images/2b269ad3363831d91bca1e7ee5c8b6f3bda09cf3cfed06286865836cacac5e93.png" src="../_images/2b269ad3363831d91bca1e7ee5c8b6f3bda09cf3cfed06286865836cacac5e93.png" />
 </div>
 <p>The slope of the CCDF tells us the heterogeneity of the degree distribution.</p>
 <ul class="simple">
@@ -453,7 +641,7 @@ For a visual comparison of CCDF and CDF, refer to Figure 3 in <span id="id1">[<a
 <li><p>Flat slope: more <strong>heterogeneous</strong> degree distribution (wide range of degrees)</p></li>
 </ul>
 <p>The slope of the CCDF is related to the power-law exponent of the degree distribution.
-A power-law degree distribution is described by <em>a continuous distribution</em> with the <em>density function</em> (not the probability mass) <span class="math notranslate nohighlight">\(p(d)\)</span> given by <span id="id2">[<a class="reference internal" href="#id11" title="Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. SIAM review, 51(4):661–703, 2009.">2</a>]</span>:</p>
+A power-law degree distribution is described by <em>a continuous distribution</em> with the <em>density function</em> (not the probability mass) <span class="math notranslate nohighlight">\(p(d)\)</span> given by <a class="footnote-reference brackets" href="#footcite-clauset2009power" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[
 p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
@@ -466,7 +654,7 @@ p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The degree distribution is <em>discrete</em> but often approximated by a <em>continuous</em> distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See <span id="id3">[<a class="reference internal" href="#id11" title="Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. SIAM review, 51(4):661–703, 2009.">2</a>]</span> for more details.</p>
+<p>The degree distribution is <em>discrete</em> but often approximated by a <em>continuous</em> distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See <a class="footnote-reference brackets" href="#footcite-clauset2009power" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> for more details.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -475,7 +663,7 @@ p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There has been a long-standing debate in network science as to whether the power-law well represents the real-world networks. Power-law is just one of many possible distributions with a heavy tail (i.e., a long tail on the right side of the distribution), and other distributions may also fit the data well such as log-normal distribution.
-This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See <span id="id4">[<a class="reference internal" href="#id13" title="Igor Artico, I Smolyarenko, Veronica Vinciotti, and Ernst C Wit. How rare are power-law networks really? Proceedings of the Royal Society A, 476(2241):20190742, 2020.">3</a>, <a class="reference internal" href="#id15" title="Petter Holme. Rare and everywhere: perspectives on scale-free networks. Nature communications, 10(1):1016, 2019.">4</a>, <a class="reference internal" href="#id16" title="Ivan Voitalov, Pim Van Der Hoorn, Remco Van Der Hofstad, and Dmitri Krioukov. Scale-free networks well done. Physical Review Research, 1(3):033034, 2019.">5</a>, <a class="reference internal" href="#id14" title="Albert-László Barabási and Eric Bonabeau. Scale-free networks. Scientific american, 288(5):60–69, 2003.">6</a>]</span> for the debate.</p>
+This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See <a class="footnote-reference brackets" href="#footcite-artico2020rare" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-holme2019rare" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-voitalov2019scale" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-barabasi2003scale" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> for the debate.</p>
 </div>
 <p>The CCDF for the power-law distribution is given by:</p>
 <div class="math notranslate nohighlight">
@@ -498,37 +686,37 @@ Specifically, a steeper negative slope (i.e., a more negative value of <span cla
 A larger <span class="math notranslate nohighlight">\(\gamma\)</span> indicates a more homogeneous degree distribution, where the probability of finding nodes with very high degrees decreases more rapidly.
 Conversely, a flatter slope (i.e., a value of <span class="math notranslate nohighlight">\(-\gamma + 1\)</span> being closer to zero) corresponds to a smaller <span class="math notranslate nohighlight">\(\gamma\)</span>.
 A smaller <span class="math notranslate nohighlight">\(\gamma\)</span> indicates a more heterogeneous degree distribution, where there’s a high probability of finding nodes with high degrees compared to that with a large <span class="math notranslate nohighlight">\(\gamma\)</span> value.</p>
-<p>For students interested in real-world examples of the CCDF plot, refer to Figure 4 in <span id="id5">[<a class="reference internal" href="#id12" title="Mark EJ Newman. Power laws, pareto distributions and zipf's law. Contemporary physics, 46(5):323–351, 2005.">1</a>]</span>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a></p>
+<p>For students interested in real-world examples of the CCDF plot, refer to Figure 4 in <a class="footnote-reference brackets" href="#footcite-newman2005power" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a></p>
 <p>In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.</p>
-<div class="docutils container" id="id6">
-<div role="list" class="citation-list">
-<div class="citation" id="id12" role="doc-biblioentry">
+<div class="docutils container" id="id9">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-newman2005power" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
-<p>Mark EJ Newman. Power laws, pareto distributions and zipf's law. <em>Contemporary physics</em>, 46(5):323–351, 2005.</p>
-</div>
-<div class="citation" id="id11" role="doc-biblioentry">
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<p>Mark EJ Newman. Power laws, pareto distributions and zipf’s law. <em>Contemporary physics</em>, 46(5):323–351, 2005.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-clauset2009power" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Aaron Clauset, Cosma Rohilla Shalizi, and Mark EJ Newman. Power-law distributions in empirical data. <em>SIAM review</em>, 51(4):661–703, 2009.</p>
-</div>
-<div class="citation" id="id13" role="doc-biblioentry">
+</aside>
+<aside class="footnote brackets" id="footcite-artico2020rare" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
 <p>Igor Artico, I Smolyarenko, Veronica Vinciotti, and Ernst C Wit. How rare are power-law networks really? <em>Proceedings of the Royal Society A</em>, 476(2241):20190742, 2020.</p>
-</div>
-<div class="citation" id="id15" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-holme2019rare" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
 <p>Petter Holme. Rare and everywhere: perspectives on scale-free networks. <em>Nature communications</em>, 10(1):1016, 2019.</p>
-</div>
-<div class="citation" id="id16" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">5</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-voitalov2019scale" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
 <p>Ivan Voitalov, Pim Van Der Hoorn, Remco Van Der Hofstad, and Dmitri Krioukov. Scale-free networks well done. <em>Physical Review Research</em>, 1(3):033034, 2019.</p>
-</div>
-<div class="citation" id="id14" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">6</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-barabasi2003scale" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">6</a><span class="fn-bracket">]</span></span>
 <p>Albert-László Barabási and Eric Bonabeau. Scale-free networks. <em>Scientific american</em>, 288(5):60–69, 2003.</p>
-</div>
-</div>
+</aside>
+</aside>
 </div>
 </section>
 
@@ -536,8 +724,8 @@ A smaller <span class="math notranslate nohighlight">\(\gamma\)</span> indicates
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

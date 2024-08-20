@@ -110,7 +110,7 @@ CCDF is the complement of CDF (cumulative distribution function). We use CCDF in
 Specifically, a logarithmic scale enlarges the range of small values, while compressing the range of large values.
 In CDF (shown in the figure below), large degree nodes have CDF values close to 1, and thus, the tail of the distribution is compressed into a small range.
 In CCDF, on the other hand, large degree nodes have a small CCDF values, which are then enlarged and thus more visible.
-For a visual comparison of CCDF and CDF, refer to Figure 3 in {cite:p}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004).
+For a visual comparison of CCDF and CDF, refer to Figure 3 in {footcite}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004).
 ```{glue} cdf_fig
 :align: center
 ```
@@ -122,7 +122,7 @@ The slope of the CCDF tells us the heterogeneity of the degree distribution.
 
 
 The slope of the CCDF is related to the power-law exponent of the degree distribution.
-A power-law degree distribution is described by *a continuous distribution* with the *density function* (not the probability mass) $p(d)$ given by {cite:p}`clauset2009power`:
+A power-law degree distribution is described by *a continuous distribution* with the *density function* (not the probability mass) $p(d)$ given by {footcite}`clauset2009power`:
 
 $$
 p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
@@ -135,7 +135,7 @@ where:
 
 
 :::{note}
-The degree distribution is *discrete* but often approximated by a *continuous* distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See {cite:p}`clauset2009power` for more details.
+The degree distribution is *discrete* but often approximated by a *continuous* distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See {footcite}`clauset2009power` for more details.
 :::
 
 :::{note}
@@ -144,7 +144,7 @@ The power-law distribution is ill-defined for $d=0$, which is why there must be 
 
 :::{note}
 There has been a long-standing debate in network science as to whether the power-law well represents the real-world networks. Power-law is just one of many possible distributions with a heavy tail (i.e., a long tail on the right side of the distribution), and other distributions may also fit the data well such as log-normal distribution.
-This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See {cite:p}`artico2020rare,holme2019rare,voitalov2019scale,barabasi2003scale` for the debate.
+This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See {footcite}`artico2020rare,holme2019rare,voitalov2019scale,barabasi2003scale` for the debate.
 :::
 
 The CCDF for the power-law distribution is given by:
@@ -171,11 +171,9 @@ A larger $\gamma$ indicates a more homogeneous degree distribution, where the pr
 Conversely, a flatter slope (i.e., a value of $-\gamma + 1$ being closer to zero) corresponds to a smaller $\gamma$.
 A smaller $\gamma$ indicates a more heterogeneous degree distribution, where there's a high probability of finding nodes with high degrees compared to that with a large $\gamma$ value.
 
-For students interested in real-world examples of the CCDF plot, refer to Figure 4 in {cite:p}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
+For students interested in real-world examples of the CCDF plot, refer to Figure 4 in {footcite}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
 
 In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.
 
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
+```{footbibliography}
 ```

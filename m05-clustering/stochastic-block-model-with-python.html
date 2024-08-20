@@ -99,8 +99,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -170,6 +170,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -266,6 +274,185 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/stochastic-block-model-with-python.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m05-clustering/stochastic-block-model-with-python.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/stochastic-block-model-with-python.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/stochastic-block-model-with-python.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/stochastic-block-model-with-python.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -388,7 +575,7 @@ document.write(`
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">B_min</span></code> and <code class="docutils literal notranslate"><span class="pre">B_max</span></code> are the minimum and maximum number of communities to consider.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">deg_corr</span></code> is a boolean flag to switch to the degree-corrected SBM <span id="id1">[<a class="reference internal" href="#id36" title="Brian Karrer and Mark EJ Newman. Stochastic blockmodels and community structure in networks. Physical Review E—Statistical, Nonlinear, and Soft Matter Physics, 83(1):016107, 2011.">3</a>]</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deg_corr</span></code> is a boolean flag to switch to the degree-corrected SBM <a class="footnote-reference brackets" href="#footcite-karrer2011stochastic" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -432,7 +619,7 @@ document.write(`
 <img alt="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" src="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" />
 </div>
 </div>
-<p>What we’re seeing here isn’t a failure at all. In fact, it’s twe best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> <span id="id2">[<a class="reference internal" href="#id37" title="Stephen P Borgatti and Martin G Everett. Models of core/periphery structures. Social networks, 21(4):375–395, 2000.">4</a>]</span>. Let me break that down:</p>
+<p>What we’re seeing here isn’t a failure at all. In fact, it’s twe best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> <a class="footnote-reference brackets" href="#footcite-borgatti2000models" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Let me break that down:</p>
 <ul class="simple">
 <li><p>Think of a major international airport (the core) and smaller regional airports (the periphery).</p></li>
 <li><p>Major international airports have many flights connecting to each other (densely connected).</p></li>
@@ -470,46 +657,46 @@ document.write(`
 <h2>Closing remarks<a class="headerlink" href="#closing-remarks" title="Link to this heading">#</a></h2>
 <p>The stochastic block model is a very extensive topic of research, most of which is beyond the scope of this course. But interested readers can refer to the following references for more information.</p>
 <ul class="simple">
-<li><p><span id="id3">[<a class="reference internal" href="#id36" title="Brian Karrer and Mark EJ Newman. Stochastic blockmodels and community structure in networks. Physical Review E—Statistical, Nonlinear, and Soft Matter Physics, 83(1):016107, 2011.">3</a>]</span> Karrer, Brian, and Mark EJ Newman. “Stochastic blockmodels and community structure in networks.” Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 83.1 (2011): 016107.</p>
+<li><p><a class="footnote-reference brackets" href="#footcite-karrer2011stochastic" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> Karrer, Brian, and Mark EJ Newman. “Stochastic blockmodels and community structure in networks.” Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 83.1 (2011): 016107.</p>
 <ul>
 <li><p>This paper proposes a <em>degree-corrected</em> stochastic block model, which can cope with the degree heterogeneity in the network. The paper provides a simple, intuitive explanations of the stochastic block model and its degree-corrected one and is recommended for entry-level readers.</p></li>
 </ul>
 </li>
-<li><p><span id="id4">[<a class="reference internal" href="#id38" title="Tiago P Peixoto. Nonparametric bayesian inference of the microcanonical stochastic block model. Physical Review E, 95(1):012317, 2017.">5</a>]</span> Peixoto, Tiago P. “Nonparametric Bayesian inference of the microcanonical stochastic block model.” Physical Review E 95.1 (2017): 012317.</p>
+<li><p><a class="footnote-reference brackets" href="#footcite-peixoto2017nonparametric" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> Peixoto, Tiago P. “Nonparametric Bayesian inference of the microcanonical stochastic block model.” Physical Review E 95.1 (2017): 012317.</p>
 <ul>
 <li><p>This paper proposes a <em>nonparameteric</em> Baysian inference of the stochastic block model. <code class="docutils literal notranslate"><span class="pre">graph-tool</span></code> is implemented and maintained by the author of this paper. The Bayesian inference framework grounds the resolution limit problem on a statistical problem, namely a selection problem of the prior probability of community membership, which is a major departure from the traditional heuristic approaches.</p></li>
 </ul>
 </li>
-<li><p><span id="id5">[<a class="reference internal" href="#id26" title="Santo Fortunato. Community detection in graphs. Physics reports, 486(3-5):75–174, 2010.">1</a>, <a class="reference internal" href="#id27" title="Santo Fortunato and Darko Hric. Community detection in networks: a user guide. Physics reports, 659:1–44, 2016.">2</a>]</span>: Fortunato, Santo. “Community detection in graphs.” Physics reports 486.3-5 (2010): 75-174; Fortunato, Santo, and Darko Hric. “Community detection in networks: A user guide.” Physics reports 659 (2016): 1-44.</p>
+<li><p><a class="footnote-reference brackets" href="#footcite-fortunato2010community" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-fortunato2016community" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>: Fortunato, Santo. “Community detection in graphs.” Physics reports 486.3-5 (2010): 75-174; Fortunato, Santo, and Darko Hric. “Community detection in networks: A user guide.” Physics reports 659 (2016): 1-44.</p>
 <ul>
 <li><p>These review papers outline a wide range of community detection methods.</p></li>
 </ul>
 </li>
 </ul>
-<div class="docutils container" id="id6">
-<div role="list" class="citation-list">
-<div class="citation" id="id26" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">1</a><span class="fn-bracket">]</span></span>
-<p>Santo Fortunato. Community detection in graphs. <em>Physics reports</em>, 486(3-5):75–174, 2010.</p>
-</div>
-<div class="citation" id="id27" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">2</a><span class="fn-bracket">]</span></span>
-<p>Santo Fortunato and Darko Hric. Community detection in networks: a user guide. <em>Physics reports</em>, 659:1–44, 2016.</p>
-</div>
-<div class="citation" id="id36" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<div class="docutils container" id="id7">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-karrer2011stochastic" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Brian Karrer and Mark EJ Newman. Stochastic blockmodels and community structure in networks. <em>Physical Review E—Statistical, Nonlinear, and Soft Matter Physics</em>, 83(1):016107, 2011.</p>
-</div>
-<div class="citation" id="id37" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">4</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-borgatti2000models" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Stephen P Borgatti and Martin G Everett. Models of core/periphery structures. <em>Social networks</em>, 21(4):375–395, 2000.</p>
-</div>
-<div class="citation" id="id38" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">5</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="footcite-peixoto2017nonparametric" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
 <p>Tiago P Peixoto. Nonparametric bayesian inference of the microcanonical stochastic block model. <em>Physical Review E</em>, 95(1):012317, 2017.</p>
-</div>
-</div>
+</aside>
+<aside class="footnote brackets" id="footcite-fortunato2010community" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<p>Santo Fortunato. Community detection in graphs. <em>Physics reports</em>, 486(3-5):75–174, 2010.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-fortunato2016community" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
+<p>Santo Fortunato and Darko Hric. Community detection in networks: a user guide. <em>Physics reports</em>, 659:1–44, 2016.</p>
+</aside>
+</aside>
 </div>
 </section>
 </section>
@@ -518,8 +705,8 @@ document.write(`
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

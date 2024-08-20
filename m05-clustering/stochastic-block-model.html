@@ -102,8 +102,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
+         placeholder="Search this book..."
+         aria-label="Search this book..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -173,6 +173,14 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
@@ -228,7 +236,6 @@
 <li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Stochastic Block Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
-
 </ul>
 
     </div>
@@ -270,6 +277,185 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/stochastic-block-model.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m05-clustering/stochastic-block-model.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/stochastic-block-model.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/stochastic-block-model.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m05-clustering/stochastic-block-model.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -405,7 +591,7 @@ As a result, when plotting the adjacency matrix, we observe “blocks” of diff
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/21ed3fc1deb994c3669d68a4c0ecd9151678df32c931fb0cff4fa1b588f0f9f9.png" src="../_images/21ed3fc1deb994c3669d68a4c0ecd9151678df32c931fb0cff4fa1b588f0f9f9.png" />
+<img alt="../_images/94cd9bdcc1430b912f0e005a81ba394433fd1a2dbbd29d763e7ce3580af26642.png" src="../_images/94cd9bdcc1430b912f0e005a81ba394433fd1a2dbbd29d763e7ce3580af26642.png" />
 </div>
 </div>
 </section>
@@ -463,7 +649,7 @@ For example, the assortativity communities can be generated as follows.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/29aa1d95f5cf663f5d753667777af289b786fd9ee23a9c68be3b717014a1c659.svg" src="../_images/29aa1d95f5cf663f5d753667777af289b786fd9ee23a9c68be3b717014a1c659.svg" /></div>
+<img alt="../_images/241b7be8b1e77e57b59e67b45186e52c6261668a61e23ed6812f7d1d55433721.svg" src="../_images/241b7be8b1e77e57b59e67b45186e52c6261668a61e23ed6812f7d1d55433721.svg" /></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pref_matrix</span></code> is the matrix of connection probabilities between communities. Its <span class="math notranslate nohighlight">\((i,j)\)</span>th-element is the probability of a connection between nodes in community <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
@@ -525,21 +711,21 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 <p>Why do we have two different equations for <span class="math notranslate nohighlight">\(p_{c,c'}\)</span>? It’s because we are counting each pair of nodes only by once. It is easy to verify when looking at the adjacency matrix:</p>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
-<img alt="../_images/d999a0a895959ea4cd4435a11f064555bf1e49c2eae6024ca96ab756d9b8ef2a.png" src="../_images/d999a0a895959ea4cd4435a11f064555bf1e49c2eae6024ca96ab756d9b8ef2a.png" />
+<img alt="../_images/3dd7773805415c861da29e01706c91208b770b2d208ab701e2f1f147919c473f.png" src="../_images/3dd7773805415c861da29e01706c91208b770b2d208ab701e2f1f147919c473f.png" />
 </div>
 </div>
 <p>The upper triangle of the adjacency matrix represents <span class="math notranslate nohighlight">\(i &lt; j\)</span> over which we take the sum.
 When <span class="math notranslate nohighlight">\(c=c'\)</span> (the diagonal block), we count only the upper half of the block, resulting in <span class="math notranslate nohighlight">\(\frac{n_c (n_c - 1)}{2}\)</span>. When <span class="math notranslate nohighlight">\(c \neq c'\)</span> (different communities), we count all connections between them, resulting in <span class="math notranslate nohighlight">\(n_cn_{c'}\)</span>.</p>
 <p>We have now obtaind the likelihood function based only on the community assignment. Maximizing <span class="math notranslate nohighlight">\({\cal L}\)</span> with respect to the community assignment gives us the most likely community assignment for the network.</p>
-<span class="target" id="id1"></span></section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
         },
         codeMirrorConfig: {
             theme: "abcdef",

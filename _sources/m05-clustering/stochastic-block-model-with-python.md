@@ -50,7 +50,7 @@ b = state.get_blocks()
 ```
 
 - `B_min` and `B_max` are the minimum and maximum number of communities to consider.
-- `deg_corr` is a boolean flag to switch to the degree-corrected SBM {cite:p}`karrer2011stochastic`.
+- `deg_corr` is a boolean flag to switch to the degree-corrected SBM {footcite}`karrer2011stochastic`.
 
 
 ```{note}
@@ -85,7 +85,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-What we're seeing here isn't a failure at all. In fact, it's twe best partition according to our stochastic block model. The model has discovered something called a **core-periphery structure** {cite:p}`borgatti2000models`. Let me break that down:
+What we're seeing here isn't a failure at all. In fact, it's twe best partition according to our stochastic block model. The model has discovered something called a **core-periphery structure** {footcite}`borgatti2000models`. Let me break that down:
 
 - Think of a major international airport (the core) and smaller regional airports (the periphery).
 - Major international airports have many flights connecting to each other (densely connected).
@@ -119,15 +119,13 @@ plt.show()
 
 The stochastic block model is a very extensive topic of research, most of which is beyond the scope of this course. But interested readers can refer to the following references for more information.
 
-- {cite:p}`karrer2011stochastic` Karrer, Brian, and Mark EJ Newman. "Stochastic blockmodels and community structure in networks." Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 83.1 (2011): 016107.
+- {footcite}`karrer2011stochastic` Karrer, Brian, and Mark EJ Newman. "Stochastic blockmodels and community structure in networks." Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 83.1 (2011): 016107.
   - This paper proposes a *degree-corrected* stochastic block model, which can cope with the degree heterogeneity in the network. The paper provides a simple, intuitive explanations of the stochastic block model and its degree-corrected one and is recommended for entry-level readers.
-- {cite:p}`peixoto2017nonparametric` Peixoto, Tiago P. "Nonparametric Bayesian inference of the microcanonical stochastic block model." Physical Review E 95.1 (2017): 012317.
+- {footcite}`peixoto2017nonparametric` Peixoto, Tiago P. "Nonparametric Bayesian inference of the microcanonical stochastic block model." Physical Review E 95.1 (2017): 012317.
    - This paper proposes a *nonparameteric* Baysian inference of the stochastic block model. `graph-tool` is implemented and maintained by the author of this paper. The Bayesian inference framework grounds the resolution limit problem on a statistical problem, namely a selection problem of the prior probability of community membership, which is a major departure from the traditional heuristic approaches.
-- {cite:p}`fortunato2010community,fortunato2016community`: Fortunato, Santo. "Community detection in graphs." Physics reports 486.3-5 (2010): 75-174; Fortunato, Santo, and Darko Hric. "Community detection in networks: A user guide." Physics reports 659 (2016): 1-44.
+- {footcite}`fortunato2010community,fortunato2016community`: Fortunato, Santo. "Community detection in graphs." Physics reports 486.3-5 (2010): 75-174; Fortunato, Santo, and Darko Hric. "Community detection in networks: A user guide." Physics reports 659 (2016): 1-44.
   - These review papers outline a wide range of community detection methods.
 
 
-```{bibliography}
-:filter: docname in docnames
-:style: unsrt
+```{footbibliography}
 ```

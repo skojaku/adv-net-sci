@@ -263,7 +263,5 @@ When $c=c'$ (the diagonal block), we count only the upper half of the block, res
 
 We have now obtaind the likelihood function based only on the community assignment. Maximizing ${\cal L}$ with respect to the community assignment gives us the most likely community assignment for the network.
 
-```{bibliography}
-:filter: docname in docnames
-:style: unsrt
+```{footbibliography}
 ```
