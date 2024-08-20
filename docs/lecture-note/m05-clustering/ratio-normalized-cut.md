@@ -58,7 +58,7 @@ plt.grid(True)
 
 ## Normalized cut
 
-**Normalized cut**{cite:p}`shi2000normalized` balances communities based on edge count, unlike Ratio cut which uses node count. It is defined as:
+**Normalized cut**{footcite}`shi2000normalized` balances communities based on edge count, unlike Ratio cut which uses node count. It is defined as:
 
 $$
 \text{Normalized cut}(V_1, V_2) = \frac{1}{|E_1| \cdot |E_2|} \sum_{i \in V_1} \sum_{j \in V_2} A_{ij}
@@ -176,12 +176,10 @@ Secondly, and perhaps more critically, these methods *favor* communities of roug
 It's as if they're assuming all our friend groups should have about the same number of people.
 But as we know from real life, that's not always the case.
 Some of us might have a large group of college friends and a smaller group of childhood buddies.
-Research has shown that in many real-world networks, communities can indeed be quite different in size {cite:p}`palla2005uncovering,clauset2004finding`.
+Research has shown that in many real-world networks, communities can indeed be quite different in size {footcite}`palla2005uncovering,clauset2004finding`.
 
 These limitations don't mean these methods should not be used, but they do remind us the importance of understanding the underlying assumptions and limitations of methods we use 😉.
 It's always good to keep these points in mind when we're working with network data. 🕸️💡
 
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
+```{footbibliography}
 ```

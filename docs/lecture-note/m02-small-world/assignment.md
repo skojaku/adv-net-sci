@@ -1,6 +1,6 @@
 # Assignment
 
-We will compute the average path length of a network of scientists. The network is constructed from {cite:p}`sinatra2016quantifying`, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.
+We will compute the average path length of a network of scientists. The network is constructed from {footcite:p}`sinatra2016quantifying`, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.
 
 - **For students enrolled in SSIE 641**
   - You will receive a dedicated link to the assignment repository from the instructor.
@@ -11,7 +11,5 @@ We will compute the average path length of a network of scientists. The network 
     - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
 
 
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
+```{footbibliography}
 ```

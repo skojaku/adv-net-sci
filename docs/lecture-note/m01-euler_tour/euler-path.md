@@ -8,6 +8,11 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
+launch_buttons:
+  notebook_interface: "classic"
+  colab_url: "https://colab.research.google.com"
+  thebe: true
+  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
 ---
 
 

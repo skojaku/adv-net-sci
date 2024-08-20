@@ -155,7 +155,7 @@ Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/communi
 
 ```{dropdown} Click here to see the solution
 
-The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the **Resolution limit** {cite:p}`fortunato2007resolution`. Modularity can't quite make out communities that are smaller than a certain size!
+The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the **Resolution limit** {footcite}`fortunato2007resolution`. Modularity can't quite make out communities that are smaller than a certain size!
 
 Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges $m_c$ in a community $c$ has to be bigger than a certain size. This size is related to the total number of edges $m$ in the whole network. We write this mathematically as ${\cal O}(m)$.
 ```
@@ -187,14 +187,11 @@ Interested readers can read more about this in [this tweet by Tiago Peixoto](htt
 
 ## So should we avoid modularity?
 
-The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is "free lunch" in community detection {cite:p}`peel2017ground`.
+The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is "free lunch" in community detection {footcite}`peel2017ground`.
 
-When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an "optimal" method for a certain class of networks {cite:p}`nadakuditi2012graph`.
+When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an "optimal" method for a certain class of networks {footcite}`nadakuditi2012graph`.
 
 So, keep modularity in your toolbox. Just remember to use it wisely!
 
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
-
+```{footbibliography}
 ```
