@@ -5,7 +5,7 @@ kernelspec:
   name: python3
 ---
 
-<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/doc/lecture-note/m01-euler_tour/how-to-code-network.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
