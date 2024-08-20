@@ -1,4 +1,4 @@
-# Welcome to SSIE 641 Advanced Topics in Network Science
+# Welcome to SSIE 641 Advanced Topics on Network Science
 
 ``Don't think! Feeeeeel'' is a famous quote by Bruce Lee in the movie *Enter the Dragon*, and this is my guiding philosophy of learning.
 

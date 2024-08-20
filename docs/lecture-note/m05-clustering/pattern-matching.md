@@ -31,30 +31,26 @@ This leads to the idea of relaxed versions of cliques, called **pseudo-cliques**
 Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness:
 
 1. Degree: Not all nodes need to connect to every other node.
-   - **$k$-plex**: each node connects to all but $k$ others in the group {cite:p}`seidman1978graph`.
-   - **$k$-core**: each node connects to $k$ others in the group {cite:p}`seidman1983network`.
+   - **$k$-plex**: each node connects to all but $k$ others in the group {footcite}`seidman1978graph`.
+   - **$k$-core**: each node connects to $k$ others in the group {footcite}`seidman1983network`.
 2. Density: The overall connection density can be lower.
-   - **$\rho$-dense subgraphs**, with a minimum edge density of $\rho$ {cite:p}`goldberg1984finding`.
+   - **$\rho$-dense subgraphs**, with a minimum edge density of $\rho$ {footcite}`goldberg1984finding`.
 3. Distance: Nodes can be further apart.
-   - **$n$-clique**, where all nodes are within n steps of each other {cite:p}`luce1950connectivity`.
+   - **$n$-clique**, where all nodes are within n steps of each other {footcite}`luce1950connectivity`.
 4. Combination of the above:
-   - **n-clan** and **n-club** {cite:p}`mokken1979cliques`
-   - **$k$-truss**, a maximal subgraph where all edges participate in at least $k-2$ triangles {cite:p}`saito2008extracting,cohen2009graph,wang2010triangulation`.
-   - **$\rho$-dense core**, a subgraph with minimum conductance $\rho$ {cite:p}`koujaku2016dense`.
+   - **n-clan** and **n-club** {footcite}`mokken1979cliques`
+   - **$k$-truss**, a maximal subgraph where all edges participate in at least $k-2$ triangles {footcite}`saito2008extracting,cohen2009graph,wang2010triangulation`.
+   - **$\rho$-dense core**, a subgraph with minimum conductance $\rho$ {footcite}`koujaku2016dense`.
 
 :::{figure-md} clique-pattern
 
 <img src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" alt="Pseudo-clique patterns" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
 
 
-Illustation of different pseudo cliques. Taken from {cite:p}`koujaku2016dense`.
+Illustation of different pseudo cliques. Taken from {footcite}`koujaku2016dense`.
 
 :::
 
 
-## References
-
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
+```{footbibliography}
 ```

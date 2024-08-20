@@ -30,11 +30,9 @@ Communities reflect underlying mechanisms of network formation and underpin the 
 3. Hierarchical structure: Smaller communities existing within larger ones.
 4. Information flow: The patterns of information, influence, or disease propagation through the network.
 
-This is why network scientists are sooo obsessed with community structure in networks. See {cite:p}`fortunato2010community,fortunato2016community,peixoto2019bayesian` for comprehensive reviews on network communities.
+This is why network scientists are sooo obsessed with community structure in networks. See {footcite}`fortunato2010community,fortunato2016community,peixoto2019bayesian` for comprehensive reviews on network communities.
 
 ## References
 
-```{bibliography}
-:style: unsrt
-:filter: docname in docnames
+```{footbibliography}
 ```

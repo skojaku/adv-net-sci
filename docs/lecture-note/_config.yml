@@ -3,12 +3,18 @@
 
 title: Advanced Topics on Network Science
 author: Sadamori Kojaku
-logo: logo.png
+logo: logo.jpg
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: auto
+
+launch_buttons:
+  notebook_interface: "classic"
+  colab_url: "https://colab.research.google.com"
+  thebe: true
+  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
 
 # Execute notebooks on each build
 sphinx:
@@ -20,6 +26,9 @@ sphinx:
         .md:
             - jupytext.reads
             - fmt: md
+    suppress_warnings: ["myst.footnote", "autosectionlabel.*"]
+    myst_footnote_transition: false
+    nb_execution_mode: auto
     html_show_copyright: false
     html_extra_path: ['files']
     myst_enable_extensions:
@@ -32,12 +41,10 @@ sphinx:
       - replacements
       - smartquotes
       - substitution
-
     myst_substitutions:
       base_url: 'https://skojaku.github.io/adv-net-sci'
     html_extra_path: ['assets']
-    html_theme_options:
-      use_download_button: false
+
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -59,7 +66,3 @@ repository:
 html:
   use_issues_button: true
   use_repository_button: true
-
-launch_buttons:
-  thebe: true
-  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
