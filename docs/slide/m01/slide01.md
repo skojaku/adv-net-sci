@@ -147,6 +147,12 @@ After this course, you'll be able to:
 
 ---
 
+# Example Project
+
+- 
+
+---
+
 # Exam
 
 - 📚 Final exam on all topics
