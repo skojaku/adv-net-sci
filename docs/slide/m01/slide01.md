@@ -147,9 +147,23 @@ After this course, you'll be able to:
 
 ---
 
-# Example Project
+# Example Project 01
 
-- 
+![](sci-topic-net.png)
+
+---
+
+# Example Project 02
+
+![width:100%](ecog.png)
+
+---
+
+# Example Project 03
+
+Tesla Supercharger Network
+
+![bg right:50% width:90%](super-charger.png)
 
 ---
 
