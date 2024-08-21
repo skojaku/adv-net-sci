@@ -1,19 +1,8 @@
 ---
-jupytext:
-  cell_metadata_filter: -all
-  formats: md:myst
-  text_representation:
-    extension: .Rmd
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.16.3
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
-launch_buttons:
-  thebe: true
-  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
 ---
 
 
@@ -28,18 +17,18 @@ An atomic element of a network is a node, i.e., a network is a collection of edg
 We *label* a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair `(0, 1)`.
 
 
-:::{figure-md} numbered-koningsberg-graph
+```{figure-md} numbered-koningsberg-graph
 
-<img src= "../figs/labeled-koningsberg.jpg" width="30%">
+![file](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true)
 
 Labeled Knigsberg graph
 
-:::
+```
 
-:::{note}
+```{note}
 :name: node-labeling
 We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is *not the only way* to label nodes.
-:::
+```
 
 The Konigsberg graph can be represented by a list of edges.
 
@@ -112,3 +101,28 @@ else:
     print("The graph does not have a Euler path.")
 ```
 
+```{admonition} Exercise
+:class: tip
+
+1. Create a network of landmasses and bridges of Binghamton, NY.
+2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
+
+![](../../lecture-note/figs/binghamton-map.jpg)
+
+```
+
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```
+
+```{code-cell} ipython3
+# This is a placeholder for your code for the exercise
+
+```

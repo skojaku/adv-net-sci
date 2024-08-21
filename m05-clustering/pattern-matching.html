@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Community detection (pattern matching) &#8212; Advanced Topics on Network Science</title>
+    <title>Community detection (pattern matching) &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -155,8 +155,8 @@
       
     
     
-    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics on Network Science - Home"/>
-    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics on Network Science - Home"/>`);</script>
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics in Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics in Network Science - Home"/>`);</script>
   
   
 </a></div>
@@ -302,6 +302,24 @@
     <img alt="Binder logo" src="../_static/images/logo_binder.svg">
   </span>
 <span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://ec2-3-129-63-85.us-east-2.compute.amazonaws.com/hub/user-redirect/git-pull?repo=https%3A//github.com/skojaku/adv-net-sci&urlpath=tree/adv-net-sci/docs/lecture-note/m05-clustering/pattern-matching.md&branch=gh-pages" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on JupyterHub"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="JupyterHub logo" src="../_static/images/logo_jupyterhub.svg">
+  </span>
+<span class="btn__text-container">JupyterHub</span>
 </a>
 </li>
       
@@ -525,7 +543,7 @@ Namely, we first explicitly define a community by a specific connectivity patter
 <figure class="align-default" id="clique">
 <a class="reference internal image-reference" href="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png"><img alt="Clique graph" src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" style="width: 80%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Cliques of different sizes. Taken from <a class="reference external" href="https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html">https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html</a></span><a class="headerlink" href="#clique" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 12 </span><span class="caption-text">Cliques of different sizes. Taken from <a class="reference external" href="https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html">https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html</a></span><a class="headerlink" href="#clique" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Perhaps, the strictest definition of a community is a <em>clique</em>: a group of nodes all connected to each other. Examples include triangles (3-node cliques) and fully-connected squares (4-node cliques).
@@ -560,7 +578,7 @@ This leads to the idea of relaxed versions of cliques, called <strong>pseudo-cli
 <figure class="align-default" id="clique-pattern">
 <a class="reference internal image-reference" href="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg"><img alt="Pseudo-clique patterns" src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" style="width: 80%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Illustation of different pseudo cliques. Taken from <a class="footnote-reference brackets" href="#footcite-koujaku2016dense" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#clique-pattern" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Illustation of different pseudo cliques. Taken from <a class="footnote-reference brackets" href="#footcite-koujaku2016dense" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#clique-pattern" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="docutils container" id="id11">
