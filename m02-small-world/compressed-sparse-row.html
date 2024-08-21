@@ -193,6 +193,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/coding-exercise.html">Exercise</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
 <ul class="current nav bd-sidenav">
@@ -302,42 +303,6 @@
     <img alt="Binder logo" src="../_static/images/logo_binder.svg">
   </span>
 <span class="btn__text-container">Binder</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://ec2-3-129-63-85.us-east-2.compute.amazonaws.com/hub/user-redirect/git-pull?repo=https%3A//github.com/skojaku/adv-net-sci&urlpath=tree/adv-net-sci/docs/lecture-note/m02-small-world/compressed-sparse-row.md&branch=gh-pages" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on JupyterHub"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="JupyterHub logo" src="../_static/images/logo_jupyterhub.svg">
-  </span>
-<span class="btn__text-container">JupyterHub</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m02-small-world/compressed-sparse-row.md" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on Colab"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="Colab logo" src="../_static/images/logo_colab.png">
-  </span>
-<span class="btn__text-container">Colab</span>
 </a>
 </li>
       
@@ -550,7 +515,7 @@ Sounds simple! But the way it stores the indices and values is slightly complica
 <figure class="align-default" id="csr-matirx">
 <a class="reference internal image-reference" href="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif"><img alt="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" style="width: 100%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 5 </span><span class="caption-text">Compressed Sparse Row (CSR) matrix. Source: <a class="reference external" href="https://medium.com/&#64;hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791">Medium: Sparse GEMM and Tensor Core’s Structured Sparsity</a></span><a class="headerlink" href="#csr-matirx" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Compressed Sparse Row (CSR) matrix. Source: <a class="reference external" href="https://medium.com/&#64;hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791">Medium: Sparse GEMM and Tensor Core’s Structured Sparsity</a></span><a class="headerlink" href="#csr-matirx" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>The CSR format is implemented in the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html">scipy</a> library. It is straightforward to convert the CSR matrix from the <em>dense</em> adjacency matrix.</p>

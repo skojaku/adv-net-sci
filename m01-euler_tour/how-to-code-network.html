@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'm01-euler_tour/how-to-code-network';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="What to learn in this module" href="../m02-small-world/what-to-learn.html" />
+    <link rel="next" title="Exercise" href="coding-exercise.html" />
     <link rel="prev" title="Euler’s solution" href="euler-path.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -193,6 +193,7 @@
 <li class="toctree-l1"><a class="reference internal" href="puzzle.html">A puzzle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="euler-path.html">Euler’s solution</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute with networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coding-exercise.html">Exercise</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
 <ul class="nav bd-sidenav">
@@ -290,7 +291,7 @@
       
       
       
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb" target="_blank"
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m01-euler_tour/how-to-code-network.md" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Binder"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -302,42 +303,6 @@
     <img alt="Binder logo" src="../_static/images/logo_binder.svg">
   </span>
 <span class="btn__text-container">Binder</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://ec2-3-129-63-85.us-east-2.compute.amazonaws.com/hub/user-redirect/git-pull?repo=https%3A//github.com/skojaku/adv-net-sci&urlpath=tree/adv-net-sci/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb&branch=gh-pages" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on JupyterHub"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="JupyterHub logo" src="../_static/images/logo_jupyterhub.svg">
-  </span>
-<span class="btn__text-container">JupyterHub</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/gh-pages/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on Colab"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="Colab logo" src="../_static/images/logo_colab.png">
-  </span>
-<span class="btn__text-container">Colab</span>
 </a>
 </li>
       
@@ -423,6 +388,23 @@
       
       
       <li><a href="../_sources/m01-euler_tour/how-to-code-network.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/m01-euler_tour/how-to-code-network.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -432,7 +414,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.ipynb</span>
+<span class="btn__text-container">.md</span>
 </a>
 </li>
       
@@ -540,8 +522,12 @@ From now, we will work with a representation of the network that can be easily c
 <h2>Network representation<a class="headerlink" href="#network-representation" title="Link to this heading">#</a></h2>
 <p>An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes.
 We <em>label</em> a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>.</p>
-<p><img alt="file" src="https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true" /></p>
-<p>Labeled Knigsberg graph</p>
+<figure class="align-default" id="numbered-koningsberg-graph">
+<img alt="file" src="https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true" />
+<figcaption>
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">Labeled Knigsberg graph</span><a class="headerlink" href="#numbered-koningsberg-graph" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <div class="admonition note" id="node-labeling">
 <p class="admonition-title">Note</p>
 <p>We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is <em>not the only way</em> to label nodes.</p>
@@ -659,35 +645,6 @@ Check out the <a class="reference external" href="https://docs.scipy.org/doc/sci
 </div>
 </div>
 </div>
-<div class="tip admonition">
-<p class="admonition-title">Exercise</p>
-<ol class="arabic simple">
-<li><p>Create a network of landmasses and bridges of Binghamton, NY.</p></li>
-<li><p>Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.</p></li>
-</ol>
-<p><img alt="" src="../_images/binghamton-map.jpg" /></p>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a placeholder for your code for the exercise</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a placeholder for your code for the exercise</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a placeholder for your code for the exercise</span>
-</pre></div>
-</div>
-</div>
-</div>
 </section>
 </section>
 
@@ -731,11 +688,11 @@ Check out the <a class="reference external" href="https://docs.scipy.org/doc/sci
       </div>
     </a>
     <a class="right-next"
-       href="../m02-small-world/what-to-learn.html"
+       href="coding-exercise.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">What to learn in this module</p>
+        <p class="prev-next-title">Exercise</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
