@@ -103,13 +103,3 @@ if np.sum(is_odd) == 2 or np.sum(is_odd) == 0:
 else:
     print("The graph does not have a Euler path.")
 ```
-
-```{admonition} Exercise
-:class: tip
-
-1. Create a network of landmasses and bridges of Binghamton, NY.
-2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
-
-![](../../lecture-note/figs/binghamton-map.jpg)
-
-```
