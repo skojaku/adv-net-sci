@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Exercise 01 &#8212; Advanced Topics in Network Science</title>
+    <title>Exercise &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -191,8 +191,7 @@
 <li class="toctree-l1"><a class="reference internal" href="puzzle.html">A puzzle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="euler-path.html">Euler’s solution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how-to-code-network.html">Compute with networks</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Exercise 01</a></li>
-
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Exercise</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
 <ul class="nav bd-sidenav">
@@ -523,7 +522,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Exercise 01</h1>
+    <h1>Exercise</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -533,10 +532,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Exercise 01</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
 </ul>
-
             </nav>
         </div>
     </div>
@@ -550,8 +548,10 @@ document.write(`
   <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise_euler_tour.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
-<section class="tex2jax_ignore mathjax_ignore" id="exercise-01">
-<h1>Exercise 01<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="exercise">
+<h1>Exercise<a class="headerlink" href="#exercise" title="Link to this heading">#</a></h1>
+<section id="exercise-01">
+<h2>Exercise 01<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Create a network of landmasses and bridges of Binghamton, NY.</p></li>
 <li><p>Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.</p></li>
@@ -577,15 +577,7 @@ document.write(`
 <p>Define the adjacnecy matrix (without for loops!)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="o">....</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>  <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="o">....</span>
-            <span class="o">^</span>
-<span class="ne">SyntaxError</span>: invalid syntax
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -608,11 +600,33 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_9369/1336985606.py:6: DeprecationWarning: Calling nonzero on 0d arrays is deprecated, as it behaves surprisingly. Use `atleast_1d(arr).nonzero()` if the old behavior was intended.
+  src, trg = np.where(np.array(A))
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">12</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>   <span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)))</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>   <span class="k">return</span> <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">12</span> <span class="n">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="nn">Cell In[4], line 6,</span> in <span class="ni">visualize_graph</span><span class="nt">(A, **params)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">def</span> <span class="nf">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">6</span>   <span class="n">src</span><span class="p">,</span> <span class="n">trg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>   <span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>   <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="ne">ValueError</span>: not enough values to unpack (expected 2, got 1)
+</pre></div>
+</div>
+</div>
 </div>
 <p>Check if the graph has an Euler path</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="exercise-02">
-<h1>Exercise 02<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h1>
+<section id="exercise-02">
+<h2>Exercise 02<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h2>
 <p>Let’s create a network from pre-existing data and check if it has an Euler path.</p>
 <ol class="arabic simple">
 <li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
@@ -661,6 +675,7 @@ document.write(`
 </div>
 </div>
 <p>Check if the graph has an Euler path</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -727,10 +742,9 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Exercise 01</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
 </ul>
-
   </nav></div>
 
 </div></div>

@@ -9,7 +9,10 @@ kernelspec:
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-#  Exercise 01
+#  Exercise
+
+
+## Exercise 01
 
 1. Create a network of landmasses and bridges of Binghamton, NY.
 2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
@@ -31,7 +34,7 @@ edges = ...
 
 Define the adjacnecy matrix (without for loops!)
 ```{code-cell} ipython3
-A = ....
+A = ...
 ```
 
 Visualize the graph
@@ -56,7 +59,7 @@ Check if the graph has an Euler path
 ```
 
 
-#  Exercise 02
+##  Exercise 02
 
 Let's create a network from pre-existing data and check if it has an Euler path.
 
