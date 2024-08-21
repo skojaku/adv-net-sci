@@ -113,19 +113,3 @@ else:
 ![](../../lecture-note/figs/binghamton-map.jpg)
 
 ```
-
-
-```{code-cell} ipython3
-# This is a placeholder for your code for the exercise
-
-```
-
-```{code-cell} ipython3
-# This is a placeholder for your code for the exercise
-
-```
-
-```{code-cell} ipython3
-# This is a placeholder for your code for the exercise
-
-```

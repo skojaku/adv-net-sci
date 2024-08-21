@@ -59,3 +59,27 @@
   <p align="center">
     <img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" style="width: 80%;">
   </p>
+
+  <div align="center" style="font-size: 1.5em;">Flavor Network</div>
+  <p align="center">
+    <img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
+  </p>
+
+  <div align="center" style="font-size: 1.5em;">Flavor Network</div>
+  <p align="center">
+    <img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
+  </p>
+
+  <div align="center" style="font-size: 1.5em;">Citation Cartels</div>
+  <p align="center">
+    <img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
+  </p>
+
+  <div align="center" style="font-size: 1.5em;">Citation Cartels</div>
+  <p align="center">
+    <img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
+  </p>
+  <div align="center" style="font-size: 1.5em;">Virus spreading network</div>
+  <p align="center">
+    <img src="https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png" style="width: 80%;">
+  </p>
