@@ -108,7 +108,7 @@ After this course, you'll be able to:
 # Philosophy of Learning in this course
 
 [![bg right:50% width:90% Drive: The surprising truth about what motivates us](https://img.youtube.com/vi/RQaW2bFieo8/0.jpg)](https://www.youtube.com/watch?v=RQaW2bFieo8 "Drive: The surprising truth about what motivates us")
-
+https://www.youtube.com/watch?v=RQaW2bFieo8
 
 ---
 
@@ -135,7 +135,6 @@ After this course, you'll be able to:
 # Final Project 🎓
 
 - Individual project (30% of grade) 📊
-  - Proposal (5%) 📝, Final paper (15%) 📄, Presentation (10%) 🎤
 - Timeline 📅
   - Proposal: Sept 29; Paper: Dec 4; Presentations: Dec 8
 
@@ -169,7 +168,7 @@ Tesla Supercharger Network
 
 # Exam
 
-- 📚 Final exam on all topics
+- 📚 Final exam on all topics (weight: 30%)
 - 📅 During exam week (Dec 9-13)
 - 📝 Theory + practical problems
 - 🌍 Apply concepts to real scenarios
@@ -180,7 +179,7 @@ Tesla Supercharger Network
 
 # Weekly Quiz on Brightspace
 
-- 📊 Quizzes: A tool to identify misconceptions
+- 📊 Quizzes: A tool to identify misconceptions (weight: 20%)
 - 🧠 Covers previous week's topics
 - 🏁 Deadline: before final exam
 - 🔄 Unlimited attempts until correct
@@ -189,7 +188,7 @@ Tesla Supercharger Network
 
 # Assignment
 
-- 📅 Roughly bi-weekly
+- 📅 Roughly bi-weekly (weight: 20%)
 - 💻 Coding exercises
 - 🤖 Autograded assignments
 - 🏁 Deadline: before final exam
@@ -228,6 +227,7 @@ Tesla Supercharger Network
 What motivates you to take this course (if you want to)?
 
 [![Drive: The surprising truth about what motivates us](https://img.youtube.com/vi/u6XAPnuFjJc/0.jpg)](https://www.youtube.com/watch?v=u6XAPnuFjJc "Drive: The surprising truth about what motivates us")
+https://www.youtube.com/watch?v=u6XAPnuFjJc
 
 ~8:23
 
