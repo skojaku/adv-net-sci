@@ -20,7 +20,7 @@ How far are two people in a social network? Milgram and his colleagues conducted
 
 :::{figure-md} milgram-small-world-experiment
 
-<img src="milgram-small-world-experiment.png" width="70%">
+<img src="../figs/milgram-small-world-experiment.png" width="70%">
 
 Milgram's small world experiment.
 
