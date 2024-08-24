@@ -1,13 +1,15 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.16.3
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
 
 <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m06-centrality.ipynb">
@@ -20,7 +22,12 @@ kernelspec:
 
 Let's compute the centrality of the network using Python igraph.
 
-```{code-cell} ipython
+```python
+# Uncomment if you use Colab
+#!pip install igraph
+```
+
+```python
 import igraph
 names  = ['Sarah', 'Mike', 'Emma', 'Alex', 'Olivia', 'James', 'Sophia', 'Ethan', 'Ava', 'Noah', 'Lily', 'Lucas', 'Henry']
 edge_list = [(0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (3, 5), (3, 6), (4, 5), (6, 7), (6, 8), (6, 9), (7, 8), (7, 9), (8, 9), (9, 10), (9, 11), (9, 12)]
@@ -42,7 +49,8 @@ igraph.plot(g, vertex_label=g.vs["name"])
 - **PageRank centrality**: `igraph.Graph.personalized_pagerank()`
 
 For example, the closeness centrality is computed by
-```{code-cell} ipython
+
+```python
 g.closeness()
 ```
 
@@ -51,26 +59,28 @@ g.closeness()
 Let's compute the Katz centrality without using igraph.
 Let us first define the adjacency matrix of the graph
 
-```{code-cell} ipython
-A = g.get_adjacency()
-A
+```python
+A = g.get_adjacency_sparse()
 ```
+
 which is the scipy CSR sparse matrix. The Katz centrality is given by
 
 $$
 
-\mat{c} = \beta \mathbb{1} + \alpha \mat{A} \mat{c}+
+\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}
 
 $$
 
 So, how do we solve this? We can use a linear solver but here we will use a simple method:
 
-1. Initialize $\mat{c}$ with a random vector.
-2. Compute the right hand side of the equation and update $\mat{c}$.
-3. Repeat the process until $\mat{c}$ converges.
+1. Initialize $\mathbf{c}$ with a random vector.
+2. Compute the right hand side of the equation and update $\mathbf{c}$.
+3. Repeat the process until $\mathbf{c}$ converges.
 
 Let's implement this.
-```{code-cell} ipython
+
+```python
+import numpy as np
 
 alpha, beta = 0.1, 0.05 # Hyperparameters
 n_nodes = g.vcount() # number of nodes
@@ -84,14 +94,15 @@ for _ in range(100):
 print(c)
 ```
 
-Change the hyperparameter and see how the result changes 😉
+- Does the centrality converge?
+- Change the hyperparameter and see how the result changes 😉
 If the centrality diverges, think about why it diverges.
 
 *Hint*: Katz centrality can be analytically computed by
 
 $$
 
-\mat{c} = \beta \left(\mathbb{I} -  \alpha \mat{A} \right)^{-1} \mathbb{1}
+\mathbf{c} = \beta \left(\mathbf{I} -  \alpha \mathbf{A} \right)^{-1} \mathbf{1}
 
 $$
 
@@ -99,35 +110,37 @@ $$
 
 Compute the PageRank centrality of this graph
 
-```{code-cell} ipython
+```python
 
 ```
-
 
 ## Network of ancient Roman roads
 
 ### Load the data & construct the network
 
-```{code-cell} ipython
+```python
 import pandas as pd
 
-root = "https://raw.github.com/skojaku/adv-net-sci/main/data/roman-roads"
+root = "https://raw.githubusercontent.com/skojaku/adv-net-sci/main/data/roman-roads"
 node_table = pd.read_csv(f"{root}/node_table.csv")
 edge_table = pd.read_csv(f"{root}/edge_table.csv")
 ```
 
 The node table:
-```{code-cell} ipython
-node_table
+
+```python
+node_table.head(3)
 ```
 
 The edge table:
-```{code-cell} ipython
-edge_table
+
+```python
+edge_table.head(3)
 ```
 
 Let's construct a network from the node and edge tables.
-```{code-cell} ipython
+
+```python
 import igraph
 
 g = igraph.Graph() # create an empty graph
@@ -136,9 +149,10 @@ g.add_edges(list(zip(edge_table["src"].values, edge_table["trg"].values))) # add
 ```
 
 which looks like this:
-```{code-cell} ipython
-coord = list(zip(node_table["long"].values, node_table["lat"].values))
-igraph.plot(g, layout = coord)
+
+```python
+coord = list(zip(node_table["lon"].values, -node_table["lat"].values))
+igraph.plot(g, layout = coord, vertex_size = 5)
 ```
 
 ### Exercise 🏛️
@@ -150,5 +164,7 @@ igraph.plot(g, layout = coord)
     - Katz centrality
     - Betweenness centrality
     - Closeness centrality
-2. Plot the centrality measures on the map and see in which centrality Rome is the most important node. 🗺️🏛️
+2. Plot the centrality measures on the map and see in which centrality Rome is the most important node. 🗺️🏛️ (as beautiful as possible!!)
+
+
 
