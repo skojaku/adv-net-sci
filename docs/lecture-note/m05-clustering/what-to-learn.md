@@ -1,4 +1,6 @@
-# What to learn in this module
+# Module 5: Clustering
+
+## What to learn in this module
 
 In this module, we will learn community detection, one of the most widely-used yet controversial techniques in network analysis. We will learn:
 - What is community structure in networks?
