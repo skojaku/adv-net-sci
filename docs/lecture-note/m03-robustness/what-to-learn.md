@@ -1,4 +1,6 @@
-# What to learn in this module
+# Module 3: Robustness
+
+## What to learn in this module
 
 In this module, we will learn about network robustness. We will learn:
 - Minimum spanning tree

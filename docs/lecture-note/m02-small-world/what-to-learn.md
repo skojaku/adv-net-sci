@@ -1,4 +1,6 @@
-# What to learn in this module
+# Module 2: Small-world
+
+## What to learn in this module
 
 In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn:
 - Small-world experiment by Milgram
