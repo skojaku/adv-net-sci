@@ -61,7 +61,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Assignment" href="assignment.html" />
-    <link rel="prev" title="Walks, Trails, Paths, and Connectedness" href="connectedness.html" />
+    <link rel="prev" title="igraph" href="compressed-sparse-row.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -198,11 +198,13 @@
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">What to learn in this module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="small-world-experiment.html">Small-world experiment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="wikirace.html">Wikirace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Why is our social network small world?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="which-tools.html">Toolbox for network analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compressed-sparse-row.html">igraph</a></li>
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Computing the Shortest Paths and Connected Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="assignment.html">Assignment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Why is our social network small world?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
@@ -496,9 +498,23 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-graph">Create a graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy">Scipy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Create a graph</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Shortest Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Connected Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
 </ul>
             </nav>
         </div>
@@ -510,18 +526,42 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="computing-the-shortest-paths-and-connected-components">
+  <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m02-small-world.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<section class="tex2jax_ignore mathjax_ignore" id="computing-the-shortest-paths-and-connected-components">
 <h1>Computing the Shortest Paths and Connected Components<a class="headerlink" href="#computing-the-shortest-paths-and-connected-components" title="Link to this heading">#</a></h1>
-<section id="shortest-paths">
-<h2>Shortest Paths<a class="headerlink" href="#shortest-paths" title="Link to this heading">#</a></h2>
-<p>Now, let’s do some exercise. First, let’s consider a simple graph below.</p>
+<p>Let’s use <code class="docutils literal notranslate"><span class="pre">igraph</span></code> to compute the shortest paths and connected components. We will then use <code class="docutils literal notranslate"><span class="pre">scipy</span></code> to compute them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using Google Colab, uncomment the following line to install igraph</span>
+<span class="c1"># !pip install python-igraph</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="igraph">
+<h2>igraph<a class="headerlink" href="#igraph" title="Link to this heading">#</a></h2>
+<section id="create-a-graph">
+<h3>Create a graph<a class="headerlink" href="#create-a-graph" title="Link to this heading">#</a></h3>
+<p>Let us create a graph of 4 nodes and 4 edges. Our edge list is given by</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">igraph</span></code> has an object <code class="docutils literal notranslate"><span class="pre">Graph</span></code> that stores a graph and provides methods to manipulate and analyze the graph. To create a graph from an edge list, we can use the <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="c1"># Create an empty graph</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># Add 4 vertices</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span> <span class="c1"># Add edges to the graph</span>
+
+<span class="c1"># Plot the graph</span>
 <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">vertex_label</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
 </pre></div>
 </div>
@@ -529,7 +569,10 @@ document.write(`
 <div class="cell_output docutils container">
 <img alt="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" src="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" /></div>
 </div>
-<p>In this straightforward example, there is at least one path connecting nodes 2 and 3. Let’s generate the paths between them by using igraph.</p>
+</section>
+<section id="shortest-paths">
+<h3>Shortest Paths<a class="headerlink" href="#shortest-paths" title="Link to this heading">#</a></h3>
+<p>Let’s compute the paths between nodes 2 and 3.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -542,7 +585,8 @@ document.write(`
 </div>
 </div>
 </div>
-<p>The lengths of the paths vary depending on which route we choose. We can get the shortest path by using the <code class="docutils literal notranslate"><span class="pre">get_shortest_paths</span></code> method.</p>
+<p>This method enumerates all possible simple paths between two nodes. This is OK for small networks but quickly becomes impractical for larger networks, as the number of paths increases exponentially with the size of the network.</p>
+<p>Often, we are interested in the shortest path, which is the path with the smallest number of edges. The shortest path can be computed by using the <code class="docutils literal notranslate"><span class="pre">get_shortest_paths</span></code> method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -555,8 +599,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Note that there can be multiple shortest paths between two nodes.</p>
-<p>We can get the length of the shortest path by using <code class="docutils literal notranslate"><span class="pre">distances</span></code> method.</p>
+<p>Note that there can be multiple shortest paths between two nodes. If we are interested in the “length” instead of the path itself, there is a more efficient function <code class="docutils literal notranslate"><span class="pre">distances</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">distances</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -571,140 +614,61 @@ document.write(`
 </div>
 </section>
 <section id="connected-components">
-<h2>Connected Components<a class="headerlink" href="#connected-components" title="Link to this heading">#</a></h2>
+<h3>Connected Components<a class="headerlink" href="#connected-components" title="Link to this heading">#</a></h3>
 <p>In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">connected_components</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# of components = &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">))</span>  <span class="c1"># number of components</span>
-<span class="n">components</span><span class="o">.</span><span class="n">membership</span>  <span class="c1"># the IDs of the component each node belongs to.</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span># of components =  1
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0, 0, 0, 0]
 </pre></div>
 </div>
 </div>
 </div>
-<p>Now, let us add two nodes that are not connected to the existing graph.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">components</span></code> is a special object called <a class="reference external" href="https://python.igraph.org/en/0.11.6/api/igraph.VertexClustering.html">VertexClustering</a> in <code class="docutils literal notranslate"><span class="pre">igraph</span></code>.
+It has the following useful functions and attributes:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
-<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">vertex_label</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;membership: &quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># the IDs of the component each node belongs to.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sizes: &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">sizes</span><span class="p">()))</span>  <span class="c1"># the number of nodes in each component.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;giant: &quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">.</span><span class="n">giant</span><span class="p">())</span>  <span class="c1"># a subgraph of the largest connected component.</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a1c365c2b05fcc297a26172d6a4f6f1c19d8669b991b09a4570eb5441de3b9cf.svg" src="../_images/a1c365c2b05fcc297a26172d6a4f6f1c19d8669b991b09a4570eb5441de3b9cf.svg" /></div>
-</div>
-<p>What happens if we query the shortest path between nodes in the different component?</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_63812/3289741389.py:1: RuntimeWarning: Couldn&#39;t reach some vertices at src/paths/unweighted.c:444
-  g.get_shortest_paths(0, to=5)
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>membership:  [0, 0, 0, 0]
+sizes:  [4]
+giant:  IGRAPH U--- 4 4 --
++ edges:
+0--1 1--2 0--2 0--3
 </pre></div>
 </div>
 </div>
 </div>
-<p>You can find the set of nodes in the same connected component by</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># List of nodes with membership = 0</span>
-<span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># List of nodes with membership = 1</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([], dtype=int64)
-</pre></div>
-</div>
-</div>
-</div>
-<p>We often care about the largest connected component, which is sometimes referred to as the core of the network. We can make use of numpy unique function in order to obtain the largest connected component.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">component_ids</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
-    <span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-<span class="n">largest_connected_component_id</span> <span class="o">=</span> <span class="n">component_ids</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">freq</span><span class="p">)]</span>
-<span class="n">nodes_in_largest_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">)</span> <span class="o">==</span> <span class="n">largest_connected_component_id</span>
-<span class="p">)[</span>
-    <span class="mi">0</span>
-<span class="p">]</span>  <span class="c1"># list of nodes in the largest connected component.</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">nodes_in_largest_component</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2 3]
-</pre></div>
-</div>
-</div>
-</div>
-<p>Let us break down the code above.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">np.unique</span></code>: returns the unique elements of an array and their counts. With <code class="docutils literal notranslate"><span class="pre">return_inverse=True</span></code>, it also returns the number of times of each unique element appears in the original array, <code class="docutils literal notranslate"><span class="pre">components.membership</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">np.argmax(freq)</span></code>: returns the index of the maximum value in the frequency array. Thus, <code class="docutils literal notranslate"><span class="pre">largest_connected_component_id</span></code> is the ID of the largest connected component.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">components.membership)</span> <span class="pre">==</span> <span class="pre">largest_connected_component_id</span></code> is a boolean array of the same length as <code class="docutils literal notranslate"><span class="pre">components.membership</span></code>, which is True for the nodes in the largest connected component and False otherwise.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">np.where(...)[0]</span></code>: returns the indices of the True values in the boolean array. Thus, <code class="docutils literal notranslate"><span class="pre">nodes_in_largest_component</span></code> is the list of nodes in the largest connected component.</p></li>
-</ul>
-<p>Using the <code class="docutils literal notranslate"><span class="pre">nodes_in_largest_component</span></code>, we can get a subgraph formed by the nodes in the largest connected component.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_sub</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">induced_subgraph</span><span class="p">(</span><span class="n">nodes_in_largest_component</span><span class="p">)</span>
-<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g_sub</span><span class="p">,</span> <span class="n">vertex_label</span><span class="o">=</span><span class="n">nodes_in_largest_component</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" src="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" /></div>
-</div>
+<section id="exercise-01">
+<h4>Exercise 01 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>Now, let us add two nodes that are not connected to the existing graph, and call <code class="docutils literal notranslate"><span class="pre">connected_components</span></code> again. 🔗➕</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">get_shortest_paths</span></code> between the two new nodes in different connected components. 🛣️🔍</p></li>
+<li><p>Get the largest connected component. 🌐🏆</p></li>
+</ol>
+</section>
 </section>
 <section id="directed-networks">
-<h2>Directed networks<a class="headerlink" href="#directed-networks" title="Link to this heading">#</a></h2>
+<h3>Directed networks<a class="headerlink" href="#directed-networks" title="Link to this heading">#</a></h3>
 <p>Let’s extend these ideas about paths and connected components to directed graphs.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_list</span> <span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
 <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">),</span> <span class="n">vertex_label</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/24b34b67ef6eb6b8130f803342ee9b44acac9d9b67482323c847253be31e3ddb.svg" src="../_images/24b34b67ef6eb6b8130f803342ee9b44acac9d9b67482323c847253be31e3ddb.svg" /></div>
+<img alt="../_images/9129854cf46104a3d99a1747f182d27d9d21b062349a0b8090585bf80cab89c2.svg" src="../_images/9129854cf46104a3d99a1747f182d27d9d21b062349a0b8090585bf80cab89c2.svg" /></div>
 </div>
-<p>In a directed graph, we know that an edge from one node to another does not necessarily mean that there is an edge in the opposite direction. This asymmetry also applies to paths in directed graphs. For example, in the given graph, there is a path from node 0 to node 3, but not in the reverse direction.</p>
+<p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;From 0 to 3&quot;</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
@@ -719,7 +683,7 @@ From 3 to 0 []
 </div>
 </div>
 </div>
-<p>The shortest path from 4 to 1 cannot simply go directly to node 3 due to the directionality of the edges; it has to go a longer route.</p>
+<p>The shortest path from 4 to 1 must take a longer route due to edge directions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -751,7 +715,127 @@ From 3 to 0 []
 </div>
 </div>
 </div>
-<p>Now, we are armed with the tools to conduct a small small-world experiment in the next section.</p>
+</section>
+</section>
+<section id="scipy">
+<h2>Scipy<a class="headerlink" href="#scipy" title="Link to this heading">#</a></h2>
+<p>We can create a graph, compute the shortest paths, and connected components using <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p>
+<section id="id1">
+<h3>Create a graph<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>With scipy, we represent a network by an adjacency matrix using something called a <em>Compressed Sparse Row (CSR) matrix</em>. CSR matrices are efficient format for storing and manipulating <em>sparse</em> matrices. Why <em>sparse</em> is highlighed here? Because in many networks, the adjacency matrix is sparse, i.e., most of the entries are zero. For example, here is the adjacency matrix of a real-world network:</p>
+<p><img alt="" src="https://www.researchgate.net/publication/263506932/figure/fig1/AS:392539896074252&#64;1470600212952/Scale-free-Network-left-its-adjacency-matrix-upper-right-and-degree-distribution.png" /></p>
+<p>Most of the entries in this adjacency matrix are white, and white means that the value of the entry is zero. And the adjacency matrix looks very white! This is pretty common in real-world networks. We call these matrices “sparse” because they are mostly empty. And CSR matrices are a way to store these sparse matrices efficiently. Don’t worry too much about the technical details for now. If you’re curious to learn more, you can check out the <a class="reference internal" href="appendix.html"><span class="std std-doc">Appendix</span></a>.</p>
+<p>The great thing is, <code class="docutils literal notranslate"><span class="pre">scipy</span></code> (especially the <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> module) provides efficient tools for working with these sparse matrices. This comes in really handy when we’re working with large networks.</p>
+<p>Let create a graph using scipy.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span> <span class="c1"># We will use sparse module in scipy</span>
+
+<span class="n">edge_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="n">src</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+<span class="n">trg</span> <span class="o">=</span> <span class="p">[</span><span class="n">dst</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+<span class="n">weight</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="c1"># Make the adjacency matrix symmetric</span>
+<span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="n">line</span> <span class="mi">10</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">weight</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="n">A</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)))</span>
+<span class="ne">---&gt; </span><span class="mi">10</span> <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="c1"># Make the adjacency matrix symmetric</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">A</span>
+
+<span class="nn">File ~/miniforge3/envs/advnetsci/lib/python3.11/site-packages/scipy/sparse/_base.py:529,</span> in <span class="ni">_spbase.__add__</span><span class="nt">(self, other)</span>
+<span class="g g-Whitespace">    </span><span class="mi">527</span> <span class="k">elif</span> <span class="n">issparse</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">528</span>     <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">529</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;inconsistent shapes&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">530</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_sparse</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">531</span> <span class="k">elif</span> <span class="n">isdense</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+
+<span class="ne">ValueError</span>: inconsistent shapes
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s break down the code.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src</span></code> and <code class="docutils literal notranslate"><span class="pre">trg</span></code> are the source and target nodes of the edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight</span></code> is the weight of the edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sparse.csr_matrix((weight,</span> <span class="pre">(src,</span> <span class="pre">trg)))</span></code> creates a sparse matrix, filling <code class="docutils literal notranslate"><span class="pre">weight</span></code> into the positions specified by <code class="docutils literal notranslate"><span class="pre">(src,</span> <span class="pre">trg)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A.T</span></code> is the transpose of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">A.T</span></code> makes the adjacency matrix symmetric.</p></li>
+</ul>
+<p>The CSR matrix does not print nicely. But you can see it by converting to a numpy array and printing it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id2">
+<h2>Shortest Paths<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">sparse</span></code> module has a submodule <code class="docutils literal notranslate"><span class="pre">csgraph</span></code> that provides APIs for network analysis.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">csgraph.shortest_path</span></code> computes the shortest path length from a specific node to all other nodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span>
+
+<span class="c1"># `indices` is the node to compute the shortest path from.</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Advanced:</strong> If you want to get the actual paths (i.e., list of nodes in the path), you can pass <code class="docutils literal notranslate"><span class="pre">return_predecessors=True</span></code> to <code class="docutils literal notranslate"><span class="pre">csgraph.shortest_path</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">,</span> <span class="n">predecessors</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_predecessors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>Connected Components<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>Connected components can be computed by <code class="docutils literal notranslate"><span class="pre">csgraph.connected_components</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_components</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of connected components:&quot;</span><span class="p">,</span> <span class="n">n_components</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Labels:&quot;</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_components</span></code> is the number of connected components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code> is an array of length <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code> where each element is the ID of the connected component the node belongs to.</p></li>
+</ul>
+</section>
+<section id="exercise-02">
+<h2>Exercise 02 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h2>
+<p>Let’s compute the average path length of a network from pre-existing data and check if how long on average it takes to go from any node to any other node.</p>
+<ol class="arabic simple">
+<li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
+<li><p>Download the csv version of the data by clicking something like “3KiB” under <code class="docutils literal notranslate"><span class="pre">csv</span></code> column.</p></li>
+<li><p>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</p></li>
+<li><p>Load the data using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Get the source and target nodes from the data to create an edge list.</p></li>
+<li><p>Construct a graph from the edge list, either using <code class="docutils literal notranslate"><span class="pre">igraph</span></code> or <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p></li>
+<li><p>Compute the average path length</p></li>
+</ol>
+<p><strong>Hint:</strong> Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the “estimate” by sampling many pairs of nodes uniformly at random and computing the average path length.</p>
 </section>
 </section>
 
@@ -786,12 +870,12 @@ From 3 to 0 []
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="connectedness.html"
+       href="compressed-sparse-row.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Walks, Trails, Paths, and Connectedness</p>
+        <p class="prev-next-title">igraph</p>
       </div>
     </a>
     <a class="right-next"
@@ -819,9 +903,23 @@ From 3 to 0 []
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-graph">Create a graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy">Scipy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Create a graph</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Shortest Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Connected Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
 </ul>
   </nav></div>
 

@@ -5,7 +5,7 @@ kernelspec:
   name: python3
 ---
 
-<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise_euler_tour.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m01-euler-tour.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
@@ -44,10 +44,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize_graph(A, **params):
-  src, trg = np.where(np.array(A))
+  A = np.array(A)
+  src, trg = np.where(A)
   g = igraph.Graph(directed=False)
   g.add_vertices(A.shape[0])
-  g.add_edges(list(zip(src, trg)))
+  for s, t in zip(src, trg):
+    for _ in range(A[s, t]):
+      g.add_edge(s, t)
   return igraph.plot(g, **params)
 
 visualize_graph(A)
@@ -75,6 +78,7 @@ Let's create a network from pre-existing data and check if it has an Euler path.
 
 Load the data by
 ```{code-cell} ipython3
+import pandas as pd
 df = pd.read_csv('edges.csv') # load the data
 display(df)
 ```

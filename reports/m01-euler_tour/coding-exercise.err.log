@@ -27,32 +27,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize_graph(A, **params):
-  src, trg = np.where(np.array(A))
+  A = np.array(A)
+  src, trg = np.where(A)
   g = igraph.Graph(directed=False)
   g.add_vertices(A.shape[0])
-  g.add_edges(list(zip(src, trg)))
+  for s, t in zip(src, trg):
+    for _ in range(A[s, t]):
+      g.add_edge(s, t)
   return igraph.plot(g, **params)
 
 visualize_graph(A)
 ------------------
 
 ----- stderr -----
-/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_9369/1336985606.py:6: DeprecationWarning: Calling nonzero on 0d arrays is deprecated, as it behaves surprisingly. Use `atleast_1d(arr).nonzero()` if the old behavior was intended.
-  src, trg = np.where(np.array(A))
+/var/folders/j7/9dgqq5g53vnbsbmvh2yqtckr0000gr/T/ipykernel_19914/520002670.py:7: DeprecationWarning: Calling nonzero on 0d arrays is deprecated, as it behaves surprisingly. Use `atleast_1d(arr).nonzero()` if the old behavior was intended.
+  src, trg = np.where(A)
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mValueError[0m                                Traceback (most recent call last)
-Cell [0;32mIn[4], line 12[0m
-[1;32m      9[0m   g[38;5;241m.[39madd_edges([38;5;28mlist[39m([38;5;28mzip[39m(src, trg)))
-[1;32m     10[0m   [38;5;28;01mreturn[39;00m igraph[38;5;241m.[39mplot(g, [38;5;241m*[39m[38;5;241m*[39mparams)
-[0;32m---> 12[0m visualize_graph(A)
+Cell [0;32mIn[4], line 15[0m
+[1;32m     12[0m       g[38;5;241m.[39madd_edge(s, t)
+[1;32m     13[0m   [38;5;28;01mreturn[39;00m igraph[38;5;241m.[39mplot(g, [38;5;241m*[39m[38;5;241m*[39mparams)
+[0;32m---> 15[0m visualize_graph(A)
 
-Cell [0;32mIn[4], line 6[0m, in [0;36mvisualize_graph[0;34m(A, **params)[0m
+Cell [0;32mIn[4], line 7[0m, in [0;36mvisualize_graph[0;34m(A, **params)[0m
 [1;32m      5[0m [38;5;28;01mdef[39;00m [38;5;21mvisualize_graph[39m(A, [38;5;241m*[39m[38;5;241m*[39mparams):
-[0;32m----> 6[0m   src, trg [38;5;241m=[39m np[38;5;241m.[39mwhere(np[38;5;241m.[39marray(A))
-[1;32m      7[0m   g [38;5;241m=[39m igraph[38;5;241m.[39mGraph(directed[38;5;241m=[39m[38;5;28;01mFalse[39;00m)
-[1;32m      8[0m   g[38;5;241m.[39madd_vertices(A[38;5;241m.[39mshape[[38;5;241m0[39m])
+[1;32m      6[0m   A [38;5;241m=[39m np[38;5;241m.[39marray(A)
+[0;32m----> 7[0m   src, trg [38;5;241m=[39m np[38;5;241m.[39mwhere(A)
+[1;32m      8[0m   g [38;5;241m=[39m igraph[38;5;241m.[39mGraph(directed[38;5;241m=[39m[38;5;28;01mFalse[39;00m)
+[1;32m      9[0m   g[38;5;241m.[39madd_vertices(A[38;5;241m.[39mshape[[38;5;241m0[39m])
 
 [0;31mValueError[0m: not enough values to unpack (expected 2, got 1)
 

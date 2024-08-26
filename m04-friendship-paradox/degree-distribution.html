@@ -200,11 +200,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">What to learn in this module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/which-tools.html">Toolbox for network analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">igraph</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
@@ -554,7 +556,7 @@ d_i = \sum_{j=1}^N A_{ij}.
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
 </pre></div>
 </div>
-<img alt="../_images/87a164bc15b571ede492f7b5669464fe58dc6958783d6060ebe11443b0f1e443.png" src="../_images/87a164bc15b571ede492f7b5669464fe58dc6958783d6060ebe11443b0f1e443.png" />
+<img alt="../_images/7d3d0e65afb3abaea97b84ccfa39038350eb916d890cd302414393684b27b794.png" src="../_images/7d3d0e65afb3abaea97b84ccfa39038350eb916d890cd302414393684b27b794.png" />
 </div>
 </div>
 <p>While it clearly shows that most nodes have small degree, it does not show the tail of the distribution clearly, and often it is this tail that is of great interest (e.g., hub nodes). To show the tail of the distribution more clearly, we can use a log-log plot.</p>
@@ -573,7 +575,7 @@ d_i = \sum_{j=1}^N A_{ij}.
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Probability&#39;)
 </pre></div>
 </div>
-<img alt="../_images/9f14565449fec93b65a42e894bc69fb46ddbad12876ceaf1ad889dab9fe812f2.png" src="../_images/9f14565449fec93b65a42e894bc69fb46ddbad12876ceaf1ad889dab9fe812f2.png" />
+<img alt="../_images/ca654337a90378bbdefb8d092433d79939141ca3aca5a52ce4b3057882d8b5b0.png" src="../_images/ca654337a90378bbdefb8d092433d79939141ca3aca5a52ce4b3057882d8b5b0.png" />
 </div>
 </div>
 <p>We see fluctuations for large degree nodes because of the small number of nodes with large degree.
@@ -606,7 +608,7 @@ The CCDF at degree <span class="math notranslate nohighlight">\(d\)</span> is th
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;CCDF&#39;)
 </pre></div>
 </div>
-<img alt="../_images/b9f80326bf3b463e62e81e209a1af4da7646612d91289c893127cd191063d45a.png" src="../_images/b9f80326bf3b463e62e81e209a1af4da7646612d91289c893127cd191063d45a.png" />
+<img alt="../_images/dd39e5d27ccb4212a071028da0429e1babb6835bd8e4bb925fafad1e5376866d.png" src="../_images/dd39e5d27ccb4212a071028da0429e1babb6835bd8e4bb925fafad1e5376866d.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -616,7 +618,7 @@ Specifically, a logarithmic scale enlarges the range of small values, while comp
 In CDF (shown in the figure below), large degree nodes have CDF values close to 1, and thus, the tail of the distribution is compressed into a small range.
 In CCDF, on the other hand, large degree nodes have a small CCDF values, which are then enlarged and thus more visible.
 For a visual comparison of CCDF and CDF, refer to Figure 3 in <a class="footnote-reference brackets" href="#footcite-newman2005power" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, or <a class="reference external" href="https://arxiv.org/pdf/cond-mat/0412004">the arxiv version</a>.</p>
-<img alt="../_images/2b269ad3363831d91bca1e7ee5c8b6f3bda09cf3cfed06286865836cacac5e93.png" src="../_images/2b269ad3363831d91bca1e7ee5c8b6f3bda09cf3cfed06286865836cacac5e93.png" />
+<img alt="../_images/9b071e51f7cb310c5a41094955aa69a692d1ae5d2e6c64b86d799f0c76641fde.png" src="../_images/9b071e51f7cb310c5a41094955aa69a692d1ae5d2e6c64b86d799f0c76641fde.png" />
 </div>
 <p>The slope of the CCDF tells us the heterogeneity of the degree distribution.</p>
 <ul class="simple">
