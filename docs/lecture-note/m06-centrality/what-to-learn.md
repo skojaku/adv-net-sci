@@ -1,4 +1,6 @@
-# What to learn in this module
+# Module 6: Centrality
+
+## What to learn in this module
 
 In this module, we will learn centrality, one of the most widely-used yet controversial techniques in network analysis. We will learn:
 - What is centrality in networks?
