@@ -69,8 +69,8 @@
     </p>
     <script>
         // Network setup
-        const width = 600;
-        const height = 400;
+        const width = 800;
+        const height = 500;
         let barChartWidth, barChartHeight;
         let dataFile = new URLSearchParams(window.location.search).get('dataFile') || "net_karate.json";
         let walkLength = parseInt(new URLSearchParams(window.location.search).get('walkLength')) || 50;
@@ -87,6 +87,17 @@
             .attr("width", width)
             .attr("height", height);
 
+        // Add a clipping path to ensure nodes stay within the SVG
+        svg.append("defs").append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create a group for all the elements and apply the clipping path
+        const g = svg.append("g")
+            .attr("clip-path", "url(#clip)");
+
         let nodes, links, simulation, walker, walkInterval;
         // Color scale for nodes
         const colorScale = d3.scaleSequential(d3.interpolatePlasma)
@@ -100,28 +111,30 @@
             // Create force simulation
             simulation = d3.forceSimulation(nodes)
                 .force("link", d3.forceLink(links).id(d => d.id))
-                .force("charge", d3.forceManyBody().strength(-100))
+                .force("charge", d3.forceManyBody().strength(-300 / Math.sqrt(nodes.length)))
+                .force("link", d3.forceLink(links).id(d => d.id).strength(.1))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
             // Draw links
-            link = svg.append("g")
+            link = g.append("g")
                 .selectAll("line")
                 .data(links)
                 .join("line")
                 .attr("class", "link");
 
             // Draw nodes
-            node = svg.append("g")
+            node = g.append("g")
                 .selectAll("circle")
                 .data(nodes)
                 .join("circle")
                 .attr("class", "node")
                 .attr("fill", "white")
                 .attr("stroke", "red")
-                .attr("r", 10);
+                .attr("r", 10)
+                .call(drag(simulation));
 
             // Add node labels
-            nodeLabels = svg.append("g")
+            nodeLabels = g.append("g")
                 .selectAll("text")
                 .data(nodes)
                 .join("text")
@@ -131,7 +144,7 @@
                 .attr("y", d => d.y - 15);
 
             //  Create walker
-            walker = svg.append("circle")
+            walker = g.append("circle")
                 .attr("class", "walker")
                 .attr("r", 5)
                 .style("display", "none");
@@ -145,16 +158,16 @@
                     .attr("y2", d => d.target.y);
 
                 node
-                    .attr("cx", d => d.x)
-                    .attr("cy", d => d.y);
+                    .attr("cx", d => Math.max(10, Math.min(width - 10, d.x)))
+                    .attr("cy", d => Math.max(10, Math.min(height - 10, d.y)));
 
                 nodeLabels
-                    .attr("x", d => d.x)
-                    .attr("y", d => d.y - 15);
+                    .attr("x", d => Math.max(10, Math.min(width - 10, d.x)))
+                    .attr("y", d => Math.max(10, Math.min(height - 10, d.y)) - 15);
             });
 
             // Create bar chart
-            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+            const margin = {top: 20, right: 20, bottom: 30, left: 80};
             barChartWidth = width - margin.left - margin.right;
             barChartHeight = 200 - margin.top - margin.bottom;
 
@@ -184,6 +197,16 @@
                 .attr("class", "axis axis--y")
                 .call(d3.axisLeft(y).ticks(10));
 
+            // Add y-axis label
+            barSvg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (barChartHeight / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Visits (%)")
+                .attr("fill", "white");
+
             bars = barSvg.selectAll(".bar")
                 .data(nodes)
                 .enter().append("rect")
@@ -193,6 +216,30 @@
                 .attr("y", d => y(d.visits))
                 .attr("height", d => barChartHeight - y(d.visits));
         });
+                // Drag functions
+        function drag(simulation) {
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = Math.max(10, Math.min(width - 10, event.x));
+                d.fy = Math.max(10, Math.min(height - 10, event.y));
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            return d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+        }
 
         let currentNode;
 
@@ -222,8 +269,8 @@
                     walker
                         .transition()
                         .duration(duration/5)
-                        .attr("cx", currentNode.x)
-                        .attr("cy", currentNode.y);
+                        .attr("cx", Math.max(10, Math.min(width - 10, currentNode.x)))
+                        .attr("cy", Math.max(10, Math.min(height - 10, currentNode.y)));
                     return; // Skip the normal walk step
                 }
 
@@ -234,8 +281,8 @@
                     walker
                         .transition()
                         .duration(duration/5)
-                        .attr("cx", currentNode.x)
-                        .attr("cy", currentNode.y);
+                        .attr("cx", Math.max(10, Math.min(width - 10, currentNode.x)))
+                        .attr("cy", Math.max(10, Math.min(height - 10, currentNode.y)));
                 }
 
                 steps++;
