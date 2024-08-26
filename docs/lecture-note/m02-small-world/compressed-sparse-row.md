@@ -14,13 +14,7 @@ kernelspec:
 ---
 
 
-## igraph
-
-
-
-## Scipy
-
-### Efficient representation for large sparse networks
+# Efficient representation for large sparse networks
 
 We will first load the network data as the adjacency matrix into memory.
 A challenge is that the adjacency matrix can be too large to fit in memrory.
