@@ -158,7 +158,7 @@ src = [src for src, dst in edge_list]
 trg = [dst for src, dst in edge_list]
 weight = [1 for src, dst in edge_list]
 
-A = sparse.csr_matrix((weight, (src, trg)))
+A = sparse.csr_matrix((weight, (src, trg)), shape=(4, 4))
 A = A + A.T # Make the adjacency matrix symmetric
 A
 ```
