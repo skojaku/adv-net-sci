@@ -96,7 +96,7 @@ https://skojaku.github.io/adv-net-sci/m02-small-world/pen-and-paper.html
 - 📊 Stores only non-zero entries
 - 🚀 Memory efficient for sparse networks
 
-https://skojaku.github.io/adv-net-sci/m02-small-world/compressed-sparse-row.html
+[Pen and Paper Exercise](../../lecture-note/m02-small-world/pen-paper-csr/exercise.pdf)
 
 ![bg right:50% width:100%](https://matthewlincoln.net/assets/images/adjmatrix_comm.png)
 
