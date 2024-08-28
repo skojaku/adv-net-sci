@@ -38,6 +38,7 @@ Google Colab is another alternative. But you might need to install some extra pa
 1. Download the notebook you want to run from the lecture note.
 2. Upload the notebook to Google Colab.
 
+Sometimes you might see and error like `ModuleNotFoundError: No module named 'python-igraph'`. In that case, you can install the missing package by `!pip install python-igraph` in the cell.
 
 ### Github Codespaces
 
