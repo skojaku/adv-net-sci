@@ -9,12 +9,13 @@ Check list
 - [ ] Zoom room open
 - [ ] Sound Volume on
 - [ ] Open Discord
+- [ ] Quiz
 
 ---
 
 # Advanced Topics in Network Science
 
-Lecture 02: Break it or Fix it: Network Robustness
+Lecture 02: Small World Networks
 Sadamori Kojaku
 
 ---
