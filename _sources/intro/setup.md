@@ -9,8 +9,9 @@ Google Colab has many packages pre-installed. However, they do not include some 
 **Installing igraph**
 Create a cell on top of the notebook and run the following code to install the igraph.
 ```
-!apt install libcairo2-dev
-!pip install pycairo igraph
+!sudo apt install libcairo2-dev pkg-config python3-dev
+!pip install pycairo cairocffi
+!pip install igraph
 ```
 
 **Installing graph-tool**

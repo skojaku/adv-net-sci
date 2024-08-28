@@ -458,8 +458,9 @@ document.write(`
 <p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code class="docutils literal notranslate"><span class="pre">igraph</span></code> and <code class="docutils literal notranslate"><span class="pre">graph-tool</span></code>.</p>
 <p><strong>Installing igraph</strong>
 Create a cell on top of the notebook and run the following code to install the igraph.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!apt install libcairo2-dev
-!pip install pycairo igraph
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!sudo apt install libcairo2-dev pkg-config python3-dev
+!pip install pycairo cairocffi
+!pip install igraph
 </pre></div>
 </div>
 <p><strong>Installing graph-tool</strong>
