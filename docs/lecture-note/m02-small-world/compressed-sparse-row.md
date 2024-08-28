@@ -16,8 +16,8 @@ kernelspec:
 
 # Efficient representation for large sparse networks
 
-We will first load the network data as the adjacency matrix into memory.
-A challenge is that the adjacency matrix can be too large to fit in memrory.
+An adjacency matrix is a convenient way to represent a network.
+A challenge of handling large networks is that the adjacency matrix can be too large to fit in memrory.
 For example, a network with $10^5$ nodes requires a $10^5 \times 10^5$ matrix, totaling $10$ billion entries!
 A good news is that we do not need to hold all these entries in memory, if we know the network is *sparse*.
 
@@ -25,9 +25,7 @@ Many networks in real-world are sparse, meaning most nodes connect to only a few
 The result is that the adjacency matrix often contains many zeros.
 This is where we can save significant memory by storing only the non-zero entries.
 
-**Compressed Sparse Row (CSR)** representation offers the same convenience as the adjacency matrix while being more efficient.
-This representation keeps the indices of the non-zero entries in the adjacency matrix, together with the values in the entries.
-Sounds simple! But the way it stores the indices and values is slightly complicated. Interested readers can find more details in the [Appendix](./appendix.md).
+**Compressed Sparse Row (CSR)** is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the "coordinates" (row and column indices) of non-zero entries, along with their values. This approach significantly reduces memory usage for sparse networks. While the concept is intuitive, the implementation can be intricate. For those interested in exploring CSR further, there's a pen and paper exercise [here](./pen-paper-csr/exercise.pdf) and a coding exercise in the [Appendix](./appendix.md).
 
 
 :::{figure-md} csr_matirx

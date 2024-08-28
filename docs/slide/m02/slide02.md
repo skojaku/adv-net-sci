@@ -4,6 +4,14 @@ theme: default
 paginate: true
 ---
 
+Check list
+- [ ] Microphone turned on
+- [ ] Zoom room open
+- [ ] Sound Volume on
+- [ ] Open Discord
+
+---
+
 # Advanced Topics in Network Science
 
 Lecture 02: Break it or Fix it: Network Robustness
@@ -67,6 +75,20 @@ https://wiki-race.com/
 
 ---
 
+# Why is the world small?
+
+- 📐 Explore "6 degrees of separation" concept
+- 🤔 Understand small world network properties
+- 🖊️ Practice network analysis without computer
+
+https://skojaku.github.io/adv-net-sci/m02-small-world/pen-and-paper.html
+
+---
+
+# Handling Large-Scale Networks: Challenges and Solutions
+
+---
+
 # Efficient Network Representation 💾
 
 - 🧮 Challenge: Storing large adjacency matrices
@@ -81,11 +103,17 @@ https://skojaku.github.io/adv-net-sci/m02-small-world/compressed-sparse-row.html
 
 ---
 
-# Network Connectedness Concepts 🔗
+# Walk, Trail, Path, Circuit, Cycle
 
-- 🚶 Walk: Sequence of connected nodes
-- 🛤️ Trail: Walk with no repeated edges
-- 🛣️ Path: Walk with no repeated nodes
+![right:100% width:80%](../../lecture-note/figs/walk.jpg)
+
+---
+
+# Walk, Trail, Path, Circuit, Cycle
+
+- 🚶 **Walk**: Sequence of connected nodes
+- 🛤️ **Trail**: Walk with no repeated edges
+- 🛣️ **Path**: Walk with no repeated nodes
 - 🔄 Loop, Circuit, Cycle: Special closed walks
 
 
@@ -130,15 +158,6 @@ https://skojaku.github.io/adv-net-sci/m02-small-world/connectedness-hands-on.htm
 
 https://skojaku.github.io/adv-net-sci/m02-small-world/assignment.html
 
----
-
-# Why is the world small?
-
-- 📐 Explore "6 degrees of separation" concept
-- 🤔 Understand small world network properties
-- 🖊️ Practice network analysis without computer
-
-https://skojaku.github.io/adv-net-sci/m02-small-world/pen-and-paper.html
 
 
 ---
