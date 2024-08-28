@@ -71,8 +71,8 @@ For each person, create a list of their friends' IDs. For example, A's list woul
 {\bf Question 3}:
 We can optimize this representation further. Create three lists:
 \begin{enumerate}
-    \item A combined list, called \texttt{pointers}, of all friends
-    \item A list, called \texttt{indices}, that shows where each person's friend list starts in the combined friend list. For example, if A has 2 friends and B has 3 friends and we combine the lists in order of A, B, C, D, E, B's list would start at index 2 in the combined list, and C's list would start at index 5.
+    \item A combined list, called \texttt{indices}, of all friends in order of A, B, C, D, E. For example, the first five elements of the combined list are [B, C, A, C, E, ...], which is a concatenation of A's friends [B, C], and B's friends [A, C, E].
+    \item A list, called \texttt{pointers}, that shows where each person's friend list starts in the combined friend list. For example, if A has 2 friends and B has 3 friends and we combine the lists in order of A, B, C, D, E, B's list would start at index 2 in the combined list, and C's list would start at index 5.
     \item A list, called \texttt{data}, of 1's with the same length as the combined friend list
 \end{enumerate}
 Hint: Start the first list with 0, and for each subsequent entry, add the number of friends the previous person has.
