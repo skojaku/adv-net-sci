@@ -22,7 +22,9 @@ kernelspec:
 
 ```{code-cell} ipython3
 # If you are using colab, uncomment the following line
-# !pip install python-igraph
+# !apt install libcairo2-dev
+# !pip install pycairo igraph
+
 ```
 
 Define the edges
