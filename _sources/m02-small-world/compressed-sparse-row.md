@@ -31,7 +31,7 @@ This is where we can save significant memory by storing only the non-zero entrie
 :class: tip
 To gain a deeper understanding of the CSR format and its implementation, complete the following exercises:
 - 📝 Pen and paper exercise [here](./pen-paper-csr/exercise.pdf)
-- 💻 Coding exercise in the [Appendix](./appendix.md).
+- 💻 (Advanced) Coding exercise in the [Appendix](./appendix.md).
 
 :::
 
