@@ -27,9 +27,9 @@ This is where we can save significant memory by storing only the non-zero entrie
 
 **Compressed Sparse Row (CSR)** is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the "coordinates" (row and column indices) of non-zero entries, along with their values.
 
-:::{admonition} Exercise
+:::{admonition} Optional Exercise
 :class: tip
-To gain a deeper understanding of the CSR format and its implementation, complete the following exercises:
+For those who are interested in the details of CSR format, please do the following:
 - 📝 Pen and paper exercise [here](./pen-paper-csr/exercise.pdf)
 - 💻 (Advanced) Coding exercise in the [Appendix](./appendix.md).
 
