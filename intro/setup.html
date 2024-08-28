@@ -440,8 +440,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cannot-plot-a-graph-with-igraph-on-google-colab">Cannot plot a graph with igraph on Google Colab</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-tool">graph-tool</a></li>
 </ul>
             </nav>
         </div>
@@ -458,197 +456,26 @@ document.write(`
 <section id="cannot-plot-a-graph-with-igraph-on-google-colab">
 <h2>Cannot plot a graph with igraph on Google Colab<a class="headerlink" href="#cannot-plot-a-graph-with-igraph-on-google-colab" title="Link to this heading">#</a></h2>
 <p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code class="docutils literal notranslate"><span class="pre">igraph</span></code> and <code class="docutils literal notranslate"><span class="pre">graph-tool</span></code>.</p>
-</section>
-<section id="igraph">
-<h2>igraph<a class="headerlink" href="#igraph" title="Link to this heading">#</a></h2>
-<p>Create a cell on top of the notebook and run the following code to install the igraph.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>apt<span class="w"> </span>install<span class="w"> </span>libcairo2-dev
-<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>pycairo<span class="w"> </span>igraph
+<p><strong>Installing igraph</strong>
+Create a cell on top of the notebook and run the following code to install the igraph.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!apt install libcairo2-dev
+!pip install pycairo igraph
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
-Please visit http://www.java.com for information on installing Java.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pycairo in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (1.23.0)
-Requirement already satisfied: igraph in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (0.11.5)
-Requirement already satisfied: texttable&gt;=1.6.2 in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (from igraph) (1.6.4)
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="graph-tool">
-<h2>graph-tool<a class="headerlink" href="#graph-tool" title="Link to this heading">#</a></h2>
-<p>Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>wget<span class="w"> </span>https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_<span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span>.deb
-<span class="o">!</span>dpkg<span class="w"> </span>-i<span class="w"> </span>skewed-keyring_1.0_all_<span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span>.deb
-<span class="o">!</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt </span><span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span><span class="s2"> main&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/apt/sources.list.d/skewed.list
-<span class="o">!</span>apt-get<span class="w"> </span>update
-<span class="o">!</span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-graph-tool<span class="w"> </span>python3-matplotlib<span class="w"> </span>python3-cairo
+<p><strong>Installing graph-tool</strong>
+Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
+!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
+!echo &quot;deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main&quot; &gt; /etc/apt/sources.list.d/skewed.list
+!apt-get update
+!apt-get install python3-graph-tool python3-matplotlib python3-cairo
 
-<span class="c1"># Colab uses a Python install that deviates from the system&#39;s! Bad colab! We need some workarounds.</span>
-<span class="o">!</span>apt<span class="w"> </span>purge<span class="w"> </span>python3-cairo
-<span class="o">!</span>apt<span class="w"> </span>install<span class="w"> </span>libcairo2-dev<span class="w"> </span>pkg-config<span class="w"> </span>python3-dev
-<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--force-reinstall<span class="w"> </span>pycairo
-<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>zstandar
+# Colab uses a Python install that deviates from the system&#39;s! Bad colab! We need some workarounds.
+!apt purge python3-cairo
+!apt install libcairo2-dev pkg-config python3-dev
+!pip install --force-reinstall pycairo
+!pip install zstandar
 </pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2024-08-28 15:51:24--  https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_.deb
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resolving downloads.skewed.de (downloads.skewed.de)... 
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>49.12.93.194
-Connecting to downloads.skewed.de (downloads.skewed.de)|49.12.93.194|:443... 
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>connected.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP request sent, awaiting response... 
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>404 Not Found
-2024-08-28 15:51:24 ERROR 404: Not Found.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
-zsh:1: command not found: dpkg
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
-zsh:1: no such file or directory: /etc/apt/sources.list.d/skewed.list
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: apt-get
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: apt-get
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
-Please visit http://www.java.com for information on installing Java.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
-Please visit http://www.java.com for information on installing Java.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting pycairo
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading pycairo-1.26.1.tar.gz (346 kB)
-?25l     <span class=" -Color -Color-C237">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">0.0/346.9 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━╸<span class=" -Color -Color-C237">━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">122.9/346.9 kB</span> <span class=" -Color -Color-Red">3.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸<span class=" -Color -Color-C237">━</span> <span class=" -Color -Color-Green">337.9/346.9 kB</span> <span class=" -Color -Color-Red">4.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-     <span class=" -Color -Color-Red">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">346.9/346.9 kB</span> <span class=" -Color -Color-Red">3.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
-?25h
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Installing build dependencies ... ?25l-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25h  Getting requirements to build wheel ... ?25l-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25h  Preparing metadata (pyproject.toml) ... ?25l-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
-?25hBuilding wheels for collected packages: pycairo
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Building wheel for pycairo (pyproject.toml) ... ?25l-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
-?25h  Created wheel for pycairo: filename=pycairo-1.26.1-cp311-cp311-macosx_11_0_arm64.whl size=130120 sha256=f8c7963953c01b5893ca67103727f4825219d6dc8bbfe41a9cf9ea5d50bd1628
-  Stored in directory: /Users/skojaku-admin/Library/Caches/pip/wheels/1d/66/b0/a9f835ae730434d050c01e59db2f4252c2fe9ea253c71ed9fa
-Successfully built pycairo
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: pycairo
-  Attempting uninstall: pycairo
-    Found existing installation: pycairo 1.23.0
-<span class=" -Color -Color-Red">ERROR: Cannot uninstall &#39;pycairo&#39;. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.</span>
-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">ERROR: Could not find a version that satisfies the requirement zstandar (from versions: none)</span>
-<span class=" -Color -Color-Red">ERROR: No matching distribution found for zstandar</span>
-
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 </section>
@@ -718,8 +545,6 @@ Successfully built pycairo
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cannot-plot-a-graph-with-igraph-on-google-colab">Cannot plot a graph with igraph on Google Colab</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-tool">graph-tool</a></li>
 </ul>
   </nav></div>
 
