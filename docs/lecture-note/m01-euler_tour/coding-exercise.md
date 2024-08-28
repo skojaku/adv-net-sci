@@ -22,8 +22,9 @@ kernelspec:
 
 ```{code-cell} ipython3
 # If you are using colab, uncomment the following line
-# !apt install libcairo2-dev
-# !pip install pycairo igraph
+# !sudo apt install libcairo2-dev pkg-config python3-dev
+# !pip install pycairo cairocffi
+# !pip install igraph
 
 ```
 
