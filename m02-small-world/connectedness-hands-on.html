@@ -61,7 +61,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Assignment" href="assignment.html" />
-    <link rel="prev" title="igraph" href="compressed-sparse-row.html" />
+    <link rel="prev" title="Efficient representation for large sparse networks" href="compressed-sparse-row.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -184,6 +184,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/setup.html">Trouble shooting</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
 <ul class="nav bd-sidenav">
@@ -201,8 +202,7 @@
 <li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Why is our social network small world?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="which-tools.html">Toolbox for network analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compressed-sparse-row.html">igraph</a></li>
-
+<li class="toctree-l1"><a class="reference internal" href="compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Computing the Shortest Paths and Connected Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="assignment.html">Assignment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
@@ -542,7 +542,8 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using Google Colab, uncomment the following line to install igraph</span>
-<span class="c1"># !pip install python-igraph</span>
+<span class="c1"># !apt install libcairo2-dev</span>
+<span class="c1"># !pip install pycairo igraph</span>
 </pre></div>
 </div>
 </div>
@@ -673,7 +674,7 @@ giant:  IGRAPH U--- 4 4 --
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6e75b5acb2c2f4bd80b204c99e8e7854a1b01b054f9d289cc8965a3b75de84ea.svg" src="../_images/6e75b5acb2c2f4bd80b204c99e8e7854a1b01b054f9d289cc8965a3b75de84ea.svg" /></div>
+<img alt="../_images/d1d8f1dbc276b3007ec8228abba50518830d3f1ec03fbb47c970af43b4846ce0.svg" src="../_images/d1d8f1dbc276b3007ec8228abba50518830d3f1ec03fbb47c970af43b4846ce0.svg" /></div>
 </div>
 <p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
 <div class="cell docutils container">
@@ -887,7 +888,7 @@ Labels: [0 0 0 0]
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">igraph</p>
+        <p class="prev-next-title">Efficient representation for large sparse networks</p>
       </div>
     </a>
     <a class="right-next"

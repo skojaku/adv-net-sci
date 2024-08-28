@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Set up the environment &#8212; Advanced Topics in Network Science</title>
+    <title>Trouble shooting &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -184,7 +184,7 @@
 <li class="toctree-l1"><a class="reference internal" href="why-networks.html">Why should we care networks?</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="zoo-of-networks.html">Zoo of networks</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Set up the environment</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Trouble shooting</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
 <ul class="nav bd-sidenav">
@@ -429,7 +429,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Set up the environment</h1>
+    <h1>Trouble shooting</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -439,16 +439,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-recommended">Local (recommended)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-1-git-vs-code-or-jupyterlab">Option 1: Git + VS Code or JupyterLab</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-2-without-git">Option 2: Without Git</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cloud">Cloud</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#google-colab">Google Colab</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#github-codespaces">Github Codespaces</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cannot-plot-a-graph-with-igraph-on-google-colab">Cannot plot a graph with igraph on Google Colab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-tool">graph-tool</a></li>
 </ul>
             </nav>
         </div>
@@ -460,60 +453,203 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="set-up-the-environment">
-<h1>Set up the environment<a class="headerlink" href="#set-up-the-environment" title="Link to this heading">#</a></h1>
-<p>This course involves coding in Python, which requires some setup. While the lecture notes are executable in-browser, this can be slow and unreliable. Here are some recommended alternatives for a better learning experience:</p>
-<section id="local-recommended">
-<h2>Local (recommended)<a class="headerlink" href="#local-recommended" title="Link to this heading">#</a></h2>
-<section id="option-1-git-vs-code-or-jupyterlab">
-<h3>Option 1: Git + VS Code or JupyterLab<a class="headerlink" href="#option-1-git-vs-code-or-jupyterlab" title="Link to this heading">#</a></h3>
-<p>This is the most recommended way to maximize your learning experience.</p>
-<ol class="arabic simple">
-<li><p>Git clone the repository via <a class="reference external" href="https://github.com/skojaku/adv-net-ci">the course repository</a> by <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/skojaku/adv-net-ci</span></code>.</p></li>
-</ol>
-<ul class="simple">
-<li><p>Anyone who has experience with GitHub Desktop, please help me write the instruction on how to clone the repository.</p></li>
-</ul>
-<ol class="arabic simple" start="2">
-<li><p>Open the repository in VS Code or JupyterLab.</p></li>
-<li><p>Create an environemtn using conda or mamba through the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file.</p></li>
-<li><p>Download the notebook you want to run from the lecture note, and run it locally.</p></li>
-</ol>
-<p>If the installation is successful, you can run the following code</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="trouble-shooting">
+<h1>Trouble shooting<a class="headerlink" href="#trouble-shooting" title="Link to this heading">#</a></h1>
+<section id="cannot-plot-a-graph-with-igraph-on-google-colab">
+<h2>Cannot plot a graph with igraph on Google Colab<a class="headerlink" href="#cannot-plot-a-graph-with-igraph-on-google-colab" title="Link to this heading">#</a></h2>
+<p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code class="docutils literal notranslate"><span class="pre">igraph</span></code> and <code class="docutils literal notranslate"><span class="pre">graph-tool</span></code>.</p>
+</section>
+<section id="igraph">
+<h2>igraph<a class="headerlink" href="#igraph" title="Link to this heading">#</a></h2>
+<p>Create a cell on top of the notebook and run the following code to install the igraph.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">import</span> <span class="nn">networkx</span>
-<span class="kn">import</span> <span class="nn">igraph</span>
-<span class="kn">import</span> <span class="nn">pandas</span>
-<span class="kn">import</span> <span class="nn">scipy</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>apt<span class="w"> </span>install<span class="w"> </span>libcairo2-dev
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>pycairo<span class="w"> </span>igraph
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com for information on installing Java.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pycairo in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (1.23.0)
+Requirement already satisfied: igraph in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (0.11.5)
+Requirement already satisfied: texttable&gt;=1.6.2 in /Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages (from igraph) (1.6.4)
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="option-2-without-git">
-<h3>Option 2: Without Git<a class="headerlink" href="#option-2-without-git" title="Link to this heading">#</a></h3>
-<p>You can download the notebook by clicking the <code class="docutils literal notranslate"><span class="pre">Download</span></code> button on top of the lecture note. You can then import the notebook to your dev tool and run it.</p>
-</section>
-</section>
-<section id="cloud">
-<h2>Cloud<a class="headerlink" href="#cloud" title="Link to this heading">#</a></h2>
-<section id="google-colab">
-<h3>Google Colab<a class="headerlink" href="#google-colab" title="Link to this heading">#</a></h3>
-<p>Google Colab is another alternative. But you might need to install some extra packages every time you start a new session.</p>
-<ol class="arabic simple">
-<li><p>Download the notebook you want to run from the lecture note.</p></li>
-<li><p>Upload the notebook to Google Colab.</p></li>
-</ol>
-<p>Sometimes you might see and error like <code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'python-igraph'</span></code>. In that case, you can install the missing package by <code class="docutils literal notranslate"><span class="pre">!pip</span> <span class="pre">install</span> <span class="pre">python-igraph</span></code> in the cell.</p>
-</section>
-<section id="github-codespaces">
-<h3>Github Codespaces<a class="headerlink" href="#github-codespaces" title="Link to this heading">#</a></h3>
-<p>Github Codespaces is probably another alternative. But I have not tried it yet.</p>
-</section>
+<section id="graph-tool">
+<h2>graph-tool<a class="headerlink" href="#graph-tool" title="Link to this heading">#</a></h2>
+<p>Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>wget<span class="w"> </span>https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_<span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span>.deb
+<span class="o">!</span>dpkg<span class="w"> </span>-i<span class="w"> </span>skewed-keyring_1.0_all_<span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span>.deb
+<span class="o">!</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt </span><span class="k">$(</span>lsb_release<span class="w"> </span>-s<span class="w"> </span>-c<span class="k">)</span><span class="s2"> main&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/apt/sources.list.d/skewed.list
+<span class="o">!</span>apt-get<span class="w"> </span>update
+<span class="o">!</span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-graph-tool<span class="w"> </span>python3-matplotlib<span class="w"> </span>python3-cairo
+
+<span class="c1"># Colab uses a Python install that deviates from the system&#39;s! Bad colab! We need some workarounds.</span>
+<span class="o">!</span>apt<span class="w"> </span>purge<span class="w"> </span>python3-cairo
+<span class="o">!</span>apt<span class="w"> </span>install<span class="w"> </span>libcairo2-dev<span class="w"> </span>pkg-config<span class="w"> </span>python3-dev
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--force-reinstall<span class="w"> </span>pycairo
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>zstandar
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2024-08-28 15:51:24--  https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_.deb
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resolving downloads.skewed.de (downloads.skewed.de)... 
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>49.12.93.194
+Connecting to downloads.skewed.de (downloads.skewed.de)|49.12.93.194|:443... 
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>connected.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP request sent, awaiting response... 
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>404 Not Found
+2024-08-28 15:51:24 ERROR 404: Not Found.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
+zsh:1: command not found: dpkg
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: lsb_release
+zsh:1: no such file or directory: /etc/apt/sources.list.d/skewed.list
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: apt-get
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>zsh:1: command not found: apt-get
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com for information on installing Java.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The operation couldn’t be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com for information on installing Java.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting pycairo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading pycairo-1.26.1.tar.gz (346 kB)
+?25l     <span class=" -Color -Color-C237">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">0.0/346.9 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━╸<span class=" -Color -Color-C237">━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">122.9/346.9 kB</span> <span class=" -Color -Color-Red">3.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸<span class=" -Color -Color-C237">━</span> <span class=" -Color -Color-Green">337.9/346.9 kB</span> <span class=" -Color -Color-Red">4.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     <span class=" -Color -Color-Red">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Green">346.9/346.9 kB</span> <span class=" -Color -Color-Red">3.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Installing build dependencies ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25h  Getting requirements to build wheel ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25h  Preparing metadata (pyproject.toml) ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+?25hBuilding wheels for collected packages: pycairo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Building wheel for pycairo (pyproject.toml) ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> -
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+?25h  Created wheel for pycairo: filename=pycairo-1.26.1-cp311-cp311-macosx_11_0_arm64.whl size=130120 sha256=f8c7963953c01b5893ca67103727f4825219d6dc8bbfe41a9cf9ea5d50bd1628
+  Stored in directory: /Users/skojaku-admin/Library/Caches/pip/wheels/1d/66/b0/a9f835ae730434d050c01e59db2f4252c2fe9ea253c71ed9fa
+Successfully built pycairo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: pycairo
+  Attempting uninstall: pycairo
+    Found existing installation: pycairo 1.23.0
+<span class=" -Color -Color-Red">ERROR: Cannot uninstall &#39;pycairo&#39;. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">ERROR: Could not find a version that satisfies the requirement zstandar (from versions: none)</span>
+<span class=" -Color -Color-Red">ERROR: No matching distribution found for zstandar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -581,16 +717,9 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-recommended">Local (recommended)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-1-git-vs-code-or-jupyterlab">Option 1: Git + VS Code or JupyterLab</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-2-without-git">Option 2: Without Git</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cloud">Cloud</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#google-colab">Google Colab</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#github-codespaces">Github Codespaces</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cannot-plot-a-graph-with-igraph-on-google-colab">Cannot plot a graph with igraph on Google Colab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-tool">graph-tool</a></li>
 </ul>
   </nav></div>
 
