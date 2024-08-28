@@ -517,7 +517,15 @@ A good news is that we do not need to hold all these entries in memory, if we kn
 <p>Many networks in real-world are sparse, meaning most nodes connect to only a few others.
 The result is that the adjacency matrix often contains many zeros.
 This is where we can save significant memory by storing only the non-zero entries.</p>
-<p><strong>Compressed Sparse Row (CSR)</strong> is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the “coordinates” (row and column indices) of non-zero entries, along with their values. This approach significantly reduces memory usage for sparse networks. While the concept is intuitive, the implementation can be intricate. For those interested in exploring CSR further, there’s a pen and paper exercise <a class="reference download internal" download="" href="../_downloads/73e1d5bab1546edd7f6480f90226d36d/exercise.pdf"><span class="xref download myst">here</span></a> and a coding exercise in the <a class="reference internal" href="appendix.html"><span class="std std-doc">Appendix</span></a>.</p>
+<p><strong>Compressed Sparse Row (CSR)</strong> is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the “coordinates” (row and column indices) of non-zero entries, along with their values.</p>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>To gain a deeper understanding of the CSR format and its implementation, complete the following exercises:</p>
+<ul class="simple">
+<li><p>📝 Pen and paper exercise <a class="reference download internal" download="" href="../_downloads/73e1d5bab1546edd7f6480f90226d36d/exercise.pdf"><span class="xref download myst">here</span></a></p></li>
+<li><p>💻 Coding exercise in the <a class="reference internal" href="appendix.html"><span class="std std-doc">Appendix</span></a>.</p></li>
+</ul>
+</div>
 <figure class="align-default" id="csr-matirx">
 <a class="reference internal image-reference" href="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif"><img alt="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" style="width: 100%;" /></a>
 <figcaption>
