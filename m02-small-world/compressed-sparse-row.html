@@ -510,16 +510,14 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="efficient-representation-for-large-sparse-networks">
 <h1>Efficient representation for large sparse networks<a class="headerlink" href="#efficient-representation-for-large-sparse-networks" title="Link to this heading">#</a></h1>
-<p>We will first load the network data as the adjacency matrix into memory.
-A challenge is that the adjacency matrix can be too large to fit in memrory.
+<p>An adjacency matrix is a convenient way to represent a network.
+A challenge of handling large networks is that the adjacency matrix can be too large to fit in memrory.
 For example, a network with <span class="math notranslate nohighlight">\(10^5\)</span> nodes requires a <span class="math notranslate nohighlight">\(10^5 \times 10^5\)</span> matrix, totaling <span class="math notranslate nohighlight">\(10\)</span> billion entries!
 A good news is that we do not need to hold all these entries in memory, if we know the network is <em>sparse</em>.</p>
 <p>Many networks in real-world are sparse, meaning most nodes connect to only a few others.
 The result is that the adjacency matrix often contains many zeros.
 This is where we can save significant memory by storing only the non-zero entries.</p>
-<p><strong>Compressed Sparse Row (CSR)</strong> representation offers the same convenience as the adjacency matrix while being more efficient.
-This representation keeps the indices of the non-zero entries in the adjacency matrix, together with the values in the entries.
-Sounds simple! But the way it stores the indices and values is slightly complicated. Interested readers can find more details in the <a class="reference internal" href="appendix.html"><span class="std std-doc">Appendix</span></a>.</p>
+<p><strong>Compressed Sparse Row (CSR)</strong> is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the “coordinates” (row and column indices) of non-zero entries, along with their values. This approach significantly reduces memory usage for sparse networks. While the concept is intuitive, the implementation can be intricate. For those interested in exploring CSR further, there’s a pen and paper exercise <a class="reference download internal" download="" href="../_downloads/73e1d5bab1546edd7f6480f90226d36d/exercise.pdf"><span class="xref download myst">here</span></a> and a coding exercise in the <a class="reference internal" href="appendix.html"><span class="std std-doc">Appendix</span></a>.</p>
 <figure class="align-default" id="csr-matirx">
 <a class="reference internal image-reference" href="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif"><img alt="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" style="width: 100%;" /></a>
 <figcaption>
