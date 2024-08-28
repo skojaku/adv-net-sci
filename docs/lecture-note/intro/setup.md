@@ -1,21 +1,21 @@
+
 # Trouble shooting
 
-### Cannot plot a graph with igraph on Google Colab
+## Cannot plot a graph with igraph on Google Colab
 
 Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like `igraph` and `graph-tool`.
 
 
-### igraph
-
+**Installing igraph**
 Create a cell on top of the notebook and run the following code to install the igraph.
-```bash
+```
 !apt install libcairo2-dev
 !pip install pycairo igraph
 ```
 
-### graph-tool
+**Installing graph-tool**
 Create a cell on top of the notebook and run the following code to install the graph-tool.
-```bash
+```
 !wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
 !dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
 !echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" > /etc/apt/sources.list.d/skewed.list
