@@ -85,7 +85,46 @@ https://skojaku.github.io/adv-net-sci/m02-small-world/pen-and-paper.html
 
 ---
 
-# Handling Large-Scale Networks: Challenges and Solutions
+# Handling Large Networks
+
+---
+
+# Tools for Network Analysis 🛠️
+
+- [networkx](https://networkx.org/)
+- [igraph](https://igraph.org/)
+- [graph-tool](https://graph-tool.skewed.de/)
+- [scipy](https://scipy.org/)
+- [pytorch-geometric](https://pytorch-geometric.readthedocs.io/en/latest/)
+- ...
+
+![bg right:50% width:100%](../../lecture-note/figs/scipy.jpg)
+
+---
+
+# networkx vs igraph 🤔
+
+- `networkx`: Beginner-friendly library
+- `igraph`: Mature library. Originally an R package.
+- `networkx` is great! But there are persistent bugs in some algorithms.
+- `igraph` is a more reliable and faithful implementation of algorithms.
+
+![bg right:50% width:100%](../../lecture-note/figs/scipy.jpg)
+
+
+---
+
+### Other Python package
+- `graph-tool`: A rich library for stochastic block modeling
+- `pytorch-geometric`: A library for deep learning on graphs
+- `scipy`: Provides efficient functions for sparse matrices
+
+### GUI tools
+- Networks + Analytics: [Gephi](https://gephi.org/), [Cytoscape](https://cytoscape.org/), [Pajek](https://pajek.org/)
+- Visualization: [HeliosWeb](https://github.com/filipinascimento/helios-web)
+
+
+![bg right:50% width:100%](../../lecture-note/figs/scipy.jpg)
 
 ---
 
