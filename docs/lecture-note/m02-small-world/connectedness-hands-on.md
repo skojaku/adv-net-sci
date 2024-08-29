@@ -23,8 +23,9 @@ Let's use `igraph` to compute the shortest paths and connected components. We wi
 
 ```{code-cell} ipython3
 # If you are using Google Colab, uncomment the following line to install igraph
-# !apt install libcairo2-dev
-# !pip install pycairo igraph
+# !sudo apt install libcairo2-dev pkg-config python3-dev
+# !pip install pycairo cairocffi
+# !pip install igraph
 ```
 
 ## igraph
