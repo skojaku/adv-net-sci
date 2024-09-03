@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -213,7 +213,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness (Random attack)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/percolation.html">Percolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
 <ul class="nav bd-sidenav">
@@ -542,8 +544,9 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using Google Colab, uncomment the following line to install igraph</span>
-<span class="c1"># !apt install libcairo2-dev</span>
-<span class="c1"># !pip install pycairo igraph</span>
+<span class="c1"># !sudo apt install libcairo2-dev pkg-config python3-dev</span>
+<span class="c1"># !pip install pycairo cairocffi</span>
+<span class="c1"># !pip install igraph</span>
 </pre></div>
 </div>
 </div>
@@ -674,7 +677,7 @@ giant:  IGRAPH U--- 4 4 --
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d1d8f1dbc276b3007ec8228abba50518830d3f1ec03fbb47c970af43b4846ce0.svg" src="../_images/d1d8f1dbc276b3007ec8228abba50518830d3f1ec03fbb47c970af43b4846ce0.svg" /></div>
+<img alt="../_images/147463268fdf231c10e9eda569a0ea207b8ccf15802574bd14955c67ed4e8cc9.svg" src="../_images/147463268fdf231c10e9eda569a0ea207b8ccf15802574bd14955c67ed4e8cc9.svg" /></div>
 </div>
 <p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
 <div class="cell docutils container">

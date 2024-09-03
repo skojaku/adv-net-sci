@@ -10,7 +10,18 @@ kernelspec:
   name: python3
 ---
 
-# Hands-on: Robustness
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+```{code-cell} ipython3
+# If you are using Google Colab, uncomment the following line to install igraph
+# !sudo apt install libcairo2-dev pkg-config python3-dev
+# !pip install pycairo cairocffi
+# !pip install igraph
+```
+
+# Hands-on: Robustness (Random attack)
 
 We consider a small social network of 34 members in a university karate club, called Zachary's karate club network.
 ```{code-cell} ipython3
@@ -118,16 +129,6 @@ plt.legend().remove()
 plt.show()
 ```
 
-How should we interpret the robustness profile? Consider the most robust network consisting of $N$ nodes, where all $N$ nodes are fully connected. Regardless of how many nodes are removed, there will always be a single connected component, and the size of this component will be $N-k$ if $k$ nodes are removed. Therefore, the connectivity is $(N-k)/N=1-k/N$, which corresponds to the diagonal line in the plot above.
-Hence, **a network is considered robust if its connectivity curve is close to the diagonal line**.
-On the other hand, if the curve is significantly lower than the diagonal line, the network is not robust.
-
-For the network we considered above, the robustness profile is close to the diagonal line, indicating that the network is robust to the random removal of nodes.
-
-:::{note}
-The random attack is stochastic, meaning that the robustness profile has a variation in each run. Thus, it is necessary to run the attack multiple times and average the results to get a more accurate estimate of the robustness.
-:::
-
 ## Targeted attack
 
 In a targeted attack, nodes are removed based on specific criteria rather than randomly.
@@ -194,14 +195,3 @@ plt.show()
 ```
 
 While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack.
-
-The **$R$-index** is the area under the connectivity curve, which can be computed by
-
-```{code-cell} ipython3
-rindex = df_robustness_profile["connectivity"].mean()
-rindex_targeted = df_robustness_profile_targeted["connectivity"].mean()
-print(f"R-index (random): {rindex:.3f}")
-print(f"R-index (targeted): {rindex_targeted:.3f}")
-```
-
-The targeted attack has a smaller $R$-index, indicating that the network is less robust to the targeted attack compared to the random attack.
