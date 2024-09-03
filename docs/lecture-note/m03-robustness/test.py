@@ -1,31 +1,34 @@
 # %%
-from scipy import sparse
 import numpy as np
+from scipy.optimize import fsolve
 
-A = [
-    [0, 2, 8, 12, 4, 10, 14, 6, 16],
-    [2, 0, 3, 2, 1, 5, 11, 15, 7],
-    [8, 3, 0, 4, 10, 14, 6, 12, 16],
-    [12, 9, 4, 0, 5, 11, 15, 7, 13],
-    [4, 13, 10, 5, 0, 6, 12, 16, 8],
-    [10, 5, 14, 11, 6, 0, 7, 13, 9],
-    [14, 11, 6, 15, 12, 7, 0, 8, 10],
-    [6, 15, 12, 7, 16, 13, 8, 0, 11],
-    [16, 7, 16, 13, 8, 9, 10, 11, 0]
-]
+# Define the equation to solve
+def obj(p_c, gamma, k_min):
+    s = p_c ** ((2-gamma)/(1-gamma)) - (2 + (2 - gamma) / (3 - gamma) * k_min * (p_c**((3 - gamma) / (1 - gamma)) - 1))
+    return s ** 2
 
-A = np.array(A)
-A = np.triu(A)
-A = sparse.csr_matrix(A + A.T)
-Tcsr = sparse.csgraph.minimum_spanning_tree(A).toarray()
-print(Tcsr + Tcsr.T)
-import networkx as nx
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
 
-G = nx.from_numpy_array(A)
-T = nx.minimum_spanning_tree(G)
-print(T.size(weight="weight"))
-nx.draw(T, with_labels=True)
+# Parameters
+gamma_values = np.linspace(2.1, 8.0, 400)  # Range of gamma values
+k_min = 3    # Example value for k_min
+
+# Initial guess for p_c
+initial_guess = 0.5
+
+# Solve the equation for each gamma value
+p_c_solutions = []
+for gamma in gamma_values:
+    res = minimize(obj, bounds = [(0, 1)], x0 = [initial_guess], args = (gamma, k_min))
+    p_c_solutions.append(res.x[0])
+    print(obj(res.x[0], gamma, k_min))
+
 # %%
-print(A.toarray())
-
+# Plot the results
+plt.plot(gamma_values, p_c_solutions, label='Critical point p_c')
+plt.xlabel('Gamma')
+plt.ylabel('Critical point p_c')
+plt.title('Critical point p_c as a function of Gamma')
+plt.legend()
 # %%
