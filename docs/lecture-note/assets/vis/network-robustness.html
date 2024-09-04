@@ -66,11 +66,12 @@
             cursor: not-allowed;
         }
         #chart-container {
-            width: 400px;
-            height: 200px;
+            width: 500px;
+            height: 300px;
             margin-top: 20px;
             border: 1px solid #1E90FF;
             border-radius: 5px;
+            position: relative;
         }
         #warning {
             color: #FF6347;
@@ -86,15 +87,35 @@
             font-size: 16px;
             border-radius: 5px;
         }
+        #r-index-targeted {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff6348;
+        }
+        #r-index-random {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ced1;
+        }
+        #r-index-targeted {
+            top: 30px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <h1 style="color: #1E90FF; text-shadow: 2px 2px #FF69B4;">Network Defense Game</h1>
         <div id="instructions">
-            <p>🌐 Welcome to the Network Resilience Optimization challenge. Your objective is to create a network with maximum resilience against various types of attacks.</p>
+            <p> Create a network with maximum resilience against various types of attacks!</p>
             <ul>
-                <li>🛡️ Defend against random and targeted attacks on network nodes.</li>
                 <li>🔄 Reconstruct the network to improve resilience.</li>
                 <li>➕ Add new connections strategically to strengthen the network structure.</li>
                 <li>🖱️ Click two unconnected nodes to add an edge between them. Click two connected nodes to remove the edge.</li>
@@ -110,7 +131,11 @@
         </div>
         <div id="status">Nodes: 15 | Edges: 0 | Largest Component: 0 | Budget: 20</div>
         <svg id="network"></svg>
-        <svg id="chart-container"></svg>
+        <div id="chart-container">
+            <div id="r-index-random">R-index (Random): ---</div>
+            <div id="r-index-targeted">R-index (Targeted): ---</div>
+            <svg></svg>
+        </div>
         <div id="warning"></div>
     </div>
 
@@ -119,9 +144,9 @@
             .attr("width", 400)
             .attr("height", 400);
 
-        const chartSvg = d3.select("#chart-container")
-            .attr("width", 400)
-            .attr("height", 200);
+        const chartSvg = d3.select("#chart-container svg")
+            .attr("width", 500)
+            .attr("height", 300);
 
         let nodes = [];
         let edges = [];
@@ -140,6 +165,8 @@
         const addRandomEdgeBtn = document.getElementById('add-random-edge');
         const statusDiv = document.getElementById('status');
         const warningDiv = document.getElementById('warning');
+        const rIndexRandomDiv = document.getElementById('r-index-random');
+        const rIndexTargetedDiv = document.getElementById('r-index-targeted');
         let nodeElements, edgeElements;
 
         function updateStatus() {
@@ -154,8 +181,8 @@
             chartSvg.selectAll("*").remove();
 
             const margin = {top: 20, right: 20, bottom: 30, left: 50};
-            const width = 400 - margin.left - margin.right;
-            const height = 200 - margin.top - margin.bottom;
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
 
             const initialNodeCount = originalNetwork.nodes.length;
             const x = d3.scaleLinear()
@@ -246,6 +273,37 @@
                 .attr("stroke-dasharray", (d, i) => i === 0 ? "0" : "5,5");
         }
 
+        function calculateRIndex(type) {
+            if (type === 'random') {
+                return calculateRIndexRandomFailure(type);
+            } else if (type === 'targeted') {
+                return calculateRIndexTargetedAttack(type);
+            }
+        }
+        function calculateRIndexRandomFailure(type) {
+            const lastRandomAttack = attackSeries.find(series => series.type === 'random');
+            if (!lastRandomAttack) {
+                return 0.0;
+            }
+
+            const connectivities = lastRandomAttack.data;
+            const totalConnectivity = connectivities.reduce((sum, connectivity) => sum + connectivity, 0);
+            const averageConnectivity = totalConnectivity / nodes.length;
+
+            return averageConnectivity;
+        }
+        function calculateRIndexTargetedAttack(type) {
+            const lastTargetedAttack = attackSeries.find(series => series.type === 'targeted');
+            if (!lastTargetedAttack) {
+                return 0.0;
+            }
+
+            const connectivities = lastTargetedAttack.data;
+            const totalConnectivity = connectivities.reduce((sum, connectivity) => sum + connectivity, 0);
+            const averageConnectivity = totalConnectivity / nodes.length;
+
+            return averageConnectivity;
+        }
         function selectNode(id) {
             if (selectedNodes.includes(id)) {
                 selectedNodes = selectedNodes.filter(i => i !== id);
@@ -287,6 +345,10 @@
                 budget++;
             }
 
+            // Reset the R-index scores
+            rIndexRandomDiv.textContent = `R-index (Random): --`;
+            rIndexTargetedDiv.textContent = `R-index (Targeted): --`;
+
             selectedNodes = [];
             updateNetwork();
             updateStatus();
@@ -323,6 +385,12 @@
                 edges.some(edge => edge.source === node.id || edge.target === node.id)
             ))];
             connectivityHistory = [1.0];
+            // Shuffle nodesToRemove
+            for (let i = nodesToRemove.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [nodesToRemove[i], nodesToRemove[j]] = [nodesToRemove[j], nodesToRemove[i]];
+            }
+
             for (let node of nodesToRemove) {
                 // Compute the degree of each node based on edges
                 const nodeDegrees = nodes.map(_node => ({
@@ -335,11 +403,17 @@
                 }
                 await new Promise(resolve => setTimeout(resolve, 300));
                 removeNode(node.id);
-                //updateStatus();
                 if (edges.length === 0) break;
             }
-            console.log(connectivityHistory.length);
+            // Fill in zeros in connectivityHistory if it is shorter than the number of nodes
+            while (connectivityHistory.length < nodes.length) {
+                connectivityHistory.push(0);
+            }
             attackSeries.push({type: 'random', data: [...connectivityHistory]});
+            // Calculate and display R-index
+            const rIndexRandom = calculateRIndex('random');
+            rIndexRandomDiv.textContent = `R-index (Random): ${rIndexRandom.toFixed(4)}`;
+
             warningDiv.textContent = "All edges removed. Press 'Reconstruct Network' to continue.";
             updateStatus();
             disableButtons();
@@ -381,8 +455,14 @@
                 await new Promise(resolve => setTimeout(resolve, 300));
                 removeNode(targetId);
             }
-            console.log(connectivityHistory.length);
+            // Fill in zeros in connectivityHistory if it is shorter than the number of nodes
+            while (connectivityHistory.length < nodes.length) {
+                connectivityHistory.push(0);
+            }
             attackSeries.push({type: 'targeted', data: [...connectivityHistory]});
+            // Calculate and display R-index
+            const rIndexTargeted = calculateRIndex('targeted');
+            rIndexTargetedDiv.textContent = `R-index (Targeted): ${rIndexTargeted.toFixed(4)}`;
             warningDiv.textContent = "All edges removed. Press 'Reconstruct Network' to continue.";
             updateStatus();
             disableButtons();
@@ -560,6 +640,11 @@
             }
             const randomNode1 = Math.floor(Math.random() * nodes.length);
             const randomNode2 = Math.floor(Math.random() * nodes.length);
+
+            // Reset the R-index scores
+            rIndexRandomDiv.textContent = `R-index (Random): ---`;
+            rIndexTargetedDiv.textContent = `R-index (Targeted): ---`;
+
             if (randomNode1 !== randomNode2) {
 
                 if (edges.some(edge => (edge.source === randomNode1 && edge.target === randomNode2) || (edge.source === randomNode2 && edge.target === randomNode1))) {
