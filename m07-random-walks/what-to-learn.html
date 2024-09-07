@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Degree distribution of a friend &#8212; Advanced Topics in Network Science</title>
+    <title>Module 7: Random Walks &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -57,13 +57,9 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm04-friendship-paradox/excess-degree-distribution';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/what-to-learn';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Module 5: Clustering" href="../m05-clustering/what-to-learn.html" />
-    <link rel="prev" title="Degree distribution" href="degree-distribution.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -125,6 +121,8 @@
     <div class="bd-container__inner bd-page-width">
       
       
+      
+        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -220,13 +218,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../m03-robustness/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 4: Friendship Paradox</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experiment.html">In-class experiment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="friendship-paradox.html">Friendship Paradox</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vaccination-game.html">Vaccination Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="degree-distribution.html">Degree distribution</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Degree distribution of a friend</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">Module 4: Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="nav bd-sidenav">
@@ -294,55 +292,6 @@
 
 
 
-<div class="dropdown dropdown-launch-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
-    <i class="fas fa-rocket"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m04-friendship-paradox/excess-degree-distribution.md" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on Binder"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
-  </span>
-<span class="btn__text-container">Binder</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="initThebeSBT()"
-  class="btn btn-sm btn-launch-thebe dropdown-item"
-  title="Launch Thebe"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-play"></i>
-  </span>
-<span class="btn__text-container">Live Code</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
 <div class="dropdown dropdown-source-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
     <i class="fab fa-github"></i>
@@ -368,7 +317,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm04-friendship-paradox/excess-degree-distribution.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/what-to-learn.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -398,24 +347,7 @@
       
       
       
-      <li><a href="../_sources/m04-friendship-paradox/excess-degree-distribution.ipynb" target="_blank"
-   class="btn btn-sm btn-download-notebook-button dropdown-item"
-   title="Download notebook file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-code"></i>
-  </span>
-<span class="btn__text-container">.ipynb</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="../_sources/m04-friendship-paradox/excess-degree-distribution.md" target="_blank"
+      <li><a href="../_sources/m07-random-walks/what-to-learn.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -499,7 +431,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Degree distribution of a friend</h1>
+    <h1>Module 7: Random Walks</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -509,7 +441,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demonstration">Demonstration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
 </ul>
             </nav>
         </div>
@@ -521,125 +453,18 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="degree-distribution-of-a-friend">
-<h1>Degree distribution of a friend<a class="headerlink" href="#degree-distribution-of-a-friend" title="Link to this heading">#</a></h1>
-<p>Continuing from the previous page, we will now consider the degree distribution of a friend of a node.</p>
-<p>There are two ways to sample a friend of a node.</p>
-<ol class="arabic simple">
-<li><p>Sample a node uniformly at random and then sample a friend of the node.</p></li>
-<li><p>Sample a <em>friendship</em> (i.e., edge) uniformly at random and then sample an end node of the edge.</p></li>
-</ol>
-<p>Let us focus on the second case and leave the first case for interested students as an exercise.
-In the second case, we sample an edge from the network.
-This sampling is biased towards nodes with many edges, i.e., a person with <span class="math notranslate nohighlight">\(d\)</span> edges is <span class="math notranslate nohighlight">\(d\)</span> times more likely to be sampled than someone with 1 edge.
-Thus, the degree distribution <span class="math notranslate nohighlight">\(p'(d)\)</span> of a friend is given by</p>
-<div class="math notranslate nohighlight">
-\[
-p' (d) = C \cdot d \cdot p(d)
-\]</div>
-<p>The additional term <span class="math notranslate nohighlight">\(d\)</span> reflects the fact that a person with <span class="math notranslate nohighlight">\(d\)</span> friends is <span class="math notranslate nohighlight">\(d\)</span> times more likely to be sampled than someone with 1 friend.
-Term <span class="math notranslate nohighlight">\(C\)</span> is the normalization constant that ensures the sum of probabilities <span class="math notranslate nohighlight">\(p'(d)\)</span> over all <span class="math notranslate nohighlight">\(d\)</span> is 1, which can be easily computed as follows:</p>
-<div class="math notranslate nohighlight">
-\[
-C = \frac{1}{\sum_{d} d \cdot p(d)} = \frac{1}{\langle d \rangle}
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(\langle d \rangle\)</span> is the average degree of the network. Substituting <span class="math notranslate nohighlight">\(C\)</span> into <span class="math notranslate nohighlight">\(p'(d)\)</span>, we get:</p>
-<div class="math notranslate nohighlight">
-\[
-p' (d) = \frac{d}{\langle d \rangle} p(d)
-\]</div>
-<p>This is the degree distribution of a friend, and it is easy to verify that <span class="math notranslate nohighlight">\(p'(d) &gt; p(d)\)</span> for <span class="math notranslate nohighlight">\(k \geq \langle d \rangle\)</span>, i.e., a friend has a higher chance of having a higher degree than a node. In other words, the friendship paradox 😉.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The distribution <span class="math notranslate nohighlight">\(p'(d)\)</span> is related to <em>the excess degree distribution</em> given by</p>
-<div class="math notranslate nohighlight">
-\[
-q(d) = \frac{d + 1}{\langle d \rangle} p(d+1)
-\]</div>
-<p>The term <em>excess</em> comes from the fact that the distribution represents the number of additional connections a randomly chosen friend has, beyond the connection that led to their selection. It excludes the link to the focal node and focuses on the remaining connections of the selected friend.</p>
-</div>
-<section id="demonstration">
-<h2>Demonstration<a class="headerlink" href="#demonstration" title="Link to this heading">#</a></h2>
-<p>Let us compare the degree distribution of a node and its friend. As before, we will create a Barabási-Albert network with <span class="math notranslate nohighlight">\(N=10,000\)</span> nodes and <span class="math notranslate nohighlight">\(m=1\)</span> edge per node.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Barabasi</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Create a Barabási-Albert network</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_adjacency</span><span class="p">()</span> <span class="c1"># Get the adjacency matrix</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Compute the degree of each node and the degree distribution of a friend.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">deg</span> <span class="o">=</span> <span class="n">deg</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="n">p_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Now, let us compute the degree distribution of a friend.
-We first get the edges in the network, from which we sample a friend.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
-<span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="module-7-random-walks">
+<h1>Module 7: Random Walks<a class="headerlink" href="#module-7-random-walks" title="Link to this heading">#</a></h1>
+<section id="what-to-learn-in-this-module">
+<h2>What to learn in this module<a class="headerlink" href="#what-to-learn-in-this-module" title="Link to this heading">#</a></h2>
+<p>In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We will learn:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">sparse.find(A)</span></code> returns the source node, target node, and edge weight of the edge.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">src</span></code> is the source node of the edge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trg</span></code> is the target node of the edge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_</span></code> is used to ignore the edge weight values, as we only need the source and target nodes for this analysis.</p></li>
+<li><p>What is a random walk?</p></li>
+<li><p>How to simulate a random walk on a network?</p></li>
+<li><p>What is the behavior of a random walk on a network?</p></li>
+<li><p>Implicit connections to community detection and network centralities</p></li>
+<li><p><strong>Keywords</strong>: random walk, community detection, network centralities</p></li>
 </ul>
-<p>Now, let us get the degree of each friend</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">deg_friend</span> <span class="o">=</span> <span class="n">deg</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
-<span class="n">p_deg_friend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">deg_friend</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">deg_friend</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>The CCDF of the degree distributions of a node and a friend can be computed by:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ccdf_deg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">p_deg</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">ccdf_deg_friend</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">p_deg_friend</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>and plotted by:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-
-<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ccdf_deg</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">ccdf_deg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Node&#39;</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ccdf_deg</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">ccdf_deg_friend</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Friend&#39;</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Degree&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;CCDF&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10e0bb9d0&gt;
-</pre></div>
-</div>
-<img alt="../_images/b0aa2e7005ad4dbeefbbbbadf16f55fd3df4a61856c6100a9d08fa32df7f4686.png" src="../_images/b0aa2e7005ad4dbeefbbbbadf16f55fd3df4a61856c6100a9d08fa32df7f4686.png" />
-</div>
-</div>
-<p>The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.</p>
 </section>
 </section>
 
@@ -656,7 +481,7 @@ We first get the edges in the network, from which we sample a friend.</p>
         },
         kernelOptions: {
             name: "python3",
-            path: "./m04-friendship-paradox"
+            path: "./m07-random-walks"
         },
         predefinedOutput: true
     }
@@ -673,24 +498,6 @@ We first get the edges in the network, from which we sample a friend.</p>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="degree-distribution.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Degree distribution</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="../m05-clustering/what-to-learn.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Module 5: Clustering</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -707,7 +514,7 @@ We first get the edges in the network, from which we sample a friend.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demonstration">Demonstration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
 </ul>
   </nav></div>
 

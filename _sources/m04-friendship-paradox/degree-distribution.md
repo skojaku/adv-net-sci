@@ -10,9 +10,23 @@ kernelspec:
   name: python3
 ---
 
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m04-friendship-paradox.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
 # Degree distribution
 
-The degree distribution is crucial to understand the friendship paradox.
+![](https://barabasi.com/img/6/159.png)
+
+Understanding degree distribution is the first key step to understand networks! And often, we want to see how the degree distribution looks like by plotting it like using histogram. But, it is not as easy as it may seem...
+
+## Visualization basics
+
+To learn the basics of data visualization, please take a [pen and paper exercise](pen-and-paper-friendship-paradox/main.pdf).
+
+## Plotting degree distribution
+
+
 We will first introduce a formal definition of the degree distribution. Then, we will learn how to plot the degree distribution of a network.
 
 The degree of a node $i$, denoted by $d_i$, is the number of edges connected to it. With the adjacency matrix $A$, the degree of node $i$ is given by:
