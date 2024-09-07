@@ -10,6 +10,10 @@ kernelspec:
   name: python3
 ---
 
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m04-friendship-paradox.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
 # Degree distribution
 
 The degree distribution is crucial to understand the friendship paradox.
