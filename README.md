@@ -3,6 +3,7 @@
 - [Lecture note](skojaku.github.io/adv-net-sci)
 - [Syllabus](docs/syllabus/syllabus.pdf)
 - [Slide](docs/slide)
+- [Exercise](notebooks)
 
 # Set up the environment
 
