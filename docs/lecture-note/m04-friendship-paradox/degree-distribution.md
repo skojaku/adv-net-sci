@@ -24,8 +24,15 @@ Understanding degree distribution is the first key step to understand networks! 
 
 To learn the basics of data visualization, please take a [pen and paper exercise](pen-and-paper-friendship-paradox/main.pdf).
 
-## Plotting degree distribution
+## Coding exercise
 
+[Exercise: Plotting degree distribution](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/exercise-m04-friendship-paradox.ipynb)
+
+
+
+### Plotting degree distribution
+
+(The following content includes the answer to the exercise. So please do the exercise first before reading the following content.)
 
 We will first introduce a formal definition of the degree distribution. Then, we will learn how to plot the degree distribution of a network.
 

@@ -145,7 +145,7 @@ Understanding degree distribution is crucial for network analysis. But how do we
 
 # Exercise: Basic visualization techniques
 
-- [TODO] Past link
+- [Pen and paper exercise](../lecture-note/m04-friendship-paradox/pen-and-paper-friendship-paradox/main.pdf)
 
 ---
 
@@ -181,20 +181,6 @@ Understanding degree distribution is crucial for network analysis. But how do we
 ## Power-Law Relation
 $\log [\text{CCDF}(d)] = (-\gamma + 1) \cdot \log d + \text{const.}$
 
----
-
-# Excess Degree Distribution 🔍
-
-## Definition
-$q(d) = \frac{d + 1}{\langle d \rangle} p(d+1)$
-
-## Interpretation
-- Represents additional connections of a randomly chosen friend
-- Excludes the link to the focal node
-
-## Comparison
-- Degree distribution of a node vs its friend
-- Demonstrates the friendship paradox mathematically
 
 ---
 
