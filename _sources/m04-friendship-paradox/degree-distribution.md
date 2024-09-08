@@ -39,10 +39,8 @@ We will first introduce a formal definition of the degree distribution. Then, we
 The degree of a node $i$, denoted by $d_i$, is the number of edges connected to it. With the adjacency matrix $A$, the degree of node $i$ is given by:
 
 $$
-d_i = \sum_{j=1}^N A_{ij}.
+k_i = \sum_{j=1}^N A_{ij}.
 $$
-
-The degree distribution $p(d)$ is the probability that a node has $d$ edges.
 
 Let us compute the degree distribution of a network. We will create a Barabási-Albert network with $N=10,000$ nodes and $m=1$ edge per node.
 
@@ -60,7 +58,7 @@ deg = np.sum(A, axis=1)
 deg = deg.flatten()
 ```
 
-The degree distribution $p(d)$ can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.
+The degree distribution $p(k)$ can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.
 
 ```{code-cell} ipython3
 p_deg = np.bincount(deg) / len(deg)
@@ -92,14 +90,14 @@ We see fluctuations for large degree nodes because of the small number of nodes 
 One can use "binning" to smooth the plot. Binning involves grouping the data into bins and calculating the fraction of data within each bin. However, selecting an appropriate bin size can be challenging, and even with a well-chosen bin size, some information may be lost.
 
 A more convenient way is to use the complementary cumulative distribution function (CCDF).
-The CCDF at degree $d$ is the probability that a randomly chosen node has degree $d'$ greater than $d$ ($d' > d$).  For a visual comparison of CCDF and PDF, see Figure 3 in {footcite}`newman2005power` or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
+The CCDF at degree $k$ is the probability that a randomly chosen node has degree $k'$ greater than $k$ ($k' > k$).  For a visual comparison of CCDF and PDF, see Figure 3 in {footcite}`newman2005power` or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
 
 $$
-\text{CCDF}(d) = P(d' > d) = \sum_{d'=d+1}^\infty p(d')
+\text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
 $$
 
-- CCDF is a monotonically decreasing function of $d$.
-- CCDF encompasses the full information of $p(d)$, i.e., taking the derivative of CCDF gives $p(d)$.
+- CCDF is a monotonically decreasing function of $k$.
+- CCDF encompasses the full information of $p(k)$, i.e., taking the derivative of CCDF gives $p(k)$.
 - CCDF can be plotted as a smooth curve on a log-log scale without binning.
 
 ```{code-cell} ipython3
@@ -142,13 +140,13 @@ The slope of the CCDF is related to the power-law exponent of the degree distrib
 A power-law degree distribution is described by *a continuous distribution* with the *density function* (not the probability mass) $p(d)$ given by {footcite}`clauset2009power`:
 
 $$
-p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
+p(k) = \frac{\gamma-1}{k_{\min}} \left( \frac{k}{k_{\min}} \right)^{-\gamma}
 $$
 
 where:
-- $p(d)$ is the probability *density* of a node having degree $d$
+- $p(k)$ is the probability *density* of a node having degree $k$
 - $\gamma$ is the power-law exponent
-- $d_{\min}$ is the minimum degree
+- $k_{\min}$ is the minimum degree
 
 
 :::{note}
@@ -168,18 +166,18 @@ The CCDF for the power-law distribution is given by:
 
 $$
 \begin{aligned}
-\text{CCDF}(d) &= 1 - \int_{d_{\min}}^d p(x) {\rm d}x \\
-  &= 1 - \frac{\gamma -1}{d_{\min}}\cdot \frac{1}{1 - \gamma} \left[
-\left(\frac{d^{-\gamma + 1}}{d_{\min}^{-\gamma}}\right) - \left(\frac{d_{\min} ^{-\gamma + 1}}{d_{\min} ^{-
+\text{CCDF}(k) &= 1 - \int_{k_{\min}}^k p(x) {\rm d}x \\
+  &= 1 - \frac{\gamma -1}{k_{\min}}\cdot \frac{1}{1 - \gamma} \left[
+\left(\frac{k^{-\gamma + 1}}{k_{\min}^{-\gamma}}\right) - \left(\frac{k_{\min} ^{-\gamma + 1}}{k_{\min} ^{-
 \gamma}}\right)\right] \\
-&= \left( \frac{d}{d_{\min}}\right)^{-\gamma + 1}
+&= \left( \frac{k}{k_{\min}}\right)^{-\gamma + 1}
 \end{aligned}
 $$
 
 Taking the logarithm:
 
 $$
-\log \left[ \text{CCDF}(d) \right] = (-\gamma + 1) \cdot \log d + \text{const.}
+\log \left[ \text{CCDF}(k) \right] = (-\gamma + 1) \cdot \log k + \text{const.}
 $$
 
 Thus, the slope of the CCDF in a log-log plot is related to the power-law exponent $\gamma$.
@@ -191,6 +189,120 @@ A smaller $\gamma$ indicates a more heterogeneous degree distribution, where the
 For students interested in real-world examples of the CCDF plot, refer to Figure 4 in {footcite}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
 
 In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.
+
+
+## Degree distribution of a friend
+
+Continuing from the previous page, we will now consider the degree distribution of a friend of a node.
+
+There are two ways to sample a friend of a node.
+1. Sample a node uniformly at random and then sample a friend of the node.
+2. Sample a *friendship* (i.e., edge) uniformly at random and then sample an end node of the edge.
+
+Let us focus on the second case and leave the first case for interested students as an exercise.
+In the second case, we sample an edge from the network.
+This sampling is biased towards nodes with many edges, i.e., a person with $d$ edges is $d$ times more likely to be sampled than someone with 1 edge.
+Thus, the degree distribution $p'(k)$ of a friend is given by
+
+$$
+p' (k) = C \cdot k \cdot p(k)
+$$
+The additional term $k$ reflects the fact that a person with $k$ friends is $k$ times more likely to be sampled than someone with 1 friend.
+Term $C$ is the normalization constant that ensures the sum of probabilities $p'(k)$ over all $k$ is 1, which can be easily computed as follows:
+
+$$
+C = \frac{1}{\sum_{k} k \cdot p(k)} = \frac{1}{\langle k \rangle}
+$$
+
+where $\langle k \rangle$ is the average degree of the network. Substituting $C$ into $p'(k)$, we get:
+
+$$
+p' (k) = \frac{k}{\langle k \rangle} p(k)
+$$
+
+This is the degree distribution of a friend, and it is easy to verify that the average degree of a friend is given by
+
+$$
+\langle k' \rangle = \sum_{k} k \cdot p'(k) = \sum_{k} k \cdot \frac{k}{\langle k \rangle} p(k) = \frac{\langle k^2 \rangle}{\langle k \rangle}
+$$
+
+which is always larger than $\langle k \rangle$:
+
+$$
+\langle k' \rangle = \frac{\langle k^2 \rangle}{\langle k \rangle} \geq \langle k \rangle
+$$
+
+with equality only if every node has the same degree. This is a proof of the friendship paradox 😉!
+
+
+:::{note}
+The distribution $p'(k)$ is related to *the excess degree distribution* given by
+
+$$
+q(k) = \frac{k + 1}{\langle k \rangle} p(k+1)
+$$
+
+The term *excess* comes from the fact that the distribution represents the number of additional connections a randomly chosen friend has, beyond the connection that led to their selection. It excludes the link to the focal node and focuses on the remaining connections of the selected friend.
+:::
+
+:::{note}
+
+The friend's degree, $\frac{\langle k^2 \rangle}{\langle k \rangle}$, concides with a term in Molloy-Reed condition:
+
+$$
+
+\frac{\langle k^2 \rangle}{\langle k \rangle} >2
+
+$$
+
+which is a condition for the existence of a giant component in a network. The Molloy-Reed condition states that the average degree of a node's friends must be at least 2 (the inequality is strict because the transition from a small component to a giant component is discontinuous). If a friend has only one edge, you and your friend form an isolated component. If a friend has two edges on average, your friend is a friend of someone else, and that someone else is also friend of another someone else and so on, forming a giant component.
+
+:::
+
+## Plotting degree distribution of a friend
+
+Let us compare the degree distribution of a node and its friend.
+We first get the edges in the network, from which we sample a friend.
+
+```{code-cell} ipython3
+from scipy import sparse
+src, trg, _ = sparse.find(A)
+```
+- `sparse.find(A)` returns the source node, target node, and edge weight of the edge.
+- `src` is the source node of the edge
+- `trg` is the target node of the edge
+- `_` is used to ignore the edge weight values, as we only need the source and target nodes for this analysis.
+
+Now, let us get the degree of each friend
+
+```{code-cell} ipython3
+deg_friend = deg[src]
+p_deg_friend = np.bincount(deg_friend) / len(deg_friend)
+```
+
+The CCDF of the degree distributions of a node and a friend can be computed by:
+
+```{code-cell} ipython3
+ccdf_deg = 1 - np.cumsum(p_deg)[:-1]
+ccdf_deg_friend = 1 - np.cumsum(p_deg_friend)[:-1]
+```
+and plotted by:
+
+```{code-cell} ipython3
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg, label='Node')
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg_friend, label='Friend', ax = ax)
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('CCDF')
+ax.legend(frameon = False)
+```
+
+The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.
 
 ```{footbibliography}
 ```

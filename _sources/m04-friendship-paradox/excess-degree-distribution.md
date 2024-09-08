@@ -21,31 +21,31 @@ There are two ways to sample a friend of a node.
 Let us focus on the second case and leave the first case for interested students as an exercise.
 In the second case, we sample an edge from the network.
 This sampling is biased towards nodes with many edges, i.e., a person with $d$ edges is $d$ times more likely to be sampled than someone with 1 edge.
-Thus, the degree distribution $p'(d)$ of a friend is given by
+Thus, the degree distribution $p'(k)$ of a friend is given by
 
 $$
-p' (d) = C \cdot d \cdot p(d)
+p' (k) = C \cdot k \cdot p(k)
 $$
-The additional term $d$ reflects the fact that a person with $d$ friends is $d$ times more likely to be sampled than someone with 1 friend.
-Term $C$ is the normalization constant that ensures the sum of probabilities $p'(d)$ over all $d$ is 1, which can be easily computed as follows:
+The additional term $k$ reflects the fact that a person with $k$ friends is $k$ times more likely to be sampled than someone with 1 friend.
+Term $C$ is the normalization constant that ensures the sum of probabilities $p'(k)$ over all $k$ is 1, which can be easily computed as follows:
 
 $$
-C = \frac{1}{\sum_{d} d \cdot p(d)} = \frac{1}{\langle d \rangle}
+C = \frac{1}{\sum_{k} k \cdot p(k)} = \frac{1}{\langle k \rangle}
 $$
 
-where $\langle d \rangle$ is the average degree of the network. Substituting $C$ into $p'(d)$, we get:
+where $\langle k \rangle$ is the average degree of the network. Substituting $C$ into $p'(k)$, we get:
 
 $$
-p' (d) = \frac{d}{\langle d \rangle} p(d)
+p' (k) = \frac{k}{\langle k \rangle} p(k)
 $$
 
-This is the degree distribution of a friend, and it is easy to verify that $p'(d) > p(d)$ for $k \geq \langle d \rangle$, i.e., a friend has a higher chance of having a higher degree than a node. In other words, the friendship paradox 😉.
+This is the degree distribution of a friend, and it is easy to verify that $p'(k) > p(k)$ for $k \geq \langle k \rangle$, i.e., a friend has a higher chance of having a higher degree than a node. In other words, the friendship paradox 😉.
 
 :::{note}
-The distribution $p'(d)$ is related to *the excess degree distribution* given by
+The distribution $p'(k)$ is related to *the excess degree distribution* given by
 
 $$
-q(d) = \frac{d + 1}{\langle d \rangle} p(d+1)
+q(k) = \frac{k + 1}{\langle k \rangle} p(k+1)
 $$
 
 The term *excess* comes from the fact that the distribution represents the number of additional connections a randomly chosen friend has, beyond the connection that led to their selection. It excludes the link to the focal node and focuses on the remaining connections of the selected friend.

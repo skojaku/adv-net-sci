@@ -532,29 +532,29 @@ document.write(`
 <p>Let us focus on the second case and leave the first case for interested students as an exercise.
 In the second case, we sample an edge from the network.
 This sampling is biased towards nodes with many edges, i.e., a person with <span class="math notranslate nohighlight">\(d\)</span> edges is <span class="math notranslate nohighlight">\(d\)</span> times more likely to be sampled than someone with 1 edge.
-Thus, the degree distribution <span class="math notranslate nohighlight">\(p'(d)\)</span> of a friend is given by</p>
+Thus, the degree distribution <span class="math notranslate nohighlight">\(p'(k)\)</span> of a friend is given by</p>
 <div class="math notranslate nohighlight">
 \[
-p' (d) = C \cdot d \cdot p(d)
+p' (k) = C \cdot k \cdot p(k)
 \]</div>
-<p>The additional term <span class="math notranslate nohighlight">\(d\)</span> reflects the fact that a person with <span class="math notranslate nohighlight">\(d\)</span> friends is <span class="math notranslate nohighlight">\(d\)</span> times more likely to be sampled than someone with 1 friend.
-Term <span class="math notranslate nohighlight">\(C\)</span> is the normalization constant that ensures the sum of probabilities <span class="math notranslate nohighlight">\(p'(d)\)</span> over all <span class="math notranslate nohighlight">\(d\)</span> is 1, which can be easily computed as follows:</p>
+<p>The additional term <span class="math notranslate nohighlight">\(k\)</span> reflects the fact that a person with <span class="math notranslate nohighlight">\(k\)</span> friends is <span class="math notranslate nohighlight">\(k\)</span> times more likely to be sampled than someone with 1 friend.
+Term <span class="math notranslate nohighlight">\(C\)</span> is the normalization constant that ensures the sum of probabilities <span class="math notranslate nohighlight">\(p'(k)\)</span> over all <span class="math notranslate nohighlight">\(k\)</span> is 1, which can be easily computed as follows:</p>
 <div class="math notranslate nohighlight">
 \[
-C = \frac{1}{\sum_{d} d \cdot p(d)} = \frac{1}{\langle d \rangle}
+C = \frac{1}{\sum_{k} k \cdot p(k)} = \frac{1}{\langle k \rangle}
 \]</div>
-<p>where <span class="math notranslate nohighlight">\(\langle d \rangle\)</span> is the average degree of the network. Substituting <span class="math notranslate nohighlight">\(C\)</span> into <span class="math notranslate nohighlight">\(p'(d)\)</span>, we get:</p>
+<p>where <span class="math notranslate nohighlight">\(\langle k \rangle\)</span> is the average degree of the network. Substituting <span class="math notranslate nohighlight">\(C\)</span> into <span class="math notranslate nohighlight">\(p'(k)\)</span>, we get:</p>
 <div class="math notranslate nohighlight">
 \[
-p' (d) = \frac{d}{\langle d \rangle} p(d)
+p' (k) = \frac{k}{\langle k \rangle} p(k)
 \]</div>
-<p>This is the degree distribution of a friend, and it is easy to verify that <span class="math notranslate nohighlight">\(p'(d) &gt; p(d)\)</span> for <span class="math notranslate nohighlight">\(k \geq \langle d \rangle\)</span>, i.e., a friend has a higher chance of having a higher degree than a node. In other words, the friendship paradox 😉.</p>
+<p>This is the degree distribution of a friend, and it is easy to verify that <span class="math notranslate nohighlight">\(p'(k) &gt; p(k)\)</span> for <span class="math notranslate nohighlight">\(k \geq \langle k \rangle\)</span>, i.e., a friend has a higher chance of having a higher degree than a node. In other words, the friendship paradox 😉.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The distribution <span class="math notranslate nohighlight">\(p'(d)\)</span> is related to <em>the excess degree distribution</em> given by</p>
+<p>The distribution <span class="math notranslate nohighlight">\(p'(k)\)</span> is related to <em>the excess degree distribution</em> given by</p>
 <div class="math notranslate nohighlight">
 \[
-q(d) = \frac{d + 1}{\langle d \rangle} p(d+1)
+q(k) = \frac{k + 1}{\langle k \rangle} p(k+1)
 \]</div>
 <p>The term <em>excess</em> comes from the fact that the distribution represents the number of additional connections a randomly chosen friend has, beyond the connection that led to their selection. It excludes the link to the focal node and focuses on the remaining connections of the selected friend.</p>
 </div>
@@ -633,10 +633,10 @@ We first get the edges in the network, from which we sample a friend.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10e0bb9d0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x132bdf090&gt;
 </pre></div>
 </div>
-<img alt="../_images/b0aa2e7005ad4dbeefbbbbadf16f55fd3df4a61856c6100a9d08fa32df7f4686.png" src="../_images/b0aa2e7005ad4dbeefbbbbadf16f55fd3df4a61856c6100a9d08fa32df7f4686.png" />
+<img alt="../_images/0a64dee538ebe5a1646112c6af68bb3e10944392c7204662db2178a049da8b7d.png" src="../_images/0a64dee538ebe5a1646112c6af68bb3e10944392c7204662db2178a049da8b7d.png" />
 </div>
 </div>
 <p>The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.</p>
