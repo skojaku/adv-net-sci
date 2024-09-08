@@ -92,7 +92,7 @@ We see fluctuations for large degree nodes because of the small number of nodes 
 One can use "binning" to smooth the plot. Binning involves grouping the data into bins and calculating the fraction of data within each bin. However, selecting an appropriate bin size can be challenging, and even with a well-chosen bin size, some information may be lost.
 
 A more convenient way is to use the complementary cumulative distribution function (CCDF).
-The CCDF at degree $d$ is the probability that a randomly chosen node has degree $d'$ greater than $d$ ($d' > d$).
+The CCDF at degree $d$ is the probability that a randomly chosen node has degree $d'$ greater than $d$ ($d' > d$).  For a visual comparison of CCDF and PDF, see Figure 3 in {footcite}`newman2005power` or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
 
 $$
 \text{CCDF}(d) = P(d' > d) = \sum_{d'=d+1}^\infty p(d')
@@ -127,11 +127,7 @@ ax.set_ylabel('CDF')
 glue("cdf_fig", fig, display=False)
 ```
 :::{note}
-CCDF is the complement of CDF (cumulative distribution function). We use CCDF instead of CDF because CCDF shows the tail of the distribution more clearly in a log-log plot.
-Specifically, a logarithmic scale enlarges the range of small values, while compressing the range of large values.
-In CDF (shown in the figure below), large degree nodes have CDF values close to 1, and thus, the tail of the distribution is compressed into a small range.
-In CCDF, on the other hand, large degree nodes have a small CCDF values, which are then enlarged and thus more visible.
-For a visual comparison of CCDF and CDF, refer to Figure 3 in {footcite}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004).
+CCDF (complementary cumulative distribution function) is used instead of CDF (cumulative distribution function) because it highlights the tail of the distribution better in a log-log plot. A log scale expands small values and compresses large values. In a CDF, large degree nodes have values close to 1, compressing the tail. In a CCDF, large degree nodes have small values, making the tail more visible.
 ```{glue} cdf_fig
 :align: center
 ```
