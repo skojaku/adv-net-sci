@@ -39,10 +39,8 @@ We will first introduce a formal definition of the degree distribution. Then, we
 The degree of a node $i$, denoted by $d_i$, is the number of edges connected to it. With the adjacency matrix $A$, the degree of node $i$ is given by:
 
 $$
-d_i = \sum_{j=1}^N A_{ij}.
+k_i = \sum_{j=1}^N A_{ij}.
 $$
-
-The degree distribution $p(d)$ is the probability that a node has $d$ edges.
 
 Let us compute the degree distribution of a network. We will create a Barabási-Albert network with $N=10,000$ nodes and $m=1$ edge per node.
 
@@ -60,7 +58,7 @@ deg = np.sum(A, axis=1)
 deg = deg.flatten()
 ```
 
-The degree distribution $p(d)$ can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.
+The degree distribution $p(k)$ can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.
 
 ```{code-cell} ipython3
 p_deg = np.bincount(deg) / len(deg)
@@ -92,14 +90,14 @@ We see fluctuations for large degree nodes because of the small number of nodes 
 One can use "binning" to smooth the plot. Binning involves grouping the data into bins and calculating the fraction of data within each bin. However, selecting an appropriate bin size can be challenging, and even with a well-chosen bin size, some information may be lost.
 
 A more convenient way is to use the complementary cumulative distribution function (CCDF).
-The CCDF at degree $d$ is the probability that a randomly chosen node has degree $d'$ greater than $d$ ($d' > d$).  For a visual comparison of CCDF and PDF, see Figure 3 in {footcite}`newman2005power` or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
+The CCDF at degree $k$ is the probability that a randomly chosen node has degree $k'$ greater than $k$ ($k' > k$).  For a visual comparison of CCDF and PDF, see Figure 3 in {footcite}`newman2005power` or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
 
 $$
-\text{CCDF}(d) = P(d' > d) = \sum_{d'=d+1}^\infty p(d')
+\text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
 $$
 
-- CCDF is a monotonically decreasing function of $d$.
-- CCDF encompasses the full information of $p(d)$, i.e., taking the derivative of CCDF gives $p(d)$.
+- CCDF is a monotonically decreasing function of $k$.
+- CCDF encompasses the full information of $p(k)$, i.e., taking the derivative of CCDF gives $p(k)$.
 - CCDF can be plotted as a smooth curve on a log-log scale without binning.
 
 ```{code-cell} ipython3
@@ -142,13 +140,13 @@ The slope of the CCDF is related to the power-law exponent of the degree distrib
 A power-law degree distribution is described by *a continuous distribution* with the *density function* (not the probability mass) $p(d)$ given by {footcite}`clauset2009power`:
 
 $$
-p(d) = \frac{\gamma-1}{d_{\min}} \left( \frac{d}{d_{\min}} \right)^{-\gamma}
+p(k) = \frac{\gamma-1}{k_{\min}} \left( \frac{k}{k_{\min}} \right)^{-\gamma}
 $$
 
 where:
-- $p(d)$ is the probability *density* of a node having degree $d$
+- $p(k)$ is the probability *density* of a node having degree $k$
 - $\gamma$ is the power-law exponent
-- $d_{\min}$ is the minimum degree
+- $k_{\min}$ is the minimum degree
 
 
 :::{note}
@@ -168,18 +166,18 @@ The CCDF for the power-law distribution is given by:
 
 $$
 \begin{aligned}
-\text{CCDF}(d) &= 1 - \int_{d_{\min}}^d p(x) {\rm d}x \\
-  &= 1 - \frac{\gamma -1}{d_{\min}}\cdot \frac{1}{1 - \gamma} \left[
-\left(\frac{d^{-\gamma + 1}}{d_{\min}^{-\gamma}}\right) - \left(\frac{d_{\min} ^{-\gamma + 1}}{d_{\min} ^{-
+\text{CCDF}(k) &= 1 - \int_{k_{\min}}^k p(x) {\rm d}x \\
+  &= 1 - \frac{\gamma -1}{k_{\min}}\cdot \frac{1}{1 - \gamma} \left[
+\left(\frac{k^{-\gamma + 1}}{k_{\min}^{-\gamma}}\right) - \left(\frac{k_{\min} ^{-\gamma + 1}}{k_{\min} ^{-
 \gamma}}\right)\right] \\
-&= \left( \frac{d}{d_{\min}}\right)^{-\gamma + 1}
+&= \left( \frac{k}{k_{\min}}\right)^{-\gamma + 1}
 \end{aligned}
 $$
 
 Taking the logarithm:
 
 $$
-\log \left[ \text{CCDF}(d) \right] = (-\gamma + 1) \cdot \log d + \text{const.}
+\log \left[ \text{CCDF}(k) \right] = (-\gamma + 1) \cdot \log k + \text{const.}
 $$
 
 Thus, the slope of the CCDF in a log-log plot is related to the power-law exponent $\gamma$.
