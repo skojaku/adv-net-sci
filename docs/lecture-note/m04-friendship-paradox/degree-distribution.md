@@ -190,5 +190,119 @@ For students interested in real-world examples of the CCDF plot, refer to Figure
 
 In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.
 
+
+## Degree distribution of a friend
+
+Continuing from the previous page, we will now consider the degree distribution of a friend of a node.
+
+There are two ways to sample a friend of a node.
+1. Sample a node uniformly at random and then sample a friend of the node.
+2. Sample a *friendship* (i.e., edge) uniformly at random and then sample an end node of the edge.
+
+Let us focus on the second case and leave the first case for interested students as an exercise.
+In the second case, we sample an edge from the network.
+This sampling is biased towards nodes with many edges, i.e., a person with $d$ edges is $d$ times more likely to be sampled than someone with 1 edge.
+Thus, the degree distribution $p'(k)$ of a friend is given by
+
+$$
+p' (k) = C \cdot k \cdot p(k)
+$$
+The additional term $k$ reflects the fact that a person with $k$ friends is $k$ times more likely to be sampled than someone with 1 friend.
+Term $C$ is the normalization constant that ensures the sum of probabilities $p'(k)$ over all $k$ is 1, which can be easily computed as follows:
+
+$$
+C = \frac{1}{\sum_{k} k \cdot p(k)} = \frac{1}{\langle k \rangle}
+$$
+
+where $\langle k \rangle$ is the average degree of the network. Substituting $C$ into $p'(k)$, we get:
+
+$$
+p' (k) = \frac{k}{\langle k \rangle} p(k)
+$$
+
+This is the degree distribution of a friend, and it is easy to verify that the average degree of a friend is given by
+
+$$
+\langle k' \rangle = \sum_{k} k \cdot p'(k) = \sum_{k} k \cdot \frac{k}{\langle k \rangle} p(k) = \frac{\langle k^2 \rangle}{\langle k \rangle}
+$$
+
+which is always larger than $\langle k \rangle$:
+
+$$
+\langle k' \rangle = \frac{\langle k^2 \rangle}{\langle k \rangle} \geq \langle k \rangle
+$$
+
+with equality only if every node has the same degree. This is a proof of the friendship paradox 😉!
+
+
+:::{note}
+The distribution $p'(k)$ is related to *the excess degree distribution* given by
+
+$$
+q(k) = \frac{k + 1}{\langle k \rangle} p(k+1)
+$$
+
+The term *excess* comes from the fact that the distribution represents the number of additional connections a randomly chosen friend has, beyond the connection that led to their selection. It excludes the link to the focal node and focuses on the remaining connections of the selected friend.
+:::
+
+:::{note}
+
+The friend's degree, $\frac{\langle k^2 \rangle}{\langle k \rangle}$, concides with a term in Molloy-Reed condition:
+
+$$
+
+\frac{\langle k^2 \rangle}{\langle k \rangle} >2
+
+$$
+
+which is a condition for the existence of a giant component in a network. The Molloy-Reed condition states that the average degree of a node's friends must be at least 2 (the inequality is strict because the transition from a small component to a giant component is discontinuous). If a friend has only one edge, you and your friend form an isolated component. If a friend has two edges on average, your friend is a friend of someone else, and that someone else is also friend of another someone else and so on, forming a giant component.
+
+:::
+
+## Plotting degree distribution of a friend
+
+Let us compare the degree distribution of a node and its friend.
+We first get the edges in the network, from which we sample a friend.
+
+```{code-cell} ipython3
+from scipy import sparse
+src, trg, _ = sparse.find(A)
+```
+- `sparse.find(A)` returns the source node, target node, and edge weight of the edge.
+- `src` is the source node of the edge
+- `trg` is the target node of the edge
+- `_` is used to ignore the edge weight values, as we only need the source and target nodes for this analysis.
+
+Now, let us get the degree of each friend
+
+```{code-cell} ipython3
+deg_friend = deg[src]
+p_deg_friend = np.bincount(deg_friend) / len(deg_friend)
+```
+
+The CCDF of the degree distributions of a node and a friend can be computed by:
+
+```{code-cell} ipython3
+ccdf_deg = 1 - np.cumsum(p_deg)[:-1]
+ccdf_deg_friend = 1 - np.cumsum(p_deg_friend)[:-1]
+```
+and plotted by:
+
+```{code-cell} ipython3
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg, label='Node')
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg_friend, label='Friend', ax = ax)
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('CCDF')
+ax.legend(frameon = False)
+```
+
+The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.
+
 ```{footbibliography}
 ```
