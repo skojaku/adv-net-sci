@@ -17,6 +17,16 @@ Community detection is an abstract unsupervised problem. It is abstract because 
 A classical approach to community detection is based on *pattern matching*.
 Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.
 
+```{admonition} Modelling communities as patterns
+:class: tips
+
+Let's do a pen-and-paper exercise to get a sense of what we mean by modelling communities as patterns.
+
+- [Pen and paper exercise](./pen-and-paper/pseudo-cliques.pdf)
+
+
+```
+
 :::{figure-md} clique
 
 <img src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" alt="Clique graph" width="80%">
