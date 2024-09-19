@@ -63,7 +63,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Graph cut" href="graph-cut.html" />
-    <link rel="prev" title="What is community?" href="what-is-community.html" />
+    <link rel="prev" title="Pen and Paper" href="pen-and-paper.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -230,8 +230,8 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 5: Clustering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ratio-normalized-cut.html">Balanced cut</a></li>
@@ -247,12 +247,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of random walks</a></li>
 </ul>
 
     </div>
@@ -521,13 +524,6 @@ document.write(`
 <p>Community detection is an abstract unsupervised problem. It is abstract because there is no clear-cut definition or ground truth to compare against. The concept of a community in a network is subjective and highly context-dependent.</p>
 <p>A classical approach to community detection is based on <em>pattern matching</em>.
 Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.</p>
-<div class="tips admonition">
-<p class="admonition-title">Modelling communities as patterns</p>
-<p>Let’s do a pen-and-paper exercise to get a sense of what we mean by modelling communities as patterns.</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#./pen-and-paper/pseudo-cliques.pdf"><span class="xref myst">Pen and paper exercise</span></a></p></li>
-</ul>
-</div>
 <figure class="align-default" id="clique">
 <a class="reference internal image-reference" href="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png"><img alt="Clique graph" src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" style="width: 80%;" /></a>
 <figcaption>
@@ -643,12 +639,12 @@ This leads to the idea of relaxed versions of cliques, called <strong>pseudo-cli
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="what-is-community.html"
+       href="pen-and-paper.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">What is community?</p>
+        <p class="prev-next-title">Pen and Paper</p>
       </div>
     </a>
     <a class="right-next"
