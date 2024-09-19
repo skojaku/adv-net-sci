@@ -226,7 +226,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="current nav bd-sidenav">
@@ -248,6 +247,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
 </ul>
 
     </div>
@@ -516,6 +521,13 @@ document.write(`
 <p>Community detection is an abstract unsupervised problem. It is abstract because there is no clear-cut definition or ground truth to compare against. The concept of a community in a network is subjective and highly context-dependent.</p>
 <p>A classical approach to community detection is based on <em>pattern matching</em>.
 Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.</p>
+<div class="tips admonition">
+<p class="admonition-title">Modelling communities as patterns</p>
+<p>Let’s do a pen-and-paper exercise to get a sense of what we mean by modelling communities as patterns.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#./pen-and-paper/pseudo-cliques.pdf"><span class="xref myst">Pen and paper exercise</span></a></p></li>
+</ul>
+</div>
 <figure class="align-default" id="clique">
 <a class="reference internal image-reference" href="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png"><img alt="Clique graph" src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" style="width: 80%;" /></a>
 <figcaption>

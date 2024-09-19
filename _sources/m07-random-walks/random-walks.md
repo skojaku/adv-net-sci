@@ -42,7 +42,7 @@ In case of directed networks, a random walker can only move along the edge direc
 
 How does this simple process tell us something about the network structure? To get some insights, let us play with a simple interactive visualization.
 
-```{admonition}
+```{admonition} Random Walk Simulation
 :class: tip
 
 Play with the {{ '[Random Walk Simulator! 🎮✨]( BASE_URL/vis/random-walks/index.html?)'.replace('BASE_URL', base_url) }} and try to answer the following questions:
@@ -52,8 +52,4 @@ Play with the {{ '[Random Walk Simulator! 🎮✨]( BASE_URL/vis/random-walks/in
 3. Does the behavior of the walker inform us about centrality of the nodes?
 3. Does the behavior of the walker inform us about communities in the network?
 
-```
-
-
-```{footbibliography}
 ```

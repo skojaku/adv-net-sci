@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Random Walks &#8212; Advanced Topics in Network Science</title>
+    <title>Characteristics of random walks &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -59,11 +59,10 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/random-walks';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/random-walks-math';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Random Walks in Python" href="random-walks-code.html" />
-    <link rel="prev" title="Ladder Lottery" href="amida-kuji.html" />
+    <link rel="prev" title="Random Walks in Python" href="random-walks-code.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -253,9 +252,9 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 7: Random Walks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="amida-kuji.html">Ladder Lottery</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random-walks.html">Random Walks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="random-walks-code.html">Random Walks in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random-walks-math.html">Characteristics of random walks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Characteristics of random walks</a></li>
 </ul>
 
     </div>
@@ -310,7 +309,7 @@
       
       
       
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m07-random-walks/random-walks.md" target="_blank"
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m07-random-walks/random-walks-math.md" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Binder"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -376,7 +375,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/random-walks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/random-walks-math.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -406,7 +405,7 @@
       
       
       
-      <li><a href="../_sources/m07-random-walks/random-walks.ipynb" target="_blank"
+      <li><a href="../_sources/m07-random-walks/random-walks-math.ipynb" target="_blank"
    class="btn btn-sm btn-download-notebook-button dropdown-item"
    title="Download notebook file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -423,7 +422,7 @@
       
       
       
-      <li><a href="../_sources/m07-random-walks/random-walks.md" target="_blank"
+      <li><a href="../_sources/m07-random-walks/random-walks-math.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -507,7 +506,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Random Walks</h1>
+    <h1>Characteristics of random walks</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -517,7 +516,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-walks-in-a-network">Random walks in a network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-state">Stationary state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relaxation-time">Relaxation time</a></li>
 </ul>
             </nav>
         </div>
@@ -529,40 +529,66 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="random-walks">
-<h1>Random Walks<a class="headerlink" href="#random-walks" title="Link to this heading">#</a></h1>
-<p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
-<p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network. It is surprising that this seemingly random, brainless behavior can tell us something deep about the structure of the city.</p>
-<a class="reference internal image-reference" href="../_images/random-walk.png"><img alt="Random walk on a network" src="../_images/random-walk.png" style="width: 50%;" /></a>
-<section id="random-walks-in-a-network">
-<h2>Random walks in a network<a class="headerlink" href="#random-walks-in-a-network" title="Link to this heading">#</a></h2>
-<p>A random walk in undirected networks is the following process:</p>
-<ol class="arabic simple">
-<li><p>Start at a node <span class="math notranslate nohighlight">\(i\)</span></p></li>
-<li><p>Randomly choose an edge to traverse to a neighbor node <span class="math notranslate nohighlight">\(j\)</span></p></li>
-<li><p>Repeat step 2 until you have taken <span class="math notranslate nohighlight">\(T\)</span> steps.</p></li>
-</ol>
-<figure class="align-default" id="random-walk-example">
-<a class="reference internal image-reference" href="https://d3i71xaburhd42.cloudfront.net/a56ca795f324f75baab70bb3b49e0544c89e05f7/2-Figure1-1.png"><img alt="Random walk example" src="https://d3i71xaburhd42.cloudfront.net/a56ca795f324f75baab70bb3b49e0544c89e05f7/2-Figure1-1.png" style="width: 100%;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 18 </span><span class="caption-text">Random walk on a small network. The figure is taken from Li, Xing et al. “Representation Learning of Reconstructed Graphs Using Random Walk Graph Convolutional Network.” ArXiv abs/2101.00417 (2021).</span><a class="headerlink" href="#random-walk-example" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called ``dead end’’ that does not have any outgoing edges.</p>
-</div>
-<p>How does this simple process tell us something about the network structure? To get some insights, let us play with a simple interactive visualization.</p>
-<div class="tip admonition">
-<p class="admonition-title">Random Walk Simulation</p>
-<p>Play with the <a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/random-walks/index.html?">Random Walk Simulator! 🎮✨</a> and try to answer the following questions:</p>
-<ol class="arabic simple">
-<li><p>When the random walker makes many steps, where does it tend to visit most frequently?</p></li>
-<li><p>When the walker makes only a few steps, where does it tend to visit?</p></li>
-<li><p>Does the behavior of the walker inform us about centrality of the nodes?</p></li>
-<li><p>Does the behavior of the walker inform us about communities in the network?</p></li>
-</ol>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="characteristics-of-random-walks">
+<h1>Characteristics of random walks<a class="headerlink" href="#characteristics-of-random-walks" title="Link to this heading">#</a></h1>
+<section id="stationary-state">
+<h2>Stationary state<a class="headerlink" href="#stationary-state" title="Link to this heading">#</a></h2>
+<p>Let’s dive into the math behind random walks in a way that’s easy to understand.</p>
+<p>Imagine you’re at a node <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span>. You randomly choose one of the neighboring nodes to move to, let’s call it node <span class="math notranslate nohighlight">\(j\)</span>. The chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(j\)</span> is called the transition probability <span class="math notranslate nohighlight">\(p_{ij}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+p_{ij} = \frac{A_{ij}}{k_i},
+\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(A_{ij}\)</span> is part of the adjacency matrix (which tells us if there’s a connection between nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>), and <span class="math notranslate nohighlight">\(k_i\)</span> is the number of connections (degree) node <span class="math notranslate nohighlight">\(i\)</span> has. If our network has <span class="math notranslate nohighlight">\(N\)</span> nodes, we have <span class="math notranslate nohighlight">\(N \times N\)</span> transition probabilities, which we can put together in a <em>transition probability matrix</em> <span class="math notranslate nohighlight">\(P\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{P} = \begin{pmatrix}
+p_{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} \\
+p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}
+\end{pmatrix}
+\end{split}\]</div>
+<p>This matrix <span class="math notranslate nohighlight">\(P\)</span> tells us everything about the random walk process. Using <span class="math notranslate nohighlight">\(P\)</span>, we can figure out how often we expect to visit each node after taking <span class="math notranslate nohighlight">\(T\)</span> steps. For example, the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after one step from node <span class="math notranslate nohighlight">\(i\)</span> is simply:</p>
+<div class="math notranslate nohighlight">
+\[
+P_{ij} = p_{ij}.
+\]</div>
+<p>If we want to know the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after <strong>two steps</strong> from node <span class="math notranslate nohighlight">\(i\)</span>, we use:</p>
+<div class="math notranslate nohighlight">
+\[
+\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}.
+\]</div>
+<p>Let’s break this down:</p>
+<ul class="simple">
+<li><p>The sum is over all possible intermediate nodes <span class="math notranslate nohighlight">\(k\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{ik}P_{kj}\)</span> is the chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(k\)</span>, and then from node <span class="math notranslate nohighlight">\(k\)</span> to node <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
+<li><p>By adding up all these probabilities, we get the total chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(j\)</span> in two steps.</p></li>
+</ul>
+<p>Similarly, the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after <strong><span class="math notranslate nohighlight">\(T\)</span> steps</strong> from node <span class="math notranslate nohighlight">\(i\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+\left(\mathbf{P}^{T}\right)_{ij}
+\]</div>
+<p>Armed with this, let us consider the long-term behavior of the random walk. We represent <span class="math notranslate nohighlight">\(\mathbf{x}(t) = [x_1(t), \ldots, x_N(t)]^\top\)</span> as the probability distribution of being at each node at time <span class="math notranslate nohighlight">\(t\)</span>. As <span class="math notranslate nohighlight">\(T\)</span> becomes very large, <span class="math notranslate nohighlight">\(\left(\mathbf{P}^{T}\right)_{ij}\)</span> settles down to a constant value such that:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{x}(t) = \mathbf{P} \mathbf{x}(t+1).
+\]</div>
+<p>This is an eigenvector equation, and the solution is given by the Perron-Frobenius theorem. For undirected networks, such vector always exists and is called the <strong>stationary distribution</strong> of the random walk. According to the Perron-Frobenius theorem, the solution is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{x}(\infty) = \mathbb{\pi}, \; \mathbf{\pi} = [\pi_1, \ldots, \pi_N]
+\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbb{\pi} = [\pi_1, \ldots, \pi_N]\)</span> is the stationary distribution. This means <span class="math notranslate nohighlight">\(\pi_j\)</span> is the long-term probability of being at node <span class="math notranslate nohighlight">\(j\)</span>. This is an eigenvector equation, and <span class="math notranslate nohighlight">\(\pi_j\)</span> is the left eigenvector of <span class="math notranslate nohighlight">\(P\)</span> with eigenvalue 1. For undirected networks, this vector <span class="math notranslate nohighlight">\(\pi\)</span> always exists and is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j.
+\]</div>
+<p>This means the probability of being at node <span class="math notranslate nohighlight">\(j\)</span> in the long run is proportional to the degree of node <span class="math notranslate nohighlight">\(j\)</span>. The normalization ensures that the sum of all probabilities is 1, i.e., <span class="math notranslate nohighlight">\(\sum_{j=1}^N \pi_j = 1\)</span>.</p>
+</section>
+<section id="relaxation-time">
+<h2>Relaxation time<a class="headerlink" href="#relaxation-time" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
@@ -597,22 +623,13 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="amida-kuji.html"
+       href="random-walks-code.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Ladder Lottery</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="random-walks-code.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Random Walks in Python</p>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -630,7 +647,8 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-walks-in-a-network">Random walks in a network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-state">Stationary state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relaxation-time">Relaxation time</a></li>
 </ul>
   </nav></div>
 

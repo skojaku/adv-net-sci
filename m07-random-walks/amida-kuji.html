@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Random Walks &#8212; Advanced Topics in Network Science</title>
+    <title>Ladder Lottery &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -57,13 +57,11 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/random-walks';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/amida-kuji';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Random Walks in Python" href="random-walks-code.html" />
-    <link rel="prev" title="Ladder Lottery" href="amida-kuji.html" />
+    <link rel="next" title="Random Walks" href="random-walks.html" />
+    <link rel="prev" title="Module 7: Random Walks" href="what-to-learn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -247,15 +245,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 7: Random Walks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="amida-kuji.html">Ladder Lottery</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Random Walks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random-walks-code.html">Random Walks in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random-walks-math.html">Characteristics of random walks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random-walks.html">Random Walks</a></li>
 </ul>
 
     </div>
@@ -310,7 +305,7 @@
       
       
       
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m07-random-walks/random-walks.md" target="_blank"
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m07-random-walks/amida-kuji.md" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Binder"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -376,7 +371,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/random-walks.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/amida-kuji.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -406,7 +401,7 @@
       
       
       
-      <li><a href="../_sources/m07-random-walks/random-walks.ipynb" target="_blank"
+      <li><a href="../_sources/m07-random-walks/amida-kuji.ipynb" target="_blank"
    class="btn btn-sm btn-download-notebook-button dropdown-item"
    title="Download notebook file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -423,7 +418,7 @@
       
       
       
-      <li><a href="../_sources/m07-random-walks/random-walks.md" target="_blank"
+      <li><a href="../_sources/m07-random-walks/amida-kuji.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -494,9 +489,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
       
     </div>
@@ -507,19 +500,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Random Walks</h1>
+    <h1>Ladder Lottery</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-walks-in-a-network">Random walks in a network</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -529,41 +514,25 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="random-walks">
-<h1>Random Walks<a class="headerlink" href="#random-walks" title="Link to this heading">#</a></h1>
-<p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
-<p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network. It is surprising that this seemingly random, brainless behavior can tell us something deep about the structure of the city.</p>
-<a class="reference internal image-reference" href="../_images/random-walk.png"><img alt="Random walk on a network" src="../_images/random-walk.png" style="width: 50%;" /></a>
-<section id="random-walks-in-a-network">
-<h2>Random walks in a network<a class="headerlink" href="#random-walks-in-a-network" title="Link to this heading">#</a></h2>
-<p>A random walk in undirected networks is the following process:</p>
-<ol class="arabic simple">
-<li><p>Start at a node <span class="math notranslate nohighlight">\(i\)</span></p></li>
-<li><p>Randomly choose an edge to traverse to a neighbor node <span class="math notranslate nohighlight">\(j\)</span></p></li>
-<li><p>Repeat step 2 until you have taken <span class="math notranslate nohighlight">\(T\)</span> steps.</p></li>
-</ol>
-<figure class="align-default" id="random-walk-example">
-<a class="reference internal image-reference" href="https://d3i71xaburhd42.cloudfront.net/a56ca795f324f75baab70bb3b49e0544c89e05f7/2-Figure1-1.png"><img alt="Random walk example" src="https://d3i71xaburhd42.cloudfront.net/a56ca795f324f75baab70bb3b49e0544c89e05f7/2-Figure1-1.png" style="width: 100%;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 18 </span><span class="caption-text">Random walk on a small network. The figure is taken from Li, Xing et al. “Representation Learning of Reconstructed Graphs Using Random Walk Graph Convolutional Network.” ArXiv abs/2101.00417 (2021).</span><a class="headerlink" href="#random-walk-example" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called ``dead end’’ that does not have any outgoing edges.</p>
-</div>
-<p>How does this simple process tell us something about the network structure? To get some insights, let us play with a simple interactive visualization.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="ladder-lottery">
+<h1>Ladder Lottery<a class="headerlink" href="#ladder-lottery" title="Link to this heading">#</a></h1>
 <div class="tip admonition">
-<p class="admonition-title">Random Walk Simulation</p>
-<p>Play with the <a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/random-walks/index.html?">Random Walk Simulator! 🎮✨</a> and try to answer the following questions:</p>
+<p class="admonition-title">Ladder Lottery</p>
+<p>Ladder Lottery is a fun East Asian game, also known as “鬼腳圖” (Guijiaotu) in China, “阿弥陀籤” (Amida-kuzi) in Japan, “사다리타기” (Sadaritagi) in Korea, and “Ladder Lottery” in English. The game is played as follows:</p>
 <ol class="arabic simple">
-<li><p>When the random walker makes many steps, where does it tend to visit most frequently?</p></li>
-<li><p>When the walker makes only a few steps, where does it tend to visit?</p></li>
-<li><p>Does the behavior of the walker inform us about centrality of the nodes?</p></li>
-<li><p>Does the behavior of the walker inform us about communities in the network?</p></li>
+<li><p>A player is given a board with a set of vertical lines.</p></li>
+<li><p>The player chooses a line and starts to move along the line</p></li>
+<li><p>When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.</p></li>
+<li><p>The player wins if the player can hit a marked line at the bottom of the board.</p></li>
+<li><p>You cannot see the horizontal lines in advance!</p></li>
 </ol>
+<p>Play the <a class="reference external" href="https://skojaku.github.io/adv-net-sci/vis/amida-kuji.html?">Ladder Lottery Game! 🎮✨</a> and try to answer the following questions:</p>
+<ol class="arabic simple">
+<li><p>Is tehre a strategy to maximize the probability of winning?</p></li>
+<li><p>How does the probability of winning change as the number of horizontal lines increases?</p></li>
+</ol>
+<p><img alt="" src="https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif" /></p>
 </div>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -597,20 +566,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="amida-kuji.html"
+       href="what-to-learn.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Ladder Lottery</p>
+        <p class="prev-next-title">Module 7: Random Walks</p>
       </div>
     </a>
     <a class="right-next"
-       href="random-walks-code.html"
+       href="random-walks.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Random Walks in Python</p>
+        <p class="prev-next-title">Random Walks</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -620,21 +589,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-walks-in-a-network">Random walks in a network</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
