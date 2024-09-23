@@ -24,7 +24,7 @@ g = igraph.Graph()
 
 g.add_vertices([0, 1, 2, 3, 4])
 g.add_edges([(0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (2, 4), (3, 4)])
-igraph.draw(g, vertex_size=20, vertex_label=g.vs["name"])
+igraph.plot(g, vertex_size=20, vertex_label=g.vs["name"])
 ```
 
 A random walk is characterized by the transition probabilities between nodes.
@@ -37,8 +37,8 @@ Let us first compute the transition probabilities and store them in a matrix, $\
 
 ```{code-cell} ipython3
 
-A = g.get_adjacency_matrix()
-k = g.degree()
+A = g.get_adjacency_sparse().toarray()
+k = np.array(g.degree())
 n_nodes = g.vcount()
 
 # A simple but inefficient way to compute P
@@ -264,7 +264,8 @@ where the color of each node represents the probability of the walker being at t
 
 An important observation is that the walker spends more time in the clique that it started from and then diffuse to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.
 
+## Exercise 04
 
-### Exercise 04
+1. Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability $0.05$ and intra-community edge probability $0.2$. Then, compute the expected position of the walker starting from node zero after $x$ steps. Plot the results for $x = 0, 5, 10, 1000$.
 
-Generate 
+2. Increase the inter-community edge probability to $0.15$ and repeat the simulation. Compare the results with the previous simulation.

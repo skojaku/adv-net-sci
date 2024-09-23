@@ -230,16 +230,15 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">Module 5: Clustering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
 <ul class="nav bd-sidenav">
@@ -526,10 +525,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-03">Exercise 03</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#community-structure">Community structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-04">Exercise 04</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#community-structure">Community structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-04">Exercise 04</a></li>
 </ul>
             </nav>
         </div>
@@ -555,22 +552,12 @@ document.write(`
 
 <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
-<span class="n">igraph</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">vertex_label</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">vertex_label</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">8</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
-<span class="ne">----&gt; </span><span class="mi">8</span> <span class="n">igraph</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">vertex_label</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
-
-<span class="ne">AttributeError</span>: module &#39;igraph&#39; has no attribute &#39;draw&#39;
-</pre></div>
-</div>
-</div>
+<img alt="../_images/d4cab239c69d42c0dababac0bfbfb4a0b9bae3b07200089ba3383d8417c52cae.svg" src="../_images/d4cab239c69d42c0dababac0bfbfb4a0b9bae3b07200089ba3383d8417c52cae.svg" /></div>
 </div>
 <p>A random walk is characterized by the transition probabilities between nodes.</p>
 <div class="math notranslate nohighlight">
@@ -580,8 +567,8 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <p>Let us first compute the transition probabilities and store them in a matrix, <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
-<span class="n">k</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_adjacency_sparse</span><span class="p">()</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
 <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span>
 
 <span class="c1"># A simple but inefficient way to compute P</span>
@@ -608,6 +595,16 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Transition probability matrix:
+ [[0.         0.33333333 0.33333333 0.33333333 0.        ]
+ [0.5        0.         0.         0.5        0.        ]
+ [0.33333333 0.         0.         0.33333333 0.33333333]
+ [0.25       0.25       0.25       0.         0.25      ]
+ [0.         0.         0.5        0.5        0.        ]]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -619,6 +616,9 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/550c1ca766b4b8cc0447b9b48bb820d5de24b523ed9df380c5c98444e472ba36.png" src="../_images/550c1ca766b4b8cc0447b9b48bb820d5de24b523ed9df380c5c98444e472ba36.png" />
+</div>
 </div>
 <p>Each row and column of <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</p>
 <p>Now, let us simulate a random walk on this graph. We represent a position of the walker by a vector, <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, with five elements, each of which represents a node. We mark the node that the walker is currently at by <code class="docutils literal notranslate"><span class="pre">1</span></code> and others as <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
@@ -627,6 +627,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial position of the walker:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initial position of the walker:
+ [1 0 0 0 0]
 </pre></div>
 </div>
 </div>
@@ -644,6 +650,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Position of the walker after one step:
+ [0.         0.33333333 0.33333333 0.33333333 0.        ]
+</pre></div>
+</div>
+</div>
 </div>
 <p>We can then draw the next node based on the probabilities</p>
 <div class="cell docutils container">
@@ -652,6 +664,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># zero out the vector</span>
 <span class="n">x</span><span class="p">[</span><span class="n">next_node</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># set the next node to 1</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Position of the walker after one step:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Position of the walker after one step:
+ [0 0 1 0 0]
 </pre></div>
 </div>
 </div>
@@ -698,6 +716,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Expected position of the walker after one step:
+ [0.         0.33333333 0.33333333 0.33333333 0.        ]
+</pre></div>
+</div>
+</div>
 </div>
 <p>For the second step, the expected position of the walker is given by</p>
 <div class="math notranslate nohighlight">
@@ -709,6 +733,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_2</span> <span class="o">=</span> <span class="n">x_1</span> <span class="o">@</span> <span class="n">P</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expected position of the walker after two steps:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x_2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Expected position of the walker after two steps:
+ [0.36111111 0.08333333 0.08333333 0.27777778 0.19444444]
 </pre></div>
 </div>
 </div>
@@ -775,6 +805,8 @@ To see this, let us consider a network of a ring of cliques.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/b9832cbb4f3acc4936ee608d7dd8449ccc0628f011cc1600621a3059c8da1e11.svg" src="../_images/b9832cbb4f3acc4936ee608d7dd8449ccc0628f011cc1600621a3059c8da1e11.svg" /></div>
 </div>
 <p>Let us compute the expected position of the walker after 1 to 10 steps.</p>
 <p><strong>Compute the transition matrix</strong>:</p>
@@ -843,13 +875,19 @@ To see this, let us consider a network of a ring of cliques.</p>
 </div>
 </div>
 </details>
+<div class="cell_output docutils container">
+<img alt="../_images/1f12c4b292ebde72b9d92a1095c5cd77b4e2e414ce95ab05eaf62eb8de938019.png" src="../_images/1f12c4b292ebde72b9d92a1095c5cd77b4e2e414ce95ab05eaf62eb8de938019.png" />
+</div>
 </div>
 <p>where the color of each node represents the probability of the walker being at that node.</p>
 <p>An important observation is that the walker spends more time in the clique that it started from and then diffuse to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.</p>
-<section id="exercise-04">
-<h3>Exercise 04<a class="headerlink" href="#exercise-04" title="Link to this heading">#</a></h3>
-<p>Generate</p>
 </section>
+<section id="exercise-04">
+<h2>Exercise 04<a class="headerlink" href="#exercise-04" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability <span class="math notranslate nohighlight">\(0.05\)</span> and intra-community edge probability <span class="math notranslate nohighlight">\(0.2\)</span>. Then, compute the expected position of the walker starting from node zero after <span class="math notranslate nohighlight">\(x\)</span> steps. Plot the results for <span class="math notranslate nohighlight">\(x = 0, 5, 10, 1000\)</span>.</p></li>
+<li><p>Increase the inter-community edge probability to <span class="math notranslate nohighlight">\(0.15\)</span> and repeat the simulation. Compare the results with the previous simulation.</p></li>
+</ol>
 </section>
 </section>
 
@@ -926,10 +964,8 @@ To see this, let us consider a network of a ring of cliques.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-03">Exercise 03</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#community-structure">Community structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-04">Exercise 04</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#community-structure">Community structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-04">Exercise 04</a></li>
 </ul>
   </nav></div>
 

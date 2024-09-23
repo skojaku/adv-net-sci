@@ -78,9 +78,17 @@ $$
 
 This means the probability of being at node $j$ in the long run is proportional to the degree of node $j$. The normalization ensures that the sum of all probabilities is 1, i.e., $\sum_{j=1}^N \pi_j = 1$.
 
-## Relaxation time
+## Mixing time
 
-```{footbibliography}
-:style: unsrt
+How fast does a random walker converges to the stationary state? The speed of convergence depends on the edge density and the community structure of the network because a walker tends to stay within its community where it started from, and takes more steps to explore the network if the network is sparse.
 
-```
+Mixing time is the number of steps it takes for the random walker to approach the stationary state, up to a certain error margin $\delta$.
+
+$$
+\sum_j \left|\pi_j - x_j(t)\right| < \delta,
+$$
+
+Random walkers converge to the stationary state quickly if the network is well-connected and does not have strong community structure.
+On the other hand, it takes longer to converge if the network is sparse or has dense communities sparsely connected across.
+
+Mixing time is the number of steps it takes for the random walker to reach the stat

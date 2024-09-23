@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Stochstic Block Model with Python &#8212; Advanced Topics in Network Science</title>
+    <title>Hands-on: Clustering &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -57,7 +57,9 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/stochastic-block-model-with-python';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/exercise-clustering';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Module 6: Centrality" href="../m06-centrality/what-to-learn.html" />
@@ -235,9 +237,8 @@
 <li class="toctree-l1"><a class="reference internal" href="ratio-normalized-cut.html">Balanced cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity.html">Modularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity-02.html">Modularity (Cont.)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Stochstic Block Model with Python</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
 <ul class="nav bd-sidenav">
@@ -308,7 +309,7 @@
       
       
       
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/stochastic-block-model-with-python.md" target="_blank"
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m05-clustering/exercise-clustering.md" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Binder"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -374,7 +375,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/stochastic-block-model-with-python.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm05-clustering/exercise-clustering.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -404,7 +405,7 @@
       
       
       
-      <li><a href="../_sources/m05-clustering/stochastic-block-model-with-python.ipynb" target="_blank"
+      <li><a href="../_sources/m05-clustering/exercise-clustering.ipynb" target="_blank"
    class="btn btn-sm btn-download-notebook-button dropdown-item"
    title="Download notebook file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -421,7 +422,7 @@
       
       
       
-      <li><a href="../_sources/m05-clustering/stochastic-block-model-with-python.md" target="_blank"
+      <li><a href="../_sources/m05-clustering/exercise-clustering.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -505,7 +506,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Stochstic Block Model with Python</h1>
+    <h1>Hands-on: Clustering</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -515,7 +516,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closing-remarks">Closing remarks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modularity-maximization">Modularity maximization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochstic-block-model">Stochstic Block Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -527,23 +535,141 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="stochstic-block-model-with-python">
-<h1>Stochstic Block Model with Python<a class="headerlink" href="#stochstic-block-model-with-python" title="Link to this heading">#</a></h1>
-<p>Let us turn the SBM as our community detection tool using <a class="reference external" href="https://graph-tool.skewed.de/">graph-tool</a>. This is a powerful library for network analysis, with a focus on the stochastic block model.</p>
+  <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m05-clustering.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<section class="tex2jax_ignore mathjax_ignore" id="hands-on-clustering">
+<h1>Hands-on: Clustering<a class="headerlink" href="#hands-on-clustering" title="Link to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Famous</span><span class="p">(</span><span class="s2">&quot;Zachary&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using Google Colab, uncomment the following line to install igraph</span>
+<span class="c1"># !sudo apt install libcairo2-dev pkg-config python3-dev</span>
+<span class="c1"># !pip install pycairo cairocffi</span>
+<span class="c1"># !pip install igraph</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Then, we will identify the communities using the stochastic block model as follows.</p>
-<p>First, we will convert the graph object in igraph to that in graph-tool.</p>
+<section id="modularity-maximization">
+<h2>Modularity maximization<a class="headerlink" href="#modularity-maximization" title="Link to this heading">#</a></h2>
+<p>Let us showcase how to use <code class="docutils literal notranslate"><span class="pre">igraph</span></code> to detect communities with modularity. We will use the Karate Club Network as an example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Famous</span><span class="p">(</span><span class="s2">&quot;Zachary&quot;</span><span class="p">)</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2b39b00f66ad3c6bb6a7d9dd4fb008bb11ed82fdcfeddf90ae71868b0b0e4af6.svg" src="../_images/2b39b00f66ad3c6bb6a7d9dd4fb008bb11ed82fdcfeddf90ae71868b0b0e4af6.svg" /></div>
+</div>
+<p>When it comes to maximizing modularity, there are a variety of algorithms to choose from.
+Two of the most popular ones are the <code class="docutils literal notranslate"><span class="pre">Louvain</span></code> and <code class="docutils literal notranslate"><span class="pre">Leiden</span></code> algorithms, both of which are implemented in <code class="docutils literal notranslate"><span class="pre">igraph</span></code>. The Louvain algorithm has been around for quite some time and is a classic choice, while the Leiden algorithm is a newer bee that often yields better accuracy. For our example, we’ll be using the <code class="docutils literal notranslate"><span class="pre">Leiden</span></code> algorithm, and I think you’ll find it really effective!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">communities</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">community_leiden</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">objective_function</span><span class="o">=</span> <span class="s2">&quot;modularity&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>What is <code class="docutils literal notranslate"><span class="pre">resolution</span></code>? It is a parameter that helps us tackle the resolution limit of the modularity maximization algorithm <a class="footnote-reference brackets" href="#footcite-fortunato2007resolution" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>!
+In simple terms, when we use the resolution parameter <span class="math notranslate nohighlight">\(\rho\)</span>, the modularity formula can be rewritten as
+follow:</p>
+<div class="math notranslate nohighlight">
+\[
+Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}{2m}\right) \delta(c_i, c_j)
+\]</div>
+<p>Here, the parameter <span class="math notranslate nohighlight">\(\rho\)</span> plays a crucial role in balancing the positive and negative parts of the equation.
+The resolution limit comes into play because of the diminishing effect of the negative term as the number of edges <span class="math notranslate nohighlight">\(m\)</span> increases.
+The parameter <span class="math notranslate nohighlight">\(\rho\)</span> can adjust this balance and allow us to circumvent the resolution limit.</p>
+<p>What is <code class="docutils literal notranslate"><span class="pre">communities</span></code>? This is a list of communities, where each community is represented by a list of nodes by their indices.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">communities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Clustering with 34 elements and 4 clusters
+[0] 0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21
+[1] 4, 5, 6, 10, 16
+[2] 8, 9, 14, 15, 18, 20, 22, 26, 29, 30, 32, 33
+[3] 23, 24, 25, 27, 28, 31
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us visualize the communities by coloring the nodes in the graph.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">community_membership</span> <span class="o">=</span> <span class="n">communities</span><span class="o">.</span><span class="n">membership</span>
+<span class="n">palette</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">()</span><span class="o">.</span><span class="n">as_hex</span><span class="p">()</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_color</span><span class="o">=</span><span class="p">[</span><span class="n">palette</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">community_membership</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7305143e3b442d1ab68859d1bc680a9bfcf7be0348dc9530c8dd435efd5903b4.svg" src="../_images/7305143e3b442d1ab68859d1bc680a9bfcf7be0348dc9530c8dd435efd5903b4.svg" /></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">community_membership</span></code>: This is a list of community membership for each node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">palette</span></code>: This is a list of colors to use for the communities.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">igraph.plot(g,</span> <span class="pre">vertex_color=[palette[i]</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">community_membership])</span></code>: This plots the graph ‘g’ with nodes colored by their community.</p></li>
+</ul>
+<section id="exercise-01">
+<h3>Exercise 01 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
+<li><p>Download the csv version of the data by clicking something like “3KiB” under <code class="docutils literal notranslate"><span class="pre">csv</span></code> column.</p></li>
+<li><p>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</p></li>
+<li><p>Load the data using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Get the source and target nodes from the data to create an edge list.</p></li>
+<li><p>Construct a graph from the edge list, either using <code class="docutils literal notranslate"><span class="pre">igraph</span></code> or <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p></li>
+<li><p>Find communities by maximizing the modularity and visualize them.</p></li>
+<li><p>Try at least three different values of the resolution parameter and observe how the community structure changes.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Your code here</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="stochstic-block-model">
+<h2>Stochstic Block Model<a class="headerlink" href="#stochstic-block-model" title="Link to this heading">#</a></h2>
+<p>Let us turn the SBM as our community detection tool using <a class="reference external" href="https://graph-tool.skewed.de/">graph-tool</a>. This is a powerful library for network analysis, with a focus on the stochastic block model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Uncomment the following code if you are using Google Colab</span>
+<span class="c1">#</span>
+<span class="c1">#!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span>
+<span class="c1">#!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span>
+<span class="c1">#!echo &quot;deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main&quot; &gt; /etc/apt/sources.list.d/skewed.list</span>
+<span class="c1">#!apt-get update</span>
+<span class="c1">#!apt-get install python3-graph-tool python3-matplotlib python3-cairo</span>
+<span class="c1">#!apt purge python3-cairo</span>
+<span class="c1">#!apt install libcairo2-dev pkg-config python3-dev</span>
+<span class="c1">#!pip install --force-reinstall pycairo</span>
+<span class="c1">#!pip install zstandard</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will identify the communities using the stochastic block model as follows.
+First, we will convert the graph object in igraph to that in graph-tool.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">graph_tool.all</span>  <span class="k">as</span> <span class="nn">gt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">igraph</span>
+
+<span class="c1"># igraph object</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Famous</span><span class="p">(</span><span class="s2">&quot;Zachary&quot;</span><span class="p">)</span>
 
 <span class="c1"># Set random seed for reproducibility</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
@@ -578,7 +704,7 @@ document.write(`
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">B_min</span></code> and <code class="docutils literal notranslate"><span class="pre">B_max</span></code> are the minimum and maximum number of communities to consider.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">deg_corr</span></code> is a boolean flag to switch to the degree-corrected SBM <a class="footnote-reference brackets" href="#footcite-karrer2011stochastic" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deg_corr</span></code> is a boolean flag to switch to the degree-corrected SBM <a class="footnote-reference brackets" href="#footcite-karrer2011stochastic" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -599,8 +725,21 @@ document.write(`
 <span class="c1"># The community labels may consist of non-consecutive integers, e.g., 10, 8, 1, 4, ...</span>
 <span class="c1"># So we reassign the community labels to be 0, 1, 2, ...</span>
 <span class="n">community_membership</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">community_membership</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="c1"># Create a color palette</span>
+<span class="n">community_membership</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 3, 2, 2, 3, 3, 3, 2,
+       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a color palette</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="n">palette</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">()</span><span class="o">.</span><span class="n">as_hex</span><span class="p">()</span>
@@ -617,12 +756,11 @@ document.write(`
 </pre></div>
 </div>
 </div>
-</details>
 <div class="cell_output docutils container">
-<img alt="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" src="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" />
+<img alt="../_images/1036f3c3d01f46b5a432d40f796e740eaa4b5d574e19d35d5002e12c46396cb9.png" src="../_images/1036f3c3d01f46b5a432d40f796e740eaa4b5d574e19d35d5002e12c46396cb9.png" />
 </div>
 </div>
-<p>What we’re seeing here isn’t a failure at all. In fact, it’s twe best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> <a class="footnote-reference brackets" href="#footcite-borgatti2000models" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Let me break that down:</p>
+<p>What we’re seeing here isn’t a failure at all. In fact, it’s the best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> <a class="footnote-reference brackets" href="#footcite-borgatti2000models" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>. Let me break that down:</p>
 <ul class="simple">
 <li><p>Think of a major international airport (the core) and smaller regional airports (the periphery).</p></li>
 <li><p>Major international airports have many flights connecting to each other (densely connected).</p></li>
@@ -653,54 +791,38 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0c8da5acf1670951d30530359ca0dd7cd4d0effe6f6e9fc1939388eaf77781f7.png" src="../_images/0c8da5acf1670951d30530359ca0dd7cd4d0effe6f6e9fc1939388eaf77781f7.png" />
+<img alt="../_images/12f4cab94d000f37ca2c9911f8b9f872e684b1084e4d929c61a403873c51e244.png" src="../_images/12f4cab94d000f37ca2c9911f8b9f872e684b1084e4d929c61a403873c51e244.png" />
 </div>
 </div>
-<section id="closing-remarks">
-<h2>Closing remarks<a class="headerlink" href="#closing-remarks" title="Link to this heading">#</a></h2>
-<p>The stochastic block model is a very extensive topic of research, most of which is beyond the scope of this course. But interested readers can refer to the following references for more information.</p>
-<ul class="simple">
-<li><p><a class="footnote-reference brackets" href="#footcite-karrer2011stochastic" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> Karrer, Brian, and Mark EJ Newman. “Stochastic blockmodels and community structure in networks.” Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 83.1 (2011): 016107.</p>
-<ul>
-<li><p>This paper proposes a <em>degree-corrected</em> stochastic block model, which can cope with the degree heterogeneity in the network. The paper provides a simple, intuitive explanations of the stochastic block model and its degree-corrected one and is recommended for entry-level readers.</p></li>
-</ul>
-</li>
-<li><p><a class="footnote-reference brackets" href="#footcite-peixoto2017nonparametric" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> Peixoto, Tiago P. “Nonparametric Bayesian inference of the microcanonical stochastic block model.” Physical Review E 95.1 (2017): 012317.</p>
-<ul>
-<li><p>This paper proposes a <em>nonparameteric</em> Baysian inference of the stochastic block model. <code class="docutils literal notranslate"><span class="pre">graph-tool</span></code> is implemented and maintained by the author of this paper. The Bayesian inference framework grounds the resolution limit problem on a statistical problem, namely a selection problem of the prior probability of community membership, which is a major departure from the traditional heuristic approaches.</p></li>
-</ul>
-</li>
-<li><p><a class="footnote-reference brackets" href="#footcite-fortunato2010community" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-fortunato2016community" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>: Fortunato, Santo. “Community detection in graphs.” Physics reports 486.3-5 (2010): 75-174; Fortunato, Santo, and Darko Hric. “Community detection in networks: A user guide.” Physics reports 659 (2016): 1-44.</p>
-<ul>
-<li><p>These review papers outline a wide range of community detection methods.</p></li>
-</ul>
-</li>
-</ul>
-<div class="docutils container" id="id7">
+<section id="exercise-02">
+<h3>Exercise 02 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
+<li><p>Download the csv version of the data by clicking something like “3KiB” under <code class="docutils literal notranslate"><span class="pre">csv</span></code> column.</p></li>
+<li><p>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</p></li>
+<li><p>Load the data using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Get the source and target nodes from the data to create an edge list.</p></li>
+<li><p>Construct a graph from the edge list, either using <code class="docutils literal notranslate"><span class="pre">igraph</span></code> or <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p></li>
+<li><p>Find communities by fitting the stochastic block model and visualize them.</p></li>
+<li><p>Try <code class="docutils literal notranslate"><span class="pre">deg_corr=True</span></code> and compare the results with those from <code class="docutils literal notranslate"><span class="pre">deg_corr=False</span></code>.</p></li>
+</ol>
+<div class="docutils container" id="id4">
 <aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-fortunato2007resolution" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Santo Fortunato and Marc Barthelemy. Resolution limit in community detection. <em>Proceedings of the national academy of sciences</em>, 104(1):36–41, 2007.</p>
+</aside>
 <aside class="footnote brackets" id="footcite-karrer2011stochastic" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Brian Karrer and Mark EJ Newman. Stochastic blockmodels and community structure in networks. <em>Physical Review E—Statistical, Nonlinear, and Soft Matter Physics</em>, 83(1):016107, 2011.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-borgatti2000models" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Stephen P Borgatti and Martin G Everett. Models of core/periphery structures. <em>Social networks</em>, 21(4):375–395, 2000.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-peixoto2017nonparametric" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
-<p>Tiago P Peixoto. Nonparametric bayesian inference of the microcanonical stochastic block model. <em>Physical Review E</em>, 95(1):012317, 2017.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-fortunato2010community" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
-<p>Santo Fortunato. Community detection in graphs. <em>Physics reports</em>, 486(3-5):75–174, 2010.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-fortunato2016community" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
-<p>Santo Fortunato and Darko Hric. Community detection in networks: a user guide. <em>Physics reports</em>, 659:1–44, 2016.</p>
 </aside>
 </aside>
 </div>
+</section>
 </section>
 </section>
 
@@ -768,7 +890,14 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closing-remarks">Closing remarks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modularity-maximization">Modularity maximization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochstic-block-model">Stochstic Block Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

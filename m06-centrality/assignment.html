@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Characteristics of random walks &#8212; Advanced Topics in Network Science</title>
+    <title>Assignment &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -57,12 +57,11 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm07-random-walks/random-walks-math';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm06-centrality/assignment';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Random Walks in Python" href="random-walks-code.html" />
+    <link rel="next" title="Module 7: Random Walks" href="../m07-random-walks/what-to-learn.html" />
+    <link rel="prev" title="Computing centrality with Python" href="hands-on.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -240,20 +239,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/what-to-learn.html">Module 6: Centrality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 6: Centrality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="degree-distance-based-centrality.html">What is centrality?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Assignment</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 7: Random Walks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="amida-kuji.html">Ladder Lottery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random-walks.html">Random Walks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random-walks-code.html">Random Walks in Python</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Characteristics of random walks</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of random walks</a></li>
 </ul>
 
     </div>
@@ -300,55 +300,6 @@
 
 
 
-<div class="dropdown dropdown-launch-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
-    <i class="fas fa-rocket"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/m07-random-walks/random-walks-math.md" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch on Binder"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
-  </span>
-<span class="btn__text-container">Binder</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="initThebeSBT()"
-  class="btn btn-sm btn-launch-thebe dropdown-item"
-  title="Launch Thebe"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-play"></i>
-  </span>
-<span class="btn__text-container">Live Code</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
 <div class="dropdown dropdown-source-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
     <i class="fab fa-github"></i>
@@ -374,7 +325,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm07-random-walks/random-walks-math.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm06-centrality/assignment.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -404,24 +355,7 @@
       
       
       
-      <li><a href="../_sources/m07-random-walks/random-walks-math.ipynb" target="_blank"
-   class="btn btn-sm btn-download-notebook-button dropdown-item"
-   title="Download notebook file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-code"></i>
-  </span>
-<span class="btn__text-container">.ipynb</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="../_sources/m07-random-walks/random-walks-math.md" target="_blank"
+      <li><a href="../_sources/m06-centrality/assignment.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -492,9 +426,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
       
     </div>
@@ -505,20 +437,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Characteristics of random walks</h1>
+    <h1>Assignment</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-state">Stationary state</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixing-time">Mixing time</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -528,76 +451,27 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="characteristics-of-random-walks">
-<h1>Characteristics of random walks<a class="headerlink" href="#characteristics-of-random-walks" title="Link to this heading">#</a></h1>
-<section id="stationary-state">
-<h2>Stationary state<a class="headerlink" href="#stationary-state" title="Link to this heading">#</a></h2>
-<p>Let’s dive into the math behind random walks in a way that’s easy to understand.</p>
-<p>Imagine you’re at a node <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span>. You randomly choose one of the neighboring nodes to move to, let’s call it node <span class="math notranslate nohighlight">\(j\)</span>. The chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(j\)</span> is called the transition probability <span class="math notranslate nohighlight">\(p_{ij}\)</span>:</p>
-<div class="math notranslate nohighlight">
-\[
-p_{ij} = \frac{A_{ij}}{k_i},
-\]</div>
-<p>Here, <span class="math notranslate nohighlight">\(A_{ij}\)</span> is part of the adjacency matrix (which tells us if there’s a connection between nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>), and <span class="math notranslate nohighlight">\(k_i\)</span> is the number of connections (degree) node <span class="math notranslate nohighlight">\(i\)</span> has. If our network has <span class="math notranslate nohighlight">\(N\)</span> nodes, we have <span class="math notranslate nohighlight">\(N \times N\)</span> transition probabilities, which we can put together in a <em>transition probability matrix</em> <span class="math notranslate nohighlight">\(P\)</span>.</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\mathbf{P} = \begin{pmatrix}
-p_{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} \\
-p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} \\
-\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}
-\end{pmatrix}
-\end{split}\]</div>
-<p>This matrix <span class="math notranslate nohighlight">\(P\)</span> tells us everything about the random walk process. Using <span class="math notranslate nohighlight">\(P\)</span>, we can figure out how often we expect to visit each node after taking <span class="math notranslate nohighlight">\(T\)</span> steps. For example, the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after one step from node <span class="math notranslate nohighlight">\(i\)</span> is simply:</p>
-<div class="math notranslate nohighlight">
-\[
-P_{ij} = p_{ij}.
-\]</div>
-<p>If we want to know the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after <strong>two steps</strong> from node <span class="math notranslate nohighlight">\(i\)</span>, we use:</p>
-<div class="math notranslate nohighlight">
-\[
-\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}.
-\]</div>
-<p>Let’s break this down:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="assignment">
+<h1>Assignment<a class="headerlink" href="#assignment" title="Link to this heading">#</a></h1>
+<p>We will compute the various centrality measures for airport networks.</p>
 <ul class="simple">
-<li><p>The sum is over all possible intermediate nodes <span class="math notranslate nohighlight">\(k\)</span>.</p></li>
-<li><p><span class="math notranslate nohighlight">\(P_{ik}P_{kj}\)</span> is the chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(k\)</span>, and then from node <span class="math notranslate nohighlight">\(k\)</span> to node <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
-<li><p>By adding up all these probabilities, we get the total chance of moving from node <span class="math notranslate nohighlight">\(i\)</span> to node <span class="math notranslate nohighlight">\(j\)</span> in two steps.</p></li>
+<li><p><strong>For students enrolled in SSIE 641</strong></p>
+<ul>
+<li><p>You will receive a dedicated link to the assignment repository from the instructor.</p></li>
 </ul>
-<p>Similarly, the chance of visiting node <span class="math notranslate nohighlight">\(j\)</span> after <strong><span class="math notranslate nohighlight">\(T\)</span> steps</strong> from node <span class="math notranslate nohighlight">\(i\)</span> is:</p>
-<div class="math notranslate nohighlight">
-\[
-\left(\mathbf{P}^{T}\right)_{ij}
-\]</div>
-<p>Armed with this, let us consider the long-term behavior of the random walk. We represent <span class="math notranslate nohighlight">\(\mathbf{x}(t) = [x_1(t), \ldots, x_N(t)]^\top\)</span> as the probability distribution of being at each node at time <span class="math notranslate nohighlight">\(t\)</span>. As <span class="math notranslate nohighlight">\(T\)</span> becomes very large, <span class="math notranslate nohighlight">\(\left(\mathbf{P}^{T}\right)_{ij}\)</span> settles down to a constant value such that:</p>
-<div class="math notranslate nohighlight">
-\[
-\mathbf{x}(t) = \mathbf{P} \mathbf{x}(t+1).
-\]</div>
-<p>This is an eigenvector equation, and the solution is given by the Perron-Frobenius theorem. For undirected networks, such vector always exists and is called the <strong>stationary distribution</strong> of the random walk. According to the Perron-Frobenius theorem, the solution is:</p>
-<div class="math notranslate nohighlight">
-\[
-\mathbf{x}(\infty) = \mathbb{\pi}, \; \mathbf{\pi} = [\pi_1, \ldots, \pi_N]
-\]</div>
-<p>Here, <span class="math notranslate nohighlight">\(\mathbb{\pi} = [\pi_1, \ldots, \pi_N]\)</span> is the stationary distribution. This means <span class="math notranslate nohighlight">\(\pi_j\)</span> is the long-term probability of being at node <span class="math notranslate nohighlight">\(j\)</span>. This is an eigenvector equation, and <span class="math notranslate nohighlight">\(\pi_j\)</span> is the left eigenvector of <span class="math notranslate nohighlight">\(P\)</span> with eigenvalue 1. For undirected networks, this vector <span class="math notranslate nohighlight">\(\pi\)</span> always exists and is given by:</p>
-<div class="math notranslate nohighlight">
-\[
-\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j.
-\]</div>
-<p>This means the probability of being at node <span class="math notranslate nohighlight">\(j\)</span> in the long run is proportional to the degree of node <span class="math notranslate nohighlight">\(j\)</span>. The normalization ensures that the sum of all probabilities is 1, i.e., <span class="math notranslate nohighlight">\(\sum_{j=1}^N \pi_j = 1\)</span>.</p>
-</section>
-<section id="mixing-time">
-<h2>Mixing time<a class="headerlink" href="#mixing-time" title="Link to this heading">#</a></h2>
-<p>How fast does a random walker converges to the stationary state? The speed of convergence depends on the edge density and the community structure of the network because a walker tends to stay within its community where it started from, and takes more steps to explore the network if the network is sparse.</p>
-<p>Mixing time is the number of steps it takes for the random walker to approach the stationary state, up to a certain error margin <span class="math notranslate nohighlight">\(\delta\)</span>.</p>
-<div class="math notranslate nohighlight">
-\[
-\sum_j \left|\pi_j - x_j(t)\right| &lt; \delta,
-\]</div>
-<p>Random walkers converge to the stationary state quickly if the network is well-connected and does not have strong community structure.
-On the other hand, it takes longer to converge if the network is sparse or has dense communities sparsely connected across.</p>
-<p>Mixing time is the number of steps it takes for the random walker to reach the stat</p>
-</section>
+</li>
+<li><p><em>For those who are not enrolled in SSIE 641</em></p>
+<ul>
+<li><p>You can access the assignment repository at <a class="reference external" href="https://github.com/sk-classroom/adv-net-sci-centrality">Github</a>.</p></li>
+<li><p>This repository does not offer auto-grading. But you can grade the assignment by yourself by</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_01.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_02.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </section>
 
     <script type="text/x-thebe-config">
@@ -613,7 +487,7 @@ On the other hand, it takes longer to converge if the network is sparse or has d
         },
         kernelOptions: {
             name: "python3",
-            path: "./m07-random-walks"
+            path: "./m06-centrality"
         },
         predefinedOutput: true
     }
@@ -631,13 +505,22 @@ On the other hand, it takes longer to converge if the network is sparse or has d
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="random-walks-code.html"
+       href="hands-on.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Random Walks in Python</p>
+        <p class="prev-next-title">Computing centrality with Python</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../m07-random-walks/what-to-learn.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Module 7: Random Walks</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -645,22 +528,6 @@ On the other hand, it takes longer to converge if the network is sparse or has d
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-state">Stationary state</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixing-time">Mixing time</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

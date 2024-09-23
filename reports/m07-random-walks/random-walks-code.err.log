@@ -22,23 +22,35 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import numpy as np
-import igraph
+A = g.get_adjacency_sparse().toarray()
+k = g.degree()
+n_nodes = g.vcount()
 
-g = igraph.Graph()
+# A simple but inefficient way to compute P
+P = np.zeros((n_nodes, n_nodes))
+for i in range(n_nodes):
+    for j in range(n_nodes):
+        if k[i] > 0:
+            P[i, j] = A[i, j] / k[i]
+        else:
+            P[i, j] = 0
 
-g.add_vertices([0, 1, 2, 3, 4])
-g.add_edges([(0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (2, 4), (3, 4)])
-igraph.draw(g, vertex_size=20, vertex_label=g.vs["name"])
+# Alternative, more efficient way to compute P
+P = A / k[:, np.newaxis]
+
+# or even more efficiently
+P = np.einsum("ij,i->ij", A, 1 / k)
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mAttributeError[0m                            Traceback (most recent call last)
-Cell [0;32mIn[1], line 8[0m
-[1;32m      6[0m g[38;5;241m.[39madd_vertices([[38;5;241m0[39m, [38;5;241m1[39m, [38;5;241m2[39m, [38;5;241m3[39m, [38;5;241m4[39m])
-[1;32m      7[0m g[38;5;241m.[39madd_edges([([38;5;241m0[39m, [38;5;241m1[39m), ([38;5;241m0[39m, [38;5;241m2[39m), ([38;5;241m0[39m, [38;5;241m3[39m), ([38;5;241m1[39m, [38;5;241m3[39m), ([38;5;241m2[39m, [38;5;241m3[39m), ([38;5;241m2[39m, [38;5;241m4[39m), ([38;5;241m3[39m, [38;5;241m4[39m)])
-[0;32m----> 8[0m igraph[38;5;241m.[39mdraw(g, vertex_size[38;5;241m=[39m[38;5;241m20[39m, vertex_label[38;5;241m=[39mg[38;5;241m.[39mvs[[38;5;124m"[39m[38;5;124mname[39m[38;5;124m"[39m])
+[0;31mTypeError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[2], line 15[0m
+[1;32m     12[0m             P[i, j] [38;5;241m=[39m [38;5;241m0[39m
+[1;32m     14[0m [38;5;66;03m# Alternative, more efficient way to compute P[39;00m
+[0;32m---> 15[0m P [38;5;241m=[39m A [38;5;241m/[39m k[:, np[38;5;241m.[39mnewaxis]
+[1;32m     17[0m [38;5;66;03m# or even more efficiently[39;00m
+[1;32m     18[0m P [38;5;241m=[39m np[38;5;241m.[39meinsum([38;5;124m"[39m[38;5;124mij,i->ij[39m[38;5;124m"[39m, A, [38;5;241m1[39m [38;5;241m/[39m k)
 
-[0;31mAttributeError[0m: module 'igraph' has no attribute 'draw'
+[0;31mTypeError[0m: list indices must be integers or slices, not tuple
 
