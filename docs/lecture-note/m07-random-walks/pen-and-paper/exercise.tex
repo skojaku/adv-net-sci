@@ -1,0 +1,174 @@
+\documentclass[a4paper, 14pt]{extarticle}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{fontspec}
+%\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+\tikzset{every picture/.style={/utils/exec={\fontspec{Pretty Neat}}}}
+\setmainfont{Pretty Neat}
+
+
+\makeatletter
+\pgfset{
+  /pgf/decoration/randomness/.initial=2,
+  /pgf/decoration/wavelength/.initial=100
+}
+\pgfdeclaredecoration{sketch}{init}{
+  \state{init}[width=0pt,next state=draw,persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t0
+  }]{}
+  \state{draw}[width=\pgfdecorationsegmentlength,
+  auto corner on length=\pgfdecorationsegmentlength,
+  persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}
+  }]{
+    \pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}
+    \pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}
+  }
+  \state{final}{}
+}
+\tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
+\makeatother
+
+\usepackage{etoolbox}
+\AtBeginEnvironment{tabular}{\fontspec{Pretty Neat}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{adjustbox}
+\usepackage{titling}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing}
+\definecolor{pltblue}{HTML}{1F77B4}
+
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{enumitem}
+
+\title{Random Walk Characteristics Worksheet}
+\author{Network Science Course}
+\date{}
+
+\begin{document}
+
+%\maketitle
+
+
+\section*{Part 1: Transition Probabilities}
+
+\begin{enumerate}
+\item Consider the following undirected network. Represent the network with an adjacency matrix $\mathbf{A}$.
+
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
+\node (A) {A};
+\node (B) [above right of=A] {B};
+\node (C) [right of=A] {C};
+\node (D) [below right of=A] {D};
+\draw (A) -- (B);
+\draw (A) -- (C);
+\draw (B) -- (C);
+\draw (A) -- (D);
+\end{tikzpicture}
+\end{center}
+
+\vspace{3cm}
+
+\item A random walk traverses the network by randomly moving from one node to another. Fill the following table with the transition probabilities.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c|c|c|c|c}
+$P$ & To A & To B & To C & To D \\
+\hline
+From A   & & & & \\[0.5cm]
+\hline
+From B   & & & & \\[0.5cm]
+\hline
+From C   & & & & \\[0.5cm]
+\hline
+From D   & & & & \\[0.5cm]
+\hline
+\end{tabular}
+\label{tab:transition_matrix}
+\end{table}
+
+\end{enumerate}
+
+\clearpage
+
+\section*{Part 2: Multiple Steps}
+
+\begin{enumerate}[resume]
+\item If we start at node A, what is the probability of being at node C after exactly two steps? Show your calculation. Hint: First, calculate the probability $P(j \vert t = 1)$ of being at each node $j$ after one step. Then, multiply the probability of moving from each node $j$ to node $i$, and sum up the probabilities. Namely,
+
+$$P(i \vert t = 2) = \sum_{j} \underbrace{P(i \vert j)}_{\substack{\text{Transition probability} \\ \text{from node } j \text{to node } i}} \underbrace{P(j \vert t = 1)}_{\substack{\text{Probability of being at} \\ \text{node } j \text{ after 1 step}}}$$
+
+\vspace{3cm}
+
+\item If we start at node A, what is the probability of being at node B after exactly three? Show your calculation.
+\vspace{3cm}
+
+\item How would you calculate the probability of being at any node after T steps, starting from node A? (You don't need to do the calculation, just describe the process using matrix multiplication.)
+
+\vspace{3cm}
+
+\end{enumerate}
+
+\clearpage
+
+\section*{Part 3: Stationary Distribution}
+
+\begin{enumerate}[resume]
+\item Calculate the probability distribution of being at each node after 1 step, 2 steps, ... 100 steps, starting from node A. Create a heatmap representation of the probability distributions for 1, 2, ... 100 steps, where rows represent nodes and columns represent steps. You can use a simple grid where darker shades represent higher probabilities. You may use pen and paper or computer software to create the heatmap.
+
+\begin{center}
+    \scalebox{0.2}{
+\begin{tabular}{|c|*{100}{c|}}
+\hline
+& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 & 22 & 23 & 24 & 25 & 26 & 27 & 28 & 29 & 30 & 31 & 32 & 33 & 34 & 35 & 36 & 37 & 38 & 39 & 40 & 41 & 42 & 43 & 44 & 45 & 46 & 47 & 48 & 49 & 50 & 51 & 52 & 53 & 54 & 55 & 56 & 57 & 58 & 59 & 60 & 61 & 62 & 63 & 64 & 65 & 66 & 67 & 68 & 69 & 70 & 71 & 72 & 73 & 74 & 75 & 76 & 77 & 78 & 79 & 80 & 81 & 82 & 83 & 84 & 85 & 86 & 87 & 88 & 89 & 90 & 91 & 92 & 93 & 94 & 95 & 96 & 97 & 98 & 99 & 100 \\
+\hline
+A & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+B & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+C & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+D & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+E & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+F & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+\hline
+\end{tabular}
+}
+\end{center}
+
+\item Let's create another heatmap using a random walk starting from node D.
+
+\vspace{3cm}
+
+\item Based on your heatmap, what observations can you make about how the probabilities change as the number of steps increases?
+
+\vspace{3cm}
+
+\item What makes the stationary probability higher for some nodes than others?
+
+\vspace{3cm}
+
+\end{enumerate}
+\end{document}

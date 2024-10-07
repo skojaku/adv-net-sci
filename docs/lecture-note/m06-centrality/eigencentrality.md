@@ -168,7 +168,7 @@ $$
 You've probably heard PageRank, a celebrated idea behind Google Search. It is like a cousin of Katz centrality.
 
 $$
-c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta
+c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
 $$
 
 where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
