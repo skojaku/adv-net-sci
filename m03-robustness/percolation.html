@@ -226,21 +226,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">Module 5: Clustering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
 <ul class="nav bd-sidenav">
@@ -248,6 +246,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
 </ul>
 
     </div>
@@ -615,7 +625,7 @@ As we increase the chance of puddles appearing (that’s our <span class="math n
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 1.0)
 </pre></div>
 </div>
-<img alt="../_images/6c27325c48214dca671f17b6a1f27814647f9f08d86af7502457c53e060adbff.png" src="../_images/6c27325c48214dca671f17b6a1f27814647f9f08d86af7502457c53e060adbff.png" />
+<img alt="../_images/8ee0f97d3d88a37c03e0de7a079f352f5817429f44a4385c91c3befa16d5eacf.png" src="../_images/8ee0f97d3d88a37c03e0de7a079f352f5817429f44a4385c91c3befa16d5eacf.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -632,7 +642,7 @@ In practice, it is often a continuous transition because of the finite size of t
 <section id="a-criterion-for-the-giant-component">
 <h2>A criterion for the giant component<a class="headerlink" href="#a-criterion-for-the-giant-component" title="Link to this heading">#</a></h2>
 <p>Percolation theory focuses on lattice, a regular structure that is rare in real-world networks. What happens if the network has a complex structure?
-The Molloy-Reed criterion  provides a simple condition for the existence of a giant component in a rewired network. It states that a giant component is likely to exist if:</p>
+The Molloy-Reed criterion <a class="footnote-reference brackets" href="#footcite-molloy1995critical" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> provides a simple condition for the existence of a giant component in a rewired network. It states that a giant component is likely to exist if:</p>
 <div class="math notranslate nohighlight">
 \[
 \kappa_0 := \frac{\langle k^2 \rangle}{\langle k \rangle} &gt; 2
@@ -642,7 +652,7 @@ The Molloy-Reed criterion  provides a simple condition for the existence of a gi
 the more heterogeneous the degree distribution is, the more likely the network is to have a giant component.</p>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
-<img alt="../_images/f28296706832972715a363f1a51a5bded3072589739f7b99e87362f1c384a6ee.png" src="../_images/f28296706832972715a363f1a51a5bded3072589739f7b99e87362f1c384a6ee.png" />
+<img alt="../_images/3982ac2077301048c0ef694043b0c45af6adb3f76daa3c459009a5ecf2a8d3e5.png" src="../_images/3982ac2077301048c0ef694043b0c45af6adb3f76daa3c459009a5ecf2a8d3e5.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -692,7 +702,7 @@ To derive <span class="math notranslate nohighlight">\(\langle k^2 \rangle\)</sp
 </section>
 <section id="how-many-nodes-are-needed-to-break-a-network">
 <h2>How many nodes are needed to break a network?<a class="headerlink" href="#how-many-nodes-are-needed-to-break-a-network" title="Link to this heading">#</a></h2>
-<p>When does a network become disconnected? Based on the Molloy-Reed criterion, we can identify the critical fraction of nodes <span class="math notranslate nohighlight">\(f_c\)</span> that need to be removed for the giant component to disappear in a network with an arbitrary degree distribution. This critical point is given by :</p>
+<p>When does a network become disconnected? Based on the Molloy-Reed criterion, we can identify the critical fraction of nodes <span class="math notranslate nohighlight">\(f_c\)</span> that need to be removed for the giant component to disappear in a network with an arbitrary degree distribution. This critical point is given by <a class="footnote-reference brackets" href="#footcite-cohen2000resilience" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[
 f_c = 1 - \frac{1}{\frac{\langle k^2 \rangle}{\langle k \rangle} - 1}
@@ -863,7 +873,7 @@ Let us confirm this by simulating the random failures.</p>
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/2f6bb54d9f6777634f9a7188d019c8d0e2b300e6925628acfbdc58fadbdda598.png" src="../_images/2f6bb54d9f6777634f9a7188d019c8d0e2b300e6925628acfbdc58fadbdda598.png" />
+<img alt="../_images/6ee87d339fde5ed7341e692936935c04b19cef7334d3026516d847296bd56c40.png" src="../_images/6ee87d339fde5ed7341e692936935c04b19cef7334d3026516d847296bd56c40.png" />
 </div>
 </div>
 <p>The robustness profile of the airport network shows a very robust nature of the network, i.e., the airport network keeps the giant component until almost all nodes are removed.</p>
@@ -898,6 +908,18 @@ In this setup, <span class="math notranslate nohighlight">\((1-r)\)</span> porti
 This structure ensures that the network remains connected even if a hub is removed, as other hubs maintain the connectivity. It also withstands random failures due to its heterogeneous degree distribution.</p>
 </div>
 </details></div>
+<div class="docutils container" id="id4">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-molloy1995critical" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Michael Molloy and Bruce Reed. A critical point for random graphs with a given degree sequence. <em>Random structures &amp; algorithms</em>, 6(2-3):161–180, 1995.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-cohen2000resilience" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Reuven Cohen, Keren Erez, Daniel Ben-Avraham, and Shlomo Havlin. Resilience of the internet to random breakdowns. <em>Physical review letters</em>, 85(21):4626, 2000.</p>
+</aside>
+</aside>
+</div>
 </section>
 </section>
 

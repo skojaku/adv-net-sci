@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -247,14 +247,17 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="eigencentrality.html">Centralities based on centralities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="assignment.html">Assignment</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of random walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
 </ul>
 
     </div>
@@ -522,7 +525,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#closeness-centrality">Closeness centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#harmonic-centrality">Harmonic centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eccentricity-centrality">Eccentricity centrality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Eccentricity centrality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Eccentricity centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#betweenness-centrality">Betweenness centrality</a></li>
 </ul>
 </li>
@@ -641,7 +644,7 @@ Click to see the answer<div class="sd-summary-down docutils">
 <section id="harmonic-centrality">
 <h3>Harmonic centrality<a class="headerlink" href="#harmonic-centrality" title="Link to this heading">#</a></h3>
 <p><strong>Harmonic Centrality</strong> is a measure that adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can’t reach others, making their distance infinite. This causes all centrality values to become zero, which isn’t very helpful!</p>
-<p>To fix this, Beauchamp  came up with a clever solution called <em>harmonic centrality</em>. It works even when the network is disconnected.</p>
+<p>To fix this, Beauchamp <a class="footnote-reference brackets" href="#footcite-beauchamp1965improved" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> came up with a clever solution called <em>harmonic centrality</em>. It works even when the network is disconnected.</p>
 <div class="math notranslate nohighlight">
 \[
 c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
@@ -663,8 +666,8 @@ c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to 
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(N\)</span> is the number of nodes in the network. The numerator, <span class="math notranslate nohighlight">\(N\)</span>, is the normalization factor to make the centrality to have the maximum value of 1.</p>
 </section>
-<section id="id1">
-<h3>Eccentricity centrality<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<section id="id2">
+<h3>Eccentricity centrality<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>Eccentricity centrality is based on the shortest path distance between nodes, just like the closeness centrality, but it is based on the <em>maximum</em> distance as opposed to the average distance like in the closeness centrality.</p>
 <div class="math notranslate nohighlight">
 \[
@@ -679,6 +682,14 @@ c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
 c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(\sigma_{jk}\)</span> is the number of shortest paths between nodes <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(\sigma_{jk}(i)\)</span> is the number of shortest paths between nodes <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(k\)</span> that pass through node <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<div class="docutils container" id="id3">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-beauchamp1965improved" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Murray A Beauchamp. An improved index of centrality. <em>Behavioral science</em>, 10(2):161–163, 1965.</p>
+</aside>
+</aside>
+</div>
 </section>
 </section>
 </section>
@@ -753,7 +764,7 @@ c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#closeness-centrality">Closeness centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#harmonic-centrality">Harmonic centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eccentricity-centrality">Eccentricity centrality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Eccentricity centrality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Eccentricity centrality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#betweenness-centrality">Betweenness centrality</a></li>
 </ul>
 </li>

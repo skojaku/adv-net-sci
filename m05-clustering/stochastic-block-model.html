@@ -62,8 +62,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'm05-clustering/stochastic-block-model';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Stochstic Block Model with Python" href="stochastic-block-model-with-python.html" />
-    <link rel="prev" title="Modularity maximization with Python" href="modularity-03.html" />
+    <link rel="next" title="Hands-on: Clustering" href="exercise-clustering.html" />
+    <link rel="prev" title="Modularity (Cont.)" href="modularity-02.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -226,21 +226,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 5: Clustering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ratio-normalized-cut.html">Balanced cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity.html">Modularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity-02.html">Modularity (Cont.)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Stochastic Block Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercise-clustering.html">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
 <ul class="nav bd-sidenav">
@@ -248,6 +246,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
 </ul>
 
     </div>
@@ -585,7 +595,7 @@ As a result, when plotting the adjacency matrix, we observe “blocks” of diff
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/1023b10ac8e4171495d0b4eff7187e7df0a4260e2a5b5dac4ca0b84c50addce8.png" src="../_images/1023b10ac8e4171495d0b4eff7187e7df0a4260e2a5b5dac4ca0b84c50addce8.png" />
+<img alt="../_images/e362c583d0f2edd88731a04eef787d22da34c76a4f344fc9f7b93786ef6e90ab.png" src="../_images/e362c583d0f2edd88731a04eef787d22da34c76a4f344fc9f7b93786ef6e90ab.png" />
 </div>
 </div>
 </section>
@@ -643,7 +653,7 @@ For example, the assortativity communities can be generated as follows.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fe7d4644d015cc8873cc30b6b47af81e961ed9368cfa8d6fb7aa7320f13cd3d6.svg" src="../_images/fe7d4644d015cc8873cc30b6b47af81e961ed9368cfa8d6fb7aa7320f13cd3d6.svg" /></div>
+<img alt="../_images/384eb26022d3d95286342ee309f26bc9e0f39bf8834d93679d76f7f85ac463d7.svg" src="../_images/384eb26022d3d95286342ee309f26bc9e0f39bf8834d93679d76f7f85ac463d7.svg" /></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pref_matrix</span></code> is the matrix of connection probabilities between communities. Its <span class="math notranslate nohighlight">\((i,j)\)</span>th-element is the probability of a connection between nodes in community <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
@@ -705,7 +715,7 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 <p>Why do we have two different equations for <span class="math notranslate nohighlight">\(p_{c,c'}\)</span>? It’s because we are counting each pair of nodes only by once. It is easy to verify when looking at the adjacency matrix:</p>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
-<img alt="../_images/e036d0aa3cdbf0e8433fb21be63d4174c56e4478003bf59d06ad328e219e022f.png" src="../_images/e036d0aa3cdbf0e8433fb21be63d4174c56e4478003bf59d06ad328e219e022f.png" />
+<img alt="../_images/f2892e77823291c27455e40e1e3f11afc88ebe9f2b27abd85494dc9874e2cb78.png" src="../_images/f2892e77823291c27455e40e1e3f11afc88ebe9f2b27abd85494dc9874e2cb78.png" />
 </div>
 </div>
 <p>The upper triangle of the adjacency matrix represents <span class="math notranslate nohighlight">\(i &lt; j\)</span> over which we take the sum.
@@ -745,20 +755,20 @@ When <span class="math notranslate nohighlight">\(c=c'\)</span> (the diagonal bl
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="modularity-03.html"
+       href="modularity-02.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Modularity maximization with Python</p>
+        <p class="prev-next-title">Modularity (Cont.)</p>
       </div>
     </a>
     <a class="right-next"
-       href="stochastic-block-model-with-python.html"
+       href="exercise-clustering.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Stochstic Block Model with Python</p>
+        <p class="prev-next-title">Hands-on: Clustering</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

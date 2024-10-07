@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -226,21 +226,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/excess-degree-distribution.html">Degree distribution of a friend</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 5: Clustering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and Paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pattern-matching.html">Community detection (pattern matching)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph-cut.html">Graph cut</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Balanced cut</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity.html">Modularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modularity-02.html">Modularity (Cont.)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modularity-03.html">Modularity maximization with Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic-block-model.html">Stochastic Block Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stochastic-block-model-with-python.html">Stochstic Block Model with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercise-clustering.html">Hands-on: Clustering</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
 <ul class="nav bd-sidenav">
@@ -248,6 +246,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
 </ul>
 
     </div>
@@ -593,7 +603,7 @@ Suppose we cut the network into two communities <span class="math notranslate no
 <p class="admonition-title">Exercise</p>
 <p>Compute the ratio cut and normalized cut for the following network. The red edges should be cut.</p>
 <figure class="align-default" id="fig-graph-cut">
-<img alt="../_images/65102db2163541699ee6a8a98fc5d2ca7b24ff8038b9d4a2dbf05d1f53b3c6a6.png" src="../_images/65102db2163541699ee6a8a98fc5d2ca7b24ff8038b9d4a2dbf05d1f53b3c6a6.png" />
+<img alt="../_images/7bff2ee839de5a4a71c1a878b8ffd1b267b0fd42533a7d17293d398230425d1d.png" src="../_images/7bff2ee839de5a4a71c1a878b8ffd1b267b0fd42533a7d17293d398230425d1d.png" />
 </figure>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
