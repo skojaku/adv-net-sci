@@ -15,7 +15,7 @@ kernelspec:
 ```{admonition} Ladder Lottery
 :class: tip
 
-Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in China, "阿弥陀籤" (Amida-kuzi) in Japan, "사다리타기" (Sadaritagi) in Korea, and "Ladder Lottery" in English. The game is played as follows:
+Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:
 1. A player is given a board with a set of vertical lines.
 2. The player chooses a line and starts to move along the line
 3. When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.
