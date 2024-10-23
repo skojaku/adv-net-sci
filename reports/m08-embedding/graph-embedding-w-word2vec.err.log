@@ -1,0 +1,58 @@
+Traceback (most recent call last):
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/asyncio/base_events.py", line 650, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/contextlib.py", line 222, in __aexit__
+    await self.gen.athrow(typ, value, traceback)
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 650, in async_setup_kernel
+    yield
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+walks = []
+p = 1
+q = 0.1
+for i in range(n_nodes):
+    for _ in range(n_walkers_per_node):
+        walks.append(node2vec_random_walk(A, i, walk_length, p, q))
+model = Word2Vec(walks, vector_size=32, window=3, min_count=1, sg=1, hs = 1)
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[10], line 6[0m
+[1;32m      4[0m [38;5;28;01mfor[39;00m i [38;5;129;01min[39;00m [38;5;28mrange[39m(n_nodes):
+[1;32m      5[0m     [38;5;28;01mfor[39;00m _ [38;5;129;01min[39;00m [38;5;28mrange[39m(n_walkers_per_node):
+[0;32m----> 6[0m         walks[38;5;241m.[39mappend(node2vec_random_walk(A, i, walk_length, p, q))
+[1;32m      7[0m model [38;5;241m=[39m Word2Vec(walks, vector_size[38;5;241m=[39m[38;5;241m32[39m, window[38;5;241m=[39m[38;5;241m3[39m, min_count[38;5;241m=[39m[38;5;241m1[39m, sg[38;5;241m=[39m[38;5;241m1[39m, hs [38;5;241m=[39m [38;5;241m1[39m)
+
+Cell [0;32mIn[9], line 15[0m, in [0;36mnode2vec_random_walk[0;34m(net, start_node, walk_length, p, q)[0m
+[1;32m     13[0m     [38;5;28;01melse[39;00m:
+[1;32m     14[0m         prev [38;5;241m=[39m walk[[38;5;241m-[39m[38;5;241m2[39m]
+[0;32m---> 15[0m         next_node [38;5;241m=[39m alias_sample(cur_nbrs, prev, p, q)
+[1;32m     16[0m         walk[38;5;241m.[39mappend(next_node)
+[1;32m     17[0m [38;5;28;01melse[39;00m:
+
+Cell [0;32mIn[9], line 33[0m, in [0;36malias_sample[0;34m(neighbors, prev, p, q)[0m
+[1;32m     31[0m [38;5;28;01mif[39;00m neighbor [38;5;241m==[39m prev:
+[1;32m     32[0m     unnormalized_probs[38;5;241m.[39mappend([38;5;241m1[39m [38;5;241m/[39m p)
+[0;32m---> 33[0m [38;5;28;01melif[39;00m neighbor [38;5;129;01min[39;00m net[38;5;241m.[39mneighbors(prev):
+[1;32m     34[0m     unnormalized_probs[38;5;241m.[39mappend([38;5;241m1[39m)
+[1;32m     35[0m [38;5;28;01melse[39;00m:
+
+[0;31mNameError[0m: name 'net' is not defined
+
