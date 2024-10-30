@@ -102,7 +102,7 @@ $$
 \begin{align}
 \frac{1}{2}\sum_{i}\sum_{j} (A_{ij} - \lambda u_i u_j)^2
 &= -\frac{1}{2} \cdot \underbrace{2}_{\substack{\text{Because } A_{ij} - \lambda u_i u_j \\ \text{appears twice} \\ \text{in the sum}}} \times \sum_j (A_{ij} - \lambda u_i u_j)\cdot \lambda u_j \\
-&= \lambda \sum_j \left(A_{ij}u_j\right) - \lambda^2 u_i
+&= -\lambda \sum_j \left(A_{ij}u_j\right) + \lambda^2 u_i
 \end{align}
 $$
 
@@ -217,6 +217,13 @@ $$
 Let us formulate the ratio cut problem as an optimization problem.
 
 $$
+\text{RatioCut}(Q,S) = \frac{\text{cut}(Q,S)}{|Q|} + \frac{\text{cut}(Q,S)}{|S|}
+= \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right)
+$$
+
+Let $x_i$ be the indicator variable for $i \in Q$ or $i \in S$:
+
+$$
 x_i = \begin{cases}
 \sqrt{\frac{|S|}{|Q|}} & \text{if } i \in Q \\
 -\sqrt{\frac{|Q|}{|S|}} & \text{if } i \in S
@@ -224,14 +231,10 @@ x_i = \begin{cases}
 $$
 
 Zero mean: $\sum_i x_i = \sqrt{\frac{|S|}{|Q|}}|Q| - \sqrt{\frac{|Q|}{|S|}}|S| = 0$
-Normalization: $\sum_i x_i^2 = \frac{|S|}{|Q|}|Q| + \frac{|Q|}{|S|}|S| = 2|V|$
+Normalization: $\sum_i x_i^2 = \frac{|S|}{|Q|}|Q| + \frac{|Q|}{|S|}|S| = |V|$
 
 **Our goal**: Express the ratio cut objective in terms of $x_i$ and $A_{ij}$.
 
-$$
-\text{RatioCut}(Q,S) = \frac{\text{cut}(Q,S)}{|Q|} + \frac{\text{cut}(Q,S)}{|S|}
-= \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right)
-$$
 
 ---
 
@@ -274,7 +277,7 @@ Cont.
 $$
 \begin{align}
 \text{RatioCut}(Q,S) &= \frac{2}{N}\sum_{i=1}^N k_i x^2_i  - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N \sum_{j=1} ^N \left[k_i \mathbf{1}(i == j) - A_{ij}\right] x_i x_j \\
+&= \frac{2}{N}\sum_{i=1}^N \sum_{j=1} ^N \left[k_i \mathbf{1}(i = j) - A_{ij}\right] x_i x_j \\
 &= \frac{2}{N}\sum_{i=1}^N \sum_{j=1} ^N L_{ij} x_i x_j \\
 \end{align}
 $$
@@ -391,7 +394,7 @@ $$
 
 where $D(Q) = \sum_{i \in Q} k_{i}$ and $D(S) = \sum_{i \in S} k_{i}$ are the sum of the degrees of the nodes in $Q$ and $S$, respectively.
 
-Plot the 2D embedding of the karate club network based on the normalized cut.
+Plot the 2D embedding of the karate club network based on the normalized cut. (Section 3 in the exercise notebook)
 
 
 ---
@@ -413,7 +416,7 @@ $$
 \end{cases}
 $$
 
-Express $J$ in forms of $z^\top M z$ where $z$ is a vector and $M$ is a matrix. Derive the spectral embedding method based on the modularity, and plot the 2D embedding of the karate club network.
+Express $J$ in forms of $z^\top M z$ where $z$ is a vector and $M$ is a matrix. Derive the spectral embedding method based on the modularity, and plot the 2D embedding of the karate club network. (Section 4 in the exercise notebook)
 
 ---
 
@@ -447,8 +450,14 @@ $$
 ![bg right:40% width:90%](https://skojaku.github.io/adv-net-sci/_images/word2vec.png)
 
 
+
 ---
 
+# Pen and Paper exercise
+
+[Pen and Paper Exercise](https://skojaku.github.io/adv-net-sci/_downloads/bda4489e6c047dd517f24d5dbdbcae89/exercise.pdf)
+
+---
 # What's special about Word2Vec?
 
 With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.
@@ -460,47 +469,49 @@ With word2vec, words are represented as dense vectors, enabling us to explore th
 # Hands-on exercise
 
 - [🔗 Exercise notebook](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/exercise-m08-embedding.ipynb)
-- Complete only the third section.
+- Complete only Section 5.
 
 ---
 
 # DeepWalk: Graph → Word2Vec 🚶
 
 1. 🎲 **Random Walk Generation**:
-   ```python
-   walk = [start_node]
-   for _ in range(length):
-       walk.append(random.choice(neighbors))
-   ```
-
 2. 🎯 **Training Process**:
    - Generate k walks of length l per node
    - Feed walks to Word2Vec
    - Use skip-gram with hierarchical softmax
 
-3. 📊 **Parameters**:
-   - Walk length (l)
-   - Walks per node (k)
-   - Window size
-   - Embedding dimension
+![width:5800px](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRW50h1B1hOr3Dw41rya4A7kGV-5PgVcp1bew&s)
 
 ---
 
 # Node2Vec: Sophisticated Random Walks 🎯
 
 - 🎲 **Biased Random Walk**:
-  ```
-  P(next|current, previous) ∝
-  1/p   # Return to previous
-  1     # Move to neighbor
-  1/q   # Explore further
-  ```
+
+  $$
+  \begin{align}
+  P(\text{next}|\text{current}, \text{previous}) \quad \quad \\
+  \propto\begin{cases}
+  \frac{1}{p} & \text{Return to previous} \\
+  1 & \text{Move to neighbor} \\
+  \frac{1}{q} & \text{Explore further}
+  \end{cases}
+  \end{align}
+  $$
 
 - 📊 **Parameters**:
   - p: Return parameter (lower = more backtracking)
   - q: Out-degree parameter (lower = more exploration)
 
 ![bg right:40% width:90%](https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png)
+
+---
+
+# Hands-on exercise
+
+- [🔗 Exercise notebook](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/exercise-m08-embedding.ipynb)
+- Complete only the third section.
 
 ---
 
