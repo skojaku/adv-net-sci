@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Pen and paper exercises &#8212; Advanced Topics in Network Science</title>
+    <title>Module 9: Graph Neural Networks &#8212; Advanced Topics in Network Science</title>
   
   
   
@@ -57,11 +57,11 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'm08-embedding/pen-and-paper';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'm09-graph-neural-networks/what-to-learn';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Spectral Embedding" href="spectral-embedding.html" />
-    <link rel="prev" title="Module 8: Embedding" href="what-to-learn.html" />
+    <link rel="next" title="Preliminaries: Image Processing" href="image-processing.html" />
+    <link rel="prev" title="Appendix" href="../m08-embedding/appendix.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -258,20 +258,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 8: Embedding</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Pen and paper exercises</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spectral-embedding.html">Spectral Embedding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="word2vec.html">word2vec</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="software.html">Software for Network Embedding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-embedding.html">Spectral Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/word2vec.html">word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/appendix.html">Appendix</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image-processing.html">Preliminaries: Image Processing</a></li>
 </ul>
 
     </div>
@@ -343,7 +343,7 @@
       
       
       
-      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm08-embedding/pen-and-paper.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Fm09-graph-neural-networks/what-to-learn.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -373,7 +373,7 @@
       
       
       
-      <li><a href="../_sources/m08-embedding/pen-and-paper.md" target="_blank"
+      <li><a href="../_sources/m09-graph-neural-networks/what-to-learn.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -444,7 +444,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -455,11 +457,19 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Pen and paper exercises</h1>
+    <h1>Module 9: Graph Neural Networks</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -469,11 +479,18 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="pen-and-paper-exercises">
-<h1>Pen and paper exercises<a class="headerlink" href="#pen-and-paper-exercises" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="module-9-graph-neural-networks">
+<h1>Module 9: Graph Neural Networks<a class="headerlink" href="#module-9-graph-neural-networks" title="Link to this heading">#</a></h1>
+<section id="what-to-learn-in-this-module">
+<h2>What to learn in this module<a class="headerlink" href="#what-to-learn-in-this-module" title="Link to this heading">#</a></h2>
+<p>In this module, we will learn how to use neural networks to learn representations of graphs. We will learn:</p>
 <ul class="simple">
-<li><p><a class="reference download internal" download="" href="../_downloads/bda4489e6c047dd517f24d5dbdbcae89/exercise.pdf"><span class="xref download myst">✍️ Pen and paper exercises</span></a></p></li>
+<li><p>Spectral filters</p></li>
+<li><p>Graph convolutional networks</p></li>
+<li><p>Graph attention networks</p></li>
+<li><p>Graph pooling</p></li>
 </ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -489,7 +506,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./m08-embedding"
+            path: "./m09-graph-neural-networks"
         },
         predefinedOutput: true
     }
@@ -507,20 +524,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="what-to-learn.html"
+       href="../m08-embedding/appendix.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Module 8: Embedding</p>
+        <p class="prev-next-title">Appendix</p>
       </div>
     </a>
     <a class="right-next"
-       href="spectral-embedding.html"
+       href="image-processing.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Spectral Embedding</p>
+        <p class="prev-next-title">Preliminaries: Image Processing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -530,6 +547,21 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
