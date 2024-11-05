@@ -196,6 +196,7 @@ The key idea is to focus on the parallel between the WL test and the GNN update 
 The key difference is that the hash function in the WL test always distinguishes different sets of neighbors' labels, while the aggregation in GraphSAGE and GAT does not always do so. For example, if all nodes have the same feature (e.g., all 1), the aggregation by the mean or max will result in the same value for all nodes, whereas the hash function in the WL test can still distinguish different sets of neighbors' labels by *the count of each label*.
 
 The resulting convolution update rule is:
+
 $$
 h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_{u \in \mathcal{N}(v)} h_u^{(k)}\right)
 $$
@@ -204,6 +205,6 @@ where $\text{MLP}^{(k)}$ is a multi-layer perceptron (MLP) with $k$ layers, and 
 
 
 
-
 ```{footbibliography}
+
 ```

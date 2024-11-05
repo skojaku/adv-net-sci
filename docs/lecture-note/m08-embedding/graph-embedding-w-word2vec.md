@@ -231,7 +231,7 @@ igraph.plot(g, vertex_color=[cmap[label] for label in labels], bbox=(500, 500))
 
 ## node2vec
 
-node2vec is a sibling of DeepWalk proposed by {cite:t}`grover2016node2vec`. Both use word2vec trained on random walks on networks. So, it appears that they are very similar. However, the following two components make them very different.
+node2vec is a sibling of DeepWalk proposed by {footcite}`grover2016node2vec`. Both use word2vec trained on random walks on networks. So, it appears that they are very similar. However, the following two components make them very different.
 
 - **Biased random walk**: node2vec uses biased random walks that can move in different directions. The bias walk is parameterized by two parameters, $p$ and $q$:
 
