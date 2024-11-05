@@ -16,7 +16,7 @@ In this section, we will introduce *word2vec*, a powerful technique for learning
 
 ## How it works
 
-``You shall know a word by the company it keeps'' {cite:p}`church1988word` is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.
+"You shall know a word by the company it keeps" {footcite}`church1988word` is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.
 word2vec operates on the same principle.
 word2vec identifies a word's context by examining the words within a fixed window around it. For example, in the sentence:
 
