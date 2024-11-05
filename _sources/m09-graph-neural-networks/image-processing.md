@@ -337,7 +337,7 @@ The basis waves are 2D waves as shown below.
 **Cosine waves**
 
 ```{code-cell} ipython
-tags: [hide-input]
+:tags: [hide-input]
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -380,7 +380,7 @@ for img, ax in zip(bf_arr_real, axs):
 **Sine waves**
 
 ```{code-cell} ipython
-tags: [hide-input]
+:tags: [hide-input]
 # imaginary part
 _, axs = plt.subplots(size, size, figsize=(7, 7))
 axs = axs.flatten()
@@ -396,6 +396,7 @@ The Fourier transform of an image is a decomposition of an image into the sum of
 Let us apply the Fourier transform to an image.
 
 ```{code-cell} ipython
+:tags: [hide-input]
 from PIL import Image
 import requests
 from io import BytesIO
@@ -436,6 +437,9 @@ ft_img_gray = np.fft.fft2(img_gray)
 This decomposes the image into a sum of basis waves. Let's see the weights of the basis waves.
 
 ```{code-cell} ipython
+:tags: [hide-input]
+import matplotlib
+
 weight = np.abs(ft_img_gray)
 
 # real part
@@ -449,6 +453,7 @@ cbar.set_label('Fourier transform magnitude')
 The corresponding basis waves look like this:
 
 ```{code-cell} ipython
+:tags: [hide-input]
 size = 16
 bf_arr_real = np.zeros((size*size,size,size))
 bf_arr_imag = np.zeros((size*size,size,size))
@@ -504,6 +509,7 @@ We can think of the frequency domain of the kernel as a **filter** that suppress
 Let's see the convolution result.
 
 ```{code-cell} ipython
+:tags: [hide-input]
 FX = np.fft.fft2(img_gray)
 conv_img_gray = np.real(np.fft.ifft2(FX * FK))
 plt.imshow(conv_img_gray, cmap='gray')
@@ -530,3 +536,4 @@ Using the Fourier transform, an image is decomposed into a sum of basis waves.
 The *kernel* can be thought of as *a filter* that suppresses some basis waves and allows others to pass through.
 
 This idea is the key to understand graph convolutional networks we will see in the next page.
+

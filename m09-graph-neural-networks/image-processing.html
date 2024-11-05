@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'm09-graph-neural-networks/image-processing';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="From Image to Graph" href="from-image-to-graph.html" />
     <link rel="prev" title="Module 9: Graph Neural Networks" href="what-to-learn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -273,6 +274,10 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 9: Graph Neural Networks</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
 </ul>
 
     </div>
@@ -885,11 +890,14 @@ More specifically, for an image <span class="math notranslate nohighlight">\(X\)
 <p>Comparing with the 1D case, we see that the 2D Fourier transform is <em>functionally</em> the same as the 1D Fourier transform, except that we now have two indices <span class="math notranslate nohighlight">\(h\)</span> and <span class="math notranslate nohighlight">\(w\)</span> to represent the frequency in both dimensions.
 The basis waves are 2D waves as shown below.</p>
 <p><strong>Cosine waves</strong></p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tags</span><span class="p">:</span> <span class="p">[</span><span class="n">hide</span><span class="o">-</span><span class="nb">input</span><span class="p">]</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="k">def</span> <span class="nf">basis_function</span><span class="p">(</span><span class="n">img_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -928,24 +936,20 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+</details>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">tags</span><span class="p">:</span> <span class="p">[</span><span class="n">hide</span><span class="o">-</span><span class="nb">input</span><span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-<span class="ne">NameError</span>: name &#39;hide&#39; is not defined
-</pre></div>
-</div>
+<img alt="../_images/7cca20a71b573173bea31dcfcb10f8cdecabdaaa5d4c6f11ff925c06a1b3c2cc.png" src="../_images/7cca20a71b573173bea31dcfcb10f8cdecabdaaa5d4c6f11ff925c06a1b3c2cc.png" />
 </div>
 </div>
 <p><strong>Sine waves</strong></p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tags</span><span class="p">:</span> <span class="p">[</span><span class="n">hide</span><span class="o">-</span><span class="nb">input</span><span class="p">]</span>
-<span class="c1"># imaginary part</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># imaginary part</span>
 <span class="n">_</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
 <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bf_arr_imag</span><span class="p">,</span> <span class="n">axs</span><span class="p">):</span>
@@ -954,12 +958,21 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/9230f042871a78717654aacec06d315ea432b2ac99ffb92f6f00a9f6c0d9c2fb.png" src="../_images/9230f042871a78717654aacec06d315ea432b2ac99ffb92f6f00a9f6c0d9c2fb.png" />
+</div>
 </div>
 <p>The Fourier transform of an image is a decomposition of an image into the sum of these basis waves.</p>
 <section id="an-example-of-fourier-transform">
 <h3>An example of Fourier transform<a class="headerlink" href="#an-example-of-fourier-transform" title="Link to this heading">#</a></h3>
 <p>Let us apply the Fourier transform to an image.</p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">import</span> <span class="nn">requests</span>
@@ -993,6 +1006,13 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x16a607690&gt;
+</pre></div>
+</div>
+<img alt="../_images/359c960ebb97a64ffaccb0c751df771287204462c7060686b2a621eca3515848.png" src="../_images/359c960ebb97a64ffaccb0c751df771287204462c7060686b2a621eca3515848.png" />
+</div>
 </div>
 <p>Take the Fourier transform of the image.</p>
 <div class="cell docutils container">
@@ -1003,9 +1023,16 @@ The basis waves are 2D waves as shown below.</p>
 </div>
 </div>
 <p>This decomposes the image into a sum of basis waves. Let’s see the weights of the basis waves.</p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ft_img_gray</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span>
+
+<span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ft_img_gray</span><span class="p">)</span>
 
 <span class="c1"># real part</span>
 <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -1016,9 +1043,18 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/a6a728113ee87033828e467caa166a1120739418194a47dfaef538d9cd485d19.png" src="../_images/a6a728113ee87033828e467caa166a1120739418194a47dfaef538d9cd485d19.png" />
+</div>
 </div>
 <p>The corresponding basis waves look like this:</p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">size</span> <span class="o">=</span> <span class="mi">16</span>
 <span class="n">bf_arr_real</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="o">*</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
@@ -1052,6 +1088,14 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;Imaginary Part of Basis Functions&#39;)
+</pre></div>
+</div>
+<img alt="../_images/dcf5ae301e7c0b7e88b47017009949aaf51682077afeae9fc05d03f17dcab965.png" src="../_images/dcf5ae301e7c0b7e88b47017009949aaf51682077afeae9fc05d03f17dcab965.png" />
+<img alt="../_images/6f12ee0ac6107fa083bf7112a5e0b1021a98c4ada55a0309c38af5f521076e87.png" src="../_images/6f12ee0ac6107fa083bf7112a5e0b1021a98c4ada55a0309c38af5f521076e87.png" />
+</div>
 </div>
 <p>Now, let’s see the convolution of the image with a Prewitt operator.</p>
 <div class="cell docutils container">
@@ -1075,16 +1119,31 @@ The basis waves are 2D waves as shown below.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/253bb110048bb08ac4c9cdb2eedfd0a1c530142a0a84dadb3bd0901755ef12af.png" src="../_images/253bb110048bb08ac4c9cdb2eedfd0a1c530142a0a84dadb3bd0901755ef12af.png" />
+</div>
 </div>
 <p>We can think of the frequency domain of the kernel as a <strong>filter</strong> that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel <code class="docutils literal notranslate"><span class="pre">FK</span></code> has a low value around the center of the image. The product <span class="math notranslate nohighlight">\(FX \cdot FK\)</span> then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.</p>
 <p>Let’s see the convolution result.</p>
-<div class="cell docutils container">
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">img_gray</span><span class="p">)</span>
 <span class="n">conv_img_gray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">FX</span> <span class="o">*</span> <span class="n">FK</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">conv_img_gray</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x177e949d0&gt;
+</pre></div>
+</div>
+<img alt="../_images/681415342de5ef3c6febfc0fa1e48e54c70c28daf02e72e134ef162abf74423e.png" src="../_images/681415342de5ef3c6febfc0fa1e48e54c70c28daf02e72e134ef162abf74423e.png" />
 </div>
 </div>
 <p>We observe that the horizontal edges are highlighted.</p>
@@ -1146,6 +1205,15 @@ The <em>kernel</em> can be thought of as <em>a filter</em> that suppresses some 
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Module 9: Graph Neural Networks</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="from-image-to-graph.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">From Image to Graph</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

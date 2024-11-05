@@ -262,10 +262,22 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectral-embedding.html">Spectral Embedding</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">word2vec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
 </ul>
 
     </div>
@@ -545,7 +557,7 @@ document.write(`
 <p>In this section, we will introduce <em>word2vec</em>, a powerful technique for learning word embeddings. word2vec is a neural network model that learns words embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 <a class="footnote-reference brackets" href="#footcite-mikolov2013distributed" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <section id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
-<p>``You shall know a word by the company it keeps’’ <span id="id2">[]</span> is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.
+<p>“You shall know a word by the company it keeps”  is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.
 word2vec operates on the same principle.
 word2vec identifies a word’s context by examining the words within a fixed window around it. For example, in the sentence:</p>
 <blockquote>
@@ -703,7 +715,7 @@ throne: 0.5422
 </div>
 </div>
 <p>We can see that word2vec places the words representing countries close to each other and so do the words representing their capitals. The country-capital relationship is also roughly preserved, e.g., <em>Germany</em>-<em>Berlin</em> vector is roughly parallel to <em>France</em>-<em>Paris</em> vector.</p>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id2">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-mikolov2013distributed" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>

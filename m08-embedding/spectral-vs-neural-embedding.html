@@ -260,12 +260,22 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectral-embedding.html">Spectral Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="word2vec.html">word2vec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Spectral vs Neural Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software for Network Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
 </ul>
 
     </div>
@@ -533,17 +543,29 @@ document.write(`
 <h1>Spectral vs Neural Embedding<a class="headerlink" href="#spectral-vs-neural-embedding" title="Link to this heading">#</a></h1>
 <p>We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects as follows.</p>
 <ol class="arabic">
-<li><p><strong>Analytical Tractability</strong>: Spectral methods are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model <a class="footnote-reference brackets" href="#footcite-nadakuditi2012graph" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Neural embedding methods are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition . These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</p></li>
+<li><p><strong>Analytical Tractability</strong>: Spectral methods are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model <a class="footnote-reference brackets" href="#footcite-nadakuditi2012graph" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Neural embedding methods are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition <a class="footnote-reference brackets" href="#footcite-qiu2018network" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-kojaku2023network" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</p></li>
 <li><p><strong>Scalability</strong>: A key limitation of the spectral embedding is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit learn package as <code class="docutils literal notranslate"><span class="pre">TruncatedSVD</span></code>), they might be unstable depending on the spectrum distribution of the matrix to be decomposed. Neural embedding methods are often more stable and scalable.</p></li>
-<li><p><strong>Flexibility</strong>: Neural embeddings are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings  for embedding networks in hyperbolic space.</p>
+<li><p><strong>Flexibility</strong>: Neural embeddings are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings <a class="footnote-reference brackets" href="#footcite-nickel2017poincare" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> for embedding networks in hyperbolic space.</p>
 <p><img alt="" src="https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg" /></p>
 </li>
 </ol>
-<div class="docutils container" id="id2">
+<div class="docutils container" id="id5">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-nadakuditi2012graph" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Raj Rao Nadakuditi and Mark EJ Newman. Graph spectra and the detectability of community structure in networks. <em>Physical review letters</em>, 108(18):188701, 2012.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-qiu2018network" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Jiezhong Qiu, Yuxiao Dong, Hao Ma, Jian Li, Kuansan Wang, and Jie Tang. Network embedding as matrix factorization: unifying deepwalk, line, pte, and node2vec. In <em>Proceedings of the eleventh ACM international conference on web search and data mining</em>, 459–467. 2018.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-kojaku2023network" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Sadamori Kojaku, Filippo Radicchi, Yong-Yeol Ahn, and Santo Fortunato. Network community detection via neural embeddings. <em>arXiv preprint arXiv:2306.13400</em>, 2023.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-nickel2017poincare" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Maximillian Nickel and Douwe Kiela. Poincaré embeddings for learning hierarchical representations. In I. Guyon, U. Von Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, <em>Advances in Neural Information Processing Systems</em>, volume 30. Curran Associates, Inc., 2017. URL: <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2017/file/59dfa2df42d9e3d41f5b02bfc32229dd-Paper.pdf">https://proceedings.neurips.cc/paper_files/paper/2017/file/59dfa2df42d9e3d41f5b02bfc32229dd-Paper.pdf</a>.</p>
 </aside>
 </aside>
 </div>

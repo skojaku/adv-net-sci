@@ -262,10 +262,22 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../m08-embedding/what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/pen-and-paper.html">Pen and paper exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-embedding.html">Spectral Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m08-embedding/word2vec.html">word2vec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m08-embedding/graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
 </ul>
 
     </div>
@@ -742,8 +754,8 @@ First, we will convert the graph object in igraph to that in graph-tool.</p>
 </div>
 </details>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([4, 4, 4, 2, 0, 0, 0, 2, 3, 3, 0, 2, 2, 2, 3, 3, 0, 2, 3, 3, 3, 2,
-       3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 5])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0])
 </pre></div>
 </div>
 </div>
@@ -768,7 +780,7 @@ First, we will convert the graph object in igraph to that in graph-tool.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3da680a56275fee6f28d90c09619d13725cc0a5b266fb6cd2bc3e190830221c8.png" src="../_images/3da680a56275fee6f28d90c09619d13725cc0a5b266fb6cd2bc3e190830221c8.png" />
+<img alt="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" src="../_images/154738c00ba32a00203987f906e770b4954d6cf2f0cd09cb6476b54c7cf6e1aa.png" />
 </div>
 </div>
 <p>What we’re seeing here isn’t a failure at all. In fact, it’s the best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> <a class="footnote-reference brackets" href="#footcite-borgatti2000models" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>. Let me break that down:</p>
@@ -802,7 +814,7 @@ First, we will convert the graph object in igraph to that in graph-tool.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bbc143ed5495e6ca6be8f3b86b2d7fc3d5785c1f2fea409e5ff409447fc2929a.png" src="../_images/bbc143ed5495e6ca6be8f3b86b2d7fc3d5785c1f2fea409e5ff409447fc2929a.png" />
+<img alt="../_images/0c8da5acf1670951d30530359ca0dd7cd4d0effe6f6e9fc1939388eaf77781f7.png" src="../_images/0c8da5acf1670951d30530359ca0dd7cd4d0effe6f6e9fc1939388eaf77781f7.png" />
 </div>
 </div>
 <section id="exercise-02">
