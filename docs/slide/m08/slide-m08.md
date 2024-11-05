@@ -231,7 +231,9 @@ x_i = \begin{cases}
 $$
 
 Zero mean: $\sum_i x_i = \sqrt{\frac{|S|}{|Q|}}|Q| - \sqrt{\frac{|Q|}{|S|}}|S| = 0$
-Normalization: $\sum_i x_i^2 = \frac{|S|}{|Q|}|Q| + \frac{|Q|}{|S|}|S| = |V|$
+Normalization: $\sum_i x_i^2 = \frac{|S|}{|Q|}|Q| + \frac{|Q|}{|S|}|S| = N$
+
+where $N = |Q| + |S|$ is the number of nodes.
 
 **Our goal**: Express the ratio cut objective in terms of $x_i$ and $A_{ij}$.
 
@@ -243,14 +245,12 @@ $$
 (x_i - x_j)^2 = \left(\sqrt{\frac{|S|}{|Q|}} + \sqrt{\frac{|Q|}{|S|}}\right)^2 = \frac{|S|^2 + |Q|^2 + 2|S||Q|}{|Q||S|} = \frac{(|S| + |Q|)^2}{|Q||S|} = \frac{N^2}{|Q||S|}
 $$
 
-where $N = |Q| + |S|$ is the number of nodes.
-
 $$
 \begin{align}
 \text{RatioCut}(Q,S) &= \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right)
 = \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{|Q| + |S|}{|Q||S|} \right) \\
 &= \frac{1}{N}\sum_{i \in Q} \sum_{j \in S} A_{ij}  \left( x_i - x_j \right)^2 \\
-&= \frac{1}{N}\underbrace{\sum_{i=1}^N  \sum_{j=1}^N}_{\text{Sum over all node pairs.}}  A_{ij}  \left( x_i - x_j \right)^2
+&= \frac{1}{2N}\underbrace{\sum_{i=1}^N  \sum_{j=1}^N}_{\text{Sum over all node pairs.}}  A_{ij}  \left( x_i - x_j \right)^2
 \end{align}
 $$
 
@@ -262,12 +262,12 @@ By expanding the square term, we get
 
 $$
 \begin{align}
-\text{RatioCut}(Q,S) &= \frac{1}{N}\sum_{i=1}^N  \sum_{j=1}^N A_{ij}  \left( x_i - x_j \right)^2
-= \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} \left( x^2_i - 2x_i x_j + x_j ^2\right) \\
-&= \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} \left( x^2_i + x_j ^2\right) - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x^2_i - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N x^2_i \underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree } k_i}  - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N k_i x^2_i  - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+\text{RatioCut}(Q,S) &= \frac{1}{2N}\sum_{i=1}^N  \sum_{j=1}^N A_{ij}  \left( x_i - x_j \right)^2
+= \frac{1}{2N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} \left( x^2_i - 2x_i x_j + x_j ^2\right) \\
+&= \frac{1}{2N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} \left( x^2_i + x_j ^2\right) - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&= \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x^2_i - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&= \frac{1}{N}\sum_{i=1}^N x^2_i \underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree } k_i}  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&= \frac{1}{N}\sum_{i=1}^N k_i x^2_i  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
 \end{align}
 $$
 
@@ -276,9 +276,9 @@ $$
 Cont.
 $$
 \begin{align}
-\text{RatioCut}(Q,S) &= \frac{2}{N}\sum_{i=1}^N k_i x^2_i  - \frac{2}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N \sum_{j=1} ^N \left[k_i \mathbf{1}(i = j) - A_{ij}\right] x_i x_j \\
-&= \frac{2}{N}\sum_{i=1}^N \sum_{j=1} ^N L_{ij} x_i x_j \\
+\text{RatioCut}(Q,S) &= \frac{1}{N}\sum_{i=1}^N k_i x^2_i  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&= \frac{1}{N}\sum_{i=1}^N \sum_{j=1} ^N \left[k_i \mathbf{1}(i = j) - A_{ij}\right] x_i x_j \\
+&= \frac{1}{N}\sum_{i=1}^N \sum_{j=1} ^N L_{ij} x_i x_j \\
 \end{align}
 $$
 
@@ -389,7 +389,7 @@ But the second smallest eigenvector is orthogonal to $x_1$.
 Let us derive another spectral embedding method based on the normalized cut.
 
 $$
-\text{Ncut}(Q,S) = \frac{\text{cut}(Q,S)}{E(Q)} + \frac{\text{cut}(Q,S)}{E(S)}
+\text{Ncut}(Q,S) = \frac{\text{cut}(Q,S)}{D(Q)} + \frac{\text{cut}(Q,S)}{D(S)}
 $$
 
 where $D(Q) = \sum_{i \in Q} k_{i}$ and $D(S) = \sum_{i \in S} k_{i}$ are the sum of the degrees of the nodes in $Q$ and $S$, respectively.
