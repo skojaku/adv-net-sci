@@ -18,6 +18,16 @@ This course is designed to help you *feel* the concepts and tools of network sci
 | M08: Embedding | [Network Embeddings](m08-embedding/pen-and-paper/exercise.pdf) | [Jupyter Notebook](https://github.com/skojaku/adv-net-sci/tree/main/notebooks/exercise-m08-embedding.ipynb) |
 | M09: Graph Neural Networks | [Graph Neural Networks](m09-graph-neural-networks/pen-and-paper/exercise.pdf) | [Jupyter Notebook](https://github.com/skojaku/adv-net-sci/tree/main/notebooks/exercise-m09-graph-neural-net.ipynb) |
 
+## List of assignments
+
+**Note:** For the students taking SSIE 641, the grading will be done through [GitHub Classroom](https://classroom.github.com/), and the following assignments are not linked to GitHub Classroom. Please use the links provided by the instructor. All the links are listed in Brightspace.
+
+| Module | Assignment |
+|--------|------------|
+| Small World | [Assignment 1](https://github.com/sk-classroom/adv-net-sci-small-world) |
+| Network Centrality | [Assignment 2](https://github.com/sk-classroom/adv-net-sci-centrality) |
+| Small world networks | [Assignment 3](https://github.com/sk-classroom/adv-net-sci-graph-embedding) |
+
 
 ```{tableofcontents}
 ```
