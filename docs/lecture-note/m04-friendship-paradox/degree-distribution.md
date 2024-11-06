@@ -22,7 +22,7 @@ Understanding degree distribution is the first key step to understand networks! 
 
 ## Visualization basics
 
-To learn the basics of data visualization, please take a [pen and paper exercise](pen-and-paper-friendship-paradox/main.pdf).
+To learn the basics of data visualization, please take a [pen and paper exercise](./pen-and-paper/exercise.pdf).
 
 ## Coding exercise
 

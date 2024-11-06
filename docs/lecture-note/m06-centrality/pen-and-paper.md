@@ -12,4 +12,4 @@ kernelspec:
 
 # Pen and paper exercises
 
--  [️️School ](pen-and-paper-centrality/exercise.pdf)
+-  [️️School ](./pen-and-paper/exercise.pdf)
