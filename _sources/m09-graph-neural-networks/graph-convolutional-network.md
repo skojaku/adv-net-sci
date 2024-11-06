@@ -139,7 +139,7 @@ These simplifications offer several advantages:
 :class: note
 
 Let's implement a simple GCN model for node classification.
-![](../notebooks/m09-graph-convolutional-network.ipynb)
+[Coding Exercise](../../../notebooks/exercise-m09-graph-neural-net.ipynb)
 ```
 
 
