@@ -20,7 +20,7 @@ How could one walk through the city and cross each bridge exactly once?
 ```
 
 :::{figure-md} seven-bridges
-![alt text](https://99percentinvisible.org/app/uploads/2022/02/bridges-with-water.png)
+![alt text](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png)
 
 The seven bridges of Königsberg
 :::
