@@ -17,7 +17,7 @@ kernelspec:
 1. Create a network of landmasses and bridges of Binghamton, NY.
 2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
 
-![](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/binghamton-map.jpg?raw=true)
+![](../figs/binghamton-map.jpg)
 
 
 ```{code-cell} ipython3
