@@ -100,7 +100,7 @@ def convert_json_to_brightspace_csv(json_file: str, output_file: str, course_cod
 
         # Write header comments
         writer.writerow(['// Brightspace Quiz - Multiple Choice Questions'])
-        writer.writerow(['// Images are located in /content/enforced/353075-32628.202490/images/'])
+        writer.writerow(['// Images are located in /content/enforced/353075-32628.202490/quiz-samples/'])
         writer.writerow([''])
 
         # Write each question
