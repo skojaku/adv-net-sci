@@ -64,7 +64,7 @@ class QuizQuestion:
         rows.append(["Difficulty", "1", "", "", ""])
 
         # Add image reference
-        rows.append(["Image", f"images/output_{self.question_id}.jpg", "", "", ""])
+        rows.append(["Image", f"sample-quiz/output_{self.question_id}.jpg", "", "", ""])
 
         # Add options
         for letter, text in self.options.items():
@@ -100,7 +100,7 @@ def convert_json_to_brightspace_csv(json_file: str, output_file: str, course_cod
 
         # Write header comments
         writer.writerow(['// Brightspace Quiz - Multiple Choice Questions'])
-        writer.writerow(['// Images are located in /content/enforced/353075-32628.202490/quiz-samples/'])
+        writer.writerow(['// Images are located in /content/enforced/353075-32628.202490/sample-quiz/'])
         writer.writerow([''])
 
         # Write each question
@@ -110,14 +110,8 @@ def convert_json_to_brightspace_csv(json_file: str, output_file: str, course_cod
 
 # Example usage
 # You can change these parameters as needed
-json_file = "quiz.json"  # Your input JSON file
+json_file = "sample-quiz.json"  # Your input JSON file
 output_file = "brightspace_quiz.csv"  # The output CSV file
 course_code = "COURSE101"  # Your course code
 
 convert_json_to_brightspace_csv(json_file, output_file, course_code)
-# %%
-
-
-
-
-
