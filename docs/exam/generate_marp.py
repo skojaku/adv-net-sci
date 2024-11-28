@@ -85,7 +85,7 @@ def generate_marp_slides(json_file, output_file):
     print(f"Successfully created Marp slides in {output_file}")
 
 def main():
-    input_file = 'quiz_output.json'
+    input_file = 'sample-quiz.json'
     output_file = 'quiz_slides.md'
     generate_marp_slides(input_file, output_file)
 
