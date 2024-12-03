@@ -1,0 +1,62 @@
+/* Custom theme CSS */
+:root {
+    --info-color: #3498db;
+    --warning-color: #f1c40f;
+    --danger-color: #e74c3c;
+    --tip-color: #2ecc71;
+}
+
+.info, .warning, .danger, .tip {
+    padding: 1em;
+    margin: 1em 0;
+    border-left: 4px solid;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.info {
+    border-left-color: var(--info-color);
+}
+
+.info::before {
+    content: "ℹ️ INFO";
+    color: var(--info-color);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.warning {
+    border-left-color: var(--warning-color);
+}
+
+.warning::before {
+    content: "⚠️ WARNING";
+    color: var(--warning-color);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.danger {
+    border-left-color: var(--danger-color);
+}
+
+.danger::before {
+    content: "🚫 DANGER";
+    color: var(--danger-color);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.tip {
+    border-left-color: var(--tip-color);
+}
+
+.tip::before {
+    content: "💡 TIP";
+    color: var(--tip-color);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5em;
+}
