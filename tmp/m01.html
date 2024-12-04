@@ -1,0 +1,1013 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Exercise &#8212; Advanced Topics in Network Science</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tmp/m01';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../home.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics in Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics in Network Science - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/setup.html">Trouble shooting</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">Module 1: Euler Tour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/coding-exercise.html">Exercise</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">Module 2: Small-world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/which-tools.html">Toolbox for network analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">Module 3: Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness (Random attack)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/percolation.html">Percolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">Module 4: Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">Module 5: Clustering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/what-to-learn.html">Module 6: Centrality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-embedding.html">Spectral Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/word2vec.html">word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/tmp/m01.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Ftmp/m01.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tmp/m01.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/tmp/m01.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Exercise</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-counting">Edge counting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pen-and-paper-worksheet">Pen-and-paper worksheet</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m01-euler-tour.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<section class="tex2jax_ignore mathjax_ignore" id="exercise">
+<h1>Exercise<a class="headerlink" href="#exercise" title="Link to this heading">#</a></h1>
+<section id="exercise-01">
+<h2>Exercise 01<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Create a network of landmasses and bridges of Binghamton, NY.</p></li>
+<li><p>Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.</p></li>
+</ol>
+<p><img alt="Binghamton Map" src="https://github.com/skojaku/adv-net-sci/raw/main/docs/lecture-note/figs/binghamton-map.jpg" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using colab, uncomment the following line</span>
+<span class="c1"># !sudo apt install libcairo2-dev pkg-config python3-dev</span>
+<span class="c1"># !pip install pycairo cairocffi</span>
+<span class="c1"># !pip install igraph</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Define the edges</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a placeholder for your code for the exercise</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Define the adjacnecy matrix (without for loops!)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualize the graph</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+  <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+  <span class="n">src</span><span class="p">,</span> <span class="n">trg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+  <span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+  <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+  <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">]):</span>
+      <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+<span class="n">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">15</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span>       <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span>   <span class="k">return</span> <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">15</span> <span class="n">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="nn">Cell In[4], line 7,</span> in <span class="ni">visualize_graph</span><span class="nt">(A, **params)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">def</span> <span class="nf">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>   <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">7</span>   <span class="n">src</span><span class="p">,</span> <span class="n">trg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>   <span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>   <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="ne">ValueError</span>: not enough values to unpack (expected 2, got 1)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Check if the graph has an Euler path</p>
+</section>
+<section id="exercise-02">
+<h2>Exercise 02<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h2>
+<p>Let’s create a network from pre-existing data and check if it has an Euler path.</p>
+<ol class="arabic simple">
+<li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
+<li><p>Download the csv version of the data by clicking something like “3KiB” under <code class="docutils literal notranslate"><span class="pre">csv</span></code> column.</p></li>
+<li><p>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</p></li>
+<li><p>Load the data using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Get the source and target nodes from the data to create an edge list.</p></li>
+<li><p>Construct the adjacency matrix from the edge list.</p></li>
+<li><p>Draw the graph using <code class="docutils literal notranslate"><span class="pre">igraph</span></code>.</p></li>
+<li><p>Check if the graph has an Euler path.</p></li>
+</ol>
+<p>Load the data by</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;edges.csv&#39;</span><span class="p">)</span> <span class="c1"># load the data</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then, get the srce and target nodes to compose an edge list</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">trg</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create the adjacency matrix from the edge list</p>
+<p>Get the degree of each node</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">deg</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualize the graph</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualize_graph</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Check if the graph has an Euler path</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="err">```</span><span class="o">---</span>
+<span class="n">jupytext</span><span class="p">:</span>
+  <span class="n">formats</span><span class="p">:</span> <span class="n">md</span><span class="p">:</span><span class="n">myst</span>
+  <span class="n">text_representation</span><span class="p">:</span>
+    <span class="n">extension</span><span class="p">:</span> <span class="o">.</span><span class="n">md</span>
+    <span class="n">format_name</span><span class="p">:</span> <span class="n">myst</span>
+<span class="n">kernelspec</span><span class="p">:</span>
+  <span class="n">display_name</span><span class="p">:</span> <span class="n">Python</span> <span class="mi">3</span>
+  <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">python3</span>
+<span class="n">launch_buttons</span><span class="p">:</span>
+  <span class="n">notebook_interface</span><span class="p">:</span> <span class="s2">&quot;classic&quot;</span>
+  <span class="n">colab_url</span><span class="p">:</span> <span class="s2">&quot;https://colab.research.google.com&quot;</span>
+  <span class="n">thebe</span><span class="p">:</span> <span class="n">true</span>
+  <span class="n">binderhub_url</span><span class="p">:</span> <span class="s2">&quot;https://mybinder.org&quot;</span>  <span class="c1"># The URL for your BinderHub (e.g., https://mybinder.org)</span>
+<span class="o">---</span>
+
+
+<span class="c1"># Euler&#39;s solution</span>
+
+<span class="n">Euler</span> <span class="n">consider</span> <span class="n">two</span> <span class="n">cases</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">a</span> <span class="n">node</span> <span class="n">has</span> <span class="n">an</span> <span class="n">even</span> <span class="n">number</span> <span class="n">of</span> <span class="n">edges</span><span class="p">,</span> <span class="ow">or</span>
+<span class="o">-</span> <span class="n">a</span> <span class="n">node</span> <span class="n">has</span> <span class="n">an</span> <span class="n">odd</span> <span class="n">number</span> <span class="n">of</span> <span class="n">edges</span><span class="o">.</span>
+
+<span class="n">When</span> <span class="n">a</span> <span class="n">node</span> <span class="n">has</span> <span class="n">an</span> <span class="n">even</span> <span class="n">number</span> <span class="err">$</span><span class="mi">2</span><span class="n">k</span><span class="err">$</span> <span class="n">of</span> <span class="n">edges</span><span class="p">,</span> <span class="n">one</span> <span class="n">can</span> <span class="n">enter</span> <span class="ow">and</span> <span class="n">leave</span> <span class="n">the</span> <span class="n">node</span> <span class="err">$</span><span class="n">k</span><span class="err">$</span> <span class="n">times</span> <span class="n">by</span> <span class="n">crossing</span> <span class="n">different</span> <span class="n">edges</span><span class="o">.</span>
+
+<span class="n">When</span> <span class="n">a</span> <span class="n">node</span> <span class="n">has</span> <span class="n">an</span> <span class="n">odd</span> <span class="n">number</span> <span class="err">$</span><span class="mi">2</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="err">$</span> <span class="n">of</span> <span class="n">edges</span><span class="p">,</span> <span class="n">one</span> <span class="n">can</span> <span class="n">enter</span> <span class="ow">and</span> <span class="n">leave</span> <span class="n">the</span> <span class="n">node</span> <span class="err">$</span><span class="n">k</span><span class="err">$</span> <span class="n">times</span> <span class="n">by</span> <span class="n">crossing</span> <span class="n">different</span> <span class="n">edges</span> <span class="n">but</span> <span class="n">leave</span> <span class="n">one</span> <span class="n">last</span> <span class="n">edge</span> <span class="n">to</span> <span class="n">cross</span><span class="o">.</span> <span class="n">The</span> <span class="n">only</span> <span class="n">way</span> <span class="n">to</span> <span class="n">cross</span> <span class="n">this</span> <span class="n">last</span> <span class="n">edge</span> <span class="ow">is</span> <span class="n">that</span> <span class="n">one</span> <span class="n">starts</span> <span class="ow">or</span> <span class="n">ends</span> <span class="n">at</span> <span class="n">the</span> <span class="n">node</span><span class="o">.</span>
+
+<span class="n">Based</span> <span class="n">up</span> <span class="n">on</span> <span class="n">the</span> <span class="n">above</span> <span class="n">reasoning</span><span class="p">,</span> <span class="n">Euler</span> <span class="n">leads</span> <span class="n">to</span> <span class="n">the</span> <span class="n">following</span> <span class="n">necessary</span> <span class="p">(</span><span class="ow">and</span> <span class="n">later</span> <span class="n">shown</span> <span class="k">as</span> <span class="n">sufficient</span><span class="p">)</span> <span class="n">conditions</span><span class="p">:</span>
+
+<span class="p">:::{</span><span class="n">admonition</span><span class="p">}</span> <span class="n">Euler</span><span class="s1">&#39;s path</span>
+
+<span class="n">There</span> <span class="n">exists</span> <span class="n">a</span> <span class="n">walk</span> <span class="n">that</span> <span class="n">crosses</span> <span class="nb">all</span> <span class="n">edges</span> <span class="n">exactly</span> <span class="n">once</span> <span class="k">if</span> <span class="ow">and</span> <span class="n">only</span> <span class="k">if</span> <span class="nb">all</span> <span class="n">nodes</span> <span class="n">have</span> <span class="n">even</span> <span class="n">number</span> <span class="n">of</span> <span class="n">edges</span><span class="p">,</span> <span class="ow">or</span> <span class="n">exactly</span> <span class="n">two</span> <span class="n">nodes</span> <span class="n">have</span> <span class="n">an</span> <span class="n">odd</span> <span class="n">number</span> <span class="n">of</span> <span class="n">edges</span><span class="o">.</span>
+<span class="p">:::</span>
+
+<span class="o">![</span>alt<span class="w"> </span>text<span class="o">](</span>https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax<span class="o">=</span><span class="m">1600</span><span class="o">)</span>
+
+<span class="n">Back</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Konigsberg</span> <span class="n">bridge</span> <span class="n">problem</span><span class="p">,</span> <span class="n">every</span> <span class="n">node</span> <span class="n">has</span> <span class="n">an</span> <span class="n">odd</span> <span class="n">number</span> <span class="n">of</span> <span class="n">edges</span><span class="p">,</span> <span class="n">meaning</span> <span class="n">that</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">no</span> <span class="n">way</span> <span class="n">to</span> <span class="n">cross</span> <span class="nb">all</span> <span class="n">edges</span> <span class="n">exactly</span> <span class="n">once</span><span class="o">.</span> <span class="n">What</span> <span class="n">a</span> <span class="n">sad</span> <span class="n">story</span> <span class="k">for</span> <span class="n">the</span> <span class="n">citizens</span> <span class="n">of</span> <span class="n">Konigsberg</span><span class="o">.</span> <span class="n">But</span> <span class="n">the</span> <span class="n">problem</span> <span class="n">was</span> <span class="n">solved</span> <span class="n">during</span> <span class="n">World</span> <span class="n">War</span> <span class="n">II</span><span class="p">,</span> <span class="n">where</span> <span class="n">Koingberg</span> <span class="n">was</span> <span class="n">bombarded</span> <span class="n">by</span> <span class="n">Soviet</span> <span class="n">Union</span><span class="p">,</span> <span class="n">losing</span> <span class="n">two</span> <span class="n">of</span> <span class="n">the</span> <span class="n">seven</span> <span class="n">bridges</span> <span class="err">🫠</span><span class="o">.</span>
+
+<span class="p">:::{</span><span class="n">figure</span><span class="o">-</span><span class="n">md</span><span class="p">}</span> <span class="n">markdown</span><span class="o">-</span><span class="n">fig</span>
+<span class="o">&lt;</span><span class="n">img</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;../figs/seven-bridge-bombared.png&quot;</span> <span class="n">alt</span><span class="o">=</span><span class="s2">&quot;fishy&quot;</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;50%&quot;</span><span class="o">&gt;</span>
+
+<span class="n">Two</span> <span class="n">bridges</span> <span class="n">were</span> <span class="n">bombed</span> <span class="n">by</span> <span class="n">Soviet</span> <span class="n">Union</span><span class="p">,</span> <span class="n">which</span> <span class="n">allows</span> <span class="n">the</span> <span class="n">Euler</span> <span class="n">path</span> <span class="n">to</span> <span class="n">exist</span><span class="o">.</span>
+<span class="p">:::</span>
+
+<span class="o">---</span>
+<span class="n">kernelspec</span><span class="p">:</span>
+  <span class="n">display_name</span><span class="p">:</span> <span class="n">Python</span> <span class="mi">3</span> <span class="p">(</span><span class="n">ipykernel</span><span class="p">)</span>
+  <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">python3</span>
+<span class="o">---</span>
+
+<span class="o">&lt;</span><span class="n">a</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;_blank&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">img</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://colab.research.google.com/assets/colab-badge.svg&quot;</span> <span class="n">alt</span><span class="o">=</span><span class="s2">&quot;Open In Colab&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+
+<span class="c1"># Compute with networks</span>
+
+<span class="n">So</span> <span class="n">far</span> <span class="n">we</span> <span class="n">worked</span> <span class="n">out</span> <span class="n">the</span> <span class="n">network</span> <span class="n">of</span> <span class="n">bridges</span> <span class="n">of</span> <span class="n">Konigsberg</span> <span class="n">by</span> <span class="n">illustrating</span> <span class="n">the</span> <span class="n">network</span> <span class="k">with</span> <span class="n">points</span> <span class="ow">and</span> <span class="n">lines</span><span class="o">.</span>
+<span class="n">From</span> <span class="n">now</span><span class="p">,</span> <span class="n">we</span> <span class="n">will</span> <span class="n">work</span> <span class="k">with</span> <span class="n">a</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">network</span> <span class="n">that</span> <span class="n">can</span> <span class="n">be</span> <span class="n">easily</span> <span class="n">computed</span> <span class="k">with</span> <span class="n">code</span><span class="o">.</span>
+
+<span class="c1">## Network representation</span>
+
+<span class="n">An</span> <span class="n">atomic</span> <span class="n">element</span> <span class="n">of</span> <span class="n">a</span> <span class="n">network</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">node</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="p">,</span> <span class="n">a</span> <span class="n">network</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">collection</span> <span class="n">of</span> <span class="n">edges</span> <span class="n">which</span> <span class="n">are</span> <span class="n">pairs</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+<span class="n">We</span> <span class="o">*</span><span class="n">label</span><span class="o">*</span> <span class="n">a</span> <span class="n">unique</span> <span class="n">integer</span> <span class="k">as</span> <span class="n">an</span> <span class="n">identifier</span> <span class="k">for</span> <span class="n">each</span> <span class="n">node</span><span class="o">.</span> <span class="n">For</span> <span class="n">instance</span><span class="p">,</span> <span class="n">the</span> <span class="n">bridges</span> <span class="n">of</span> <span class="n">Konigsberg</span> <span class="n">has</span> <span class="mi">4</span> <span class="n">nodes</span><span class="p">,</span> <span class="ow">and</span> <span class="n">we</span> <span class="n">assign</span> <span class="n">the</span> <span class="n">number</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">3</span> <span class="n">to</span> <span class="n">the</span> <span class="n">nodes</span><span class="o">.</span> <span class="n">An</span> <span class="n">edge</span> <span class="n">can</span> <span class="n">be</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">a</span> <span class="n">pair</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span> <span class="n">For</span> <span class="n">instance</span><span class="p">,</span> <span class="n">the</span> <span class="n">edge</span> <span class="n">between</span> <span class="n">node</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">node</span> <span class="mi">1</span> <span class="n">can</span> <span class="n">be</span> <span class="n">represented</span> <span class="n">by</span> <span class="n">the</span> <span class="n">pair</span> <span class="err">`</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="err">`</span><span class="o">.</span>
+
+
+<span class="err">```</span><span class="p">{</span><span class="n">figure</span><span class="o">-</span><span class="n">md</span><span class="p">}</span> <span class="n">numbered</span><span class="o">-</span><span class="n">koningsberg</span><span class="o">-</span><span class="n">graph</span>
+
+<span class="o">![</span>file<span class="o">](</span>https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw<span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+
+<span class="n">Labeled</span> <span class="n">Knigsberg</span> <span class="n">graph</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note" id="node-labeling">
+<p class="admonition-title">Note</p>
+<p>We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is <em>not the only way</em> to label nodes.</p>
+</div>
+<p>The Konigsberg graph can be represented by a list of edges.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another, more convenient format is the <em>adjacency matrix</em>.
+In this form, one regard the node index as a coordinate in the matrix. For instance, edge <span class="math notranslate nohighlight">\((1,3)\)</span> is represented by the entry in the second row and fourth column. The entry of the matrix represents the number of edges between two nodes. Thus, the zeros in the matrix represent the absence of edges.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>or equivalently, using for loops:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the Konigsberg graph, the edges are <em>undirected</em>, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries <span class="math notranslate nohighlight">\((i,j)\)</span> and <span class="math notranslate nohighlight">\((j,i)\)</span> in the for loop. If the edges are <em>directed</em>, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).</p>
+</div>
+</section>
+<section id="edge-counting">
+<h2>Edge counting<a class="headerlink" href="#edge-counting" title="Link to this heading">#</a></h2>
+<p>Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.</p>
+<p>The total number of edges in the network is the sum of the entities in the</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider</p>
+<p>It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The result is an array of length 4, where the i-th entry is the number of edges connected to node i.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The number of edges connected to a node is called the <em><strong>degree</strong></em> of the node.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">np.sum(A,</span> <span class="pre">axis</span> <span class="pre">=</span> <span class="pre">1)</span></code> is the column sum of <code class="docutils literal notranslate"><span class="pre">A</span></code>. Alternatively, <code class="docutils literal notranslate"><span class="pre">np.sum(A,</span> <span class="pre">axis</span> <span class="pre">=</span> <span class="pre">0)</span></code> is the row sum of <code class="docutils literal notranslate"><span class="pre">A</span></code>.
+Check out the numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html">documentation</a> for more details.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the adjacency matrix is <code class="docutils literal notranslate"><span class="pre">scipy</span></code> CSR format (or CSC format), you can instead use <code class="docutils literal notranslate"><span class="pre">A_csr.sum(axis=1)</span></code>, <code class="docutils literal notranslate"><span class="pre">A_csr.sum(axis=0)</span></code>, and <code class="docutils literal notranslate"><span class="pre">A_csr.sum()</span></code>.
+Check out the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix">scipy documentation</a> for more details.</p>
+</div>
+<p>We can check the number of nodes with odd degree by taking the modulus of the degree by 2.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">is_odd</span> <span class="o">=</span> <span class="n">deg</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="n">is_odd</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">is_odd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">is_odd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph has a Euler path.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph does not have a Euler path.&quot;</span><span class="p">)</span>
+<span class="err">```</span><span class="o">---</span>
+<span class="n">jupytext</span><span class="p">:</span>
+  <span class="n">formats</span><span class="p">:</span> <span class="n">md</span><span class="p">:</span><span class="n">myst</span>
+  <span class="n">text_representation</span><span class="p">:</span>
+    <span class="n">extension</span><span class="p">:</span> <span class="o">.</span><span class="n">md</span>
+    <span class="n">format_name</span><span class="p">:</span> <span class="n">myst</span>
+<span class="n">kernelspec</span><span class="p">:</span>
+  <span class="n">display_name</span><span class="p">:</span> <span class="n">Python</span> <span class="mi">3</span>
+  <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">python3</span>
+<span class="o">---</span>
+
+<span class="c1"># A puzzle</span>
+
+<span class="n">Back</span> <span class="ow">in</span> <span class="mi">18</span><span class="n">th</span> <span class="n">century</span><span class="p">,</span> <span class="n">there</span> <span class="n">was</span> <span class="n">a</span> <span class="n">city</span> <span class="n">called</span> <span class="o">*</span><span class="n">Königsberg</span><span class="o">*</span> <span class="n">situated</span> <span class="n">on</span> <span class="n">the</span> <span class="n">Pregel</span> <span class="n">River</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">historical</span> <span class="n">region</span> <span class="n">of</span> <span class="n">Germany</span><span class="o">.</span> <span class="n">The</span> <span class="n">city</span> <span class="n">had</span> <span class="n">two</span> <span class="n">large</span> <span class="n">islands</span> <span class="n">connected</span> <span class="n">to</span> <span class="n">each</span> <span class="n">other</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">mainland</span> <span class="n">by</span> <span class="n">seven</span> <span class="n">bridges</span><span class="o">.</span>
+<span class="n">The</span> <span class="n">citizens</span> <span class="n">of</span> <span class="n">Königsberg</span> <span class="n">pondered</span> <span class="n">a</span> <span class="n">puzzle</span> <span class="n">during</span> <span class="n">their</span> <span class="n">Sunday</span> <span class="n">walks</span><span class="p">:</span>
+
+<span class="err">```</span><span class="p">{</span><span class="n">admonition</span><span class="p">}</span> <span class="n">Problem</span>
+<span class="n">How</span> <span class="n">could</span> <span class="n">one</span> <span class="n">walk</span> <span class="n">through</span> <span class="n">the</span> <span class="n">city</span> <span class="ow">and</span> <span class="n">cross</span> <span class="n">each</span> <span class="n">bridge</span> <span class="n">exactly</span> once<span class="o">?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<figure class="align-default" id="seven-bridges">
+<img alt="alt text" src="https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png" />
+<figcaption>
+<p><span class="caption-text">The seven bridges of Königsberg</span><a class="headerlink" href="#seven-bridges" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Leonard Euler worked out the solution to this puzzle in 1736. He first simplified the city into <em>a network of landmasses connected by bridges</em>, by noting that the landareas, the positions of the islands and the bridges are nothing to do with the puzzle, and that the only thing that matters is the connections between the landmasses.</p>
+<figure class="align-default" id="euler-graph">
+<img alt="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600" src="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600" />
+<figcaption>
+<p><span class="caption-text">Euler’s graph of the bridges of Knigsberg</span><a class="headerlink" href="#euler-graph" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="pen-and-paper-worksheet">
+<h2>Pen-and-paper worksheet<a class="headerlink" href="#pen-and-paper-worksheet" title="Link to this heading">#</a></h2>
+<p>Let’s follow the worksheet to solve the puzzle step by step.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">Worksheet</a> <span id="id1">[<a class="reference internal" href="#id3" title="Esteban Moro. Network science for kids! Mar 2017. URL: http://estebanmoro.org/2017/03/network-science-for-kids.">1</a>]</span></p></li>
+</ul>
+<div class="docutils container" id="id2">
+<div role="list" class="citation-list">
+<div class="citation" id="id3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Esteban Moro. Network science for kids! Mar 2017. URL: <a class="reference external" href="http://estebanmoro.org/2017/03/network-science-for-kids">http://estebanmoro.org/2017/03/network-science-for-kids</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tmp"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-counting">Edge counting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pen-and-paper-worksheet">Pen-and-paper worksheet</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sadamori Kojaku
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

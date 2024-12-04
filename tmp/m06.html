@@ -1,0 +1,1086 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Assignment &#8212; Advanced Topics in Network Science</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tmp/m06';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../home.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics in Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics in Network Science - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/setup.html">Trouble shooting</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">Module 1: Euler Tour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/coding-exercise.html">Exercise</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">Module 2: Small-world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/which-tools.html">Toolbox for network analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">Module 3: Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness (Random attack)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/percolation.html">Percolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">Module 4: Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">Module 5: Clustering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/what-to-learn.html">Module 6: Centrality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-embedding.html">Spectral Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/word2vec.html">word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Ftmp/m06.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tmp/m06.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Assignment</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Assignment</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#harmonic-centrality">Harmonic centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eccentricity-centrality">Eccentricity centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Eccentricity centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#betweenness-centrality">Betweenness centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#katz-centrality">Katz centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pagerank">PageRank</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-katz-centrality">Computing Katz centrality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-optional">Exercise (Optional)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-of-ancient-roman-roads">Network of ancient Roman roads</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-the-data-construct-the-network">Load the data &amp; construct the network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise">Exercise 🏛️</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupytext-formats-md-myst-text-representation-extension-md-format-name-myst-kernelspec-display-name-python-3-language-python-name-python3">jupytext:
+formats: md:myst
+text_representation:
+extension: .md
+format_name: myst
+kernelspec:
+display_name: Python 3
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pen-and-paper-exercises">Pen and paper exercises</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#module-6-centrality">Module 6: Centrality</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="assignment">
+<h1>Assignment<a class="headerlink" href="#assignment" title="Link to this heading">#</a></h1>
+<p>We will compute the various centrality measures for airport networks.</p>
+<ul class="simple">
+<li><p><strong>For students enrolled in SSIE 641</strong></p>
+<ul>
+<li><p>You will receive a dedicated link to the assignment repository from the instructor.</p></li>
+</ul>
+</li>
+<li><p><em>For those who are not enrolled in SSIE 641</em></p>
+<ul>
+<li><p>You can access the assignment repository at <a class="reference external" href="https://github.com/sk-classroom/adv-net-sci-centrality">Github</a>.</p></li>
+<li><p>This repository does not offer auto-grading. But you can grade the assignment by yourself by</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_01.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_02.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<section id="harmonic-centrality">
+<h2>Harmonic centrality<a class="headerlink" href="#harmonic-centrality" title="Link to this heading">#</a></h2>
+<p><strong>Harmonic Centrality</strong> is a measure that adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can’t reach others, making their distance infinite. This causes all centrality values to become zero, which isn’t very helpful!</p>
+<p>To fix this, Beauchamp <a class="footnote-reference brackets" href="#footcite-beauchamp1965improved" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> came up with a clever solution called <em>harmonic centrality</em>. It works even when the network is disconnected.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
+\]</div>
+</section>
+<section id="eccentricity-centrality">
+<h2>Eccentricity centrality<a class="headerlink" href="#eccentricity-centrality" title="Link to this heading">#</a></h2>
+<p><strong>Eccentricity centrality</strong> is baesd on the farthest distance from a node to any other node. The eccentricity centrality is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+\]</div>
+<p>These centrality measures provide different perspectives on the importance of nodes based on their accessibility and reachability within the network.</p>
+<p>A central node should be close to all other nodes.</p>
+<p>Closeness centrality captures the notion of “centrality” in the network. Namely, a node is <em>central</em> if it is close to all other nodes.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> is the number of nodes in the network. The numerator, <span class="math notranslate nohighlight">\(N\)</span>, is the normalization factor to make the centrality to have the maximum value of 1.</p>
+</section>
+<section id="id2">
+<h2>Eccentricity centrality<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>Eccentricity centrality is based on the shortest path distance between nodes, just like the closeness centrality, but it is based on the <em>maximum</em> distance as opposed to the average distance like in the closeness centrality.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+\]</div>
+</section>
+<section id="betweenness-centrality">
+<h2>Betweenness centrality<a class="headerlink" href="#betweenness-centrality" title="Link to this heading">#</a></h2>
+<p>Another notion of centrality is <em>betweenness centrality</em>. It considers that a node is important if it lies on many shortest paths between other nodes.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma_{jk}\)</span> is the number of shortest paths between nodes <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(\sigma_{jk}(i)\)</span> is the number of shortest paths between nodes <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(k\)</span> that pass through node <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<div class="docutils container" id="id3">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-beauchamp1965improved" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Murray A Beauchamp. An improved index of centrality. <em>Behavioral science</em>, 10(2):161–163, 1965.</p>
+</aside>
+</aside>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>Consider the case where the graph is undirected and we normalize the hub centrality by the degree <span class="math notranslate nohighlight">\(d_j\)</span> of the authority, namely</p>
+<div class="math notranslate nohighlight">
+\[
+x_i = \sum_j \frac{A_{ji}}{d_j} y_j,\quad y_i = \sum_j A_{ij} x_j
+\]</div>
+<p>Then we will get the hub centrality equivalent to the degree centrality. Confirm this by substituting <span class="math notranslate nohighlight">\(x_i = d_i\)</span>.</p>
+</div>
+</section>
+<section id="katz-centrality">
+<h2>Katz centrality<a class="headerlink" href="#katz-centrality" title="Link to this heading">#</a></h2>
+<p>Eigenvector centrality tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. A solution is to add a little bit of score to all nodes.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = \beta + \lambda \sum_{j} A_{ij} c_j
+\]</div>
+<div class="tip admonition">
+<p class="admonition-title">Exercise</p>
+<p>Derive the solution of the Katz centrality.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see the answer<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The equation can be solved by</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{c} = \beta \mathbf{1} + \lambda \mathbf{A} \mathbf{c}
+\]</div>
+<p class="sd-card-text">where <span class="math notranslate nohighlight">\(\mathbf{1}\)</span> is the vector of ones. By rewriting the equation, we get</p>
+<div class="math notranslate nohighlight">
+\[
+\left( \mathbf{I} - \lambda \mathbf{A} \right) \mathbf{c} = \beta \mathbf{1}
+\]</div>
+<p class="sd-card-text">By taking the inverse of <span class="math notranslate nohighlight">\(\mathbf{I} - \lambda \mathbf{A}\)</span>, we get</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{c} = \beta \left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} \mathbf{1}
+\]</div>
+</div>
+</details></div>
+</section>
+<section id="pagerank">
+<h2>PageRank<a class="headerlink" href="#pagerank" title="Link to this heading">#</a></h2>
+<p>You’ve probably heard PageRank, a celebrated idea behind Google Search. It is like a cousin of Katz centrality.</p>
+<div class="math notranslate nohighlight">
+\[
+c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(d^{\text{out}}_j\)</span> is the out-degree of node <span class="math notranslate nohighlight">\(j\)</span> (the number of edges pointing out from node <span class="math notranslate nohighlight">\(j\)</span>).
+The term <span class="math notranslate nohighlight">\(c_j/d^{\text{out}}_j\)</span> represents that the score of node <span class="math notranslate nohighlight">\(j\)</span> is divided by the number of nodes to which node <span class="math notranslate nohighlight">\(j\)</span> points. In Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+<span class="n">names</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Sarah&#39;</span><span class="p">,</span> <span class="s1">&#39;Mike&#39;</span><span class="p">,</span> <span class="s1">&#39;Emma&#39;</span><span class="p">,</span> <span class="s1">&#39;Alex&#39;</span><span class="p">,</span> <span class="s1">&#39;Olivia&#39;</span><span class="p">,</span> <span class="s1">&#39;James&#39;</span><span class="p">,</span> <span class="s1">&#39;Sophia&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethan&#39;</span><span class="p">,</span> <span class="s1">&#39;Ava&#39;</span><span class="p">,</span> <span class="s1">&#39;Noah&#39;</span><span class="p">,</span> <span class="s1">&#39;Lily&#39;</span><span class="p">,</span> <span class="s1">&#39;Lucas&#39;</span><span class="p">,</span> <span class="s1">&#39;Henry&#39;</span><span class="p">]</span>
+<span class="n">edge_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">)]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">vertex_label</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a32d9cd303eda85a7a3068704392f7bfa2f7254a489534704880c26073722afb.svg" src="../_images/a32d9cd303eda85a7a3068704392f7bfa2f7254a489534704880c26073722afb.svg" /></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">igraph</span></code> offers a wide range of centrality measures as methods of the <code class="docutils literal notranslate"><span class="pre">igraph.Graph</span></code> class.</p>
+<ul class="simple">
+<li><p><strong>Degree centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.degree()</span></code></p></li>
+<li><p><strong>Closeness centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.closeness()</span></code></p></li>
+<li><p><strong>Betweenness centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.betweenness()</span></code></p></li>
+<li><p><strong>Harmonic centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.harmonic_centrality()</span></code></p></li>
+<li><p><strong>Eccentricity</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.eccentricity()</span></code></p></li>
+<li><p><strong>Eigenvector centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.eigenvector_centrality()</span></code></p></li>
+<li><p><strong>PageRank centrality</strong>: <code class="docutils literal notranslate"><span class="pre">igraph.Graph.personalized_pagerank()</span></code></p></li>
+</ul>
+<p>For example, the closeness centrality is computed by</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">closeness</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.3,
+ 0.3,
+ 0.4,
+ 0.5217391304347826,
+ 0.36363636363636365,
+ 0.36363636363636365,
+ 0.5454545454545454,
+ 0.42857142857142855,
+ 0.42857142857142855,
+ 0.48,
+ 0.3333333333333333,
+ 0.3333333333333333,
+ 0.3333333333333333]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="computing-katz-centrality">
+<h3>Computing Katz centrality<a class="headerlink" href="#computing-katz-centrality" title="Link to this heading">#</a></h3>
+<p>Let’s compute the Katz centrality without using igraph.
+Let us first define the adjacency matrix of the graph</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_adjacency_sparse</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>which is the scipy CSR sparse matrix. The Katz centrality is given by</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}\]</div>
+<p>So, how do we solve this? We can use a linear solver but here we will use a simple method:</p>
+<ol class="arabic simple">
+<li><p>Initialize <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> with a random vector.</p></li>
+<li><p>Compute the right hand side of the equation and update <span class="math notranslate nohighlight">\(\mathbf{c}\)</span>.</p></li>
+<li><p>Repeat the process until <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> converges.</p></li>
+</ol>
+<p>Let’s implement this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span> <span class="c1"># Hyperparameters</span>
+<span class="n">n_nodes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="c1"># number of nodes</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># column random vector</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">c_next</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">c</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">c_next</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c_next</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.0633873 ]
+ [0.0633873 ]
+ [0.07048544]
+ [0.07807923]
+ [0.0642311 ]
+ [0.0642311 ]
+ [0.08184319]
+ [0.07474505]
+ [0.07474505]
+ [0.09085949]
+ [0.05908605]
+ [0.05908605]
+ [0.05908605]]
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p>Does the centrality converge?</p></li>
+<li><p>Change the hyperparameter and see how the result changes 😉
+If the centrality diverges, think about why it diverges.</p></li>
+</ul>
+<p><em>Hint</em>: Katz centrality can be analytically computed by</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{c} = \beta \left(\mathbf{I} -  \alpha \mathbf{A} \right)^{-1} \mathbf{1}\]</div>
+</section>
+<section id="exercise-optional">
+<h3>Exercise (Optional)<a class="headerlink" href="#exercise-optional" title="Link to this heading">#</a></h3>
+<p>Compute the PageRank centrality of this graph</p>
+</section>
+</section>
+<section id="network-of-ancient-roman-roads">
+<h2>Network of ancient Roman roads<a class="headerlink" href="#network-of-ancient-roman-roads" title="Link to this heading">#</a></h2>
+<section id="load-the-data-construct-the-network">
+<h3>Load the data &amp; construct the network<a class="headerlink" href="#load-the-data-construct-the-network" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/skojaku/adv-net-sci/main/data/roman-roads&quot;</span>
+<span class="n">node_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">/node_table.csv&quot;</span><span class="p">)</span>
+<span class="n">edge_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">/edge_table.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The node table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_table</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>node_id</th>
+      <th>lon</th>
+      <th>lat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>12.506</td>
+      <td>41.875</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>12.470</td>
+      <td>41.904</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>12.471</td>
+      <td>41.881</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The edge table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_table</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>src</th>
+      <th>trg</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1785</td>
+      <td>358</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1785</td>
+      <td>1771</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1771</td>
+      <td>350</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Let’s construct a network from the node and edge tables.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="c1"># create an empty graph</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="n">node_table</span><span class="p">[</span><span class="s2">&quot;node_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="c1"># add nodes</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">edge_table</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">edge_table</span><span class="p">[</span><span class="s2">&quot;trg&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span> <span class="c1"># add edges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>which looks like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coord</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">node_table</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="o">-</span><span class="n">node_table</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">layout</span> <span class="o">=</span> <span class="n">coord</span><span class="p">,</span> <span class="n">vertex_size</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/509d8506cef1bff1c3c21adbd595cf8a75eec780f148d7f9789cabb68ebd3064.svg" src="../_images/509d8506cef1bff1c3c21adbd595cf8a75eec780f148d7f9789cabb68ebd3064.svg" /></div>
+</div>
+</section>
+<section id="exercise">
+<h3>Exercise 🏛️<a class="headerlink" href="#exercise" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Compute the following centrality measures:</p>
+<ul class="simple">
+<li><p>Degree centrality 🔢</p></li>
+<li><p>Eigenvector centrality</p></li>
+<li><p>PageRank centrality</p></li>
+<li><p>Katz centrality</p></li>
+<li><p>Betweenness centrality</p></li>
+<li><p>Closeness centrality</p></li>
+</ul>
+</li>
+<li><p>Plot the centrality measures on the map and see in which centrality Rome is the most important node. 🗺️🏛️ (as beautiful as possible!!)</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="jupytext-formats-md-myst-text-representation-extension-md-format-name-myst-kernelspec-display-name-python-3-language-python-name-python3">
+<h2>jupytext:
+formats: md:myst
+text_representation:
+extension: .md
+format_name: myst
+kernelspec:
+display_name: Python 3
+language: python
+name: python3<a class="headerlink" href="#jupytext-formats-md-myst-text-representation-extension-md-format-name-myst-kernelspec-display-name-python-3-language-python-name-python3" title="Link to this heading">#</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="pen-and-paper-exercises">
+<h1>Pen and paper exercises<a class="headerlink" href="#pen-and-paper-exercises" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="#./pen-and-paper/exercise.pdf"><span class="xref myst">️️School </span></a></p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="module-6-centrality">
+<h1>Module 6: Centrality<a class="headerlink" href="#module-6-centrality" title="Link to this heading">#</a></h1>
+<section id="what-to-learn-in-this-module">
+<h2>What to learn in this module<a class="headerlink" href="#what-to-learn-in-this-module" title="Link to this heading">#</a></h2>
+<p>In this module, we will learn centrality, one of the most widely-used yet controversial techniques in network analysis. We will learn:</p>
+<ul class="simple">
+<li><p>What is centrality in networks?</p></li>
+<li><p>How to operationalize centrality?</p></li>
+<li><p>How to find centrality in networks?</p></li>
+<li><p>Limitations of centrality</p></li>
+<li><p><strong>Keywords</strong>: degree centrality, closeness centrality, betweenness centrality, eigenvector centrality, PageRank, Katz centrality, HITS, random walk</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tmp"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Assignment</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#harmonic-centrality">Harmonic centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eccentricity-centrality">Eccentricity centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Eccentricity centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#betweenness-centrality">Betweenness centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#katz-centrality">Katz centrality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pagerank">PageRank</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-katz-centrality">Computing Katz centrality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-optional">Exercise (Optional)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-of-ancient-roman-roads">Network of ancient Roman roads</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-the-data-construct-the-network">Load the data &amp; construct the network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise">Exercise 🏛️</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupytext-formats-md-myst-text-representation-extension-md-format-name-myst-kernelspec-display-name-python-3-language-python-name-python3">jupytext:
+formats: md:myst
+text_representation:
+extension: .md
+format_name: myst
+kernelspec:
+display_name: Python 3
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pen-and-paper-exercises">Pen and paper exercises</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#module-6-centrality">Module 6: Centrality</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-learn-in-this-module">What to learn in this module</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sadamori Kojaku
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

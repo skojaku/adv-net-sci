@@ -289,7 +289,7 @@ The second largest eigenvalue primarily determines the convergence speed to the 
 Levin-Peres-Wilmer theorem states that the mixing time is bounded by the relaxation time as
 
 $$
-t_{\text{mix}} < \tau \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right), \quad \tau = \frac{1}{\lambda_2}
+t_{\text{mix}} < \tau \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right), \quad \tau = \frac{1}{1-\lambda_2}
 $$
 
 where $\lambda_2$ is the second largest eigenvalue of the normalized adjacency matrix. The mixing time is known to be bounded by the relaxation time as
@@ -297,7 +297,7 @@ where $\lambda_2$ is the second largest eigenvalue of the normalized adjacency m
 More commonly, it is expressed using the second smallest eigenvalue $\mu$ of the normalized laplacian matrix as
 
 $$
-t_{\text{mix}} \leq \frac{1}{1-\mu}
+t_{\text{mix}} \leq \frac{1}{\mu}
 $$
 
 where $\mu = 1-\lambda_2$.

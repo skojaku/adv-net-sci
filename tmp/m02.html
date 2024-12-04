@@ -1,0 +1,1660 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Appendix &#8212; Advanced Topics in Network Science</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tmp/m02';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../home.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="Advanced Topics in Network Science - Home"/>
+    <script>document.write(`<img src="../_static/logo.jpg" class="logo__image only-dark" alt="Advanced Topics in Network Science - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../home.html">
+                    Welcome to SSIE 641 Advanced Topics on Network Science
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/why-networks.html">Why should we care networks?</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../intro/zoo-of-networks.html">Zoo of networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/setup.html">Trouble shooting</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M01: Euler Tour</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/what-to-learn.html">Module 1: Euler Tour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/puzzle.html">A puzzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/euler-path.html">Euler’s solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/how-to-code-network.html">Compute with networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m01-euler_tour/coding-exercise.html">Exercise</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M02: Small World</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/what-to-learn.html">Module 2: Small-world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/small-world-experiment.html">Small-world experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/wikirace.html">Wikirace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/pen-and-paper.html">Why is our social network small world?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness.html">Walks, Trails, Paths, and Connectedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/which-tools.html">Toolbox for network analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/compressed-sparse-row.html">Efficient representation for large sparse networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/connectedness-hands-on.html">Computing the Shortest Paths and Connected Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/assignment.html">Assignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m02-small-world/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M03: Robustness</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/what-to-learn.html">Module 3: Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/exercise-power-grid.html">Building a cost-effective power grid network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/minimum-spanning-tree.html">Minimum spanning tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness.html">Network Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/robustness-hands-on.html">Hands-on: Robustness (Random attack)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/percolation.html">Percolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m03-robustness/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M04: Friendship Paradox</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/what-to-learn.html">Module 4: Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/experiment.html">In-class experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/friendship-paradox.html">Friendship Paradox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/vaccination-game.html">Vaccination Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m04-friendship-paradox/degree-distribution.html">Degree distribution</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M05: Clustering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-to-learn.html">Module 5: Clustering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/what-is-community.html">What is community?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pen-and-paper.html">Pen and Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/pattern-matching.html">Community detection (pattern matching)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/graph-cut.html">Graph cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/ratio-normalized-cut.html">Balanced cut</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity.html">Modularity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/modularity-02.html">Modularity (Cont.)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/stochastic-block-model.html">Stochastic Block Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m05-clustering/exercise-clustering.html">Hands-on: Clustering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M06: Centrality</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/what-to-learn.html">Module 6: Centrality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/degree-distance-based-centrality.html">What is centrality?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/eigencentrality.html">Centralities based on centralities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/hands-on.html">Computing centrality with Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m06-centrality/assignment.html">Assignment</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M07: Random Walks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/what-to-learn.html">Module 7: Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/amida-kuji.html">Ladder Lottery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks.html">Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-code.html">Random Walks in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/random-walks-math.html">Characteristics of Random Walks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m07-random-walks/unifying-centrality-and-communities.html">Random walks unify centrality and communities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M08: Embedding</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/what-to-learn.html">Module 8: Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-embedding.html">Spectral Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/word2vec.html">word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/graph-embedding-w-word2vec.html">Graph embedding with word2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/spectral-vs-neural-embedding.html">Spectral vs Neural Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/software.html">Software for Network Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m08-embedding/appendix.html">Appendix</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">M09: Graph Neural Networks</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/what-to-learn.html">Module 9: Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/pen-and-paper.html">Pen and paper exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/image-processing.html">Preliminaries: Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/from-image-to-graph.html">From Image to Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/graph-convolutional-network.html">Graph Convolutional Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/popular-gnn.html">Popular Graph Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../m09-graph-neural-networks/appendix.html">Appendix</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/skojaku/adv-net-sci/gh-pages?urlpath=tree/docs/lecture-note/tmp/m02.md" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Binder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Binder logo" src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/skojaku/adv-net-sci/issues/new?title=Issue%20on%20page%20%2Ftmp/m02.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tmp/m02.ipynb" target="_blank"
+   class="btn btn-sm btn-download-notebook-button dropdown-item"
+   title="Download notebook file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="../_sources/tmp/m02.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Appendix</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Appendix</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compressed-sparse-row-csr-format">Compressed Sparse Row (CSR) format</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-generate-csr-format-from-an-adjacency-matrix">How to generate CSR format from an adjacency matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-csr-format-for-efficient-computations">How to use CSR format for efficient computations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#assignment">Assignment</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-src-trg-and-values-are-lists-of-the-source-nodes-target-nodes-and-edge-weights-respectively">where <code class="docutils literal notranslate"><span class="pre">src</span></code>, <code class="docutils literal notranslate"><span class="pre">trg</span></code>, and <code class="docutils literal notranslate"><span class="pre">values</span></code> are lists of the source nodes, target nodes, and edge weights, respectively.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3">jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-the-shortest-paths-and-connected-components">Computing the Shortest Paths and Connected Components</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-graph">Create a graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy">Scipy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Create a graph</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Shortest Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Connected Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hint-finding-all-shortest-paths-is-a-qubic-time-operation-with-respect-to-the-number-of-nodes-or-simply-put-it-takes-a-long-time-to-compute-so-compute-the-estimate-by-sampling-many-pairs-of-nodes-uniformly-at-random-and-computing-the-average-path-length-jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3"><strong>Hint:</strong> Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the “estimate” by sampling many pairs of nodes uniformly at random and computing the average path length.—
+jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#walks-trails-paths-and-connectedness">Walks, Trails, Paths, and Connectedness</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#walks-trails-paths">Walks, Trails, Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectedness">Connectedness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectedness-in-directed-networks">Connectedness in directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-our-social-network-small-world">Why is our social network small world?</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#small-world-experiment">Small-world experiment</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="appendix">
+<h1>Appendix<a class="headerlink" href="#appendix" title="Link to this heading">#</a></h1>
+<section id="compressed-sparse-row-csr-format">
+<h2>Compressed Sparse Row (CSR) format<a class="headerlink" href="#compressed-sparse-row-csr-format" title="Link to this heading">#</a></h2>
+<p>CSR format is implemented in <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html">scipy</a>. This consists of three arrays called <code class="docutils literal notranslate"><span class="pre">indptr</span></code>, <code class="docutils literal notranslate"><span class="pre">indices</span></code>, and <code class="docutils literal notranslate"><span class="pre">data</span></code>. For example,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">karate_club_graph</span><span class="p">()</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A.indices:&quot;</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indices</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A.indptr:&quot;</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indptr</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A.data:&quot;</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>A.indices: [1 2 3 4 5]
+A.indptr: [ 0 16 25 35 41]
+A.data: [4 5 3 3 3]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will walk you through what these arrays mean, how they are generated, and how we can leverage them for efficient computations.</p>
+<section id="how-to-generate-csr-format-from-an-adjacency-matrix">
+<h3>How to generate CSR format from an adjacency matrix<a class="headerlink" href="#how-to-generate-csr-format-from-an-adjacency-matrix" title="Link to this heading">#</a></h3>
+<p>Let’s walk you through how to store an example adjacency matrix in Compressed Sparse Row (CSR) format. Our example adjacency matrix is as follows.</p>
+<div align="center">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p></p></th>
+<th class="head text-right"><p>0</p></th>
+<th class="head text-right"><p>1</p></th>
+<th class="head text-right"><p>2</p></th>
+<th class="head text-right"><p>3</p></th>
+<th class="head text-right"><p>4</p></th>
+<th class="head text-right"><p>5</p></th>
+<th class="head text-right"><p>6</p></th>
+<th class="head text-right"><p>7</p></th>
+<th class="head text-right"><p>8</p></th>
+<th class="head text-right"><p>9</p></th>
+<th class="head text-right"><p>10</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p>0</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>2</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>3</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>4</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>5</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>6</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>7</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>8</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>9</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>10</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p></p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p>1</p></td>
+<td class="text-right"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We will first create <strong>adjacency list</strong>, which is a dictionary consisting of the row IDs and column IDs for the non-zero entries in the adjacency matrix.</p>
+<div class="container" align="center">
+<div class="col" style="margin-top:0%">
+<p><span class="math notranslate nohighlight">\(\{\text{Row ID}: (\text{Column ID}, \text{Value})\}\)</span></p>
+</div>
+</div>
+<p>Concretely, in Python,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adj_list</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="mi">0</span><span class="p">:[(</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+  <span class="mi">1</span><span class="p">:[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+  <span class="mi">2</span><span class="p">:[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+  <span class="mi">3</span><span class="p">:[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+  <span class="c1">#...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>CSR format is a <em>concatenation</em> of the keys and values of the adjacency list, respectively. The CSR format has a concatenated array of the values, one for column IDs and one for the values, called <code class="docutils literal notranslate"><span class="pre">indices</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code>, respectively.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj_list</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])</span>
+<span class="n">indices</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([10,  2, 10,  1,  3, 10,  2,  4,  5,  6])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj_list</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Additionally, the CSR format has another array called <code class="docutils literal notranslate"><span class="pre">indptr</span></code>, which stores the Row IDs of the non-zero entries in the adjacency matrix. This <code class="docutils literal notranslate"><span class="pre">indptr</span></code> array has a value such that <code class="docutils literal notranslate"><span class="pre">indptr[i]</span></code> is the first index of <code class="docutils literal notranslate"><span class="pre">indices</span></code> that corresponds to the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th row of the adjacency matrix. This can be generated by</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">adj_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">adj_list</span><span class="p">))])</span>
+<span class="n">indptr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0,  1,  3,  6, 10])
+</pre></div>
+</div>
+</div>
+</div>
+<p>where we added <code class="docutils literal notranslate"><span class="pre">0</span></code> at the beginning of the array to represent the first non-zero entry in the first row.
+The first row ends at index <code class="docutils literal notranslate"><span class="pre">len(adj_list[0])-1</span></code>, and the second row starts at index <code class="docutils literal notranslate"><span class="pre">len(adj_list[0])</span></code> and ends at index <code class="docutils literal notranslate"><span class="pre">len(adj_list[0])+len(adj_list[1])-1</span></code>, and so on.</p>
+<p>Now we have three compressed vectors <code class="docutils literal notranslate"><span class="pre">indptr</span></code>, <code class="docutils literal notranslate"><span class="pre">indices</span></code>, and <code class="docutils literal notranslate"><span class="pre">data</span></code>, that together form the CSR format for the adjacency matrix.</p>
+</section>
+<section id="how-to-use-csr-format-for-efficient-computations">
+<h3>How to use CSR format for efficient computations<a class="headerlink" href="#how-to-use-csr-format-for-efficient-computations" title="Link to this heading">#</a></h3>
+<p>The key advantage of the CSR representation is the memory efficiency. But you can leverage the CSR format for more efficient computations, if you know the semantics of <code class="docutils literal notranslate"><span class="pre">indptr</span></code>, <code class="docutils literal notranslate"><span class="pre">indices</span></code>, and <code class="docutils literal notranslate"><span class="pre">data</span></code> arrays.</p>
+<p>For instance, one can compute the degree of a node by using</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">degree</span> <span class="o">=</span> <span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+<span class="n">degree</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us break down the above code.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indptr[node]</span></code> is the first index of the <code class="docutils literal notranslate"><span class="pre">indices</span></code> array that corresponds to the <code class="docutils literal notranslate"><span class="pre">node</span></code>-th row of the adjacency matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indptr[node+1]</span></code> is the first index of the <code class="docutils literal notranslate"><span class="pre">indices</span></code> array that corresponds to the <code class="docutils literal notranslate"><span class="pre">(node+1)</span></code>-th row of the adjacency matrix.</p></li>
+<li><p>Thus, <code class="docutils literal notranslate"><span class="pre">indptr[node+1]</span> <span class="pre">-</span> <span class="pre">indptr[node]</span></code> is the number of non-zero entries in the <code class="docutils literal notranslate"><span class="pre">node</span></code>-th row of the adjacency matrix, which is the degree of the <code class="docutils literal notranslate"><span class="pre">node</span></code>-th node.</p></li>
+</ul>
+<p>Using <code class="docutils literal notranslate"><span class="pre">indices</span></code>, it is easy to identify the neighbors of a given node by using</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neighbors</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">neighbors</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 2, 10])
+</pre></div>
+</div>
+</div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">indices[indptr[node]:indptr[node+1]]</span></code> is the corresponding column IDs of the non-zero entries in the <code class="docutils literal notranslate"><span class="pre">node</span></code>-th row of the adjacency matrix, which corresponds to the node IDs connected to the <code class="docutils literal notranslate"><span class="pre">node</span></code>-th node.</p>
+<p>The edge weights to the neighbors can be obtained by using</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_weights</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">node</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">edge_weights</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1, 1])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="assignment">
+<h1>Assignment<a class="headerlink" href="#assignment" title="Link to this heading">#</a></h1>
+<p>We will compute the average path length of a network of scientists. The network is constructed from <a class="footnote-reference brackets" href="#footcite-sinatra2016quantifying" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</p>
+<ul class="simple">
+<li><p><strong>For students enrolled in SSIE 641</strong></p>
+<ul>
+<li><p>You will receive a dedicated link to the assignment repository from the instructor.</p></li>
+</ul>
+</li>
+<li><p><em>For those who are not enrolled in SSIE 641</em></p>
+<ul>
+<li><p>You can access the assignment repository at <a class="reference external" href="https://github.com/sk-classroom/adv-net-sci-small-world">Github</a>.</p></li>
+<li><p>This repository does not offer auto-grading. But you can grade the assignment by yourself by</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_01.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">grading-toolkit/grade_notebook.sh</span> <span class="pre">tests/test_02.py</span> <span class="pre">assignment/assignment.ipynb</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="docutils container" id="id2">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-sinatra2016quantifying" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Roberta Sinatra, Dashun Wang, Pierre Deville, Chaoming Song, and Albert-László Barabási. Quantifying the evolution of individual scientific impact. <em>Science</em>, 354(6312):aaf5239, 2016.</p>
+</aside>
+</aside>
+</div>
+<p>If you have an <em>edge list</em>, you can directly generate the CSR matrix without creating the dense matrix first.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">]</span>
+<span class="n">trg</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">]</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">]</span>
+<span class="n">A_csr</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">((</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">A_csr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;4x4 sparse matrix of type &#39;&lt;class &#39;numpy.int64&#39;&gt;&#39;
+	with 5 stored elements in Compressed Sparse Row format&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<section id="where-src-trg-and-values-are-lists-of-the-source-nodes-target-nodes-and-edge-weights-respectively">
+<h2>where <code class="docutils literal notranslate"><span class="pre">src</span></code>, <code class="docutils literal notranslate"><span class="pre">trg</span></code>, and <code class="docutils literal notranslate"><span class="pre">values</span></code> are lists of the source nodes, target nodes, and edge weights, respectively.<a class="headerlink" href="#where-src-trg-and-values-are-lists-of-the-source-nodes-target-nodes-and-edge-weights-respectively" title="Link to this heading">#</a></h2>
+</section>
+<section id="jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3">
+<h2>jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3<a class="headerlink" href="#jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3" title="Link to this heading">#</a></h2>
+<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m02-small-world.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="computing-the-shortest-paths-and-connected-components">
+<h1>Computing the Shortest Paths and Connected Components<a class="headerlink" href="#computing-the-shortest-paths-and-connected-components" title="Link to this heading">#</a></h1>
+<p>Let’s use <code class="docutils literal notranslate"><span class="pre">igraph</span></code> to compute the shortest paths and connected components. We will then use <code class="docutils literal notranslate"><span class="pre">scipy</span></code> to compute them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using Google Colab, uncomment the following line to install igraph</span>
+<span class="c1"># !sudo apt install libcairo2-dev pkg-config python3-dev</span>
+<span class="c1"># !pip install pycairo cairocffi</span>
+<span class="c1"># !pip install igraph</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="igraph">
+<h2>igraph<a class="headerlink" href="#igraph" title="Link to this heading">#</a></h2>
+<section id="create-a-graph">
+<h3>Create a graph<a class="headerlink" href="#create-a-graph" title="Link to this heading">#</a></h3>
+<p>Let us create a graph of 4 nodes and 4 edges. Our edge list is given by</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">igraph</span></code> has an object <code class="docutils literal notranslate"><span class="pre">Graph</span></code> that stores a graph and provides methods to manipulate and analyze the graph. To create a graph from an edge list, we can use the <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">igraph</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="c1"># Create an empty graph</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># Add 4 vertices</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span> <span class="c1"># Add edges to the graph</span>
+
+<span class="c1"># Plot the graph</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">vertex_label</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" src="../_images/c21edd93fb70c82bfef78dbeb2c73edc4e5abe619845ebacea3639fee3762291.svg" /></div>
+</div>
+</section>
+<section id="shortest-paths">
+<h3>Shortest Paths<a class="headerlink" href="#shortest-paths" title="Link to this heading">#</a></h3>
+<p>Let’s compute the paths between nodes 2 and 3.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[2, 0, 3], [2, 1, 0, 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>This method enumerates all possible simple paths between two nodes. This is OK for small networks but quickly becomes impractical for larger networks, as the number of paths increases exponentially with the size of the network.</p>
+<p>Often, we are interested in the shortest path, which is the path with the smallest number of edges. The shortest path can be computed by using the <code class="docutils literal notranslate"><span class="pre">get_shortest_paths</span></code> method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[2, 0, 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that there can be multiple shortest paths between two nodes. If we are interested in the “length” instead of the path itself, there is a more efficient function <code class="docutils literal notranslate"><span class="pre">distances</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">distances</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[2]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="connected-components">
+<h3>Connected Components<a class="headerlink" href="#connected-components" title="Link to this heading">#</a></h3>
+<p>In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">connected_components</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">components</span></code> is a special object called <a class="reference external" href="https://python.igraph.org/en/0.11.6/api/igraph.VertexClustering.html">VertexClustering</a> in <code class="docutils literal notranslate"><span class="pre">igraph</span></code>.
+It has the following useful functions and attributes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;membership: &quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">.</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># the IDs of the component each node belongs to.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sizes: &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">sizes</span><span class="p">()))</span>  <span class="c1"># the number of nodes in each component.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;giant: &quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">.</span><span class="n">giant</span><span class="p">())</span>  <span class="c1"># a subgraph of the largest connected component.</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>membership:  [0, 0, 0, 0]
+sizes:  [4]
+giant:  IGRAPH U--- 4 4 --
++ edges:
+0--1 1--2 0--2 0--3
+</pre></div>
+</div>
+</div>
+</div>
+<section id="exercise-01">
+<h4>Exercise 01 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-01" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>Now, let us add two nodes that are not connected to the existing graph, and call <code class="docutils literal notranslate"><span class="pre">connected_components</span></code> again. 🔗➕</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">get_shortest_paths</span></code> between the two new nodes in different connected components. 🛣️🔍</p></li>
+<li><p>Get the largest connected component. 🌐🏆</p></li>
+</ol>
+</section>
+</section>
+<section id="directed-networks">
+<h3>Directed networks<a class="headerlink" href="#directed-networks" title="Link to this heading">#</a></h3>
+<p>Let’s extend these ideas about paths and connected components to directed graphs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_list</span> <span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+<span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">),</span> <span class="n">vertex_label</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/909f4695ce7638dc8d2c00697b72bd26955dc7b1fb16afcfa2136d5f3211110a.svg" src="../_images/909f4695ce7638dc8d2c00697b72bd26955dc7b1fb16afcfa2136d5f3211110a.svg" /></div>
+</div>
+<p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;From 0 to 3&quot;</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;From 3 to 0&quot;</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>From 0 to 3 [[0, 1, 2, 3], [0, 1, 2, 5, 3]]
+From 3 to 0 []
+</pre></div>
+</div>
+</div>
+</div>
+<p>The shortest path from 4 to 1 must take a longer route due to edge directions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[4, 5, 3, 1]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Directed networks have two kinds of connected components.</p>
+<ul class="simple">
+<li><p><strong>Strongly connected components:</strong> Strongly connected means that there exists a direct path between every pair of nodes, i.e., that from any node to any other nodes while respecting the edge directionality.</p></li>
+<li><p><strong>Weakly connected components:</strong> Weakly connected means that there exists a path between every pair of nodes when ignoring the edge directionality.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;strong&quot;</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;weak&quot;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0], [1, 2, 3, 4, 5]]
+[[0, 1, 2, 3, 4, 5]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="scipy">
+<h2>Scipy<a class="headerlink" href="#scipy" title="Link to this heading">#</a></h2>
+<p>We can create a graph, compute the shortest paths, and connected components using <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p>
+<section id="id3">
+<h3>Create a graph<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>With scipy, we represent a network by an adjacency matrix using something called a <em>Compressed Sparse Row (CSR) matrix</em>. CSR matrices are efficient format for storing and manipulating <em>sparse</em> matrices. Why <em>sparse</em> is highlighed here? Because in many networks, the adjacency matrix is sparse, i.e., most of the entries are zero. For example, here is the adjacency matrix of a real-world network:</p>
+<p><img alt="" src="https://www.researchgate.net/publication/263506932/figure/fig1/AS:392539896074252&#64;1470600212952/Scale-free-Network-left-its-adjacency-matrix-upper-right-and-degree-distribution.png" /></p>
+<p>Most of the entries in this adjacency matrix are white, and white means that the value of the entry is zero. And the adjacency matrix looks very white! This is pretty common in real-world networks. We call these matrices “sparse” because they are mostly empty. And CSR matrices are a way to store these sparse matrices efficiently. Don’t worry too much about the technical details for now. If you’re curious to learn more, you can check out the <a class="reference internal" href="#appendix.md"><span class="xref myst">Appendix</span></a>.</p>
+<p>The great thing is, <code class="docutils literal notranslate"><span class="pre">scipy</span></code> (especially the <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> module) provides efficient tools for working with these sparse matrices. This comes in really handy when we’re working with large networks.</p>
+<p>Let create a graph using scipy.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span> <span class="c1"># We will use sparse module in scipy</span>
+
+<span class="n">edge_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="n">src</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+<span class="n">trg</span> <span class="o">=</span> <span class="p">[</span><span class="n">dst</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+<span class="n">weight</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">]</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="c1"># Make the adjacency matrix symmetric</span>
+<span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;4x4 sparse matrix of type &#39;&lt;class &#39;numpy.int64&#39;&gt;&#39;
+	with 8 stored elements in Compressed Sparse Row format&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s break down the code.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src</span></code> and <code class="docutils literal notranslate"><span class="pre">trg</span></code> are the source and target nodes of the edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight</span></code> is the weight of the edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sparse.csr_matrix((weight,</span> <span class="pre">(src,</span> <span class="pre">trg)))</span></code> creates a sparse matrix, filling <code class="docutils literal notranslate"><span class="pre">weight</span></code> into the positions specified by <code class="docutils literal notranslate"><span class="pre">(src,</span> <span class="pre">trg)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A.T</span></code> is the transpose of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">A.T</span></code> makes the adjacency matrix symmetric.</p></li>
+</ul>
+<p>The CSR matrix does not print nicely. But you can see it by converting to a numpy array and printing it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0, 1, 1, 1],
+       [1, 0, 1, 0],
+       [1, 1, 0, 0],
+       [1, 0, 0, 0]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id4">
+<h2>Shortest Paths<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">sparse</span></code> module has a submodule <code class="docutils literal notranslate"><span class="pre">csgraph</span></code> that provides APIs for network analysis.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">csgraph.shortest_path</span></code> computes the shortest path length from a specific node to all other nodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span>
+
+<span class="c1"># `indices` is the node to compute the shortest path from.</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1., 1., 0., 2.])
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Advanced:</strong> If you want to get the actual paths (i.e., list of nodes in the path), you can pass <code class="docutils literal notranslate"><span class="pre">return_predecessors=True</span></code> to <code class="docutils literal notranslate"><span class="pre">csgraph.shortest_path</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">,</span> <span class="n">predecessors</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_predecessors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2>Connected Components<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>Connected components can be computed by <code class="docutils literal notranslate"><span class="pre">csgraph.connected_components</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_components</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of connected components:&quot;</span><span class="p">,</span> <span class="n">n_components</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Labels:&quot;</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of connected components: 1
+Labels: [0 0 0 0]
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_components</span></code> is the number of connected components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code> is an array of length <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code> where each element is the ID of the connected component the node belongs to.</p></li>
+</ul>
+</section>
+<section id="exercise-02">
+<h2>Exercise 02 🏋️‍♀️💪🧠<a class="headerlink" href="#exercise-02" title="Link to this heading">#</a></h2>
+<p>Let’s compute the average path length of a network from pre-existing data and check if how long on average it takes to go from any node to any other node.</p>
+<ol class="arabic simple">
+<li><p>Select a network of your choice from <a class="reference external" href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</p></li>
+<li><p>Download the csv version of the data by clicking something like “3KiB” under <code class="docutils literal notranslate"><span class="pre">csv</span></code> column.</p></li>
+<li><p>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</p></li>
+<li><p>Load the data using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Get the source and target nodes from the data to create an edge list.</p></li>
+<li><p>Construct a graph from the edge list, either using <code class="docutils literal notranslate"><span class="pre">igraph</span></code> or <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.</p></li>
+<li><p>Compute the average path length</p></li>
+</ol>
+</section>
+<section id="hint-finding-all-shortest-paths-is-a-qubic-time-operation-with-respect-to-the-number-of-nodes-or-simply-put-it-takes-a-long-time-to-compute-so-compute-the-estimate-by-sampling-many-pairs-of-nodes-uniformly-at-random-and-computing-the-average-path-length-jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3">
+<h2><strong>Hint:</strong> Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the “estimate” by sampling many pairs of nodes uniformly at random and computing the average path length.—
+jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3<a class="headerlink" href="#hint-finding-all-shortest-paths-is-a-qubic-time-operation-with-respect-to-the-number-of-nodes-or-simply-put-it-takes-a-long-time-to-compute-so-compute-the-estimate-by-sampling-many-pairs-of-nodes-uniformly-at-random-and-computing-the-average-path-length-jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3" title="Link to this heading">#</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="walks-trails-paths-and-connectedness">
+<h1>Walks, Trails, Paths, and Connectedness<a class="headerlink" href="#walks-trails-paths-and-connectedness" title="Link to this heading">#</a></h1>
+<section id="walks-trails-paths">
+<h2>Walks, Trails, Paths<a class="headerlink" href="#walks-trails-paths" title="Link to this heading">#</a></h2>
+<p>While we have already used the term <strong>path</strong>, let us make clear its definition, together with other related terms.</p>
+<ul class="simple">
+<li><p>A <strong>walk</strong> is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.</p></li>
+<li><p>A <strong>trail</strong> is a walk with no repeated edge. For instance, walk (0, 1, 2, 3) is also a trail as it does not cross the same edge twice. But walk (0,2,3,1,3) is not a trail due to the repeated edge (1,3).</p></li>
+<li><p>A <strong>path</strong> is a walk without repeated node. For instance, walk (0,1,2,3) is a path. But walk (0, 1, 2, 1, 2, 3) is not a path due to the repeated node 1 and 2.</p></li>
+<li><p>When a walk starts and ends at the same node, it is called a *<em>loop</em>. If the loop is a trail, it is called a <strong>circuit</strong>. If the loop is a path, it is called a <strong>cycle</strong>.</p></li>
+</ul>
+<p><em><strong>Question</strong></em>: Is a path always a trail, and is a trail always a path?</p>
+<figure class="align-default" id="numbered-koningsberg-graph2">
+<a class="reference internal image-reference" href="../_images/labeled-koningsberg.jpg"><img alt="../_images/labeled-koningsberg.jpg" src="../_images/labeled-koningsberg.jpg" style="width: 30%;" /></a>
+<figcaption>
+<p><span class="caption-text">Labeled Knigsberg graph</span><a class="headerlink" href="#numbered-koningsberg-graph2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p><strong>Shortest Path</strong> is the path with the smallest number of edges (or nodes) between two nodes.
+A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).</p></li>
+<li><p><strong>The shortest path length</strong> is the number of edges in the shortest path, <em>not the number of nodes!</em> 👈👈</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Are there <strong>shortest trails</strong> and <strong>shortest walks</strong>?
+Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.</p>
+</div>
+</section>
+<section id="connectedness">
+<h2>Connectedness<a class="headerlink" href="#connectedness" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A network is <strong>connected</strong> if there is a path between every pair of nodes.</p></li>
+<li><p>A network is <strong>disconnected</strong> if there is no path between some pairs of nodes.</p></li>
+<li><p><strong>A connected component</strong> of a network is a set of nodes that are connected to each other.</p></li>
+<li><p><strong>The giant component</strong> of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).</p></li>
+</ul>
+<figure class="align-default" id="id6">
+<a class="reference internal image-reference" href="../_images/connected-component.jpg"><img alt="../_images/connected-component.jpg" src="../_images/connected-component.jpg" style="width: 50%;" /></a>
+<figcaption>
+<p><span class="caption-text">connected components of a network. the nodes with the same color form a connected component.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="connectedness-in-directed-networks">
+<h2>Connectedness in directed networks<a class="headerlink" href="#connectedness-in-directed-networks" title="Link to this heading">#</a></h2>
+<p>We call a network is <em>directed</em> if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.</p>
+<p>In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.</p>
+<p>This leads to two different types of <code class="docutils literal notranslate"><span class="pre">connectedness</span></code> as follows:</p>
+<ul class="simple">
+<li><p><strong>Strong connectedness</strong>: A directed network is said to be strongly connected if there is a path from every node to every other node.</p></li>
+<li><p><strong>Weak connectedness</strong>: A directed network is said to be weakly connected if there is a path from every node to every other node on its <em>undirected</em> counterpart.</p></li>
+</ul>
+<figure class="align-default" id="connected-components-directed">
+<a class="reference internal image-reference" href="../_images/connected-component-directed.jpg"><img alt="../_images/connected-component-directed.jpg" src="../_images/connected-component-directed.jpg" style="width: 50%;" /></a>
+<figcaption>
+<p><span class="caption-text">connected components of a network. the nodes with the same color form a connected component.</span><a class="headerlink" href="#connected-components-directed" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p><strong>Question</strong>: Is a strongly-connected component always a weakly-connected component?</p>
+<p>In the next section, we will learn how to compute the shortest paths and connected components of a network using a library <a class="reference external" href="https://python.igraph.org/en/stable/">igraph</a>.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="why-is-our-social-network-small-world">
+<h1>Why is our social network small world?<a class="headerlink" href="#why-is-our-social-network-small-world" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p>✍️ <a class="reference external" href="http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf">It’s a small world!! 6 degrees of separation</a> <a class="footnote-reference brackets" href="#footcite-esteban-moro-worksheet" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></li>
+</ul>
+<div class="docutils container" id="id8">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-esteban-moro-worksheet" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">2</a><span class="fn-bracket">]</span></span>
+<p>Esteban Moro. Network science for kids! Mar 2017. URL: <a class="reference external" href="http://estebanmoro.org/2017/03/network-science-for-kids">http://estebanmoro.org/2017/03/network-science-for-kids</a>.</p>
+</aside>
+</aside>
+</div>
+<hr class="docutils" />
+<section id="id9">
+<h2>jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="small-world-experiment">
+<h1>Small-world experiment<a class="headerlink" href="#small-world-experiment" title="Link to this heading">#</a></h1>
+<p>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</p>
+<figure class="align-default" id="milgram-small-world-experiment">
+<a class="reference internal image-reference" href="../_images/milgram-small-world-experiment.png"><img alt="../_images/milgram-small-world-experiment.png" src="../_images/milgram-small-world-experiment.png" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-text">Milgram’s small world experiment.</span><a class="headerlink" href="#milgram-small-world-experiment" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The experiment went as follows:</p>
+<ol class="arabic simple">
+<li><p>Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas.</p></li>
+<li><p>The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target.</p></li>
+<li><p>The recipient continued to forward the packet to their acquaintances until it reached the target.</p></li>
+</ol>
+<p>The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called <strong>six degrees of separation</strong>.
+The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The term “Six degrees of separation” is commonly associated with Milgram’s experiment, but Milgram never used it. John Guare coined the term for his 1991 play and movie <a class="reference external" href="https://en.wikipedia.org/wiki/Six_Degrees_of_Separation_(film)">“Six Degrees of Separation.”</a></p>
+</div>
+<p>The results were later confirmed independently.</p>
+<ul class="simple">
+<li><p>Yahoo research replicate the Milgram’s experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7.<a class="footnote-reference brackets" href="#footcite-goel2009social" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></li>
+<li><p>Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. <a class="footnote-reference brackets" href="#footcite-backstrom2012four" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p></li>
+</ul>
+<div class="docutils container" id="id12">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-goel2009social" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">3</a><span class="fn-bracket">]</span></span>
+<p>Sharad Goel, Roby Muhamad, and Duncan Watts. Social search in” small-world” experiments. In <em>Proceedings of the 18th international conference on World wide web</em>, 701–710. 2009.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-backstrom2012four" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">4</a><span class="fn-bracket">]</span></span>
+<p>Lars Backstrom, Paolo Boldi, Marco Rosa, Johan Ugander, and Sebastiano Vigna. Four degrees of separation. In <em>Proceedings of the 4th annual ACM Web science conference</em>, 33–42. 2012.</p>
+</aside>
+</aside>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "skojaku/adv-net-sci",
+            ref: "gh-pages",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tmp"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Appendix</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compressed-sparse-row-csr-format">Compressed Sparse Row (CSR) format</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-generate-csr-format-from-an-adjacency-matrix">How to generate CSR format from an adjacency matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-csr-format-for-efficient-computations">How to use CSR format for efficient computations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#assignment">Assignment</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-src-trg-and-values-are-lists-of-the-source-nodes-target-nodes-and-edge-weights-respectively">where <code class="docutils literal notranslate"><span class="pre">src</span></code>, <code class="docutils literal notranslate"><span class="pre">trg</span></code>, and <code class="docutils literal notranslate"><span class="pre">values</span></code> are lists of the source nodes, target nodes, and edge weights, respectively.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3">jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-the-shortest-paths-and-connected-components">Computing the Shortest Paths and Connected Components</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igraph">igraph</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-graph">Create a graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shortest-paths">Shortest Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connected-components">Connected Components</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-01">Exercise 01 🏋️‍♀️💪🧠</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-networks">Directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy">Scipy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Create a graph</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Shortest Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Connected Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-02">Exercise 02 🏋️‍♀️💪🧠</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hint-finding-all-shortest-paths-is-a-qubic-time-operation-with-respect-to-the-number-of-nodes-or-simply-put-it-takes-a-long-time-to-compute-so-compute-the-estimate-by-sampling-many-pairs-of-nodes-uniformly-at-random-and-computing-the-average-path-length-jupytext-cell-metadata-filter-all-formats-md-myst-text-representation-extension-rmd-format-name-myst-format-version-0-13-jupytext-version-1-16-3-kernelspec-display-name-python-3-ipykernel-language-python-name-python3"><strong>Hint:</strong> Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the “estimate” by sampling many pairs of nodes uniformly at random and computing the average path length.—
+jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#walks-trails-paths-and-connectedness">Walks, Trails, Paths, and Connectedness</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#walks-trails-paths">Walks, Trails, Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectedness">Connectedness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectedness-in-directed-networks">Connectedness in directed networks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-our-social-network-small-world">Why is our social network small world?</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">jupytext:
+cell_metadata_filter: -all
+formats: md:myst
+text_representation:
+extension: .Rmd
+format_name: myst
+format_version: 0.13
+jupytext_version: 1.16.3
+kernelspec:
+display_name: Python 3 (ipykernel)
+language: python
+name: python3</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#small-world-experiment">Small-world experiment</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sadamori Kojaku
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+Traceback (most recent call last):
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/asyncio/base_events.py", line 650, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/contextlib.py", line 222, in __aexit__
+    await self.gen.athrow(typ, value, traceback)
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 650, in async_setup_kernel
+    yield
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+A = g.get_adjacency_sparse().toarray()
+k = np.array(g.degree())
+n_nodes = g.vcount()
+
+# A simple but inefficient way to compute P
+P = np.zeros((n_nodes, n_nodes))
+for i in range(n_nodes):
+    for j in range(n_nodes):
+        if k[i] > 0:
+            P[i, j] = A[i, j] / k[i]
+        else:
+            P[i, j] = 0
+
+# Alternative, more efficient way to compute P
+P = A / k[:, np.newaxis]
+
+# or even more efficiently
+P = np.einsum("ij,i->ij", A, 1 / k)
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[1], line 1[0m
+[0;32m----> 1[0m A [38;5;241m=[39m g[38;5;241m.[39mget_adjacency_sparse()[38;5;241m.[39mtoarray()
+[1;32m      2[0m k [38;5;241m=[39m np[38;5;241m.[39marray(g[38;5;241m.[39mdegree())
+[1;32m      3[0m n_nodes [38;5;241m=[39m g[38;5;241m.[39mvcount()
+
+[0;31mNameError[0m: name 'g' is not defined
+
