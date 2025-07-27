@@ -11,11 +11,13 @@ In this module, we will learn about the friendship paradox. Specifically:
 "Your friends have more friends than you" is a well-known phenomenon in social networks. It appears everywhere from physical social networks to online social networks, and even random networks!
 OK. Let's do not "think" but "feeeeel" this paradox through the following in-class experiment.
 
-### Materials
+## Experiment Materials and Procedure
+
+**Materials:**
 - [📇 Friendship card](./friendship-cards.pdf)
 - 🖊️ Pen
 
-### Friendship Network Experiment
+**Friendship Network Experiment:**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -46,13 +48,13 @@ OK. Let's do not "think" but "feeeeel" this paradox through the following in-cla
 
 ## The Friendship Paradox Explained
 
-### The Origin of the Friendship Paradox
+## The Origin of the Friendship Paradox
 
 The paradox arises not because of the way we form friendships. It's about measurement! For example a person with 100 friends generates 100 cards, while a person with 1 friend generates only 1 card. If we average friend counts over the cards, popular people are counted more. This is where the friendship paradox comes from.
 
 In network terms, cards represent edges and people represent nodes. The friendship paradox arises because we measure at different levels: nodes or edges. The average friend count at the node level is lower than at the edge level because popular people are counted more often at the edge level.
 
-### Key Questions to Consider
+## Key Questions to Consider
 
 - **🎉 Fun Challenge**: Can you create a network where your friends have the most friends? 🤔💡 Give it a try in this [Friendship Paradox Game! 🎮✨](../assets/vis/friendship-paradox-game.html)
 
@@ -62,13 +64,13 @@ In network terms, cards represent edges and people represent nodes. The friendsh
 
 Beyond an interesting trivia, the friendship paradox has many practical utilities.
 
-### Strategic Vaccination
+## Strategic Vaccination
 
 The friendship paradox has important implications for public health strategies. By understanding that highly connected individuals are more likely to be selected through their connections, we can develop more effective vaccination strategies.
 
 - **🎉 Fun Challenge**: Can you control the spread of a virus by strategically vaccinating individuals? 🤔💡 Give it a try in this [Vaccination Game! 🎮✨](../assets/vis/vaccination-game.html)
 
-### Why This Works
+## Why Vaccination Strategy Works
 
 When we vaccinate people chosen through the friendship paradox principle:
 1. We're more likely to vaccinate highly connected individuals
