@@ -175,7 +175,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -837,7 +837,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <li>Emphasizes differences between neighbors</li>
 </ul></li>
 </ol>
-<div id="5a275bbd" class="cell">
+<div id="1bcf2235" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -869,7 +869,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <section id="example" class="level3" data-number="65.2.2">
 <h3 data-number="65.2.2" class="anchored" data-anchor-id="example"><span class="header-section-number">65.2.2</span> Example</h3>
 <p>Let us showcase the idea of spectral filtering with a simple example with the karate club network.</p>
-<div id="22bca7cc" class="cell">
+<div id="2da26548" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -883,7 +883,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>We will first compute the laplacian matrix and its eigendecomposition.</p>
-<div id="6cd2576d" class="cell">
+<div id="c06b8245" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Laplacian matrix</span></span>
@@ -901,7 +901,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>Now, let’s create a low-pass and high-pass filter.</p>
-<div id="f5772ad6" class="cell">
+<div id="68af5982" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="dv">2</span></span>
@@ -918,7 +918,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </span></p>
 <p>where <span class="math inline">{\bf L}_{\text{low}}</span> and <span class="math inline">{\bf L}_{\text{high}}</span> are the low-pass and high-pass filters, respectively, and <span class="math inline">{\bf x}'</span> is the convolved feature vector.</p>
 <p>Now, let’s see how these filters work. Our first example is a random feature vector.</p>
-<div id="072d8150" class="cell">
+<div id="c42b59e4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Random feature vector</span></span>
@@ -932,7 +932,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>Let us visualize the results.</p>
-<div id="b6e9c64a" class="cell">
+<div id="8ca6fa8c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -965,7 +965,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </div>
 <p>We observe that the low-pass filter results in smoother <span class="math inline">{\bf x}</span> between connected nodes (i.e., neighboring nodes have similar <span class="math inline">{\bf x}</span>). The original <span class="math inline">{\bf x}</span> and <span class="math inline">{\bf x}'_{\text{low}}</span> are very similar because random variables are high-frequency components. In contrast, when we apply the high-pass filter, <span class="math inline">{\bf x}'_{\text{high}}</span> is similar to <span class="math inline">{\bf x}</span> because the high-frequency components are not filtered.</p>
 <p>Let’s now use an eigenvector as our feature vector <span class="math inline">{\bf x}</span>.</p>
-<div id="2ca097ff" class="cell">
+<div id="b566d386" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>

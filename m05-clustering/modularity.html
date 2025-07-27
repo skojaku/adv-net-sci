@@ -175,7 +175,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -767,9 +767,16 @@ window.Quarto = {
 <li>Then we draw pairs of balls at random <em>with replacement</em> and see how often the colors match.</li>
 </ol>
 <p>By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we’d expect by chance. This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity <em>relative</em> to <em>a null model</em>.</p>
-<p>:::{figure-md} fig-modularity-game</p>
-<p><img src="../figs/modularity.jpg" alt="Single node failure" width="100%"></p>
-<p>Illustration of how modularity measures assortativity relative to a null model. :::</p>
+<div id="fig-fig-modularity-game" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fig-modularity-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><img src="../figs/modularity.jpg" alt="Single node failure" width="100%" class="figure-img"></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fig-modularity-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;37.1: Illustration of how modularity measures assortativity relative to a null model.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="deriving-modularity" class="level2" data-number="37.2">
 <h2 data-number="37.2" class="anchored" data-anchor-id="deriving-modularity"><span class="header-section-number">37.2</span> Deriving Modularity</h2>
@@ -806,21 +813,24 @@ Hint
 
 What is the probability of color matches for the random version? Derive the probability by using $\sum, M, \delta(c_i, c_j), k_i,k_j$.
 
-:::{dropdown} Hint
+::: {.callout collapse="true"}
+## Hint
 1. Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡
 2. Now, think about picking one ball out of the bag. What are the chances of picking a specific color?
 3. Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?
 </code></pre>
 <p>The full modularity formula is on the next page 😉.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>:::</p>
+<p>:::</p>
 
 
 <!-- -->
 
-</div>
-</div>
-</div>
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->
@@ -1315,7 +1325,7 @@ What is the probability of color matches for the random version? Derive the prob
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we'd expect by chance.</span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity *relative* to *a null model*.</span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>:::{figure-md} fig-modularity-game</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>::: {#fig-fig-modularity-game}</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"../figs/modularity.jpg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Single node failure"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"100%"</span><span class="dt">&gt;</span></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
@@ -1351,14 +1361,23 @@ What is the probability of color matches for the random version? Derive the prob
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="in">What is the probability of color matches for the random version? Derive the probability by using $\sum, M, \delta(c_i, c_j), k_i,k_j$.</span></span>
 <span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="in">:::{dropdown} Hint</span></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="in">1. Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡</span></span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="in">2. Now, think about picking one ball out of the bag. What are the chances of picking a specific color?</span></span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="in">3. Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?</span></span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>The full modularity formula is on the next page 😉.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="in">::: {.callout collapse="true"}</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="in">## Hint</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="in">1. Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="in">2. Now, think about picking one ball out of the bag. What are the chances of picking a specific color?</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="in">3. Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>The full modularity formula is on the next page 😉.</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

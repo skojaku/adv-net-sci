@@ -132,7 +132,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -710,7 +710,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="a4a1cda4" class="cell">
+<div id="01292f89" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
@@ -721,7 +721,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="hands-on-robustness-random-attack" class="level1" data-number="24">
 <h1 data-number="24"><span class="header-section-number">24</span> Hands-on: Robustness (Random attack)</h1>
 <p>We consider a small social network of 34 members in a university karate club, called Zachary’s karate club network.</p>
-<div id="776376f6" class="cell">
+<div id="343587d9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -730,7 +730,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Let’s break the network 😈! We will remove nodes one by one and see how the connectivity of the network changes at each step. It is useful to create a copy of the network to keep the original network unchanged.</p>
-<div id="c949f3db" class="cell">
+<div id="84b944a6" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>g_original <span class="op">=</span> g.copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -739,14 +739,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="robustness-against-random-failures" class="level2" data-number="24.1">
 <h2 data-number="24.1" class="anchored" data-anchor-id="robustness-against-random-failures"><span class="header-section-number">24.1</span> Robustness against random failures</h2>
 <p>Let us remove a single node from the network. To this end, we need to first identify which nodes are in the network. With <code>igraph</code>, the IDs of the nodes in a graph are accessible through <code>Graph.vs.indices</code> as follows:</p>
-<div id="ae5f524e" class="cell">
+<div id="88d21087" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(g.vs.indices)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We randomly choose a node and remove it from the network by using <code>Graph.delete_vertices</code>.</p>
-<div id="2cb9a897" class="cell">
+<div id="6423fb1f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -770,21 +770,21 @@ Note
 </div>
 </div>
 <p>The connectivity of the network is the fraction of nodes in the largest connected component of the network after node removal. We can get the connected components of the network by using <code>Graph.connected_components</code>.</p>
-<div id="f3ff8509" class="cell">
+<div id="7d8baaed" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The sizes of the connected components are accessible via <code>Graph.connected_components.sizes</code>.</p>
-<div id="e770fc4b" class="cell">
+<div id="f93ab9d2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>components.sizes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Thus, the connectivity of the network can be computed by</p>
-<div id="f924308d" class="cell">
+<div id="b06bf91c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
@@ -793,7 +793,7 @@ Note
 </details>
 </div>
 <p>Putting together the above code, let us compute the robustness profile of the network.</p>
-<div id="047c59b7" class="cell">
+<div id="c7ca6844" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -824,7 +824,7 @@ Note
 </details>
 </div>
 <p>Let us plot the robustness profile.</p>
-<div id="f022ac7a" class="cell">
+<div id="095bf94d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -851,14 +851,14 @@ Note
 <h2 data-number="24.2" class="anchored" data-anchor-id="targeted-attack"><span class="header-section-number">24.2</span> Targeted attack</h2>
 <p>In a targeted attack, nodes are removed based on specific criteria rather than randomly. One common strategy is to remove nodes from the largest node degree to the smallest, based on the idea that removing nodes with many edges is more likely to disrupt the network connectivity.</p>
 <p>The degree of the nodes is accessible via <code>Graph.degree</code>.</p>
-<div id="302a13bc" class="cell">
+<div id="8e75e8b8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(g_original.degree())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We compute the robustness profile by removing nodes with the largest degree and measuring the connectivity of the network after each removal.</p>
-<div id="204ecd7e" class="cell">
+<div id="9bac7acd" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> g_original.copy() <span class="co"># restore the network</span></span>
@@ -886,7 +886,7 @@ Note
 <span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>df_robustness_profile_targeted <span class="op">=</span> pd.DataFrame(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="71640c8f" class="cell">
+<div id="6b4fe123" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">'white'</span>, font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>

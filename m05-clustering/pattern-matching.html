@@ -175,7 +175,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -744,9 +744,16 @@ window.Quarto = {
 
 <p>Community detection is an abstract unsupervised problem. It is abstract because there is no clear-cut definition or ground truth to compare against. The concept of a community in a network is subjective and highly context-dependent.</p>
 <p>A classical approach to community detection is based on <em>pattern matching</em>. Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.</p>
-<p>:::{figure-md} clique</p>
-<p><img src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" alt="Clique graph" width="80%"></p>
-<p>Cliques of different sizes. Taken from <a href="https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html">https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html</a> :::</p>
+<div id="fig-clique" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clique-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><img src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" alt="Clique graph" width="80%" class="figure-img"></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clique-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.1: Cliques of different sizes. Taken from <a href="https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html">https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html</a>
+</figcaption>
+</figure>
+</div>
 <p>Perhaps, the strictest definition of a community is a <em>clique</em>: a group of nodes all connected to each other. Examples include triangles (3-node cliques) and fully-connected squares (4-node cliques). However, cliques are often too rigid for real-world networks. In social networks, for instance, large groups of friends rarely have every member connected to every other, yet we want to accept such “in-perfect” social circles as communities. This leads to the idea of relaxed versions of cliques, called <strong>pseudo-cliques</strong>.</p>
 <p>Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness:</p>
 <ol type="1">
@@ -770,10 +777,16 @@ window.Quarto = {
 <li><strong><span class="math inline">\rho</span>-dense core</strong>, a subgraph with minimum conductance <span class="math inline">\rho</span> {footcite}<code>koujaku2016dense</code>.</li>
 </ul></li>
 </ol>
-<p>:::{figure-md} clique-pattern</p>
-<p><img src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" alt="Pseudo-clique patterns" width="80%" style="display: block; margin-left: auto; margin-right: auto;"></p>
-<p>Illustation of different pseudo cliques. Taken from {footcite}<code>koujaku2016dense</code>.</p>
-<p>:::</p>
+<div id="fig-clique-pattern" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clique-pattern-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><img src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" alt="Pseudo-clique patterns" width="80%" style="display: block; margin-left: auto; margin-right: auto;" class="figure-img"></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clique-pattern-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.2: Illustation of different pseudo cliques. Taken from {footcite}<code>koujaku2016dense</code>.
+</figcaption>
+</figure>
+</div>
 
 
 <!-- -->
@@ -1249,7 +1262,7 @@ window.Quarto = {
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>A classical approach to community detection is based on *pattern matching*.</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>:::{figure-md} clique</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>::: {#fig-clique}</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Clique graph"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"80%"</span><span class="dt">&gt;</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
@@ -1274,7 +1287,7 @@ window.Quarto = {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**$k$-truss**, a maximal subgraph where all edges participate in at least $k-2$ triangles {footcite}<span class="in">`saito2008extracting,cohen2009graph,wang2010triangulation`</span>.</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**$\rho$-dense core**, a subgraph with minimum conductance $\rho$ {footcite}<span class="in">`koujaku2016dense`</span>.</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>:::{figure-md} clique-pattern</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>::: {#fig-clique-pattern}</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Pseudo-clique patterns"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"80%"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"display: block; margin-left: auto; margin-right: auto;"</span><span class="dt">&gt;</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>

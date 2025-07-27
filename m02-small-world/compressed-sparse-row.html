@@ -175,7 +175,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -755,14 +755,21 @@ Optional Exercise
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>:class: tip For those who are interested in the details of CSR format, please do the following: - 📝 Pen and paper exercise <a href="./pen-paper-csr/exercise.pdf">here</a> - 💻 (Advanced) Coding exercise in the <a href="./appendix.md">Appendix</a>.</p>
+<p>:class: tip For those who are interested in the details of CSR format, please do the following: - 📝 Pen and paper exercise <a href="./pen-paper-csr/exercise.pdf">here</a> - 💻 (Advanced) Coding exercise in the <a href="../m02-small-world/appendix.html">Appendix</a>.</p>
 </div>
 </div>
-<p>:::{figure-md} csr_matirx</p>
-<p><img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" width="100%"></p>
-<p>Compressed Sparse Row (CSR) matrix. Source: <a href="https://medium.com/@hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791">Medium: Sparse GEMM and Tensor Core’s Structured Sparsity</a> :::</p>
+<div id="fig-csr_matirx" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-csr_matirx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" width="100%" class="figure-img"></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-csr_matirx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://medium.com/@hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791">Medium: Sparse GEMM and Tensor Core’s Structured Sparsity</a>
+</figcaption>
+</figure>
+</div>
 <p>The CSR format is implemented in the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html">scipy</a> library. It is straightforward to convert the CSR matrix from the <em>dense</em> adjacency matrix.</p>
-<div id="86b91ed8" class="cell">
+<div id="0d529cb7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> csr_matrix</span>
@@ -777,7 +784,7 @@ Optional Exercise
 </details>
 </div>
 <p>If you have an <em>edge list</em>, you can directly generate the CSR matrix without creating the dense matrix first.</p>
-<div id="21eefbef" class="cell">
+<div id="2436ffc3" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> csr_matrix</span>
@@ -1277,12 +1284,12 @@ Optional Exercise
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="sc">:class:</span> tip</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>For those who are interested in the details of CSR format, please do the following:</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>📝 Pen and paper exercise <span class="co">[</span><span class="ot">here</span><span class="co">](./pen-paper-csr/exercise.pdf)</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>💻 (Advanced) Coding exercise in the <span class="co">[</span><span class="ot">Appendix</span><span class="co">](./appendix.md)</span>.</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>💻 (Advanced) Coding exercise in the <span class="co">[</span><span class="ot">Appendix</span><span class="co">](./appendix.qmd)</span>.</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>:::{figure-md} csr_matirx</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>::: {#fig-csr_matirx}</span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"100%"</span><span class="dt">&gt;</span></span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>

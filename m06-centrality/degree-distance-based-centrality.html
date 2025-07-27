@@ -140,7 +140,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">
@@ -819,7 +819,18 @@ Exercise
 <div class="callout-body-container callout-body">
 <p>:class: tip</p>
 <p>Create a graph where a node has the maximum closeness centrality of value 1.</p>
-<p>:::{dropdown} Click to see the answer</p>
+<div class="callout callout-style-simple callout-none no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Click to see the answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <p>The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.</p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;"></p>
 <pre><code>
@@ -1058,7 +1069,8 @@ where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the 
 Create a graph where a node has the maximum closeness centrality of value 1.
 
 
-:::{dropdown} Click to see the answer
+::: {.callout collapse="true"}
+## Click to see the answer
 
 The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
 
@@ -1102,6 +1114,9 @@ c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
 <p>where <span class="math inline">\sigma_{jk}</span> is the number of shortest paths between nodes <span class="math inline">j</span> and <span class="math inline">k</span>, and <span class="math inline">\sigma_{jk}(i)</span> is the number of shortest paths between nodes <span class="math inline">j</span> and <span class="math inline">k</span> that pass through node <span class="math inline">i</span>.</p>
 <p>```````````````````</p>
 </section>
+</div>
+</div>
+</div>
 </div>
 </div>
 </section>
