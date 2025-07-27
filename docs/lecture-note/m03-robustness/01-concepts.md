@@ -1,60 +1,51 @@
 # Module 3: Robustness - Concepts
 
-## What to learn in this module
+## Learning Objectives
 
-In this module, we will learn about network robustness. We will learn:
-- Minimum spanning tree
-- Network robustness against random and targeted attacks
-- **Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, random attacks, targeted attacks, network robustness, robustness index
+In this module, we will explore network robustness and its applications. By the end of this module, you will understand:
+- Minimum spanning tree algorithms and their role in network design
+- Network robustness against random failures and targeted attacks
+- Quantitative measures of network robustness including the R-index
+- Real-world applications in power grid design and infrastructure planning
 
-## Building a cost-effective power grid network
+**Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, random attacks, targeted attacks, network robustness, robustness index
 
-- ✍️ [Pen and Paper](./pen-and-paper/exercise.pdf)
+## Network Robustness Fundamentals
 
-## Network Robustness
+Networks in the real world face constant threats - nodes and edges can fail or be attacked, disrupting connectivity. A robust network maintains most of its connectivity even after failures or attacks. Understanding and quantifying this robustness is crucial for designing resilient infrastructure, from power grids to communication networks.
 
-Nodes and edges can fail or be attacked, which disrupt the connectivity of a network.
-Roughly speaking, we say a network is robust if it maintain most of its connectivity after failures or attacks.
-There are different types of attacks, together with how we quantify the damage they cause. So let us first showcase a case study with code.
+The key insight is that different types of failures require different defensive strategies. Random failures (like equipment malfunction) affect networks differently than targeted attacks (like deliberate sabotage of critical nodes). Let's explore these scenarios and learn how to measure and improve network resilience.
 
-### Random node failures
+## Random Node Failures
 
-Nodes can fail and disconnect from networks, such as power station closures in power grids. This is modeled as a **random failure**, where randomly chosen nodes are removed from the network. When a node fails, it and its edges are removed.
+Random failures occur when nodes disconnect unexpectedly, such as power station closures in electrical grids or server failures in computer networks. In this scenario, nodes are removed randomly from the network along with all their connections.
 
-The damage varies depending on the node to be removed. The damage to the network can be measued in many different ways, but an accepted measure is the loss of **connectivity**, defined as the fraction of nodes left in the largest connected part of the network after the failure.
+The impact of random failures varies significantly depending on which nodes fail. We measure this damage through **connectivity loss** - the fraction of nodes remaining in the largest connected component after failure. This metric captures how well the network maintains its overall structure.
 
 ![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
 
-: The impact of removing a single node varies based on which node is removed. {#fig-single-node-failure}
-
-Multiple nodes can fail simultaneously, e.g., due to natural disasters like earthquakes or tsunamis.
-Thus it is often useful to assess the robustness of the network against such failures.
-**Robustness profile** is a plot of the connectivity drop as a function of the number of nodes removed. It provides a visual summary of the robustness of the network against *a given sequential failure of nodes*.
-In random failure, the order of nodes removed is random.
+When multiple nodes fail simultaneously (as in natural disasters), we need systematic ways to assess network vulnerability. The **robustness profile** provides this by plotting connectivity loss against the number of nodes removed. This visualization reveals how quickly a network fragments under progressive random failures.
 
 ![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
 
-: Robustness profile of a network for a sequential failure of nodes. {#fig-multiple-node-failure}
-
-Beyond the qualitative observation, it is useful to quantify the robustness of the network.
-The **$R$-index** is a single number that summarizes the robustness of the network.
-It is defined as the area under the connectivity curve with integral approximation.
+To quantify robustness with a single metric, we use the **R-index**, defined as the area under the robustness profile curve:
 
 $$
 R = \frac{1}{N} \sum_{k=1}^{N-1} y_k
 $$
 
-where $y_k$ is the connectivity at fraction $k/N$ of nodes removed, where $N$ is the total number of nodes in the network. A higher value indicates that the network is robust against the attack. The $R$-index has a maximum value of 1/2 (i.e., which corresponds to a diagonal line in the plot above).
+where $y_k$ is the connectivity at fraction $k/N$ of nodes removed, and $N$ is the total number of nodes. Higher R-index values indicate greater robustness, with a maximum possible value of 0.5.
 
+## Targeted Attacks
 
-### Targeted attack
+While a network may survive random failures well, it can still be vulnerable to **targeted attacks** where adversaries strategically remove specific nodes. The most common strategy targets high-degree nodes (hubs) first, since they have many connections and their removal severely disrupts network connectivity.
 
-A network robust against random failures can still be fragmented by **targeted attacks**.
-In targeted attacks, nodes are removed based on specific criteria rather than randomly.
-For example, nodes can be removed in order of their degree, starting with the largest degree to the smallest degree. The rationale for this attack strategy is that large-degree nodes have many connections, so removing them disrupts the network more significantly.
+Beyond degree-based attacks, adversaries might target nodes based on centrality measures (closeness, betweenness) or strategic positioning. Each attack strategy exploits different network vulnerabilities, making comprehensive robustness analysis essential for critical infrastructure.
 
-Degree-based attack is not the only form of targeted attacks. Other forms of targeted attacks include removing nodes based on their centrality (closeness centrality, betweenness centrality) and those based on proximity.
+## Power Grid Design Exercise
 
-## What's next?
+Understanding robustness concepts is crucial for real-world applications like power grid design. Consider the challenge of building a cost-effective electrical grid that maintains service even when components fail.
 
-In the next section, we will code up a simple example to compute the robustness profile of a network using Python.
+- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Design a cost-effective power grid network using minimum spanning tree concepts, balancing cost minimization with robustness requirements.
+
+This exercise bridges theoretical concepts with practical engineering decisions, demonstrating how robustness analysis guides infrastructure planning.
