@@ -1,0 +1,94 @@
+# Preparation: Python and Graph Basics
+
+Before diving into the Euler Tour problem, let's establish the foundational knowledge you'll need.
+
+## Python Essentials
+
+### Data Structures
+For graph algorithms, you'll frequently use:
+- **Lists**: For storing sequences of nodes or edges
+- **Dictionaries**: For adjacency lists and node mappings
+- **Sets**: For tracking visited nodes and unique elements
+
+```python
+# Basic data structures for graphs
+nodes = [1, 2, 3, 4]
+edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+adjacency_dict = {1: [2, 4], 2: [1, 3], 3: [2, 4], 4: [3, 1]}
+visited = set()
+```
+
+### Essential Libraries
+- **NetworkX**: Python library for graph creation and analysis
+- **NumPy**: For numerical operations and matrix representations
+- **Matplotlib**: For graph visualization
+
+```python
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+## Graph Theory Fundamentals
+
+### Basic Definitions
+- **Graph**: A collection of nodes (vertices) connected by edges
+- **Directed vs Undirected**: Edges have direction or are bidirectional
+- **Degree**: Number of edges connected to a node
+- **Path**: Sequence of connected edges
+- **Cycle**: Path that starts and ends at the same node
+
+### Graph Representations
+
+#### Adjacency List
+```python
+# Undirected graph representation
+graph = {
+    'A': ['B', 'D'],
+    'B': ['A', 'C'],
+    'C': ['B', 'D'],
+    'D': ['A', 'C']
+}
+```
+
+#### Adjacency Matrix
+```python
+# For a 4-node graph
+adj_matrix = np.array([
+    [0, 1, 0, 1],  # Node A connections
+    [1, 0, 1, 0],  # Node B connections
+    [0, 1, 0, 1],  # Node C connections
+    [1, 0, 1, 0]   # Node D connections
+])
+```
+
+### NetworkX Basics
+
+```python
+# Creating a graph
+G = nx.Graph()
+
+# Adding nodes and edges
+G.add_nodes_from([1, 2, 3, 4])
+G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 1)])
+
+# Basic graph properties
+print(f"Number of nodes: {G.number_of_nodes()}")
+print(f"Number of edges: {G.number_of_edges()}")
+print(f"Degree of node 1: {G.degree(1)}")
+```
+
+## Key Concepts for Euler Tours
+
+### Euler Path and Euler Circuit
+- **Euler Path**: Visits every edge exactly once
+- **Euler Circuit**: Euler path that returns to starting node
+- **Eulerian Graph**: Graph that contains an Euler circuit
+
+### Prerequisites
+Understanding these concepts will be essential:
+1. **Node Degree**: Foundation for Euler's theorem
+2. **Connected Components**: Euler paths exist only in connected graphs
+3. **Graph Traversal**: Basic algorithms like DFS and BFS
+
+This preparation will help you understand the mathematical foundations and implement solutions for the famous Seven Bridges of Königsberg problem that we'll explore next.
