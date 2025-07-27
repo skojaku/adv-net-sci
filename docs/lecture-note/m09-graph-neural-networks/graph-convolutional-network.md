@@ -1,16 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
-
 # Graph Convolutional Networks
 We have seen that spectral filters give us a principled way to think about "convolution" on irregular graph structures, and controlling the frequency components brings out different aspects of the data. We now go one step further: instead of designing filters by hand, we can learn them from data for specific tasks.
 
@@ -135,13 +122,11 @@ These simplifications offer several advantages:
 - **Depth**: Fewer parameters allow building deeper models
 - **Performance**: Despite (or perhaps due to) its simplicity, it often outperforms more complex models
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: note
 
 Let's implement a simple GCN model for node classification.
 [Coding Exercise](../../../notebooks/exercise-m09-graph-neural-net.ipynb)
-```
+:::
 
 
-```{footbibliography}
-```

@@ -1,16 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
-
 # Network Robustness
 
 Nodes and edges can fail or be attacked, which disrupt the connectivity of a network.
@@ -23,22 +10,18 @@ Nodes can fail and disconnect from networks, such as power station closures in p
 
 The damage varies depending on the node to be removed. The damage to the network can be measued in many different ways, but an accepted measure is the loss of **connectivity**, defined as the fraction of nodes left in the largest connected part of the network after the failure.
 
-:::{figure-md} single-node-failure
-<img src="../figs/single-node-failure.jpg" alt="Single node failure" width="70%">
+![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
 
-The impact of removing a single node varies based on which node is removed.
-:::
+: The impact of removing a single node varies based on which node is removed. {#fig-single-node-failure}
 
 Multiple nodes can fail simultaneously, e.g., due to natural disasters like earthquakes or tsunamis.
 Thus it is often useful to assess the robustness of the network against such failures.
 **Robustness profile** is a plot of the connectivity drop as a function of the number of nodes removed. It provides a visual summary of the robustness of the network against *a given sequential failure of nodes*.
 In random failure, the order of nodes removed is random.
 
-:::{figure-md} multiple-node-failure
-<img src="../figs/robustness-profile.jpg" alt="Multiple node failure" width="70%">
+![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
 
-Robustness profile of a network for a sequential failure of nodes.
-:::
+: Robustness profile of a network for a sequential failure of nodes. {#fig-multiple-node-failure}
 
 Beyond the qualitative observation, it is useful to quantify the robustness of the network.
 The **$R$-index** is a single number that summarizes the robustness of the network.

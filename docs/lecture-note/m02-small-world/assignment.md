@@ -11,5 +11,3 @@ We will compute the average path length of a network of scientists. The network 
     - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
 
 
-```{footbibliography}
-```

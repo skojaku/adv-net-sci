@@ -44,6 +44,7 @@ displaying the questions clearly for classroom or review purposes.
 """
 
 import json
+import sys 
 
 def create_marp_header():
     return """---
@@ -85,8 +86,8 @@ def generate_marp_slides(json_file, output_file):
     print(f"Successfully created Marp slides in {output_file}")
 
 def main():
-    input_file = 'sample-quiz.json'
-    output_file = 'quiz_slides.md'
+    input_file = sys.argv[1] 
+    output_file = sys.argv[2] 
     generate_marp_slides(input_file, output_file)
 
 if __name__ == "__main__":

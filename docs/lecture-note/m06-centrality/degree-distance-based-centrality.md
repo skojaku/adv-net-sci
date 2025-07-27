@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # What is centrality?
 
 Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
@@ -72,13 +60,13 @@ $$
 where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the normalization factor to make the centrality have a maximum value of 1.
 
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: tip
 
 Create a graph where a node has the maximum closeness centrality of value 1.
 
 
-```{dropdown} Click to see the answer
+:::{dropdown} Click to see the answer
 
 The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
 
@@ -138,5 +126,3 @@ $$
 
 where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of shortest paths between nodes $j$ and $k$ that pass through node $i$.
 
-```{footbibliography}
-```

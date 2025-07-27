@@ -1,21 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
-launch_buttons:
-  notebook_interface: "classic"
-  colab_url: "https://colab.research.google.com"
-  thebe: true
-  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
----
-
-
 # Euler's solution
 
 Euler consider two cases:
@@ -28,7 +10,7 @@ When a node has an odd number $2k+1$ of edges, one can enter and leave the node 
 
 Based up on the above reasoning, Euler leads to the following necessary (and later shown as sufficient) conditions:
 
-:::{admonition} Euler's path
+::: {.callout-note title="Euler's path"}
 
 There exists a walk that crosses all edges exactly once if and only if all nodes have even number of edges, or exactly two nodes have an odd number of edges.
 :::
@@ -37,9 +19,7 @@ There exists a walk that crosses all edges exactly once if and only if all nodes
 
 Back to the Konigsberg bridge problem, every node has an odd number of edges, meaning that there is no way to cross all edges exactly once. What a sad story for the citizens of Konigsberg. But the problem was solved during World War II, where Koingberg was bombarded by Soviet Union, losing two of the seven bridges 🫠.
 
-:::{figure-md} markdown-fig
-<img src="../figs/seven-bridge-bombared.png" alt="fishy" width="50%">
+![](../figs/seven-bridge-bombared.png){#fig-markdown-fig fig-alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."}
 
-Two bridges were bombed by Soviet Union, which allows the Euler path to exist.
-:::
+: Two bridges were bombed by Soviet Union, which allows the Euler path to exist. {#fig-markdown-fig}
 

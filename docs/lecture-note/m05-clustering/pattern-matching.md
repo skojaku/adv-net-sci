@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Community detection (pattern matching)
 
 Community detection is an abstract unsupervised problem. It is abstract because there is no clear-cut definition or ground truth to compare against. The concept of a community in a network is subjective and highly context-dependent.
@@ -52,5 +40,4 @@ Illustation of different pseudo cliques. Taken from {footcite}`koujaku2016dense`
 :::
 
 
-```{footbibliography}
-```
+

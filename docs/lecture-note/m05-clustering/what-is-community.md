@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # What is community?
 
 ## Birds of a feather flock together
@@ -34,5 +22,4 @@ This is why network scientists are sooo obsessed with community structure in net
 
 ## References
 
-```{footbibliography}
-```
+
