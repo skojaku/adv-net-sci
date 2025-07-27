@@ -48,16 +48,13 @@ Let us feel how small a large network can be by playing the [Wikirace](https://w
   <img src="https://cdn.sparkfun.com/assets/home_page_posts/3/8/8/0/Wikirace.jpeg" alt="Wikirace" width="70%">
 </div>
 
-### What's next
+At the end of the module, we will measure the average path length in a social network. Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.
 
-At the end of the module, we will measure the average path length in a social network.
-Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.
+## Paths, Walks, and Network Connectivity
 
-## Walks, Trails, Paths, and Connectedness
+While we have already used the term **path**, let us make clear its definition, together with other related terms and concepts of network connectivity.
 
-### Walks, Trails, Paths
-
-While we have already used the term **path**, let us make clear its definition, together with other related terms.
+**Basic Definitions:**
 
 - A **walk** is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.
 
@@ -77,8 +74,9 @@ Labeled Knigsberg graph
 
 :::
 
-- **Shortest Path** is the path with the smallest number of edges (or nodes) between two nodes.
-A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).
+**Shortest Paths:**
+
+- **Shortest Path** is the path with the smallest number of edges (or nodes) between two nodes. A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).
 - **The shortest path length** is the number of edges in the shortest path, *not the number of nodes!* 👈👈
 
 ::: {.callout-note}
@@ -86,8 +84,9 @@ A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple short
 Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.
 :::
 
+## Network Connectivity
 
-### Connectedness
+**Basic Connectivity Concepts:**
 
 - A network is **connected** if there is a path between every pair of nodes.
 - A network is **disconnected** if there is no path between some pairs of nodes.
@@ -102,7 +101,7 @@ connected components of a network. the nodes with the same color form a connecte
 
 :::
 
-### Connectedness in directed networks
+**Connectivity in Directed Networks:**
 
 We call a network is *directed* if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.
 
@@ -112,7 +111,6 @@ This leads to two different types of `connectedness` as follows:
 
 - **Strong connectedness**: A directed network is said to be strongly connected if there is a path from every node to every other node.
 - **Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.
-
 
 ::: {#fig-connected-components-directed}
 
