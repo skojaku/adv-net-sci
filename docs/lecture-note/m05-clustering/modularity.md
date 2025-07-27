@@ -51,7 +51,7 @@ Let's introduce some helpful symbols to describe our network:
 
 What is the probability of color matches for a given network? Derive the probability by using $\sum, M, A_{ij}, \delta(c_i, c_j)$.
 
-:::{dropdown} Hint
+::: {.callout-note collapse="true" title="Hint"}
 Let's think about our colorful bag of balls and strings! 🎨🧵
 First, ask yourself:
 1. How many strings do we have in total? (This is our M!)

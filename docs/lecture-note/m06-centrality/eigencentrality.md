@@ -82,7 +82,7 @@ Again, we obtain the eigenvector equations whose solutions are the eigenvectors 
 
 If the original network is *undirected*, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.
 
-:::{dropdown} Click to see the answer
+::: {.callout-note collapse="true" title="Click to see the answer"}
 If the graph is undirected, the hub and authority centralities are equivalent. And the solution is given by the eigenvector of $\mathbf{A} \mathbf{A}^T$. Now, let us consider the eigenvector equation for the adjacency matrix $\mathbf{A}$.
 
 $$
