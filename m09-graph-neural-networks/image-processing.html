@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5fd9db47a040b21ac2cac9a0b3b722ba.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-42d6d7f73c49f266427812bee1da63d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -937,7 +937,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <section id="an-example-for-the-fourier-transform" class="level3" data-number="64.2.1">
 <h3 data-number="64.2.1" class="anchored" data-anchor-id="an-example-for-the-fourier-transform"><span class="header-section-number">64.2.1</span> An example for the Fourier transform</h3>
 <p>Now, let’s perform the convolution using the Fourier transform using an example.</p>
-<div id="3fa9f14e" class="cell">
+<div id="fd960b4d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -946,7 +946,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 </details>
 </div>
 <p>Let us first perform the convolution directly.</p>
-<div id="e7b8b28b" class="cell">
+<div id="af58e427" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad X with zeros on both sides to handle boundary</span></span>
@@ -959,7 +959,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 </details>
 </div>
 <p>Let us now perform the convolution using the Fourier transform. We compute the Fourier transform of <span class="math inline">X</span> and <span class="math inline">K</span>.</p>
-<div id="ea87e059" class="cell">
+<div id="3f23859b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Transform X and K to frequency domain</span></span>
@@ -975,14 +975,14 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <li><code>FX</code> is the Fourier transform of <span class="math inline">X</span>, which is a complex number. Each entry <span class="math inline">FX[k]</span> represents the weight of the cosine wave in its real part and the weight of the sine wave in its imaginary part, with phase <span class="math inline">2\pi k / N</span>. Similarly for <code>FK</code>.</li>
 </ul>
 <p>Next, we multiply the transformed signals.</p>
-<div id="18a3c36f" class="cell">
+<div id="8849fef3" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>FXKconv <span class="op">=</span> FX <span class="op">*</span> FK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>This is the convolution in the frequency domain. Finally, we transform back to get the convolution.</p>
-<div id="4d454575" class="cell">
+<div id="b86d4b03" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> np.real(np.fft.ifft(FXKconv))</span>
@@ -1000,7 +1000,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 </ul>
 The Fourier transform method gives us all these positions (-2, -1, 0, …), but we only want the full overlaps starting from position 0, which is why we truncate the first two elements.</li>
 </ul>
-<div id="c54b93fd" class="cell">
+<div id="889ee86c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> XKconv_ft[<span class="dv">2</span>:]</span>
@@ -1021,7 +1021,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </span></p>
 <p>Comparing with the 1D case, we see that the 2D Fourier transform is <em>functionally</em> the same as the 1D Fourier transform, except that we now have two indices <span class="math inline">h</span> and <span class="math inline">w</span> to represent the frequency in both dimensions. The basis waves are 2D waves as shown below.</p>
 <p><strong>Cosine waves</strong></p>
-<div id="decb8558" class="cell">
+<div id="ea8749db" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1065,7 +1065,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </details>
 </div>
 <p><strong>Sine waves</strong></p>
-<div id="4792a3f6" class="cell">
+<div id="0c4efe13" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1081,7 +1081,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <section id="an-example-of-fourier-transform" class="level3" data-number="64.3.1">
 <h3 data-number="64.3.1" class="anchored" data-anchor-id="an-example-of-fourier-transform"><span class="header-section-number">64.3.1</span> An example of Fourier transform</h3>
 <p>Let us apply the Fourier transform to an image.</p>
-<div id="202e4835" class="cell">
+<div id="6f1da930" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1117,14 +1117,14 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </details>
 </div>
 <p>Take the Fourier transform of the image.</p>
-<div id="5369f199" class="cell">
+<div id="520ba778" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ft_img_gray <span class="op">=</span> np.fft.fft2(img_gray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>This decomposes the image into a sum of basis waves. Let’s see the weights of the basis waves.</p>
-<div id="37a7e9be" class="cell">
+<div id="7f488168" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1141,7 +1141,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </details>
 </div>
 <p>The corresponding basis waves look like this:</p>
-<div id="1730e00c" class="cell">
+<div id="74579016" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1177,7 +1177,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </details>
 </div>
 <p>Now, let’s see the convolution of the image with a Prewitt operator.</p>
-<div id="7fec5f5a" class="cell">
+<div id="560aa1c0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]]) <span class="co"># Prewitt operator</span></span>
@@ -1190,7 +1190,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </details>
 </div>
 <p>The Fourier transform of the Prewitt operator looks like this:</p>
-<div id="49afd035" class="cell">
+<div id="61206738" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(np.<span class="bu">abs</span>(FK), cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
@@ -1199,7 +1199,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </div>
 <p>We can think of the frequency domain of the kernel as a <strong>filter</strong> that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel <code>FK</code> has a low value around the center of the image. The product <span class="math inline">FX \cdot FK</span> then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.</p>
 <p>Let’s see the convolution result.</p>
-<div id="df4adad9" class="cell">
+<div id="3771ddd8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
