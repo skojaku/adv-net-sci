@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5fd9db47a040b21ac2cac9a0b3b722ba.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -771,7 +771,7 @@ window.Quarto = {
 <h2 data-number="21.2" class="anchored" data-anchor-id="code"><span class="header-section-number">21.2</span> Code</h2>
 <p><code>igraph</code> provides a function <code>igraph.Graph.spanning_tree</code> to find a minimum spanning tree in a given network.</p>
 <p>Let’s first create a network with random edge weights.</p>
-<div id="51a90faf" class="cell">
+<div id="e1e9b770" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -796,7 +796,7 @@ Note
 </div>
 </div>
 <p>The minimum spanning tree of the network can be found by the following code.</p>
-<div id="1f604510" class="cell">
+<div id="be5cd06b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gmst <span class="op">=</span> g.spanning_tree(weights<span class="op">=</span>g.es[<span class="st">"weight"</span>]) <span class="co"># If not `weights` are not specified, the edges are assumed to be unweighted</span></span>
