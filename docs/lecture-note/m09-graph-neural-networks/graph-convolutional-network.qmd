@@ -77,7 +77,7 @@ where:
 While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) {footcite}`kipf2017semi` proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.
 
 
-#### First-order Approximation
+### First-order Approximation
 
 The key departure is to use the first-order approximation of the Chebyshev polynomials.
 
@@ -95,7 +95,7 @@ $$
 
 While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.
 
-#### Deep GCNs can suffer from over-smoothing
+### Deep GCNs can suffer from over-smoothing
 
 GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called *gradient vanishing/exploding*, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.
 

@@ -15,7 +15,7 @@ To approach the problem, let us first remind that an image is a matrix of pixels
 
 ![](https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png)
 
-#### An example
+### An example
 
 Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a *significant brightness change between adjacent pixels*. To be more concrete, let's consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.
 
@@ -89,7 +89,7 @@ $$
 
 When applied to the entire image, the result is the same as the horizontal derivative.
 
-#### Convolution
+### Convolution
 
 We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.
 
@@ -206,7 +206,7 @@ This equation provides key insight into the meaning of eigenvalues:
 
 Thus, if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a large $\lambda_i$, then ${\bf x}$ has a strong high-frequency component; if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a small $\lambda_i$, then ${\bf x}$ has strong low-frequency component.
 
-#### Spectral Filtering
+### Spectral Filtering
 
 Eigenvalues $\lambda_i$ can be thought of as a *filter* that controls which frequency components pass through. Instead of using the filter associated with the Laplacian matrix, we can design a filter $h(\lambda_i)$ to control which frequency components pass through. This leads to the idea of *spectral filtering*. Two common filters are:
 
@@ -249,7 +249,7 @@ plt.tight_layout()
 ```
 
 
-#### Example
+### Example
 
 Let us showcase the idea of spectral filtering with a simple example with the karate club network.
 
@@ -426,7 +426,7 @@ Spectral GCNs are mathematically elegant but have two main limitations:
 
 These two limitations motivate the development of spatial GCNs.
 
-#### ChebNet
+### ChebNet
 
 ChebNet {footcite}`defferrard2016convolutional` is one of the earliest spatial GCNs that bridges the gap between spectral and spatial domains.
 The key idea is to leverage Chebyshev polynomials to approximate ${\bf L}_{\text{learn}}$ by
@@ -456,7 +456,7 @@ where:
 - $\theta_k$ are the learnable parameters
 - K is the order of the polynomial (typically small, e.g., K=3)
 
-#### Graph Convolutional Networks by Kipf and Welling
+### Graph Convolutional Networks by Kipf and Welling
 
 While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) {footcite}`kipf2017semi` proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.
 
@@ -523,7 +523,7 @@ GraphSAGE {footcite}`hamilton2017graphsage` introduced a different GCN that can 
 
 ![](https://theaisummer.com/static/02e23adc75fe68e5dd249a94f3c1e8cc/c483d/graphsage.png)
 
-#### Key Ideas
+### Key Ideas
 
 GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.
 
@@ -568,7 +568,7 @@ A key innovation of GraphSAGE is to treat the self and neighborhood information 
 
 
 
-#### Attention Mechanism
+### Attention Mechanism
 
 ![](https://production-media.paperswithcode.com/methods/Screen_Shot_2020-07-08_at_7.55.32_PM_vkdDcDx.png)
 
@@ -608,7 +608,7 @@ $$\mathbf{h}'_i = \parallel_{k=1}^K \sigma\left(\sum_{j \in \mathcal{N}(i) \cup 
 Graph Isomorphism Networks (GIN) is another popular GNN that born out of a question: what is the maximum discriminative power achievable by Graph Neural Networks? The answer lies in its theoretical connection to **the Weisfeiler-Lehman (WL) test**, a powerful algorithm for graph isomorphism testing.
 
 
-#### Weisfeiler-Lehman Test
+### Weisfeiler-Lehman Test
 
 Are two graphs structurally identical? Graph isomorphism testing determines if two graphs are structurally identical, with applications in graph classification, clustering, and other tasks.
 
@@ -689,7 +689,7 @@ The WL test above is called the 1-WL test. There are higher-order WL tests that 
 Check out [this note](https://www.moldesk.net/blog/weisfeiler-lehman-isomorphism-test/)
 ```
 
-#### GIN
+### GIN
 
 GIN {footcite}`xu2018how` is a GNN that is based on the WL test.
 The key idea is to focus on the parallel between the WL test and the GNN update rule.

@@ -301,7 +301,7 @@ Find communities by maximizing the modularity. [Modularity maximization (four co
 
 Like many other community detection methods, modularity is not a silver bullet. Thanks to extensive research, we know many limitations of modularity. Let's take a look at a few of them.
 
-#### Resolution limit
+### Resolution limit
 
 The modularity finds two cliques connected by a single edge as two separate communities.
 But what if we add another community to this network?
@@ -319,7 +319,7 @@ The best modularity score actually comes from merging our two cliques into one b
 Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges $m_c$ in a community $c$ has to be bigger than a certain size. This size is related to the total number of edges $m$ in the whole network. We write this mathematically as ${\cal O}(m)$.
 :::
 
-#### Spurious communities
+### Spurious communities
 
 What if the network does not have any communities at all? Does the modularity find no communities? To find out, let's run the modularity on a random network, where each pair of nodes is connected randomly with the same probability.
 
