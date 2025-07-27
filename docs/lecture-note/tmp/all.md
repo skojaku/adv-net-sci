@@ -621,7 +621,7 @@ print("sizes: ", list(components.sizes()))  # the number of nodes in each compon
 print("giant: ", components.giant())  # a subgraph of the largest connected component.
 ```
 
-#### Exercise 01 🏋️‍♀️💪🧠
+### Exercise 01 🏋️‍♀️💪🧠
 
 1. Now, let us add two nodes that are not connected to the existing graph, and call `connected_components` again. 🔗➕
 
@@ -4433,7 +4433,7 @@ where $\mu = 1-\lambda_2$.
 
 Let us demonstrate the above math by using the network of two cliques.
 
-#### Normalized Adjacency Matrix
+### Normalized Adjacency Matrix
 
 First, let us construct the normalized adjacency matrix $\overline{\bf A}$ of the network.
 
@@ -4494,7 +4494,7 @@ pd.DataFrame(A_norm_reconstructed).style.background_gradient(cmap='cividis', axi
 
 Notice that the reconstruction is not perfect due to the numerical error, although overall the structure is correct.
 
-#### Multi-step Transition Probability
+### Multi-step Transition Probability
 
 Let us first conform whether we can compute the transition probability after $t$ steps by using the eigenvalues and eigenvectors.
 
@@ -4519,7 +4519,7 @@ pd.DataFrame({
 }).style.background_gradient(cmap='cividis', axis = None).set_caption("Comparison of Eigenvector and Power Iteration")
 ```
 
-#### Relaxation Time and Mixing Time
+### Relaxation Time and Mixing Time
 
 Let us measure the relaxation time of the random walk.
 
@@ -4881,7 +4881,7 @@ There are some technical details that we need to be aware of, which we will lear
 
 In this exercise, we implement DeepWalk step by step.
 
-#### Step 1: Data preparation
+### Step 1: Data preparation
 
 We will use the karate club network as an example.
 
@@ -4904,7 +4904,7 @@ palette = sns.color_palette().as_hex()
 igraph.plot(g, vertex_color=[palette[label] for label in g.vs["label"]], bbox=(300, 300))
 ```
 
-#### Step 2: Generate random walks
+### Step 2: Generate random walks
 
 Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network.
 Let us first implement a function to sample random walks from a given network.
@@ -4946,7 +4946,7 @@ for i in range(n_nodes):
         walks.append(random_walk(A, i, walk_length))
 ```
 
-#### Step 3: Train the word2vec model
+### Step 3: Train the word2vec model
 Then, we feed the random walks to the word2vec model.
 
 ```{code-cell} ipython3
@@ -5030,7 +5030,7 @@ p.scatter('x', 'y', size='size', source=source, line_color="black", color="commu
 show(p)
 ```
 
-#### Step 4: Clustering
+### Step 4: Clustering
 
 One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as $K$-means and Gaussian mixture model. Let's see what we can get from the node embeddings.
 
@@ -6588,7 +6588,7 @@ where:
 While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) {footcite}`kipf2017semi` proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.
 
 
-#### First-order Approximation
+### First-order Approximation
 
 The key departure is to use the first-order approximation of the Chebyshev polynomials.
 
@@ -6606,7 +6606,7 @@ $$
 
 While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.
 
-#### Deep GCNs can suffer from over-smoothing
+### Deep GCNs can suffer from over-smoothing
 
 GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called *gradient vanishing/exploding*, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.
 
@@ -7210,13 +7210,13 @@ GraphSAGE {footcite}`hamilton2017graphsage` introduced a different GCN that can 
 
 GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.
 
-#### Neighborhood Sampling
+### Neighborhood Sampling
 
 The key idea is the *neighborhood sampling*. Instead of using all neighbors, GraphSAGE samples a fixed-size set of neighbors for each node. This controls memory complexity, a key limitation of the previous GNNs.
 
 Another key advantage of neighborhood sampling is that it enables GraphSAGE to handle dynamic, growing networks. Consider a citation network where new papers (nodes) are continuously added. Traditional GCNs would need to recompute filters for the entire network with each new addition. In contrast, GraphSAGE can immediately generate embeddings for new nodes by simply sampling their neighbors, without any retraining or recomputation.
 
-#### Aggregation
+### Aggregation
 
 Another key idea is the *aggregation*. GraphSAGE makes a distinction between self-information and neighborhood information. While previous GNNs treat them equally and aggregate them, GraphSAGE treats them differently. Specifically, GraphSAGE introduces an additional step: it concatenates the self-information and the neighborhood information as the input of the convolution.
 

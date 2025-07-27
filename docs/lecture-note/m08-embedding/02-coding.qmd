@@ -25,7 +25,7 @@ where:
 
 By minimizing the Frobenius norm with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.
 
-#### An Intuitive Solution
+### An Intuitive Solution
 
 Let us first understand the solution intuitively.
 Consider the spectral decomposition of $\mathbf{A}$:
@@ -42,7 +42,7 @@ To compress the network, we can select the $d$ terms with the largest weights $\
 
 For a formal proof, please refer to the [Appendix section](./04-appendix.md).
 
-#### Example: Spectral Embedding
+### Example: Spectral Embedding
 
 Let us demonstrate the results with a simple example as follows.
 
@@ -188,7 +188,7 @@ The solution is the $d$ eigenvectors associated with the $d$ smallest eigenvalue
 
 It is important to note that the eigenvector corresponding to the smallest eigenvalue (which is always zero for connected graphs) is trivial - it's the all-one vector. Therefore, in practice, we typically compute the $d+1$ smallest eigenvectors and discard the one corresponding to the zero eigenvalue.
 
-#### Example: Laplacian Eigenmap
+### Example: Laplacian Eigenmap
 
 Let us first compute the Laplacian matrix and its eigenvectors.
 ```{python}
@@ -223,7 +223,7 @@ plt.show()
 
 In this section, we will introduce *word2vec*, a powerful technique for learning word embeddings. word2vec is a neural network model that learns words embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 {footcite}`mikolov2013distributed`.
 
-#### How it works
+### How it works
 
 "You shall know a word by the company it keeps" {footcite}`church1988word` is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.
 word2vec operates on the same principle.
@@ -251,7 +251,7 @@ So how are word embeddings learned? word2vec is a neural network model that look
 
 We can consider word2vec as a *dimensionality reduction* technique that reduces the dimensionality of the input layer to the hidden layer based on the co-occurrence of words within a short distance. The distance is named the *window size*, which is a user-defined hyperparameter.
 
-#### What's special about word2vec?
+### What's special about word2vec?
 
 With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.
 
@@ -367,7 +367,7 @@ More specifically, the method contains the following steps:
 
 There are some technical details that we need to be aware of, which we will learn by implementing DeepWalk in the following exercise.
 
-#### Exercise 01: Implement DeepWalk
+### Exercise 01: Implement DeepWalk
 
 In this exercise, we implement DeepWalk step by step.
 
@@ -596,7 +596,7 @@ node2vec is a sibling of DeepWalk proposed by {footcite}`grover2016node2vec`. Bo
 
 - **Negative sampling**: node2vec uses negative sampling, instead of hierarchical softmax. This difference appears to be minor, but it has significant consequences on the characteristics of the embeddings. This is beyond the scope of this lecture, but you can refer to {footcite}`kojaku2021neurips` and {footcite}`dyer2014notes` for more details.
 
-#### Exercise 02: Implement node2vec
+### Exercise 02: Implement node2vec
 
 Let's implement the biased random walk for node2vec
 ```{python}

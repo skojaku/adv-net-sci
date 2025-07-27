@@ -73,7 +73,7 @@ Let's use `igraph` to compute the shortest paths and connected components. We wi
 
 ### igraph
 
-#### Create a graph
+### Create a graph
 
 Let us create a graph of 4 nodes and 4 edges. Our edge list is given by
 
@@ -94,7 +94,7 @@ g.add_edges(edge_list) # Add edges to the graph
 igraph.plot(g, bbox=(150, 150), vertex_label=list(range(4)))
 ```
 
-#### Shortest Paths
+### Shortest Paths
 
 Let's compute the paths between nodes 2 and 3.
 
@@ -116,7 +116,7 @@ Note that there can be multiple shortest paths between two nodes. If we are inte
 g.distances(2, 3)
 ```
 
-#### Connected Components
+### Connected Components
 
 In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:
 
@@ -145,7 +145,7 @@ print("giant: ", components.giant())  # a subgraph of the largest connected comp
 
 ```
 
-#### Directed networks
+### Directed networks
 Let's extend these ideas about paths and connected components to directed graphs.
 
 ```{python}
@@ -182,7 +182,7 @@ print(list(g.connected_components(mode="weak")))
 
 We can create a graph, compute the shortest paths, and connected components using `scipy`.
 
-#### Create a graph
+### Create a graph
 
 
 With scipy, we represent a network by an adjacency matrix using something called a *Compressed Sparse Row (CSR) matrix*. CSR matrices are efficient format for storing and manipulating *sparse* matrices. Why *sparse* is highlighed here? Because in many networks, the adjacency matrix is sparse, i.e., most of the entries are zero. For example, here is the adjacency matrix of a real-world network:
@@ -220,7 +220,7 @@ The CSR matrix does not print nicely. But you can see it by converting to a nump
 A.toarray()
 ```
 
-#### Shortest Paths
+### Shortest Paths
 
 The `sparse` module has a submodule `csgraph` that provides APIs for network analysis.
 
@@ -240,7 +240,7 @@ D
 D, predecessors = csgraph.shortest_path(A, indices=2, directed=False, return_predecessors=True)
 ```
 
-#### Connected Components
+### Connected Components
 
 Connected components can be computed by `csgraph.connected_components`.
 
