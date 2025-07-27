@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; Trouble shooting – Advanced Topics in Network Science</title>
+<title>11&nbsp; Exercises and Assignments – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m01-euler_tour/00-preparation.html" rel="next">
-<link href="../intro/zoo-of-networks.html" rel="prev">
+<link href="../m02-small-world/04-appendix.html" rel="next">
+<link href="../m02-small-world/02-coding.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -174,7 +174,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span></a>
   </div>
 </li>
@@ -244,7 +244,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></span></a>
   </div>
 </li>
@@ -529,16 +529,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#cannot-plot-a-graph-with-igraph-on-google-colab" id="toc-cannot-plot-a-graph-with-igraph-on-google-colab" class="nav-link active" data-scroll-target="#cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</a></li>
+  <li><a href="#pen-and-paper-exercise-why-is-our-social-network-small-world" id="toc-pen-and-paper-exercise-why-is-our-social-network-small-world" class="nav-link active" data-scroll-target="#pen-and-paper-exercise-why-is-our-social-network-small-world"><span class="header-section-number">11.1</span> Pen-and-Paper Exercise: Why is our social network small world?</a></li>
+  <li><a href="#assignment" id="toc-assignment" class="nav-link" data-scroll-target="#assignment"><span class="header-section-number">11.2</span> Assignment</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -555,25 +556,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="cannot-plot-a-graph-with-igraph-on-google-colab" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</h2>
-<p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code>igraph</code> and <code>graph-tool</code>.</p>
-<p><strong>Installing igraph</strong> Create a cell on top of the notebook and run the following code to install the igraph.</p>
-<pre><code>!sudo apt install libcairo2-dev pkg-config python3-dev
-!pip install pycairo cairocffi
-!pip install igraph</code></pre>
-<p><strong>Installing graph-tool</strong> Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
-<pre><code>!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list
-!apt-get update
-!apt-get install python3-graph-tool python3-matplotlib python3-cairo
-
-# Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.
-!apt purge python3-cairo
-!apt install libcairo2-dev pkg-config python3-dev
-!pip install --force-reinstall pycairo
-!pip install zstandar</code></pre>
+<section id="pen-and-paper-exercise-why-is-our-social-network-small-world" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="pen-and-paper-exercise-why-is-our-social-network-small-world"><span class="header-section-number">11.1</span> Pen-and-Paper Exercise: Why is our social network small world?</h2>
+<ul>
+<li>✍️ <a href="http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf">It’s a small world!! 6 degrees of separation</a> {footcite}<code>esteban-moro-worksheet</code></li>
+</ul>
+</section>
+<section id="assignment" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="assignment"><span class="header-section-number">11.2</span> Assignment</h2>
+<p>We will compute the average path length of a network of scientists. The network is constructed from {footcite:p}<code>sinatra2016quantifying</code>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</p>
+<ul>
+<li><strong>For students enrolled in SSIE 641</strong>
+<ul>
+<li>You will receive a dedicated link to the assignment repository from the instructor.</li>
+</ul></li>
+<li><em>For those who are not enrolled in SSIE 641</em>
+<ul>
+<li>You can access the assignment repository at <a href="https://github.com/sk-classroom/adv-net-sci-small-world">Github</a>.</li>
+<li>This repository does not offer auto-grading. But you can grade the assignment by yourself by
+<ul>
+<li><code>bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb</code></li>
+<li><code>bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb</code></li>
+</ul></li>
+</ul></li>
+</ul>
 
 
 <!-- -->
@@ -1033,46 +1039,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../intro/zoo-of-networks.html" class="pagination-link" aria-label="Zoo of networks">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span>
+      <a href="../m02-small-world/02-coding.html" class="pagination-link" aria-label="Efficient Network Representation and Computing Paths">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Efficient Network Representation and Computing Paths</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m01-euler_tour/00-preparation.html" class="pagination-link" aria-label="Preparation: Python and Graph Basics">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m02-small-world/04-appendix.html" class="pagination-link" aria-label="Appendix: Tools and Advanced Topics">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Appendix: Tools and Advanced Topics</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Trouble shooting</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cannot plot a graph with igraph on Google Colab</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <span class="in">`igraph`</span> and <span class="in">`graph-tool`</span>.</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the igraph.</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="in">!sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install pycairo cairocffi</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install igraph</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>**Installing graph-tool**</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the graph-tool.</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="in">!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="in">!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get update</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get install python3-graph-tool python3-matplotlib python3-cairo</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="in"># Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="in">!apt purge python3-cairo</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="in">!apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install --force-reinstall pycairo</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install zstandar</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exercises and Assignments</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen-and-Paper Exercise: Why is our social network small world?</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>✍️ <span class="co">[</span><span class="ot">It's a small world!! 6 degrees of separation</span><span class="co">](http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf)</span> {footcite}<span class="in">`esteban-moro-worksheet`</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assignment</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>We will compute the average path length of a network of scientists. The network is constructed from {footcite:p}<span class="in">`sinatra2016quantifying`</span>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**For students enrolled in SSIE 641**</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You will receive a dedicated link to the assignment repository from the instructor.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>*For those who are not enrolled in SSIE 641*</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You can access the assignment repository at <span class="co">[</span><span class="ot">Github</span><span class="co">](https://github.com/sk-classroom/adv-net-sci-small-world)</span>.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>This repository does not offer auto-grading. But you can grade the assignment by yourself by</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

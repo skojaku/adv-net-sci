@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; Trouble shooting – Advanced Topics in Network Science</title>
+<title>35&nbsp; Network Embedding Concepts – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m01-euler_tour/00-preparation.html" rel="next">
-<link href="../intro/zoo-of-networks.html" rel="prev">
+<link href="../m08-embedding/02-coding.html" rel="next">
+<link href="../m08-embedding/00-preparation.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -174,7 +174,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span></a>
   </div>
 </li>
@@ -454,7 +454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span></a>
   </div>
 </li>
@@ -529,16 +529,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#cannot-plot-a-graph-with-igraph-on-google-colab" id="toc-cannot-plot-a-graph-with-igraph-on-google-colab" class="nav-link active" data-scroll-target="#cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</a></li>
+  <li><a href="#what-to-learn-in-this-module" id="toc-what-to-learn-in-this-module" class="nav-link active" data-scroll-target="#what-to-learn-in-this-module"><span class="header-section-number">35.1</span> What to Learn in This Module</a></li>
+  <li><a href="#spectral-vs-neural-embedding" id="toc-spectral-vs-neural-embedding" class="nav-link" data-scroll-target="#spectral-vs-neural-embedding"><span class="header-section-number">35.2</span> Spectral vs Neural Embedding</a>
+  <ul class="collapse">
+  <li><a href="#analytical-tractability" id="toc-analytical-tractability" class="nav-link" data-scroll-target="#analytical-tractability"><span class="header-section-number">35.2.1</span> 1. Analytical Tractability</a></li>
+  <li><a href="#scalability" id="toc-scalability" class="nav-link" data-scroll-target="#scalability"><span class="header-section-number">35.2.2</span> 2. Scalability</a></li>
+  <li><a href="#flexibility" id="toc-flexibility" class="nav-link" data-scroll-target="#flexibility"><span class="header-section-number">35.2.3</span> 3. Flexibility</a></li>
+  </ul></li>
+  <li><a href="#software-for-network-embedding" id="toc-software-for-network-embedding" class="nav-link" data-scroll-target="#software-for-network-embedding"><span class="header-section-number">35.3</span> Software for Network Embedding</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">35.4</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -555,25 +563,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="cannot-plot-a-graph-with-igraph-on-google-colab" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</h2>
-<p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code>igraph</code> and <code>graph-tool</code>.</p>
-<p><strong>Installing igraph</strong> Create a cell on top of the notebook and run the following code to install the igraph.</p>
-<pre><code>!sudo apt install libcairo2-dev pkg-config python3-dev
-!pip install pycairo cairocffi
-!pip install igraph</code></pre>
-<p><strong>Installing graph-tool</strong> Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
-<pre><code>!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list
-!apt-get update
-!apt-get install python3-graph-tool python3-matplotlib python3-cairo
-
-# Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.
-!apt purge python3-cairo
-!apt install libcairo2-dev pkg-config python3-dev
-!pip install --force-reinstall pycairo
-!pip install zstandar</code></pre>
+<section id="what-to-learn-in-this-module" class="level2" data-number="35.1">
+<h2 data-number="35.1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">35.1</span> What to Learn in This Module</h2>
+<p>In this module, we will learn how to embed networks into low-dimensional spaces. We will learn: - Spectral embedding - Neural embedding - <strong>Keywords</strong>: Laplacian EigenMap, Normalized Spectral Embedding, DeepWalk, Node2Vec</p>
+</section>
+<section id="spectral-vs-neural-embedding" class="level2" data-number="35.2">
+<h2 data-number="35.2" class="anchored" data-anchor-id="spectral-vs-neural-embedding"><span class="header-section-number">35.2</span> Spectral vs Neural Embedding</h2>
+<p>We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects as follows.</p>
+<section id="analytical-tractability" class="level3" data-number="35.2.1">
+<h3 data-number="35.2.1" class="anchored" data-anchor-id="analytical-tractability"><span class="header-section-number">35.2.1</span> 1. Analytical Tractability</h3>
+<p><strong>Spectral methods</strong> are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model {footcite}<code>nadakuditi2012graph</code>.</p>
+<p><strong>Neural embedding methods</strong> are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition {footcite}<code>qiu2018network,kojaku2023network</code>. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</p>
+</section>
+<section id="scalability" class="level3" data-number="35.2.2">
+<h3 data-number="35.2.2" class="anchored" data-anchor-id="scalability"><span class="header-section-number">35.2.2</span> 2. Scalability</h3>
+<p>A key limitation of the <strong>spectral embedding</strong> is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit learn package as <code>TruncatedSVD</code>), they might be unstable depending on the spectrum distribution of the matrix to be decomposed.</p>
+<p><strong>Neural embedding methods</strong> are often more stable and scalable.</p>
+</section>
+<section id="flexibility" class="level3" data-number="35.2.3">
+<h3 data-number="35.2.3" class="anchored" data-anchor-id="flexibility"><span class="header-section-number">35.2.3</span> 3. Flexibility</h3>
+<p><strong>Neural embeddings</strong> are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings {footcite}<code>nickel2017poincare</code> for embedding networks in hyperbolic space.</p>
+<p><img src="https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg" class="img-fluid"></p>
+</section>
+</section>
+<section id="software-for-network-embedding" class="level2" data-number="35.3">
+<h2 data-number="35.3" class="anchored" data-anchor-id="software-for-network-embedding"><span class="header-section-number">35.3</span> Software for Network Embedding</h2>
+<p>There are various software packages for network embeddings. But due to technical complexity, some of them do not faithfully implement the algorithms in the paper. We provide a list of software packages for network embeddings below.</p>
+<ul>
+<li><a href="https://github.com/louisabraham/fastnode2vec">fastnode2vec</a>. This is a very fast implementation of node2vec. However, it uses a uniform probability distribution for the negative sampling, which is different from the original node2vec paper that uses a different distribution. This leads to some degeneracy of the embedding quality in community detection tasks.</li>
+<li><a href="https://github.com/pyg-team/pytorch_geometric">pytorch-geometric</a>. This is a very popular package for graph neural networks. It also uses a uniform probability distribution for the negative sampling, potentially having the same issue as <code>fastnode2vec</code>.</li>
+<li><a href="https://github.com/skojaku/gnn-tools">gnn-tools</a>. This is a collection of my experiments on network embedding methods.</li>
+<li><a href="https://github.com/skojaku/graphvec">My collection</a>. This is a lighter version of the <code>gnn-tools</code> collection.</li>
+</ul>
+</section>
+<section id="exercises" class="level2" data-number="35.4">
+<h2 data-number="35.4" class="anchored" data-anchor-id="exercises"><span class="header-section-number">35.4</span> Exercises</h2>
+<ul>
+<li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
+</ul>
 
 
 <!-- -->
@@ -1033,46 +1060,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../intro/zoo-of-networks.html" class="pagination-link" aria-label="Zoo of networks">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span>
+      <a href="../m08-embedding/00-preparation.html" class="pagination-link" aria-label="Preparation: Random Walks and Linear Algebra Foundations">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Preparation: Random Walks and Linear Algebra Foundations</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m01-euler_tour/00-preparation.html" class="pagination-link" aria-label="Preparation: Python and Graph Basics">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m08-embedding/02-coding.html" class="pagination-link" aria-label="Embedding Methods: Implementation and Practice">
+        <span class="nav-page-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Trouble shooting</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cannot plot a graph with igraph on Google Colab</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <span class="in">`igraph`</span> and <span class="in">`graph-tool`</span>.</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the igraph.</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="in">!sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install pycairo cairocffi</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install igraph</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>**Installing graph-tool**</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the graph-tool.</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="in">!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="in">!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get update</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get install python3-graph-tool python3-matplotlib python3-cairo</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="in"># Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="in">!apt purge python3-cairo</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="in">!apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install --force-reinstall pycairo</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install zstandar</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Network Embedding Concepts</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to Learn in This Module</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn how to embed networks into low-dimensional spaces. We will learn:</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Spectral embedding</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Neural embedding</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keywords**: Laplacian EigenMap, Normalized Spectral Embedding, DeepWalk, Node2Vec</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Spectral vs Neural Embedding</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects as follows.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Analytical Tractability</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>**Spectral methods** are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model {footcite}<span class="in">`nadakuditi2012graph`</span>. </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>**Neural embedding methods** are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition {footcite}<span class="in">`qiu2018network,kojaku2023network`</span>. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Scalability</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>A key limitation of the **spectral embedding** is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit learn package as <span class="in">`TruncatedSVD`</span>), they might be unstable depending on the spectrum distribution of the matrix to be decomposed. </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>**Neural embedding methods** are often more stable and scalable.</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Flexibility</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>**Neural embeddings** are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings {footcite}<span class="in">`nickel2017poincare`</span> for embedding networks in hyperbolic space.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## Software for Network Embedding</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>There are various software packages for network embeddings. But due to technical complexity, some of them do not faithfully implement the algorithms in the paper. We provide a list of software packages for network embeddings below.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">fastnode2vec</span><span class="co">](https://github.com/louisabraham/fastnode2vec)</span>. This is a very fast implementation of node2vec. However, it uses a uniform probability distribution for the negative sampling, which is different from the original node2vec paper that uses a different distribution. This leads to some degeneracy of the embedding quality in community detection tasks.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">pytorch-geometric</span><span class="co">](https://github.com/pyg-team/pytorch_geometric)</span>. This is a very popular package for graph neural networks. It also uses a uniform probability distribution for the negative sampling, potentially having the same issue as <span class="in">`fastnode2vec`</span>.</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">gnn-tools</span><span class="co">](https://github.com/skojaku/gnn-tools)</span>. This is a collection of my experiments on network embedding methods.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">My collection</span><span class="co">](https://github.com/skojaku/graphvec)</span>. This is a lighter version of the <span class="in">`gnn-tools`</span> collection.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercises</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
