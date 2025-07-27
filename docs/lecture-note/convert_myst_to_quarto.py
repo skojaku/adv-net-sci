@@ -86,6 +86,38 @@ def convert_file(filepath):
         flags=re.DOTALL
     )
     
+    # Convert MyST glue directives (remove or comment out)
+    content = re.sub(
+        r'```\{glue.*?\}.*?\n```',
+        '<!-- Glue directive removed during Quarto conversion -->',
+        content,
+        flags=re.DOTALL
+    )
+    
+    # Convert MyST margin directives
+    content = re.sub(
+        r'```\{margin\}.*?\n```',
+        '',
+        content,
+        flags=re.DOTALL
+    )
+    
+    # Convert MyST prf (proof) directives  
+    content = re.sub(
+        r'```\{prf.*?\}.*?\n```',
+        '::: {.callout-note}\n<!-- Proof directive converted -->\n:::',
+        content,
+        flags=re.DOTALL
+    )
+    
+    # Convert remaining MyST dropdown directives
+    content = re.sub(
+        r':::\{dropdown\}\s*([^\n]*)\n(.*?)\n:::',
+        r'::: {.callout-note collapse="true" title="\1"}\n\2\n:::',
+        content,
+        flags=re.DOTALL
+    )
+    
     # Convert citations from {cite:p}`ref` to [@ref]
     content = re.sub(r'\{cite:p\}`([^`]+)`', r'[@\1]', content)
     content = re.sub(r'\{cite\}`([^`]+)`', r'[@\1]', content)

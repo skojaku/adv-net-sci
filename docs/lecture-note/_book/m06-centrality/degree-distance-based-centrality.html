@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>43&nbsp; What is centrality? – Advanced Topics in Network Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../m06-centrality/eigencentrality.html" rel="next">
+<link href="../m06-centrality/pen-and-paper.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/what-to-learn.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/degree-distance-based-centrality.html"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">What is centrality?</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">
+      Advanced Topics in Network Science
+      </a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">M01: Euler Tour</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Module 1: Euler Tour</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/puzzle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A puzzle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/euler-path.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Euler's solution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/how-to-code-network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Compute with networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/coding-exercise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">M02: Small World</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Module 2: Small-world</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/small-world-experiment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Small-world experiment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/wikirace.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Wikirace</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Why is our social network small world?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/connectedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Walks, Trails, Paths, and Connectedness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/which-tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Toolbox for network analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/compressed-sparse-row.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Efficient representation for large sparse networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/connectedness-hands-on.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Computing the Shortest Paths and Connected Components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/assignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">M03: Robustness</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Module 3: Robustness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/exercise-power-grid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building a cost-effective power grid network</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/minimum-spanning-tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Minimum spanning tree</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/robustness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Network Robustness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/robustness-hands-on.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">If you are using Google Colab, uncomment the following line to install igraph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/percolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Percolation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">M04: Friendship Paradox</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Module 4: Friendship Paradox</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/experiment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">In-class experiment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/friendship-paradox.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Friendship Paradox</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/vaccination-game.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Vaccination Game</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/degree-distribution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Degree distribution</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">M05: Clustering</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Module 5: Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/what-is-community.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">What is community?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Pen and Paper</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/pattern-matching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Community detection (pattern matching)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/graph-cut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Graph cut</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/ratio-normalized-cut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Balanced cut</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/modularity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Modularity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/modularity-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Modularity (Cont.)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/stochastic-block-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Stochastic Block Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/exercise-clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Module 6: Centrality</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Pen and paper exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/degree-distance-based-centrality.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">What is centrality?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/eigencentrality.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Centralities based on centralities</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/hands-on.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Computing centrality with Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/assignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">M07: Random Walks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Module 7: Random Walks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/amida-kuji.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Ladder Lottery</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/random-walks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Random Walks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Pen and paper exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/random-walks-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Random Walks in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/random-walks-math.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Characteristics of Random Walks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/unifying-centrality-and-communities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title">Random walks unify centrality and communities</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title">Module 8: Embedding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">55</span>&nbsp; <span class="chapter-title">Pen and paper exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/spectral-embedding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">56</span>&nbsp; <span class="chapter-title">Spectral Embedding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/word2vec.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">57</span>&nbsp; <span class="chapter-title">word2vec</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/graph-embedding-w-word2vec.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">58</span>&nbsp; <span class="chapter-title">Graph embedding with word2vec</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/spectral-vs-neural-embedding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">59</span>&nbsp; <span class="chapter-title">Spectral vs Neural Embedding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">60</span>&nbsp; <span class="chapter-title">Software for Network Embedding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/what-to-learn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Module 9: Graph Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/pen-and-paper.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Pen and paper exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/image-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Preliminaries: Image Processing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/from-image-to-graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">65</span>&nbsp; <span class="chapter-title">From Image to Graph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/graph-convolutional-network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">66</span>&nbsp; <span class="chapter-title">Graph Convolutional Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/popular-gnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">67</span>&nbsp; <span class="chapter-title">Popular Graph Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">68</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#different-centrality-measures" id="toc-different-centrality-measures" class="nav-link active" data-scroll-target="#different-centrality-measures"><span class="header-section-number">43.1</span> Different centrality measures</a>
+  <ul class="collapse">
+  <li><a href="#degree-centrality" id="toc-degree-centrality" class="nav-link" data-scroll-target="#degree-centrality"><span class="header-section-number">43.1.1</span> Degree centrality</a></li>
+  <li><a href="#centrality-based-on-shortest-path" id="toc-centrality-based-on-shortest-path" class="nav-link" data-scroll-target="#centrality-based-on-shortest-path"><span class="header-section-number">43.1.2</span> Centrality based on shortest path</a></li>
+  <li><a href="#closeness-centrality" id="toc-closeness-centrality" class="nav-link" data-scroll-target="#closeness-centrality"><span class="header-section-number">43.1.3</span> Closeness centrality</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/what-to-learn.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/degree-distance-based-centrality.html"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">What is centrality?</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">What is centrality?</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone’s talking about right now? These questions are all about finding out what’s important in a network of people, ideas, or things. In network science, we call this <em>centrality.</em></p>
+<p>Centrality or <em>importance</em> is a question of how important a node is in a network. But the notion of <em>importance</em> is somewhat vague. In what sense we say a node is important? Answering this question needs a specific <em>context</em>, and there are many contexts in which the <em>importance</em> is defined.</p>
+<p><img src="../figs/centrality.jpg" class="img-fluid"></p>
+<section id="different-centrality-measures" class="level2" data-number="43.1">
+<h2 data-number="43.1" class="anchored" data-anchor-id="different-centrality-measures"><span class="header-section-number">43.1</span> Different centrality measures</h2>
+<p>Here we will focus on several popular centrality measures. Let us denote by <span class="math inline">c_i</span> the centrality of node <span class="math inline">i</span> throughout this section. Here is a preview of the centrality measures we will cover in this section</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 17%">
+<col style="width: 62%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Centrality</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Degree Centrality</td>
+<td>Degree</td>
+<td>Counts the number of edges connected to a node.</td>
+</tr>
+<tr class="even">
+<td>Closeness Centrality</td>
+<td>Shortest Path</td>
+<td>Measures how close a node is to all other nodes in the network.</td>
+</tr>
+<tr class="odd">
+<td>Eccentricity Centrality</td>
+<td>Shortest Path</td>
+<td>Based on the maximum shortest path distance from a node to any other node.</td>
+</tr>
+<tr class="even">
+<td>Harmonic Centrality</td>
+<td>Shortest Path</td>
+<td>Adjusts closeness centrality to work even in disconnected networks.</td>
+</tr>
+<tr class="odd">
+<td>Betweenness Centrality</td>
+<td>Shortest Path</td>
+<td>Measures the extent to which a node lies on paths between other nodes.</td>
+</tr>
+<tr class="even">
+<td>Eigenvector Centrality</td>
+<td>Walk</td>
+<td>Measures a node’s influence based on the influence of its neighbors.</td>
+</tr>
+<tr class="odd">
+<td>HITS (Hub and Authority) Centrality</td>
+<td>Walk</td>
+<td>Measures the importance of nodes as hubs and authorities in a network.</td>
+</tr>
+<tr class="even">
+<td>Katz Centrality</td>
+<td>Walk</td>
+<td>Considers the total number of walks between nodes, with a damping factor.</td>
+</tr>
+<tr class="odd">
+<td>PageRank</td>
+<td>Walk</td>
+<td>Measures the importance of nodes based on the structure of incoming links.</td>
+</tr>
+</tbody>
+</table>
+<section id="degree-centrality" class="level3" data-number="43.1.1">
+<h3 data-number="43.1.1" class="anchored" data-anchor-id="degree-centrality"><span class="header-section-number">43.1.1</span> Degree centrality</h3>
+<p>Perhaps the simplest form of cnetrality is <em>degree centrality</em>. It is just the count of the number of edges connected to a node (i.e., the number of neighbors, or <em>degree</em> in network science terminology). The most important node is thus the one with the highest degree.</p>
+<p><span class="math display">
+c_i = d_i = \sum_{j} A_{ij}
+</span></p>
+<p>where <span class="math inline">A_{ij}</span> is the adjacency matrix of the network, and <span class="math inline">d_i</span> is the degree of node <span class="math inline">i</span>.</p>
+</section>
+<section id="centrality-based-on-shortest-path" class="level3" data-number="43.1.2">
+<h3 data-number="43.1.2" class="anchored" data-anchor-id="centrality-based-on-shortest-path"><span class="header-section-number">43.1.2</span> Centrality based on shortest path</h3>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Milliarium_Aureum_op_het_Forum_Romanum_te_Rome_Columna_Miliaria_in_Foro_Romano_%28titel_op_object%29_Antieke_monumenten_%28serietitel%29_Antiquae_Urbis_Splendor_%28serietitel%29%2C_RP-P-2016-345-28-1.jpg/1546px-thumbnail.jpg?20191217151048" alt="Roma Foro Romano Miliarium Aureum" width="80%" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p>Let’s talk about an ancient Roman monument called the <em>Milliarium Aureum</em>, also known as the <em>Golden Milestone</em>. It was the starting point for measuring distances on all major roads in the Roman Empire. Emperor Augustus built it when Rome changed from a republic to an empire. The monument not only marked the distances but also represent a centralization of power, where Rome transitioned from a Republic to an Empire. Perhaps the Romans understood the importance of being central in terms of distance, and this concept can be applied to define <em>centrality</em> in networks.</p>
+</section>
+<section id="closeness-centrality" class="level3" data-number="43.1.3">
+<h3 data-number="43.1.3" class="anchored" data-anchor-id="closeness-centrality"><span class="header-section-number">43.1.3</span> Closeness centrality</h3>
+<p><strong>Closenes centrality</strong> is a measure of how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as</p>
+<p><span class="math display">
+c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+</span></p>
+<p>where <span class="math inline">N</span> is the number of nodes in the network. The numerator, <span class="math inline">N - 1</span>, is the normalization factor to make the centrality have a maximum value of 1.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>:class: tip</p>
+<p>Create a graph where a node has the maximum closeness centrality of value 1.</p>
+<p>:::{dropdown} Click to see the answer</p>
+<p>The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<pre><code>
+
+### Harmonic centrality
+
+**Harmonic Centrality** is a measure that adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can't reach others, making their distance infinite. This causes all centrality values to become zero, which isn't very helpful!
+
+To fix this, Beauchamp {footcite:p}`beauchamp1965improved` came up with a clever solution called *harmonic centrality*. It works even when the network is disconnected.
+
+$$
+c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
+$$
+
+### Eccentricity centrality
+
+**Eccentricity centrality** is baesd on the farthest distance from a node to any other node. The eccentricity centrality is defined as
+
+$$
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+$$
+
+
+These centrality measures provide different perspectives on the importance of nodes based on their accessibility and reachability within the network.
+
+A central node should be close to all other nodes.
+
+Closeness centrality captures the notion of "centrality" in the network. Namely, a node is *central* if it is close to all other nodes.
+
+$$
+c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+$$
+
+where $N$ is the number of nodes in the network. The numerator, $N$, is the normalization factor to make the centrality to have the maximum value of 1.
+
+
+### Eccentricity centrality
+
+Eccentricity centrality is based on the shortest path distance between nodes, just like the closeness centrality, but it is based on the *maximum* distance as opposed to the average distance like in the closeness centrality.
+
+$$
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+$$
+
+
+### Betweenness centrality
+
+Another notion of centrality is *betweenness centrality*. It considers that a node is important if it lies on many shortest paths between other nodes.
+
+$$
+c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
+$$
+
+where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of shortest paths between nodes $j$ and $k$ that pass through node $i$.
+
+
+
+
+
+:::{#quarto-navigation-envelope .hidden}
+[Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyLXRpdGxl"}
+[Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXItdGl0bGU="}
+[&lt;span class='chapter-number'&gt;44&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Centralities based on centralities&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uZXh0"}
+[&lt;span class='chapter-number'&gt;42&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and paper exercises&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1wcmV2"}
+[Preface]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmRleC5odG1sUHJlZmFjZQ=="}
+[Intro]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMQ=="}
+[&lt;span class='chapter-number'&gt;1&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Why should we care networks?&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbnRyby93aHktbmV0d29ya3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5XaHktc2hvdWxkLXdlLWNhcmUtbmV0d29ya3M/PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;2&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Zoo of networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbnRyby96b28tb2YtbmV0d29ya3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+Mjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5ab28tb2YtbmV0d29ya3M8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;3&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Trouble shooting&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbnRyby9zZXR1cC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4zPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlRyb3VibGUtc2hvb3Rpbmc8L3NwYW4+"}
+[M01: Euler Tour]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMg=="}
+[&lt;span class='chapter-number'&gt;4&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 1: Euler Tour&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDEtZXVsZXJfdG91ci93aGF0LXRvLWxlYXJuLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TW9kdWxlLTE6LUV1bGVyLVRvdXI8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;5&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;A puzzle&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDEtZXVsZXJfdG91ci9wdXp6bGUuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5BLXB1enpsZTwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;6&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Euler's solution&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDEtZXVsZXJfdG91ci9ldWxlci1wYXRoLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjY8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+RXVsZXIncy1zb2x1dGlvbjwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;7&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Compute with networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDEtZXVsZXJfdG91ci9ob3ctdG8tY29kZS1uZXR3b3JrLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjc8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+Q29tcHV0ZS13aXRoLW5ldHdvcmtzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;8&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Exercise&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDEtZXVsZXJfdG91ci9jb2RpbmctZXhlcmNpc2UuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+ODwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5FeGVyY2lzZTwvc3Bhbj4="}
+[M02: Small World]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMw=="}
+[&lt;span class='chapter-number'&gt;9&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 2: Small-world&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvd2hhdC10by1sZWFybi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz45PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsZS0yOi1TbWFsbC13b3JsZDwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;10&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Small-world experiment&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvc21hbGwtd29ybGQtZXhwZXJpbWVudC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xMDwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5TbWFsbC13b3JsZC1leHBlcmltZW50PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;11&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Wikirace&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvd2lraXJhY2UuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTE8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+V2lraXJhY2U8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;12&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Why is our social network small world?&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvcGVuLWFuZC1wYXBlci5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xMjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5XaHktaXMtb3VyLXNvY2lhbC1uZXR3b3JrLXNtYWxsLXdvcmxkPzwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;13&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Walks, Trails, Paths, and Connectedness&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvY29ubmVjdGVkbmVzcy5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xMzwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5XYWxrcywtVHJhaWxzLC1QYXRocywtYW5kLUNvbm5lY3RlZG5lc3M8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;14&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Toolbox for network analysis&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvd2hpY2gtdG9vbHMuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+VG9vbGJveC1mb3ItbmV0d29yay1hbmFseXNpczwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;15&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Efficient representation for large sparse networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvY29tcHJlc3NlZC1zcGFyc2Utcm93Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjE1PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkVmZmljaWVudC1yZXByZXNlbnRhdGlvbi1mb3ItbGFyZ2Utc3BhcnNlLW5ldHdvcmtzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;16&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Computing the Shortest Paths and Connected Components&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvY29ubmVjdGVkbmVzcy1oYW5kcy1vbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xNjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5Db21wdXRpbmctdGhlLVNob3J0ZXN0LVBhdGhzLWFuZC1Db25uZWN0ZWQtQ29tcG9uZW50czwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;17&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Assignment&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvYXNzaWdubWVudC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xNzwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5Bc3NpZ25tZW50PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;18&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Appendix&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDItc21hbGwtd29ybGQvYXBwZW5kaXguaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTg8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+QXBwZW5kaXg8L3NwYW4+"}
+[M03: Robustness]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNA=="}
+[&lt;span class='chapter-number'&gt;19&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 3: Robustness&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy93aGF0LXRvLWxlYXJuLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjE5PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsZS0zOi1Sb2J1c3RuZXNzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;20&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Building a cost-effective power grid network&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9leGVyY2lzZS1wb3dlci1ncmlkLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjIwPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkJ1aWxkaW5nLWEtY29zdC1lZmZlY3RpdmUtcG93ZXItZ3JpZC1uZXR3b3JrPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;21&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Minimum spanning tree&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9taW5pbXVtLXNwYW5uaW5nLXRyZWUuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MjE8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TWluaW11bS1zcGFubmluZy10cmVlPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;22&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Network Robustness&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9yb2J1c3RuZXNzLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjIyPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk5ldHdvcmstUm9idXN0bmVzczwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;23&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;If you are using Google Colab, uncomment the following line to install igraph&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9yb2J1c3RuZXNzLWhhbmRzLW9uLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjIzPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPklmLXlvdS1hcmUtdXNpbmctR29vZ2xlLUNvbGFiLC11bmNvbW1lbnQtdGhlLWZvbGxvd2luZy1saW5lLXRvLWluc3RhbGwtaWdyYXBoPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;24&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Percolation&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9wZXJjb2xhdGlvbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yNDwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5QZXJjb2xhdGlvbjwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;25&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Appendix&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDMtcm9idXN0bmVzcy9hcHBlbmRpeC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yNTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5BcHBlbmRpeDwvc3Bhbj4="}
+[M04: Friendship Paradox]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNQ=="}
+[&lt;span class='chapter-number'&gt;26&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 4: Friendship Paradox&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDQtZnJpZW5kc2hpcC1wYXJhZG94L3doYXQtdG8tbGVhcm4uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MjY8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TW9kdWxlLTQ6LUZyaWVuZHNoaXAtUGFyYWRveDwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;27&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;In-class experiment&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDQtZnJpZW5kc2hpcC1wYXJhZG94L2V4cGVyaW1lbnQuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+Mjc8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+SW4tY2xhc3MtZXhwZXJpbWVudDwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;28&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Friendship Paradox&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDQtZnJpZW5kc2hpcC1wYXJhZG94L2ZyaWVuZHNoaXAtcGFyYWRveC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yODwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5GcmllbmRzaGlwLVBhcmFkb3g8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;29&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Vaccination Game&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDQtZnJpZW5kc2hpcC1wYXJhZG94L3ZhY2NpbmF0aW9uLWdhbWUuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+Mjk8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+VmFjY2luYXRpb24tR2FtZTwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;30&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Degree distribution&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDQtZnJpZW5kc2hpcC1wYXJhZG94L2RlZ3JlZS1kaXN0cmlidXRpb24uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MzA8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+RGVncmVlLWRpc3RyaWJ1dGlvbjwvc3Bhbj4="}
+[M05: Clustering]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNg=="}
+[&lt;span class='chapter-number'&gt;31&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 5: Clustering&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy93aGF0LXRvLWxlYXJuLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjMxPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsZS01Oi1DbHVzdGVyaW5nPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;32&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;What is community?&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy93aGF0LWlzLWNvbW11bml0eS5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4zMjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5XaGF0LWlzLWNvbW11bml0eT88L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;33&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and Paper&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9wZW4tYW5kLXBhcGVyLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjMzPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlBlbi1hbmQtUGFwZXI8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;34&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Community detection (pattern matching)&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9wYXR0ZXJuLW1hdGNoaW5nLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjM0PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkNvbW11bml0eS1kZXRlY3Rpb24tKHBhdHRlcm4tbWF0Y2hpbmcpPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;35&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Graph cut&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9ncmFwaC1jdXQuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MzU8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+R3JhcGgtY3V0PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;36&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Balanced cut&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9yYXRpby1ub3JtYWxpemVkLWN1dC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4zNjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5CYWxhbmNlZC1jdXQ8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;37&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Modularity&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9tb2R1bGFyaXR5Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjM3PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsYXJpdHk8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;38&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Modularity (Cont.)&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9tb2R1bGFyaXR5LTAyLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjM4PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsYXJpdHktKENvbnQuKTwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;39&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Stochastic Block Model&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9zdG9jaGFzdGljLWJsb2NrLW1vZGVsLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjM5PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlN0b2NoYXN0aWMtQmxvY2stTW9kZWw8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;40&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Hands-on: Clustering&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDUtY2x1c3RlcmluZy9leGVyY2lzZS1jbHVzdGVyaW5nLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQwPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkhhbmRzLW9uOi1DbHVzdGVyaW5nPC9zcGFuPg=="}
+[M06: Centrality]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNw=="}
+[&lt;span class='chapter-number'&gt;41&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 6: Centrality&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS93aGF0LXRvLWxlYXJuLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQxPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk1vZHVsZS02Oi1DZW50cmFsaXR5PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;42&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and paper exercises&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS9wZW4tYW5kLXBhcGVyLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQyPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlBlbi1hbmQtcGFwZXItZXhlcmNpc2VzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;43&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;What is centrality?&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS9kZWdyZWUtZGlzdGFuY2UtYmFzZWQtY2VudHJhbGl0eS5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz40Mzwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5XaGF0LWlzLWNlbnRyYWxpdHk/PC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;44&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Centralities based on centralities&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS9laWdlbmNlbnRyYWxpdHkuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NDQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+Q2VudHJhbGl0aWVzLWJhc2VkLW9uLWNlbnRyYWxpdGllczwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;45&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Computing centrality with Python&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS9oYW5kcy1vbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz40NTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5Db21wdXRpbmctY2VudHJhbGl0eS13aXRoLVB5dGhvbjwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;46&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Assignment&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDYtY2VudHJhbGl0eS9hc3NpZ25tZW50Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQ2PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkFzc2lnbm1lbnQ8L3NwYW4+"}
+[M07: Random Walks]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tOA=="}
+[&lt;span class='chapter-number'&gt;47&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 7: Random Walks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3doYXQtdG8tbGVhcm4uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NDc8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TW9kdWxlLTc6LVJhbmRvbS1XYWxrczwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;48&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Ladder Lottery&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL2FtaWRhLWt1amkuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NDg8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TGFkZGVyLUxvdHRlcnk8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;49&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Random Walks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3JhbmRvbS13YWxrcy5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz40OTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5SYW5kb20tV2Fsa3M8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;50&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and paper exercises&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3Blbi1hbmQtcGFwZXIuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NTA8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UGVuLWFuZC1wYXBlci1leGVyY2lzZXM8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;51&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Random Walks in Python&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3JhbmRvbS13YWxrcy1jb2RlLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjUxPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlJhbmRvbS1XYWxrcy1pbi1QeXRob248L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;52&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Characteristics of Random Walks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3JhbmRvbS13YWxrcy1tYXRoLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjUyPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkNoYXJhY3RlcmlzdGljcy1vZi1SYW5kb20tV2Fsa3M8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;53&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Random walks unify centrality and communities&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDctcmFuZG9tLXdhbGtzL3VuaWZ5aW5nLWNlbnRyYWxpdHktYW5kLWNvbW11bml0aWVzLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjUzPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlJhbmRvbS13YWxrcy11bmlmeS1jZW50cmFsaXR5LWFuZC1jb21tdW5pdGllczwvc3Bhbj4="}
+[M08: Embedding]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tOQ=="}
+[&lt;span class='chapter-number'&gt;54&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 8: Embedding&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3doYXQtdG8tbGVhcm4uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NTQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TW9kdWxlLTg6LUVtYmVkZGluZzwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;55&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and paper exercises&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3Blbi1hbmQtcGFwZXIuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NTU8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UGVuLWFuZC1wYXBlci1leGVyY2lzZXM8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;56&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Spectral Embedding&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3NwZWN0cmFsLWVtYmVkZGluZy5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz41Njwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5TcGVjdHJhbC1FbWJlZGRpbmc8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;57&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;word2vec&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3dvcmQydmVjLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjU3PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPndvcmQydmVjPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;58&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Graph embedding with word2vec&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL2dyYXBoLWVtYmVkZGluZy13LXdvcmQydmVjLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjU4PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkdyYXBoLWVtYmVkZGluZy13aXRoLXdvcmQydmVjPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;59&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Spectral vs Neural Embedding&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3NwZWN0cmFsLXZzLW5ldXJhbC1lbWJlZGRpbmcuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NTk8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+U3BlY3RyYWwtdnMtTmV1cmFsLUVtYmVkZGluZzwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;60&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Software for Network Embedding&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL3NvZnR3YXJlLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjYwPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlNvZnR3YXJlLWZvci1OZXR3b3JrLUVtYmVkZGluZzwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;61&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Appendix&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDgtZW1iZWRkaW5nL2FwcGVuZGl4Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjYxPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkFwcGVuZGl4PC9zcGFuPg=="}
+[M09: Graph Neural Networks]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMTA="}
+[&lt;span class='chapter-number'&gt;62&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Module 9: Graph Neural Networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL3doYXQtdG8tbGVhcm4uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NjI8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+TW9kdWxlLTk6LUdyYXBoLU5ldXJhbC1OZXR3b3Jrczwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;63&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Pen and paper exercises&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL3Blbi1hbmQtcGFwZXIuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NjM8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UGVuLWFuZC1wYXBlci1leGVyY2lzZXM8L3NwYW4+"}
+[&lt;span class='chapter-number'&gt;64&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Preliminaries: Image Processing&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL2ltYWdlLXByb2Nlc3NpbmcuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NjQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UHJlbGltaW5hcmllczotSW1hZ2UtUHJvY2Vzc2luZzwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;65&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;From Image to Graph&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL2Zyb20taW1hZ2UtdG8tZ3JhcGguaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NjU8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+RnJvbS1JbWFnZS10by1HcmFwaDwvc3Bhbj4="}
+[&lt;span class='chapter-number'&gt;66&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Graph Convolutional Networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL2dyYXBoLWNvbnZvbHV0aW9uYWwtbmV0d29yay5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz42Njwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5HcmFwaC1Db252b2x1dGlvbmFsLU5ldHdvcmtzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;67&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Popular Graph Neural Networks&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL3BvcHVsYXItZ25uLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjY3PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlBvcHVsYXItR3JhcGgtTmV1cmFsLU5ldHdvcmtzPC9zcGFuPg=="}
+[&lt;span class='chapter-number'&gt;68&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;Appendix&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyOi9tMDktZ3JhcGgtbmV1cmFsLW5ldHdvcmtzL2FwcGVuZGl4Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjY4PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkFwcGVuZGl4PC9zcGFuPg=="}
+[M06: Centrality]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWJyZWFkY3J1bWJzLU0wNjotQ2VudHJhbGl0eQ=="}
+[&lt;span class='chapter-number'&gt;43&lt;/span&gt;&nbsp; &lt;span class='chapter-title'&gt;What is centrality?&lt;/span&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWJyZWFkY3J1bWJzLTxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+NDM8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+V2hhdC1pcy1jZW50cmFsaXR5Pzwvc3Bhbj4="}
+
+:::{.hidden .quarto-markdown-envelope-contents render-id="Zm9vdGVyLWxlZnQ="}
+Copyright 2024, Sadamori Kojaku
+:::
+
+:::
+
+
+
+:::{#quarto-meta-markdown .hidden}
+[[43]{.chapter-number}&nbsp; [What is centrality?]{.chapter-title} – Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW1ldGF0aXRsZQ=="}
+[[43]{.chapter-number}&nbsp; [What is centrality?]{.chapter-title} – Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLXR3aXR0ZXJjYXJkdGl0bGU="}
+[[43]{.chapter-number}&nbsp; [What is centrality?]{.chapter-title} – Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW9nY2FyZHRpdGxl"}
+[Advanced Topics in Network Science]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW1ldGFzaXRlbmFtZQ=="}
+[]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLXR3aXR0ZXJjYXJkZGVzYw=="}
+[]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW9nY2FyZGRkZXNj"}
+:::
+
+
+
+
+&lt;!-- --&gt;
+
+::: {.quarto-embedded-source-code}
+```````````````````{.markdown shortcodes="false"}
+# What is centrality?
+
+Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
+These questions are all about finding out what's important in a network of people, ideas, or things. In network science, we call this *centrality.*
+
+Centrality or *importance* is a question of how important a node is in a network.
+But the notion of *importance* is somewhat vague.
+In what sense we say a node is important?
+Answering this question needs a specific *context*, and there are many contexts in which the *importance* is defined.
+
+![](../figs/centrality.jpg)
+
+## Different centrality measures
+
+Here we will focus on several popular centrality measures. Let us denote by $c_i$ the centrality of node $i$ throughout this section.
+Here is a preview of the centrality measures we will cover in this section
+
+| Centrality          | Category            | Description                                                                 |
+|-------------------------|---------------------|-----------------------------------------------------------------------------|
+| Degree Centrality       | Degree              | Counts the number of edges connected to a node.                             |
+| Closeness Centrality    | Shortest Path  | Measures how close a node is to all other nodes in the network.             |
+| Eccentricity Centrality | Shortest Path  | Based on the maximum shortest path distance from a node to any other node.  |
+| Harmonic Centrality     | Shortest Path  | Adjusts closeness centrality to work even in disconnected networks.         |
+| Betweenness Centrality  | Shortest Path  | Measures the extent to which a node lies on paths between other nodes.      |
+| Eigenvector Centrality  | Walk           | Measures a node's influence based on the influence of its neighbors.        |
+| HITS (Hub and Authority) Centrality | Walk  | Measures the importance of nodes as hubs and authorities in a network.      |
+| Katz Centrality         | Walk           | Considers the total number of walks between nodes, with a damping factor.   |
+| PageRank                | Walk           | Measures the importance of nodes based on the structure of incoming links.  |
+
+
+### Degree centrality
+
+Perhaps the simplest form of cnetrality is *degree centrality*. It is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
+
+$$
+c_i = d_i = \sum_{j} A_{ij}
+$$
+
+where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
+
+### Centrality based on shortest path
+
+
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Milliarium_Aureum_op_het_Forum_Romanum_te_Rome_Columna_Miliaria_in_Foro_Romano_%28titel_op_object%29_Antieke_monumenten_%28serietitel%29_Antiquae_Urbis_Splendor_%28serietitel%29%2C_RP-P-2016-345-28-1.jpg/1546px-thumbnail.jpg?20191217151048" alt="Roma Foro Romano Miliarium Aureum" width="80%" style="display: block; margin-left: auto; margin-right: auto;"&gt;
+
+
+Let's talk about an ancient Roman monument called the *Milliarium Aureum*, also known as the *Golden Milestone*.
+It was the starting point for measuring distances on all major roads in the Roman Empire.
+Emperor Augustus built it when Rome changed from a republic to an empire.
+The monument not only marked the distances but also represent a centralization of power, where Rome transitioned from a Republic to an Empire.
+Perhaps the Romans understood the importance of being central in terms of distance, and this concept can be applied to define *centrality* in networks.
+
+### Closeness centrality
+**Closenes centrality** is a measure of how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as
+
+$$
+c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+$$
+
+where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the normalization factor to make the centrality have a maximum value of 1.
+
+
+::: {.callout-note title="Exercise"}
+:class: tip
+
+Create a graph where a node has the maximum closeness centrality of value 1.
+
+
+:::{dropdown} Click to see the answer
+
+The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
+
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;"&gt;
+</code></pre>
+<section id="harmonic-centrality" class="level3" data-number="43.1.4">
+<h3 data-number="43.1.4" class="anchored" data-anchor-id="harmonic-centrality"><span class="header-section-number">43.1.4</span> Harmonic centrality</h3>
+<p><strong>Harmonic Centrality</strong> is a measure that adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can’t reach others, making their distance infinite. This causes all centrality values to become zero, which isn’t very helpful!</p>
+<p>To fix this, Beauchamp {footcite:p}<code>beauchamp1965improved</code> came up with a clever solution called <em>harmonic centrality</em>. It works even when the network is disconnected.</p>
+<p><span class="math display">
+c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
+</span></p>
+</section>
+<section id="eccentricity-centrality" class="level3" data-number="43.1.5">
+<h3 data-number="43.1.5" class="anchored" data-anchor-id="eccentricity-centrality"><span class="header-section-number">43.1.5</span> Eccentricity centrality</h3>
+<p><strong>Eccentricity centrality</strong> is baesd on the farthest distance from a node to any other node. The eccentricity centrality is defined as</p>
+<p><span class="math display">
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+</span></p>
+<p>These centrality measures provide different perspectives on the importance of nodes based on their accessibility and reachability within the network.</p>
+<p>A central node should be close to all other nodes.</p>
+<p>Closeness centrality captures the notion of “centrality” in the network. Namely, a node is <em>central</em> if it is close to all other nodes.</p>
+<p><span class="math display">
+c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+</span></p>
+<p>where <span class="math inline">N</span> is the number of nodes in the network. The numerator, <span class="math inline">N</span>, is the normalization factor to make the centrality to have the maximum value of 1.</p>
+</section>
+<section id="eccentricity-centrality-1" class="level3" data-number="43.1.6">
+<h3 data-number="43.1.6" class="anchored" data-anchor-id="eccentricity-centrality-1"><span class="header-section-number">43.1.6</span> Eccentricity centrality</h3>
+<p>Eccentricity centrality is based on the shortest path distance between nodes, just like the closeness centrality, but it is based on the <em>maximum</em> distance as opposed to the average distance like in the closeness centrality.</p>
+<p><span class="math display">
+c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
+</span></p>
+</section>
+<section id="betweenness-centrality" class="level3" data-number="43.1.7">
+<h3 data-number="43.1.7" class="anchored" data-anchor-id="betweenness-centrality"><span class="header-section-number">43.1.7</span> Betweenness centrality</h3>
+<p>Another notion of centrality is <em>betweenness centrality</em>. It considers that a node is important if it lies on many shortest paths between other nodes.</p>
+<p><span class="math display">
+c_i = \sum_{j &lt; k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
+</span></p>
+<p>where <span class="math inline">\sigma_{jk}</span> is the number of shortest paths between nodes <span class="math inline">j</span> and <span class="math inline">k</span>, and <span class="math inline">\sigma_{jk}(i)</span> is the number of shortest paths between nodes <span class="math inline">j</span> and <span class="math inline">k</span> that pass through node <span class="math inline">i</span>.</p>
+<p>```````````````````</p>
+</section>
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../m06-centrality/pen-and-paper.html" class="pagination-link" aria-label="Pen and paper exercises">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Pen and paper exercises</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../m06-centrality/eigencentrality.html" class="pagination-link" aria-label="Centralities based on centralities">
+        <span class="nav-page-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Centralities based on centralities</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      <div class="footer-contents">Copyright 2024, Sadamori Kojaku</div>  
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/skojaku/adv-net-sci">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

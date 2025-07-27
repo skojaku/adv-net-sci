@@ -141,7 +141,7 @@ Our intuition tells us that, because communities are *local* structure, the two 
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-:::{dropdown} Click here to see the solution
+::: {.callout-note collapse="true" title="Click here to see the solution"}
 
 The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the **Resolution limit** {footcite}`fortunato2007resolution`. Modularity can't quite make out communities that are smaller than a certain size!
 
