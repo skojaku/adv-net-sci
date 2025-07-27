@@ -2,10 +2,11 @@ project:
   type: book
   output-dir: _book
 
+
 book:
   title: "Advanced Topics in Network Science"
   author: "Sadamori Kojaku"
-  
+
   chapters:
     - index.qmd
     - part: "Intro"
@@ -99,6 +100,7 @@ book:
 
 execute:
   enabled: false  # Disable execution for initial migration
+  freeze: auto
 
 format:
   html:
@@ -111,7 +113,7 @@ format:
     code-copy: hover
     code-tools: true
     logo: logo.jpg
-    
+
 # Add a bibtex file so that we can create citations
 bibliography: references.bib
 
@@ -121,8 +123,8 @@ website:
   repo-actions: [edit, issue]
   search: true
   page-navigation: true
-  page-footer: 
+  page-footer:
     left: "Copyright 2024, Sadamori Kojaku"
-    right: 
+    right:
       - icon: github
         href: https://github.com/skojaku/adv-net-sci
