@@ -9,14 +9,11 @@ In this module, we will learn community detection, one of the most widely-used y
 - Limitations of community detection
 - **Keywords**: community detection, assortativity, modularity, resolution limit, rugged landscape, random graph, label switching algorithm, Louvain algorithm, stochastic block model, the configuration model.
 
-## What is community?
+## Understanding communities in networks
 
-### Birds of a feather flock together
+Birds of a feather flock together, and so do many other things. For instance, we have a group of friends with similar interests who hang out together frequently but may not interact as much with other groups.
 
 ![Birds of a feather](https://t4.ftcdn.net/jpg/08/10/89/17/360_F_810891701_xy4NsqgdqllMfKDfV6V27ycrw8FLFqrw.jpg)
-
-Birds of a feather flock together, and so do many other things.
-For instance, we have a group of friends with similar interests who hang out together frequently but may not interact as much with other groups.
 
 In networks, communities are groups of nodes that share similar connection patterns. These communities do not always mean densely-connected nodes. Sometimes, a community can be nodes that are not connected to each other, but connect similarly to other groups. For instance, in a user-movie rating network, a community might be users with similar movie tastes, even if they don't directly connect to each other.
 
@@ -31,14 +28,11 @@ Communities reflect underlying mechanisms of network formation and underpin the 
 
 This is why network scientists are sooo obsessed with community structure in networks. See {footcite}`fortunato2010community,fortunato2016community,peixoto2019bayesian` for comprehensive reviews on network communities.
 
-## Community detection approaches
-
-### Pattern Matching Approach
+## Pattern matching approach
 
 Community detection is an abstract unsupervised problem. It is abstract because there is no clear-cut definition or ground truth to compare against. The concept of a community in a network is subjective and highly context-dependent.
 
-A classical approach to community detection is based on *pattern matching*.
-Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.
+A classical approach to community detection is based on *pattern matching*. Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.
 
 ::: {#fig-clique}
 
@@ -47,9 +41,7 @@ Namely, we first explicitly define a community by a specific connectivity patter
 Cliques of different sizes. Taken from [https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html](https://pythonhosted.org/trustedanalytics/python_api/graphs/graph-/kclique_percolation.html)
 :::
 
-Perhaps, the strictest definition of a community is a *clique*: a group of nodes all connected to each other. Examples include triangles (3-node cliques) and fully-connected squares (4-node cliques).
-However, cliques are often too rigid for real-world networks. In social networks, for instance, large groups of friends rarely have every member connected to every other, yet we want to accept such "in-perfect" social circles as communities.
-This leads to the idea of relaxed versions of cliques, called **pseudo-cliques**.
+Perhaps, the strictest definition of a community is a *clique*: a group of nodes all connected to each other. Examples include triangles (3-node cliques) and fully-connected squares (4-node cliques). However, cliques are often too rigid for real-world networks. In social networks, for instance, large groups of friends rarely have every member connected to every other, yet we want to accept such "in-perfect" social circles as communities. This leads to the idea of relaxed versions of cliques, called **pseudo-cliques**.
 
 Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness:
 
@@ -73,13 +65,11 @@ Illustation of different pseudo cliques. Taken from {footcite}`koujaku2016dense`
 
 :::
 
-### Graph Cut Approach
+## Graph cut optimization approach
 
-Another approach from computer science is to treat a community detection problem as an *optimization* problem.
-An early example is the **graph cut** problem, which asks to find the minimum number of edges to cut the graph into two disconnected components.
+Another approach from computer science is to treat a community detection problem as an *optimization* problem. An early example is the **graph cut** problem, which asks to find the minimum number of edges to cut the graph into two disconnected components.
 
-Specifically, let us consider cutting the network into two communities. Let $V_1$ and $V_2$ be the set of nodes in the two communities.
-Then, the cut is the number of edges between the two communities, which is given by
+Specifically, let us consider cutting the network into two communities. Let $V_1$ and $V_2$ be the set of nodes in the two communities. Then, the cut is the number of edges between the two communities, which is given by
 
 $$
 \begin{align}
@@ -97,22 +87,18 @@ The description of this problem is not complete 😈. Let's find out what is mis
 Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a>".replace('BASE_URL', base_url) }}
 
 ::: {.callout collapse="true"}
-## Click to reveal the answer!
+**Click to reveal the answer!**
 
 The missing element is a constraint: each community must contain at least one node. Without this, the trivial solution of placing all nodes in a single community would always yield a cut of zero.
 :::
 
 :::
 
-## Modularity: Measuring Community Structure
+## Modularity: measuring assortativity against null models
 
-**Modularity** is by far the most widely used method for community detection.
-Modularity can be derived in many ways, but we will follow the one derived from assortativity.
+**Modularity** is by far the most widely used method for community detection. Modularity can be derived in many ways, but we will follow the one derived from assortativity.
 
-### Assortativity
-
-**Assortativity** is a measure of the tendency of nodes to connect with nodes of the same attribute.
-The attribute, in our case, is the community that the node belongs to, and we say that a network is assortative if nodes of the same community are more likely to connect with each other than nodes of different communities.
+**Assortativity** is a measure of the tendency of nodes to connect with nodes of the same attribute. The attribute, in our case, is the community that the node belongs to, and we say that a network is assortative if nodes of the same community are more likely to connect with each other than nodes of different communities.
 
 Let's think about assortativity by using color balls and strings! 🎨🧵
 
@@ -123,15 +109,12 @@ Imagine we're playing a game as follows:
 3. Now, let's toss all these ball-and-string pairs into a big bag.
 4. We'll keep pulling out strings with replacement and checking if the balls on each end match colors.
 
-The more color matches we find, the more assortative our network is. But, there's a catch!
-What if we got lots of matches just by luck? For example, if all our balls were the same color, we'd always get a match. But that doesn't tell us much about our communities.
-So, to be extra clever, we compare our results to a "random" version (null model):
+The more color matches we find, the more assortative our network is. But, there's a catch! What if we got lots of matches just by luck? For example, if all our balls were the same color, we'd always get a match. But that doesn't tell us much about our communities. So, to be extra clever, we compare our results to a "random" version (null model):
 
 1. We snip all the strings and mix up all the balls.
 2. Then we draw pairs of balls at random *with replacement* and see how often the colors match.
 
-By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we'd expect by chance.
-This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity *relative* to *a null model*.
+By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we'd expect by chance. This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity *relative* to *a null model*.
 
 ::: {#fig-fig-modularity-game}
 
@@ -140,11 +123,7 @@ This comparison against the random version is the heart of modularity. Unlike gr
 Illustration of how modularity measures assortativity relative to a null model.
 :::
 
-### Deriving Modularity
-
-Now, let's put on our math hats and make this colorful game a bit more precise.
-
-Let's introduce some helpful symbols to describe our network:
+Now, let's put on our math hats and make this colorful game a bit more precise. Let's introduce some helpful symbols to describe our network:
 - $N$: This is our total number of nodes (or balls in our game)
 - $M$: The number of edges (or strings) connecting our nodes
 - $A_{ij}$: Adjacency matrix. If $A_{ij} = 1$, it means node $i$ and node $j$ are connected. If $A_{ij} = 0$, they're not connected.
@@ -172,7 +151,7 @@ First, ask yourself:
 What is the probability of color matches for the random version? Derive the probability by using $\sum, M, \delta(c_i, c_j), k_i,k_j$.
 
 ::: {.callout collapse="true"}
-## Hint
+**Hint**
 1. Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡
 2. Now, think about picking one ball out of the bag. What are the chances of picking a specific color?
 3. Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?
