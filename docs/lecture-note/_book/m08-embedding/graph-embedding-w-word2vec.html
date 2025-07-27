@@ -771,7 +771,7 @@ window.Quarto = {
 <h4 data-number="58.1.1.1" class="anchored" data-anchor-id="step-1-data-preparation"><span class="header-section-number">58.1.1.1</span> Step 1: Data preparation</h4>
 <p>We will use the karate club network as an example.</p>
 <p><strong>Load the data</strong></p>
-<div id="0acf14e1" class="cell">
+<div id="993f88b5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -795,7 +795,7 @@ window.Quarto = {
 <section id="step-2-generate-random-walks" class="level4" data-number="58.1.1.2">
 <h4 data-number="58.1.1.2" class="anchored" data-anchor-id="step-2-generate-random-walks"><span class="header-section-number">58.1.1.2</span> Step 2: Generate random walks</h4>
 <p>Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network. Let us first implement a function to sample random walks from a given network.</p>
-<div id="5dd1f0bb" class="cell">
+<div id="46a2b758" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(net, start_node, walk_length):</span>
@@ -822,7 +822,7 @@ window.Quarto = {
 </details>
 </div>
 <p>Generate 10 random walks of length 50 starting from each node.</p>
-<div id="b50eb9a6" class="cell">
+<div id="7e682041" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -838,7 +838,7 @@ window.Quarto = {
 <section id="step-3-train-the-word2vec-model" class="level4" data-number="58.1.1.3">
 <h4 data-number="58.1.1.3" class="anchored" data-anchor-id="step-3-train-the-word2vec-model"><span class="header-section-number">58.1.1.3</span> Step 3: Train the word2vec model</h4>
 <p>Then, we feed the random walks to the word2vec model.</p>
-<div id="2d98d5ee" class="cell">
+<div id="afd2ed16" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
@@ -865,7 +865,7 @@ window.Quarto = {
 </ul>
 <p>By using the skip-gram model with hierarchical softmax, we can efficiently learn high-quality word embeddings even when dealing with large vocabularies.</p>
 <p>Now, we extract the node embeddings from the word2vec model. In the word2vec model, the embeddings are stored in the <code>wv</code> attribute. The embedding of node <span class="math inline">i</span> is given by <code>model.wv[i]</code>.</p>
-<div id="1e341937" class="cell">
+<div id="39ab3715" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -876,7 +876,7 @@ window.Quarto = {
 </div>
 <p><code>embedding</code> is the matrix of node embeddings. It has the same number of rows as the number of nodes in the network, and the number of columns is the embedding dimension.</p>
 <p><strong>Print the first 3 nodes</strong></p>
-<div id="8b8e2953" class="cell">
+<div id="742edb2d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -885,7 +885,7 @@ window.Quarto = {
 </details>
 </div>
 <p>Let’s visualize the node embeddings using UMAP.</p>
-<div id="c7b1ab71" class="cell">
+<div id="aedcce09" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -921,7 +921,7 @@ window.Quarto = {
 <section id="step-4-clustering" class="level4" data-number="58.1.1.4">
 <h4 data-number="58.1.1.4" class="anchored" data-anchor-id="step-4-clustering"><span class="header-section-number">58.1.1.4</span> Step 4: Clustering</h4>
 <p>One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as <span class="math inline">K</span>-means and Gaussian mixture model. Let’s see what we can get from the node embeddings.</p>
-<div id="9c4ed8d5" class="cell">
+<div id="adfb6a24" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -958,7 +958,7 @@ window.Quarto = {
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.labels_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="437172c0" class="cell">
+<div id="ff6ceab0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -997,7 +997,7 @@ window.Quarto = {
 <section id="exercise-02-implement-node2vec" class="level3" data-number="58.2.1">
 <h3 data-number="58.2.1" class="anchored" data-anchor-id="exercise-02-implement-node2vec"><span class="header-section-number">58.2.1</span> Exercise 02: Implement node2vec</h3>
 <p>Let’s implement the biased random walk for node2vec</p>
-<div id="e55b212a" class="cell">
+<div id="6294cb93" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
@@ -1070,7 +1070,7 @@ window.Quarto = {
 </details>
 </div>
 <p>Now, let’s set up the word2vec model for node2vec.</p>
-<div id="1f526638" class="cell">
+<div id="ea77ed4a" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>walks <span class="op">=</span> []</span>
@@ -1084,7 +1084,7 @@ window.Quarto = {
 </div>
 <p>where <code>hs=0</code> indicates that we are using negative sampling. Notice that we set <code>sg=1</code> and <code>hs=1</code> instead of <code>sg=1</code> and <code>hs=0</code> in DeepWalk. This is because node2vec uses the skip-gram model with negative sampling.</p>
 <p>Now, we extract the node embeddings from the word2vec model.</p>
-<div id="da264f50" class="cell">
+<div id="1f8c9438" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -1094,7 +1094,7 @@ window.Quarto = {
 </details>
 </div>
 <p>Let’s visualize the node embeddings from node2vec.</p>
-<div id="c19ccb72" class="cell">
+<div id="b337bda6" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1130,7 +1130,7 @@ window.Quarto = {
 </details>
 </div>
 <p>The results for clustering are as follows:</p>
-<div id="75f6b3bc" class="cell">
+<div id="79b7b5d8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
