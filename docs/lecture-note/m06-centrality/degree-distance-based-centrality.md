@@ -66,7 +66,8 @@ where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the 
 Create a graph where a node has the maximum closeness centrality of value 1.
 
 
-:::{dropdown} Click to see the answer
+::: {.callout collapse="true"}
+## Click to see the answer
 
 The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
 

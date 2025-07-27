@@ -14,7 +14,7 @@ While we have already used the term **path**, let us make clear its definition, 
 
 ***Question***: Is a path always a trail, and is a trail always a path?
 
-:::{figure-md} numbered-koningsberg-graph2
+::: {#fig-numbered-koningsberg-graph2}
 
 <img src= "../figs/labeled-koningsberg.jpg" width="30%">
 
@@ -26,7 +26,8 @@ Labeled Knigsberg graph
 A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).
 - **The shortest path length** is the number of edges in the shortest path, *not the number of nodes!* 👈👈
 
-:::{note} Are there **shortest trails** and **shortest walks**?
+::: {.callout-note}
+## Are there **shortest trails** and **shortest walks**?
 Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.
 :::
 
@@ -38,7 +39,7 @@ Shortest trails and shortest walks are fundamentally equivalent to shortest path
 - **A connected component** of a network is a set of nodes that are connected to each other.
 - **The giant component** of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).
 
-:::{figure-md} connected-components
+::: {#fig-connected-components}
 
 <img src= "../figs/connected-component.jpg" width="50%">
 
@@ -58,7 +59,7 @@ This leads to two different types of `connectedness` as follows:
 - **Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.
 
 
-:::{figure-md} connected-components-directed
+::: {#fig-connected-components-directed}
 
 <img src= "../figs/connected-component-directed.jpg" width="50%">
 

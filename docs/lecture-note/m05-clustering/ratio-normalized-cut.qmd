@@ -61,12 +61,13 @@ $$
 
 Compute the ratio cut and normalized cut for the following network. The red edges should be cut.
 
-:::{glue:figure} fig-graph-cut
+::: {#fig-fig-graph-cut}
 :name: fig-graph-cut
 
 ```
 
-```{dropdown} Click here to reveal the answer
+::: {.callout collapse="true"}
+## Click here to reveal the answer
 
 The graph consists of two cliques, each with 5 nodes ($|V_1| = |V_2| = 5$).
 Each clique has 10 internal edges and 2 edges connecting to the other clique.
@@ -76,7 +77,7 @@ We can now calculate:
 - **Ratio cut**: $2 / (5 \times 5) = 0.08$.
 - **Normalized cut**: $2 / (12 \times 12) = 0.01388889$.
 
-```
+:::
 
 ```{python}
 :tags: ["hide-input", "remove-output"]
@@ -137,6 +138,10 @@ plt.tight_layout()
 
 glue("fig-graph-cut", fig, display=False)
 ```
+
+:::
+
+:::
 
 ## Cut into more than two communities
 

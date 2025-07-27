@@ -5,7 +5,7 @@ Community detection is an abstract unsupervised problem. It is abstract because 
 A classical approach to community detection is based on *pattern matching*.
 Namely, we first explicitly define a community by a specific connectivity pattern of its members. Then, we search for these communities in the network.
 
-:::{figure-md} clique
+::: {#fig-clique}
 
 <img src="https://pythonhosted.org/trustedanalytics/R_images/k-clique_201508281155.png" alt="Clique graph" width="80%">
 
@@ -30,7 +30,7 @@ Pseudo-cliques are defined by relaxing at least one of the following three dimen
    - **$k$-truss**, a maximal subgraph where all edges participate in at least $k-2$ triangles {footcite}`saito2008extracting,cohen2009graph,wang2010triangulation`.
    - **$\rho$-dense core**, a subgraph with minimum conductance $\rho$ {footcite}`koujaku2016dense`.
 
-:::{figure-md} clique-pattern
+::: {#fig-clique-pattern}
 
 <img src="https://ars.els-cdn.com/content/image/1-s2.0-S0378873315000520-gr1.jpg" alt="Pseudo-clique patterns" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
 

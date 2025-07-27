@@ -21,7 +21,8 @@ The description of this problem is not complete 😈. Let's find out what is mis
 
 Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a>".replace('BASE_URL', base_url) }}
 
-:::{dropdown} Click to reveal the answer!
+::: {.callout collapse="true"}
+## Click to reveal the answer!
 
 The missing element is a constraint: each community must contain at least one node. Without this, the trivial solution of placing all nodes in a single community would always yield a cut of zero.
 ```
