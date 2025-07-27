@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Zoo of networks – Advanced Topics in Network Science</title>
+<title>31&nbsp; Random Walks: Core Concepts – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../intro/setup.html" rel="next">
-<link href="../intro/why-networks.html" rel="prev">
+<link href="../m07-random-walks/02-coding.html" rel="next">
+<link href="../m07-random-walks/00-preparation.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -105,6 +105,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -117,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -168,7 +211,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
   </div>
 </li>
@@ -419,7 +462,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span></a>
   </div>
 </li>
@@ -524,15 +567,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-to-learn-in-this-module" id="toc-what-to-learn-in-this-module" class="nav-link active" data-scroll-target="#what-to-learn-in-this-module"><span class="header-section-number">31.1</span> What to learn in this module</a></li>
+  <li><a href="#introduction-through-games-ladder-lottery" id="toc-introduction-through-games-ladder-lottery" class="nav-link" data-scroll-target="#introduction-through-games-ladder-lottery"><span class="header-section-number">31.2</span> Introduction through Games: Ladder Lottery</a>
+  <ul class="collapse">
+  <li><a href="#connection-to-random-walks" id="toc-connection-to-random-walks" class="nav-link" data-scroll-target="#connection-to-random-walks"><span class="header-section-number">31.2.1</span> Connection to Random Walks</a></li>
+  </ul></li>
+  <li><a href="#fundamental-concepts" id="toc-fundamental-concepts" class="nav-link" data-scroll-target="#fundamental-concepts"><span class="header-section-number">31.3</span> Fundamental Concepts</a>
+  <ul class="collapse">
+  <li><a href="#what-is-a-random-walk" id="toc-what-is-a-random-walk" class="nav-link" data-scroll-target="#what-is-a-random-walk"><span class="header-section-number">31.3.1</span> What is a Random Walk?</a></li>
+  <li><a href="#random-walks-in-networks" id="toc-random-walks-in-networks" class="nav-link" data-scroll-target="#random-walks-in-networks"><span class="header-section-number">31.3.2</span> Random Walks in Networks</a></li>
+  <li><a href="#key-questions-to-consider" id="toc-key-questions-to-consider" class="nav-link" data-scroll-target="#key-questions-to-consider"><span class="header-section-number">31.3.3</span> Key Questions to Consider</a></li>
+  </ul></li>
+  <li><a href="#pen-and-paper-exercises" id="toc-pen-and-paper-exercises" class="nav-link" data-scroll-target="#pen-and-paper-exercises"><span class="header-section-number">31.4</span> Pen and Paper Exercises</a></li>
+  <li><a href="#preview-whats-coming-next" id="toc-preview-whats-coming-next" class="nav-link" data-scroll-target="#preview-whats-coming-next"><span class="header-section-number">31.5</span> Preview: What’s Coming Next</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -549,112 +610,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div data-align="center" style="font-size: 1.5em;">
-Plant pollinator network
+<section id="what-to-learn-in-this-module" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">31.1</span> What to learn in this module</h2>
+<p>In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We will learn: - What is a random walk? - How to simulate a random walk on a network? - What is the behavior of a random walk on a network? - Implicit connections to community detection and network centralities - <strong>Keywords</strong>: random walk, community detection, network centralities</p>
+</section>
+<section id="introduction-through-games-ladder-lottery" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="introduction-through-games-ladder-lottery"><span class="header-section-number">31.2</span> Introduction through Games: Ladder Lottery</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Ladder Lottery">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Food web
+<div class="callout-title-container flex-fill">
+Ladder Lottery
 </div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/images/food-web.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Brain network
 </div>
-<p align="center">
-<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of medicine
+<div class="callout-body-container callout-body">
+<p>:class: tip</p>
+<p>Ladder Lottery is a fun East Asian game, also known as “鬼腳圖” (Guijiaotu) in Chinese, “阿弥陀籤” (Amida-kuzi) in Japanese, “사다리타기” (Sadaritagi) in Korean, and “Ladder Lottery” in English. The game is played as follows: 1. A player is given a board with a set of vertical lines. 2. The player chooses a line and starts to move along the line 3. When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line. 4. The player wins if the player can hit a marked line at the bottom of the board. 5. You cannot see the horizontal lines in advance!</p>
+<p>Play the {{ ‘<a href="BASE_URL/vis/amida-kuji.html?">Ladder Lottery Game! 🎮✨</a>’.replace(‘BASE_URL’, base_url) }} and try to answer the following questions:</p>
+<ol type="1">
+<li>Is there a strategy to maximize the probability of winning?</li>
+<li>How does the probability of winning change as the number of horizontal lines increases?</li>
+</ol>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif" class="img-fluid"></p>
 </div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Protein-protein interaction
 </div>
-<p align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Social network
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-International financial network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-US airport network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Power grid network
-</div>
-<p align="center">
-<img src="https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of rivers
-</div>
-<p align="center">
-<img src="https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Internet
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Knowledge graph
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Virus spreading network
-</div>
-<p align="center">
-<img src="https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png" style="width: 80%;">
-</p>
+<section id="connection-to-random-walks" class="level3" data-number="31.2.1">
+<h3 data-number="31.2.1" class="anchored" data-anchor-id="connection-to-random-walks"><span class="header-section-number">31.2.1</span> Connection to Random Walks</h3>
+<p>The Ladder Lottery game is actually a perfect introduction to random walks! In this game: - <strong>States</strong> are the vertical lines - <strong>Transitions</strong> happen when you encounter horizontal connections - <strong>Randomness</strong> comes from not knowing where the horizontal lines are placed - <strong>Long-term behavior</strong> determines your probability of winning</p>
+<p>This simple game illustrates many key concepts we’ll explore in random walks on networks.</p>
+</section>
+</section>
+<section id="fundamental-concepts" class="level2" data-number="31.3">
+<h2 data-number="31.3" class="anchored" data-anchor-id="fundamental-concepts"><span class="header-section-number">31.3</span> Fundamental Concepts</h2>
+<section id="what-is-a-random-walk" class="level3" data-number="31.3.1">
+<h3 data-number="31.3.1" class="anchored" data-anchor-id="what-is-a-random-walk"><span class="header-section-number">31.3.1</span> What is a Random Walk?</h3>
+<p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
+<p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</p>
+</section>
+<section id="random-walks-in-networks" class="level3" data-number="31.3.2">
+<h3 data-number="31.3.2" class="anchored" data-anchor-id="random-walks-in-networks"><span class="header-section-number">31.3.2</span> Random Walks in Networks</h3>
+<p>A random walk in undirected networks is the following process: 1. Start at a node <span class="math inline">i</span> 2. Randomly choose an edge to traverse to a neighbor node <span class="math inline">j</span> 3. Repeat step 2 until you have taken <span class="math inline">T</span> steps.</p>
+<pre class="{note}"><code>In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</code></pre>
+</section>
+<section id="key-questions-to-consider" class="level3" data-number="31.3.3">
+<h3 data-number="31.3.3" class="anchored" data-anchor-id="key-questions-to-consider"><span class="header-section-number">31.3.3</span> Key Questions to Consider</h3>
+<p>When studying random walks, we want to understand:</p>
+<ol type="1">
+<li><strong>Short-term behavior</strong>: Where does the walker go in the first few steps?</li>
+<li><strong>Long-term behavior</strong>: After many steps, where does the walker spend most of its time?</li>
+<li><strong>Structural insights</strong>: What does the walker’s behavior tell us about the network?</li>
+<li><strong>Applications</strong>: How can we use random walks for centrality and community detection?</li>
+</ol>
+</section>
+</section>
+<section id="pen-and-paper-exercises" class="level2" data-number="31.4">
+<h2 data-number="31.4" class="anchored" data-anchor-id="pen-and-paper-exercises"><span class="header-section-number">31.4</span> Pen and Paper Exercises</h2>
+<p>Before diving into the mathematical details and coding, it’s important to work through some fundamental concepts by hand.</p>
+<ul>
+<li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
+</ul>
+<p>These exercises will help you: - Understand the basic mechanics of random walks - Calculate transition probabilities manually - Explore simple examples of stationary distributions - Connect random walk concepts to network properties</p>
+</section>
+<section id="preview-whats-coming-next" class="level2" data-number="31.5">
+<h2 data-number="31.5" class="anchored" data-anchor-id="preview-whats-coming-next"><span class="header-section-number">31.5</span> Preview: What’s Coming Next</h2>
+<p>In the following sections, we will: 1. <strong>Dive into the mathematics</strong> behind random walks and their connection to Markov chains 2. <strong>Implement random walks in code</strong> and visualize their behavior on real networks 3. <strong>Explore applications</strong> including centrality measures and community detection 4. <strong>Work through practical exercises</strong> to solidify your understanding</p>
+<p>The journey from this simple concept to powerful network analysis tools is both fascinating and practical!</p>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1109,101 +1136,108 @@ Virus spreading network
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../intro/why-networks.html" class="pagination-link" aria-label="Why should we care networks?">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></span>
+      <a href="../m07-random-walks/00-preparation.html" class="pagination-link" aria-label="Preparation: From Centrality to Random Walks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: From Centrality to Random Walks</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../intro/setup.html" class="pagination-link" aria-label="Trouble shooting">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m07-random-walks/02-coding.html" class="pagination-link" aria-label="Random Walks: Implementation and Applications">
+        <span class="nav-page-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Zoo of networks</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Plant pollinator network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Food web<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/images/food-web.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Brain network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of medicine<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Protein-protein interaction<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Social network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>International financial network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>US airport network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Power grid network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of rivers<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Internet<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Knowledge graph<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Virus spreading network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Random Walks: Core Concepts</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to learn in this module</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We will learn:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What is a random walk?</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How to simulate a random walk on a network?</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What is the behavior of a random walk on a network?</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Implicit connections to community detection and network centralities</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keywords**: random walk, community detection, network centralities</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction through Games: Ladder Lottery</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Ladder Lottery"}</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="sc">:class:</span> tip</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>A player is given a board with a set of vertical lines.</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The player chooses a line and starts to move along the line</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The player wins if the player can hit a marked line at the bottom of the board.</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>You cannot see the horizontal lines in advance!</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Play the {{ '<span class="co">[</span><span class="ot">Ladder Lottery Game! 🎮✨</span><span class="co">]( BASE_URL/vis/amida-kuji.html?)</span>'.replace('BASE_URL', base_url) }} and try to answer the following questions:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Is there a strategy to maximize the probability of winning?</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How does the probability of winning change as the number of horizontal lines increases?</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif)</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Connection to Random Walks</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>The Ladder Lottery game is actually a perfect introduction to random walks! In this game:</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**States** are the vertical lines</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Transitions** happen when you encounter horizontal connections</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Randomness** comes from not knowing where the horizontal lines are placed</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Long-term behavior** determines your probability of winning</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>This simple game illustrates many key concepts we'll explore in random walks on networks.</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fundamental Concepts</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### What is a Random Walk?</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="fu">### Random Walks in Networks</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>A random walk in undirected networks is the following process:</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Start at a node $i$</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Randomly choose an edge to traverse to a neighbor node $j$</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Repeat step 2 until you have taken $T$ steps.</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="in">```{note}</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="in">In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Questions to Consider</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>When studying random walks, we want to understand:</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Short-term behavior**: Where does the walker go in the first few steps?</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Long-term behavior**: After many steps, where does the walker spend most of its time?</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Structural insights**: What does the walker's behavior tell us about the network?</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Applications**: How can we use random walks for centrality and community detection?</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen and Paper Exercises</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>Before diving into the mathematical details and coding, it's important to work through some fundamental concepts by hand.</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>These exercises will help you:</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand the basic mechanics of random walks</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate transition probabilities manually</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explore simple examples of stationary distributions</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connect random walk concepts to network properties</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preview: What's Coming Next</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>In the following sections, we will:</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Dive into the mathematics** behind random walks and their connection to Markov chains</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Implement random walks in code** and visualize their behavior on real networks</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Explore applications** including centrality measures and community detection</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Work through practical exercises** to solidify your understanding</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>The journey from this simple concept to powerful network analysis tools is both fascinating and practical!</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

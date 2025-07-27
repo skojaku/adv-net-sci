@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Zoo of networks – Advanced Topics in Network Science</title>
+<title>26&nbsp; Module 06 Preparation: Community Detection and Matrix Operations – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../intro/setup.html" rel="next">
-<link href="../intro/why-networks.html" rel="prev">
+<link href="../m06-centrality/01-concepts.html" rel="next">
+<link href="../m05-clustering/03-exercises.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -105,6 +105,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -117,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/00-preparation.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/00-preparation.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Module 06 Preparation: Community Detection and Matrix Operations</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -168,7 +211,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
   </div>
 </li>
@@ -378,7 +421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
+  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Module 06 Preparation: Community Detection and Matrix Operations</span></span></a>
   </div>
 </li>
@@ -524,15 +567,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#review-from-module-5-community-detection" id="toc-review-from-module-5-community-detection" class="nav-link active" data-scroll-target="#review-from-module-5-community-detection"><span class="header-section-number">26.1</span> Review from Module 5: Community Detection</a>
+  <ul class="collapse">
+  <li><a href="#what-is-community" id="toc-what-is-community" class="nav-link" data-scroll-target="#what-is-community"><span class="header-section-number">26.1.1</span> What is community?</a></li>
+  <li><a href="#modularity" id="toc-modularity" class="nav-link" data-scroll-target="#modularity"><span class="header-section-number">26.1.2</span> Modularity</a></li>
+  <li><a href="#stochastic-block-model" id="toc-stochastic-block-model" class="nav-link" data-scroll-target="#stochastic-block-model"><span class="header-section-number">26.1.3</span> Stochastic Block Model</a></li>
+  </ul></li>
+  <li><a href="#essential-matrix-operations-for-centrality" id="toc-essential-matrix-operations-for-centrality" class="nav-link" data-scroll-target="#essential-matrix-operations-for-centrality"><span class="header-section-number">26.2</span> Essential Matrix Operations for Centrality</a>
+  <ul class="collapse">
+  <li><a href="#adjacency-matrix-fundamentals" id="toc-adjacency-matrix-fundamentals" class="nav-link" data-scroll-target="#adjacency-matrix-fundamentals"><span class="header-section-number">26.2.1</span> Adjacency Matrix Fundamentals</a></li>
+  <li><a href="#key-matrix-operations" id="toc-key-matrix-operations" class="nav-link" data-scroll-target="#key-matrix-operations"><span class="header-section-number">26.2.2</span> Key Matrix Operations</a></li>
+  <li><a href="#connection-to-centrality" id="toc-connection-to-centrality" class="nav-link" data-scroll-target="#connection-to-centrality"><span class="header-section-number">26.2.3</span> Connection to Centrality</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/00-preparation.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/00-preparation.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Module 06 Preparation: Community Detection and Matrix Operations</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Module 06 Preparation: Community Detection and Matrix Operations</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -549,112 +609,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div data-align="center" style="font-size: 1.5em;">
-Plant pollinator network
-</div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Food web
-</div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/images/food-web.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Brain network
-</div>
-<p align="center">
-<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of medicine
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Protein-protein interaction
-</div>
-<p align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Social network
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-International financial network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-US airport network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Power grid network
-</div>
-<p align="center">
-<img src="https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of rivers
-</div>
-<p align="center">
-<img src="https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Internet
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Knowledge graph
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Virus spreading network
-</div>
-<p align="center">
-<img src="https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png" style="width: 80%;">
-</p>
+<section id="review-from-module-5-community-detection" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="review-from-module-5-community-detection"><span class="header-section-number">26.1</span> Review from Module 5: Community Detection</h2>
+<section id="what-is-community" class="level3" data-number="26.1.1">
+<h3 data-number="26.1.1" class="anchored" data-anchor-id="what-is-community"><span class="header-section-number">26.1.1</span> What is community?</h3>
+<p><strong>Communities</strong> in networks are groups of nodes that share similar connection patterns. These communities do not always mean densely-connected nodes. Sometimes, a community can be nodes that are not connected to each other, but connect similarly to other groups.</p>
+<p>Communities reflect underlying mechanisms of network formation and underpin the dynamics of information propagation. Examples include:</p>
+<ol type="1">
+<li><strong>Homophily</strong>: The tendency of similar nodes to form connections.</li>
+<li><strong>Functional groups</strong>: Nodes that collaborate for specific purposes.</li>
+<li><strong>Hierarchical structure</strong>: Smaller communities existing within larger ones.</li>
+<li><strong>Information flow</strong>: The patterns of information, influence, or disease propagation through the network.</li>
+</ol>
+</section>
+<section id="modularity" class="level3" data-number="26.1.2">
+<h3 data-number="26.1.2" class="anchored" data-anchor-id="modularity"><span class="header-section-number">26.1.2</span> Modularity</h3>
+<p><strong>Modularity</strong> is by far the most widely used method for community detection. Modularity measures assortativity <em>relative</em> to <em>a null model</em>.</p>
+<p><strong>Assortativity</strong> is a measure of the tendency of nodes to connect with nodes of the same attribute. The attribute, in our case, is the community that the node belongs to, and we say that a network is assortative if nodes of the same community are more likely to connect with each other than nodes of different communities.</p>
+<p>Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity relative to a null model by comparing our original network to a “random” version where we mix up all the connections.</p>
+</section>
+<section id="stochastic-block-model" class="level3" data-number="26.1.3">
+<h3 data-number="26.1.3" class="anchored" data-anchor-id="stochastic-block-model"><span class="header-section-number">26.1.3</span> Stochastic Block Model</h3>
+<p>The <strong>Stochastic Block Model (SBM)</strong> flips the idea of modularity maximization on its head! Instead of starting with a network and looking for communities, we start with the communities and ask, <em>“What kind of network would we get if the nodes form these communities?”</em>.</p>
+<p>In stochastic block model, we describe a network using probabilities given a community structure. Specifically, let us consider two nodes <span class="math inline">i</span> and <span class="math inline">j</span> who belong to community <span class="math inline">c_i</span> and <span class="math inline">c_j</span>. Then, the probability of an edge between <span class="math inline">i</span> and <span class="math inline">j</span> is given by their community membership:</p>
+<p><span class="math display">
+P(A_{ij}=1|c_i, c_j) = p_{c_i,c_j}
+</span></p>
+<p>where <span class="math inline">p_{c_i,c_j}</span> is the probability of an edge between nodes in community <span class="math inline">c_i</span> and <span class="math inline">c_j</span>, respectively.</p>
+</section>
+</section>
+<section id="essential-matrix-operations-for-centrality" class="level2" data-number="26.2">
+<h2 data-number="26.2" class="anchored" data-anchor-id="essential-matrix-operations-for-centrality"><span class="header-section-number">26.2</span> Essential Matrix Operations for Centrality</h2>
+<section id="adjacency-matrix-fundamentals" class="level3" data-number="26.2.1">
+<h3 data-number="26.2.1" class="anchored" data-anchor-id="adjacency-matrix-fundamentals"><span class="header-section-number">26.2.1</span> Adjacency Matrix Fundamentals</h3>
+<p>The <strong>adjacency matrix</strong> <span class="math inline">A</span> is the foundation for most centrality calculations: - <span class="math inline">A_{ij} = 1</span> if there is an edge between nodes <span class="math inline">i</span> and <span class="math inline">j</span> - <span class="math inline">A_{ij} = 0</span> otherwise - For undirected networks: <span class="math inline">A_{ij} = A_{ji}</span> (symmetric matrix)</p>
+</section>
+<section id="key-matrix-operations" class="level3" data-number="26.2.2">
+<h3 data-number="26.2.2" class="anchored" data-anchor-id="key-matrix-operations"><span class="header-section-number">26.2.2</span> Key Matrix Operations</h3>
+<section id="matrix-powers" class="level4" data-number="26.2.2.1">
+<h4 data-number="26.2.2.1" class="anchored" data-anchor-id="matrix-powers"><span class="header-section-number">26.2.2.1</span> Matrix Powers</h4>
+<p>Powers of the adjacency matrix reveal important network properties: - <span class="math inline">A^2_{ij}</span> = number of walks of length 2 between nodes <span class="math inline">i</span> and <span class="math inline">j</span> - <span class="math inline">A^k_{ij}</span> = number of walks of length <span class="math inline">k</span> between nodes <span class="math inline">i</span> and <span class="math inline">j</span></p>
+</section>
+<section id="eigenvalues-and-eigenvectors" class="level4" data-number="26.2.2.2">
+<h4 data-number="26.2.2.2" class="anchored" data-anchor-id="eigenvalues-and-eigenvectors"><span class="header-section-number">26.2.2.2</span> Eigenvalues and Eigenvectors</h4>
+<p>For a matrix <span class="math inline">A</span> and vector <span class="math inline">v</span>: <span class="math display">Av = \lambda v</span> where <span class="math inline">\lambda</span> is an eigenvalue and <span class="math inline">v</span> is the corresponding eigenvector.</p>
+<p><strong>Key properties:</strong> - The <strong>largest eigenvalue</strong> <span class="math inline">\lambda_1</span> (spectral radius) determines many network properties - The <strong>principal eigenvector</strong> <span class="math inline">v_1</span> (corresponding to <span class="math inline">\lambda_1</span>) forms the basis of eigenvector centrality - For connected networks, <span class="math inline">\lambda_1 &gt; 0</span> and <span class="math inline">v_1</span> has all positive entries</p>
+</section>
+<section id="matrix-norms" class="level4" data-number="26.2.2.3">
+<h4 data-number="26.2.2.3" class="anchored" data-anchor-id="matrix-norms"><span class="header-section-number">26.2.2.3</span> Matrix Norms</h4>
+<p>The <strong>matrix norm</strong> measures the “size” of a matrix: - <strong>Spectral norm</strong>: <span class="math inline">||A||_2 = \lambda_1</span> (largest eigenvalue) - Used in normalizing centrality measures</p>
+</section>
+<section id="matrix-inversion-and-pseudo-inverse" class="level4" data-number="26.2.2.4">
+<h4 data-number="26.2.2.4" class="anchored" data-anchor-id="matrix-inversion-and-pseudo-inverse"><span class="header-section-number">26.2.2.4</span> Matrix Inversion and Pseudo-inverse</h4>
+<ul>
+<li><strong>Matrix inverse</strong> <span class="math inline">A^{-1}</span>: exists only for square, non-singular matrices</li>
+<li><strong>Moore-Penrose pseudo-inverse</strong> <span class="math inline">A^+</span>: generalization for any matrix</li>
+<li>Used in advanced centrality measures like Katz centrality</li>
+</ul>
+</section>
+</section>
+<section id="connection-to-centrality" class="level3" data-number="26.2.3">
+<h3 data-number="26.2.3" class="anchored" data-anchor-id="connection-to-centrality"><span class="header-section-number">26.2.3</span> Connection to Centrality</h3>
+<p>These matrix operations directly connect to centrality measures we’ll study:</p>
+<ol type="1">
+<li><strong>Degree centrality</strong>: Uses row/column sums of <span class="math inline">A</span></li>
+<li><strong>Eigenvector centrality</strong>: Uses the principal eigenvector of <span class="math inline">A</span></li>
+<li><strong>Katz centrality</strong>: Uses matrix series <span class="math inline">(I - \alpha A)^{-1}</span></li>
+<li><strong>PageRank</strong>: Uses modified adjacency matrix with damping</li>
+</ol>
+<p>Understanding these matrix fundamentals will be crucial as we explore how different centrality measures capture different aspects of node importance in networks.</p>
 
 
 <!-- -->
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1109,101 +1138,97 @@ Virus spreading network
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../intro/why-networks.html" class="pagination-link" aria-label="Why should we care networks?">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></span>
+      <a href="../m05-clustering/03-exercises.html" class="pagination-link" aria-label="Hands-on: Clustering">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../intro/setup.html" class="pagination-link" aria-label="Trouble shooting">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m06-centrality/01-concepts.html" class="pagination-link" aria-label="Module 6: Centrality Concepts">
+        <span class="nav-page-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Module 6: Centrality Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Zoo of networks</span></span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Module 06 Preparation: Community Detection and Matrix Operations</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Plant pollinator network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Food web<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/images/food-web.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Brain network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Review from Module 5: Community Detection</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### What is community?</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>**Communities** in networks are groups of nodes that share similar connection patterns. These communities do not always mean densely-connected nodes. Sometimes, a community can be nodes that are not connected to each other, but connect similarly to other groups.</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Communities reflect underlying mechanisms of network formation and underpin the dynamics of information propagation. Examples include:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Homophily**: The tendency of similar nodes to form connections.</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Functional groups**: Nodes that collaborate for specific purposes.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Hierarchical structure**: Smaller communities existing within larger ones.</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Information flow**: The patterns of information, influence, or disease propagation through the network.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modularity</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of medicine<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Protein-protein interaction<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>**Modularity** is by far the most widely used method for community detection. Modularity measures assortativity *relative* to *a null model*.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>**Assortativity** is a measure of the tendency of nodes to connect with nodes of the same attribute. The attribute, in our case, is the community that the node belongs to, and we say that a network is assortative if nodes of the same community are more likely to connect with each other than nodes of different communities.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity relative to a null model by comparing our original network to a "random" version where we mix up all the connections.</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### Stochastic Block Model</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>The **Stochastic Block Model (SBM)** flips the idea of modularity maximization on its head! Instead of starting with a network and looking for communities, we start with the communities and ask, *"What kind of network would we get if the nodes form these communities?"*.</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Social network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>International financial network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>In stochastic block model, we describe a network using probabilities given a community structure. Specifically, let us consider two nodes $i$ and $j$ who belong to community $c_i$ and $c_j$. Then, the probability of an edge between $i$ and $j$ is given by their community membership:</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>P(A_{ij}=1|c_i, c_j) = p_{c_i,c_j}</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>where $p_{c_i,c_j}$ is the probability of an edge between nodes in community $c_i$ and $c_j$, respectively.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## Essential Matrix Operations for Centrality</span></span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>US airport network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Power grid network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of rivers<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Internet<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Knowledge graph<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Virus spreading network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">### Adjacency Matrix Fundamentals</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>The **adjacency matrix** $A$ is the foundation for most centrality calculations:</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A_{ij} = 1$ if there is an edge between nodes $i$ and $j$</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A_{ij} = 0$ otherwise</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For undirected networks: $A_{ij} = A_{ji}$ (symmetric matrix)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Matrix Operations</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Matrix Powers</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>Powers of the adjacency matrix reveal important network properties:</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A^2_{ij}$ = number of walks of length 2 between nodes $i$ and $j$</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A^k_{ij}$ = number of walks of length $k$ between nodes $i$ and $j$</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Eigenvalues and Eigenvectors</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>For a matrix $A$ and vector $v$:</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>$$Av = \lambda v$$</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>where $\lambda$ is an eigenvalue and $v$ is the corresponding eigenvector.</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>**Key properties:**</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The **largest eigenvalue** $\lambda_1$ (spectral radius) determines many network properties</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The **principal eigenvector** $v_1$ (corresponding to $\lambda_1$) forms the basis of eigenvector centrality</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For connected networks, $\lambda_1 &gt; 0$ and $v_1$ has all positive entries</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Matrix Norms</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>The **matrix norm** measures the "size" of a matrix:</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Spectral norm**: $||A||_2 = \lambda_1$ (largest eigenvalue)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Used in normalizing centrality measures</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Matrix Inversion and Pseudo-inverse</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Matrix inverse** $A^{-1}$: exists only for square, non-singular matrices</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Moore-Penrose pseudo-inverse** $A^+$: generalization for any matrix</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Used in advanced centrality measures like Katz centrality</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="fu">### Connection to Centrality</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>These matrix operations directly connect to centrality measures we'll study:</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Degree centrality**: Uses row/column sums of $A$</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Eigenvector centrality**: Uses the principal eigenvector of $A$</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Katz centrality**: Uses matrix series $(I - \alpha A)^{-1}$</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**PageRank**: Uses modified adjacency matrix with damping</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>Understanding these matrix fundamentals will be crucial as we explore how different centrality measures capture different aspects of node importance in networks.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

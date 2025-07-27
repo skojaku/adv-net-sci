@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Why should we care networks? – Advanced Topics in Network Science</title>
+<title>8&nbsp; Preparation: Graph Theory Fundamentals – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../intro/zoo-of-networks.html" rel="next">
-<link href="../index.html" rel="prev">
+<link href="../m02-small-world/01-concepts.html" rel="next">
+<link href="../m01-euler_tour/03-exercises.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -105,6 +105,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -117,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Graph Theory Fundamentals</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -162,7 +205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></span></a>
   </div>
 </li>
@@ -226,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
+  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Graph Theory Fundamentals</span></span></a>
   </div>
 </li>
@@ -529,17 +572,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#zoo-of-networks" id="toc-zoo-of-networks" class="nav-link active" data-scroll-target="#zoo-of-networks"><span class="header-section-number">1.1</span> Zoo of networks</a></li>
-  <li><a href="#what-is-a-network" id="toc-what-is-a-network" class="nav-link" data-scroll-target="#what-is-a-network"><span class="header-section-number">2</span> What is a network?</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">8.1</span> Overview</a></li>
+  <li><a href="#historical-foundation-the-seven-bridges-of-königsberg" id="toc-historical-foundation-the-seven-bridges-of-königsberg" class="nav-link" data-scroll-target="#historical-foundation-the-seven-bridges-of-königsberg"><span class="header-section-number">8.2</span> Historical Foundation: The Seven Bridges of Königsberg</a></li>
+  <li><a href="#eulers-solution" id="toc-eulers-solution" class="nav-link" data-scroll-target="#eulers-solution"><span class="header-section-number">8.3</span> Euler’s Solution</a></li>
+  <li><a href="#network-representation" id="toc-network-representation" class="nav-link" data-scroll-target="#network-representation"><span class="header-section-number">8.4</span> Network Representation</a></li>
+  <li><a href="#edge-counting-and-degree" id="toc-edge-counting-and-degree" class="nav-link" data-scroll-target="#edge-counting-and-degree"><span class="header-section-number">8.5</span> Edge Counting and Degree</a></li>
+  <li><a href="#graph-algorithms-fundamentals" id="toc-graph-algorithms-fundamentals" class="nav-link" data-scroll-target="#graph-algorithms-fundamentals"><span class="header-section-number">8.6</span> Graph Algorithms Fundamentals</a>
+  <ul class="collapse">
+  <li><a href="#path-finding" id="toc-path-finding" class="nav-link" data-scroll-target="#path-finding"><span class="header-section-number">8.6.1</span> Path Finding</a></li>
+  <li><a href="#graph-traversal" id="toc-graph-traversal" class="nav-link" data-scroll-target="#graph-traversal"><span class="header-section-number">8.6.2</span> Graph Traversal</a></li>
+  <li><a href="#connectivity" id="toc-connectivity" class="nav-link" data-scroll-target="#connectivity"><span class="header-section-number">8.6.3</span> Connectivity</a></li>
+  </ul></li>
+  <li><a href="#keywords" id="toc-keywords" class="nav-link" data-scroll-target="#keywords"><span class="header-section-number">8.7</span> Keywords</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Graph Theory Fundamentals</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Graph Theory Fundamentals</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -556,18 +609,203 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>From the vast expanse of the Internet to social networks and protein-protein interactions, <em>networks</em> are all around us in nature and society. And, their <em>connections</em> do matter in our daily lives. A virus goes viral by going through the <em>physical contacts</em> of people. The economics are driven by <em>trades</em> between companies. Proteins function by <em>interacting</em> with each other. Networks are the key drivers of many interesting phenomena that do not arise without the networks!</p>
-<section id="zoo-of-networks" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="zoo-of-networks"><span class="header-section-number">1.1</span> Zoo of networks</h2>
-<p>Can you find networks around you? Find out what networks are like in nature and society.</p>
-<p><a href="../intro/zoo-of-networks.html">Zoo 🐆🐘🦆 of networks</a></p>
+<section id="overview" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">8.1</span> Overview</h2>
+<p>Before diving into small-world networks, let’s review the fundamental concepts from graph theory that will be essential for understanding distance, paths, and connectivity in networks.</p>
 </section>
-<section id="what-is-a-network" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> What is a network?</h1>
-<p>Networks, in the simplest form, consist of a set of points, called <em>nodes</em>, and lines connecting them, called <em>edges</em>. This representation is quite simple. So simple that it is versatile to represent many systems of different kinds. While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</p>
-<p align="center">
-<img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" width="50%">
-</p>
+<section id="historical-foundation-the-seven-bridges-of-königsberg" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="historical-foundation-the-seven-bridges-of-königsberg"><span class="header-section-number">8.2</span> Historical Foundation: The Seven Bridges of Königsberg</h2>
+<p>Back in 18th century, there was a city called <em>Königsberg</em> situated on the Pregel River in a historical region of Germany. The city had two large islands connected to each other and the mainland by seven bridges. The citizens of Königsberg pondered a puzzle during their Sunday walks:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Problem">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Problem
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>How could one walk through the city and cross each bridge exactly once?</p>
+</div>
+</div>
+<dl>
+<dt><img src="https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png" id="fig-seven-bridges" class="img-fluid" alt="The seven bridges of Königsberg"></dt>
+<dd>
+<p>The seven bridges of Königsberg {#fig-seven-bridges}</p>
+</dd>
+</dl>
+<p>Leonard Euler worked out the solution to this puzzle in 1736. He first simplified the city into <em>a network of landmasses connected by bridges</em>, by noting that the landareas, the positions of the islands and the bridges are nothing to do with the puzzle, and that the only thing that matters is the connections between the landmasses.</p>
+<dl>
+<dt><img src="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600.png" id="fig-euler-graph" class="img-fluid" alt="Euler's graph of the bridges of Knigsberg"></dt>
+<dd>
+<p>Euler’s graph of the bridges of Knigsberg {#fig-euler-graph}</p>
+</dd>
+</dl>
+</section>
+<section id="eulers-solution" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="eulers-solution"><span class="header-section-number">8.3</span> Euler’s Solution</h2>
+<p>Euler consider two cases: - a node has an even number of edges, or - a node has an odd number of edges.</p>
+<p>When a node has an even number <span class="math inline">2k</span> of edges, one can enter and leave the node <span class="math inline">k</span> times by crossing different edges.</p>
+<p>When a node has an odd number <span class="math inline">2k+1</span> of edges, one can enter and leave the node <span class="math inline">k</span> times by crossing different edges but leave one last edge to cross. The only way to cross this last edge is that one starts or ends at the node.</p>
+<p>Based up on the above reasoning, Euler leads to the following necessary (and later shown as sufficient) conditions:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Euler's path">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Euler’s path
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There exists a walk that crosses all edges exactly once if and only if all nodes have even number of edges, or exactly two nodes have an odd number of edges.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600.png" class="img-fluid figure-img"></p>
+<figcaption>alt text</figcaption>
+</figure>
+</div>
+<p>Back to the Konigsberg bridge problem, every node has an odd number of edges, meaning that there is no way to cross all edges exactly once. What a sad story for the citizens of Konigsberg. But the problem was solved during World War II, where Koingberg was bombarded by Soviet Union, losing two of the seven bridges 🫠.</p>
+<dl>
+<dt><img src="../figs/seven-bridge-bombared.png" id="fig-markdown-fig" class="img-fluid" alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."></dt>
+<dd>
+<p>Two bridges were bombed by Soviet Union, which allows the Euler path to exist. {#fig-markdown-fig}</p>
+</dd>
+</dl>
+</section>
+<section id="network-representation" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="network-representation"><span class="header-section-number">8.4</span> Network Representation</h2>
+<p>An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes. We <em>label</em> a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair <code>(0, 1)</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is <em>not the only way</em> to label nodes.</p>
+</div>
+</div>
+<p>The Konigsberg graph can be represented by a list of edges:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [(<span class="dv">0</span>,<span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Another, more convenient format is the <em>adjacency matrix</em>. In this form, one regard the node index as a coordinate in the matrix. For instance, edge <span class="math inline">(1,3)</span> is represented by the entry in the second row and fourth column. The entry of the matrix represents the number of edges between two nodes. Thus, the zeros in the matrix represent the absence of edges.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [[<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>],</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>or equivalently, using for loops:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.zeros((<span class="dv">4</span>, <span class="dv">4</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, j <span class="kw">in</span> edges:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    A[i][j] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    A[j][i] <span class="op">+=</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the Konigsberg graph, the edges are <em>undirected</em>, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries <span class="math inline">(i,j)</span> and <span class="math inline">(j,i)</span> in the for loop. If the edges are <em>directed</em>, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).</p>
+</div>
+</div>
+</section>
+<section id="edge-counting-and-degree" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="edge-counting-and-degree"><span class="header-section-number">8.5</span> Edge Counting and Degree</h2>
+<p>Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.</p>
+<p>The total number of edges in the network is the sum of the entities in the matrix divided by 2:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A) <span class="op">/</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We divide by 2 because an edge corresponds to two entries in the matrix.</p>
+<p>It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The result is an array of length 4, where the i-th entry is the number of edges connected to node i.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The number of edges connected to a node is called the <strong><em>degree</em></strong> of the node.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>np.sum(A, axis = 1)</code> is the column sum of <code>A</code>. Alternatively, <code>np.sum(A, axis = 0)</code> is the row sum of <code>A</code>. Check out the numpy <a href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html">documentation</a> for more details.</p>
+</div>
+</div>
+<p>We can check the number of nodes with odd degree by taking the modulus of the degree by 2:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>is_odd <span class="op">=</span> deg <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>is_odd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">2</span> <span class="kw">or</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"The graph has a Euler path."</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"The graph does not have a Euler path."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="graph-algorithms-fundamentals" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="graph-algorithms-fundamentals"><span class="header-section-number">8.6</span> Graph Algorithms Fundamentals</h2>
+<p>Before we explore small-world networks, it’s important to understand several key algorithmic concepts:</p>
+<section id="path-finding" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="path-finding"><span class="header-section-number">8.6.1</span> Path Finding</h3>
+<ul>
+<li><strong>Path</strong>: A sequence of nodes where each adjacent pair is connected by an edge</li>
+<li><strong>Shortest Path</strong>: The path between two nodes with the minimum number of edges (unweighted) or minimum total weight (weighted)</li>
+<li><strong>Dijkstra’s Algorithm</strong>: Finds shortest paths from a source node to all other nodes in weighted graphs</li>
+<li><strong>Breadth-First Search (BFS)</strong>: Finds shortest paths in unweighted graphs</li>
+</ul>
+</section>
+<section id="graph-traversal" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="graph-traversal"><span class="header-section-number">8.6.2</span> Graph Traversal</h3>
+<ul>
+<li><strong>Depth-First Search (DFS)</strong>: Explores as far as possible along each branch before backtracking</li>
+<li><strong>Breadth-First Search (BFS)</strong>: Explores neighbors at the current depth before moving to nodes at the next depth</li>
+</ul>
+</section>
+<section id="connectivity" class="level3" data-number="8.6.3">
+<h3 data-number="8.6.3" class="anchored" data-anchor-id="connectivity"><span class="header-section-number">8.6.3</span> Connectivity</h3>
+<ul>
+<li><strong>Connected Component</strong>: A maximal set of nodes such that every pair is connected by a path</li>
+<li><strong>Strongly Connected Component</strong>: In directed graphs, a maximal set where every node can reach every other node</li>
+<li><strong>Weakly Connected Component</strong>: In directed graphs, connected when edge directions are ignored</li>
+</ul>
+<p>These concepts will be crucial for understanding how small-world networks maintain short paths between nodes while preserving local clustering.</p>
+</section>
+</section>
+<section id="keywords" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="keywords"><span class="header-section-number">8.7</span> Keywords</h2>
+<ul>
+<li><strong>Network</strong>, <strong>Graph</strong></li>
+<li><strong>Node</strong>, <strong>Vertex</strong></li>
+<li><strong>Edge</strong>, <strong>Link</strong></li>
+<li><strong>Degree</strong></li>
+<li><strong>Adjacency Matrix</strong></li>
+<li><strong>Path</strong>, <strong>Walk</strong></li>
+<li><strong>Euler Path</strong></li>
+<li><strong>Connected Component</strong></li>
+<li><strong>Graph Algorithms</strong></li>
+</ul>
 
 
 <!-- -->
@@ -1027,36 +1265,171 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../index.html" class="pagination-link" aria-label="Preface">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="../m01-euler_tour/03-exercises.html" class="pagination-link" aria-label="Exercise">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercise</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../intro/zoo-of-networks.html" class="pagination-link" aria-label="Zoo of networks">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m02-small-world/01-concepts.html" class="pagination-link" aria-label="Small-World Networks: Core Concepts">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Small-World Networks: Core Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care networks?</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>From the vast expanse of the Internet to social networks and protein-protein interactions, *networks* are all around us in nature and society. And, their *connections* do matter in our daily lives. A virus goes viral by going through the *physical contacts* of people. The economics are driven by *trades* between companies. Proteins function by *interacting* with each other.</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Networks are the key drivers of many interesting phenomena that do not arise without the networks!</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zoo of networks</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Can you find networks around you? Find out what networks are like in nature and society.</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zoo 🐆🐘🦆 of networks</span><span class="co">](./zoo-of-networks.md)</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu"># What is a network?</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Networks, in the simplest form, consist of a set of points, called *nodes*, and lines connecting them, called *edges*.</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>This representation is quite simple. So simple that it is versatile to represent many systems of different kinds.</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>While representing complex, real-world systems by points and lines is crude, it still captures many interesting properties, as we will see.</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"50%"</span><span class="dt">&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Preparation: Graph Theory Fundamentals</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Overview</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>Before diving into small-world networks, let's review the fundamental concepts from graph theory that will be essential for understanding distance, paths, and connectivity in networks.</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Historical Foundation: The Seven Bridges of Königsberg</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>Back in 18th century, there was a city called *Königsberg* situated on the Pregel River in a historical region of Germany. The city had two large islands connected to each other and the mainland by seven bridges. The citizens of Königsberg pondered a puzzle during their Sunday walks:</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Problem"}</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>How could one walk through the city and cross each bridge exactly once?</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="al">![alt text](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png)</span>{#fig-seven-bridges fig-alt="The seven bridges of Königsberg"}</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>: The seven bridges of Königsberg {#fig-seven-bridges}</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>Leonard Euler worked out the solution to this puzzle in 1736. He first simplified the city into *a network of landmasses connected by bridges*, by noting that the landareas, the positions of the islands and the bridges are nothing to do with the puzzle, and that the only thing that matters is the connections between the landmasses.</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600)</span>{#fig-euler-graph fig-alt="Euler's graph of the bridges of Knigsberg"}</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>: Euler's graph of the bridges of Knigsberg {#fig-euler-graph}</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## Euler's Solution</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>Euler consider two cases:</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an even number of edges, or</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an odd number of edges.</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>When a node has an even number $2k$ of edges, one can enter and leave the node $k$ times by crossing different edges.</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>When a node has an odd number $2k+1$ of edges, one can enter and leave the node $k$ times by crossing different edges but leave one last edge to cross. The only way to cross this last edge is that one starts or ends at the node.</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>Based up on the above reasoning, Euler leads to the following necessary (and later shown as sufficient) conditions:</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Euler's path"}</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>There exists a walk that crosses all edges exactly once if and only if all nodes have even number of edges, or exactly two nodes have an odd number of edges.</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="al">![alt text](https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600)</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>Back to the Konigsberg bridge problem, every node has an odd number of edges, meaning that there is no way to cross all edges exactly once. What a sad story for the citizens of Konigsberg. But the problem was solved during World War II, where Koingberg was bombarded by Soviet Union, losing two of the seven bridges 🫠.</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/seven-bridge-bombared.png)</span>{#fig-markdown-fig fig-alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."}</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>: Two bridges were bombed by Soviet Union, which allows the Euler path to exist. {#fig-markdown-fig}</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network Representation</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes. We *label* a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair <span class="in">`(0, 1)`</span>.</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is *not the only way* to label nodes.</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>The Konigsberg graph can be represented by a list of edges:</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [(<span class="dv">0</span>,<span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">3</span>)]</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>Another, more convenient format is the *adjacency matrix*. In this form, one regard the node index as a coordinate in the matrix. For instance, edge $(1,3)$ is represented by the entry in the second row and fourth column. The entry of the matrix represents the number of edges between two nodes. Thus, the zeros in the matrix represent the absence of edges.</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [[<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>],</span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]]</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>or equivalently, using for loops:</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.zeros((<span class="dv">4</span>, <span class="dv">4</span>))</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, j <span class="kw">in</span> edges:</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>    A[i][j] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>    A[j][i] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>In the Konigsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).</span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## Edge Counting and Degree</span></span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a>Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.</span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>The total number of edges in the network is the sum of the entities in the matrix divided by 2:</span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a>We divide by 2 because an edge corresponds to two entries in the matrix.</span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a>It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix:</span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>The result is an array of length 4, where the i-th entry is the number of edges connected to node i.</span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>The number of edges connected to a node is called the ***degree*** of the node.</span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>The <span class="in">`np.sum(A, axis = 1)`</span> is the column sum of <span class="in">`A`</span>. Alternatively, <span class="in">`np.sum(A, axis = 0)`</span> is the row sum of <span class="in">`A`</span>.</span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>Check out the numpy <span class="co">[</span><span class="ot">documentation</span><span class="co">](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)</span> for more details.</span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>We can check the number of nodes with odd degree by taking the modulus of the degree by 2:</span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a>is_odd <span class="op">=</span> deg <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a>is_odd</span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">2</span> <span class="kw">or</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"The graph has a Euler path."</span>)</span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"The graph does not have a Euler path."</span>)</span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a><span class="fu">## Graph Algorithms Fundamentals</span></span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a>Before we explore small-world networks, it's important to understand several key algorithmic concepts:</span>
+<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a><span class="fu">### Path Finding</span></span>
+<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Path**: A sequence of nodes where each adjacent pair is connected by an edge</span>
+<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Shortest Path**: The path between two nodes with the minimum number of edges (unweighted) or minimum total weight (weighted)</span>
+<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dijkstra's Algorithm**: Finds shortest paths from a source node to all other nodes in weighted graphs</span>
+<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Breadth-First Search (BFS)**: Finds shortest paths in unweighted graphs</span>
+<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a><span class="fu">### Graph Traversal</span></span>
+<span id="cb8-136"><a href="#cb8-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Depth-First Search (DFS)**: Explores as far as possible along each branch before backtracking</span>
+<span id="cb8-137"><a href="#cb8-137" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Breadth-First Search (BFS)**: Explores neighbors at the current depth before moving to nodes at the next depth</span>
+<span id="cb8-138"><a href="#cb8-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-139"><a href="#cb8-139" aria-hidden="true" tabindex="-1"></a><span class="fu">### Connectivity</span></span>
+<span id="cb8-140"><a href="#cb8-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Connected Component**: A maximal set of nodes such that every pair is connected by a path</span>
+<span id="cb8-141"><a href="#cb8-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Strongly Connected Component**: In directed graphs, a maximal set where every node can reach every other node</span>
+<span id="cb8-142"><a href="#cb8-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Weakly Connected Component**: In directed graphs, connected when edge directions are ignored</span>
+<span id="cb8-143"><a href="#cb8-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-144"><a href="#cb8-144" aria-hidden="true" tabindex="-1"></a>These concepts will be crucial for understanding how small-world networks maintain short paths between nodes while preserving local clustering.</span>
+<span id="cb8-145"><a href="#cb8-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-146"><a href="#cb8-146" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keywords</span></span>
+<span id="cb8-147"><a href="#cb8-147" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Network**, **Graph**</span>
+<span id="cb8-148"><a href="#cb8-148" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Node**, **Vertex** </span>
+<span id="cb8-149"><a href="#cb8-149" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Edge**, **Link**</span>
+<span id="cb8-150"><a href="#cb8-150" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree**</span>
+<span id="cb8-151"><a href="#cb8-151" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Adjacency Matrix**</span>
+<span id="cb8-152"><a href="#cb8-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Path**, **Walk**</span>
+<span id="cb8-153"><a href="#cb8-153" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Euler Path**</span>
+<span id="cb8-154"><a href="#cb8-154" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Connected Component**</span>
+<span id="cb8-155"><a href="#cb8-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Graph Algorithms**</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

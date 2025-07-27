@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Zoo of networks – Advanced Topics in Network Science</title>
+<title>40&nbsp; Concepts: Graph Neural Networks – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../intro/setup.html" rel="next">
-<link href="../intro/why-networks.html" rel="prev">
+<link href="../m09-graph-neural-networks/02-coding.html" rel="next">
+<link href="../m09-graph-neural-networks/00-preparation.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/01-concepts.html"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -168,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link active">
+  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
   </div>
 </li>
@@ -495,7 +495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></span></a>
   </div>
 </li>
@@ -524,15 +524,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-to-learn-in-this-module" id="toc-what-to-learn-in-this-module" class="nav-link active" data-scroll-target="#what-to-learn-in-this-module"><span class="header-section-number">40.1</span> What to learn in this module</a></li>
+  <li><a href="#theoretical-exercises" id="toc-theoretical-exercises" class="nav-link" data-scroll-target="#theoretical-exercises"><span class="header-section-number">40.2</span> Theoretical Exercises</a>
+  <ul class="collapse">
+  <li><a href="#pen-and-paper-exercises" id="toc-pen-and-paper-exercises" class="nav-link" data-scroll-target="#pen-and-paper-exercises"><span class="header-section-number">40.2.1</span> Pen and paper exercises</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/zoo-of-networks.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/01-concepts.html"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -549,112 +559,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div data-align="center" style="font-size: 1.5em;">
-Plant pollinator network
-</div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Food web
-</div>
-<p align="center">
-<img src="https://mlurgi.github.io/networks_for_r/images/food-web.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Brain network
-</div>
-<p align="center">
-<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of medicine
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Protein-protein interaction
-</div>
-<p align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Social network
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-International financial network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-US airport network
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Power grid network
-</div>
-<p align="center">
-<img src="https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Network of rivers
-</div>
-<p align="center">
-<img src="https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Internet
-</div>
-<p align="center">
-<img src="https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Knowledge graph
-</div>
-<p align="center">
-<img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Flavor Network
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Citation Cartels
-</div>
-<p align="center">
-<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png" style="width: 80%;">
-</p>
-<div data-align="center" style="font-size: 1.5em;">
-Virus spreading network
-</div>
-<p align="center">
-<img src="https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png" style="width: 80%;">
-</p>
+<section id="what-to-learn-in-this-module" class="level2" data-number="40.1">
+<h2 data-number="40.1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">40.1</span> What to learn in this module</h2>
+<p>In this module, we will learn how to use neural networks to learn representations of graphs. We will learn: - Fourier transform on image - Fourier transform on graph - Spectral filters - Graph convolutional networks - Popular GNNs (GCN, GAT, GraphSAGE, and GIN)</p>
+</section>
+<section id="theoretical-exercises" class="level2" data-number="40.2">
+<h2 data-number="40.2" class="anchored" data-anchor-id="theoretical-exercises"><span class="header-section-number">40.2</span> Theoretical Exercises</h2>
+<section id="pen-and-paper-exercises" class="level3" data-number="40.2.1">
+<h3 data-number="40.2.1" class="anchored" data-anchor-id="pen-and-paper-exercises"><span class="header-section-number">40.2.1</span> Pen and paper exercises</h3>
+<ul>
+<li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
+</ul>
+<p>The pen and paper exercises will help you understand the mathematical foundations of graph neural networks, including:</p>
+<ol type="1">
+<li><strong>Spectral Graph Theory</strong>: Understanding eigenvalues and eigenvectors of graph matrices</li>
+<li><strong>Fourier Analysis on Graphs</strong>: Extending classical signal processing to graph domains</li>
+<li><strong>Convolution Operations</strong>: Defining convolution for irregular graph structures</li>
+<li><strong>Message Passing</strong>: Mathematical formulation of information aggregation in graphs</li>
+<li><strong>Network Architecture Design</strong>: Principles for designing effective GNN architectures</li>
+</ol>
+<p>These exercises provide the theoretical foundation necessary to understand how graph neural networks process and learn from graph-structured data.</p>
 
 
 <!-- -->
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1109,101 +1039,42 @@ Virus spreading network
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../intro/why-networks.html" class="pagination-link" aria-label="Why should we care networks?">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Why should we care networks?</span></span>
+      <a href="../m09-graph-neural-networks/00-preparation.html" class="pagination-link" aria-label="Preparation: Machine Learning Basics for Graph Neural Networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Preparation: Machine Learning Basics for Graph Neural Networks</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../intro/setup.html" class="pagination-link" aria-label="Trouble shooting">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m09-graph-neural-networks/02-coding.html" class="pagination-link" aria-label="Coding: Graph Neural Networks Implementation">
+        <span class="nav-page-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Coding: Graph Neural Networks Implementation</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Zoo of networks</span></span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Concepts: Graph Neural Networks</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Plant pollinator network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Food web<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://mlurgi.github.io/networks_for_r/images/food-web.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Brain network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to learn in this module</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn how to use neural networks to learn representations of graphs. We will learn:</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Fourier transform on image</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Fourier transform on graph</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Spectral filters</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Graph convolutional networks</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Popular GNNs (GCN, GAT, GraphSAGE, and GIN)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Theoretical Exercises</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pen and paper exercises</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of medicine<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Protein-protein interaction<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Social network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>International financial network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>US airport network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Power grid network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Network of rivers<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Internet<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Knowledge graph<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Flavor Network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fsrep00196/MediaObjects/41598_2011_Article_BFsrep00196_Fig2_HTML.jpg"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Citation Cartels<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-021-93572-3/MediaObjects/41598_2021_93572_Fig4_HTML.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size: 1.5em;"</span><span class="dt">&gt;</span>Virus spreading network<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://content.fortune.com/wp-content/uploads/2020/02/map_virus.png"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"width: 80%;"</span><span class="dt">&gt;</span></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>The pen and paper exercises will help you understand the mathematical foundations of graph neural networks, including:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fourier Analysis on Graphs**: Extending classical signal processing to graph domains</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Convolution Operations**: Defining convolution for irregular graph structures</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Message Passing**: Mathematical formulation of information aggregation in graphs</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Network Architecture Design**: Principles for designing effective GNN architectures</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>These exercises provide the theoretical foundation necessary to understand how graph neural networks process and learn from graph-structured data.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
