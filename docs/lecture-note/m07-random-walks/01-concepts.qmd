@@ -1,15 +1,10 @@
 # Random Walks: Core Concepts
 
-## What to learn in this module
-
-In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We will learn:
-- What is a random walk?
-- How to simulate a random walk on a network?
-- What is the behavior of a random walk on a network?
-- Implicit connections to community detection and network centralities
-- **Keywords**: random walk, community detection, network centralities
-
 ## Introduction through Games: Ladder Lottery
+
+In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We'll explore what random walks are, how to simulate them on networks, their behavior patterns, and their connections to community detection and network centralities.
+
+To make these concepts tangible, let's start with a fun game that perfectly illustrates random walk principles:
 
 ::: {.callout-note title="Ladder Lottery"}
 :class: tip
@@ -30,43 +25,24 @@ Play the {{ '[Ladder Lottery Game! 🎮✨]( BASE_URL/vis/amida-kuji.html?)'.rep
 
 :::
 
-### Connection to Random Walks
+The Ladder Lottery game is actually a perfect introduction to random walks! In this game, **states** are the vertical lines, **transitions** happen when you encounter horizontal connections, **randomness** comes from not knowing where the horizontal lines are placed, and **long-term behavior** determines your probability of winning. This simple game illustrates many key concepts we'll explore in random walks on networks.
 
-The Ladder Lottery game is actually a perfect introduction to random walks! In this game:
-- **States** are the vertical lines
-- **Transitions** happen when you encounter horizontal connections
-- **Randomness** comes from not knowing where the horizontal lines are placed
-- **Long-term behavior** determines your probability of winning
-
-This simple game illustrates many key concepts we'll explore in random walks on networks.
-
-## Fundamental Concepts
-
-### What is a Random Walk?
+## Understanding Random Walks
 
 Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.
 
 While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.
 
-### Random Walks in Networks
-
-A random walk in undirected networks is the following process:
+More formally, a random walk in undirected networks follows this process:
 1. Start at a node $i$
 2. Randomly choose an edge to traverse to a neighbor node $j$
-3. Repeat step 2 until you have taken $T$ steps.
+3. Repeat step 2 until you have taken $T$ steps
 
 ```{note}
-In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.
+In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.
 ```
 
-### Key Questions to Consider
-
-When studying random walks, we want to understand:
-
-1. **Short-term behavior**: Where does the walker go in the first few steps?
-2. **Long-term behavior**: After many steps, where does the walker spend most of its time?
-3. **Structural insights**: What does the walker's behavior tell us about the network?
-4. **Applications**: How can we use random walks for centrality and community detection?
+When studying random walks, we want to understand several key aspects: **short-term behavior** (where does the walker go in the first few steps?), **long-term behavior** (after many steps, where does the walker spend most of its time?), **structural insights** (what does the walker's behavior tell us about the network?), and **applications** (how can we use random walks for centrality and community detection?).
 
 ## Pen and Paper Exercises
 
