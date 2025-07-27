@@ -294,7 +294,7 @@ where $\mu = 1-\lambda_2$.
 
 Let us demonstrate the above math by using the network of two cliques.
 
-#### Normalized Adjacency Matrix
+### Normalized Adjacency Matrix
 
 First, let us construct the normalized adjacency matrix $\overline{\bf A}$ of the network.
 
@@ -355,7 +355,7 @@ pd.DataFrame(A_norm_reconstructed).style.background_gradient(cmap='cividis', axi
 
 Notice that the reconstruction is not perfect due to the numerical error, although overall the structure is correct.
 
-#### Multi-step Transition Probability
+### Multi-step Transition Probability
 
 Let us first conform whether we can compute the transition probability after $t$ steps by using the eigenvalues and eigenvectors.
 
@@ -380,7 +380,7 @@ pd.DataFrame({
 }).style.background_gradient(cmap='cividis', axis = None).set_caption("Comparison of Eigenvector and Power Iteration")
 ```
 
-#### Relaxation Time and Mixing Time
+### Relaxation Time and Mixing Time
 
 Let us measure the relaxation time of the random walk.
 
