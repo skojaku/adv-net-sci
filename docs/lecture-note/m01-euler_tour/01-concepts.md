@@ -26,11 +26,7 @@ Leonard Euler worked out the solution to this puzzle in 1736. He first simplifie
 
 : Euler's graph of the bridges of Knigsberg {#fig-euler-graph}
 
-## Pen-and-paper worksheet
-
-Let's follow the worksheet to solve the puzzle step by step.
-
-- [Worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) [@esteban-moro-worksheet]
+To better understand this problem, you can work through it step by step using this [worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) [@esteban-moro-worksheet] that guides you through the solution process.
 
 ## Euler's solution
 
