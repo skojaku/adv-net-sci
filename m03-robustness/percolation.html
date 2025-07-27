@@ -173,7 +173,10 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
     </div>
@@ -748,14 +751,14 @@ window.Quarto = {
 
 
 <p>Network robustness can be viewed as a inverse process of <strong>percolation</strong> on a network. What is percolation? Imagine a grid where each square has a chance to become a little puddle. Two puddles are connected if they are next to each other. As more puddles appear, they start connecting with their neighbors to form bigger puddles. This is basically what percolation is all about! Random failure can be viewed as an inverse process of percolation, where a puddle is dried up (i.e., removed from the network),</p>
-<p>```bwmesamhcwy percolation</p>
+<p>```xfurksrddmi percolation</p>
 <p><img src="https://jamesmccaffrey.wordpress.com/wp-content/uploads/2021/07/percolation.jpg?w=584&amp;h=389" class="img-fluid"></p>
 <p>Image taken from https://jamesmccaffrey.wordpress.com/2021/07/12/whatever-happened-to-percolation-theory/</p>
 <pre><code>
 Now, the big question is: When the probability of a node being puddle is $p$, how big can our largest puddle get? 🌊
 As we increase the chance of puddles appearing (that's our $p$), the biggest puddle does not grow slowly but explodes in size when $p$ reaches a critical value $p_c$. This sudden change is what we call a *phase transition*! From the percolation perspective, we approach to the critical point from disconnected phase, whereas from the network robustness perspective, we approach to the critical point from connected phase.
 
-::: {#f249f354 .cell}
+::: {#daf9c9f0 .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input"]
 
@@ -841,7 +844,7 @@ In practice, it is often a continuous transition because of the finite size of t
 </span></p>
 <p>where <span class="math inline">k</span> is the degree of a node, and <span class="math inline">\langle k \rangle</span> and <span class="math inline">\langle k^2 \rangle</span> are the average degree and the average of the square of the degree, respectively. The variable <span class="math inline">\kappa_0</span> is a shorthand for the ratio. See the <a href="../m03-robustness/appendix.html">Appendix</a> for the derivation of this criterion.</p>
 <p>What does <span class="math inline">\kappa_0</span> represent? It represents the heterogeneity of the degree distribution. For example, a high <span class="math inline">\kappa_0</span> indicates that there are a few nodes with very high degrees and many nodes with low degrees. When <span class="math inline">\kappa_0</span> is small, the nodes have similar degree. And Molloy-Reed criterion tells us an important fact about the role of degree distributions on the robustness of networks: the more heterogeneous the degree distribution is, the more likely the network is to have a giant component.</p>
-<div id="7d3a8e77" class="cell">
+<div id="df1465c5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"remove-input"</span>]</span>
@@ -981,7 +984,7 @@ Let's consider an empirical network of international airports, where nodes are a
 
 Data loading:
 
-::: {#3a8fc3dd .cell}
+::: {#101c46c1 .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input", "hide-output"]
 
@@ -1007,7 +1010,7 @@ g.add_edges([tuple(edge) for edge in edges])</code></pre>
 </div>
 </div>
 <p>Based on the argument above, we can predict the critical point <span class="math inline">f_c</span> for the airport network as follows:</p>
-<div id="57778b35" class="cell">
+<div id="8f7c44f9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1026,7 +1029,7 @@ g.add_edges([tuple(edge) for edge in edges])</code></pre>
 </details>
 </div>
 <p>The <span class="math inline">f_c</span> is very close to 1, meaning that the network is highly robust to random failures that it keeps the giant component until when almost all nodes are removed. Let us confirm this by simulating the random failures.</p>
-<div id="1f7590ab" class="cell">
+<div id="598ffa32" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>

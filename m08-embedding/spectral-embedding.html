@@ -173,7 +173,10 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
     </div>
@@ -782,7 +785,7 @@ window.Quarto = {
 <section id="an-example-for-the-spectral-embedding" class="level3" data-number="56.1.2">
 <h3 data-number="56.1.2" class="anchored" data-anchor-id="an-example-for-the-spectral-embedding"><span class="header-section-number">56.1.2</span> An example for the spectral embedding</h3>
 <p>Let us demonstrate the results with a simple example as follows.</p>
-<div id="254294b2" class="cell">
+<div id="22eb3f3b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -800,7 +803,7 @@ window.Quarto = {
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nx.draw(G, with_labels<span class="op">=</span><span class="va">False</span>, node_color<span class="op">=</span>[cmap[i] <span class="cf">for</span> i <span class="kw">in</span> labels])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="a070acbf" class="cell">
+<div id="e75ef820" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -835,7 +838,7 @@ Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </span></p>
 <p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
 <p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix.</p>
-<div id="a3037457" class="cell">
+<div id="55d976c1" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -917,7 +920,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="an-example-for-the-laplacian-eigenmap" class="level3" data-number="56.3.1">
 <h3 data-number="56.3.1" class="anchored" data-anchor-id="an-example-for-the-laplacian-eigenmap"><span class="header-section-number">56.3.1</span> An example for the Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="36176b93" class="cell">
+<div id="508957e1" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -934,7 +937,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The eigenvectors corresponding to the <span class="math inline">d</span> smallest eigenvalues are:</p>
-<div id="9e4b908b" class="cell">
+<div id="812959c8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
