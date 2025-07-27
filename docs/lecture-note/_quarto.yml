@@ -1,0 +1,64 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Advanced Topics in Network Science"
+  author: "Sadamori Kojaku"
+  
+  chapters:
+    - index.qmd
+    - part: "Intro"
+      chapters:
+        - intro/why-networks.md
+        - intro/zoo-of-networks.md
+        - intro/setup.md
+    - part: "M01: Euler Tour"
+      chapters:
+        - m01-euler_tour/what-to-learn.md
+        - m01-euler_tour/puzzle.md
+        - m01-euler_tour/euler-path.md
+        - m01-euler_tour/how-to-code-network.qmd
+        - m01-euler_tour/coding-exercise.qmd
+    - part: "M02: Small World"
+      chapters:
+        - m02-small-world/what-to-learn.md
+        - m02-small-world/small-world-experiment.md
+        - m02-small-world/wikirace.md
+        - m02-small-world/pen-and-paper.md
+        - m02-small-world/connectedness.md
+        - m02-small-world/which-tools.md
+        - m02-small-world/compressed-sparse-row.qmd
+        - m02-small-world/connectedness-hands-on.qmd
+        - m02-small-world/assignment.md
+        - m02-small-world/appendix.qmd
+
+execute:
+  enabled: false  # Disable execution for initial migration
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    html-math-method: katex
+    code-fold: true
+    code-copy: hover
+    code-tools: true
+    logo: logo.jpg
+    
+# Add a bibtex file so that we can create citations
+bibliography: references.bib
+
+# Information about where the book exists on the web
+website:
+  repo-url: https://github.com/skojaku/adv-net-sci
+  repo-actions: [edit, issue]
+  search: true
+  page-navigation: true
+  page-footer: 
+    left: "Copyright 2024, Sadamori Kojaku"
+    right: 
+      - icon: github
+        href: https://github.com/skojaku/adv-net-sci

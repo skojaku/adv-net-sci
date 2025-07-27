@@ -1,18 +1,6 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Ladder Lottery
 
-```{admonition} Ladder Lottery
+::: {.callout-note title="Ladder Lottery"}
 :class: tip
 
 Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:
@@ -29,4 +17,4 @@ Play the {{ '[Ladder Lottery Game! 🎮✨]( BASE_URL/vis/amida-kuji.html?)'.rep
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif)
 
-```
+:::

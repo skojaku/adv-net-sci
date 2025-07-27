@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Graph cut
 
 Another approach from computer science is to treat a community detection problem as an *optimization* problem.
@@ -28,12 +16,12 @@ Now, the community detection problem is translated into **an optimization proble
 
 The description of this problem is not complete 😈. Let's find out what is missing by playing with the optimization problem.
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: tip
 
 Can you identify what is missing in the description of the graph cut problem? Without this, the best cut is trivial. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Graph Cut Problem 🎮</a>".replace('BASE_URL', base_url) }}
 
-```{dropdown} Click to reveal the answer!
+:::{dropdown} Click to reveal the answer!
 
 The missing element is a constraint: each community must contain at least one node. Without this, the trivial solution of placing all nodes in a single community would always yield a cut of zero.
 ```

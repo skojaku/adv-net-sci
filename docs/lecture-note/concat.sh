@@ -1,0 +1,9 @@
+cat m01-euler_tour/*.md>tmp/m01.md
+cat m02-small-world/*.md>tmp/m02.md
+cat m03-robustness/*.md>tmp/m03.md
+cat m04-friendship-paradox/*.md>tmp/m04.md
+cat m05-clustering/*.md>tmp/m05.md
+cat m06-centrality/*.md>tmp/m06.md
+cat m07-random-walks/*.md>tmp/m07.md
+cat m08-embedding/*.md>tmp/m08.md
+cat m09-graph-neural-networks/*.md>tmp/m09.md

@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Random walks unify centrality and communities
 
 ## Modularity: Interpretation from random walk perspective
@@ -99,6 +87,3 @@ The PageRank $c_i$ is the stationary distribution of this random walk, represent
 This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.
 ```
 
-```{footbibliography}
-
-```

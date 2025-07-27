@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Centralities based on centralities
 
 "A man is known by the company he keeps" is a quote from Aesop who lived in the ancient Greece, a further back in time from the Roman Empire.
@@ -89,12 +77,12 @@ $$
 
 Again, we obtain the eigenvector equations whose solutions are the eigenvectors of $\mathbf{A}^T \mathbf{A}$ and $\mathbf{A} \mathbf{A}^T$ for $\mathbf{x}$ and $\mathbf{y}$, respectively.
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: tip
 
 If the original network is *undirected*, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.
 
-```{dropdown} Click to see the answer
+:::{dropdown} Click to see the answer
 If the graph is undirected, the hub and authority centralities are equivalent. And the solution is given by the eigenvector of $\mathbf{A} \mathbf{A}^T$. Now, let us consider the eigenvector equation for the adjacency matrix $\mathbf{A}$.
 
 $$
@@ -116,7 +104,7 @@ Thus, the eigenvector centrality is equivalent to the HITS centrality if the net
 
 ```
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: tip
 
 Consider the case where the graph is undirected and we normalize the hub centrality by the degree $d_j$ of the authority, namely
@@ -127,7 +115,7 @@ $$
 
 
 Then we will get the hub centrality equivalent to the degree centrality. Confirm this by substituting $x_i = d_i$.
-```
+:::
 
 ## Katz centrality
 
@@ -137,12 +125,12 @@ $$
 c_i = \beta + \lambda \sum_{j} A_{ij} c_j
 $$
 
-```{admonition} Exercise
+::: {.callout-note title="Exercise"}
 :class: tip
 
 Derive the solution of the Katz centrality.
 
-```{dropdown} Click to see the answer
+:::{dropdown} Click to see the answer
 
 The equation can be solved by
 
@@ -174,5 +162,3 @@ $$
 where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
 The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
 
-```{footbibliography}
-```

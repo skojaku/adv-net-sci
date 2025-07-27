@@ -1,15 +1,3 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
----
-
 # Modularity (Cont.)
 
 :::{figure-md} fig-modularity-game
@@ -114,29 +102,29 @@ Are the two forms of modularity the same formula? Let's see how we can transform
 
 Let's learn how the modularity works by playing with a community detection game!
 
-```{admonition} Exercise 1
+::: {.callout-note title="Exercise 1"}
 :class: tip
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Modularity maximization (two communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-```
+:::
 
 One of the good things about modularity is that it can figure out how many communities there should be all by itself! 🕵️‍♀️ Let's have some fun with this idea. We're going to play the same game again, but this time, we'll start with a different number of communities. See how the modularity score changes as we move things around.
 
-```{admonition} Exercise 2
+::: {.callout-note title="Exercise 2"}
 :class: tip
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
-```
+:::
 
 Now, let's take our modularity maximization for a real-world example! 🥋 We're going to use the famous karate club network. This network represents friendships between members of a university karate club. It's a classic in the world of network science, and it's perfect for seeing how modularity works in practice.
 
-```{admonition} Exercise 3
+::: {.callout-note title="Exercise 3"}
 :class: tip
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-```
+:::
 
 ## Limitation of Modularity
 
@@ -148,12 +136,12 @@ The modularity finds two cliques connected by a single edge as two separate comm
 But what if we add another community to this network?
 Our intuition tells us that, because communities are *local* structure, the two cliques should remain separated by the modularity. But is this the case?
 
-```{admonition} Exercise 4
+::: {.callout-note title="Exercise 4"}
 :class: tip
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-```{dropdown} Click here to see the solution
+:::{dropdown} Click here to see the solution
 
 The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the **Resolution limit** {footcite}`fortunato2007resolution`. Modularity can't quite make out communities that are smaller than a certain size!
 
@@ -164,12 +152,12 @@ Think of it like this: modularity is trying to see the big picture, but it misse
 
 What if the network does not have any communities at all? Does the modularity find no communities? To find out, let's run the modularity on a random network, where each pair of nodes is connected randomly with the same probability.
 
-```{admonition} Exercise 5
+::: {.callout-note title="Exercise 5"}
 :class: tip
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-```{dropdown} Click here to see the solution
+:::{dropdown} Click here to see the solution
 
 Surprise, surprise! 😮 Modularity finds communities even in our random network, and with a very high score too! It's like finding shapes in clouds - sometimes our brains (or algorithms) see patterns where there aren't any.
 
@@ -193,5 +181,3 @@ When these implicit assumptions are met, modularity is in fact a very powerful m
 
 So, keep modularity in your toolbox. Just remember to use it wisely!
 
-```{footbibliography}
-```

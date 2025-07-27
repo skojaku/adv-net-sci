@@ -11,5 +11,3 @@ We will compute the various centrality measures for airport networks.
     - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
 
 
-```{footbibliography}
-```
