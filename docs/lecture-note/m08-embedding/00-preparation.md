@@ -1,94 +1,101 @@
-# Preparation: Random Walks and Linear Algebra Foundations
+# Preparation: Dimensionality Reduction and Optimization Prerequisites
 
-## Overview from Module 7: Random Walks
+## Required Knowledge from Previous Modules
 
-### What is a Random Walk?
+Before studying network embedding, ensure you understand:
+- **From M01-M07**: Network representations, linear algebra, eigenvalue theory, and Markov chain concepts
+- **From M07**: Stationary distributions and spectral properties of random walks
 
-A random walk in undirected networks is the following process:
-1. Start at a node $i$
-2. Randomly choose an edge to traverse to a neighbor node $j$
-3. Repeat step 2 until you have taken $T$ steps.
+## Matrix Decomposition Theory
 
-Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.
+### Singular Value Decomposition (SVD)
+Essential decomposition for dimensionality reduction:
+- **Definition**: For matrix $A$: $A = U \Sigma V^T$
+- **Components**: $U$ (left singular vectors), $\Sigma$ (singular values), $V$ (right singular vectors)
+- **Properties**: Provides optimal low-rank approximation in Frobenius norm
+- **Truncated SVD**: Using only top-k singular values/vectors for compression
 
-While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.
+### Low-Rank Approximation
+Mathematical foundation for embedding:
+- **Frobenius norm**: $||A||_F = \sqrt{\sum_{ij} A_{ij}^2}$
+- **Optimal approximation**: SVD minimizes $||A - A_k||_F$ for rank-k matrix $A_k$
+- **Information preservation**: How much structure is retained in low dimensions
 
-### Mathematical Foundation: Transition Probabilities
+### Principal Component Analysis (PCA)
+Classical dimensionality reduction technique:
+- **Objective**: Find directions of maximum variance
+- **Covariance matrix**: $C = \frac{1}{n-1}X^TX$ for centered data matrix $X$
+- **Solution**: Eigenvectors of covariance matrix
+- **Connection to SVD**: PCA eigenvectors are SVD right singular vectors
 
-The probability of moving from node $i$ to node $j$, called the transition probability $p_{ij}$, is:
+## Optimization Fundamentals
 
-$$p_{ij} = \frac{A_{ij}}{k_i}$$
+### Objective Functions
+Understanding what we optimize in embedding:
+- **Reconstruction error**: How well embeddings recreate original data
+- **Preservation metrics**: Maintaining distances, similarities, or other properties
+- **Regularization**: Preventing overfitting and ensuring generalization
 
-where $A_{ij}$ is an element of the adjacency matrix, and $k_i$ is the degree of node $i$. For a network with $N$ nodes, we can represent all transition probabilities in a transition probability matrix $\mathbf{P}$.
+### Gradient-Based Optimization
+Essential for neural embedding methods:
+- **Gradient descent**: $\theta_{t+1} = \theta_t - \alpha \nabla_\theta L(\theta_t)$
+- **Stochastic gradient descent**: Using random samples for efficiency
+- **Learning rate scheduling**: Adaptive step sizes
+- **Convergence criteria**: When to stop optimization
 
-The probability distribution after $t$ steps is:
-$$\mathbf{x}(t) = \mathbf{x}(0) \mathbf{P}^t$$
+### Constrained Optimization
+For embedding problems with constraints:
+- **Orthogonality constraints**: When embedding vectors must be orthogonal
+- **Norm constraints**: Limiting embedding vector magnitudes
+- **Lagrange multipliers**: Mathematical tool for handling constraints
 
-### Stationary Distribution
+## Distance and Similarity Measures
 
-As $T$ becomes very large, the probability distribution approaches a constant value called the stationary distribution:
+### Metric Properties
+Understanding what makes a good distance measure:
+- **Non-negativity**: $d(x,y) \geq 0$
+- **Symmetry**: $d(x,y) = d(y,x)$
+- **Triangle inequality**: $d(x,z) \leq d(x,y) + d(y,z)$
+- **Identity**: $d(x,y) = 0$ if and only if $x = y$
 
-$$\mathbf{x}(\infty) = \boldsymbol{\pi}, \; \boldsymbol{\pi} = [\pi_1, \ldots, \pi_N]$$
+### Common Distance Functions
+- **Euclidean distance**: $||x - y||_2$
+- **Cosine similarity**: $\frac{x \cdot y}{||x|| ||y||}$
+- **Manhattan distance**: $||x - y||_1$
+- **Jaccard similarity**: For set-based comparisons
 
-For undirected networks, this stationary distribution is proportional to the degree of each node:
+### Embedding Quality Metrics
+How to evaluate if embeddings preserve important properties:
+- **Distance preservation**: Do similar nodes remain close?
+- **Neighborhood preservation**: Are local structures maintained?
+- **Global structure**: Are long-range relationships captured?
 
-$$\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j$$
+## High-Dimensional Data Analysis
 
-## Essential Linear Algebra: Eigenvalues and Eigenvectors
+### Curse of Dimensionality
+Understanding challenges with high-dimensional spaces:
+- **Distance concentration**: All points become equidistant in high dimensions
+- **Sparsity**: High-dimensional spaces are mostly empty
+- **Visualization challenges**: Difficulty interpreting high-dimensional data
 
-### Matrix Diagonalization
+### Manifold Learning
+Assumption underlying many embedding methods:
+- **Manifold hypothesis**: High-dimensional data lies on lower-dimensional manifolds
+- **Local linearity**: Small neighborhoods can be approximated linearly
+- **Intrinsic dimensionality**: True degrees of freedom in the data
 
-A diagonalizable matrix $\mathbf{S}$ can be written as:
-$$\mathbf{S} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^{-1}$$
+## Computational Considerations
 
-where $\boldsymbol{\Lambda}$ is a diagonal matrix of eigenvalues and $\mathbf{Q}$ is a matrix of eigenvectors. This is useful because:
+### Scalability Issues
+Challenges with large networks:
+- **Matrix operations**: O(n³) complexity for eigenvalue decomposition
+- **Memory requirements**: Storing large adjacency matrices
+- **Approximation methods**: Trading accuracy for computational efficiency
 
-$$\mathbf{S}^t = \mathbf{Q} \boldsymbol{\Lambda}^t \mathbf{Q}^{-1}$$
+### Sparse Matrix Techniques
+Essential for large network analysis:
+- **Sparse storage**: Only storing non-zero entries
+- **Iterative methods**: Lanczos algorithm for eigenvalues
+- **Random sampling**: Approximating matrix operations
 
-### Spectral Properties of Networks
-
-For network analysis, we work with the normalized adjacency matrix:
-$$\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}$$
-
-where $\mathbf{D}$ is the diagonal degree matrix. This matrix is symmetric and can be diagonalized as:
-$$\overline{\mathbf{A}} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^\top$$
-
-### Connection to Random Walks
-
-The transition matrix can be expressed using the normalized adjacency matrix:
-$$\mathbf{P} = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}$$
-
-This allows us to compute:
-$$\mathbf{P}^t = \mathbf{Q}_L \boldsymbol{\Lambda}^t \mathbf{Q}_R^\top$$
-
-where $\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}$ and $\mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}$.
-
-### Eigenvalue Interpretation
-
-The probability distribution after $t$ steps can be written as:
-
-$$\mathbf{x}(t) = \sum_{\ell=1}^N \lambda_\ell^t \mathbf{q}^{(L)}_{\ell} \langle\mathbf{q}^{(R)}_{\ell}, \mathbf{x}(0) \rangle$$
-
-Key insights:
-- The largest eigenvalue is always $\lambda_1 = 1$
-- The second largest eigenvalue $\lambda_2$ determines convergence speed
-- As $t \to \infty$, all terms decay except the first, leading to the stationary distribution
-
-### Mixing Time
-
-The mixing time $t_{\text{mix}}$ is the time needed to reach the stationary distribution and is bounded by:
-
-$$t_{\text{mix}} \leq \frac{1}{1-\lambda_2}$$
-
-where $\lambda_2$ is the second largest eigenvalue of the normalized adjacency matrix.
-
-## Why This Matters for Embedding
-
-Understanding random walks and spectral properties is crucial for embedding methods because:
-
-1. **Spectral Embedding**: Uses eigenvectors of graph matrices to create node representations
-2. **Neural Embeddings**: Methods like Word2Vec can be understood through random walk processes
-3. **Convergence Properties**: Eigenvalues determine how well embedding methods will work
-4. **Structural Information**: Eigenvectors capture important network structural properties
-
-The concepts from random walks provide the mathematical foundation for understanding how both classical spectral methods and modern neural embedding approaches extract meaningful representations from network structure.
+These mathematical foundations provide the theoretical basis for understanding how embedding methods transform high-dimensional network structures into meaningful low-dimensional representations.
