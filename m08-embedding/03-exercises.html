@@ -528,16 +528,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#pen-and-paper-exercises" id="toc-pen-and-paper-exercises" class="nav-link active" data-scroll-target="#pen-and-paper-exercises"><span class="header-section-number">37.1</span> Pen and Paper Exercises</a></li>
-  <li><a href="#programming-exercises" id="toc-programming-exercises" class="nav-link" data-scroll-target="#programming-exercises"><span class="header-section-number">37.2</span> Programming Exercises</a>
   <ul class="collapse">
-  <li><a href="#exercise-01-implement-deepwalk" id="toc-exercise-01-implement-deepwalk" class="nav-link" data-scroll-target="#exercise-01-implement-deepwalk"><span class="header-section-number">37.2.1</span> Exercise 01: Implement DeepWalk</a></li>
-  <li><a href="#exercise-02-implement-node2vec" id="toc-exercise-02-implement-node2vec" class="nav-link" data-scroll-target="#exercise-02-implement-node2vec"><span class="header-section-number">37.2.2</span> Exercise 02: Implement node2vec</a></li>
-  <li><a href="#additional-practice-exercises" id="toc-additional-practice-exercises" class="nav-link" data-scroll-target="#additional-practice-exercises"><span class="header-section-number">37.2.3</span> Additional Practice Exercises</a></li>
-  </ul></li>
-  <li><a href="#evaluation-questions" id="toc-evaluation-questions" class="nav-link" data-scroll-target="#evaluation-questions"><span class="header-section-number">37.3</span> Evaluation Questions</a></li>
-  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources"><span class="header-section-number">37.4</span> Additional Resources</a></li>
+  <li><a href="#pen-and-paper-exercises" id="toc-pen-and-paper-exercises" class="nav-link active" data-scroll-target="#pen-and-paper-exercises"><span class="header-section-number">37.1</span> Pen and Paper Exercises</a></li>
+  <li><a href="#programming-exercises" id="toc-programming-exercises" class="nav-link" data-scroll-target="#programming-exercises"><span class="header-section-number">37.2</span> Programming Exercises</a></li>
+  <li><a href="#additional-practice-exercises" id="toc-additional-practice-exercises" class="nav-link" data-scroll-target="#additional-practice-exercises"><span class="header-section-number">37.3</span> Additional Practice Exercises</a></li>
+  <li><a href="#evaluation-questions" id="toc-evaluation-questions" class="nav-link" data-scroll-target="#evaluation-questions"><span class="header-section-number">37.4</span> Evaluation Questions</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources"><span class="header-section-number">37.5</span> Additional Resources</a></li>
   </ul>
 </nav>
     </div>
@@ -583,27 +579,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Objectives:</strong> - Understand the biased random walk mechanism in node2vec - Learn about the parameters p and q and their effects - Implement the alias sampling method for biased walks - Compare node2vec results with DeepWalk</p>
 <p><strong>Key Steps:</strong> 1. <strong>Implement biased random walk</strong>: Create functions for node2vec random walks 2. <strong>Understand p and q parameters</strong>: Learn how they control walk behavior 3. <strong>Train node2vec model</strong>: Apply word2vec with biased random walks 4. <strong>Compare results</strong>: Analyze differences between node2vec and DeepWalk</p>
 </section>
-<section id="additional-practice-exercises" class="level3" data-number="37.2.3">
-<h3 data-number="37.2.3" class="anchored" data-anchor-id="additional-practice-exercises"><span class="header-section-number">37.2.3</span> Additional Practice Exercises</h3>
-<section id="exercise-03-spectral-embedding-comparison" class="level4" data-number="37.2.3.1">
-<h4 data-number="37.2.3.1" class="anchored" data-anchor-id="exercise-03-spectral-embedding-comparison"><span class="header-section-number">37.2.3.1</span> Exercise 03: Spectral Embedding Comparison</h4>
+</section>
+<section id="additional-practice-exercises" class="level2" data-number="37.3">
+<h2 data-number="37.3" class="anchored" data-anchor-id="additional-practice-exercises"><span class="header-section-number">37.3</span> Additional Practice Exercises</h2>
+<section id="exercise-03-spectral-embedding-comparison" class="level3" data-number="37.3.1">
+<h3 data-number="37.3.1" class="anchored" data-anchor-id="exercise-03-spectral-embedding-comparison"><span class="header-section-number">37.3.1</span> Exercise 03: Spectral Embedding Comparison</h3>
 <p><strong>Objective</strong>: Compare different spectral embedding methods on the same network.</p>
 <p><strong>Tasks</strong>: 1. Implement spectral embedding using the adjacency matrix 2. Implement modularity embedding 3. Implement Laplacian Eigenmap 4. Compare the resulting embeddings visually 5. Analyze which method best captures community structure</p>
 </section>
-<section id="exercise-04-parameter-sensitivity-analysis" class="level4" data-number="37.2.3.2">
-<h4 data-number="37.2.3.2" class="anchored" data-anchor-id="exercise-04-parameter-sensitivity-analysis"><span class="header-section-number">37.2.3.2</span> Exercise 04: Parameter Sensitivity Analysis</h4>
+<section id="exercise-04-parameter-sensitivity-analysis" class="level3" data-number="37.3.2">
+<h3 data-number="37.3.2" class="anchored" data-anchor-id="exercise-04-parameter-sensitivity-analysis"><span class="header-section-number">37.3.2</span> Exercise 04: Parameter Sensitivity Analysis</h3>
 <p><strong>Objective</strong>: Understand how different parameters affect embedding quality.</p>
 <p><strong>Tasks</strong>: 1. Vary the embedding dimension (d) in spectral methods 2. Test different window sizes in word2vec-based methods 3. Experiment with different p and q values in node2vec 4. Compare clustering performance across parameter settings</p>
 </section>
-<section id="exercise-05-real-network-analysis" class="level4" data-number="37.2.3.3">
-<h4 data-number="37.2.3.3" class="anchored" data-anchor-id="exercise-05-real-network-analysis"><span class="header-section-number">37.2.3.3</span> Exercise 05: Real Network Analysis</h4>
+<section id="exercise-05-real-network-analysis" class="level3" data-number="37.3.3">
+<h3 data-number="37.3.3" class="anchored" data-anchor-id="exercise-05-real-network-analysis"><span class="header-section-number">37.3.3</span> Exercise 05: Real Network Analysis</h3>
 <p><strong>Objective</strong>: Apply embedding methods to a real-world network.</p>
 <p><strong>Tasks</strong>: 1. Choose a real network dataset (e.g., social network, citation network) 2. Apply both spectral and neural embedding methods 3. Evaluate embeddings using downstream tasks (clustering, classification) 4. Compare computational efficiency and embedding quality</p>
 </section>
 </section>
-</section>
-<section id="evaluation-questions" class="level2" data-number="37.3">
-<h2 data-number="37.3" class="anchored" data-anchor-id="evaluation-questions"><span class="header-section-number">37.3</span> Evaluation Questions</h2>
+<section id="evaluation-questions" class="level2" data-number="37.4">
+<h2 data-number="37.4" class="anchored" data-anchor-id="evaluation-questions"><span class="header-section-number">37.4</span> Evaluation Questions</h2>
 <ol type="1">
 <li><strong>Conceptual Understanding</strong>:
 <ul>
@@ -625,8 +621,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ol>
 </section>
-<section id="additional-resources" class="level2" data-number="37.4">
-<h2 data-number="37.4" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">37.4</span> Additional Resources</h2>
+<section id="additional-resources" class="level2" data-number="37.5">
+<h2 data-number="37.5" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">37.5</span> Additional Resources</h2>
 <ul>
 <li><strong>Software Packages</strong>: Refer to the <a href="../m08-embedding/01-concepts.html#software-for-network-embedding">01-concepts.md</a> for recommended implementations</li>
 <li><strong>Mathematical Details</strong>: See <a href="../m08-embedding/04-appendix.html">04-appendix.md</a> for formal proofs and derivations</li>
@@ -1141,9 +1137,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Train node2vec model**: Apply word2vec with biased random walks</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Compare results**: Analyze differences between node2vec and DeepWalk</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### Additional Practice Exercises</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Practice Exercises</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Exercise 03: Spectral Embedding Comparison</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 03: Spectral Embedding Comparison</span></span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>**Objective**: Compare different spectral embedding methods on the same network.</span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
@@ -1154,7 +1150,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Compare the resulting embeddings visually</span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Analyze which method best captures community structure</span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Exercise 04: Parameter Sensitivity Analysis</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 04: Parameter Sensitivity Analysis</span></span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>**Objective**: Understand how different parameters affect embedding quality.</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
@@ -1164,7 +1160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Experiment with different p and q values in node2vec</span>
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Compare clustering performance across parameter settings</span>
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Exercise 05: Real Network Analysis</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 05: Real Network Analysis</span></span>
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>**Objective**: Apply embedding methods to a real-world network.</span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>

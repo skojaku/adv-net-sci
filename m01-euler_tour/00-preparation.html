@@ -528,23 +528,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#python-essentials" id="toc-python-essentials" class="nav-link active" data-scroll-target="#python-essentials"><span class="header-section-number">4.1</span> Python Essentials</a>
   <ul class="collapse">
-  <li><a href="#data-structures" id="toc-data-structures" class="nav-link" data-scroll-target="#data-structures"><span class="header-section-number">4.1.1</span> Data Structures</a></li>
-  <li><a href="#essential-libraries" id="toc-essential-libraries" class="nav-link" data-scroll-target="#essential-libraries"><span class="header-section-number">4.1.2</span> Essential Libraries</a></li>
-  </ul></li>
-  <li><a href="#graph-theory-fundamentals" id="toc-graph-theory-fundamentals" class="nav-link" data-scroll-target="#graph-theory-fundamentals"><span class="header-section-number">4.2</span> Graph Theory Fundamentals</a>
-  <ul class="collapse">
-  <li><a href="#basic-definitions" id="toc-basic-definitions" class="nav-link" data-scroll-target="#basic-definitions"><span class="header-section-number">4.2.1</span> Basic Definitions</a></li>
-  <li><a href="#graph-representations" id="toc-graph-representations" class="nav-link" data-scroll-target="#graph-representations"><span class="header-section-number">4.2.2</span> Graph Representations</a></li>
-  <li><a href="#networkx-basics" id="toc-networkx-basics" class="nav-link" data-scroll-target="#networkx-basics"><span class="header-section-number">4.2.3</span> NetworkX Basics</a></li>
-  </ul></li>
-  <li><a href="#key-concepts-for-euler-tours" id="toc-key-concepts-for-euler-tours" class="nav-link" data-scroll-target="#key-concepts-for-euler-tours"><span class="header-section-number">4.3</span> Key Concepts for Euler Tours</a>
-  <ul class="collapse">
-  <li><a href="#euler-path-and-euler-circuit" id="toc-euler-path-and-euler-circuit" class="nav-link" data-scroll-target="#euler-path-and-euler-circuit"><span class="header-section-number">4.3.1</span> Euler Path and Euler Circuit</a></li>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">4.3.2</span> Prerequisites</a></li>
-  </ul></li>
+  <li><a href="#python-essentials" id="toc-python-essentials" class="nav-link active" data-scroll-target="#python-essentials"><span class="header-section-number">4.1</span> Python Essentials</a></li>
+  <li><a href="#graph-theory-fundamentals" id="toc-graph-theory-fundamentals" class="nav-link" data-scroll-target="#graph-theory-fundamentals"><span class="header-section-number">4.2</span> Graph Theory Fundamentals</a></li>
+  <li><a href="#key-concepts-for-euler-tours" id="toc-key-concepts-for-euler-tours" class="nav-link" data-scroll-target="#key-concepts-for-euler-tours"><span class="header-section-number">4.3</span> Key Concepts for Euler Tours</a></li>
   </ul>
 </nav>
     </div>
@@ -608,8 +595,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="graph-representations" class="level3" data-number="4.2.2">
 <h3 data-number="4.2.2" class="anchored" data-anchor-id="graph-representations"><span class="header-section-number">4.2.2</span> Graph Representations</h3>
-<section id="adjacency-list" class="level4" data-number="4.2.2.1">
-<h4 data-number="4.2.2.1" class="anchored" data-anchor-id="adjacency-list"><span class="header-section-number">4.2.2.1</span> Adjacency List</h4>
+</section>
+<section id="adjacency-list" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="adjacency-list"><span class="header-section-number">4.2.3</span> Adjacency List</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Undirected graph representation</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> {</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'A'</span>: [<span class="st">'B'</span>, <span class="st">'D'</span>],</span>
@@ -618,8 +606,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'D'</span>: [<span class="st">'A'</span>, <span class="st">'C'</span>]</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="adjacency-matrix" class="level4" data-number="4.2.2.2">
-<h4 data-number="4.2.2.2" class="anchored" data-anchor-id="adjacency-matrix"><span class="header-section-number">4.2.2.2</span> Adjacency Matrix</h4>
+<section id="adjacency-matrix" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="adjacency-matrix"><span class="header-section-number">4.2.4</span> Adjacency Matrix</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For a 4-node graph</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>adj_matrix <span class="op">=</span> np.array([</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>],  <span class="co"># Node A connections</span></span>
@@ -628,9 +616,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>]   <span class="co"># Node D connections</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-</section>
-<section id="networkx-basics" class="level3" data-number="4.2.3">
-<h3 data-number="4.2.3" class="anchored" data-anchor-id="networkx-basics"><span class="header-section-number">4.2.3</span> NetworkX Basics</h3>
+<section id="networkx-basics" class="level3" data-number="4.2.5">
+<h3 data-number="4.2.5" class="anchored" data-anchor-id="networkx-basics"><span class="header-section-number">4.2.5</span> NetworkX Basics</h3>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a graph</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.Graph()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1170,7 +1157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### Graph Representations</span></span>
 <span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Adjacency List</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### Adjacency List</span></span>
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Undirected graph representation</span></span>
 <span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> {</span>
@@ -1181,7 +1168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Adjacency Matrix</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### Adjacency Matrix</span></span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
 <span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co"># For a 4-node graph</span></span>
 <span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>adj_matrix <span class="op">=</span> np.array([</span>

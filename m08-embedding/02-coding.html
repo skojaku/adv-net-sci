@@ -571,23 +571,10 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#spectral-embedding" id="toc-spectral-embedding" class="nav-link active" data-scroll-target="#spectral-embedding"><span class="header-section-number">36.1</span> Spectral Embedding</a>
   <ul class="collapse">
-  <li><a href="#network-compression-approach" id="toc-network-compression-approach" class="nav-link" data-scroll-target="#network-compression-approach"><span class="header-section-number">36.1.1</span> Network Compression Approach</a></li>
-  <li><a href="#modularity-embedding" id="toc-modularity-embedding" class="nav-link" data-scroll-target="#modularity-embedding"><span class="header-section-number">36.1.2</span> Modularity Embedding</a></li>
-  <li><a href="#laplacian-eigenmap" id="toc-laplacian-eigenmap" class="nav-link" data-scroll-target="#laplacian-eigenmap"><span class="header-section-number">36.1.3</span> Laplacian Eigenmap</a></li>
-  </ul></li>
-  <li><a href="#neural-embedding-with-word2vec" id="toc-neural-embedding-with-word2vec" class="nav-link" data-scroll-target="#neural-embedding-with-word2vec"><span class="header-section-number">36.2</span> Neural Embedding with word2vec</a>
-  <ul class="collapse">
-  <li><a href="#introduction-to-word2vec" id="toc-introduction-to-word2vec" class="nav-link" data-scroll-target="#introduction-to-word2vec"><span class="header-section-number">36.2.1</span> Introduction to word2vec</a></li>
-  </ul></li>
-  <li><a href="#graph-embedding-with-word2vec" id="toc-graph-embedding-with-word2vec" class="nav-link" data-scroll-target="#graph-embedding-with-word2vec"><span class="header-section-number">36.3</span> Graph Embedding with word2vec</a>
-  <ul class="collapse">
-  <li><a href="#deepwalk" id="toc-deepwalk" class="nav-link" data-scroll-target="#deepwalk"><span class="header-section-number">36.3.1</span> DeepWalk</a></li>
-  <li><a href="#node2vec" id="toc-node2vec" class="nav-link" data-scroll-target="#node2vec"><span class="header-section-number">36.3.2</span> node2vec</a></li>
-  <li><a href="#line" id="toc-line" class="nav-link" data-scroll-target="#line"><span class="header-section-number">36.3.3</span> LINE</a></li>
-  </ul></li>
+  <li><a href="#spectral-embedding" id="toc-spectral-embedding" class="nav-link active" data-scroll-target="#spectral-embedding"><span class="header-section-number">36.1</span> Spectral Embedding</a></li>
+  <li><a href="#neural-embedding-with-word2vec" id="toc-neural-embedding-with-word2vec" class="nav-link" data-scroll-target="#neural-embedding-with-word2vec"><span class="header-section-number">36.2</span> Neural Embedding with word2vec</a></li>
+  <li><a href="#graph-embedding-with-word2vec" id="toc-graph-embedding-with-word2vec" class="nav-link" data-scroll-target="#graph-embedding-with-word2vec"><span class="header-section-number">36.3</span> Graph Embedding with word2vec</a></li>
   </ul>
 </nav>
     </div>
@@ -629,8 +616,9 @@ window.Quarto = {
 <li><span class="math inline">J(\mathbf{U})</span> is the loss function that measures the difference between the original network <span class="math inline">\mathbf{A}</span> and the reconstructed network <span class="math inline">\mathbf{U}\mathbf{U}^\top</span>.</li>
 </ol>
 <p>By minimizing the Frobenius norm with respect to <span class="math inline">\mathbf{U}</span>, we obtain the best low-dimensional embedding of the network.</p>
-<section id="an-intuitive-solution" class="level4" data-number="36.1.1.1">
-<h4 data-number="36.1.1.1" class="anchored" data-anchor-id="an-intuitive-solution"><span class="header-section-number">36.1.1.1</span> An Intuitive Solution</h4>
+</section>
+<section id="an-intuitive-solution" class="level3" data-number="36.1.2">
+<h3 data-number="36.1.2" class="anchored" data-anchor-id="an-intuitive-solution"><span class="header-section-number">36.1.2</span> An Intuitive Solution</h3>
 <p>Let us first understand the solution intuitively. Consider the spectral decomposition of <span class="math inline">\mathbf{A}</span>:</p>
 <p><span class="math display">
 \mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top
@@ -640,10 +628,10 @@ window.Quarto = {
 <p><img src="../figs/spectral-decomposition.jpg" class="img-fluid"></p>
 <p>For a formal proof, please refer to the <a href="../m08-embedding/04-appendix.html">Appendix section</a>.</p>
 </section>
-<section id="example-spectral-embedding" class="level4" data-number="36.1.1.2">
-<h4 data-number="36.1.1.2" class="anchored" data-anchor-id="example-spectral-embedding"><span class="header-section-number">36.1.1.2</span> Example: Spectral Embedding</h4>
+<section id="example-spectral-embedding" class="level3" data-number="36.1.3">
+<h3 data-number="36.1.3" class="anchored" data-anchor-id="example-spectral-embedding"><span class="header-section-number">36.1.3</span> Example: Spectral Embedding</h3>
 <p>Let us demonstrate the results with a simple example as follows.</p>
-<div id="dc2ade4a" class="cell">
+<div id="83578ba2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -661,7 +649,7 @@ window.Quarto = {
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nx.draw(G, with_labels<span class="op">=</span><span class="va">False</span>, node_color<span class="op">=</span>[cmap[i] <span class="cf">for</span> i <span class="kw">in</span> labels])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="1d5de872" class="cell">
+<div id="b12a94ca" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -687,16 +675,15 @@ window.Quarto = {
 </div>
 <p>Interestingly, the first eigenvector corresponds to the eigen centrality of the network, representing the centrality of the nodes. The second eigenvector captures the community structure of the network, clearly separating the two communities in the network.</p>
 </section>
-</section>
-<section id="modularity-embedding" class="level3" data-number="36.1.2">
-<h3 data-number="36.1.2" class="anchored" data-anchor-id="modularity-embedding"><span class="header-section-number">36.1.2</span> Modularity Embedding</h3>
+<section id="modularity-embedding" class="level3" data-number="36.1.4">
+<h3 data-number="36.1.4" class="anchored" data-anchor-id="modularity-embedding"><span class="header-section-number">36.1.4</span> Modularity Embedding</h3>
 <p>In a similar vein, we can use the modularity matrix to generate a low-dimensional embedding of the network. Namely, let us define the modularity matrix <span class="math inline">\mathbf{Q}</span> as follows:</p>
 <p><span class="math display">
 Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </span></p>
 <p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
 <p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix.</p>
-<div id="d5d77c25" class="cell">
+<div id="ffcf0409" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -723,8 +710,8 @@ Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </div>
 <pre class="{note}"><code>The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes with the same sign of the second eigenvector {footcite}`newman2006modularity`.</code></pre>
 </section>
-<section id="laplacian-eigenmap" class="level3" data-number="36.1.3">
-<h3 data-number="36.1.3" class="anchored" data-anchor-id="laplacian-eigenmap"><span class="header-section-number">36.1.3</span> Laplacian Eigenmap</h3>
+<section id="laplacian-eigenmap" class="level3" data-number="36.1.5">
+<h3 data-number="36.1.5" class="anchored" data-anchor-id="laplacian-eigenmap"><span class="header-section-number">36.1.5</span> Laplacian Eigenmap</h3>
 <p>Laplacian Eigenmap {footcite}<code>belkin2003laplacian</code> is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:</p>
 <p><span class="math display">
 \min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
@@ -768,10 +755,11 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </span></p>
 <p>The solution is the <span class="math inline">d</span> eigenvectors associated with the <span class="math inline">d</span> smallest eigenvalues of <span class="math inline">\mathbf{L}</span>.</p>
 <p>It is important to note that the eigenvector corresponding to the smallest eigenvalue (which is always zero for connected graphs) is trivial - it’s the all-one vector. Therefore, in practice, we typically compute the <span class="math inline">d+1</span> smallest eigenvectors and discard the one corresponding to the zero eigenvalue.</p>
-<section id="example-laplacian-eigenmap" class="level4" data-number="36.1.3.1">
-<h4 data-number="36.1.3.1" class="anchored" data-anchor-id="example-laplacian-eigenmap"><span class="header-section-number">36.1.3.1</span> Example: Laplacian Eigenmap</h4>
+</section>
+<section id="example-laplacian-eigenmap" class="level3" data-number="36.1.6">
+<h3 data-number="36.1.6" class="anchored" data-anchor-id="example-laplacian-eigenmap"><span class="header-section-number">36.1.6</span> Example: Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="1a611b19" class="cell">
+<div id="3302cce9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -788,7 +776,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The eigenvectors corresponding to the <span class="math inline">d</span> smallest eigenvalues are:</p>
-<div id="2d57b3ea" class="cell">
+<div id="b58ad4c2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -803,14 +791,14 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 </section>
 </section>
-</section>
 <section id="neural-embedding-with-word2vec" class="level2" data-number="36.2">
 <h2 data-number="36.2" class="anchored" data-anchor-id="neural-embedding-with-word2vec"><span class="header-section-number">36.2</span> Neural Embedding with word2vec</h2>
 <section id="introduction-to-word2vec" class="level3" data-number="36.2.1">
 <h3 data-number="36.2.1" class="anchored" data-anchor-id="introduction-to-word2vec"><span class="header-section-number">36.2.1</span> Introduction to word2vec</h3>
 <p>In this section, we will introduce <em>word2vec</em>, a powerful technique for learning word embeddings. word2vec is a neural network model that learns words embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 {footcite}<code>mikolov2013distributed</code>.</p>
-<section id="how-it-works" class="level4" data-number="36.2.1.1">
-<h4 data-number="36.2.1.1" class="anchored" data-anchor-id="how-it-works"><span class="header-section-number">36.2.1.1</span> How it works</h4>
+</section>
+<section id="how-it-works" class="level3" data-number="36.2.2">
+<h3 data-number="36.2.2" class="anchored" data-anchor-id="how-it-works"><span class="header-section-number">36.2.2</span> How it works</h3>
 <p>“You shall know a word by the company it keeps” {footcite}<code>church1988word</code> is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context. word2vec operates on the same principle. word2vec identifies a word’s context by examining the words within a fixed window around it. For example, in the sentence:</p>
 <blockquote class="blockquote">
 <p>The quick brown fox jumps over a lazy dog</p>
@@ -828,12 +816,12 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ul>
 <p>We can consider word2vec as a <em>dimensionality reduction</em> technique that reduces the dimensionality of the input layer to the hidden layer based on the co-occurrence of words within a short distance. The distance is named the <em>window size</em>, which is a user-defined hyperparameter.</p>
 </section>
-<section id="whats-special-about-word2vec" class="level4" data-number="36.2.1.2">
-<h4 data-number="36.2.1.2" class="anchored" data-anchor-id="whats-special-about-word2vec"><span class="header-section-number">36.2.1.2</span> What’s special about word2vec?</h4>
+<section id="whats-special-about-word2vec" class="level3" data-number="36.2.3">
+<h3 data-number="36.2.3" class="anchored" data-anchor-id="whats-special-about-word2vec"><span class="header-section-number">36.2.3</span> What’s special about word2vec?</h3>
 <p>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</p>
 <p><img src="https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg" class="img-fluid"></p>
 <p>To showcase the effectiveness of word2vec, let’s walk through an example using the <code>gensim</code> library.</p>
-<div id="c6749ffc" class="cell">
+<div id="8376a6f0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim</span>
@@ -845,7 +833,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Our first example is to find the words most similar to <em>king</em>.</p>
-<div id="4e48210f" class="cell">
+<div id="13bfa26f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
@@ -861,7 +849,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p><em>man</em> is to <em>woman</em> as <em>king</em> is to ___ ?</p>
 </blockquote>
 <p>We can use word embeddings to solve this puzzle.</p>
-<div id="f1723f83" class="cell">
+<div id="c276c3dc" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We solve the puzzle by</span></span>
@@ -874,7 +862,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The last example is to visualize the word embeddings.</p>
-<div id="edfe3013" class="cell">
+<div id="a0c40e02" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -929,7 +917,6 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p>We can see that word2vec places the words representing countries close to each other and so do the words representing their capitals. The country-capital relationship is also roughly preserved, e.g., <em>Germany</em>-<em>Berlin</em> vector is roughly parallel to <em>France</em>-<em>Paris</em> vector.</p>
 </section>
 </section>
-</section>
 <section id="graph-embedding-with-word2vec" class="level2" data-number="36.3">
 <h2 data-number="36.3" class="anchored" data-anchor-id="graph-embedding-with-word2vec"><span class="header-section-number">36.3</span> Graph Embedding with word2vec</h2>
 <p>How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequence of words as input, while graph data are discrete and unordered. A solution to fill this gap is <em>random walk</em>, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.</p>
@@ -943,14 +930,15 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <li>Treat the random walks as sentences and feed them to word2vev to learn the node embeddings.</li>
 </ol>
 <p>There are some technical details that we need to be aware of, which we will learn by implementing DeepWalk in the following exercise.</p>
-<section id="exercise-01-implement-deepwalk" class="level4" data-number="36.3.1.1">
-<h4 data-number="36.3.1.1" class="anchored" data-anchor-id="exercise-01-implement-deepwalk"><span class="header-section-number">36.3.1.1</span> Exercise 01: Implement DeepWalk</h4>
+</section>
+<section id="exercise-01-implement-deepwalk" class="level3" data-number="36.3.2">
+<h3 data-number="36.3.2" class="anchored" data-anchor-id="exercise-01-implement-deepwalk"><span class="header-section-number">36.3.2</span> Exercise 01: Implement DeepWalk</h3>
 <p>In this exercise, we implement DeepWalk step by step.</p>
-<section id="step-1-data-preparation" class="level5" data-number="36.3.1.1.1">
-<h5 data-number="36.3.1.1.1" class="anchored" data-anchor-id="step-1-data-preparation"><span class="header-section-number">36.3.1.1.1</span> Step 1: Data preparation</h5>
+<section id="step-1-data-preparation" class="level5" data-number="36.3.2.0.1">
+<h5 data-number="36.3.2.0.1" class="anchored" data-anchor-id="step-1-data-preparation"><span class="header-section-number">36.3.2.0.1</span> Step 1: Data preparation</h5>
 <p>We will use the karate club network as an example.</p>
 <p><strong>Load the data</strong></p>
-<div id="15a2529c" class="cell">
+<div id="244d4273" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -971,10 +959,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 </section>
-<section id="step-2-generate-random-walks" class="level5" data-number="36.3.1.1.2">
-<h5 data-number="36.3.1.1.2" class="anchored" data-anchor-id="step-2-generate-random-walks"><span class="header-section-number">36.3.1.1.2</span> Step 2: Generate random walks</h5>
+<section id="step-2-generate-random-walks" class="level5" data-number="36.3.2.0.2">
+<h5 data-number="36.3.2.0.2" class="anchored" data-anchor-id="step-2-generate-random-walks"><span class="header-section-number">36.3.2.0.2</span> Step 2: Generate random walks</h5>
 <p>Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network. Let us first implement a function to sample random walks from a given network.</p>
-<div id="ac0f42b4" class="cell">
+<div id="bc5c4dc7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(net, start_node, walk_length):</span>
@@ -1001,7 +989,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Generate 10 random walks of length 50 starting from each node.</p>
-<div id="8e7f8abc" class="cell">
+<div id="8558a189" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -1014,10 +1002,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 </section>
-<section id="step-3-train-the-word2vec-model" class="level5" data-number="36.3.1.1.3">
-<h5 data-number="36.3.1.1.3" class="anchored" data-anchor-id="step-3-train-the-word2vec-model"><span class="header-section-number">36.3.1.1.3</span> Step 3: Train the word2vec model</h5>
+<section id="step-3-train-the-word2vec-model" class="level5" data-number="36.3.2.0.3">
+<h5 data-number="36.3.2.0.3" class="anchored" data-anchor-id="step-3-train-the-word2vec-model"><span class="header-section-number">36.3.2.0.3</span> Step 3: Train the word2vec model</h5>
 <p>Then, we feed the random walks to the word2vec model.</p>
-<div id="1d448bd3" class="cell">
+<div id="7d91ad11" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
@@ -1044,7 +1032,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ul>
 <p>By using the skip-gram model with hierarchical softmax, we can efficiently learn high-quality word embeddings even when dealing with large vocabularies.</p>
 <p>Now, we extract the node embeddings from the word2vec model. In the word2vec model, the embeddings are stored in the <code>wv</code> attribute. The embedding of node <span class="math inline">i</span> is given by <code>model.wv[i]</code>.</p>
-<div id="7bdb03cb" class="cell">
+<div id="e9480fd7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -1055,7 +1043,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 <p><code>embedding</code> is the matrix of node embeddings. It has the same number of rows as the number of nodes in the network, and the number of columns is the embedding dimension.</p>
 <p><strong>Print the first 3 nodes</strong></p>
-<div id="63dfd279" class="cell">
+<div id="42d9a9f5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1064,7 +1052,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Let’s visualize the node embeddings using UMAP.</p>
-<div id="b2efa7ca" class="cell">
+<div id="327650f9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1097,10 +1085,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 </section>
-<section id="step-4-clustering" class="level5" data-number="36.3.1.1.4">
-<h5 data-number="36.3.1.1.4" class="anchored" data-anchor-id="step-4-clustering"><span class="header-section-number">36.3.1.1.4</span> Step 4: Clustering</h5>
+<section id="step-4-clustering" class="level5" data-number="36.3.2.0.4">
+<h5 data-number="36.3.2.0.4" class="anchored" data-anchor-id="step-4-clustering"><span class="header-section-number">36.3.2.0.4</span> Step 4: Clustering</h5>
 <p>One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as <span class="math inline">K</span>-means and Gaussian mixture model. Let’s see what we can get from the node embeddings.</p>
-<div id="b7c8d5a3" class="cell">
+<div id="87d66326" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -1137,7 +1125,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.labels_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="47b70b3e" class="cell">
+<div id="97d4dfcb" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -1148,9 +1136,8 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 </section>
 </section>
-</section>
-<section id="node2vec" class="level3" data-number="36.3.2">
-<h3 data-number="36.3.2" class="anchored" data-anchor-id="node2vec"><span class="header-section-number">36.3.2</span> node2vec</h3>
+<section id="node2vec" class="level3" data-number="36.3.3">
+<h3 data-number="36.3.3" class="anchored" data-anchor-id="node2vec"><span class="header-section-number">36.3.3</span> node2vec</h3>
 <p>node2vec is a sibling of DeepWalk proposed by {footcite}<code>grover2016node2vec</code>. Both use word2vec trained on random walks on networks. So, it appears that they are very similar. However, the following two components make them very different.</p>
 <ul>
 <li><p><strong>Biased random walk</strong>: node2vec uses biased random walks that can move in different directions. The bias walk is parameterized by two parameters, <span class="math inline">p</span> and <span class="math inline">q</span>:</p>
@@ -1173,10 +1160,11 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p><img src="https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png" class="img-fluid"></p></li>
 <li><p><strong>Negative sampling</strong>: node2vec uses negative sampling, instead of hierarchical softmax. This difference appears to be minor, but it has significant consequences on the characteristics of the embeddings. This is beyond the scope of this lecture, but you can refer to {footcite}<code>kojaku2021neurips</code> and {footcite}<code>dyer2014notes</code> for more details.</p></li>
 </ul>
-<section id="exercise-02-implement-node2vec" class="level4" data-number="36.3.2.1">
-<h4 data-number="36.3.2.1" class="anchored" data-anchor-id="exercise-02-implement-node2vec"><span class="header-section-number">36.3.2.1</span> Exercise 02: Implement node2vec</h4>
+</section>
+<section id="exercise-02-implement-node2vec" class="level3" data-number="36.3.4">
+<h3 data-number="36.3.4" class="anchored" data-anchor-id="exercise-02-implement-node2vec"><span class="header-section-number">36.3.4</span> Exercise 02: Implement node2vec</h3>
 <p>Let’s implement the biased random walk for node2vec</p>
-<div id="c9a81cf9" class="cell">
+<div id="8a5daccb" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
@@ -1249,7 +1237,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Now, let’s set up the word2vec model for node2vec.</p>
-<div id="17db6acd" class="cell">
+<div id="2873c7eb" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>walks <span class="op">=</span> []</span>
@@ -1263,7 +1251,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 <p>where <code>hs=0</code> indicates that we are using negative sampling. Notice that we set <code>sg=1</code> and <code>hs=1</code> instead of <code>sg=1</code> and <code>hs=0</code> in DeepWalk. This is because node2vec uses the skip-gram model with negative sampling.</p>
 <p>Now, we extract the node embeddings from the word2vec model.</p>
-<div id="83180baf" class="cell">
+<div id="38c23f88" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -1273,7 +1261,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Let’s visualize the node embeddings from node2vec.</p>
-<div id="9c814c2a" class="cell">
+<div id="03a43f94" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1309,7 +1297,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The results for clustering are as follows:</p>
-<div id="d147d964" class="cell">
+<div id="993d1e7b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -1322,9 +1310,8 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 </section>
-</section>
-<section id="line" class="level3" data-number="36.3.3">
-<h3 data-number="36.3.3" class="anchored" data-anchor-id="line"><span class="header-section-number">36.3.3</span> LINE</h3>
+<section id="line" class="level3" data-number="36.3.5">
+<h3 data-number="36.3.5" class="anchored" data-anchor-id="line"><span class="header-section-number">36.3.5</span> LINE</h3>
 <p>LINE {footcite}<code>tang2015line</code> is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with <span class="math inline">p=1</span>, <span class="math inline">q=1</span>, and window size 1.</p>
 <pre class="{footbibliography}"><code></code></pre>
 
@@ -1824,7 +1811,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>By minimizing the Frobenius norm with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.</span>
 <span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a><span class="fu">#### An Intuitive Solution</span></span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a><span class="fu">### An Intuitive Solution</span></span>
 <span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>Let us first understand the solution intuitively.</span>
 <span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>Consider the spectral decomposition of $\mathbf{A}$:</span>
@@ -1841,7 +1828,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-43"><a href="#cb27-43" aria-hidden="true" tabindex="-1"></a>For a formal proof, please refer to the <span class="co">[</span><span class="ot">Appendix section</span><span class="co">](./04-appendix.md)</span>.</span>
 <span id="cb27-44"><a href="#cb27-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-45"><a href="#cb27-45" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Example: Spectral Embedding</span></span>
+<span id="cb27-45"><a href="#cb27-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### Example: Spectral Embedding</span></span>
 <span id="cb27-46"><a href="#cb27-46" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-47"><a href="#cb27-47" aria-hidden="true" tabindex="-1"></a>Let us demonstrate the results with a simple example as follows.</span>
 <span id="cb27-48"><a href="#cb27-48" aria-hidden="true" tabindex="-1"></a></span>
@@ -1987,7 +1974,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-196"><a href="#cb27-196" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-197"><a href="#cb27-197" aria-hidden="true" tabindex="-1"></a>It is important to note that the eigenvector corresponding to the smallest eigenvalue (which is always zero for connected graphs) is trivial - it's the all-one vector. Therefore, in practice, we typically compute the $d+1$ smallest eigenvectors and discard the one corresponding to the zero eigenvalue.</span>
 <span id="cb27-198"><a href="#cb27-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-199"><a href="#cb27-199" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Example: Laplacian Eigenmap</span></span>
+<span id="cb27-199"><a href="#cb27-199" aria-hidden="true" tabindex="-1"></a><span class="fu">### Example: Laplacian Eigenmap</span></span>
 <span id="cb27-200"><a href="#cb27-200" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-201"><a href="#cb27-201" aria-hidden="true" tabindex="-1"></a>Let us first compute the Laplacian matrix and its eigenvectors.</span>
 <span id="cb27-204"><a href="#cb27-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
@@ -2022,7 +2009,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-235"><a href="#cb27-235" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-236"><a href="#cb27-236" aria-hidden="true" tabindex="-1"></a>In this section, we will introduce *word2vec*, a powerful technique for learning word embeddings. word2vec is a neural network model that learns words embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 {footcite}<span class="in">`mikolov2013distributed`</span>.</span>
 <span id="cb27-237"><a href="#cb27-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-238"><a href="#cb27-238" aria-hidden="true" tabindex="-1"></a><span class="fu">#### How it works</span></span>
+<span id="cb27-238"><a href="#cb27-238" aria-hidden="true" tabindex="-1"></a><span class="fu">### How it works</span></span>
 <span id="cb27-239"><a href="#cb27-239" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-240"><a href="#cb27-240" aria-hidden="true" tabindex="-1"></a>"You shall know a word by the company it keeps" {footcite}<span class="in">`church1988word`</span> is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context.</span>
 <span id="cb27-241"><a href="#cb27-241" aria-hidden="true" tabindex="-1"></a>word2vec operates on the same principle.</span>
@@ -2050,7 +2037,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-265"><a href="#cb27-265" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-266"><a href="#cb27-266" aria-hidden="true" tabindex="-1"></a>We can consider word2vec as a *dimensionality reduction* technique that reduces the dimensionality of the input layer to the hidden layer based on the co-occurrence of words within a short distance. The distance is named the *window size*, which is a user-defined hyperparameter.</span>
 <span id="cb27-267"><a href="#cb27-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-268"><a href="#cb27-268" aria-hidden="true" tabindex="-1"></a><span class="fu">#### What's special about word2vec?</span></span>
+<span id="cb27-268"><a href="#cb27-268" aria-hidden="true" tabindex="-1"></a><span class="fu">### What's special about word2vec?</span></span>
 <span id="cb27-269"><a href="#cb27-269" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-270"><a href="#cb27-270" aria-hidden="true" tabindex="-1"></a>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</span>
 <span id="cb27-271"><a href="#cb27-271" aria-hidden="true" tabindex="-1"></a></span>
@@ -2165,7 +2152,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-388"><a href="#cb27-388" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-389"><a href="#cb27-389" aria-hidden="true" tabindex="-1"></a>There are some technical details that we need to be aware of, which we will learn by implementing DeepWalk in the following exercise.</span>
 <span id="cb27-390"><a href="#cb27-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-391"><a href="#cb27-391" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Exercise 01: Implement DeepWalk</span></span>
+<span id="cb27-391"><a href="#cb27-391" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 01: Implement DeepWalk</span></span>
 <span id="cb27-392"><a href="#cb27-392" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-393"><a href="#cb27-393" aria-hidden="true" tabindex="-1"></a>In this exercise, we implement DeepWalk step by step.</span>
 <span id="cb27-394"><a href="#cb27-394" aria-hidden="true" tabindex="-1"></a></span>
@@ -2393,7 +2380,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb27-634"><a href="#cb27-634" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-635"><a href="#cb27-635" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Negative sampling**: node2vec uses negative sampling, instead of hierarchical softmax. This difference appears to be minor, but it has significant consequences on the characteristics of the embeddings. This is beyond the scope of this lecture, but you can refer to {footcite}<span class="in">`kojaku2021neurips`</span> and {footcite}<span class="in">`dyer2014notes`</span> for more details.</span>
 <span id="cb27-636"><a href="#cb27-636" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-637"><a href="#cb27-637" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Exercise 02: Implement node2vec</span></span>
+<span id="cb27-637"><a href="#cb27-637" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 02: Implement node2vec</span></span>
 <span id="cb27-638"><a href="#cb27-638" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-639"><a href="#cb27-639" aria-hidden="true" tabindex="-1"></a>Let's implement the biased random walk for node2vec</span>
 <span id="cb27-642"><a href="#cb27-642" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>

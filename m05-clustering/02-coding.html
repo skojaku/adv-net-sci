@@ -571,20 +571,9 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#balanced-cut-approaches" id="toc-balanced-cut-approaches" class="nav-link active" data-scroll-target="#balanced-cut-approaches"><span class="header-section-number">24.1</span> Balanced Cut Approaches</a>
   <ul class="collapse">
-  <li><a href="#ratio-cut" id="toc-ratio-cut" class="nav-link" data-scroll-target="#ratio-cut"><span class="header-section-number">24.1.1</span> Ratio Cut</a></li>
-  <li><a href="#normalized-cut" id="toc-normalized-cut" class="nav-link" data-scroll-target="#normalized-cut"><span class="header-section-number">24.1.2</span> Normalized Cut</a></li>
-  <li><a href="#cut-into-more-than-two-communities" id="toc-cut-into-more-than-two-communities" class="nav-link" data-scroll-target="#cut-into-more-than-two-communities"><span class="header-section-number">24.1.3</span> Cut into more than two communities</a></li>
-  <li><a href="#algorithms-to-find-the-best-cut" id="toc-algorithms-to-find-the-best-cut" class="nav-link" data-scroll-target="#algorithms-to-find-the-best-cut"><span class="header-section-number">24.1.4</span> Algorithms to find the best cut</a></li>
-  <li><a href="#issue-of-ratio-cut-and-normalized-cut" id="toc-issue-of-ratio-cut-and-normalized-cut" class="nav-link" data-scroll-target="#issue-of-ratio-cut-and-normalized-cut"><span class="header-section-number">24.1.5</span> Issue of Ratio cut and Normalized cut</a></li>
-  </ul></li>
-  <li><a href="#modularity-implementation" id="toc-modularity-implementation" class="nav-link" data-scroll-target="#modularity-implementation"><span class="header-section-number">24.2</span> Modularity Implementation</a>
-  <ul class="collapse">
-  <li><a href="#modularity-demo" id="toc-modularity-demo" class="nav-link" data-scroll-target="#modularity-demo"><span class="header-section-number">24.2.1</span> Modularity Demo</a></li>
-  <li><a href="#limitation-of-modularity" id="toc-limitation-of-modularity" class="nav-link" data-scroll-target="#limitation-of-modularity"><span class="header-section-number">24.2.2</span> Limitation of Modularity</a></li>
-  </ul></li>
+  <li><a href="#balanced-cut-approaches" id="toc-balanced-cut-approaches" class="nav-link active" data-scroll-target="#balanced-cut-approaches"><span class="header-section-number">24.1</span> Balanced Cut Approaches</a></li>
+  <li><a href="#modularity-implementation" id="toc-modularity-implementation" class="nav-link" data-scroll-target="#modularity-implementation"><span class="header-section-number">24.2</span> Modularity Implementation</a></li>
   </ul>
 </nav>
     </div>
@@ -623,7 +612,7 @@ window.Quarto = {
 <li><span class="math inline">|V_1|</span> (or |V_2|) is the number of nodes in the community <span class="math inline">V_1</span> (or <span class="math inline">V_2</span>).</li>
 </ul>
 <p>The normalization factor <span class="math inline">1/(|V_1| |V_2|)</span> balances the community sizes. It’s smallest when communities are equal (<span class="math inline">|V_1| = |V_2|</span>) and largest when one community has only one node (<span class="math inline">|V_1| = 1</span> or <span class="math inline">|V_2| = 1</span>).</p>
-<div id="ac5ba6a0" class="cell">
+<div id="119a68fe" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
@@ -693,7 +682,7 @@ We can now calculate:
 
 :::
 
-::: {#b5198786 .cell}
+::: {#2c002480 .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input", "remove-output"]
 
@@ -902,10 +891,11 @@ Exercise 3
 </div>
 </section>
 <section id="limitation-of-modularity" class="level3" data-number="24.2.2">
-<h3 data-number="24.2.2" class="anchored"><span class="header-section-number">24.2.2</span> Limitation of Modularity</h3>
+<h3 data-number="24.2.2" class="anchored" data-anchor-id="limitation-of-modularity"><span class="header-section-number">24.2.2</span> Limitation of Modularity</h3>
 <p>Like many other community detection methods, modularity is not a silver bullet. Thanks to extensive research, we know many limitations of modularity. Let’s take a look at a few of them.</p>
-<section id="resolution-limit" class="level4" data-number="24.2.2.1">
-<h4 data-number="24.2.2.1" class="anchored"><span class="header-section-number">24.2.2.1</span> Resolution limit</h4>
+</section>
+<section id="resolution-limit" class="level3" data-number="24.2.3">
+<h3 data-number="24.2.3" class="anchored"><span class="header-section-number">24.2.3</span> Resolution limit</h3>
 <p>The modularity finds two cliques connected by a single edge as two separate communities. But what if we add another community to this network? Our intuition tells us that, because communities are <em>local</em> structure, the two cliques should remain separated by the modularity. But is this the case?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Exercise 4">
 <div class="callout-header d-flex align-content-center">
@@ -936,8 +926,8 @@ Click here to see the solution
 </div>
 </div>
 </div>
-<section id="spurious-communities" class="level4" data-number="24.2.2.2">
-<h4 data-number="24.2.2.2" class="anchored" data-anchor-id="spurious-communities"><span class="header-section-number">24.2.2.2</span> Spurious communities</h4>
+<section id="spurious-communities" class="level3" data-number="24.2.4">
+<h3 data-number="24.2.4" class="anchored" data-anchor-id="spurious-communities"><span class="header-section-number">24.2.4</span> Spurious communities</h3>
 <p>What if the network does not have any communities at all? Does the modularity find no communities? To find out, let’s run the modularity on a random network, where each pair of nodes is connected randomly with the same probability.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Exercise 5">
 <div class="callout-header d-flex align-content-center">
@@ -980,8 +970,8 @@ Modularity maximization is not a reliable method to find communities in networks
 </div>
 </div>
 </section>
-<section id="so-should-we-avoid-modularity" class="level3" data-number="24.2.3">
-<h3 data-number="24.2.3" class="anchored" data-anchor-id="so-should-we-avoid-modularity"><span class="header-section-number">24.2.3</span> So should we avoid modularity?</h3>
+<section id="so-should-we-avoid-modularity" class="level3" data-number="24.2.5">
+<h3 data-number="24.2.5" class="anchored" data-anchor-id="so-should-we-avoid-modularity"><span class="header-section-number">24.2.5</span> So should we avoid modularity?</h3>
 <p>The simple answer is no. Modularity is still a powerful tool for finding communities in networks. Like any other method, it has its limitations. And knowing these limitations is crucial for using it effectively. There is “free lunch” in community detection {footcite}<code>peel2017ground</code>.</p>
 <p>When these implicit assumptions are met, modularity is in fact a very powerful method for community detection. For example, it is in fact an “optimal” method for a certain class of networks {footcite}<code>nadakuditi2012graph</code>.</p>
 <p>So, keep modularity in your toolbox. Just remember to use it wisely!</p>
@@ -999,7 +989,7 @@ Modularity maximization is not a reliable method to find communities in networks
 P(A_{ij}=1|c_i, c_j) = p_{c_i,c_j}
 </span></p>
 <p>where <span class="math inline">p_{c_i,c_j}</span> is the probability of an edge between nodes in community <span class="math inline">c_i</span> and <span class="math inline">c_j</span>, respectively. Notice that the edge probability is fully specified by the community membership of the nodes. This means that nodes in a community are connected with the same probability irrespective of the nodes themselves, and the nodes in different two communities are also connected with the same probability. As a result, when plotting the adjacency matrix, we observe “blocks” of different edge densities, which is why we say that SBM is a “block model”.</p>
-<div id="aa7b6259" class="cell">
+<div id="1252d94f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1064,7 +1054,7 @@ P_{c,c'} = \begin{cases}
 <section id="generating-networks-with-sbm" class="level3" data-number="24.3.3">
 <h3 data-number="24.3.3" class="anchored" data-anchor-id="generating-networks-with-sbm"><span class="header-section-number">24.3.3</span> Generating networks with SBM</h3>
 <p>It is easy to generate networks with SBM using igraph. For example, the assortativity communities can be generated as follows.</p>
-<div id="e313523f" class="cell">
+<div id="bdba4f42" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -1113,7 +1103,7 @@ P(\left\{A_{ij}\right\}_{ij}) = \prod_{i&lt;j} P(A_{ij}=1|c_i, c_j)^{A_{ij}} (1-
 </span></p>
 <p>We call this the <strong>likelihood function</strong>. It tells us how likely we are to see this network given our community guess. We can play around with different community assignments and edge probabilities to see which one gives us the highest likelihood. To make this game easier, let’s first figure out the best edge probabilities for a given community assignment.</p>
 <p>Our likelihood function has a special shape - it is <em>a concave function</em> with respect to <span class="math inline">p_{c,c'}</span>. This means that the likelihood function is a hill with only one peak when we look at it in terms of edge probability <span class="math inline">p_{c,c'}</span>.</p>
-<div id="a5967c0a" class="cell">
+<div id="e8c91f35" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1164,7 +1154,7 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 \end{cases}
 </span></p>
 <p>Why do we have two different equations for <span class="math inline">p_{c,c'}</span>? It’s because we are counting each pair of nodes only by once. It is easy to verify when looking at the adjacency matrix:</p>
-<div id="71903759" class="cell">
+<div id="76518089" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1218,7 +1208,6 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 </section>
 </div>
 </div>
-</section>
 </section>
 </section>
 
@@ -1987,7 +1976,7 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 <span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a>Like many other community detection methods, modularity is not a silver bullet. Thanks to extensive research, we know many limitations of modularity. Let's take a look at a few of them.</span>
 <span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Resolution limit</span></span>
+<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a><span class="fu">### Resolution limit</span></span>
 <span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a>The modularity finds two cliques connected by a single edge as two separate communities.</span>
 <span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a>But what if we add another community to this network?</span>
@@ -2005,7 +1994,7 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 <span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a>Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges $m_c$ in a community $c$ has to be bigger than a certain size. This size is related to the total number of edges $m$ in the whole network. We write this mathematically as ${\cal O}(m)$.</span>
 <span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Spurious communities</span></span>
+<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a><span class="fu">### Spurious communities</span></span>
 <span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a>What if the network does not have any communities at all? Does the modularity find no communities? To find out, let's run the modularity on a random network, where each pair of nodes is connected randomly with the same probability.</span>
 <span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a></span>

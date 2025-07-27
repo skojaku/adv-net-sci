@@ -571,20 +571,9 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#from-module-8-network-embedding-foundations" id="toc-from-module-8-network-embedding-foundations" class="nav-link active" data-scroll-target="#from-module-8-network-embedding-foundations"><span class="header-section-number">39.1</span> From Module 8: Network Embedding Foundations</a>
   <ul class="collapse">
-  <li><a href="#spectral-embedding-matrix-decomposition-approach" id="toc-spectral-embedding-matrix-decomposition-approach" class="nav-link" data-scroll-target="#spectral-embedding-matrix-decomposition-approach"><span class="header-section-number">39.1.1</span> Spectral Embedding: Matrix Decomposition Approach</a></li>
-  <li><a href="#laplacian-eigenmap-graph-aware-embedding" id="toc-laplacian-eigenmap-graph-aware-embedding" class="nav-link" data-scroll-target="#laplacian-eigenmap-graph-aware-embedding"><span class="header-section-number">39.1.2</span> Laplacian Eigenmap: Graph-Aware Embedding</a></li>
-  <li><a href="#neural-embedding-word2vec-fundamentals" id="toc-neural-embedding-word2vec-fundamentals" class="nav-link" data-scroll-target="#neural-embedding-word2vec-fundamentals"><span class="header-section-number">39.1.3</span> Neural Embedding: word2vec Fundamentals</a></li>
-  </ul></li>
-  <li><a href="#essential-machine-learning-concepts-for-gnns" id="toc-essential-machine-learning-concepts-for-gnns" class="nav-link" data-scroll-target="#essential-machine-learning-concepts-for-gnns"><span class="header-section-number">39.2</span> Essential Machine Learning Concepts for GNNs</a>
-  <ul class="collapse">
-  <li><a href="#loss-functions-and-optimization" id="toc-loss-functions-and-optimization" class="nav-link" data-scroll-target="#loss-functions-and-optimization"><span class="header-section-number">39.2.1</span> 1. Loss Functions and Optimization</a></li>
-  <li><a href="#feature-learning-vs.-feature-engineering" id="toc-feature-learning-vs.-feature-engineering" class="nav-link" data-scroll-target="#feature-learning-vs.-feature-engineering"><span class="header-section-number">39.2.2</span> 2. Feature Learning vs.&nbsp;Feature Engineering</a></li>
-  <li><a href="#inductive-vs.-transductive-learning" id="toc-inductive-vs.-transductive-learning" class="nav-link" data-scroll-target="#inductive-vs.-transductive-learning"><span class="header-section-number">39.2.3</span> 3. Inductive vs.&nbsp;Transductive Learning</a></li>
-  <li><a href="#nonlinear-transformations" id="toc-nonlinear-transformations" class="nav-link" data-scroll-target="#nonlinear-transformations"><span class="header-section-number">39.2.4</span> 4. Nonlinear Transformations</a></li>
-  </ul></li>
+  <li><a href="#from-module-8-network-embedding-foundations" id="toc-from-module-8-network-embedding-foundations" class="nav-link active" data-scroll-target="#from-module-8-network-embedding-foundations"><span class="header-section-number">39.1</span> From Module 8: Network Embedding Foundations</a></li>
+  <li><a href="#essential-machine-learning-concepts-for-gnns" id="toc-essential-machine-learning-concepts-for-gnns" class="nav-link" data-scroll-target="#essential-machine-learning-concepts-for-gnns"><span class="header-section-number">39.2</span> Essential Machine Learning Concepts for GNNs</a></li>
   <li><a href="#connection-to-graph-neural-networks" id="toc-connection-to-graph-neural-networks" class="nav-link" data-scroll-target="#connection-to-graph-neural-networks"><span class="header-section-number">39.3</span> Connection to Graph Neural Networks</a></li>
   </ul>
 </nav>
@@ -628,8 +617,9 @@ window.Quarto = {
 <li><span class="math inline">J(\mathbf{U})</span> is the loss function that measures the difference between the original network <span class="math inline">\mathbf{A}</span> and the reconstructed network <span class="math inline">\mathbf{U}\mathbf{U}^\top</span>.</li>
 </ol>
 <p>By minimizing the Frobenius norm with respect to <span class="math inline">\mathbf{U}</span>, we obtain the best low-dimensional embedding of the network.</p>
-<section id="spectral-decomposition-solution" class="level4" data-number="39.1.1.1">
-<h4 data-number="39.1.1.1" class="anchored" data-anchor-id="spectral-decomposition-solution"><span class="header-section-number">39.1.1.1</span> Spectral Decomposition Solution</h4>
+</section>
+<section id="spectral-decomposition-solution" class="level3" data-number="39.1.2">
+<h3 data-number="39.1.2" class="anchored" data-anchor-id="spectral-decomposition-solution"><span class="header-section-number">39.1.2</span> Spectral Decomposition Solution</h3>
 <p>Consider the spectral decomposition of <span class="math inline">\mathbf{A}</span>:</p>
 <p><span class="math display">
 \mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top
@@ -637,9 +627,8 @@ window.Quarto = {
 <p>where <span class="math inline">\lambda_i</span> are weights and <span class="math inline">\mathbf{u}_i</span> are column vectors. Each term <span class="math inline">\lambda_i \mathbf{u}_i \mathbf{u}_i^\top</span> is a rank-one matrix that captures a part of the network’s structure. The larger the weight <span class="math inline">\lambda_i</span>, the more important that term is in describing the network.</p>
 <p>To compress the network, we can select the <span class="math inline">d</span> terms with the largest weights <span class="math inline">\lambda_i</span>. By combining the corresponding <span class="math inline">\mathbf{u}_i</span> vectors into a matrix <span class="math inline">\mathbf{U}</span>, we obtain a good low-dimensional embedding of the network.</p>
 </section>
-</section>
-<section id="laplacian-eigenmap-graph-aware-embedding" class="level3" data-number="39.1.2">
-<h3 data-number="39.1.2" class="anchored" data-anchor-id="laplacian-eigenmap-graph-aware-embedding"><span class="header-section-number">39.1.2</span> Laplacian Eigenmap: Graph-Aware Embedding</h3>
+<section id="laplacian-eigenmap-graph-aware-embedding" class="level3" data-number="39.1.3">
+<h3 data-number="39.1.3" class="anchored" data-anchor-id="laplacian-eigenmap-graph-aware-embedding"><span class="header-section-number">39.1.3</span> Laplacian Eigenmap: Graph-Aware Embedding</h3>
 <p>Laplacian Eigenmap is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:</p>
 <p><span class="math display">
 \min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
@@ -658,18 +647,18 @@ k_i &amp; \text{if } i = j \\
 </span></p>
 <p>The solution is the <span class="math inline">d</span> eigenvectors associated with the <span class="math inline">d</span> smallest eigenvalues of <span class="math inline">\mathbf{L}</span>.</p>
 </section>
-<section id="neural-embedding-word2vec-fundamentals" class="level3" data-number="39.1.3">
-<h3 data-number="39.1.3" class="anchored" data-anchor-id="neural-embedding-word2vec-fundamentals"><span class="header-section-number">39.1.3</span> Neural Embedding: word2vec Fundamentals</h3>
+<section id="neural-embedding-word2vec-fundamentals" class="level3" data-number="39.1.4">
+<h3 data-number="39.1.4" class="anchored" data-anchor-id="neural-embedding-word2vec-fundamentals"><span class="header-section-number">39.1.4</span> Neural Embedding: word2vec Fundamentals</h3>
 <p>Neural embedding methods like word2vec provide another perspective on learning representations. word2vec is a neural network model that learns word embeddings in a continuous vector space, operating on the principle: “You shall know a word by the company it keeps.”</p>
-<section id="key-concepts-from-word2vec" class="level4" data-number="39.1.3.1">
-<h4 data-number="39.1.3.1" class="anchored" data-anchor-id="key-concepts-from-word2vec"><span class="header-section-number">39.1.3.1</span> Key Concepts from word2vec:</h4>
+</section>
+<section id="key-concepts-from-word2vec" class="level3" data-number="39.1.5">
+<h3 data-number="39.1.5" class="anchored" data-anchor-id="key-concepts-from-word2vec"><span class="header-section-number">39.1.5</span> Key Concepts from word2vec:</h3>
 <ol type="1">
 <li><p><strong>Context Windows</strong>: word2vec identifies a word’s context by examining the words within a fixed window around it.</p></li>
 <li><p><strong>Neural Architecture</strong>: word2vec uses a neural network that looks like a bow tie - two layers of vocabulary size coupled with a much smaller hidden layer.</p></li>
 <li><p><strong>Dimensionality Reduction</strong>: word2vec can be considered as a dimensionality reduction technique that reduces the dimensionality based on the co-occurrence of words within a short distance.</p></li>
 <li><p><strong>Dense Vector Representations</strong>: With word2vec, words are represented as dense vectors, enabling exploration of relationships using simple linear algebra.</p></li>
 </ol>
-</section>
 </section>
 </section>
 <section id="essential-machine-learning-concepts-for-gnns" class="level2" data-number="39.2">
@@ -1218,7 +1207,7 @@ k_i &amp; \text{if } i = j \\
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>By minimizing the Frobenius norm with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Spectral Decomposition Solution</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### Spectral Decomposition Solution</span></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>Consider the spectral decomposition of $\mathbf{A}$:</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
@@ -1261,7 +1250,7 @@ k_i &amp; \text{if } i = j \\
 <span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>Neural embedding methods like word2vec provide another perspective on learning representations. word2vec is a neural network model that learns word embeddings in a continuous vector space, operating on the principle: "You shall know a word by the company it keeps."</span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Key Concepts from word2vec:</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Concepts from word2vec:</span></span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Context Windows**: word2vec identifies a word's context by examining the words within a fixed window around it.</span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>

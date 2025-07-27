@@ -571,27 +571,11 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul>
-  <li><a href="#preliminaries-image-processing" id="toc-preliminaries-image-processing" class="nav-link active" data-scroll-target="#preliminaries-image-processing"><span class="header-section-number">41.1</span> Preliminaries: Image Processing</a>
   <ul class="collapse">
-  <li><a href="#edge-detection-problem-in-image-processing" id="toc-edge-detection-problem-in-image-processing" class="nav-link" data-scroll-target="#edge-detection-problem-in-image-processing"><span class="header-section-number">41.1.1</span> Edge Detection Problem in Image Processing</a></li>
-  </ul></li>
-  <li><a href="#from-image-to-graph" id="toc-from-image-to-graph" class="nav-link" data-scroll-target="#from-image-to-graph"><span class="header-section-number">41.2</span> From Image to Graph</a>
-  <ul class="collapse">
-  <li><a href="#analogy-between-image-and-graph-data" id="toc-analogy-between-image-and-graph-data" class="nav-link" data-scroll-target="#analogy-between-image-and-graph-data"><span class="header-section-number">41.2.1</span> Analogy between image and graph data</a></li>
-  <li><a href="#spectral-filter-on-graphs" id="toc-spectral-filter-on-graphs" class="nav-link" data-scroll-target="#spectral-filter-on-graphs"><span class="header-section-number">41.2.2</span> Spectral filter on graphs</a></li>
-  </ul></li>
-  <li><a href="#graph-convolutional-networks" id="toc-graph-convolutional-networks" class="nav-link" data-scroll-target="#graph-convolutional-networks"><span class="header-section-number">41.3</span> Graph Convolutional Networks</a>
-  <ul class="collapse">
-  <li><a href="#spectral-graph-convolutional-networks" id="toc-spectral-graph-convolutional-networks" class="nav-link" data-scroll-target="#spectral-graph-convolutional-networks"><span class="header-section-number">41.3.1</span> Spectral Graph Convolutional Networks</a></li>
-  <li><a href="#from-spectral-to-spatial" id="toc-from-spectral-to-spatial" class="nav-link" data-scroll-target="#from-spectral-to-spatial"><span class="header-section-number">41.3.2</span> From Spectral to Spatial</a></li>
-  </ul></li>
-  <li><a href="#popular-graph-neural-networks" id="toc-popular-graph-neural-networks" class="nav-link" data-scroll-target="#popular-graph-neural-networks"><span class="header-section-number">41.4</span> Popular Graph Neural Networks</a>
-  <ul class="collapse">
-  <li><a href="#graphsage-sample-and-aggregate" id="toc-graphsage-sample-and-aggregate" class="nav-link" data-scroll-target="#graphsage-sample-and-aggregate"><span class="header-section-number">41.4.1</span> GraphSAGE: Sample and Aggregate</a></li>
-  <li><a href="#graph-attention-networks-gat-differentiate-individual-neighbors" id="toc-graph-attention-networks-gat-differentiate-individual-neighbors" class="nav-link" data-scroll-target="#graph-attention-networks-gat-differentiate-individual-neighbors"><span class="header-section-number">41.4.2</span> Graph Attention Networks (GAT): Differentiate Individual Neighbors</a></li>
-  <li><a href="#graph-isomorphism-network-gin-differentiate-the-aggregation" id="toc-graph-isomorphism-network-gin-differentiate-the-aggregation" class="nav-link" data-scroll-target="#graph-isomorphism-network-gin-differentiate-the-aggregation"><span class="header-section-number">41.4.3</span> Graph Isomorphism Network (GIN): Differentiate the Aggregation</a></li>
-  </ul></li>
+  <li><a href="#preliminaries-image-processing" id="toc-preliminaries-image-processing" class="nav-link active" data-scroll-target="#preliminaries-image-processing"><span class="header-section-number">41.1</span> Preliminaries: Image Processing</a></li>
+  <li><a href="#from-image-to-graph" id="toc-from-image-to-graph" class="nav-link" data-scroll-target="#from-image-to-graph"><span class="header-section-number">41.2</span> From Image to Graph</a></li>
+  <li><a href="#graph-convolutional-networks" id="toc-graph-convolutional-networks" class="nav-link" data-scroll-target="#graph-convolutional-networks"><span class="header-section-number">41.3</span> Graph Convolutional Networks</a></li>
+  <li><a href="#popular-graph-neural-networks" id="toc-popular-graph-neural-networks" class="nav-link" data-scroll-target="#popular-graph-neural-networks"><span class="header-section-number">41.4</span> Popular Graph Neural Networks</a></li>
   </ul>
 </nav>
     </div>
@@ -626,8 +610,9 @@ window.Quarto = {
 <p><img src="https://media.geeksforgeeks.org/wp-content/uploads/20240616211411/Screenshot-(85).webp" class="img-fluid"></p>
 <p>To approach the problem, let us first remind that an image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image can be represented as a 2D matrix, where each element in the matrix represents the brightness of a pixel.</p>
 <p><img src="https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png" class="img-fluid"></p>
-<section id="an-example" class="level4" data-number="41.1.1.1">
-<h4 data-number="41.1.1.1" class="anchored" data-anchor-id="an-example"><span class="header-section-number">41.1.1.1</span> An example</h4>
+</section>
+<section id="an-example" class="level3" data-number="41.1.2">
+<h3 data-number="41.1.2" class="anchored" data-anchor-id="an-example"><span class="header-section-number">41.1.2</span> An example</h3>
 <p>Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a <em>significant brightness change between adjacent pixels</em>. To be more concrete, let’s consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.</p>
 <p><span class="math display">
 X = \begin{bmatrix}
@@ -683,8 +668,8 @@ Z = \begin{bmatrix}
 </span></p>
 <p>When applied to the entire image, the result is the same as the horizontal derivative.</p>
 </section>
-<section id="convolution" class="level4" data-number="41.1.1.2">
-<h4 data-number="41.1.1.2" class="anchored" data-anchor-id="convolution"><span class="header-section-number">41.1.1.2</span> Convolution</h4>
+<section id="convolution" class="level3" data-number="41.1.3">
+<h3 data-number="41.1.3" class="anchored" data-anchor-id="convolution"><span class="header-section-number">41.1.3</span> Convolution</h3>
 <p>We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.</p>
 <p><span class="math display">
 \nabla Z_{22} = \sum_{i=-1}^1 \sum_{j=-1}^1 K_{h-(i+1),w-(j+1)} Z_{2+i, 2+j}
@@ -707,7 +692,6 @@ K_{\text{vertical}} = \begin{bmatrix}
 Y_{ij} = \sum_{p}\sum_{q} K_{pq} X_{i+p-\frac{h+1}{2}, j+q-\frac{w+1}{2}}
 </span></p>
 <p>where <span class="math inline">h</span> and <span class="math inline">w</span> are the height and width of the kernel, respectively.</p>
-</section>
 </section>
 </section>
 <section id="from-image-to-graph" class="level2" data-number="41.2">
@@ -779,8 +763,9 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <li>Large eigenvalues mean large differences between neighbors (high frequency), while small eigenvalues mean small differences (low frequency).</li>
 </ol>
 <p>Thus, if <span class="math inline">{\bf x}</span> aligns well with <span class="math inline">{\mathbf u}_i</span> with a large <span class="math inline">\lambda_i</span>, then <span class="math inline">{\bf x}</span> has a strong high-frequency component; if <span class="math inline">{\bf x}</span> aligns well with <span class="math inline">{\mathbf u}_i</span> with a small <span class="math inline">\lambda_i</span>, then <span class="math inline">{\bf x}</span> has strong low-frequency component.</p>
-<section id="spectral-filtering" class="level4" data-number="41.2.2.1">
-<h4 data-number="41.2.2.1" class="anchored" data-anchor-id="spectral-filtering"><span class="header-section-number">41.2.2.1</span> Spectral Filtering</h4>
+</section>
+<section id="spectral-filtering" class="level3" data-number="41.2.3">
+<h3 data-number="41.2.3" class="anchored" data-anchor-id="spectral-filtering"><span class="header-section-number">41.2.3</span> Spectral Filtering</h3>
 <p>Eigenvalues <span class="math inline">\lambda_i</span> can be thought of as a <em>filter</em> that controls which frequency components pass through. Instead of using the filter associated with the Laplacian matrix, we can design a filter <span class="math inline">h(\lambda_i)</span> to control which frequency components pass through. This leads to the idea of <em>spectral filtering</em>. Two common filters are:</p>
 <ol type="1">
 <li><strong>Low-pass Filter</strong>: <span class="math display">h_{\text{low}}(\lambda) = \frac{1}{1 + \alpha\lambda}</span>
@@ -796,7 +781,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <li>Emphasizes differences between neighbors</li>
 </ul></li>
 </ol>
-<div id="24e1b04b" class="cell">
+<div id="897b1c19" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -825,10 +810,10 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 </section>
-<section id="example" class="level4" data-number="41.2.2.2">
-<h4 data-number="41.2.2.2" class="anchored" data-anchor-id="example"><span class="header-section-number">41.2.2.2</span> Example</h4>
+<section id="example" class="level3" data-number="41.2.4">
+<h3 data-number="41.2.4" class="anchored" data-anchor-id="example"><span class="header-section-number">41.2.4</span> Example</h3>
 <p>Let us showcase the idea of spectral filtering with a simple example with the karate club network.</p>
-<div id="a861d2f6" class="cell">
+<div id="ec7e556d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -842,7 +827,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>We will first compute the laplacian matrix and its eigendecomposition.</p>
-<div id="ae97438c" class="cell">
+<div id="6014bcd9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Laplacian matrix</span></span>
@@ -860,7 +845,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>Now, let’s create a low-pass and high-pass filter.</p>
-<div id="12adb9c7" class="cell">
+<div id="0f4c1290" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="dv">2</span></span>
@@ -877,7 +862,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </span></p>
 <p>where <span class="math inline">{\bf L}_{\text{low}}</span> and <span class="math inline">{\bf L}_{\text{high}}</span> are the low-pass and high-pass filters, respectively, and <span class="math inline">{\bf x}'</span> is the convolved feature vector.</p>
 <p>Now, let’s see how these filters work. Our first example is a random feature vector.</p>
-<div id="453cdaff" class="cell">
+<div id="3b038977" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Random feature vector</span></span>
@@ -891,7 +876,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </details>
 </div>
 <p>Let us visualize the results.</p>
-<div id="1a2be977" class="cell">
+<div id="eb88d8d5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -924,7 +909,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </div>
 <p>We observe that the low-pass filter results in smoother <span class="math inline">{\bf x}</span> between connected nodes (i.e., neighboring nodes have similar <span class="math inline">{\bf x}</span>). The original <span class="math inline">{\bf x}</span> and <span class="math inline">{\bf x}'_{\text{low}}</span> are very similar because random variables are high-frequency components. In contrast, when we apply the high-pass filter, <span class="math inline">{\bf x}'_{\text{high}}</span> is similar to <span class="math inline">{\bf x}</span> because the high-frequency components are not filtered.</p>
 <p>Let’s now use an eigenvector as our feature vector <span class="math inline">{\bf x}</span>.</p>
-<div id="11b6b2a5" class="cell">
+<div id="94390ef4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -958,7 +943,6 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <p>The high-pass filter increases the contrast of the eigenvector centrality, emphasizing the differences between nodes. On the other hand, the low-pass filter smooths out the eigenvector centrality.</p>
 </section>
 </section>
-</section>
 <section id="graph-convolutional-networks" class="level2" data-number="41.3">
 <h2 data-number="41.3" class="anchored" data-anchor-id="graph-convolutional-networks"><span class="header-section-number">41.3</span> Graph Convolutional Networks</h2>
 <p>We have seen that spectral filters give us a principled way to think about “convolution” on irregular graph structures, and controlling the frequency components brings out different aspects of the data. We now go one step further: instead of designing filters by hand, we can learn them from data for specific tasks.</p>
@@ -987,8 +971,9 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <h3 data-number="41.3.2" class="anchored" data-anchor-id="from-spectral-to-spatial"><span class="header-section-number">41.3.2</span> From Spectral to Spatial</h3>
 <p>Spectral GCNs are mathematically elegant but have two main limitations: 1. <strong>Computational Limitation</strong>: Computing the spectra of the Laplacian is expensive <span class="math inline">{\cal O}(N^3)</span> and prohibitive for large graphs 2. <strong>Spatial Locality</strong>: The learned filters are not spatially localized. A node can be influenced by all other nodes in the graph.</p>
 <p>These two limitations motivate the development of spatial GCNs.</p>
-<section id="chebnet" class="level4" data-number="41.3.2.1">
-<h4 data-number="41.3.2.1" class="anchored" data-anchor-id="chebnet"><span class="header-section-number">41.3.2.1</span> ChebNet</h4>
+</section>
+<section id="chebnet" class="level3" data-number="41.3.3">
+<h3 data-number="41.3.3" class="anchored" data-anchor-id="chebnet"><span class="header-section-number">41.3.3</span> ChebNet</h3>
 <p>ChebNet {footcite}<code>defferrard2016convolutional</code> is one of the earliest spatial GCNs that bridges the gap between spectral and spatial domains. The key idea is to leverage Chebyshev polynomials to approximate <span class="math inline">{\bf L}_{\text{learn}}</span> by</p>
 <p><span class="math display">
 {\bf L}_{\text{learn}} \approx \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}), \quad \text{where} \quad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L} - {\bf I},
@@ -1007,11 +992,11 @@ T_k(\tilde{{\bf L}}) &amp;= 2\tilde{{\bf L}} T_{k-1}(\tilde{{\bf L}}) - T_{k-2}(
 </span></p>
 <p>where: - <span class="math inline">T_k(\tilde{{\bf L}})</span> applies the k-th Chebyshev polynomial to the scaled Laplacian matrix - <span class="math inline">\theta_k</span> are the learnable parameters - K is the order of the polynomial (typically small, e.g., K=3)</p>
 </section>
-<section id="graph-convolutional-networks-by-kipf-and-welling" class="level4" data-number="41.3.2.2">
-<h4 data-number="41.3.2.2" class="anchored" data-anchor-id="graph-convolutional-networks-by-kipf-and-welling"><span class="header-section-number">41.3.2.2</span> Graph Convolutional Networks by Kipf and Welling</h4>
+<section id="graph-convolutional-networks-by-kipf-and-welling" class="level3" data-number="41.3.4">
+<h3 data-number="41.3.4" class="anchored" data-anchor-id="graph-convolutional-networks-by-kipf-and-welling"><span class="header-section-number">41.3.4</span> Graph Convolutional Networks by Kipf and Welling</h3>
 <p>While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) {footcite}<code>kipf2017semi</code> proposed an even simpler and highly effective variant called <strong>Graph Convolutional Networks (GCN)</strong>.</p>
-<section id="first-order-approximation" class="level5" data-number="41.3.2.2.1">
-<h5 data-number="41.3.2.2.1" class="anchored" data-anchor-id="first-order-approximation"><span class="header-section-number">41.3.2.2.1</span> First-order Approximation</h5>
+<section id="first-order-approximation" class="level5" data-number="41.3.4.0.1">
+<h5 data-number="41.3.4.0.1" class="anchored" data-anchor-id="first-order-approximation"><span class="header-section-number">41.3.4.0.1</span> First-order Approximation</h5>
 <p>The key departure is to use the first-order approximation of the Chebyshev polynomials.</p>
 <p><span class="math display">
 g_{\theta'} * x \approx \theta'_0x + \theta'_1(L - I_N)x = \theta'_0x - \theta'_1D^{-\frac{1}{2}}AD^{-\frac{1}{2}}x
@@ -1023,8 +1008,8 @@ g_{\theta} * x \approx \theta(I_N + D^{-\frac{1}{2}}AD^{-\frac{1}{2}})x
 </span></p>
 <p>While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.</p>
 </section>
-<section id="deep-gcns-can-suffer-from-over-smoothing" class="level5" data-number="41.3.2.2.2">
-<h5 data-number="41.3.2.2.2" class="anchored" data-anchor-id="deep-gcns-can-suffer-from-over-smoothing"><span class="header-section-number">41.3.2.2.2</span> Deep GCNs can suffer from over-smoothing</h5>
+<section id="deep-gcns-can-suffer-from-over-smoothing" class="level5" data-number="41.3.4.0.2">
+<h5 data-number="41.3.4.0.2" class="anchored" data-anchor-id="deep-gcns-can-suffer-from-over-smoothing"><span class="header-section-number">41.3.4.0.2</span> Deep GCNs can suffer from over-smoothing</h5>
 <p>GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called <em>gradient vanishing/exploding</em>, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.</p>
 <p>To facilitate the training of deep GCNs, the authors introduce a very simple trick called <em>renormalization</em>. The idea is to add self-connections to the graph:</p>
 <p><span class="math display">
@@ -1052,7 +1037,6 @@ Exercise
 </section>
 </section>
 </section>
-</section>
 <section id="popular-graph-neural-networks" class="level2" data-number="41.4">
 <h2 data-number="41.4" class="anchored" data-anchor-id="popular-graph-neural-networks"><span class="header-section-number">41.4</span> Popular Graph Neural Networks</h2>
 <p>In this section, we will introduce three popular GNNs: GraphSAGE, Graph Attention Networks (GAT), and Graph Isomorphism Network (GIN).</p>
@@ -1060,16 +1044,17 @@ Exercise
 <h3 data-number="41.4.1" class="anchored" data-anchor-id="graphsage-sample-and-aggregate"><span class="header-section-number">41.4.1</span> GraphSAGE: Sample and Aggregate</h3>
 <p>GraphSAGE {footcite}<code>hamilton2017graphsage</code> introduced a different GCN that can be <strong><em>generalized to unseen nodes</em></strong> (they called it “inductive”). While previous approaches like ChebNet and GCN operate on the entire graph, GraphSAGE proposes an inductive framework that generates embeddings by sampling and aggregating features from a node’s neighborhood.</p>
 <p><img src="https://theaisummer.com/static/02e23adc75fe68e5dd249a94f3c1e8cc/c483d/graphsage.png" class="img-fluid"></p>
-<section id="key-ideas" class="level4" data-number="41.4.1.1">
-<h4 data-number="41.4.1.1" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">41.4.1.1</span> Key Ideas</h4>
+</section>
+<section id="key-ideas" class="level3" data-number="41.4.2">
+<h3 data-number="41.4.2" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">41.4.2</span> Key Ideas</h3>
 <p>GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.</p>
-<section id="neighborhood-sampling" class="level5" data-number="41.4.1.1.1">
-<h5 data-number="41.4.1.1.1" class="anchored" data-anchor-id="neighborhood-sampling"><span class="header-section-number">41.4.1.1.1</span> Neighborhood Sampling</h5>
+<section id="neighborhood-sampling" class="level5" data-number="41.4.2.0.1">
+<h5 data-number="41.4.2.0.1" class="anchored" data-anchor-id="neighborhood-sampling"><span class="header-section-number">41.4.2.0.1</span> Neighborhood Sampling</h5>
 <p>The key idea is the <em>neighborhood sampling</em>. Instead of using all neighbors, GraphSAGE samples a fixed-size set of neighbors for each node. This controls memory complexity, a key limitation of the previous GNNs.</p>
 <p>Another key advantage of neighborhood sampling is that it enables GraphSAGE to handle dynamic, growing networks. Consider a citation network where new papers (nodes) are continuously added. Traditional GCNs would need to recompute filters for the entire network with each new addition. In contrast, GraphSAGE can immediately generate embeddings for new nodes by simply sampling their neighbors, without any retraining or recomputation.</p>
 </section>
-<section id="aggregation" class="level5" data-number="41.4.1.1.2">
-<h5 data-number="41.4.1.1.2" class="anchored" data-anchor-id="aggregation"><span class="header-section-number">41.4.1.1.2</span> Aggregation</h5>
+<section id="aggregation" class="level5" data-number="41.4.2.0.2">
+<h5 data-number="41.4.2.0.2" class="anchored" data-anchor-id="aggregation"><span class="header-section-number">41.4.2.0.2</span> Aggregation</h5>
 <p>Another key idea is the <em>aggregation</em>. GraphSAGE makes a distinction between self-information and neighborhood information. While previous GNNs treat them equally and aggregate them, GraphSAGE treats them differently. Specifically, GraphSAGE introduces an additional step: it concatenates the self-information and the neighborhood information as the input of the convolution.</p>
 <p><span class="math display">
 Z_v = \text{CONCAT}(X_v, X_{\mathcal{N}(v)})
@@ -1087,12 +1072,12 @@ X_v^k = \sigma(W^k \hat{Z}_v + b^k)
 </span></p>
 </section>
 </section>
-</section>
-<section id="graph-attention-networks-gat-differentiate-individual-neighbors" class="level3" data-number="41.4.2">
-<h3 data-number="41.4.2" class="anchored" data-anchor-id="graph-attention-networks-gat-differentiate-individual-neighbors"><span class="header-section-number">41.4.2</span> Graph Attention Networks (GAT): Differentiate Individual Neighbors</h3>
+<section id="graph-attention-networks-gat-differentiate-individual-neighbors" class="level3" data-number="41.4.3">
+<h3 data-number="41.4.3" class="anchored" data-anchor-id="graph-attention-networks-gat-differentiate-individual-neighbors"><span class="header-section-number">41.4.3</span> Graph Attention Networks (GAT): Differentiate Individual Neighbors</h3>
 <p>A key innovation of GraphSAGE is to treat the self and neighborhood information differently. But should all neighbors be treated equally? Graph Attention Networks (GAT) address this by letting the model learn which neighbors to pay attention to.</p>
-<section id="attention-mechanism" class="level4" data-number="41.4.2.1">
-<h4 data-number="41.4.2.1" class="anchored" data-anchor-id="attention-mechanism"><span class="header-section-number">41.4.2.1</span> Attention Mechanism</h4>
+</section>
+<section id="attention-mechanism" class="level3" data-number="41.4.4">
+<h3 data-number="41.4.4" class="anchored" data-anchor-id="attention-mechanism"><span class="header-section-number">41.4.4</span> Attention Mechanism</h3>
 <p><img src="https://production-media.paperswithcode.com/methods/Screen_Shot_2020-07-08_at_7.55.32_PM_vkdDcDx.png" class="img-fluid"></p>
 <p>The core idea is beautifully simple: instead of using fixed weights like GCN, let’s learn attention weights <span class="math inline">\alpha_{ij}</span> that determine how much node <span class="math inline">i</span> should attend to node <span class="math inline">j</span>. These weights are computed dynamically based on node features:</p>
 <p><span class="math display">
@@ -1116,12 +1101,12 @@ e_{ij} = \text{LeakyReLU}(\mathbf{a}^T[\mathbf{\tilde h}_i, \mathbf{\tilde h}_j]
 <p>where <span class="math inline">{\bf W}_{\text{feature}}</span> is a trainable weight matrix. To stabilize training, GAT uses multiple attention heads and concatenates their outputs:</p>
 <p><span class="math display">\mathbf{h}'_i = \parallel_{k=1}^K \sigma\left(\sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k_{\text{feature}}\mathbf{h}_j\right)</span></p>
 </section>
-</section>
-<section id="graph-isomorphism-network-gin-differentiate-the-aggregation" class="level3" data-number="41.4.3">
-<h3 data-number="41.4.3" class="anchored" data-anchor-id="graph-isomorphism-network-gin-differentiate-the-aggregation"><span class="header-section-number">41.4.3</span> Graph Isomorphism Network (GIN): Differentiate the Aggregation</h3>
+<section id="graph-isomorphism-network-gin-differentiate-the-aggregation" class="level3" data-number="41.4.5">
+<h3 data-number="41.4.5" class="anchored" data-anchor-id="graph-isomorphism-network-gin-differentiate-the-aggregation"><span class="header-section-number">41.4.5</span> Graph Isomorphism Network (GIN): Differentiate the Aggregation</h3>
 <p>Graph Isomorphism Networks (GIN) is another popular GNN that born out of a question: what is the maximum discriminative power achievable by Graph Neural Networks? The answer lies in its theoretical connection to <strong>the Weisfeiler-Lehman (WL) test</strong>, a powerful algorithm for graph isomorphism testing.</p>
-<section id="weisfeiler-lehman-test" class="level4" data-number="41.4.3.1">
-<h4 data-number="41.4.3.1" class="anchored" data-anchor-id="weisfeiler-lehman-test"><span class="header-section-number">41.4.3.1</span> Weisfeiler-Lehman Test</h4>
+</section>
+<section id="weisfeiler-lehman-test" class="level3" data-number="41.4.6">
+<h3 data-number="41.4.6" class="anchored" data-anchor-id="weisfeiler-lehman-test"><span class="header-section-number">41.4.6</span> Weisfeiler-Lehman Test</h3>
 <p>Are two graphs structurally identical? Graph isomorphism testing determines if two graphs are structurally identical, with applications in graph classification, clustering, and other tasks.</p>
 <p><img src="https://i.sstatic.net/j5sGu.png" class="img-fluid"></p>
 <p>While the general problem has no known polynomial-time solution, the WL test is an efficient heuristic that works well in practice. The WL test iteratively refines node labels by hashing the multiset of neighboring labels</p>
@@ -1133,7 +1118,7 @@ e_{ij} = \text{LeakyReLU}(\mathbf{a}^T[\mathbf{\tilde h}_i, \mathbf{\tilde h}_j]
 <li>Repeat the process for a fixed number of iterations or until convergence.</li>
 </ol>
 <p>Here is the implementation of the WL test in Python:</p>
-<div id="13d568d9" class="cell">
+<div id="d4480e4e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1191,8 +1176,8 @@ e_{ij} = \text{LeakyReLU}(\mathbf{a}^T[\mathbf{\tilde h}_i, \mathbf{\tilde h}_j]
 <pre class="{note}"><code>The WL test above is called the 1-WL test. There are higher-order WL tests that can distinguish more graphs, which are the basis of advanced GNNs.
 Check out [this note](https://www.moldesk.net/blog/weisfeiler-lehman-isomorphism-test/)</code></pre>
 </section>
-<section id="gin" class="level4" data-number="41.4.3.2">
-<h4 data-number="41.4.3.2" class="anchored" data-anchor-id="gin"><span class="header-section-number">41.4.3.2</span> GIN</h4>
+<section id="gin" class="level3" data-number="41.4.7">
+<h3 data-number="41.4.7" class="anchored" data-anchor-id="gin"><span class="header-section-number">41.4.7</span> GIN</h3>
 <p>GIN {footcite}<code>xu2018how</code> is a GNN that is based on the WL test. The key idea is to focus on the parallel between the WL test and the GNN update rule. - In the WL test, we iteratively collect the labels of neighbors and aggregate them through a <em>hash function</em>. - In the GraphSAGE and GAT, the labels are the nodes’ features, and the aggregation is some arithmetic operations such as mean or max.</p>
 <p>The key difference is that the hash function in the WL test always distinguishes different sets of neighbors’ labels, while the aggregation in GraphSAGE and GAT does not always do so. For example, if all nodes have the same feature (e.g., all 1), the aggregation by the mean or max will result in the same value for all nodes, whereas the hash function in the WL test can still distinguish different sets of neighbors’ labels by <em>the count of each label</em>.</p>
 <p>The resulting convolution update rule is:</p>
@@ -1205,7 +1190,6 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 
 <!-- -->
 
-</section>
 </section>
 </section>
 
@@ -1689,7 +1673,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png)</span></span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">#### An example</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### An example</span></span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a *significant brightness change between adjacent pixels*. To be more concrete, let's consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.</span>
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
@@ -1763,7 +1747,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>When applied to the entire image, the result is the same as the horizontal derivative.</span>
 <span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Convolution</span></span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="fu">### Convolution</span></span>
 <span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.</span>
 <span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a></span>
@@ -1880,7 +1864,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-206"><a href="#cb12-206" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-207"><a href="#cb12-207" aria-hidden="true" tabindex="-1"></a>Thus, if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a large $\lambda_i$, then ${\bf x}$ has a strong high-frequency component; if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a small $\lambda_i$, then ${\bf x}$ has strong low-frequency component.</span>
 <span id="cb12-208"><a href="#cb12-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-209"><a href="#cb12-209" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Spectral Filtering</span></span>
+<span id="cb12-209"><a href="#cb12-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### Spectral Filtering</span></span>
 <span id="cb12-210"><a href="#cb12-210" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-211"><a href="#cb12-211" aria-hidden="true" tabindex="-1"></a>Eigenvalues $\lambda_i$ can be thought of as a *filter* that controls which frequency components pass through. Instead of using the filter associated with the Laplacian matrix, we can design a filter $h(\lambda_i)$ to control which frequency components pass through. This leads to the idea of *spectral filtering*. Two common filters are:</span>
 <span id="cb12-212"><a href="#cb12-212" aria-hidden="true" tabindex="-1"></a></span>
@@ -1923,7 +1907,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-251"><a href="#cb12-251" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb12-252"><a href="#cb12-252" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-253"><a href="#cb12-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-254"><a href="#cb12-254" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Example</span></span>
+<span id="cb12-254"><a href="#cb12-254" aria-hidden="true" tabindex="-1"></a><span class="fu">### Example</span></span>
 <span id="cb12-255"><a href="#cb12-255" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-256"><a href="#cb12-256" aria-hidden="true" tabindex="-1"></a>Let us showcase the idea of spectral filtering with a simple example with the karate club network.</span>
 <span id="cb12-257"><a href="#cb12-257" aria-hidden="true" tabindex="-1"></a></span>
@@ -2099,7 +2083,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-441"><a href="#cb12-441" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-442"><a href="#cb12-442" aria-hidden="true" tabindex="-1"></a>These two limitations motivate the development of spatial GCNs.</span>
 <span id="cb12-443"><a href="#cb12-443" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-444"><a href="#cb12-444" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ChebNet</span></span>
+<span id="cb12-444"><a href="#cb12-444" aria-hidden="true" tabindex="-1"></a><span class="fu">### ChebNet</span></span>
 <span id="cb12-445"><a href="#cb12-445" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-446"><a href="#cb12-446" aria-hidden="true" tabindex="-1"></a>ChebNet {footcite}<span class="in">`defferrard2016convolutional`</span> is one of the earliest spatial GCNs that bridges the gap between spectral and spatial domains.</span>
 <span id="cb12-447"><a href="#cb12-447" aria-hidden="true" tabindex="-1"></a>The key idea is to leverage Chebyshev polynomials to approximate ${\bf L}_{\text{learn}}$ by</span>
@@ -2129,7 +2113,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-471"><a href="#cb12-471" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\theta_k$ are the learnable parameters</span>
 <span id="cb12-472"><a href="#cb12-472" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>K is the order of the polynomial (typically small, e.g., K=3)</span>
 <span id="cb12-473"><a href="#cb12-473" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-474"><a href="#cb12-474" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Graph Convolutional Networks by Kipf and Welling</span></span>
+<span id="cb12-474"><a href="#cb12-474" aria-hidden="true" tabindex="-1"></a><span class="fu">### Graph Convolutional Networks by Kipf and Welling</span></span>
 <span id="cb12-475"><a href="#cb12-475" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-476"><a href="#cb12-476" aria-hidden="true" tabindex="-1"></a>While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) {footcite}<span class="in">`kipf2017semi`</span> proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.</span>
 <span id="cb12-477"><a href="#cb12-477" aria-hidden="true" tabindex="-1"></a></span>
@@ -2196,7 +2180,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-538"><a href="#cb12-538" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-539"><a href="#cb12-539" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://theaisummer.com/static/02e23adc75fe68e5dd249a94f3c1e8cc/c483d/graphsage.png)</span></span>
 <span id="cb12-540"><a href="#cb12-540" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-541"><a href="#cb12-541" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Key Ideas</span></span>
+<span id="cb12-541"><a href="#cb12-541" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Ideas</span></span>
 <span id="cb12-542"><a href="#cb12-542" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-543"><a href="#cb12-543" aria-hidden="true" tabindex="-1"></a>GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.</span>
 <span id="cb12-544"><a href="#cb12-544" aria-hidden="true" tabindex="-1"></a></span>
@@ -2241,7 +2225,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-583"><a href="#cb12-583" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-584"><a href="#cb12-584" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-585"><a href="#cb12-585" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-586"><a href="#cb12-586" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Attention Mechanism</span></span>
+<span id="cb12-586"><a href="#cb12-586" aria-hidden="true" tabindex="-1"></a><span class="fu">### Attention Mechanism</span></span>
 <span id="cb12-587"><a href="#cb12-587" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-588"><a href="#cb12-588" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://production-media.paperswithcode.com/methods/Screen_Shot_2020-07-08_at_7.55.32_PM_vkdDcDx.png)</span></span>
 <span id="cb12-589"><a href="#cb12-589" aria-hidden="true" tabindex="-1"></a></span>
@@ -2281,7 +2265,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-623"><a href="#cb12-623" aria-hidden="true" tabindex="-1"></a>Graph Isomorphism Networks (GIN) is another popular GNN that born out of a question: what is the maximum discriminative power achievable by Graph Neural Networks? The answer lies in its theoretical connection to **the Weisfeiler-Lehman (WL) test**, a powerful algorithm for graph isomorphism testing.</span>
 <span id="cb12-624"><a href="#cb12-624" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-625"><a href="#cb12-625" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-626"><a href="#cb12-626" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Weisfeiler-Lehman Test</span></span>
+<span id="cb12-626"><a href="#cb12-626" aria-hidden="true" tabindex="-1"></a><span class="fu">### Weisfeiler-Lehman Test</span></span>
 <span id="cb12-627"><a href="#cb12-627" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-628"><a href="#cb12-628" aria-hidden="true" tabindex="-1"></a>Are two graphs structurally identical? Graph isomorphism testing determines if two graphs are structurally identical, with applications in graph classification, clustering, and other tasks.</span>
 <span id="cb12-629"><a href="#cb12-629" aria-hidden="true" tabindex="-1"></a></span>
@@ -2362,7 +2346,7 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 <span id="cb12-708"><a href="#cb12-708" aria-hidden="true" tabindex="-1"></a><span class="in">Check out [this note](https://www.moldesk.net/blog/weisfeiler-lehman-isomorphism-test/)</span></span>
 <span id="cb12-709"><a href="#cb12-709" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb12-710"><a href="#cb12-710" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-711"><a href="#cb12-711" aria-hidden="true" tabindex="-1"></a><span class="fu">#### GIN</span></span>
+<span id="cb12-711"><a href="#cb12-711" aria-hidden="true" tabindex="-1"></a><span class="fu">### GIN</span></span>
 <span id="cb12-712"><a href="#cb12-712" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-713"><a href="#cb12-713" aria-hidden="true" tabindex="-1"></a>GIN {footcite}<span class="in">`xu2018how`</span> is a GNN that is based on the WL test.</span>
 <span id="cb12-714"><a href="#cb12-714" aria-hidden="true" tabindex="-1"></a>The key idea is to focus on the parallel between the WL test and the GNN update rule.</span>
