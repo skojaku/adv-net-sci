@@ -27,7 +27,7 @@ So, to be extra clever, we compare our results to a "random" version (null model
 By comparing our original network to this mixed-up version, we can see if our communities are really sticking together more than we'd expect by chance.
 This comparison against the random version is the heart of modularity. Unlike graph cut methods that aim to maximize assortativity directly, modularity measures assortativity *relative* to *a null model*.
 
-:::{figure-md} fig-modularity-game
+::: {#fig-fig-modularity-game}
 
 <img src="../figs/modularity.jpg" alt="Single node failure" width="100%">
 
@@ -63,7 +63,8 @@ First, ask yourself:
 
 What is the probability of color matches for the random version? Derive the probability by using $\sum, M, \delta(c_i, c_j), k_i,k_j$.
 
-:::{dropdown} Hint
+::: {.callout collapse="true"}
+## Hint
 1. Imagine a big bag full of colorful balls, but this time without any strings. 🔴🟢🔵🟡
 2. Now, think about picking one ball out of the bag. What are the chances of picking a specific color?
 3. Then, put that ball back and pick another one. What are the odds this second ball matches the color of the first one?
@@ -71,3 +72,11 @@ What is the probability of color matches for the random version? Derive the prob
 ```
 
 The full modularity formula is on the next page 😉.
+
+:::
+
+:::
+
+:::
+
+:::

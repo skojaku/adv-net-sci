@@ -1,6 +1,6 @@
 # Modularity (Cont.)
 
-:::{figure-md} fig-modularity-game
+::: {#fig-fig-modularity-game}
 
 <img src="../figs/modularity.jpg" alt="Single node failure" width="100%">
 
@@ -157,7 +157,8 @@ What if the network does not have any communities at all? Does the modularity fi
 
 Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-:::{dropdown} Click here to see the solution
+::: {.callout collapse="true"}
+## Click here to see the solution
 
 Surprise, surprise! 😮 Modularity finds communities even in our random network, and with a very high score too! It's like finding shapes in clouds - sometimes our brains (or algorithms) see patterns where there aren't any.
 

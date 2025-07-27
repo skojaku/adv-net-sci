@@ -184,7 +184,8 @@ Then, the degree $k$ of a node is a binomial random variable, which we approxima
 2. Compute the ratio $\frac{\langle k^2 \rangle}{\langle k \rangle}$.
 3. Check when the network satisfies the Molloy-Reed criterion.
 
-:::{dropdown} Solution
+::: {.callout collapse="true"}
+## Solution
 
 **Solution for Q1**:
 To derive $\langle k^2 \rangle$, we start with the definition of variance
@@ -402,15 +403,14 @@ Design a network that is robust against both random failures and targeted attack
 
 {{ '[🚀 Interactive Demo]( BASE_URL/vis/network-robustness.html)'.replace('BASE_URL', base_url) }}
 
-:::{dropdown} An answer
+::: {.callout collapse="true"}
+## An answer
 
 A bimodal degree distribution can enhance network robustness against both random failures and targeted attacks.
 In this setup, $(1-r)$ portion of nodes have a degree of 1, while $r$ portion of nodes have a high degree, $k_{\text{max}}$.
 This structure ensures that the network remains connected even if a hub is removed, as other hubs maintain the connectivity. It also withstands random failures due to its heterogeneous degree distribution.
 
-
-```
-
+:::
 
 ```{footbibliography}
 ```

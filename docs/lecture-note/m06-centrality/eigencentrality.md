@@ -130,7 +130,8 @@ $$
 
 Derive the solution of the Katz centrality.
 
-:::{dropdown} Click to see the answer
+::: {.callout collapse="true"}
+## Click to see the answer
 
 The equation can be solved by
 

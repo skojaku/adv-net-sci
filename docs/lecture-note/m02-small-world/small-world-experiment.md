@@ -2,7 +2,7 @@
 
 How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.
 
-:::{figure-md} milgram-small-world-experiment
+::: {#fig-milgram-small-world-experiment}
 
 <img src="../figs/milgram-small-world-experiment.png" width="70%">
 

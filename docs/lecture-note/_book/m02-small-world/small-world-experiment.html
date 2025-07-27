@@ -132,7 +132,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Advanced Topics in Network Science</a> 
@@ -700,10 +700,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</p>
-<p>:::{figure-md} milgram-small-world-experiment</p>
-<p><img src="../figs/milgram-small-world-experiment.png" width="70%"></p>
-<p>Milgram’s small world experiment.</p>
-<p>:::</p>
+<div id="fig-milgram-small-world-experiment" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-milgram-small-world-experiment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><img src="../figs/milgram-small-world-experiment.png" width="70%" class="figure-img"></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-milgram-small-world-experiment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: Milgram’s small world experiment.
+</figcaption>
+</figure>
+</div>
 <p>The experiment went as follows: 1. Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas. 2. The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target. 3. The recipient continued to forward the packet to their acquaintances until it reached the target.</p>
 <p>The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called <strong>six degrees of separation</strong>. The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1196,7 +1202,7 @@ Tip
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>:::{figure-md} milgram-small-world-experiment</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>::: {#fig-milgram-small-world-experiment}</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"../figs/milgram-small-world-experiment.png"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"70%"</span><span class="dt">&gt;</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
