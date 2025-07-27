@@ -21,26 +21,11 @@ Answering this question needs a specific *context*, and there are many contexts 
 
 ![](../figs/centrality.jpg)
 
-## Different centrality measures
+## Degree-based centrality
 
-Here we will focus on several popular centrality measures. Let us denote by $c_i$ the centrality of node $i$ throughout this section.
-Here is a preview of the centrality measures we will cover in this section
+The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
 
-| Centrality          | Category            | Description                                                                 |
-|-------------------------|---------------------|-----------------------------------------------------------------------------|
-| Degree Centrality       | Degree              | Counts the number of edges connected to a node.                             |
-| Closeness Centrality    | Shortest Path  | Measures how close a node is to all other nodes in the network.             |
-| Eccentricity Centrality | Shortest Path  | Based on the maximum shortest path distance from a node to any other node.  |
-| Harmonic Centrality     | Shortest Path  | Adjusts closeness centrality to work even in disconnected networks.         |
-| Betweenness Centrality  | Shortest Path  | Measures the extent to which a node lies on paths between other nodes.      |
-| Eigenvector Centrality  | Walk           | Measures a node's influence based on the influence of its neighbors.        |
-| HITS (Hub and Authority) Centrality | Walk  | Measures the importance of nodes as hubs and authorities in a network.      |
-| Katz Centrality         | Walk           | Considers the total number of walks between nodes, with a damping factor.   |
-| PageRank                | Walk           | Measures the importance of nodes based on the structure of incoming links.  |
-
-### Degree centrality
-
-Perhaps the simplest form of centrality is *degree centrality*. It is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
+**Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
 
 $$
 c_i = d_i = \sum_{j} A_{ij}
@@ -48,7 +33,7 @@ $$
 
 where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
 
-## Centrality based on shortest path
+## Distance-based centrality
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Milliarium_Aureum_op_het_Forum_Romanum_te_Rome_Columna_Miliaria_in_Foro_Romano_%28titel_op_object%29_Antieke_monumenten_%28serietitel%29_Antiquae_Urbis_Splendor_%28serietitel%29%2C_RP-P-2016-345-28-1.jpg/1546px-thumbnail.jpg?20191217151048" alt="Roma Foro Romano Miliarium Aureum" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
 
@@ -58,9 +43,9 @@ Emperor Augustus built it when Rome changed from a republic to an empire.
 The monument not only marked the distances but also represent a centralization of power, where Rome transitioned from a Republic to an Empire.
 Perhaps the Romans understood the importance of being central in terms of distance, and this concept can be applied to define *centrality* in networks.
 
-### Closeness centrality
+This family of centrality measures is based on shortest path distances between nodes. They consider a node important if it has short distances to other nodes or if it lies on many shortest paths.
 
-**Closeness centrality** is a measure of how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as
+**Closeness centrality** measures how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as
 
 $$
 c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
@@ -81,17 +66,11 @@ The simplest example is a star graph, where one node is connected to all other n
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
 :::
 
-### Harmonic centrality
-
-**Harmonic Centrality** is a measure that adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can't reach others, making their distance infinite. This causes all centrality values to become zero, which isn't very helpful!
-
-To fix this, Beauchamp {footcite:p}`beauchamp1965improved` came up with a clever solution called *harmonic centrality*. It works even when the network is disconnected.
+**Harmonic centrality** adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can't reach others, making their distance infinite. This causes all centrality values to become zero, which isn't very helpful! To fix this, Beauchamp {footcite:p}`beauchamp1965improved` came up with a clever solution called *harmonic centrality*. It works even when the network is disconnected.
 
 $$
 c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
 $$
-
-### Eccentricity centrality
 
 **Eccentricity centrality** is based on the farthest distance from a node to any other node. The eccentricity centrality is defined as
 
@@ -99,9 +78,7 @@ $$
 c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
 $$
 
-### Betweenness centrality
-
-Another notion of centrality is *betweenness centrality*. It considers that a node is important if it lies on many shortest paths between other nodes.
+**Betweenness centrality** considers that a node is important if it lies on many shortest paths between other nodes.
 
 $$
 c_i = \sum_{j < k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
@@ -109,15 +86,15 @@ $$
 
 where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of shortest paths between nodes $j$ and $k$ that pass through node $i$.
 
-## Centralities based on centralities
+## Walk-based centrality
 
 "A man is known by the company he keeps" is a quote from Aesop who lived in the ancient Greece, a further back in time from the Roman Empire.
 It suggests that a person's character is reflected by the people this person is friends with.
 This idea can be applied to define the *centrality* of a node in a network.
 
-### Eigenvector centrality
+This family of centrality measures considers that a node is important if it is connected to other important nodes, or if it receives many "walks" or "votes" from other nodes in the network. These measures often use recursive definitions and are computed using linear algebra techniques.
 
-One considers that a node is important if it is connected to other important nodes. Yes, it sounds like circular! But it is actually computable! Let us define it more precisely by the following equation.
+**Eigenvector centrality** considers that a node is important if it is connected to other important nodes. Yes, it sounds like circular! But it is actually computable! Let us define it more precisely by the following equation.
 
 $$
 c_i = \lambda \sum_{j} A_{ij} c_j
@@ -158,13 +135,9 @@ Okay, but how do we solve this? Well, this is actually the eigenvector equation!
 Let's think about it for a moment. We want our centrality measure to be positive. It wouldn't make much sense to have negative importance! So, we're looking for an eigenvector where all the elements are positive. And a good news is that there's a special eigenvector that fits the bill perfectly.
 Perron-Frobenius theorem guarantees that the eigenvector associated with the largest eigenvalue always has all positive elements.
 
-This centrality is called **Eigenvector centrality**.
+**Hyperlink-Induced Topic Search (HITS) centrality**
 
-### Hyperlink-Induced Topic Search (HITS) centrality
-
-Eigenvector centrality has several problems. One is that it does not handle directed networks very well.
-A natural extension of eigenvector centrality to directed networks is the HITS centrality.
-It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
+extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
 
 Let's put on a math hat to concretely define the hub and authority centralities.
 We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, we can define the hub and authority centralities as follows:
@@ -225,9 +198,7 @@ $$
 Then we will get the hub centrality equivalent to the degree centrality. Confirm this by substituting $x_i = d_i$.
 :::
 
-### Katz centrality
-
-Eigenvector centrality tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. A solution is to add a little bit of score to all nodes.
+**Katz centrality** addresses a limitation of eigenvector centrality, which tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. The solution is to add a little bit of score to all nodes.
 
 $$
 c_i = \beta + \lambda \sum_{j} A_{ij} c_j
@@ -260,16 +231,14 @@ $$
 $$
 :::
 
-### PageRank
-
-You've probably heard PageRank, a celebrated idea behind Google Search. It is like a cousin of Katz centrality.
+**PageRank** is the celebrated idea behind Google Search and can be seen as a cousin of Katz centrality.
 
 $$
 c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
 $$
 
 where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
-The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
+The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In the Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
 
 ## Pen and paper exercises
 
