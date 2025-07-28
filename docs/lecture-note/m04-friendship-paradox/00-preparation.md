@@ -1,58 +1,63 @@
-# M04 Preparation: Prerequisites and Foundation
+# Preparation: Statistical Sampling and Probability Prerequisites
 
-## Review: Network Robustness (from M03)
+## Required Knowledge from Previous Modules
 
-Before diving into the friendship paradox, let's review key concepts from M03 that will be relevant:
+Before studying the friendship paradox, ensure you understand:
+- **From M01-M03**: Basic network concepts (degree, adjacency matrix, connectivity)
+- **General math**: Basic calculus and linear algebra
 
-### Minimum Spanning Tree
-- **Definition**: A tree that connects all vertices in a graph with the minimum total edge weight
-- **Algorithms**: 
-  - Kruskal's algorithm: Build MST by adding edges in order of increasing weight
-  - Prim's algorithm: Build MST by growing from a starting vertex
-- **Applications**: Network connectivity, infrastructure design
+## Probability Theory Fundamentals
 
-### Network Robustness
-- **Random attacks**: Removing nodes/edges randomly
-- **Targeted attacks**: Removing highest-degree nodes first
-- **Robustness index**: Measures how well a network maintains connectivity under attacks
-- **Key insight**: Scale-free networks are robust to random failures but vulnerable to targeted attacks
+### Random Variables and Distributions
+Understanding of discrete probability distributions:
+- **Probability mass function**: $P(X = k)$ for discrete random variable $X$
+- **Expected value**: $E[X] = \sum_{k} k \cdot P(X = k)$  
+- **Variance**: $\text{Var}(X) = E[X^2] - (E[X])^2$
 
-## Probability Theory Basics
+### Conditional Probability
+Essential for understanding biased sampling:
+- **Conditional probability**: $P(A|B) = \frac{P(A \cap B)}{P(B)}$
+- **Law of total expectation**: $E[X] = E[E[X|Y]]$
 
-The friendship paradox relies on fundamental probability concepts:
+## Sampling Theory
 
-### Expected Value
-For a discrete random variable X:
-$$E[X] = \sum_{i} x_i P(X = x_i)$$
+### Population vs. Sample
+- **Population parameters**: True values in the complete dataset
+- **Sample statistics**: Measured values from a subset
+- **Sampling bias**: When sample doesn't represent population
 
-### Sampling Bias
-- **Population vs. Sample**: What we measure may not represent the true population
-- **Selection bias**: Some individuals are more likely to be selected than others
-- **Example**: Airport surveys overrepresent frequent travelers
+### Types of Sampling
+- **Simple random sampling**: Each individual has equal probability of selection
+- **Weighted sampling**: Selection probability proportional to some attribute
+- **Size-biased sampling**: Larger items more likely to be selected
 
-### Degree Distribution
-In networks, the degree distribution P(k) gives the probability that a randomly chosen node has degree k:
-- **Mean degree**: $\langle k \rangle = \sum_{k} k P(k)$
-- **Degree variance**: Important for understanding network structure
+### Jensen's Inequality
+For convex functions and random variables:
+$$E[f(X)] \geq f(E[X])$$
 
-### Weighted Sampling
-When sampling is not uniform:
-- Probability of selecting node i is proportional to some weight w_i
-- Expected degree under degree-weighted sampling differs from uniform sampling
-- This is the mathematical foundation of the friendship paradox
+This inequality is fundamental to understanding why averages of friends differ from friends of averages.
 
-## Connection to Friendship Paradox
+## Mathematical Prerequisites
 
-These concepts prepare us to understand:
-1. Why your friends have more friends than you (on average)
-2. How sampling bias creates this apparent paradox
-3. Applications in epidemiology and social network analysis
-4. The role of degree heterogeneity in network phenomena
+### Basic Statistical Moments
+- **First moment**: Mean $\mu = E[X]$
+- **Second moment**: $E[X^2]$  
+- **Relationship**: $E[X^2] \geq (E[X])^2$ with equality only when $X$ is constant
 
-## Learning Objectives
+### Linear Algebra Basics
+- **Matrix operations**: For adjacency matrix manipulations
+- **Vector operations**: For degree calculations
 
-By the end of this module, you should be able to:
-- Explain the friendship paradox mathematically
-- Identify when and why the paradox occurs
-- Apply the concept to vaccination strategies
-- Calculate expected degrees under different sampling schemes
+## Applications Context
+
+### Survey Methodology
+Understanding how data collection methods can introduce bias:
+- **Response bias**: Who is more likely to participate in surveys
+- **Selection effects**: How sampling frames affect results
+
+### Network Effects in Epidemiology
+Basic concepts about disease spread:
+- **Contact networks**: How diseases spread through social connections
+- **Vaccination strategies**: Targeting high-contact individuals
+
+These mathematical foundations will help you understand the counterintuitive but mathematically precise friendship paradox phenomenon.
