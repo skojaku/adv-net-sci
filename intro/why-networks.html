@@ -529,7 +529,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-key-insight" id="toc-the-key-insight" class="nav-link active" data-scroll-target="#the-key-insight"><span class="header-section-number">1.1</span> The key insight 💡</a></li>
+  <li><a href="#topology-matters" id="toc-topology-matters" class="nav-link active" data-scroll-target="#topology-matters"><span class="header-section-number">1.1</span> Topology matters 💡</a></li>
   <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</a></li>
   <li><a href="#the-power-of-abstraction" id="toc-the-power-of-abstraction" class="nav-link" data-scroll-target="#the-power-of-abstraction"><span class="header-section-number">1.3</span> The power of abstraction 🌍</a></li>
   <li><a href="#why-should-we-care-about-networks" id="toc-why-should-we-care-about-networks" class="nav-link" data-scroll-target="#why-should-we-care-about-networks"><span class="header-section-number">2</span> Why should we care about networks?</a>
@@ -567,9 +567,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>When you hear “network,” what comes to mind? If you’re an engineering student, you probably think of computer networks - routers, switches, and cables connecting devices. Maybe you think of power grids, with generators, transformers, and transmission lines. Or perhaps telecommunications networks with cell towers and fiber optic cables.</p>
 <p>You’re absolutely right. These are all networks. But here’s what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread. ✨</p>
-<section id="the-key-insight" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="the-key-insight"><span class="header-section-number">1.1</span> The key insight 💡</h2>
-<p><em>Topology matters</em>. How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs.&nbsp;parallel behave completely differently. A single point of failure can bring down an entire system.</p>
+<section id="topology-matters" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="topology-matters"><span class="header-section-number">1.1</span> Topology matters 💡</h2>
+<p>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs.&nbsp;parallel behave completely differently. A single point of failure can bring down an entire system.</p>
 <p>This intuition transfers directly to network science. Whether we’re talking about electrical circuits, computer networks, or social systems, the <em>structure of connections</em> shapes behavior.</p>
 <p>A network is simply a collection of <em>nodes</em> connected by <em>edges</em>. Despite this simplicity, it’s one of the most powerful abstractions we have for understanding complex systems.</p>
 </section>
@@ -577,7 +577,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="1.2" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</h2>
 <p>We can represent networks in two equivalent ways. Schematically, we draw them as dots and lines - nodes connected by edges, as shown in this network diagram:</p>
 <p><a href="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid"></a></p>
-<p>But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:</p>
+<p>But for analyzing networks, we represent them as tables with source and target columns. Consider this network:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -587,24 +587,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>Router1</td>
-<td>Router2</td>
+<td>Node1</td>
+<td>Node2</td>
 </tr>
 <tr class="even">
-<td>Router1</td>
-<td>Router3</td>
+<td>Node1</td>
+<td>Node3</td>
 </tr>
 <tr class="odd">
-<td>Router2</td>
-<td>Router3</td>
+<td>Node2</td>
+<td>Node3</td>
 </tr>
 <tr class="even">
-<td>Router2</td>
-<td>Server1</td>
+<td>Node2</td>
+<td>Node4</td>
 </tr>
 <tr class="odd">
-<td>Router3</td>
-<td>Server2</td>
+<td>Node3</td>
+<td>Node5</td>
 </tr>
 </tbody>
 </table>
@@ -621,7 +621,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Citation networks</strong>: Papers connected by citations</li>
 <li><strong>Food webs</strong>: Species connected by predator-prey relationships</li>
 </ul>
-<p>Whether your edge list contains “Router1 → Router2” or “Alice → Bob” or “Neuron_A → Neuron_B”, the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</p>
+<p>Whether your edge list contains “Node1 → Node2” or “Alice → Bob” or “Neuron_A → Neuron_B”, the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</p>
 </section>
 <section id="why-should-we-care-about-networks" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Why should we care about networks?</h1>
@@ -1150,9 +1150,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>You're absolutely right. These are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread. ✨</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## The key insight 💡</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Topology matters 💡</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>*Topology matters*. How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>This intuition transfers directly to network science. Whether we're talking about electrical circuits, computer networks, or social systems, the *structure of connections* shapes behavior.</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
@@ -1164,15 +1164,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span><span class="co">](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>But for analyzing networks, we represent them as tables with source and target columns. Consider this network:</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router2 <span class="pp">|</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Server1 <span class="pp">|</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router3 <span class="pp">|</span> Server2 <span class="pp">|</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node2 <span class="pp">|</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node4 <span class="pp">|</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node3 <span class="pp">|</span> Node5 <span class="pp">|</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>This *edge list* completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it's routers, people, neurons, or molecules. ✅</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
@@ -1186,7 +1186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Citation networks**: Papers connected by citations</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Food webs**: Species connected by predator-prey relationships</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care about networks?</span></span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
