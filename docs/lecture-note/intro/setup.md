@@ -5,19 +5,21 @@ title: Setup
 
 ## Python
 
-We'll use Python to work with data throughout this course. Python is an excellent choice for network science for several reasons:
+We'll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.
 
-- **Rich ecosystem of libraries**: Python has an extensive collection of libraries that we can use immediately without building everything from scratch. For network analysis, we have `NetworkX` for general network manipulation, `igraph` for high-performance computations, and `graph-tool` for large-scale analysis. For data work, we have `pandas` for data manipulation, `numpy` for numerical computing, and `matplotlib`/`seaborn` for visualization.
+We strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
 
-- **Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's strict rules on indentation - the language enforces consistent formatting by requiring proper indentation to define code blocks, which eliminates the visual clutter of brackets and forces code to be well-structured and easy to follow.
+- **Reproducibility**: Your code will work consistently across different machines and over time
+- **Flexibility**: You can use different versions of packages for different projects without conflicts  
+- **Prevent project interference**: Changes to one project won't break another project's dependencies
 
-- **Well-documented**: Python is one of the most well-documented programming languages, with comprehensive official documentation, extensive community resources, and clear examples for every library we'll use.
+::: {fig-python-ecosystem}
 
+![Dependency hell](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
 
-### Virtual Environments
+Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.
 
-We strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, preventing package conflicts and ensuring reproducible setups.
-
+:::
 **Using UV (Recommended)**
 
 We recommend using [UV](https://docs.astral.sh/uv/), a fast Python package and project manager. UV is significantly faster than traditional tools and makes managing Python environments effortless.
