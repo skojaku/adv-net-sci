@@ -558,7 +558,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="brunas-spectral-gcn" class="level2" data-number="43.1">
 <h2 data-number="43.1" class="anchored" data-anchor-id="brunas-spectral-gcn"><span class="header-section-number">43.1</span> Bruna’s Spectral GCN</h2>
 <p>Let’s first implement Bruna’s spectral GCN.</p>
-<div id="a6e79242" class="cell">
+<div id="775be236" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -662,7 +662,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Next, we will train the model on the karate club network to predict the given node labels indicating nodes’ community memberships. We load the data by</p>
-<div id="26dec5a0" class="cell">
+<div id="9d01d9f5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -679,7 +679,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>We apply the convolution twice with ReLu activation in between. This can be implemented by preparing two independent <code>BrunaGraphConv</code> layers, applying them consecutively, and adding a ReLu activation in between.</p>
-<div id="8b5733b3" class="cell">
+<div id="fe86c09c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -700,7 +700,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>We then train the model by</p>
-<div id="158dde53" class="cell">
+<div id="a807d22d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -750,7 +750,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Observe that the accuracy increases as the training progresses. We can use the model to predict the labels. The model has a hidden layer, and let’s visualize the data in the hidden space.</p>
-<div id="54facaf2" class="cell">
+<div id="5a0ddbcf" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -772,7 +772,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="chebnet" class="level2" data-number="43.2">
 <h2 data-number="43.2" class="anchored" data-anchor-id="chebnet"><span class="header-section-number">43.2</span> ChebNet</h2>
 <p>Let’s implement the ChebNet layer.</p>
-<div id="81ea6f57" class="cell">
+<div id="02fc3410" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -916,7 +916,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>We stack the layers to form a simple GCN model.</p>
-<div id="495f4f17" class="cell">
+<div id="dfe3e357" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -967,7 +967,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Let’s train the model on the karate club network.</p>
-<div id="43d9d5db" class="cell">
+<div id="145e184f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1039,7 +1039,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Let’s visualize the learned embeddings.</p>
-<div id="d08d7a90" class="cell">
+<div id="a4aeaa49" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
