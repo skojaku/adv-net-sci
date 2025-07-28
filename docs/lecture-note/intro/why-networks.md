@@ -4,6 +4,7 @@ title: Networks
 
 ## Our world operates on networks
 
+
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
 The most natural way to think about disease spread is through geographic distance.
@@ -35,17 +36,36 @@ See [@brockmann2013hidden] for more details.
 
 The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
 
-Consider another surprising discovery: In 1973, sociologist Mark Granovetter studied how people find jobs and made a counterintuitive finding. He discovered that people were more likely to get jobs through acquaintances - colleagues, neighbors, or distant friends - rather than through their close friends and family members.
+Networks are everywhere. From the molecular interactions that keep us alive to the digital connections that shape our global economy, network structures govern how our world operates. Every breath you take depends on networks - oxygen molecules traveling through your lung network, blood flowing through your circulatory network, and neurons firing across your brain network to control it all.
 
-This seems backward: shouldn't your closest connections be most helpful? But Granovetter realized it's all about *network position*. Your close friends know mostly the same people you know, so they have access to the same job information. But your acquaintances - your "weak ties" - connect you to entirely different social circles with different opportunities.
 
-The strength wasn't in the relationship itself, but in the *network structure*. Weak ties serve as bridges between different communities, carrying unique information across social boundaries that strong ties cannot reach.
+::: {layout-nrow=2}
 
-Or consider the 2003 Northeast blackout that affected 55 million people across the United States and Canada. It started when a single transmission line in Ohio sagged into overgrown trees and shut down. You might think one failed line among thousands shouldn't matter much - the grid has plenty of redundancy, right?
+![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)
 
-But here's what actually happened: when that line failed, electricity rerouted through neighboring lines, overloading them. They failed too, forcing more rerouting, creating a cascade of failures that spread through the interconnected power network like falling dominoes [@dobson2007complex]. The *network structure* of the power grid - how the transmission lines were connected - determined how a local failure became a continental disaster.
+![Food web](https://mlurgi.github.io/networks_for_r/images/food-web.png)
 
-Individual components were working fine; it was the pattern of connections that created vulnerability.
+![Brain network](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp)
+
+![Medicine network](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png)
+
+![Protein-protein interaction](https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg)
+
+![Social network](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png)
+
+![International financial network](https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)
+
+![US airport network](https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)
+
+![Power grid network](https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png)
+
+![River network](https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png)
+
+![Internet network](https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)
+
+![Knowledge graph](https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png)
+
+:::
 
 ## Why networks matter 💡
 
