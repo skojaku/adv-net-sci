@@ -15,11 +15,11 @@ A network is simply a collection of *nodes* connected by *edges*. Despite this s
 
 ## How to represent a network 📊
 
-We can represent networks in two equivalent ways. Schematically, we draw them as dots and lines - nodes connected by edges, as shown in this network diagram:
+We can represent networks in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
 
 [![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
-But for analyzing networks, we represent them as tables with source and target columns. Consider this network:
+But for analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:
 
 | Source | Target |
 |--------|--------|
@@ -29,7 +29,7 @@ But for analyzing networks, we represent them as tables with source and target c
 | Node2 | Node4 |
 | Node3 | Node5 |
 
-This *edge list* completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it's routers, people, neurons, or molecules. ✅
+This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules. ✅
 
 ## The power of abstraction 🌍
 
