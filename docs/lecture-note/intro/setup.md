@@ -113,7 +113,7 @@ At the minimum level, you only need to:
 1. Create a GitHub account at [github.com](https://github.com)
 2. Know how to upload files to GitHub
 
-Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course.
+Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this [assignment example](https://github.com/sk-classroom/starter) to get familiar with the format.
 
 **For Students Interested in Learning More**
 
