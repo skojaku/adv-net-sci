@@ -100,13 +100,9 @@ This is called an ***edge table***. Each row represents a connection between two
 
 ## Why networks are hard to understand
 
-For centuries, science has been dominated by reductionist thinking - the belief that we can understand complex systems by breaking them down into their fundamental components. This approach has been extraordinarily successful: we understand chemistry by studying atoms, biology by examining cells, and physics by analyzing particles and forces. From Galileo's mechanical view of the universe to Darwin's focus on individual organisms, scientists have consistently found that understanding the parts leads to understanding the whole.
-
-This reductionist paradigm worked so well because most natural phenomena could indeed be decomposed into independent units. A gas can be understood by studying individual molecules, a machine by examining its components, and even many biological processes by focusing on individual cells or biochemical reactions. The 18th century even saw mechanical automata like Vaucanson's Digesting Duck - an intricate clockwork machine that could eat, digest, and excrete - demonstrating that complex behaviors could emerge from understanding and assembling mechanical parts.
+For centuries, scientists believed in a reductionist approach - break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole. This worked remarkably well: we understand chemistry by studying atoms, biology by examining cells, physics by analyzing particles. Some scientists even believed that if you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century Digesting Duck seemed to prove this point - an intricate clockwork machine that could eat, digest, and excrete.
 
 ![Vaucanson's Digesting Duck](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg)
-
-The mathematical tools developed over centuries - calculus, differential equations, statistical mechanics - were designed specifically for systems where the behavior of the whole could be predicted from the behavior of the parts.
 
 However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.
 
