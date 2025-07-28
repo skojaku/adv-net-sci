@@ -94,6 +94,20 @@ mamba install numpy pandas matplotlib seaborn networkx scikit-learn
 - Download from [github.com/conda-forge/miniforge](https://github.com/conda-forge/miniforge)
 - Provides conda-forge as default channel
 
+::: {.callout-note}
+## Side Note: Virtual Environments vs Virtual Machines
+
+Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
+
+Other virtualization tools you might encounter include:
+- **Docker**: Containerization that packages applications with their dependencies
+- **Vagrant**: Tool for managing virtual machine environments
+- **VirtualBox/VMware**: Full virtual machine platforms
+- **WSL (Windows Subsystem for Linux)**: Linux environment on Windows
+
+For this course, Python virtual environments are all you need - they're faster, lighter, and perfect for managing Python dependencies.
+:::
+
 
 
 ::: {.callout-note}
