@@ -1,7 +1,26 @@
 
+# What is a network?
+
+At its core, a network is deceptively simple: a collection of *nodes* (also called vertices) connected by *edges* (also called links). This elementary representation - just dots connected by lines - is one of the most powerful abstractions science has ever developed.
+
+While representing complex, real-world systems by points and lines might seem crude, this simple abstraction captures many fascinating properties of interconnected systems, as we will see throughout this course.
+
+## The power of abstraction
+
+What makes this simple representation so powerful is its universality. Whether we're studying:
+- **Social networks**: People (nodes) connected by friendships (edges)
+- **The Internet**: Computers (nodes) connected by cables (edges)  
+- **Food webs**: Species (nodes) connected by predator-prey relationships (edges)
+- **Citation networks**: Papers (nodes) connected by citations (edges)
+- **Neural networks**: Neurons (nodes) connected by synapses (edges)
+
+The same mathematical framework applies. This abstraction allows us to discover universal principles that govern systems across completely different domains.
+
+[![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
+
 # Why should we care about networks?
 
-From the vast expanse of the Internet to social networks and protein-protein interactions, *networks* are all around us in nature and society. Their *connections* fundamentally shape the world we live in and drive phenomena that simply cannot exist in isolation.
+From the vast expanse of the Internet to social networks and protein-protein interactions, these simple representations of *nodes* and *edges* are all around us in nature and society. Their *connections* fundamentally shape the world we live in and drive phenomena that simply cannot exist in isolation.
 
 Consider these examples:
 
@@ -77,8 +96,6 @@ While the basic definition is simple, real networks exhibit rich structural prop
 - **Small worlds**: Despite their large size, most networks exhibit surprisingly short paths between any two nodes - often just a few steps separate any two points in the network.
 
 - **Community structure**: Networks naturally organize into *communities* or *modules* - groups of nodes that are more densely connected internally than to the rest of the network.
-
-[![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
 ## Network effects and emergent phenomena
 
