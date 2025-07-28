@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; What do you imagine about networks? 🤔 – Advanced Topics in Network Science</title>
+<title>1&nbsp; Networks – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What do you imagine about networks? 🤔</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -163,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What do you imagine about networks? 🤔</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -529,8 +529,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#why-networks-matter" id="toc-why-networks-matter" class="nav-link active" data-scroll-target="#why-networks-matter"><span class="header-section-number">1.1</span> Why networks matter 💡</a></li>
-  <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1.1</span> Introduction</a></li>
+  <li><a href="#why-networks-matter" id="toc-why-networks-matter" class="nav-link" data-scroll-target="#why-networks-matter"><span class="header-section-number">1.2</span> Why networks matter 💡</a></li>
+  <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.3</span> How to represent a network 📊</a></li>
   <li><a href="#why-should-we-care-about-networks" id="toc-why-should-we-care-about-networks" class="nav-link" data-scroll-target="#why-should-we-care-about-networks"><span class="header-section-number">2</span> Why should we care about networks?</a>
   <ul class="collapse">
   <li><a href="#zoo-of-networks" id="toc-zoo-of-networks" class="nav-link" data-scroll-target="#zoo-of-networks"><span class="header-section-number">2.1</span> Zoo of networks</a></li>
@@ -545,9 +546,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What do you imagine about networks? 🤔</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What do you imagine about networks? 🤔</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -564,32 +565,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</p>
+<section id="introduction" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1.1</span> Introduction</h2>
+<p>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</p>
 <p>The most natural way to think about disease spread is through geographic distance. If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:</p>
+<div id="geo-vs-arrival-time">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg"><img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" class="img-fluid figure-img"></a></p>
 <figcaption>Geographic distance vs arrival time</figcaption>
 </figure>
 </div>
-<p>Distance does explain the arrival time to some extent - there’s a rough trend where farther places tend to be infected later. But it doesn’t tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</p>
+<p>Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</p>
+</div>
+<p>Distance does explain the arrival time to some extent - there’s a rough trend where farther places tend to be infected later (C, D, E). But it doesn’t tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</p>
 <p>But when we map the same data using “effective distance” based on mobility flows, the pattern becomes beautifully clear:</p>
+<div id="network-distance-vs-arrival-time">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg"><img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" class="img-fluid figure-img"></a></p>
 <figcaption>Network distance vs arrival time</figcaption>
 </figure>
 </div>
+<p><span class="citation" data-cites="article">(<a href="../m01-euler_tour/01-concepts.html#ref-article" role="doc-biblioref"><strong>article?</strong></a>)</span>{brockmann2013hidden, title = {{The Hidden Geometry of Complex, Network-Driven Contagion Phenomena}}, author = {Brockmann, Dirk and Helbing, Dirk}, year = {2013}, month = dec, journal = {Science}, publisher = {American Association for the Advancement of Science (AAAS)}, volume = {342}, number = {6164}, pages = {1337–1342}, doi = {10.1126/science.1245200}, issn = {1095-9203}, url = {http://dx.doi.org/10.1126/science.1245200} }</p>
+<p>Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</p>
+</div>
 <p>This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.</p>
 <p>When you hear “network,” you probably think of computer networks, power grids, or telecommunications systems. You’re absolutely right - these are all networks. But here’s what might surprise you: the same mathematical principles that govern these engineered systems also govern how diseases spread, how your brain works, how information flows through social media, and countless other phenomena. ✨</p>
-<section id="why-networks-matter" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="why-networks-matter"><span class="header-section-number">1.1</span> Why networks matter 💡</h2>
+</section>
+<section id="why-networks-matter" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="why-networks-matter"><span class="header-section-number">1.2</span> Why networks matter 💡</h2>
 <p>The H1N1 example above reveals a fundamental truth: <strong><em>network structure determines how things spread</em></strong>. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</p>
 <p>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs.&nbsp;parallel behave completely differently. A single point of failure can bring down an entire system. Whether we’re talking about electrical circuits, pandemics, or social influence, the <em>structure of connections</em> shapes behavior in ways that individual components cannot.</p>
 <p>A network is simply a collection of <em>nodes</em> connected by <em>edges</em>. Despite this simplicity, it’s one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.</p>
 </section>
-<section id="how-to-represent-a-network" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</h2>
+<section id="how-to-represent-a-network" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.3</span> How to represent a network 📊</h2>
 <p>We can represent networks in two equivalent ways. <strong>Schematically</strong>, we draw them as <em>dots and lines</em> - nodes connected by edges, as shown in this network diagram:</p>
 <p><a href="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid"></a></p>
 <p>But for analyzing networks, we represent them as <strong>tables</strong> with <em>source and target</em> columns. Consider this network:</p>
@@ -1155,128 +1166,160 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># What do you imagine about networks? 🤔</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Networks</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>The most natural way to think about disease spread is through geographic distance.</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)</span><span class="co">](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later. But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>The most natural way to think about disease spread is through geographic distance.</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>::: {#geo-vs-arrival-time}</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)</span><span class="co">](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)</span><span class="co">](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>When you hear "network," you probably think of computer networks, power grids, or telecommunications systems. You're absolutely right - these are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern how diseases spread, how your brain works, how information flows through social media, and countless other phenomena. ✨</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks matter 💡</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>::: {#network-distance-vs-arrival-time}</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)</span><span class="co">](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## How to represent a network 📊</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>We can represent networks in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span><span class="co">](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>But for analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node2 <span class="pp">|</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node4 <span class="pp">|</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node3 <span class="pp">|</span> Node5 <span class="pp">|</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>@article{brockmann2013hidden,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  title         = {{The Hidden Geometry of Complex, Network-Driven Contagion Phenomena}},</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  author        = {Brockmann, Dirk and Helbing, Dirk},</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  year          = {2013},</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  month         = dec,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  journal       = {Science},</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  publisher     = {American Association for the Advancement of Science (AAAS)},</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  volume        = {342},</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  number        = {6164},</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  pages         = {1337–1342},</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  doi           = {10.1126/science.1245200},</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  issn          = {1095-9203},</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  url           = {http://dx.doi.org/10.1126/science.1245200}</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>**The power of abstraction**: The same tabular representation works for any networked system:</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Social networks**: People connected by friendships</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Brain networks**: Neurons connected by synapses</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The Internet**: Web pages connected by hyperlinks</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Citation networks**: Papers connected by citations</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Food webs**: Species connected by predator-prey relationships</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>When you hear "network," you probably think of computer networks, power grids, or telecommunications systems. You're absolutely right - these are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern how diseases spread, how your brain works, how information flows through social media, and countless other phenomena. ✨</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks matter 💡</span></span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is ***the power of abstraction*** that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care about networks?</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>System-level behavior emerges from component interactions, but networks take this to another level entirely. The 2003 Northeast blackout started with a single overloaded line in Ohio and cascaded through network connections to affect 55 million people. COVID factory closures created global shortages through supply chain networks. A single tweet can reach millions through social media cascades.</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.</span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>Here's the key insight: in networked systems, *local events can have global consequences*, and *global properties emerge from local interactions*. You can't understand these systems by studying individual components - you need to understand the network structure itself.</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## How to represent a network 📊</span></span>
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zoo of networks</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>We can represent networks in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:</span>
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>Can you find networks around you? Find out what networks are like in nature and society.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span><span class="co">](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zoo 🐆🐘🦆 of networks</span><span class="co">](./zoo-of-networks.md)</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>But for analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:</span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks are hard to understand</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>If networks are just tables of connections, why do we need sophisticated mathematical tools to understand them? The answer lies in the complexity that emerges from simplicity.</span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>Traditional reductionist thinking works well for systems where you can understand the whole by understanding the parts. But networks break this approach in fundamental ways:</span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Scale overwhelms intuition**: You can mentally track relationships between 3 people. But what about 3 million? At massive scales, simple rules create complex patterns that defy intuition.</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node2 <span class="pp">|</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node4 <span class="pp">|</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node3 <span class="pp">|</span> Node5 <span class="pp">|</span></span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small changes, big consequences**: Remove one connection and nothing happens. Remove a different connection and the entire network fragments. This *non-linearity* makes networks unpredictable.</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.</span>
 <span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hidden structure**: A table with millions of rows reveals nothing about communities, bottlenecks, or influence patterns. The important structural properties are buried in the data and require sophisticated analysis to uncover.</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>**The power of abstraction**: The same tabular representation works for any networked system:</span>
 <span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dynamic evolution**: Networks constantly change - nodes join, leave, reconnect. Understanding these *temporal dynamics* requires mathematical tools that go far beyond static snapshots.</span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>This is why network science exists as a field: traditional mathematical tools aren't sufficient for interconnected systems.</span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building the right mathematical toolkit</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Social networks**: People connected by friendships</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Brain networks**: Neurons connected by synapses</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The Internet**: Web pages connected by hyperlinks</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Citation networks**: Papers connected by citations</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Food webs**: Species connected by predator-prey relationships</span>
 <span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is ***the power of abstraction*** that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</span>
 <span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>**From calculus to graph theory**: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don't. This requires *graph theory*, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care about networks?</span></span>
 <span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>**From individual statistics to structural measures**: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are *relational*. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>System-level behavior emerges from component interactions, but networks take this to another level entirely. The 2003 Northeast blackout started with a single overloaded line in Ohio and cascaded through network connections to affect 55 million people. COVID factory closures created global shortages through supply chain networks. A single tweet can reach millions through social media cascades.</span>
 <span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>**From equilibrium to dynamics**: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these *dynamic processes*.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>Here's the key insight: in networked systems, *local events can have global consequences*, and *global properties emerge from local interactions*. You can't understand these systems by studying individual components - you need to understand the network structure itself.</span>
 <span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>**From analytical to computational**: Many network problems can't be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zoo of networks</span></span>
 <span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>This toolkit transforms qualitative questions like "How resilient is this system?" into precise, quantitative problems we can solve with algorithms and data.</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>Can you find networks around you? Find out what networks are like in nature and society.</span>
 <span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond simple connections</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zoo 🐆🐘🦆 of networks</span><span class="co">](./zoo-of-networks.md)</span></span>
 <span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>Real networks exhibit complex structural properties that affect system behavior:</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks are hard to understand</span></span>
 <span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree heterogeneity**: Not all nodes are equal. Some become *hubs* with many connections, others remain peripheral. This creates both efficiency and vulnerability.</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>If networks are just tables of connections, why do we need sophisticated mathematical tools to understand them? The answer lies in the complexity that emerges from simplicity.</span>
 <span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Clustering**: Nodes tend to connect to their neighbors' neighbors, creating local redundancy that affects how information flows through the system.</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>Traditional reductionist thinking works well for systems where you can understand the whole by understanding the parts. But networks break this approach in fundamental ways:</span>
 <span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world effects**: Even in large networks, surprisingly short paths connect any two nodes - the "six degrees of separation" is a universal network property.</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Scale overwhelms intuition**: You can mentally track relationships between 3 people. But what about 3 million? At massive scales, simple rules create complex patterns that defy intuition.</span>
 <span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Community structure**: Networks naturally organize into *modules* that are internally well-connected but have fewer connections between them.</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small changes, big consequences**: Remove one connection and nothing happens. Remove a different connection and the entire network fragments. This *non-linearity* makes networks unpredictable.</span>
 <span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network effects and emergent phenomena</span></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hidden structure**: A table with millions of rows reveals nothing about communities, bottlenecks, or influence patterns. The important structural properties are buried in the data and require sophisticated analysis to uncover.</span>
 <span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dynamic evolution**: Networks constantly change - nodes join, leave, reconnect. Understanding these *temporal dynamics* requires mathematical tools that go far beyond static snapshots.</span>
 <span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cascading failures**: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Collective intelligence**: Distributed systems can solve problems that individual components cannot</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Resilience**: Redundant connections allow systems to function even when components fail</span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Synchronization**: Components spontaneously coordinate their behavior through network interactions</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Phase transitions**: Networks can suddenly shift between different states as connections are added or removed</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>This is why network science exists as a field: traditional mathematical tools aren't sufficient for interconnected systems.</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building the right mathematical toolkit</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</span>
 <span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>**From calculus to graph theory**: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don't. This requires *graph theory*, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>**From individual statistics to structural measures**: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are *relational*. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>**From equilibrium to dynamics**: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these *dynamic processes*.</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>**From analytical to computational**: Many network problems can't be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>This toolkit transforms qualitative questions like "How resilient is this system?" into precise, quantitative problems we can solve with algorithms and data.</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond simple connections</span></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>Real networks exhibit complex structural properties that affect system behavior:</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree heterogeneity**: Not all nodes are equal. Some become *hubs* with many connections, others remain peripheral. This creates both efficiency and vulnerability.</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Clustering**: Nodes tend to connect to their neighbors' neighbors, creating local redundancy that affects how information flows through the system.</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world effects**: Even in large networks, surprisingly short paths connect any two nodes - the "six degrees of separation" is a universal network property.</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Community structure**: Networks naturally organize into *modules* that are internally well-connected but have fewer connections between them.</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network effects and emergent phenomena</span></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cascading failures**: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Collective intelligence**: Distributed systems can solve problems that individual components cannot</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Resilience**: Redundant connections allow systems to function even when components fail</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Synchronization**: Components spontaneously coordinate their behavior through network interactions</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Phase transitions**: Networks can suddenly shift between different states as connections are added or removed</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
