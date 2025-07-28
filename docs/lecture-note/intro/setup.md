@@ -24,7 +24,7 @@ Without virtual environments, you risk dependency hell where package conflicts m
 
 **Using uv (Recommended)**
 
-We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. uv is significantly faster than traditional tools and makes managing Python environments effortless.
+We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience.
 
 Install uv:
 ```bash
