@@ -5,7 +5,15 @@ title: Setup
 
 ## Python
 
-We'll use Python to work with data throughout this course. Python provides powerful libraries for network analysis, data manipulation, and visualization that are essential for understanding network science concepts. You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
+We'll use Python to work with data throughout this course. Python is an excellent choice for network science for several reasons:
+
+**Rich ecosystem of libraries**: Python has an extensive collection of libraries that we can use immediately without building everything from scratch. For network analysis, we have `NetworkX` for general network manipulation, `igraph` for high-performance computations, and `graph-tool` for large-scale analysis. For data work, we have `pandas` for data manipulation, `numpy` for numerical computing, and `matplotlib`/`seaborn` for visualization.
+
+**Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's clean syntax that uses indentation (whitespace) to define code blocks rather than confusing brackets, and its emphasis on descriptive function names that tell you exactly what they do.
+
+**Easy to learn**: The combination of readable syntax and extensive documentation makes Python accessible to both beginners and experts. You can focus on understanding network concepts rather than wrestling with complex programming syntax.
+
+You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
 
 If you don't have Python installed:
 - **Windows/Mac**: Download from [python.org](https://www.python.org/downloads/)
