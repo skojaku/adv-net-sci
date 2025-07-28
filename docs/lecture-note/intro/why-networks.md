@@ -24,33 +24,25 @@ Can you find networks around you? Find out what networks are like in nature and 
 
 Networks present unique challenges that make them difficult to understand using traditional analytical approaches:
 
-### Scale and complexity
-Real-world networks often contain millions or billions of nodes and connections. The human brain alone has roughly 100 trillion synaptic connections. The sheer scale makes it impossible to analyze these systems by examining individual components.
+- **Scale and complexity**: Real-world networks often contain millions or billions of nodes and connections. The human brain alone has roughly 100 trillion synaptic connections. The sheer *scale* makes it impossible to analyze these systems by examining individual components.
 
-### Non-linear dynamics
-Small changes in network structure can lead to dramatically different outcomes. Adding or removing a single connection might cause an entire network to transition from stable to chaotic behavior, or from fragmented to connected.
+- **Non-linear dynamics**: Small changes in network structure can lead to dramatically different outcomes. Adding or removing a single connection might cause an entire network to transition from *stable* to *chaotic* behavior, or from fragmented to connected.
 
-### Hidden structures
-Networks often contain hidden patterns and hierarchies that are not immediately visible. Communities, bottlenecks, and influential nodes may be buried deep within the network's structure, requiring sophisticated tools to uncover.
+- **Hidden structures**: Networks often contain hidden patterns and hierarchies that are not immediately visible. Communities, bottlenecks, and *influential nodes* may be buried deep within the network's structure, requiring sophisticated tools to uncover.
 
-### Time-dependent evolution
-Networks are rarely static. They grow, evolve, and adapt over time. Understanding how network structure changes and how these changes affect function requires dynamic analysis that goes far beyond static snapshots.
+- **Time-dependent evolution**: Networks are rarely static. They grow, evolve, and adapt over time. Understanding how network structure changes and how these changes affect function requires *dynamic analysis* that goes far beyond static snapshots.
 
 ## Why we need a special mathematical language
 
 The complexity of networks demands specialized mathematical tools and concepts that differ fundamentally from traditional mathematics:
 
-### Graph theory fundamentals
-We need precise definitions for nodes, edges, paths, and connectivity that capture the essence of networked systems while remaining mathematically tractable.
+- **Graph theory fundamentals**: We need precise definitions for *nodes*, *edges*, *paths*, and *connectivity* that capture the essence of networked systems while remaining mathematically tractable.
 
-### Statistical measures
-Traditional statistics focus on individual data points, but networks require measures that capture structural properties: clustering coefficients, centrality measures, path lengths, and degree distributions.
+- **Statistical measures**: Traditional statistics focus on individual data points, but networks require measures that capture *structural properties*: clustering coefficients, centrality measures, path lengths, and degree distributions.
 
-### Dynamic models  
-Understanding how information, diseases, or failures propagate through networks requires mathematical models that can handle cascading processes and feedback loops.
+- **Dynamic models**: Understanding how information, diseases, or failures propagate through networks requires mathematical models that can handle *cascading processes* and *feedback loops*.
 
-### Computational approaches
-Many network properties cannot be calculated analytically and require computational methods. This has led to the development of specialized algorithms for network analysis.
+- **Computational approaches**: Many network properties cannot be calculated analytically and require computational methods. This has led to the development of specialized *algorithms* for network analysis.
 
 The mathematical language of networks allows us to:
 - **Quantify** seemingly qualitative concepts like "importance" or "influence"
@@ -78,17 +70,13 @@ The same mathematical framework applies. This abstraction allows us to discover 
 
 While the basic definition is simple, real networks exhibit rich structural properties:
 
-### Degree heterogeneity
-Not all nodes are equal. Some have many connections (hubs), others have just a few. This variation in connectivity creates dramatically different roles for different nodes.
+- **Degree heterogeneity**: Not all nodes are equal. Some have many connections (*hubs*), others have just a few. This variation in connectivity creates dramatically different *roles* for different nodes.
 
-### Clustering  
-Nodes tend to form tight-knit groups where "friends of friends are friends." This local clustering affects how information and influence spread through the network.
+- **Clustering**: Nodes tend to form tight-knit groups where "friends of friends are friends." This *local clustering* affects how information and influence spread through the network.
 
-### Small worlds
-Despite their large size, most networks exhibit surprisingly short paths between any two nodes - often just a few steps separate any two points in the network.
+- **Small worlds**: Despite their large size, most networks exhibit surprisingly short paths between any two nodes - often just a few steps separate any two points in the network.
 
-### Community structure
-Networks naturally organize into communities or modules - groups of nodes that are more densely connected internally than to the rest of the network.
+- **Community structure**: Networks naturally organize into *communities* or *modules* - groups of nodes that are more densely connected internally than to the rest of the network.
 
 [![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
