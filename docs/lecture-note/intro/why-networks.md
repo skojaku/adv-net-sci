@@ -5,9 +5,9 @@ When you hear "network," what comes to mind? If you're an engineering student, y
 
 You're absolutely right. These are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread. ✨
 
-## The key insight 💡
+## Topology matters 💡
 
-*Topology matters*. How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.
+How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.
 
 This intuition transfers directly to network science. Whether we're talking about electrical circuits, computer networks, or social systems, the *structure of connections* shapes behavior.
 
@@ -19,15 +19,15 @@ We can represent networks in two equivalent ways. Schematically, we draw them as
 
 [![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
-But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:
+But for analyzing networks, we represent them as tables with source and target columns. Consider this network:
 
 | Source | Target |
 |--------|--------|
-| Router1 | Router2 |
-| Router1 | Router3 |
-| Router2 | Router3 |
-| Router2 | Server1 |
-| Router3 | Server2 |
+| Node1 | Node2 |
+| Node1 | Node3 |
+| Node2 | Node3 |
+| Node2 | Node4 |
+| Node3 | Node5 |
 
 This *edge list* completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it's routers, people, neurons, or molecules. ✅
 
@@ -41,7 +41,7 @@ The same tabular representation works for any networked system:
 - **Citation networks**: Papers connected by citations
 - **Food webs**: Species connected by predator-prey relationships
 
-Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
+Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
 
 # Why should we care about networks?
 
