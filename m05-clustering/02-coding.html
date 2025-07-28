@@ -612,7 +612,7 @@ window.Quarto = {
 <li><span class="math inline">|V_1|</span> (or |V_2|) is the number of nodes in the community <span class="math inline">V_1</span> (or <span class="math inline">V_2</span>).</li>
 </ul>
 <p>The normalization factor <span class="math inline">1/(|V_1| |V_2|)</span> balances the community sizes. It’s smallest when communities are equal (<span class="math inline">|V_1| = |V_2|</span>) and largest when one community has only one node (<span class="math inline">|V_1| = 1</span> or <span class="math inline">|V_2| = 1</span>).</p>
-<div id="2a00f266" class="cell">
+<div id="26f375e6" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
@@ -682,7 +682,7 @@ We can now calculate:
 
 :::
 
-::: {#f710f89f .cell}
+::: {#48fdcbab .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input", "remove-output"]
 
@@ -989,7 +989,7 @@ Modularity maximization is not a reliable method to find communities in networks
 P(A_{ij}=1|c_i, c_j) = p_{c_i,c_j}
 </span></p>
 <p>where <span class="math inline">p_{c_i,c_j}</span> is the probability of an edge between nodes in community <span class="math inline">c_i</span> and <span class="math inline">c_j</span>, respectively. Notice that the edge probability is fully specified by the community membership of the nodes. This means that nodes in a community are connected with the same probability irrespective of the nodes themselves, and the nodes in different two communities are also connected with the same probability. As a result, when plotting the adjacency matrix, we observe “blocks” of different edge densities, which is why we say that SBM is a “block model”.</p>
-<div id="4f8db4ff" class="cell">
+<div id="cf6b3469" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1054,7 +1054,7 @@ P_{c,c'} = \begin{cases}
 <section id="generating-networks-with-sbm" class="level3" data-number="24.3.3">
 <h3 data-number="24.3.3" class="anchored" data-anchor-id="generating-networks-with-sbm"><span class="header-section-number">24.3.3</span> Generating networks with SBM</h3>
 <p>It is easy to generate networks with SBM using igraph. For example, the assortativity communities can be generated as follows.</p>
-<div id="e1c170b6" class="cell">
+<div id="bccb609d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -1103,7 +1103,7 @@ P(\left\{A_{ij}\right\}_{ij}) = \prod_{i&lt;j} P(A_{ij}=1|c_i, c_j)^{A_{ij}} (1-
 </span></p>
 <p>We call this the <strong>likelihood function</strong>. It tells us how likely we are to see this network given our community guess. We can play around with different community assignments and edge probabilities to see which one gives us the highest likelihood. To make this game easier, let’s first figure out the best edge probabilities for a given community assignment.</p>
 <p>Our likelihood function has a special shape - it is <em>a concave function</em> with respect to <span class="math inline">p_{c,c'}</span>. This means that the likelihood function is a hill with only one peak when we look at it in terms of edge probability <span class="math inline">p_{c,c'}</span>.</p>
-<div id="e66420fb" class="cell">
+<div id="aaea01be" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1154,7 +1154,7 @@ n_cn_{c'} &amp; \text{if } c \neq c' \\
 \end{cases}
 </span></p>
 <p>Why do we have two different equations for <span class="math inline">p_{c,c'}</span>? It’s because we are counting each pair of nodes only by once. It is easy to verify when looking at the adjacency matrix:</p>
-<div id="33a6b125" class="cell">
+<div id="9c544b9d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
