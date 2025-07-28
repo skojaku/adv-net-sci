@@ -600,7 +600,7 @@ window.Quarto = {
 
 
 <p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m05-clustering.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="27603e10" class="cell">
+<div id="a7f3c732" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
@@ -612,7 +612,7 @@ window.Quarto = {
 <section id="modularity-maximization" class="level2" data-number="25.1">
 <h2 data-number="25.1" class="anchored" data-anchor-id="modularity-maximization"><span class="header-section-number">25.1</span> Modularity maximization</h2>
 <p>Let us showcase how to use <code>igraph</code> to detect communities with modularity. We will use the Karate Club Network as an example.</p>
-<div id="993d3395" class="cell">
+<div id="fb1a47f9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -621,7 +621,7 @@ window.Quarto = {
 </details>
 </div>
 <p>When it comes to maximizing modularity, there are a variety of algorithms to choose from. Two of the most popular ones are the <code>Louvain</code> and <code>Leiden</code> algorithms, both of which are implemented in <code>igraph</code>. The Louvain algorithm has been around for quite some time and is a classic choice, while the Leiden algorithm is a newer bee that often yields better accuracy. For our example, we’ll be using the <code>Leiden</code> algorithm, and I think you’ll find it really effective!</p>
-<div id="c4c8aeca" class="cell">
+<div id="26dffe4e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>communities <span class="op">=</span> g.community_leiden(resolution<span class="op">=</span><span class="dv">1</span>, objective_function<span class="op">=</span> <span class="st">"modularity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -633,14 +633,14 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </span></p>
 <p>Here, the parameter <span class="math inline">\rho</span> plays a crucial role in balancing the positive and negative parts of the equation. The resolution limit comes into play because of the diminishing effect of the negative term as the number of edges <span class="math inline">m</span> increases. The parameter <span class="math inline">\rho</span> can adjust this balance and allow us to circumvent the resolution limit.</p>
 <p>What is <code>communities</code>? This is a list of communities, where each community is represented by a list of nodes by their indices.</p>
-<div id="b631b19b" class="cell">
+<div id="781def09" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(communities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Let us visualize the communities by coloring the nodes in the graph.</p>
-<div id="f5d79cf7" class="cell">
+<div id="3de4363c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -666,7 +666,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <li>Find communities by maximizing the modularity and visualize them.</li>
 <li>Try at least three different values of the resolution parameter and observe how the community structure changes.</li>
 </ol>
-<div id="64d18c7c" class="cell">
+<div id="ccf49627" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -677,7 +677,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <section id="stochstic-block-model" class="level2" data-number="25.2">
 <h2 data-number="25.2" class="anchored" data-anchor-id="stochstic-block-model"><span class="header-section-number">25.2</span> Stochstic Block Model</h2>
 <p>Let us turn the SBM as our community detection tool using <a href="https://graph-tool.skewed.de/">graph-tool</a>. This is a powerful library for network analysis, with a focus on the stochastic block model.</p>
-<div id="5dc30b5c" class="cell">
+<div id="73dabe2c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
@@ -695,7 +695,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </details>
 </div>
 <p>We will identify the communities using the stochastic block model as follows. First, we will convert the graph object in igraph to that in graph-tool.</p>
-<div id="f2bf96f4" class="cell">
+<div id="ce35f3eb" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graph_tool.<span class="bu">all</span>  <span class="im">as</span> gt</span>
@@ -716,7 +716,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </details>
 </div>
 <p>Then, we will fit the stochastic block model to the graph.</p>
-<div id="61dba683" class="cell">
+<div id="e0c8d5e0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the stochastic block model</span></span>
@@ -734,7 +734,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <pre class="{note}"><code>Here's a fun fact: the likelihood maximization on its own can't figure out how many communities there should be. But `graph-tool` has a clever trick to circumvent this limitation.
 `graph-tool` actually fits multiple SBMs, each with a different number of communities. Then, it picks the most plausible one based on a model selection criterion.</code></pre>
 <p>Let’s visualize the communities to see what we got.</p>
-<div id="25190b99" class="cell">
+<div id="df85af29" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
@@ -747,7 +747,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>community_membership</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="f7f14b60" class="cell">
+<div id="2161fd18" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a color palette</span></span>
@@ -775,7 +775,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </ul>
 <p>That’s exactly what our model found in this network.</p>
 <p>If we look at the adjacency matrix, we would see something that looks like an upside-down “L”. This shape is like a signature for core-periphery structures.</p>
-<div id="1ee95b15" class="cell">
+<div id="a59ad0cf" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert igraph Graph to adjacency matrix</span></span>
