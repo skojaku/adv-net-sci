@@ -530,8 +530,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#our-world-operates-on-networks" id="toc-our-world-operates-on-networks" class="nav-link active" data-scroll-target="#our-world-operates-on-networks"><span class="header-section-number">1.1</span> Our world operates on networks</a></li>
-  <li><a href="#why-networks-matter" id="toc-why-networks-matter" class="nav-link" data-scroll-target="#why-networks-matter"><span class="header-section-number">1.2</span> Why networks matter 💡</a></li>
-  <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.3</span> How to represent a network 📊</a></li>
+  <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</a></li>
   <li><a href="#why-should-we-care-about-networks" id="toc-why-should-we-care-about-networks" class="nav-link" data-scroll-target="#why-should-we-care-about-networks"><span class="header-section-number">2</span> Why should we care about networks?</a>
   <ul class="collapse">
   <li><a href="#zoo-of-networks" id="toc-zoo-of-networks" class="nav-link" data-scroll-target="#zoo-of-networks"><span class="header-section-number">2.1</span> Zoo of networks</a></li>
@@ -595,10 +594,10 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 <div class="no-row-height column-margin column-container"><div class="">
 <p>See <span class="citation" data-cites="brockmann2013hidden">(<a href="../m01-euler_tour/01-concepts.html#ref-brockmann2013hidden" role="doc-biblioref"><strong>brockmann2013hidden?</strong></a>)</span> for more details.</p>
 </div></div><p>The H1N1 example above reveals a fundamental truth: <strong><em>network structure determines how things spread</em></strong>. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</p>
-<p>Networks are everywhere. From the molecular interactions that keep us alive to the digital connections that shape our global economy, network structures govern how our world operates. Every breath you take depends on networks - oxygen molecules traveling through your lung network, blood flowing through your circulatory network, and neurons firing across your brain network to control it all.</p>
-<div class="quarto-layout-panel" data-layout-nrow="2">
+<p>Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we’re connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.</p>
+<div class="quarto-layout-panel" data-layout-nrow="4">
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" class="img-fluid figure-img"></p>
@@ -606,7 +605,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://mlurgi.github.io/networks_for_r/images/food-web.png" class="img-fluid figure-img"></p>
@@ -614,7 +613,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" class="img-fluid figure-img"></p>
@@ -622,7 +621,9 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png" class="img-fluid figure-img"></p>
@@ -630,7 +631,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg" class="img-fluid figure-img"></p>
@@ -638,7 +639,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" class="img-fluid figure-img"></p>
@@ -648,7 +649,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </div>
 </div>
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png" class="img-fluid figure-img"></p>
@@ -656,7 +657,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" class="img-fluid figure-img"></p>
@@ -664,7 +665,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png" class="img-fluid figure-img"></p>
@@ -672,7 +673,9 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png" class="img-fluid figure-img"></p>
@@ -680,7 +683,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" class="img-fluid figure-img"></p>
@@ -688,7 +691,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 16.7%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" class="img-fluid figure-img"></p>
@@ -698,14 +701,12 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </div>
 </div>
 </div>
-</section>
-<section id="why-networks-matter" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="why-networks-matter"><span class="header-section-number">1.2</span> Why networks matter 💡</h2>
+<p>💡## Why networks matter</p>
 <p>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs.&nbsp;parallel behave completely differently. A single point of failure can bring down an entire system. Whether we’re talking about electrical circuits, pandemics, or social influence, the <em>structure of connections</em> shapes behavior in ways that individual components cannot.</p>
 <p>A network is simply a collection of <em>nodes</em> connected by <em>edges</em>. Despite this simplicity, it’s one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.</p>
 </section>
-<section id="how-to-represent-a-network" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.3</span> How to represent a network 📊</h2>
+<section id="how-to-represent-a-network" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</h2>
 <p>We can represent networks in two equivalent ways. <strong>Schematically</strong>, we draw them as <em>dots and lines</em> - nodes connected by edges, as shown in this network diagram:</p>
 <p><a href="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid"></a></p>
 <p>But for analyzing networks, we represent them as <strong>tables</strong> with <em>source and target</em> columns. Consider this network:</p>
@@ -1309,10 +1310,10 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Networks are everywhere. From the molecular interactions that keep us alive to the digital connections that shape our global economy, network structures govern how our world operates. Every breath you take depends on networks - oxygen molecules traveling through your lung network, blood flowing through your circulatory network, and neurons firing across your brain network to control it all.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we're connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>::: {layout-nrow=2}</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>::: {layout-nrow=4}</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="al">![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)</span></span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
@@ -1340,7 +1341,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks matter 💡</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>💡## Why networks matter </span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.</span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
