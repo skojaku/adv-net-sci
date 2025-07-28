@@ -2,8 +2,7 @@
 title: Networks
 ---
 
-## Our world operates on networks
-
+## Networks are everywhere and they matter
 
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
@@ -53,31 +52,41 @@ Networks are everywhere. Look around you: plants depend on pollinators in ecolog
 
 ![Social network](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png)
 
-![International financial network](https://www.researchgate.net/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)
+![International financial network](https://www.researchgate.net/profile/Douglas-White-4/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)
 
-![US airport network](https://www.researchgate.net/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)
+![US airport network](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)
 
 ![Power grid network](https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png)
 
 ![River network](https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png)
 
-![Internet network](https://www.researchgate.net/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)
+![Internet network](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)
 
 ![Knowledge graph](https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png)
 
 :::
 
-## How to represent a network 📊
+## How to represent a network
 
-Although networks come from vastly different fields - from the pollinator networks sustaining ecosystems to the financial networks driving global markets - we can represent them all using the same universal language. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This unified approach is what makes network science so powerful across disciplines.
+Although networks come from vastly different fields, **we can represent them all using the same universal language** 😉. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This abstraction is what makes network science so interdisciplinary.
 
 A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
 
+
 We can represent any network in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
 
-[![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
-But for analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:
+::: {layout-ncol=2}
+
+![Schematic network](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
+
+![A network of penguins in the Kyoto Aquarium.](https://www.kyoto-aquarium.com/sokanzu/assets/img/img_sokanzu_2022.jpg)
+
+:::
+
+While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to perform quantitative understanding of network properties and behaviors.
+
+For analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:
 
 | Source | Target |
 |--------|--------|
