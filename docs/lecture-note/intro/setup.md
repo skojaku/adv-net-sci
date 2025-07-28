@@ -20,7 +20,7 @@ Don't confuse Python virtual environments with virtual machines (VMs). Python vi
 - **Flexibility**: You can use different versions of packages for different projects without conflicts
 - **Prevent project interference**: Changes to one project won't break another project's dependencies
 
-::: {#fig-python-ecosystem .column-margin}
+::: {#fig-python-ecosystem}
 
 ![](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
 
@@ -33,33 +33,35 @@ Without virtual environments, you risk dependency hell where package conflicts m
 
 We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. [See here for installation instructions](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
-
-
 ::: {.column-margin}
+
+<iframe width="250" height="125" src="https://www.youtube.com/embed/bwRgYxmCqLI?si=-PMkEhKuFW4IyMXW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
+
+
 
 **Other Options**
 
 If you prefer tools other than uv, here are some alternatives:
 
-*[venv](https://docs.python.org/3/library/venv.html):* The standard library for creating virtual environments
+- [venv](https://docs.python.org/3/library/venv.html): The standard library for creating virtual environments;
+- [pyenv](https://github.com/pyenv/pyenv): Great for managing multiple Python versions;
+- [Conda](https://docs.conda.io/): Popular in data science, includes non-Python packages;
+- [Mamba](https://mamba.readthedocs.io/): Faster drop-in replacement for conda;
+- [Miniforge](https://github.com/conda-forge/miniforge): Community-driven conda distribution with mamba included;
 
-*[pyenv](https://github.com/pyenv/pyenv):* Great for managing multiple Python versions
 
-*[Conda](https://docs.conda.io/):* Popular in data science, includes non-Python packages
-
-*[Mamba](https://mamba.readthedocs.io/):* Faster drop-in replacement for conda
-
-*[Miniforge](https://github.com/conda-forge/miniforge):* Community-driven conda distribution with mamba included
-
-:::
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/bwRgYxmCqLI?si=-PMkEhKuFW4IyMXW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Marimo Notebook
 
-![Marimo Logo](https://marimo.io/_next/image?url=%2Fimages%2Fblog%2F6%2Fblog-6-thumbnail.png&w=1920&q=75)
-
 We'll use [Marimo](https://marimo.io/) ([GitHub](https://github.com/marimo-team/marimo)) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
+
+::: {.column-margin}
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/3N6lInzq5MI?si=8WXcexm56zn86WkW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
 
 **Using Marimo's Sandbox Feature with uv (Recommended)**
 
@@ -79,10 +81,6 @@ uv run my_notebook.py
 
 Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.
 
-::: {.callout-note}
-For a visual introduction to Marimo, watch this [YouTube tutorial](https://youtu.be/rrK24YBQjIs?si=ahFmd9CYGbmSB-lR).
-:::
-
 **Alternative Installation**
 
 If you're not using uv, you can install marimo with pip:
@@ -90,7 +88,7 @@ If you're not using uv, you can install marimo with pip:
 pip install marimo
 ```
 
-### Running Marimo
+**Running Marimo**
 
 To start a new marimo notebook:
 
@@ -104,48 +102,40 @@ To open an existing marimo notebook:
 marimo edit notebook.py
 ```
 
-### Key Features
-
-- **Reactive**: Cells automatically re-run when their dependencies change
-- **Version control friendly**: Notebooks are stored as Python files
-- **Interactive widgets**: Built-in support for sliders, dropdowns, and other UI elements
-
-## VS Code
-
-Visual Studio Code is our recommended code editor for this course. It provides excellent Python support, integrated debugging, and extensions that make working with network data and Marimo notebooks more efficient.
-
-### Installation
-
-Download and install VS Code from [code.visualstudio.com](https://code.visualstudio.com/)
-
-### Recommended Extensions
-
-Install these extensions for the best Python development experience:
-
-- **Python** (Microsoft): Python language support
-- **Jupyter** (Microsoft): Jupyter notebook support
-- **Python Docstring Generator**: Auto-generate docstrings
-- **GitLens**: Enhanced Git capabilities
-- **Marimo** (marimo-team): Marimo notebook support
-
-### Configuration
-
-Create a `.vscode/settings.json` file in your project root with:
-
-```json
-{
-    "python.defaultInterpreterPath": "python3",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.formatting.provider": "black"
-}
-```
 
 ## Github
 
 We'll use GitHub for assignments in this course. GitHub provides version control for your code and a platform for submitting and reviewing your work. You'll create repositories, commit your solutions, and share them for evaluation.
 
-### Creating a Github Account
+**For Beginners: GitHub Desktop (Recommended)**
+
+If you're new to Git and GitHub, we strongly recommend starting with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface that makes version control intuitive without requiring command-line knowledge.
+
+Download and install GitHub Desktop:
+1. Go to [desktop.github.com](https://desktop.github.com/)
+2. Download for your operating system
+3. Install and sign in with your GitHub account
+
+**Understanding Git and Version Control**
+
+Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated "save" system that:
+- Keeps a complete history of all changes to your files
+- Lets you go back to any previous version
+- Allows multiple people to work on the same project simultaneously
+- Helps you manage different versions or "branches" of your work
+
+GitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.
+
+**Learning Resources**
+
+Essential resources to understand Git concepts:
+- [Git Handbook](https://guides.github.com/introduction/git-handbook/) - GitHub's official beginner guide
+- [Pro Git Book](https://git-scm.com/book) - Comprehensive free online book
+- [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
+- [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
+- [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
+
+**Creating a Github Account**
 
 1. Go to [github.com](https://github.com)
 2. Click "Sign up"
