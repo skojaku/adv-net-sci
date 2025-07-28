@@ -79,6 +79,10 @@ uv run my_notebook.py
 
 Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.
 
+::: {.callout-note}
+For a visual introduction to Marimo, watch this [YouTube tutorial](https://youtu.be/rrK24YBQjIs?si=ahFmd9CYGbmSB-lR).
+:::
+
 **Alternative Installation**
 
 If you're not using uv, you can install marimo with pip:
