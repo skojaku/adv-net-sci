@@ -3,17 +3,18 @@
 
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
-The most natural way to think about disease spread is through geographic distance - but look at what the data actually shows:
+The most natural way to think about disease spread is through geographic distance.
+If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:
 
 [![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
+
+Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later. But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
 
 But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:
 
 [![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
 
-Consider the puzzle shown above: In 2009, the H1N1 influenza pandemic started in Mexico. If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places.
 
-But that's not what happened. The virus reached South Korea and the UK almost as quickly as it reached neighboring Central American countries. Cities thousands of miles away were infected before some geographically closer locations. The disease didn't follow the logic of geographic distance at all.
 
 This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
 
