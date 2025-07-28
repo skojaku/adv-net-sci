@@ -3,14 +3,15 @@
 title: Setup
 ---
 
-## Python
+### Virtual Environments: Why You Must Avoid Dependency Hell
 
 We'll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.
+
 
 We strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
 
 - **Reproducibility**: Your code will work consistently across different machines and over time
-- **Flexibility**: You can use different versions of packages for different projects without conflicts  
+- **Flexibility**: You can use different versions of packages for different projects without conflicts
 - **Prevent project interference**: Changes to one project won't break another project's dependencies
 
 ::: {fig-python-ecosystem}
