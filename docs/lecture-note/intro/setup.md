@@ -9,11 +9,18 @@ We'll use Python to work with data throughout this course. Python is an excellen
 
 We strongly recommend using **virtual environments** to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
 
+
+::: {.column-margin}
+
+Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
+
+:::
+
 - **Reproducibility**: Your code will work consistently across different machines and over time
 - **Flexibility**: You can use different versions of packages for different projects without conflicts
 - **Prevent project interference**: Changes to one project won't break another project's dependencies
 
-::: {#fig-python-ecosystem}
+::: {#fig-python-ecosystem .column-margin}
 
 ![](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
 
@@ -24,35 +31,17 @@ Without virtual environments, you risk dependency hell where package conflicts m
 
 **Using uv (Recommended)**
 
-We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience.
+We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. [See here for installation instructions](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
-
-::: {.column-margin}
-
-Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
-
-:::
 
 
 ::: {.column-margin}
 
 **Other Options**
 
-If you prefer other tools, here are some alternatives:
+If you prefer tools other than uv, here are some alternatives:
 
-*Standard venv:*
-```bash
-# Create virtual environment
-python -m venv network-science-env
-
-# Activate it
-source network-science-env/bin/activate  # On macOS/Linux
-# or
-network-science-env\Scripts\activate     # On Windows
-
-# Install packages
-pip install numpy pandas matplotlib seaborn networkx igraph-python scikit-learn marimo
-```
+*[venv](https://docs.python.org/3/library/venv.html):* The standard library for creating virtual environments
 
 *[pyenv](https://github.com/pyenv/pyenv):* Great for managing multiple Python versions
 
@@ -64,58 +53,41 @@ pip install numpy pandas matplotlib seaborn networkx igraph-python scikit-learn 
 
 :::
 
-Other virtualization tools you might encounter include:
-- **[Docker](https://www.docker.com/)**: Containerization that packages applications with their dependencies
-- **[Vagrant](https://www.vagrantup.com/)**: Tool for managing virtual machine environments
-- **[VirtualBox](https://www.virtualbox.org/)/[VMware](https://www.vmware.com/)**: Full virtual machine platforms
-- **[WSL](https://docs.microsoft.com/en-us/windows/wsl/)**: Linux environment on Windows
-
-For this course, Python virtual environments are all you need - they're faster, lighter, and perfect for managing Python dependencies.
-:::
-
-
-
-::: {.callout-note}
-
-You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
-
-:::
-
-### Trouble shooting with Google Colab
-
-Google Colab has many packages pre-installed. However, they do not include some packages for network analysis like `igraph` and `graph-tool`.
-
-**Installing igraph**
-Create a cell on top of the notebook and run the following code to install the igraph:
-```python
-!sudo apt install libcairo2-dev pkg-config python3-dev
-!pip install pycairo cairocffi
-!pip install igraph
-```
-
-**Installing graph-tool**
-Create a cell on top of the notebook and run the following code to install the graph-tool:
-```python
-!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" > /etc/apt/sources.list.d/skewed.list
-!apt-get update
-!apt-get install python3-graph-tool python3-matplotlib python3-cairo
-
-# Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.
-!apt purge python3-cairo
-!apt install libcairo2-dev pkg-config python3-dev
-!pip install --force-reinstall pycairo
-!pip install zstandar
-```
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bwRgYxmCqLI?si=-PMkEhKuFW4IyMXW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Marimo Notebook
 
 We'll use Marimo notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
 
-### Installation
+### Using Marimo's Sandbox Feature with uv
 
-Install marimo using pip:
+Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.
+
+**Creating a sandboxed notebook:**
+
+```bash
+uvx marimo edit --sandbox my_notebook.py
+```
+
+This command:
+- Installs marimo in a temporary environment
+- Tracks your dependencies and stores them in the notebook file
+- Automatically downloads and installs any existing dependencies
+
+**Running sandboxed notebooks:**
+
+```bash
+uv run my_notebook.py
+```
+
+**Benefits of the sandbox approach:**
+- Dependencies are embedded in the notebook file itself
+- Perfect reproducibility - anyone can run your notebook with a single command
+- No need to manage separate dependency files
+
+### Alternative Installation
+
+If you're not using uv, you can install marimo with pip:
 
 ```bash
 pip install marimo
