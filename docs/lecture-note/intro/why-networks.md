@@ -2,58 +2,46 @@
 title: Networks
 ---
 
-## Introduction
+## Our world operates on networks
 
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
 The most natural way to think about disease spread is through geographic distance.
 If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:
 
-::: {#geo-vs-arrival-time}
+::: {#fig-geo-vs-arrival-time}
 
-[![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
+![](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
 
 Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
-:::
 
+:::
 
 
 Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
 
-But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:
+This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
 
-::: {#network-distance-vs-arrival-time}
+::: {#fig-network-distance-vs-arrival-time}
 
-[![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
-
-
-@article{brockmann2013hidden,
-  title         = {{The Hidden Geometry of Complex, Network-Driven Contagion Phenomena}},
-  author        = {Brockmann, Dirk and Helbing, Dirk},
-  year          = {2013},
-  month         = dec,
-  journal       = {Science},
-  publisher     = {American Association for the Advancement of Science (AAAS)},
-  volume        = {342},
-  number        = {6164},
-  pages         = {1337–1342},
-  doi           = {10.1126/science.1245200},
-  issn          = {1095-9203},
-  url           = {http://dx.doi.org/10.1126/science.1245200}
-}
-
+![](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
 
 Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
 :::
 
-
-This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
-
-When you hear "network," you probably think of computer networks, power grids, or telecommunications systems. You're absolutely right - these are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern how diseases spread, how your brain works, how information flows through social media, and countless other phenomena. ✨
-
-## Why networks matter 💡
+::: {.column-margin}
+See [@brockmann2013hidden] for more details.
+:::
 
 The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
+
+Consider another surprising discovery: In 1973, sociologist Mark Granovetter studied how people find jobs and made a counterintuitive finding. He discovered that people were more likely to get jobs through acquaintances - colleagues, neighbors, or distant friends - rather than through their close friends and family members.
+
+This seems backward: shouldn't your closest connections be most helpful? But Granovetter realized it's all about *network position*. Your close friends know mostly the same people you know, so they have access to the same job information. But your acquaintances - your "weak ties" - connect you to entirely different social circles with different opportunities.
+
+The strength wasn't in the relationship itself, but in the *network structure*. Weak ties serve as bridges between different communities, carrying unique information across social boundaries that strong ties cannot reach.
+
+## Why networks matter 💡
 
 How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.
 
