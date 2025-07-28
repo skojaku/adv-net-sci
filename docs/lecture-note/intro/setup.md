@@ -50,9 +50,11 @@ source .venv/bin/activate  # On macOS/Linux
 .venv\Scripts\activate     # On Windows
 ```
 
-**Alternative: Using venv**
+**Other Options**
 
-If you prefer the standard approach:
+If you prefer other tools, here are some alternatives:
+
+*Standard venv:*
 ```bash
 # Create virtual environment
 python -m venv network-science-env
@@ -65,6 +67,32 @@ network-science-env\Scripts\activate     # On Windows
 # Install packages
 pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn marimo
 ```
+
+*pyenv:* Great for managing multiple Python versions
+```bash
+pyenv install 3.11.0
+pyenv virtualenv 3.11.0 network-science
+pyenv activate network-science
+```
+
+*Conda:* Popular in data science, includes non-Python packages
+```bash
+conda create -n network-science python=3.11
+conda activate network-science
+conda install numpy pandas matplotlib seaborn networkx scikit-learn
+pip install marimo igraph
+```
+
+*Mamba:* Faster drop-in replacement for conda
+```bash
+mamba create -n network-science python=3.11
+mamba activate network-science
+mamba install numpy pandas matplotlib seaborn networkx scikit-learn
+```
+
+*Miniforge:* Community-driven conda distribution with mamba included
+- Download from [github.com/conda-forge/miniforge](https://github.com/conda-forge/miniforge)
+- Provides conda-forge as default channel
 
 
 
