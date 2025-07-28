@@ -631,7 +631,7 @@ window.Quarto = {
 <section id="example-spectral-embedding" class="level3" data-number="36.1.3">
 <h3 data-number="36.1.3" class="anchored" data-anchor-id="example-spectral-embedding"><span class="header-section-number">36.1.3</span> Example: Spectral Embedding</h3>
 <p>Let us demonstrate the results with a simple example as follows.</p>
-<div id="a9b846ec" class="cell">
+<div id="e1ced99b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -649,7 +649,7 @@ window.Quarto = {
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nx.draw(G, with_labels<span class="op">=</span><span class="va">False</span>, node_color<span class="op">=</span>[cmap[i] <span class="cf">for</span> i <span class="kw">in</span> labels])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="b540895c" class="cell">
+<div id="5d6a30b2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -683,7 +683,7 @@ Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </span></p>
 <p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
 <p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix.</p>
-<div id="352f70ac" class="cell">
+<div id="38c6400d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -759,7 +759,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="example-laplacian-eigenmap" class="level3" data-number="36.1.6">
 <h3 data-number="36.1.6" class="anchored" data-anchor-id="example-laplacian-eigenmap"><span class="header-section-number">36.1.6</span> Example: Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="08e935c9" class="cell">
+<div id="d36ebbcd" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -776,7 +776,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The eigenvectors corresponding to the <span class="math inline">d</span> smallest eigenvalues are:</p>
-<div id="8a4f252a" class="cell">
+<div id="237ef71f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -821,7 +821,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</p>
 <p><img src="https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg" class="img-fluid"></p>
 <p>To showcase the effectiveness of word2vec, let’s walk through an example using the <code>gensim</code> library.</p>
-<div id="61054546" class="cell">
+<div id="82fb9574" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim</span>
@@ -833,7 +833,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Our first example is to find the words most similar to <em>king</em>.</p>
-<div id="068570b2" class="cell">
+<div id="267c8633" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
@@ -849,7 +849,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p><em>man</em> is to <em>woman</em> as <em>king</em> is to ___ ?</p>
 </blockquote>
 <p>We can use word embeddings to solve this puzzle.</p>
-<div id="a417a2c1" class="cell">
+<div id="d363afb2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We solve the puzzle by</span></span>
@@ -862,7 +862,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The last example is to visualize the word embeddings.</p>
-<div id="fa94adba" class="cell">
+<div id="fef8ab6b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -938,7 +938,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <h5 data-number="36.3.2.0.1" class="anchored" data-anchor-id="step-1-data-preparation"><span class="header-section-number">36.3.2.0.1</span> Step 1: Data preparation</h5>
 <p>We will use the karate club network as an example.</p>
 <p><strong>Load the data</strong></p>
-<div id="53bb7306" class="cell">
+<div id="eabb0687" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -962,7 +962,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="step-2-generate-random-walks" class="level5" data-number="36.3.2.0.2">
 <h5 data-number="36.3.2.0.2" class="anchored" data-anchor-id="step-2-generate-random-walks"><span class="header-section-number">36.3.2.0.2</span> Step 2: Generate random walks</h5>
 <p>Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network. Let us first implement a function to sample random walks from a given network.</p>
-<div id="70c51afc" class="cell">
+<div id="57f29681" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(net, start_node, walk_length):</span>
@@ -989,7 +989,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Generate 10 random walks of length 50 starting from each node.</p>
-<div id="1e9ed4b9" class="cell">
+<div id="61761e3d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -1005,7 +1005,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="step-3-train-the-word2vec-model" class="level5" data-number="36.3.2.0.3">
 <h5 data-number="36.3.2.0.3" class="anchored" data-anchor-id="step-3-train-the-word2vec-model"><span class="header-section-number">36.3.2.0.3</span> Step 3: Train the word2vec model</h5>
 <p>Then, we feed the random walks to the word2vec model.</p>
-<div id="d3a4ad1a" class="cell">
+<div id="defe6585" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
@@ -1032,7 +1032,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ul>
 <p>By using the skip-gram model with hierarchical softmax, we can efficiently learn high-quality word embeddings even when dealing with large vocabularies.</p>
 <p>Now, we extract the node embeddings from the word2vec model. In the word2vec model, the embeddings are stored in the <code>wv</code> attribute. The embedding of node <span class="math inline">i</span> is given by <code>model.wv[i]</code>.</p>
-<div id="49739be3" class="cell">
+<div id="70aaf198" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -1043,7 +1043,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 <p><code>embedding</code> is the matrix of node embeddings. It has the same number of rows as the number of nodes in the network, and the number of columns is the embedding dimension.</p>
 <p><strong>Print the first 3 nodes</strong></p>
-<div id="ee33792e" class="cell">
+<div id="f9637f44" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1052,7 +1052,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Let’s visualize the node embeddings using UMAP.</p>
-<div id="1ce23991" class="cell">
+<div id="404ac675" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1088,7 +1088,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="step-4-clustering" class="level5" data-number="36.3.2.0.4">
 <h5 data-number="36.3.2.0.4" class="anchored" data-anchor-id="step-4-clustering"><span class="header-section-number">36.3.2.0.4</span> Step 4: Clustering</h5>
 <p>One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as <span class="math inline">K</span>-means and Gaussian mixture model. Let’s see what we can get from the node embeddings.</p>
-<div id="accc8c25" class="cell">
+<div id="0332745e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -1125,7 +1125,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.labels_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="e7b43975" class="cell">
+<div id="92ff2cfa" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -1164,7 +1164,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="exercise-02-implement-node2vec" class="level3" data-number="36.3.4">
 <h3 data-number="36.3.4" class="anchored" data-anchor-id="exercise-02-implement-node2vec"><span class="header-section-number">36.3.4</span> Exercise 02: Implement node2vec</h3>
 <p>Let’s implement the biased random walk for node2vec</p>
-<div id="b8015585" class="cell">
+<div id="b24a4d89" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
@@ -1237,7 +1237,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Now, let’s set up the word2vec model for node2vec.</p>
-<div id="57430083" class="cell">
+<div id="0658e5dc" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>walks <span class="op">=</span> []</span>
@@ -1251,7 +1251,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>
 <p>where <code>hs=0</code> indicates that we are using negative sampling. Notice that we set <code>sg=1</code> and <code>hs=1</code> instead of <code>sg=1</code> and <code>hs=0</code> in DeepWalk. This is because node2vec uses the skip-gram model with negative sampling.</p>
 <p>Now, we extract the node embeddings from the word2vec model.</p>
-<div id="e674c6d8" class="cell">
+<div id="ad2b536d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
@@ -1261,7 +1261,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>Let’s visualize the node embeddings from node2vec.</p>
-<div id="86ef7814" class="cell">
+<div id="c861cb71" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1297,7 +1297,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </details>
 </div>
 <p>The results for clustering are as follows:</p>
-<div id="0d95f0d5" class="cell">
+<div id="f76891c4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
