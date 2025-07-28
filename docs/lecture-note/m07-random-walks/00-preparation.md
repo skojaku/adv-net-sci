@@ -1,93 +1,86 @@
-# Preparation: From Centrality to Random Walks
+# Preparation: Markov Chain Theory Prerequisites
 
-## Overview
+## Required Knowledge from Previous Modules
 
-Before diving into random walks, let's review the key concepts from Module 6 (Centrality) that will form the foundation for understanding how random walks relate to network structure and centrality measures.
+Before studying random walks, ensure you understand:
+- **From M01-M06**: Network representations, eigenvalue theory, matrix operations
+- **From M06**: Advanced concepts like matrix series convergence and spectral properties
 
-## Review: Eigenvector Centrality and Spectral Methods
+## Probability Theory for Stochastic Processes
 
-### Eigenvector Centrality
+### Discrete Probability Basics
+Foundation for understanding random processes:
+- **Probability distributions**: Discrete probability mass functions
+- **Conditional probability**: $P(A|B) = \frac{P(A \cap B)}{P(B)}$
+- **Independence**: When events don't influence each other
+- **Law of total probability**: $P(A) = \sum_i P(A|B_i)P(B_i)$
 
-"A man is known by the company he keeps" is a quote from Aesop who lived in the ancient Greece, a further back in time from the Roman Empire.
-It suggests that a person's character is reflected by the people this person is friends with.
-This idea can be applied to define the *centrality* of a node in a network.
+### Stochastic Processes
+Understanding time-dependent random systems:
+- **Random variable sequences**: $X_0, X_1, X_2, \ldots$
+- **State space**: Set of possible values for each $X_t$
+- **Transition probabilities**: $P(X_{t+1} = j | X_t = i)$
 
-One considers that a node is important if it is connected to other important nodes. Yes, it sounds like circular! But it is actually computable! Let us define it more precisely by the following equation.
+## Markov Chain Fundamentals
 
-$$
-c_i = \lambda \sum_{j} A_{ij} c_j
-$$
+### Markov Property
+The defining characteristic of Markov chains:
+$$P(X_{t+1} = j | X_t = i, X_{t-1} = i_{t-1}, \ldots, X_0 = i_0) = P(X_{t+1} = j | X_t = i)$$
 
-where $\lambda$ is a constant. It suggests that the centrality of a node ($c_i$) is the sum of the centralities of its neighbors ($A_{ij} c_j$; note that $A_{ij}=1$ if $j$ is a neighbor, and otherwise $A_{ij}=0$), normalized by $\lambda$.
+**Interpretation**: Future state depends only on present state, not on history.
 
-Using vector notation, we can rewrite the equation as:
+### Transition Matrix Theory
+Matrix representation of state transitions:
+- **Stochastic matrix**: Rows sum to 1, all entries non-negative
+- **Chapman-Kolmogorov equation**: $P^{(n+m)} = P^{(n)} \cdot P^{(m)}$
+- **n-step transition probabilities**: $(P^n)_{ij} = P(X_n = j | X_0 = i)$
 
-$$
-\mathbf{c} = \lambda \mathbf{A} \mathbf{c}
-$$
+### Classification of States
+Understanding different types of states:
+- **Accessible**: State $j$ is accessible from state $i$ if $P^{(n)}_{ij} > 0$ for some $n$
+- **Communicating**: States $i$ and $j$ communicate if each is accessible from the other
+- **Irreducible**: All states communicate with each other
+- **Periodic**: State $i$ has period $d$ if returns are only possible at multiples of $d$ steps
 
-This is actually the eigenvector equation! The solution is the eigenvector of the adjacency matrix, $\mathbf{A}$. We choose the eigenvector associated with the largest eigenvalue, which by the Perron-Frobenius theorem guarantees that all elements are positive.
+## Limit Behavior and Convergence
 
-### PageRank
+### Stationary Distributions
+Probability distributions that don't change over time:
+- **Definition**: $\pi P = \pi$ where $\pi$ is a row vector
+- **Existence**: Guaranteed for finite, irreducible chains
+- **Uniqueness**: Unique for irreducible chains
 
-PageRank, the celebrated idea behind Google Search, is like a cousin of Katz centrality:
+### Convergence Theorems
+When and how chains reach equilibrium:
+- **Ergodic theorem**: For irreducible, aperiodic chains: $\lim_{n \to \infty} P^{(n)}_{ij} = \pi_j$
+- **Rate of convergence**: How quickly the chain approaches stationary distribution
+- **Mixing time**: Time needed to get close to stationary distribution
 
-$$
-c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
-$$
+## Linear Algebra for Markov Chains
 
-where $d^{\text{out}}_j$ is the out-degree of node $j$. The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. This is based on an idea of traffic, where viewers of a web page are evenly transferred to the linked web pages.
+### Eigenvalue Structure
+Connection between eigenvalues and chain behavior:
+- **Dominant eigenvalue**: Always equals 1 for stochastic matrices
+- **Subdominant eigenvalue**: Controls convergence rate
+- **Spectral gap**: Difference between largest and second-largest eigenvalues
 
-## Introduction to Markov Chains
+### Perron-Frobenius for Stochastic Matrices
+Special properties of transition matrices:
+- **Principal eigenvalue**: Always 1
+- **Principal eigenvector**: Corresponds to stationary distribution
+- **Non-negative entries**: All eigenvector entries are non-negative
 
-### What is a Markov Chain?
+## Applications Context
 
-A Markov chain is a mathematical system that experiences transitions from one state to another according to certain probabilistic rules. The defining property is that the next state depends only on the current state, not on the sequence of events that preceded it. This is called the **Markov property** or "memorylessness."
+### Random Walks on Graphs
+Specific application of Markov chains to networks:
+- **State space**: Nodes of the graph
+- **Transition probabilities**: Based on edge structure
+- **Uniformity**: Equal probability to each neighbor
 
-### Key Components
+### Information Propagation
+Understanding how information spreads:
+- **Diffusion processes**: How properties spread through networks
+- **Equilibrium**: Long-term distribution of walkers or information
 
-1. **State Space**: A set of possible states $S = \{1, 2, ..., n\}$
-2. **Transition Matrix**: A matrix $P$ where $P_{ij}$ is the probability of transitioning from state $i$ to state $j$
-3. **Initial Distribution**: The probability distribution over states at time $t=0$
-
-### Transition Matrix Properties
-
-For a valid transition matrix:
-- All entries are non-negative: $P_{ij} \geq 0$
-- Each row sums to 1: $\sum_j P_{ij} = 1$ (stochastic matrix)
-
-### Stationary Distribution
-
-A key concept is the **stationary distribution** $\pi$, which satisfies:
-
-$$
-\pi = \pi P
-$$
-
-This means that if the system reaches the stationary distribution, it will remain in that distribution over time. The stationary distribution is the left eigenvector of the transition matrix corresponding to eigenvalue 1.
-
-### Connection to Random Walks
-
-Random walks on networks are a special case of Markov chains where:
-- **States** are the nodes of the network
-- **Transitions** follow the edges of the network
-- **Transition probabilities** are typically uniform among neighbors
-
-For an unweighted, undirected network, the transition probability from node $i$ to node $j$ is:
-
-$$
-P_{ij} = \frac{A_{ij}}{d_i}
-$$
-
-where $d_i$ is the degree of node $i$.
-
-### Why This Matters for Random Walks
-
-The concepts from eigenvector centrality and Markov chains come together in random walks:
-
-1. **PageRank** is actually the stationary distribution of a specific random walk on the network
-2. **Eigenvector centrality** relates to the stationary distribution of random walks on undirected networks
-3. The **transition matrix** of a random walk encodes the local structure of the network
-4. The **long-term behavior** of random walks reveals global network properties
-
-This foundation will help us understand how random walks can unify concepts of centrality and community detection in the following sections.
+These probability and linear algebra foundations are essential for understanding how random walks reveal network structure through their stationary distributions and convergence properties.

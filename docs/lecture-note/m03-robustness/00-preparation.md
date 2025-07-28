@@ -1,72 +1,63 @@
-# Preparation: Connectivity Concepts
+# Preparation: Network Failure Analysis Prerequisites
 
-## Walks, Trails, Paths, and Connectedness
+## Required Knowledge from Previous Modules
 
-While we have already used the term **path**, let us make clear its definition, together with other related terms.
+Before studying network robustness, ensure you understand:
+- **From M01**: Basic graph representations and connectivity concepts
+- **From M02**: Shortest path calculations and average path length measurement
 
-- A **walk** is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.
+## Graph Theory Prerequisites for Robustness Analysis
 
-- A **trail** is a walk with no repeated edge. For instance, walk (0, 1, 2, 3) is also a trail as it does not cross the same edge twice. But walk (0,2,3,1,3) is not a trail due to the repeated edge (1,3).
+### Tree Structures
+Understanding **tree** structures is essential for robustness analysis:
+- **Tree**: A connected graph with no cycles
+- **Spanning Tree**: A tree that connects all nodes in a graph
+- **Minimum Spanning Tree (MST)**: The spanning tree with minimum total edge weight
 
-- A **path** is a walk without repeated node. For instance, walk (0,1,2,3) is a path. But walk (0, 1, 2, 1, 2, 3) is not a path due to the repeated node 1 and 2.
+Trees are important because they represent the minimal connectivity structure - removing any edge disconnects the network.
 
-- When a walk starts and ends at the same node, it is called a **loop*. If the loop is a trail, it is called a **circuit**. If the loop is a path, it is called a **cycle**.
+### Network Connectivity Measures
 
-***Question***: Is a path always a trail, and is a trail always a path?
+#### Connectivity Robustness
+- **Node connectivity**: Minimum number of nodes that must be removed to disconnect the network
+- **Edge connectivity**: Minimum number of edges that must be removed to disconnect the network
+- **Cut sets**: Sets of edges or nodes whose removal increases the number of components
 
-::: {#fig-numbered-koningsberg-graph2}
+#### Centrality and Vulnerability
+Understanding which nodes are most important for network connectivity:
+- High-degree nodes often play crucial roles in network connectivity
+- Removing central nodes may have disproportionate impact on network function
 
-<img src= "../figs/labeled-koningsberg.jpg" width="30%">
+## Statistical Prerequisites
 
-Labeled Knigsberg graph
+### Probability and Random Processes
+For understanding different types of network attacks:
+- **Random sampling**: Understanding uniform random selection of nodes/edges
+- **Probability distributions**: How failure events are distributed
+- **Expected values**: Average behavior under random failures
 
-:::
+### Network Models for Comparison
+- **Random graphs**: As baseline models to compare robustness
+- **Scale-free networks**: Understanding degree heterogeneity effects
+- **Small-world networks**: Balancing local and global connectivity
 
-- **Shortest Path** is the path with the smallest number of edges (or nodes) between two nodes.
-A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).
-- **The shortest path length** is the number of edges in the shortest path, *not the number of nodes!* 👈👈
+## Computational Prerequisites
 
-::: {.callout-note}
-## Are there **shortest trails** and **shortest walks**?
-Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.
-:::
+### Algorithm Analysis
+- **Efficiency considerations**: How to efficiently test connectivity after node/edge removal
+- **Simulation methods**: Running multiple trials of failure scenarios
+- **Measurement techniques**: Quantifying network performance degradation
 
+### Data Structures for Dynamic Networks
+- Efficient representations for networks that change over time
+- Methods for tracking connected components as network is modified
 
-## Connectedness
+## Application Context
 
-- A network is **connected** if there is a path between every pair of nodes.
-- A network is **disconnected** if there is no path between some pairs of nodes.
-- **A connected component** of a network is a set of nodes that are connected to each other.
-- **The giant component** of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).
+### Infrastructure Networks
+Basic understanding of real-world networks that must remain functional:
+- **Power grids**: Electrical distribution networks
+- **Transportation networks**: Road, rail, and air traffic systems
+- **Communication networks**: Internet and telecommunication systems
 
-::: {#fig-connected-components}
-
-<img src= "../figs/connected-component.jpg" width="50%">
-
-connected components of a network. the nodes with the same color form a connected component.
-
-:::
-
-## Connectedness in directed networks
-
-We call a network is *directed* if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.
-
-In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.
-
-This leads to two different types of `connectedness` as follows:
-
-- **Strong connectedness**: A directed network is said to be strongly connected if there is a path from every node to every other node.
-- **Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.
-
-
-::: {#fig-connected-components-directed}
-
-<img src= "../figs/connected-component-directed.jpg" width="50%">
-
-connected components of a network. the nodes with the same color form a connected component.
-
-:::
-
-**Question**: Is a strongly-connected component always a weakly-connected component?
-
-In the next section, we will learn how to compute the shortest paths and connected components of a network using a library [igraph](https://python.igraph.org/en/stable/).
+These prerequisites will help you understand how different network structures respond to various types of failures and attacks.
