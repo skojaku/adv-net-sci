@@ -620,7 +620,7 @@ window.Quarto = {
 k_i = \sum_{j=1}^N A_{ij}.
 </span></p>
 <p>Let us compute the degree distribution of a network. We will create a Barabási-Albert network with <span class="math inline">N=10,000</span> nodes and <span class="math inline">m=1</span> edge per node.</p>
-<div id="eac45fc6" class="cell">
+<div id="ccea8385" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -629,7 +629,7 @@ k_i = \sum_{j=1}^N A_{ij}.
 </details>
 </div>
 <p>Compute the degree of each node by summing the elements of the adjacency matrix along the rows.</p>
-<div id="e2922e8b" class="cell">
+<div id="895213f7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -638,14 +638,14 @@ k_i = \sum_{j=1}^N A_{ij}.
 </details>
 </div>
 <p>The degree distribution <span class="math inline">p(k)</span> can be computed by counting the number of nodes with each degree and dividing by the total number of nodes.</p>
-<div id="9782d088" class="cell">
+<div id="6ea6b46b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p_deg <span class="op">=</span> np.bincount(deg) <span class="op">/</span> <span class="bu">len</span>(deg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Let us plot the degree distribution. This is not as trivial as you might think… 🤔</p>
-<div id="0bb205ea" class="cell">
+<div id="4a7fbc4c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -657,7 +657,7 @@ k_i = \sum_{j=1}^N A_{ij}.
 </details>
 </div>
 <p>While it clearly shows that most nodes have small degree, it does not show the tail of the distribution clearly, and often it is this tail that is of great interest (e.g., hub nodes). To show the tail of the distribution more clearly, we can use a log-log plot.</p>
-<div id="0c1b4527" class="cell">
+<div id="de65640d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> sns.lineplot(x<span class="op">=</span>np.arange(<span class="bu">len</span>(p_deg)), y<span class="op">=</span>p_deg)</span>
@@ -678,7 +678,7 @@ k_i = \sum_{j=1}^N A_{ij}.
 <li>CCDF encompasses the full information of <span class="math inline">p(k)</span>, i.e., taking the derivative of CCDF gives <span class="math inline">p(k)</span>.</li>
 <li>CCDF can be plotted as a smooth curve on a log-log scale without binning.</li>
 </ul>
-<div id="d440b42a" class="cell">
+<div id="25f29214" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ccdf_deg <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> np.cumsum(p_deg)[:<span class="op">-</span><span class="dv">1</span>] <span class="co"># 1 - CDF (cumulative distribution function).</span></span>
@@ -691,7 +691,7 @@ k_i = \sum_{j=1}^N A_{ij}.
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'CCDF'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="c308fc41" class="cell">
+<div id="cf7c9dd5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span>cell]</span>
@@ -717,7 +717,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>CCDF (complementary cumulative distribution function) is used instead of CDF (cumulative distribution function) because it highlights the tail of the distribution better in a log-log plot. A log scale expands small values and compresses large values. In a CDF, large degree nodes have values close to 1, compressing the tail. In a CCDF, large degree nodes have small values, making the tail more visible. <code>fbttkh cdf_fig :align: center</code></p>
+<p>CCDF (complementary cumulative distribution function) is used instead of CDF (cumulative distribution function) because it highlights the tail of the distribution better in a log-log plot. A log scale expands small values and compresses large values. In a CDF, large degree nodes have values close to 1, compressing the tail. In a CCDF, large degree nodes have small values, making the tail more visible. <code>udgxaa cdf_fig :align: center</code></p>
 </div>
 </div>
 <p>The slope of the CCDF tells us the heterogeneity of the degree distribution. - Steep slope: more <strong>homogeneous</strong> degree distribution (similar degrees) - Flat slope: more <strong>heterogeneous</strong> degree distribution (wide range of degrees)</p>
@@ -846,7 +846,7 @@ Note
 <section id="plotting-degree-distribution-of-a-friend" class="level2" data-number="20.4">
 <h2 data-number="20.4" class="anchored" data-anchor-id="plotting-degree-distribution-of-a-friend"><span class="header-section-number">20.4</span> Plotting degree distribution of a friend</h2>
 <p>Let us compare the degree distribution of a node and its friend. We first get the edges in the network, from which we sample a friend.</p>
-<div id="47a724c9" class="cell">
+<div id="c270822c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
@@ -860,7 +860,7 @@ Note
 <li><code>_</code> is used to ignore the edge weight values, as we only need the source and target nodes for this analysis.</li>
 </ul>
 <p>Now, let us get the degree of each friend</p>
-<div id="6607b571" class="cell">
+<div id="f53ba45a" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>deg_friend <span class="op">=</span> deg[src]</span>
@@ -868,7 +868,7 @@ Note
 </details>
 </div>
 <p>The CCDF of the degree distributions of a node and a friend can be computed by:</p>
-<div id="591d666d" class="cell">
+<div id="e3132027" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ccdf_deg <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> np.cumsum(p_deg)[:<span class="op">-</span><span class="dv">1</span>]</span>
@@ -876,7 +876,7 @@ Note
 </details>
 </div>
 <p>and plotted by:</p>
-<div id="33f19997" class="cell">
+<div id="a18ec76d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
