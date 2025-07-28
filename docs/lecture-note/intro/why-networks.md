@@ -1,17 +1,23 @@
 
 # What do you imagine about networks? 🤔
 
-When you hear "network," what comes to mind? If you're an engineering student, you probably think of computer networks - routers, switches, and cables connecting devices. Maybe you think of power grids, with generators, transformers, and transmission lines. Or perhaps telecommunications networks with cell towers and fiber optic cables.
+Consider this puzzle: In 2009, the H1N1 influenza pandemic started in Mexico. If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places.
 
-You're absolutely right. These are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread. ✨
+But that's not what happened. The virus reached South Korea and the UK almost as quickly as it reached neighboring Central American countries. Cities thousands of miles away were infected before some geographically closer locations. The disease didn't follow the logic of geographic distance at all.
 
-## Topology matters 💡
+This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
 
-How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.
+When you hear "network," you probably think of computer networks, power grids, or telecommunications systems. You're absolutely right - these are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern how diseases spread, how your brain works, how information flows through social media, and countless other phenomena. ✨
 
-This intuition transfers directly to network science. Whether we're talking about electrical circuits, computer networks, or social systems, the *structure of connections* shapes behavior.
+## Why networks matter 💡
 
-A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
+The H1N1 example reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
+
+How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.
+
+[Insert image demonstrating spreading on networks]
+
+A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.
 
 ## How to represent a network 📊
 
