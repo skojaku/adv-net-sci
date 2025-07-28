@@ -7,25 +7,68 @@ title: Setup
 
 We'll use Python to work with data throughout this course. Python is an excellent choice for network science for several reasons:
 
-**Rich ecosystem of libraries**: Python has an extensive collection of libraries that we can use immediately without building everything from scratch. For network analysis, we have `NetworkX` for general network manipulation, `igraph` for high-performance computations, and `graph-tool` for large-scale analysis. For data work, we have `pandas` for data manipulation, `numpy` for numerical computing, and `matplotlib`/`seaborn` for visualization.
+- **Rich ecosystem of libraries**: Python has an extensive collection of libraries that we can use immediately without building everything from scratch. For network analysis, we have `NetworkX` for general network manipulation, `igraph` for high-performance computations, and `graph-tool` for large-scale analysis. For data work, we have `pandas` for data manipulation, `numpy` for numerical computing, and `matplotlib`/`seaborn` for visualization.
 
-**Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's strict rules on indentation - the language enforces consistent formatting by requiring proper indentation to define code blocks, which eliminates the visual clutter of brackets and forces code to be well-structured and easy to follow.
+- **Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's strict rules on indentation - the language enforces consistent formatting by requiring proper indentation to define code blocks, which eliminates the visual clutter of brackets and forces code to be well-structured and easy to follow.
 
-**Well-documented**: Python is one of the most well-documented programming languages, with comprehensive official documentation, extensive community resources, and clear examples for every library we'll use.
+- **Well-documented**: Python is one of the most well-documented programming languages, with comprehensive official documentation, extensive community resources, and clear examples for every library we'll use.
 
-**Easy to learn**: The combination of readable syntax and extensive documentation makes Python accessible to both beginners and experts. You can focus on understanding network concepts rather than wrestling with complex programming syntax.
+
+### Virtual Environments
+
+We strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, preventing package conflicts and ensuring reproducible setups.
+
+**Using UV (Recommended)**
+
+We recommend using [UV](https://docs.astral.sh/uv/), a fast Python package and project manager. UV is significantly faster than traditional tools and makes managing Python environments effortless.
+
+Install UV:
+```bash
+# On macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Create and activate a virtual environment for this course:
+```bash
+# Create a new project with virtual environment
+uv init network-science-course
+cd network-science-course
+
+# Add required packages
+uv add numpy pandas matplotlib seaborn networkx igraph-python scikit-learn marimo
+
+# Activate the environment
+source .venv/bin/activate  # On macOS/Linux
+# or
+.venv\Scripts\activate     # On Windows
+```
+
+**Alternative: Using venv**
+
+If you prefer the standard approach:
+```bash
+# Create virtual environment
+python -m venv network-science-env
+
+# Activate it
+source network-science-env/bin/activate  # On macOS/Linux
+# or
+network-science-env\Scripts\activate     # On Windows
+
+# Install packages
+pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn marimo
+```
+
+
+
+::: {.callout-note}
 
 You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
 
-If you don't have Python installed:
-- **Windows/Mac**: Download from [python.org](https://www.python.org/downloads/)
-- **Linux**: Use your package manager (e.g., `sudo apt install python3`)
-
-Install the required packages using pip:
-
-```bash
-pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn marimo
-```
+:::
 
 ### Trouble shooting with Google Colab
 
