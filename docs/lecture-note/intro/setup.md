@@ -57,6 +57,8 @@ If you prefer tools other than uv, here are some alternatives:
 
 ## Marimo Notebook
 
+![Marimo Logo](https://marimo.io/_next/image?url=%2Fimages%2Fblog%2F6%2Fblog-6-thumbnail.png&w=1920&q=75)
+
 We'll use [Marimo](https://marimo.io/) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
 
 **Using Marimo's Sandbox Feature with uv (Recommended)**
