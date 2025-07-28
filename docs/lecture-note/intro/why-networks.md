@@ -41,6 +41,12 @@ This seems backward: shouldn't your closest connections be most helpful? But Gra
 
 The strength wasn't in the relationship itself, but in the *network structure*. Weak ties serve as bridges between different communities, carrying unique information across social boundaries that strong ties cannot reach.
 
+Or consider the 2003 Northeast blackout that affected 55 million people across the United States and Canada. It started when a single transmission line in Ohio sagged into overgrown trees and shut down. You might think one failed line among thousands shouldn't matter much - the grid has plenty of redundancy, right?
+
+But here's what actually happened: when that line failed, electricity rerouted through neighboring lines, overloading them. They failed too, forcing more rerouting, creating a cascade of failures that spread through the interconnected power network like falling dominoes [@dobson2007complex]. The *network structure* of the power grid - how the transmission lines were connected - determined how a local failure became a continental disaster.
+
+Individual components were working fine; it was the pattern of connections that created vulnerability.
+
 ## Why networks matter 💡
 
 How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.
