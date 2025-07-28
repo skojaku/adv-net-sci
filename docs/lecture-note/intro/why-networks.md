@@ -84,9 +84,9 @@ We can represent any network in two equivalent ways. **Schematically**, we draw 
 
 :::
 
-While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to perform quantitative understanding of network properties and behaviors.
+While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to obtain a quantitative understanding of network properties and behaviors.
 
-For analyzing networks, we represent them as **tables** with *source and target* columns. Consider this network:
+**Tables** are a natural way to represent networks. The idea is to list the pairs of nodes that are connected by an edge. For example:
 
 | Source | Target |
 |--------|--------|
@@ -96,45 +96,17 @@ For analyzing networks, we represent them as **tables** with *source and target*
 | Node2 | Node4 |
 | Node3 | Node5 |
 
-This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
-
-**The power of abstraction**: The same tabular representation works for any networked system:
-
-- **Social networks**: People connected by friendships
-- **Brain networks**: Neurons connected by synapses
-- **The Internet**: Web pages connected by hyperlinks
-- **Citation networks**: Papers connected by citations
-- **Food webs**: Species connected by predator-prey relationships
-
-Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is ***the power of abstraction*** that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
-
-# Why should we care about networks?
-
-System-level behavior emerges from component interactions, but networks take this to another level entirely. The 2003 Northeast blackout started with a single overloaded line in Ohio and cascaded through network connections to affect 55 million people. COVID factory closures created global shortages through supply chain networks. A single tweet can reach millions through social media cascades.
-
-Here's the key insight: in networked systems, *local events can have global consequences*, and *global properties emerge from local interactions*. You can't understand these systems by studying individual components - you need to understand the network structure itself.
-
-## Zoo of networks
-
-Can you find networks around you? Find out what networks are like in nature and society.
-
-[Zoo 🐆🐘🦆 of networks](./zoo-of-networks.md)
+This is called an ***edge table***. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
 
 ## Why networks are hard to understand
 
-If networks are just tables of connections, why do we need sophisticated mathematical tools to understand them? The answer lies in the complexity that emerges from simplicity.
+For centuries, science has been dominated by reductionist thinking - the belief that we can understand complex systems by breaking them down into their fundamental components. This approach has been extraordinarily successful: we understand chemistry by studying atoms, biology by examining cells, and physics by analyzing particles and forces. From Galileo's mechanical view of the universe to Darwin's focus on individual organisms, scientists have consistently found that understanding the parts leads to understanding the whole.
 
-Traditional reductionist thinking works well for systems where you can understand the whole by understanding the parts. But networks break this approach in fundamental ways:
+This reductionist paradigm worked so well because most natural phenomena could indeed be decomposed into independent units. A gas can be understood by studying individual molecules, a machine by examining its components, and even many biological processes by focusing on individual cells or biochemical reactions. The mathematical tools developed over centuries - calculus, differential equations, statistical mechanics - were designed specifically for systems where the behavior of the whole could be predicted from the behavior of the parts.
 
-- **Scale overwhelms intuition**: You can mentally track relationships between 3 people. But what about 3 million? At massive scales, simple rules create complex patterns that defy intuition.
+However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.
 
-- **Small changes, big consequences**: Remove one connection and nothing happens. Remove a different connection and the entire network fragments. This *non-linearity* makes networks unpredictable.
-
-- **Hidden structure**: A table with millions of rows reveals nothing about communities, bottlenecks, or influence patterns. The important structural properties are buried in the data and require sophisticated analysis to uncover.
-
-- **Dynamic evolution**: Networks constantly change - nodes join, leave, reconnect. Understanding these *temporal dynamics* requires mathematical tools that go far beyond static snapshots.
-
-This is why network science exists as a field: traditional mathematical tools aren't sufficient for interconnected systems.
+The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition - while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences - removing one connection might fragment an entire network, while removing another has no effect at all. The structural properties that matter most - communities, bottlenecks, influence patterns - are hidden in the data and require sophisticated mathematical analysis to uncover. This is why network science exists as a distinct field: the traditional reductionist toolkit, powerful as it is, simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity.
 
 ## Building the right mathematical toolkit
 
