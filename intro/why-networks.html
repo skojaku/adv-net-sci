@@ -531,7 +531,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#the-key-insight" id="toc-the-key-insight" class="nav-link active" data-scroll-target="#the-key-insight"><span class="header-section-number">1.1</span> The key insight 💡</a></li>
   <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</a></li>
-  <li><a href="#universal-applicability" id="toc-universal-applicability" class="nav-link" data-scroll-target="#universal-applicability"><span class="header-section-number">1.3</span> Universal applicability 🌍</a></li>
+  <li><a href="#the-power-of-abstraction" id="toc-the-power-of-abstraction" class="nav-link" data-scroll-target="#the-power-of-abstraction"><span class="header-section-number">1.3</span> The power of abstraction 🌍</a></li>
   <li><a href="#why-should-we-care-about-networks" id="toc-why-should-we-care-about-networks" class="nav-link" data-scroll-target="#why-should-we-care-about-networks"><span class="header-section-number">2</span> Why should we care about networks?</a>
   <ul class="collapse">
   <li><a href="#zoo-of-networks" id="toc-zoo-of-networks" class="nav-link" data-scroll-target="#zoo-of-networks"><span class="header-section-number">2.1</span> Zoo of networks</a></li>
@@ -575,7 +575,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="how-to-represent-a-network" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network 📊</h2>
-<p>While we often visualize networks as diagrams with dots and lines, mathematically we can represent them as simple tables. Consider this small computer network:</p>
+<p>We can represent networks in two equivalent ways. Schematically, we draw them as dots and lines - nodes connected by edges, as shown in this network diagram:</p>
+<p><a href="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid"></a></p>
+<p>But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -606,10 +608,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>This <em>edge list</em> completely describes the network structure. Each row represents a connection between two nodes. From this table, we can reconstruct the entire network topology, calculate shortest paths, identify critical components, or analyze resilience - all the complex network properties emerge from this simple tabular representation. ✅</p>
+<p>This <em>edge list</em> completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it’s routers, people, neurons, or molecules. ✅</p>
 </section>
-<section id="universal-applicability" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="universal-applicability"><span class="header-section-number">1.3</span> Universal applicability 🌍</h2>
+<section id="the-power-of-abstraction" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="the-power-of-abstraction"><span class="header-section-number">1.3</span> The power of abstraction 🌍</h2>
 <p>The same tabular representation works for any networked system:</p>
 <ul>
 <li><strong>Social networks</strong>: People connected by friendships</li>
@@ -619,8 +621,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Citation networks</strong>: Papers connected by citations</li>
 <li><strong>Food webs</strong>: Species connected by predator-prey relationships</li>
 </ul>
-<p>Whether your edge list contains “Router1 → Router2” or “Alice → Bob” or “Neuron_A → Neuron_B”, the mathematical analysis is identical. This universality is what makes network science so powerful - the same tools work everywhere. 🔧</p>
-<p><a href="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png"><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid"></a></p>
+<p>Whether your edge list contains “Router1 → Router2” or “Alice → Bob” or “Neuron_A → Neuron_B”, the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</p>
 </section>
 <section id="why-should-we-care-about-networks" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Why should we care about networks?</h1>
@@ -1159,97 +1160,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## How to represent a network 📊</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>While we often visualize networks as diagrams with dots and lines, mathematically we can represent them as simple tables. Consider this small computer network:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>We can represent networks in two equivalent ways. Schematically, we draw them as dots and lines - nodes connected by edges, as shown in this network diagram:</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router2 <span class="pp">|</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Server1 <span class="pp">|</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router3 <span class="pp">|</span> Server2 <span class="pp">|</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>This *edge list* completely describes the network structure. Each row represents a connection between two nodes. From this table, we can reconstruct the entire network topology, calculate shortest paths, identify critical components, or analyze resilience - all the complex network properties emerge from this simple tabular representation. ✅</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## Universal applicability 🌍</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span><span class="co">](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router2 <span class="pp">|</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router1 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Router3 <span class="pp">|</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router2 <span class="pp">|</span> Server1 <span class="pp">|</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Router3 <span class="pp">|</span> Server2 <span class="pp">|</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>The same tabular representation works for any networked system:</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>This *edge list* completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it's routers, people, neurons, or molecules. ✅</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Social networks**: People connected by friendships</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Brain networks**: Neurons connected by synapses  </span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The Internet**: Web pages connected by hyperlinks</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Citation networks**: Papers connected by citations</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Food webs**: Species connected by predator-prey relationships</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This universality is what makes network science so powerful - the same tools work everywhere. 🔧</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="al">![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span><span class="co">](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## The power of abstraction 🌍</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>The same tabular representation works for any networked system:</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Social networks**: People connected by friendships</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Brain networks**: Neurons connected by synapses  </span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The Internet**: Web pages connected by hyperlinks</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Citation networks**: Papers connected by citations</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Food webs**: Species connected by predator-prey relationships</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care about networks?</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>System-level behavior emerges from component interactions, but networks take this to another level entirely. The 2003 Northeast blackout started with a single overloaded line in Ohio and cascaded through network connections to affect 55 million people. COVID factory closures created global shortages through supply chain networks. A single tweet can reach millions through social media cascades.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why should we care about networks?</span></span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>Here's the key insight: in networked systems, *local events can have global consequences*, and *global properties emerge from local interactions*. You can't understand these systems by studying individual components - you need to understand the network structure itself.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>System-level behavior emerges from component interactions, but networks take this to another level entirely. The 2003 Northeast blackout started with a single overloaded line in Ohio and cascaded through network connections to affect 55 million people. COVID factory closures created global shortages through supply chain networks. A single tweet can reach millions through social media cascades.</span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zoo of networks</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>Here's the key insight: in networked systems, *local events can have global consequences*, and *global properties emerge from local interactions*. You can't understand these systems by studying individual components - you need to understand the network structure itself.</span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>Can you find networks around you? Find out what networks are like in nature and society.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zoo of networks</span></span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zoo 🐆🐘🦆 of networks</span><span class="co">](./zoo-of-networks.md)</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>Can you find networks around you? Find out what networks are like in nature and society.</span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks are hard to understand</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zoo 🐆🐘🦆 of networks</span><span class="co">](./zoo-of-networks.md)</span></span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>If networks are just tables of connections, why do we need sophisticated mathematical tools to understand them? The answer lies in the complexity that emerges from simplicity.</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why networks are hard to understand</span></span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>Traditional reductionist thinking works well for systems where you can understand the whole by understanding the parts. But networks break this approach in fundamental ways:</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>If networks are just tables of connections, why do we need sophisticated mathematical tools to understand them? The answer lies in the complexity that emerges from simplicity.</span>
 <span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Scale overwhelms intuition**: You can mentally track relationships between 3 people. But what about 3 million? At massive scales, simple rules create complex patterns that defy intuition.</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>Traditional reductionist thinking works well for systems where you can understand the whole by understanding the parts. But networks break this approach in fundamental ways:</span>
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small changes, big consequences**: Remove one connection and nothing happens. Remove a different connection and the entire network fragments. This *non-linearity* makes networks unpredictable.</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Scale overwhelms intuition**: You can mentally track relationships between 3 people. But what about 3 million? At massive scales, simple rules create complex patterns that defy intuition.</span>
 <span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hidden structure**: A table with millions of rows reveals nothing about communities, bottlenecks, or influence patterns. The important structural properties are buried in the data and require sophisticated analysis to uncover.</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small changes, big consequences**: Remove one connection and nothing happens. Remove a different connection and the entire network fragments. This *non-linearity* makes networks unpredictable.</span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dynamic evolution**: Networks constantly change - nodes join, leave, reconnect. Understanding these *temporal dynamics* requires mathematical tools that go far beyond static snapshots.</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hidden structure**: A table with millions of rows reveals nothing about communities, bottlenecks, or influence patterns. The important structural properties are buried in the data and require sophisticated analysis to uncover.</span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>This is why network science exists as a field: traditional mathematical tools aren't sufficient for interconnected systems.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dynamic evolution**: Networks constantly change - nodes join, leave, reconnect. Understanding these *temporal dynamics* requires mathematical tools that go far beyond static snapshots.</span>
 <span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building the right mathematical toolkit</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>This is why network science exists as a field: traditional mathematical tools aren't sufficient for interconnected systems.</span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building the right mathematical toolkit</span></span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>**From calculus to graph theory**: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don't. This requires *graph theory*, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>**From individual statistics to structural measures**: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are *relational*. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>**From calculus to graph theory**: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don't. This requires *graph theory*, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</span>
 <span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>**From equilibrium to dynamics**: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these *dynamic processes*.</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>**From individual statistics to structural measures**: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are *relational*. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</span>
 <span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>**From analytical to computational**: Many network problems can't be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>**From equilibrium to dynamics**: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these *dynamic processes*.</span>
 <span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>This toolkit transforms qualitative questions like "How resilient is this system?" into precise, quantitative problems we can solve with algorithms and data.</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>**From analytical to computational**: Many network problems can't be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</span>
 <span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond simple connections</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>This toolkit transforms qualitative questions like "How resilient is this system?" into precise, quantitative problems we can solve with algorithms and data.</span>
 <span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>Real networks exhibit complex structural properties that affect system behavior:</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond simple connections</span></span>
 <span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree heterogeneity**: Not all nodes are equal. Some become *hubs* with many connections, others remain peripheral. This creates both efficiency and vulnerability.</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>Real networks exhibit complex structural properties that affect system behavior:</span>
 <span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Clustering**: Nodes tend to connect to their neighbors' neighbors, creating local redundancy that affects how information flows through the system.</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree heterogeneity**: Not all nodes are equal. Some become *hubs* with many connections, others remain peripheral. This creates both efficiency and vulnerability.</span>
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world effects**: Even in large networks, surprisingly short paths connect any two nodes - the "six degrees of separation" is a universal network property.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Clustering**: Nodes tend to connect to their neighbors' neighbors, creating local redundancy that affects how information flows through the system.</span>
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Community structure**: Networks naturally organize into *modules* that are internally well-connected but have fewer connections between them.</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world effects**: Even in large networks, surprisingly short paths connect any two nodes - the "six degrees of separation" is a universal network property.</span>
 <span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network effects and emergent phenomena</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Community structure**: Networks naturally organize into *modules* that are internally well-connected but have fewer connections between them.</span>
 <span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network effects and emergent phenomena</span></span>
 <span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cascading failures**: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Collective intelligence**: Distributed systems can solve problems that individual components cannot</span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Resilience**: Redundant connections allow systems to function even when components fail</span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Synchronization**: Components spontaneously coordinate their behavior through network interactions</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Phase transitions**: Networks can suddenly shift between different states as connections are added or removed</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cascading failures**: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Collective intelligence**: Distributed systems can solve problems that individual components cannot</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Resilience**: Redundant connections allow systems to function even when components fail</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Synchronization**: Components spontaneously coordinate their behavior through network interactions</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Phase transitions**: Networks can suddenly shift between different states as connections are added or removed</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

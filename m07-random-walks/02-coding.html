@@ -644,7 +644,7 @@ Random Walk Simulation
 <section id="simulating-random-walks" class="level3" data-number="32.3.1">
 <h3 data-number="32.3.1" class="anchored" data-anchor-id="simulating-random-walks"><span class="header-section-number">32.3.1</span> Simulating Random Walks</h3>
 <p>We will simulate random walks on a simple graph of five nodes as follows.</p>
-<div id="ac1a92ab" class="cell">
+<div id="13fcbca9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -662,7 +662,7 @@ Random Walk Simulation
 P_{ij} = \frac{A_{ij}}{k_i}
 </span></p>
 <p>Let us first compute the transition probabilities and store them in a matrix, <span class="math inline">\mathbf{P}</span>.</p>
-<div id="bbb3be76" class="cell">
+<div id="0038f350" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
@@ -685,13 +685,13 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="d194b175" class="cell">
+<div id="eb2af24c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="ed56afcb" class="cell">
+<div id="ce36053d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -703,7 +703,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </div>
 <p>Each row and column of <span class="math inline">\mathbf{P}</span> corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</p>
 <p>Now, let us simulate a random walk on this graph. We represent a position of the walker by a vector, <span class="math inline">\mathbf{x}</span>, with five elements, each of which represents a node. We mark the node that the walker is currently at by <code>1</code> and others as <code>0</code>.</p>
-<div id="d09ebc77" class="cell">
+<div id="2057fd75" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
@@ -716,7 +716,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbf{x} \mathbf{P}
 </span></p>
 <p>which is translated into the following code:</p>
-<div id="fcdff0a4" class="cell">
+<div id="8d7017f4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
@@ -724,7 +724,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </details>
 </div>
 <p>We can then draw the next node based on the probabilities</p>
-<div id="1877f10d" class="cell">
+<div id="7b2b6788" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
@@ -738,7 +738,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <section id="exercise-01" class="level3" data-number="32.3.2">
 <h3 data-number="32.3.2" class="anchored" data-anchor-id="exercise-01"><span class="header-section-number">32.3.2</span> Exercise 01</h3>
 <p>Write the following function to simulate the random walk for a given number of steps and return the <span class="math inline">x</span> for each step.</p>
-<div id="89f714ff" class="cell">
+<div id="bdae1e94" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
@@ -766,7 +766,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbb{E}[x(1)] = x(0) P
 </span></p>
 <p>where <span class="math inline">x(t)</span> is the probability distribution of the walker at time <span class="math inline">t</span>. In Python, the expected position of the walker at time <span class="math inline">t=1</span> is given by</p>
-<div id="3a1c2c4c" class="cell">
+<div id="9c33d815" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
@@ -779,7 +779,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbb{E}[x(2)] = \mathbb{E}[x(1) P] = \mathbb{E}[x(0) P] P = x(0) P^2
 </span></p>
 <p>In other words,</p>
-<div id="7021c5b7" class="cell">
+<div id="3ff6ce2d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
@@ -793,7 +793,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <section id="exercise-02" class="level3" data-number="32.4.1">
 <h3 data-number="32.4.1" class="anchored" data-anchor-id="exercise-02"><span class="header-section-number">32.4.1</span> Exercise 02</h3>
 <p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span> using the above formula:</p>
-<div id="0679d904" class="cell">
+<div id="9f578948" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
@@ -882,7 +882,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <section id="practical-demonstration" class="level2" data-number="32.6">
 <h2 data-number="32.6" class="anchored" data-anchor-id="practical-demonstration"><span class="header-section-number">32.6</span> Practical Demonstration</h2>
 <p>Let us demonstrate the above math by using a small network using Python. Let us consider a small network of 5 nodes, which looks like this:</p>
-<div id="78638f4b" class="cell">
+<div id="1bd1c51f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
@@ -899,7 +899,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </details>
 </div>
 <p>The transition probability matrix <span class="math inline">P</span> is given by:</p>
-<div id="34ceb3dd" class="cell">
+<div id="349c6550" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
@@ -912,7 +912,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </details>
 </div>
 <p>Let us compute the stationary distribution by using the power method.</p>
-<div id="db322fe9" class="cell">
+<div id="875a5c27" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -942,7 +942,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </div>
 <p>We see that the distributions of the walker converges, and there are three characteristic features in the convergence: 1. The distribution of the walker oscillates with a decaying amplitude and eventually converges. 2. Nodes of the same degree converge to the same stationary probability. 3. Nodes with higher degree converge to the higher stationary probability.</p>
 <p>To validate the last two observation, let us compare the stationary distribution of a random walker with the expected stationary distribution, which is proportional to the degree of the nodes.</p>
-<div id="430ee1ba" class="cell">
+<div id="3a643915" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -960,7 +960,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <section id="community-structure" class="level2" data-number="32.7">
 <h2 data-number="32.7" class="anchored" data-anchor-id="community-structure"><span class="header-section-number">32.7</span> Community structure</h2>
 <p>Random walks can capture community structure of a network. To see this, let us consider a network of a ring of cliques.</p>
-<div id="c85da7fb" class="cell">
+<div id="831dae52" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
@@ -982,7 +982,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </div>
 <p>Let us compute the expected position of the walker after 1 to 10 steps.</p>
 <p><strong>Compute the transition matrix</strong>:</p>
-<div id="61e832f8" class="cell">
+<div id="69796db0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
@@ -998,7 +998,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </details>
 </div>
 <p><strong>Compute the expected position of the walker after 1 to 300 steps</strong>:</p>
-<div id="c17e0d62" class="cell">
+<div id="5aa599e8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
@@ -1013,7 +1013,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </details>
 </div>
 <p><strong>Plot the expected position of the walker at each step</strong>:</p>
-<div id="b0421ce3" class="cell">
+<div id="b98b2013" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
@@ -1143,7 +1143,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="normalized-adjacency-matrix" class="level3" data-number="32.8.3">
 <h3 data-number="32.8.3" class="anchored" data-anchor-id="normalized-adjacency-matrix"><span class="header-section-number">32.8.3</span> Normalized Adjacency Matrix</h3>
 <p>First, let us construct the normalized adjacency matrix <span class="math inline">\overline{\bf A}</span> of the network.</p>
-<div id="23cccd01" class="cell">
+<div id="fe857bcc" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
@@ -1151,7 +1151,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 </details>
 </div>
 <p>Next, let us compute the eigenvalues and eigenvectors of the normalized adjacency matrix.</p>
-<div id="0f4d291f" class="cell">
+<div id="afd87287" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1160,7 +1160,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <pre class="{note}"><code>`evals` and `evecs` are sorted in descending order of the eigenvalues. `evecs[:, 0]` is the eigenvector corresponding to the largest eigenvalue, which is always 1.</code></pre>
 <pre class="{warning}"><code>There is a similar function called `np.linalg.eig` which returns the eigenvalues and eigenvectors. It can be used for any matrices, while `np.linalg.eigh` is specifically for symmetric matrices. `np.linalg.eigh` is faster and more stable and therefore preferred if your matrix is symmetric. `np.linalg.eig` is more susceptible to numerical errors and therefore less stable.</code></pre>
 <p>The eigenvalues and eigenvectors are shown below.</p>
-<div id="efff2013" class="cell">
+<div id="4836eb20" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
@@ -1168,7 +1168,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>}).T.style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="dv">1</span>).set_caption(<span class="st">"Eigenvalues of the normalized adjacency matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="42e67803" class="cell">
+<div id="75e413c7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
@@ -1182,13 +1182,13 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <p>We decompose <span class="math inline">\overline{\bf A}</span> as</p>
 <p><span class="math display">\overline {\bf A} = {\bf Q}{\bf \Lambda}{\bf Q}^\top</span></p>
 <p>where <span class="math inline">{\bf Q}</span> corresponds to <code>eigvecs</code> and <span class="math inline">{\bf \Lambda}</span> corresponds to <code>np.diag(evals)</code> (since <span class="math inline">{\bf \Lambda}</span> is a diagonal matrix). Let’s see if this is correct:</p>
-<div id="96ec0535" class="cell">
+<div id="51d87a99" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(A_norm.toarray()).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Normalized Adjacency Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="a1637a40" class="cell">
+<div id="48938a80" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>A_norm_reconstructed <span class="op">=</span> evecs <span class="op">@</span> np.diag(evals) <span class="op">@</span> evecs.T</span>
@@ -1200,7 +1200,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="multi-step-transition-probability" class="level3" data-number="32.8.4">
 <h3 data-number="32.8.4" class="anchored" data-anchor-id="multi-step-transition-probability"><span class="header-section-number">32.8.4</span> Multi-step Transition Probability</h3>
 <p>Let us first conform whether we can compute the transition probability after <span class="math inline">t</span> steps by using the eigenvalues and eigenvectors.</p>
-<div id="1e1261af" class="cell">
+<div id="492e1901" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
@@ -1227,7 +1227,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="relaxation-time-and-mixing-time" class="level3" data-number="32.8.5">
 <h3 data-number="32.8.5" class="anchored" data-anchor-id="relaxation-time-and-mixing-time"><span class="header-section-number">32.8.5</span> Relaxation Time and Mixing Time</h3>
 <p>Let us measure the relaxation time of the random walk.</p>
-<div id="6727f3b0" class="cell">
+<div id="e5f2e4a4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span>
