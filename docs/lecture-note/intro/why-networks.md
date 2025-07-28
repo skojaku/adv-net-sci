@@ -1,7 +1,8 @@
 
+Vd
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
-Look at how misleading geographic distance can be for understanding disease spread:
+The most natural way to think about disease spread is through geographic distance - but look at what the data actually shows:
 
 [![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
 
@@ -43,12 +44,12 @@ But for analyzing networks, we represent them as **tables** with *source and tar
 | Node2 | Node4 |
 | Node3 | Node5 |
 
-This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules. 
+This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
 
 **The power of abstraction**: The same tabular representation works for any networked system:
 
 - **Social networks**: People connected by friendships
-- **Brain networks**: Neurons connected by synapses  
+- **Brain networks**: Neurons connected by synapses
 - **The Internet**: Web pages connected by hyperlinks
 - **Citation networks**: Papers connected by citations
 - **Food webs**: Species connected by predator-prey relationships
