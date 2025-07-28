@@ -1,11 +1,11 @@
 
-# What do you imagine about networks?
+# What do you imagine about networks? 🤔
 
 When you hear "network," what comes to mind? If you're an engineering student, you probably think of computer networks - routers, switches, and cables connecting devices. Maybe you think of power grids, with generators, transformers, and transmission lines. Or perhaps telecommunications networks with cell towers and fiber optic cables.
 
-You're absolutely right. These are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread.
+You're absolutely right. These are all networks. But here's what might surprise you: the same mathematical principles that govern these engineered systems also govern social media, your brain, the Internet, supply chains, and even how diseases spread. ✨
 
-## The key insight
+## The key insight 💡
 
 *Topology matters*. How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system.
 
@@ -13,7 +13,7 @@ This intuition transfers directly to network science. Whether we're talking abou
 
 A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
 
-## How to represent a network
+## How to represent a network 📊
 
 While we often visualize networks as diagrams with dots and lines, mathematically we can represent them as simple tables. Consider this small computer network:
 
@@ -25,9 +25,9 @@ While we often visualize networks as diagrams with dots and lines, mathematicall
 | Router2 | Server1 |
 | Router3 | Server2 |
 
-This *edge list* completely describes the network structure. Each row represents a connection between two nodes. From this table, we can reconstruct the entire network topology, calculate shortest paths, identify critical components, or analyze resilience - all the complex network properties emerge from this simple tabular representation.
+This *edge list* completely describes the network structure. Each row represents a connection between two nodes. From this table, we can reconstruct the entire network topology, calculate shortest paths, identify critical components, or analyze resilience - all the complex network properties emerge from this simple tabular representation. ✅
 
-## Universal applicability
+## Universal applicability 🌍
 
 The same tabular representation works for any networked system:
 
@@ -37,7 +37,7 @@ The same tabular representation works for any networked system:
 - **Citation networks**: Papers connected by citations
 - **Food webs**: Species connected by predator-prey relationships
 
-Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This universality is what makes network science so powerful - the same tools work everywhere.
+Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This universality is what makes network science so powerful - the same tools work everywhere. 🔧
 
 [![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
