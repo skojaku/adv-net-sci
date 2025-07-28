@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; Trouble shooting – Advanced Topics in Network Science</title>
+<title>3&nbsp; Setup – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -175,7 +175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></span></a>
   </div>
 </li>
       </ul>
@@ -529,16 +529,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#cannot-plot-a-graph-with-igraph-on-google-colab" id="toc-cannot-plot-a-graph-with-igraph-on-google-colab" class="nav-link active" data-scroll-target="#cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</a></li>
+  <li><a href="#python" id="toc-python" class="nav-link active" data-scroll-target="#python"><span class="header-section-number">3.1</span> Python</a></li>
+  <li><a href="#marimo-notebook" id="toc-marimo-notebook" class="nav-link" data-scroll-target="#marimo-notebook"><span class="header-section-number">3.2</span> Marimo Notebook</a></li>
+  <li><a href="#vs-code" id="toc-vs-code" class="nav-link" data-scroll-target="#vs-code"><span class="header-section-number">3.3</span> VS Code</a></li>
+  <li><a href="#github" id="toc-github" class="nav-link" data-scroll-target="#github"><span class="header-section-number">3.4</span> Github</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Intro</a></li><li class="breadcrumb-item"><a href="../intro/setup.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Trouble shooting</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -555,29 +558,148 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="cannot-plot-a-graph-with-igraph-on-google-colab" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="cannot-plot-a-graph-with-igraph-on-google-colab"><span class="header-section-number">3.1</span> Cannot plot a graph with igraph on Google Colab</h2>
-<p>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <code>igraph</code> and <code>graph-tool</code>.</p>
-<p><strong>Installing igraph</strong> Create a cell on top of the notebook and run the following code to install the igraph.</p>
-<pre><code>!sudo apt install libcairo2-dev pkg-config python3-dev
-!pip install pycairo cairocffi
-!pip install igraph</code></pre>
-<p><strong>Installing graph-tool</strong> Create a cell on top of the notebook and run the following code to install the graph-tool.</p>
-<pre><code>!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb
-!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list
-!apt-get update
-!apt-get install python3-graph-tool python3-matplotlib python3-cairo
-
-# Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.
-!apt purge python3-cairo
-!apt install libcairo2-dev pkg-config python3-dev
-!pip install --force-reinstall pycairo
-!pip install zstandar</code></pre>
+<section id="python" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="python"><span class="header-section-number">3.1</span> Python</h2>
+<p>To follow the course materials, you’ll need Python 3.8 or higher. We recommend using the latest stable version of Python.</p>
+<section id="installing-python" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="installing-python"><span class="header-section-number">3.1.1</span> Installing Python</h3>
+<p>If you don’t have Python installed: - <strong>Windows/Mac</strong>: Download from <a href="https://www.python.org/downloads/">python.org</a> - <strong>Linux</strong>: Use your package manager (e.g., <code>sudo apt install python3</code>)</p>
+</section>
+<section id="required-packages" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="required-packages"><span class="header-section-number">3.1.2</span> Required Packages</h3>
+<p>Install the required packages using pip:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="trouble-shooting-with-google-colab" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="trouble-shooting-with-google-colab"><span class="header-section-number">3.1.3</span> Trouble shooting with Google Colab</h3>
+<p>Google Colab has many packages pre-installed. However, they do not include some packages for network analysis like <code>igraph</code> and <code>graph-tool</code>.</p>
+<p><strong>Installing igraph</strong> Create a cell on top of the notebook and run the following code to install the igraph:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>sudo apt install libcairo2<span class="op">-</span>dev pkg<span class="op">-</span>config python3<span class="op">-</span>dev</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install pycairo cairocffi</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install igraph</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Installing graph-tool</strong> Create a cell on top of the notebook and run the following code to install the graph-tool:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>downloads.skewed.de<span class="op">/</span>skewed<span class="op">-</span>keyring<span class="op">/</span>skewed<span class="op">-</span>keyring_1<span class="fl">.0</span><span class="er">_all_</span>$(lsb_release <span class="op">-</span>s <span class="op">-</span>c).deb</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>dpkg <span class="op">-</span>i skewed<span class="op">-</span>keyring_1<span class="fl">.0</span><span class="er">_all_</span>$(lsb_release <span class="op">-</span>s <span class="op">-</span>c).deb</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>echo <span class="st">"deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main"</span> <span class="op">&gt;</span> <span class="op">/</span>etc<span class="op">/</span>apt<span class="op">/</span>sources.<span class="bu">list</span>.d<span class="op">/</span>skewed.<span class="bu">list</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt<span class="op">-</span>get update</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt<span class="op">-</span>get install python3<span class="op">-</span>graph<span class="op">-</span>tool python3<span class="op">-</span>matplotlib python3<span class="op">-</span>cairo</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt purge python3<span class="op">-</span>cairo</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt install libcairo2<span class="op">-</span>dev pkg<span class="op">-</span>config python3<span class="op">-</span>dev</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install <span class="op">--</span>force<span class="op">-</span>reinstall pycairo</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install zstandar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="marimo-notebook" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="marimo-notebook"><span class="header-section-number">3.2</span> Marimo Notebook</h2>
+<p>Marimo is a reactive Python notebook that we’ll use for interactive coding exercises.</p>
+<section id="installation" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="installation"><span class="header-section-number">3.2.1</span> Installation</h3>
+<p>Install marimo using pip:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="running-marimo" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="running-marimo"><span class="header-section-number">3.2.2</span> Running Marimo</h3>
+<p>To start a new marimo notebook:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To open an existing marimo notebook:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit notebook.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="key-features" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="key-features"><span class="header-section-number">3.2.3</span> Key Features</h3>
+<ul>
+<li><strong>Reactive</strong>: Cells automatically re-run when their dependencies change</li>
+<li><strong>Version control friendly</strong>: Notebooks are stored as Python files</li>
+<li><strong>Interactive widgets</strong>: Built-in support for sliders, dropdowns, and other UI elements</li>
+</ul>
+</section>
+</section>
+<section id="vs-code" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="vs-code"><span class="header-section-number">3.3</span> VS Code</h2>
+<p>Visual Studio Code is our recommended code editor for this course.</p>
+<section id="installation-1" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="installation-1"><span class="header-section-number">3.3.1</span> Installation</h3>
+<p>Download and install VS Code from <a href="https://code.visualstudio.com/">code.visualstudio.com</a></p>
+</section>
+<section id="recommended-extensions" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="recommended-extensions"><span class="header-section-number">3.3.2</span> Recommended Extensions</h3>
+<p>Install these extensions for the best Python development experience:</p>
+<ul>
+<li><strong>Python</strong> (Microsoft): Python language support</li>
+<li><strong>Jupyter</strong> (Microsoft): Jupyter notebook support</li>
+<li><strong>Python Docstring Generator</strong>: Auto-generate docstrings</li>
+<li><strong>GitLens</strong>: Enhanced Git capabilities</li>
+<li><strong>Marimo</strong> (marimo-team): Marimo notebook support</li>
+</ul>
+</section>
+<section id="configuration" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="configuration"><span class="header-section-number">3.3.3</span> Configuration</h3>
+<p>Create a <code>.vscode/settings.json</code> file in your project root with:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"python.defaultInterpreterPath"</span><span class="fu">:</span> <span class="st">"python3"</span><span class="fu">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"python.linting.enabled"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"python.linting.pylintEnabled"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"python.formatting.provider"</span><span class="fu">:</span> <span class="st">"black"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="github" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="github"><span class="header-section-number">3.4</span> Github</h2>
+<p>We’ll use Github for version control and collaboration.</p>
+<section id="creating-a-github-account" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="creating-a-github-account"><span class="header-section-number">3.4.1</span> Creating a Github Account</h3>
+<ol type="1">
+<li>Go to <a href="https://github.com">github.com</a></li>
+<li>Click “Sign up”</li>
+<li>Follow the registration process</li>
+</ol>
+</section>
+<section id="setting-up-git" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="setting-up-git"><span class="header-section-number">3.4.2</span> Setting up Git</h3>
+<p>Configure your Git identity:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"your.email@example.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="ssh-key-setup-recommended" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="ssh-key-setup-recommended"><span class="header-section-number">3.4.3</span> SSH Key Setup (Recommended)</h3>
+<ol type="1">
+<li>Generate an SSH key:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-keygen</span> <span class="at">-t</span> ed25519 <span class="at">-C</span> <span class="st">"your.email@example.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="1">
+<li>Add the key to your SSH agent:</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-add</span> ~/.ssh/id_ed25519</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="3" type="1">
+<li>Copy the public key:</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/.ssh/id_ed25519.pub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="4" type="1">
+<li>Add the key to your Github account under Settings &gt; SSH and GPG keys</li>
+</ol>
+</section>
+<section id="basic-git-workflow" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="basic-git-workflow"><span class="header-section-number">3.4.4</span> Basic Git Workflow</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clone a repository</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:username/repository.git</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check status</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add changes</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Commit changes</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Your commit message"</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Push changes</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 <!-- -->
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1043,36 +1165,175 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Trouble shooting</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cannot plot a graph with igraph on Google Colab</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Google Colab has many packages pre-installed. However, they do not include some pacages for network analysis like <span class="in">`igraph`</span> and <span class="in">`graph-tool`</span>.</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the igraph.</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="in">!sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install pycairo cairocffi</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install igraph</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>**Installing graph-tool**</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the graph-tool.</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="in">!wget https://downloads.skewed.de/skewed-keyring/skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="in">!dpkg -i skewed-keyring_1.0_all_$(lsb_release -s -c).deb</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">!echo "deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main" &gt; /etc/apt/sources.list.d/skewed.list</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get update</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="in">!apt-get install python3-graph-tool python3-matplotlib python3-cairo</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="in"># Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="in">!apt purge python3-cairo</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="in">!apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install --force-reinstall pycairo</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="in">!pip install zstandar</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Setup</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Python</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>To follow the course materials, you'll need Python 3.8 or higher. We recommend using the latest stable version of Python.</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">### Installing Python</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>If you don't have Python installed:</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Windows/Mac**: Download from <span class="co">[</span><span class="ot">python.org</span><span class="co">](https://www.python.org/downloads/)</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Linux**: Use your package manager (e.g., <span class="in">`sudo apt install python3`</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Required Packages</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>Install the required packages using pip:</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="fu">### Trouble shooting with Google Colab</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>Google Colab has many packages pre-installed. However, they do not include some packages for network analysis like <span class="in">`igraph`</span> and <span class="in">`graph-tool`</span>.</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the igraph:</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>sudo apt install libcairo2<span class="op">-</span>dev pkg<span class="op">-</span>config python3<span class="op">-</span>dev</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install pycairo cairocffi</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install igraph</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>**Installing graph-tool**</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>Create a cell on top of the notebook and run the following code to install the graph-tool:</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>downloads.skewed.de<span class="op">/</span>skewed<span class="op">-</span>keyring<span class="op">/</span>skewed<span class="op">-</span>keyring_1<span class="fl">.0</span><span class="er">_all_</span>$(lsb_release <span class="op">-</span>s <span class="op">-</span>c).deb</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>dpkg <span class="op">-</span>i skewed<span class="op">-</span>keyring_1<span class="fl">.0</span><span class="er">_all_</span>$(lsb_release <span class="op">-</span>s <span class="op">-</span>c).deb</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>echo <span class="st">"deb [signed-by=/usr/share/keyrings/skewed-keyring.gpg] https://downloads.skewed.de/apt $(lsb_release -s -c) main"</span> <span class="op">&gt;</span> <span class="op">/</span>etc<span class="op">/</span>apt<span class="op">/</span>sources.<span class="bu">list</span>.d<span class="op">/</span>skewed.<span class="bu">list</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt<span class="op">-</span>get update</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt<span class="op">-</span>get install python3<span class="op">-</span>graph<span class="op">-</span>tool python3<span class="op">-</span>matplotlib python3<span class="op">-</span>cairo</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Colab uses a Python install that deviates from the system's! Bad colab! We need some workarounds.</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt purge python3<span class="op">-</span>cairo</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>apt install libcairo2<span class="op">-</span>dev pkg<span class="op">-</span>config python3<span class="op">-</span>dev</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install <span class="op">--</span>force<span class="op">-</span>reinstall pycairo</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install zstandar</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## Marimo Notebook</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>Marimo is a reactive Python notebook that we'll use for interactive coding exercises.</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="fu">### Installation</span></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>Install marimo using pip:</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### Running Marimo</span></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>To start a new marimo notebook:</span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit</span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a>To open an existing marimo notebook:</span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit notebook.py</span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Features</span></span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Reactive**: Cells automatically re-run when their dependencies change</span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Version control friendly**: Notebooks are stored as Python files</span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Interactive widgets**: Built-in support for sliders, dropdowns, and other UI elements</span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## VS Code</span></span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>Visual Studio Code is our recommended code editor for this course.</span>
+<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a><span class="fu">### Installation</span></span>
+<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a>Download and install VS Code from <span class="co">[</span><span class="ot">code.visualstudio.com</span><span class="co">](https://code.visualstudio.com/)</span></span>
+<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a><span class="fu">### Recommended Extensions</span></span>
+<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a>Install these extensions for the best Python development experience:</span>
+<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Python** (Microsoft): Python language support</span>
+<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Jupyter** (Microsoft): Jupyter notebook support</span>
+<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Python Docstring Generator**: Auto-generate docstrings</span>
+<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**GitLens**: Enhanced Git capabilities</span>
+<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Marimo** (marimo-team): Marimo notebook support</span>
+<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a><span class="fu">### Configuration</span></span>
+<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a>Create a <span class="in">`.vscode/settings.json`</span> file in your project root with:</span>
+<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a><span class="in">```json</span></span>
+<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>    <span class="st">"python.defaultInterpreterPath"</span><span class="op">:</span> <span class="st">"python3"</span><span class="op">,</span></span>
+<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>    <span class="st">"python.linting.enabled"</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a>    <span class="st">"python.linting.pylintEnabled"</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a>    <span class="st">"python.formatting.provider"</span><span class="op">:</span> <span class="st">"black"</span></span>
+<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Github</span></span>
+<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a>We'll use Github for version control and collaboration.</span>
+<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a><span class="fu">### Creating a Github Account</span></span>
+<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Go to <span class="co">[</span><span class="ot">github.com</span><span class="co">](https://github.com)</span></span>
+<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Click "Sign up"</span>
+<span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Follow the registration process</span>
+<span id="cb13-123"><a href="#cb13-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a><span class="fu">### Setting up Git</span></span>
+<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-126"><a href="#cb13-126" aria-hidden="true" tabindex="-1"></a>Configure your Git identity:</span>
+<span id="cb13-127"><a href="#cb13-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-128"><a href="#cb13-128" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-129"><a href="#cb13-129" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb13-130"><a href="#cb13-130" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"your.email@example.com"</span></span>
+<span id="cb13-131"><a href="#cb13-131" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-132"><a href="#cb13-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSH Key Setup (Recommended)</span></span>
+<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-135"><a href="#cb13-135" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Generate an SSH key:</span>
+<span id="cb13-136"><a href="#cb13-136" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-137"><a href="#cb13-137" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-keygen</span> <span class="at">-t</span> ed25519 <span class="at">-C</span> <span class="st">"your.email@example.com"</span></span>
+<span id="cb13-138"><a href="#cb13-138" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-139"><a href="#cb13-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-140"><a href="#cb13-140" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Add the key to your SSH agent:</span>
+<span id="cb13-141"><a href="#cb13-141" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-142"><a href="#cb13-142" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-add</span> ~/.ssh/id_ed25519</span>
+<span id="cb13-143"><a href="#cb13-143" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-144"><a href="#cb13-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-145"><a href="#cb13-145" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Copy the public key:</span>
+<span id="cb13-146"><a href="#cb13-146" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-147"><a href="#cb13-147" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/.ssh/id_ed25519.pub</span>
+<span id="cb13-148"><a href="#cb13-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb13-149"><a href="#cb13-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-150"><a href="#cb13-150" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Add the key to your Github account under Settings &gt; SSH and GPG keys</span>
+<span id="cb13-151"><a href="#cb13-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-152"><a href="#cb13-152" aria-hidden="true" tabindex="-1"></a><span class="fu">### Basic Git Workflow</span></span>
+<span id="cb13-153"><a href="#cb13-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-154"><a href="#cb13-154" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb13-155"><a href="#cb13-155" aria-hidden="true" tabindex="-1"></a><span class="co"># Clone a repository</span></span>
+<span id="cb13-156"><a href="#cb13-156" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:username/repository.git</span>
+<span id="cb13-157"><a href="#cb13-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-158"><a href="#cb13-158" aria-hidden="true" tabindex="-1"></a><span class="co"># Check status</span></span>
+<span id="cb13-159"><a href="#cb13-159" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb13-160"><a href="#cb13-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-161"><a href="#cb13-161" aria-hidden="true" tabindex="-1"></a><span class="co"># Add changes</span></span>
+<span id="cb13-162"><a href="#cb13-162" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb13-163"><a href="#cb13-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-164"><a href="#cb13-164" aria-hidden="true" tabindex="-1"></a><span class="co"># Commit changes</span></span>
+<span id="cb13-165"><a href="#cb13-165" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Your commit message"</span></span>
+<span id="cb13-166"><a href="#cb13-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-167"><a href="#cb13-167" aria-hidden="true" tabindex="-1"></a><span class="co"># Push changes</span></span>
+<span id="cb13-168"><a href="#cb13-168" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin main</span>
+<span id="cb13-169"><a href="#cb13-169" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
