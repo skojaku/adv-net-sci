@@ -630,7 +630,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </figure>
 </div>
 <p>The CSR format is implemented in the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html">scipy</a> library. It is straightforward to convert the CSR matrix from the <em>dense</em> adjacency matrix.</p>
-<div id="c98038f3" class="cell">
+<div id="7a0b4e97" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> csr_matrix</span>
@@ -645,7 +645,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </details>
 </div>
 <p>If you have an <em>edge list</em>, you can directly generate the CSR matrix without creating the dense matrix first.</p>
-<div id="c33b2b52" class="cell">
+<div id="3f92f132" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> csr_matrix</span>
@@ -664,7 +664,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="computing-shortest-paths-and-connected-components" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="computing-shortest-paths-and-connected-components"><span class="header-section-number">10.2</span> Computing Shortest Paths and Connected Components</h2>
 <p>Let’s use <code>igraph</code> to compute the shortest paths and connected components. We will then use <code>scipy</code> to compute them.</p>
-<div id="f6b330a6" class="cell">
+<div id="9622c3e5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
@@ -679,14 +679,14 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="create-a-graph" class="level3" data-number="10.2.2">
 <h3 data-number="10.2.2" class="anchored" data-anchor-id="create-a-graph"><span class="header-section-number">10.2.2</span> Create a graph</h3>
 <p>Let us create a graph of 4 nodes and 4 edges. Our edge list is given by</p>
-<div id="436c619f" class="cell">
+<div id="1456908c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p><code>igraph</code> has an object <code>Graph</code> that stores a graph and provides methods to manipulate and analyze the graph. To create a graph from an edge list, we can use the <code>add_edges</code> method.</p>
-<div id="02799506" class="cell">
+<div id="23dbbff3" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -703,7 +703,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="shortest-paths" class="level3" data-number="10.2.3">
 <h3 data-number="10.2.3" class="anchored" data-anchor-id="shortest-paths"><span class="header-section-number">10.2.3</span> Shortest Paths</h3>
 <p>Let’s compute the paths between nodes 2 and 3.</p>
-<div id="e1068c00" class="cell">
+<div id="30ef602b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g.get_all_simple_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -711,14 +711,14 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </div>
 <p>This method enumerates all possible simple paths between two nodes. This is OK for small networks but quickly becomes impractical for larger networks, as the number of paths increases exponentially with the size of the network.</p>
 <p>Often, we are interested in the shortest path, which is the path with the smallest number of edges. The shortest path can be computed by using the <code>get_shortest_paths</code> method.</p>
-<div id="1d4c6752" class="cell">
+<div id="e50b1475" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Note that there can be multiple shortest paths between two nodes. If we are interested in the “length” instead of the path itself, there is a more efficient function <code>distances</code>.</p>
-<div id="ad48c3bd" class="cell">
+<div id="526d73ac" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g.distances(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -728,14 +728,14 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="connected-components" class="level3" data-number="10.2.4">
 <h3 data-number="10.2.4" class="anchored" data-anchor-id="connected-components"><span class="header-section-number">10.2.4</span> Connected Components</h3>
 <p>In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:</p>
-<div id="60d40551" class="cell">
+<div id="548e71a7" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The <code>components</code> is a special object called <a href="https://python.igraph.org/en/0.11.6/api/igraph.VertexClustering.html">VertexClustering</a> in <code>igraph</code>. It has the following useful functions and attributes:</p>
-<div id="3a2eedae" class="cell">
+<div id="33f7a718" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"membership: "</span>, components.membership)  <span class="co"># the IDs of the component each node belongs to.</span></span>
@@ -755,7 +755,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="directed-networks" class="level3" data-number="10.2.5">
 <h3 data-number="10.2.5" class="anchored" data-anchor-id="directed-networks"><span class="header-section-number">10.2.5</span> Directed networks</h3>
 <p>Let’s extend these ideas about paths and connected components to directed graphs.</p>
-<div id="1d84b7be" class="cell">
+<div id="8a130db0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span>[(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">2</span>, <span class="dv">1</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">5</span>), (<span class="dv">3</span>, <span class="dv">1</span>), (<span class="dv">3</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">5</span>), (<span class="dv">4</span>, <span class="dv">5</span>), (<span class="dv">5</span>, <span class="dv">3</span>)]</span>
@@ -766,7 +766,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </details>
 </div>
 <p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
-<div id="62ecb019" class="cell">
+<div id="b515c111" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"From 0 to 3"</span>, g.get_all_simple_paths(<span class="dv">0</span>, to<span class="op">=</span><span class="dv">3</span>))</span>
@@ -774,7 +774,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </details>
 </div>
 <p>The shortest path from 4 to 1 must take a longer route due to edge directions.</p>
-<div id="182b361e" class="cell">
+<div id="7b544230" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">4</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -785,7 +785,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <li><strong>Strongly connected components:</strong> Strongly connected means that there exists a direct path between every pair of nodes, i.e., that from any node to any other nodes while respecting the edge directionality.</li>
 <li><strong>Weakly connected components:</strong> Weakly connected means that there exists a path between every pair of nodes when ignoring the edge directionality.</li>
 </ul>
-<div id="e30982df" class="cell">
+<div id="de8be654" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(g.connected_components(mode<span class="op">=</span><span class="st">"strong"</span>)))</span>
@@ -804,7 +804,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <p>Most of the entries in this adjacency matrix are white, and white means that the value of the entry is zero. And the adjacency matrix looks very white! This is pretty common in real-world networks. We call these matrices “sparse” because they are mostly empty. And CSR matrices are a way to store these sparse matrices efficiently. Don’t worry too much about the technical details for now. If you’re curious to learn more, you can check out the <a href="appendix.qmd">Appendix</a>.</p>
 <p>The great thing is, <code>scipy</code> (especially the <code>scipy.sparse</code> module) provides efficient tools for working with these sparse matrices. This comes in really handy when we’re working with large networks.</p>
 <p>Let create a graph using scipy.</p>
-<div id="276978ad" class="cell">
+<div id="91080dbe" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse <span class="co"># We will use sparse module in scipy</span></span>
@@ -822,7 +822,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </div>
 <p>Let’s break down the code. - <code>src</code> and <code>trg</code> are the source and target nodes of the edges. - <code>weight</code> is the weight of the edges. - <code>sparse.csr_matrix((weight, (src, trg)))</code> creates a sparse matrix, filling <code>weight</code> into the positions specified by <code>(src, trg)</code>. - <code>A.T</code> is the transpose of <code>A</code> and <code>A + A.T</code> makes the adjacency matrix symmetric.</p>
 <p>The CSR matrix does not print nicely. But you can see it by converting to a numpy array and printing it.</p>
-<div id="89e9f3bc" class="cell">
+<div id="cd077062" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>A.toarray()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -833,7 +833,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <h3 data-number="10.2.8" class="anchored" data-anchor-id="shortest-paths-1"><span class="header-section-number">10.2.8</span> Shortest Paths</h3>
 <p>The <code>sparse</code> module has a submodule <code>csgraph</code> that provides APIs for network analysis.</p>
 <p>For example, <code>csgraph.shortest_path</code> computes the shortest path length from a specific node to all other nodes.</p>
-<div id="5cd98a13" class="cell">
+<div id="c6ccc2ce" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> csgraph</span>
@@ -844,7 +844,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 </details>
 </div>
 <p><strong>Advanced:</strong> If you want to get the actual paths (i.e., list of nodes in the path), you can pass <code>return_predecessors=True</code> to <code>csgraph.shortest_path</code>.</p>
-<div id="af96943d" class="cell">
+<div id="63dbfedc" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>D, predecessors <span class="op">=</span> csgraph.shortest_path(A, indices<span class="op">=</span><span class="dv">2</span>, directed<span class="op">=</span><span class="va">False</span>, return_predecessors<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -854,7 +854,7 @@ Figure&nbsp;10.1: Compressed Sparse Row (CSR) matrix. Source: <a href="https://m
 <section id="connected-components-1" class="level3" data-number="10.2.9">
 <h3 data-number="10.2.9" class="anchored" data-anchor-id="connected-components-1"><span class="header-section-number">10.2.9</span> Connected Components</h3>
 <p>Connected components can be computed by <code>csgraph.connected_components</code>.</p>
-<div id="d1e7dbbc" class="cell">
+<div id="a7e02e34" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>n_components, labels <span class="op">=</span> csgraph.connected_components(A, directed<span class="op">=</span><span class="va">False</span>, return_labels<span class="op">=</span><span class="va">True</span>)</span>
