@@ -26,29 +26,15 @@ Without virtual environments, you risk dependency hell where package conflicts m
 
 We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience.
 
-Install uv:
-```bash
-# On macOS and Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# On Windows
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
+::: {.column-margin}
 
-Create and activate a virtual environment for this course:
-```bash
-# Create a new project with virtual environment
-uv init network-science-course
-cd network-science-course
+Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
 
-# Add required packages
-uv add numpy pandas matplotlib seaborn networkx igraph-python scikit-learn marimo
+:::
 
-# Activate the environment
-source .venv/bin/activate  # On macOS/Linux
-# or
-.venv\Scripts\activate     # On Windows
-```
+
+::: {.column-margin}
 
 **Other Options**
 
@@ -65,45 +51,24 @@ source network-science-env/bin/activate  # On macOS/Linux
 network-science-env\Scripts\activate     # On Windows
 
 # Install packages
-pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn marimo
+pip install numpy pandas matplotlib seaborn networkx igraph-python scikit-learn marimo
 ```
 
-*pyenv:* Great for managing multiple Python versions
-```bash
-pyenv install 3.11.0
-pyenv virtualenv 3.11.0 network-science
-pyenv activate network-science
-```
+*[pyenv](https://github.com/pyenv/pyenv):* Great for managing multiple Python versions
 
-*Conda:* Popular in data science, includes non-Python packages
-```bash
-conda create -n network-science python=3.11
-conda activate network-science
-conda install numpy pandas matplotlib seaborn networkx scikit-learn
-pip install marimo igraph
-```
+*[Conda](https://docs.conda.io/):* Popular in data science, includes non-Python packages
 
-*Mamba:* Faster drop-in replacement for conda
-```bash
-mamba create -n network-science python=3.11
-mamba activate network-science
-mamba install numpy pandas matplotlib seaborn networkx scikit-learn
-```
+*[Mamba](https://mamba.readthedocs.io/):* Faster drop-in replacement for conda
 
-*Miniforge:* Community-driven conda distribution with mamba included
-- Download from [github.com/conda-forge/miniforge](https://github.com/conda-forge/miniforge)
-- Provides conda-forge as default channel
+*[Miniforge](https://github.com/conda-forge/miniforge):* Community-driven conda distribution with mamba included
 
-::: {.callout-note}
-## Side Note: Virtual Environments vs Virtual Machines
-
-Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
+:::
 
 Other virtualization tools you might encounter include:
-- **Docker**: Containerization that packages applications with their dependencies
-- **Vagrant**: Tool for managing virtual machine environments
-- **VirtualBox/VMware**: Full virtual machine platforms
-- **WSL (Windows Subsystem for Linux)**: Linux environment on Windows
+- **[Docker](https://www.docker.com/)**: Containerization that packages applications with their dependencies
+- **[Vagrant](https://www.vagrantup.com/)**: Tool for managing virtual machine environments
+- **[VirtualBox](https://www.virtualbox.org/)/[VMware](https://www.vmware.com/)**: Full virtual machine platforms
+- **[WSL](https://docs.microsoft.com/en-us/windows/wsl/)**: Linux environment on Windows
 
 For this course, Python virtual environments are all you need - they're faster, lighter, and perfect for managing Python dependencies.
 :::
