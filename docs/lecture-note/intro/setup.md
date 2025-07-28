@@ -5,20 +5,16 @@ title: Setup
 
 ## Python
 
-To follow the course materials, you'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
-
-### Installing Python
+We'll use Python to work with data throughout this course. Python provides powerful libraries for network analysis, data manipulation, and visualization that are essential for understanding network science concepts. You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
 
 If you don't have Python installed:
 - **Windows/Mac**: Download from [python.org](https://www.python.org/downloads/)
 - **Linux**: Use your package manager (e.g., `sudo apt install python3`)
 
-### Required Packages
-
 Install the required packages using pip:
 
 ```bash
-pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn
+pip install numpy pandas matplotlib seaborn networkx igraph-python graph-tool scikit-learn marimo
 ```
 
 ### Trouble shooting with Google Colab
@@ -51,7 +47,7 @@ Create a cell on top of the notebook and run the following code to install the g
 
 ## Marimo Notebook
 
-Marimo is a reactive Python notebook that we'll use for interactive coding exercises.
+We'll use Marimo notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
 
 ### Installation
 
@@ -83,7 +79,7 @@ marimo edit notebook.py
 
 ## VS Code
 
-Visual Studio Code is our recommended code editor for this course.
+Visual Studio Code is our recommended code editor for this course. It provides excellent Python support, integrated debugging, and extensions that make working with network data and Marimo notebooks more efficient.
 
 ### Installation
 
@@ -114,7 +110,7 @@ Create a `.vscode/settings.json` file in your project root with:
 
 ## Github
 
-We'll use Github for version control and collaboration.
+We'll use GitHub for assignments in this course. GitHub provides version control for your code and a platform for submitting and reviewing your work. You'll create repositories, commit your solutions, and share them for evaluation.
 
 ### Creating a Github Account
 
