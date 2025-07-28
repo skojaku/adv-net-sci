@@ -1,19 +1,50 @@
+---
+title: Networks
+---
 
-# What do you imagine about networks? 🤔
+## Introduction
 
-In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
+In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
 The most natural way to think about disease spread is through geographic distance.
 If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:
 
+::: {#geo-vs-arrival-time}
+
 [![Geographic distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
 
-Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later. But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
+Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
+:::
+
+
+
+Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
 
 But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:
 
+::: {#network-distance-vs-arrival-time}
+
 [![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
 
+
+@article{brockmann2013hidden,
+  title         = {{The Hidden Geometry of Complex, Network-Driven Contagion Phenomena}},
+  author        = {Brockmann, Dirk and Helbing, Dirk},
+  year          = {2013},
+  month         = dec,
+  journal       = {Science},
+  publisher     = {American Association for the Advancement of Science (AAAS)},
+  volume        = {342},
+  number        = {6164},
+  pages         = {1337–1342},
+  doi           = {10.1126/science.1245200},
+  issn          = {1095-9203},
+  url           = {http://dx.doi.org/10.1126/science.1245200}
+}
+
+
+Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
+:::
 
 
 This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
