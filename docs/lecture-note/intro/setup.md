@@ -9,7 +9,7 @@ We'll use Python to work with data throughout this course. Python is an excellen
 
 **Rich ecosystem of libraries**: Python has an extensive collection of libraries that we can use immediately without building everything from scratch. For network analysis, we have `NetworkX` for general network manipulation, `igraph` for high-performance computations, and `graph-tool` for large-scale analysis. For data work, we have `pandas` for data manipulation, `numpy` for numerical computing, and `matplotlib`/`seaborn` for visualization.
 
-**Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's clean syntax that uses indentation (whitespace) to define code blocks rather than confusing brackets, and its emphasis on descriptive function names that tell you exactly what they do.
+**Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's strict rules on indentation - the language enforces consistent formatting by requiring proper indentation to define code blocks, which eliminates the visual clutter of brackets and forces code to be well-structured and easy to follow.
 
 **Easy to learn**: The combination of readable syntax and extensive documentation makes Python accessible to both beginners and experts. You can focus on understanding network concepts rather than wrestling with complex programming syntax.
 
