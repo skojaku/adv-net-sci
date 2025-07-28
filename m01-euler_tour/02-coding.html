@@ -604,7 +604,7 @@ window.Quarto = {
 <section id="network-representation" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="network-representation"><span class="header-section-number">6.1</span> Network representation</h2>
 <p>An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes. We <em>label</em> a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair <code>(0, 1)</code>.</p>
-<p>```bamytqndhsi numbered-koningsberg-graph</p>
+<p>```esbmxamauvd numbered-koningsberg-graph</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true" class="img-fluid figure-img"></p>
@@ -619,12 +619,12 @@ We label nodes starting from 0 with consecutive numbers, which is convenient for
 
 The Konigsberg graph can be represented by a list of edges.
 
-::: {#22283d90 .cell}
+::: {#3aee7f77 .cell}
 ``` {.python .cell-code}
 edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]</code></pre>
 <p>:::</p>
 <p>Another, more convenient format is the <em>adjacency matrix</em>. In this form, one regard the node index as a coordinate in the matrix. For instance, edge <span class="math inline">(1,3)</span> is represented by the entry in the second row and fourth column. The entry of the matrix represents the number of edges between two nodes. Thus, the zeros in the matrix represent the absence of edges.</p>
-<div id="96a5d985" class="cell">
+<div id="216dafd9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [[<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
@@ -634,7 +634,7 @@ edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]</code></pre>
 </details>
 </div>
 <p>or equivalently, using for loops:</p>
-<div id="65223f29" class="cell">
+<div id="5cf61647" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -663,7 +663,7 @@ Note
 <h2 data-number="6.2" class="anchored" data-anchor-id="edge-counting"><span class="header-section-number">6.2</span> Edge counting</h2>
 <p>Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.</p>
 <p>The total number of edges in the network is the sum of the entities in the</p>
-<div id="5fd2102e" class="cell">
+<div id="281ff661" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A) <span class="op">/</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -671,7 +671,7 @@ Note
 </div>
 <p>We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider</p>
 <p>It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.</p>
-<div id="5fc35779" class="cell">
+<div id="6d6a9992" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -718,7 +718,7 @@ Tip
 </div>
 </div>
 <p>We can check the number of nodes with odd degree by taking the modulus of the degree by 2.</p>
-<div id="d14f4489" class="cell">
+<div id="a481e7de" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A, axis <span class="op">=</span> <span class="dv">1</span>)</span>
@@ -726,7 +726,7 @@ Tip
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>is_odd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="01b79932" class="cell">
+<div id="21f5057d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">2</span> <span class="kw">or</span> np.<span class="bu">sum</span>(is_odd) <span class="op">==</span> <span class="dv">0</span>:</span>
