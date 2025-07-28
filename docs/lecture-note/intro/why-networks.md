@@ -36,10 +36,10 @@ See [@brockmann2013hidden] for more details.
 
 The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
 
-Networks are everywhere. From the molecular interactions that keep us alive to the digital connections that shape our global economy, network structures govern how our world operates. Every breath you take depends on networks - oxygen molecules traveling through your lung network, blood flowing through your circulatory network, and neurons firing across your brain network to control it all.
+Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we're connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.
 
 
-::: {layout-nrow=2}
+::: {layout-nrow=4}
 
 ![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)
 
@@ -67,7 +67,7 @@ Networks are everywhere. From the molecular interactions that keep us alive to t
 
 :::
 
-## Why networks matter 💡
+💡## Why networks matter 
 
 How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.
 
