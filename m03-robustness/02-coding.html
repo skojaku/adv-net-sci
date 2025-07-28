@@ -627,7 +627,7 @@ window.Quarto = {
 <h3 data-number="15.1.2" class="anchored" data-anchor-id="code"><span class="header-section-number">15.1.2</span> Code</h3>
 <p><code>igraph</code> provides a function <code>igraph.Graph.spanning_tree</code> to find a minimum spanning tree in a given network.</p>
 <p>Let’s first create a network with random edge weights.</p>
-<div id="13e1848a" class="cell">
+<div id="ced43860" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -652,7 +652,7 @@ Note
 </div>
 </div>
 <p>The minimum spanning tree of the network can be found by the following code.</p>
-<div id="b5111fac" class="cell">
+<div id="1de3d5b8" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gmst <span class="op">=</span> g.spanning_tree(weights<span class="op">=</span>g.es[<span class="st">"weight"</span>]) <span class="co"># If not `weights` are not specified, the edges are assumed to be unweighted</span></span>
@@ -664,7 +664,7 @@ Note
 <section id="hands-on-robustness-random-attack" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="hands-on-robustness-random-attack"><span class="header-section-number">15.2</span> Hands-on: Robustness (Random attack)</h2>
 <p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="2f2c6175" class="cell">
+<div id="debdfcf0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
@@ -674,7 +674,7 @@ Note
 </details>
 </div>
 <p>We consider a small social network of 34 members in a university karate club, called Zachary’s karate club network.</p>
-<div id="920364ae" class="cell">
+<div id="5089e830" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -683,7 +683,7 @@ Note
 </details>
 </div>
 <p>Let’s break the network 😈! We will remove nodes one by one and see how the connectivity of the network changes at each step. It is useful to create a copy of the network to keep the original network unchanged.</p>
-<div id="df3bf526" class="cell">
+<div id="f9098c8d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_original <span class="op">=</span> g.copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -692,14 +692,14 @@ Note
 <section id="robustness-against-random-failures" class="level3" data-number="15.2.1">
 <h3 data-number="15.2.1" class="anchored" data-anchor-id="robustness-against-random-failures"><span class="header-section-number">15.2.1</span> Robustness against random failures</h3>
 <p>Let us remove a single node from the network. To this end, we need to first identify which nodes are in the network. With <code>igraph</code>, the IDs of the nodes in a graph are accessible through <code>Graph.vs.indices</code> as follows:</p>
-<div id="4b6bc2cf" class="cell">
+<div id="152eb26f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(g.vs.indices)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We randomly choose a node and remove it from the network by using <code>Graph.delete_vertices</code>.</p>
-<div id="fa045918" class="cell">
+<div id="b6a9c55c" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -723,21 +723,21 @@ Note
 </div>
 </div>
 <p>The connectivity of the network is the fraction of nodes in the largest connected component of the network after node removal. We can get the connected components of the network by using <code>Graph.connected_components</code>.</p>
-<div id="0c155573" class="cell">
+<div id="21f2b293" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The sizes of the connected components are accessible via <code>Graph.connected_components.sizes</code>.</p>
-<div id="3ab2b975" class="cell">
+<div id="a624e0c1" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>components.sizes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Thus, the connectivity of the network can be computed by</p>
-<div id="a6d9fa22" class="cell">
+<div id="3f57c9e1" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
@@ -746,7 +746,7 @@ Note
 </details>
 </div>
 <p>Putting together the above code, let us compute the robustness profile of the network.</p>
-<div id="c793469d" class="cell">
+<div id="6ad4c773" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -777,7 +777,7 @@ Note
 </details>
 </div>
 <p>Let us plot the robustness profile.</p>
-<div id="f3db91f6" class="cell">
+<div id="5dec2f3d" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -804,14 +804,14 @@ Note
 <h3 data-number="15.2.2" class="anchored" data-anchor-id="targeted-attack"><span class="header-section-number">15.2.2</span> Targeted attack</h3>
 <p>In a targeted attack, nodes are removed based on specific criteria rather than randomly. One common strategy is to remove nodes from the largest node degree to the smallest, based on the idea that removing nodes with many edges is more likely to disrupt the network connectivity.</p>
 <p>The degree of the nodes is accessible via <code>Graph.degree</code>.</p>
-<div id="a0fb96e7" class="cell">
+<div id="ab5ff659" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(g_original.degree())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We compute the robustness profile by removing nodes with the largest degree and measuring the connectivity of the network after each removal.</p>
-<div id="e9a13a7f" class="cell">
+<div id="1b294797" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> g_original.copy() <span class="co"># restore the network</span></span>
@@ -839,7 +839,7 @@ Note
 <span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>df_robustness_profile_targeted <span class="op">=</span> pd.DataFrame(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="b726e373" class="cell">
+<div id="1b1a5de9" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">'white'</span>, font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>
@@ -874,14 +874,14 @@ Note
 <section id="percolation" class="level2" data-number="15.3">
 <h2 data-number="15.3" class="anchored" data-anchor-id="percolation"><span class="header-section-number">15.3</span> Percolation</h2>
 <p>Network robustness can be viewed as a inverse process of <strong>percolation</strong> on a network. What is percolation? Imagine a grid where each square has a chance to become a little puddle. Two puddles are connected if they are next to each other. As more puddles appear, they start connecting with their neighbors to form bigger puddles. This is basically what percolation is all about! Random failure can be viewed as an inverse process of percolation, where a puddle is dried up (i.e., removed from the network),</p>
-<p>```suyoaxkegzf percolation</p>
+<p>```xybbqhcveyg percolation</p>
 <p><img src="https://jamesmccaffrey.wordpress.com/wp-content/uploads/2021/07/percolation.jpg?w=584&amp;h=389" class="img-fluid"></p>
 <p>Image taken from https://jamesmccaffrey.wordpress.com/2021/07/12/whatever-happened-to-percolation-theory/</p>
 <pre><code>
 Now, the big question is: When the probability of a node being puddle is $p$, how big can our largest puddle get? 🌊
 As we increase the chance of puddles appearing (that's our $p$), the biggest puddle does not grow slowly but explodes in size when $p$ reaches a critical value $p_c$. This sudden change is what we call a *phase transition*! From the percolation perspective, we approach to the critical point from disconnected phase, whereas from the network robustness perspective, we approach to the critical point from connected phase.
 
-::: {#b52c4d23 .cell}
+::: {#68eda774 .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input"]
 
@@ -967,7 +967,7 @@ In practice, it is often a continuous transition because of the finite size of t
 </span></p>
 <p>where <span class="math inline">k</span> is the degree of a node, and <span class="math inline">\langle k \rangle</span> and <span class="math inline">\langle k^2 \rangle</span> are the average degree and the average of the square of the degree, respectively. The variable <span class="math inline">\kappa_0</span> is a shorthand for the ratio. See the <a href="../m03-robustness/04-appendix.html">Appendix</a> for the derivation of this criterion.</p>
 <p>What does <span class="math inline">\kappa_0</span> represent? It represents the heterogeneity of the degree distribution. For example, a high <span class="math inline">\kappa_0</span> indicates that there are a few nodes with very high degrees and many nodes with low degrees. When <span class="math inline">\kappa_0</span> is small, the nodes have similar degree. And Molloy-Reed criterion tells us an important fact about the role of degree distributions on the robustness of networks: the more heterogeneous the degree distribution is, the more likely the network is to have a giant component.</p>
-<div id="199fb3b2" class="cell">
+<div id="0b302189" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"remove-input"</span>]</span>
@@ -1056,7 +1056,7 @@ f_c =
 <h3 data-number="15.3.3" class="anchored" data-anchor-id="case-study-airport-network"><span class="header-section-number">15.3.3</span> Case study: Airport network</h3>
 <p>Let’s consider an empirical network of international airports, where nodes are airports and edges denote a regular commercial flight between two airports.</p>
 <p>Data loading:</p>
-<div id="7ed6a2cd" class="cell">
+<div id="583f2ca4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>, <span class="st">"hide-output"</span>]</span>
@@ -1083,7 +1083,7 @@ f_c =
 </details>
 </div>
 <p>Based on the argument above, we can predict the critical point <span class="math inline">f_c</span> for the airport network as follows:</p>
-<div id="492c15c0" class="cell">
+<div id="bc4a2591" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1102,7 +1102,7 @@ f_c =
 </details>
 </div>
 <p>The <span class="math inline">f_c</span> is very close to 1, meaning that the network is highly robust to random failures that it keeps the giant component until when almost all nodes are removed. Let us confirm this by simulating the random failures.</p>
-<div id="d219a111" class="cell">
+<div id="4122ce15" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
