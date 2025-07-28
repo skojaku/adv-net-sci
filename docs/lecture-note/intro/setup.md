@@ -105,7 +105,7 @@ marimo edit notebook.py
 
 ## Github
 
-We'll use GitHub for assignments in this course. GitHub provides version control for your code and a platform for submitting and reviewing your work. You'll create repositories, commit your solutions, and share them for evaluation.
+We'll use GitHub for assignment collection and auto-grading in this course. At the minimum level, you'll need GitHub to upload your completed assignments for evaluation.
 
 **For Beginners: GitHub Desktop (Recommended)**
 
@@ -129,8 +129,7 @@ GitHub is a cloud-based platform that hosts Git repositories and adds collaborat
 **Learning Resources**
 
 Essential resources to understand Git concepts:
-- [Git Handbook](https://guides.github.com/introduction/git-handbook/) - GitHub's official beginner guide
-- [Pro Git Book](https://git-scm.com/book) - Comprehensive free online book
+
 - [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
 - [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
 - [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
@@ -141,49 +140,6 @@ Essential resources to understand Git concepts:
 2. Click "Sign up"
 3. Follow the registration process
 
-### Setting up Git
+**Assignment Upload Instructions**
 
-Configure your Git identity:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-### SSH Key Setup (Recommended)
-
-1. Generate an SSH key:
-```bash
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-
-2. Add the key to your SSH agent:
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
-
-3. Copy the public key:
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-4. Add the key to your Github account under Settings > SSH and GPG keys
-
-### Basic Git Workflow
-
-```bash
-# Clone a repository
-git clone git@github.com:username/repository.git
-
-# Check status
-git status
-
-# Add changes
-git add .
-
-# Commit changes
-git commit -m "Your commit message"
-
-# Push changes
-git push origin main
-````
+Detailed instructions on how to upload your assignments to GitHub will be provided separately. For the course, you only need to know how to upload files - advanced Git features are optional.
