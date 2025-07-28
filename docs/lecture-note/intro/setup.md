@@ -11,6 +11,8 @@ We'll use Python to work with data throughout this course. Python is an excellen
 
 **Readable and intuitive**: Python code reads almost like English, making it easy to understand what the code does. For example, `G.add_node("Alice")` clearly adds a node named "Alice" to a graph G. This readability comes from Python's strict rules on indentation - the language enforces consistent formatting by requiring proper indentation to define code blocks, which eliminates the visual clutter of brackets and forces code to be well-structured and easy to follow.
 
+**Well-documented**: Python is one of the most well-documented programming languages, with comprehensive official documentation, extensive community resources, and clear examples for every library we'll use.
+
 **Easy to learn**: The combination of readable syntax and extensive documentation makes Python accessible to both beginners and experts. You can focus on understanding network concepts rather than wrestling with complex programming syntax.
 
 You'll need Python 3.8 or higher. We recommend using the latest stable version of Python.
