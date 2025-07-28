@@ -532,9 +532,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#networks-are-everywhere-and-they-matter" id="toc-networks-are-everywhere-and-they-matter" class="nav-link active" data-scroll-target="#networks-are-everywhere-and-they-matter"><span class="header-section-number">1.1</span> Networks are everywhere and they matter</a></li>
   <li><a href="#how-to-represent-a-network" id="toc-how-to-represent-a-network" class="nav-link" data-scroll-target="#how-to-represent-a-network"><span class="header-section-number">1.2</span> How to represent a network</a></li>
   <li><a href="#why-networks-are-hard-to-understand" id="toc-why-networks-are-hard-to-understand" class="nav-link" data-scroll-target="#why-networks-are-hard-to-understand"><span class="header-section-number">1.3</span> Why networks are hard to understand</a></li>
-  <li><a href="#building-the-right-mathematical-toolkit" id="toc-building-the-right-mathematical-toolkit" class="nav-link" data-scroll-target="#building-the-right-mathematical-toolkit"><span class="header-section-number">1.4</span> Building the right mathematical toolkit</a></li>
-  <li><a href="#beyond-simple-connections" id="toc-beyond-simple-connections" class="nav-link" data-scroll-target="#beyond-simple-connections"><span class="header-section-number">1.5</span> Beyond simple connections</a></li>
-  <li><a href="#network-effects-and-emergent-phenomena" id="toc-network-effects-and-emergent-phenomena" class="nav-link" data-scroll-target="#network-effects-and-emergent-phenomena"><span class="header-section-number">1.6</span> Network effects and emergent phenomena</a></li>
   </ul>
 </nav>
     </div>
@@ -768,37 +765,6 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 </div>
 <p>However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the <em>interactions</em> between components, not from the components themselves. You can understand every individual neuron in the brain, but this won’t tell you how consciousness emerges. You can analyze every person in a social movement, but this won’t predict how ideas spread through the population. You can study every computer on the internet, but this won’t explain how global information patterns form.</p>
 <p>The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition - while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences - removing one connection might fragment an entire network, while removing another has no effect at all. The structural properties that matter most - communities, bottlenecks, influence patterns - are hidden in the data and require sophisticated mathematical analysis to uncover. This is why network science exists as a distinct field: the traditional reductionist toolkit, powerful as it is, simply isn’t sufficient for understanding interconnected systems where the connections themselves are the source of complexity.</p>
-</section>
-<section id="building-the-right-mathematical-toolkit" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="building-the-right-mathematical-toolkit"><span class="header-section-number">1.4</span> Building the right mathematical toolkit</h2>
-<p>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</p>
-<p><strong>From calculus to graph theory</strong>: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don’t. This requires <em>graph theory</em>, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</p>
-<p><strong>From individual statistics to structural measures</strong>: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are <em>relational</em>. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</p>
-<p><strong>From equilibrium to dynamics</strong>: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these <em>dynamic processes</em>.</p>
-<p><strong>From analytical to computational</strong>: Many network problems can’t be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</p>
-<p>This toolkit transforms qualitative questions like “How resilient is this system?” into precise, quantitative problems we can solve with algorithms and data.</p>
-</section>
-<section id="beyond-simple-connections" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="beyond-simple-connections"><span class="header-section-number">1.5</span> Beyond simple connections</h2>
-<p>Real networks exhibit complex structural properties that affect system behavior:</p>
-<ul>
-<li><p><strong>Degree heterogeneity</strong>: Not all nodes are equal. Some become <em>hubs</em> with many connections, others remain peripheral. This creates both efficiency and vulnerability.</p></li>
-<li><p><strong>Clustering</strong>: Nodes tend to connect to their neighbors’ neighbors, creating local redundancy that affects how information flows through the system.</p></li>
-<li><p><strong>Small-world effects</strong>: Even in large networks, surprisingly short paths connect any two nodes - the “six degrees of separation” is a universal network property.</p></li>
-<li><p><strong>Community structure</strong>: Networks naturally organize into <em>modules</em> that are internally well-connected but have fewer connections between them.</p></li>
-</ul>
-</section>
-<section id="network-effects-and-emergent-phenomena" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="network-effects-and-emergent-phenomena"><span class="header-section-number">1.6</span> Network effects and emergent phenomena</h2>
-<p>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</p>
-<ul>
-<li><strong>Cascading failures</strong>: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</li>
-<li><strong>Collective intelligence</strong>: Distributed systems can solve problems that individual components cannot</li>
-<li><strong>Resilience</strong>: Redundant connections allow systems to function even when components fail</li>
-<li><strong>Synchronization</strong>: Components spontaneously coordinate their behavior through network interactions</li>
-<li><strong>Phase transitions</strong>: Networks can suddenly shift between different states as connections are added or removed</li>
-</ul>
-<p>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</p>
 
 
 <!-- -->
@@ -1376,45 +1342,7 @@ Figure&nbsp;1.2: Effective distance (based on mobility networks) shows strong co
 <span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.</span>
 <span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition - while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences - removing one connection might fragment an entire network, while removing another has no effect at all. The structural properties that matter most - communities, bottlenecks, influence patterns - are hidden in the data and require sophisticated mathematical analysis to uncover. This is why network science exists as a distinct field: the traditional reductionist toolkit, powerful as it is, simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity.</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building the right mathematical toolkit</span></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>So how do we make sense of complex networks? We need mathematical tools specifically designed for interconnected systems:</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>**From calculus to graph theory**: Traditional mathematics deals with continuous functions and smooth changes. But networks are discrete - you either have a connection or you don't. This requires *graph theory*, which gives us precise ways to talk about nodes, edges, paths, and connectivity patterns.</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>**From individual statistics to structural measures**: Traditional statistics studies properties of individual data points. But in networks, the interesting properties are *relational*. How clustered are the connections? How central is a particular node? How long are the shortest paths? These require entirely new kinds of measurements.</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>**From equilibrium to dynamics**: Much of physics assumes systems reach equilibrium. But networks constantly change - information spreads, opinions influence each other, failures cascade. We need mathematical models that handle these *dynamic processes*.</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>**From analytical to computational**: Many network problems can't be solved analytically. Finding the most influential nodes in a million-node network requires sophisticated algorithms. This creates a tight coupling between theory and computation.</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>This toolkit transforms qualitative questions like "How resilient is this system?" into precise, quantitative problems we can solve with algorithms and data.</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond simple connections</span></span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>Real networks exhibit complex structural properties that affect system behavior:</span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree heterogeneity**: Not all nodes are equal. Some become *hubs* with many connections, others remain peripheral. This creates both efficiency and vulnerability.</span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Clustering**: Nodes tend to connect to their neighbors' neighbors, creating local redundancy that affects how information flows through the system.</span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world effects**: Even in large networks, surprisingly short paths connect any two nodes - the "six degrees of separation" is a universal network property.</span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Community structure**: Networks naturally organize into *modules* that are internally well-connected but have fewer connections between them.</span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network effects and emergent phenomena</span></span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>The most fascinating aspect of networks is how they create system-level behaviors from simple local rules:</span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cascading failures**: One failure triggers failures in neighbors, which trigger more failures, creating system-wide collapse</span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Collective intelligence**: Distributed systems can solve problems that individual components cannot</span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Resilience**: Redundant connections allow systems to function even when components fail</span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Synchronization**: Components spontaneously coordinate their behavior through network interactions</span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Phase transitions**: Networks can suddenly shift between different states as connections are added or removed</span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>These phenomena emerge from the network structure itself - they are properties of the connections, not the individual nodes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition - while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences - removing one connection might fragment an entire network, while removing another has no effect at all. The structural properties that matter most - communities, bottlenecks, influence patterns - are hidden in the data and require sophisticated mathematical analysis to uncover. This is why network science exists as a distinct field: the traditional reductionist toolkit, powerful as it is, simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
