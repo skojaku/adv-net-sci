@@ -67,15 +67,13 @@ Networks are everywhere. Look around you: plants depend on pollinators in ecolog
 
 :::
 
-💡## Why networks matter 
-
-How you connect components affects system performance, reliability, and efficiency. The same circuit components wired in series vs. parallel behave completely differently. A single point of failure can bring down an entire system. Whether we're talking about electrical circuits, pandemics, or social influence, the *structure of connections* shapes behavior in ways that individual components cannot.
-
-A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems - from disease pandemics to power grid failures to viral social media posts.
-
 ## How to represent a network 📊
 
-We can represent networks in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
+Although networks come from vastly different fields - from the pollinator networks sustaining ecosystems to the financial networks driving global markets - we can represent them all using the same universal language. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This unified approach is what makes network science so powerful across disciplines.
+
+A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
+
+We can represent any network in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
 
 [![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
 
