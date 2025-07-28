@@ -29,11 +29,9 @@ But for analyzing networks, we represent them as **tables** with *source and tar
 | Node2 | Node4 |
 | Node3 | Node5 |
 
-This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules. ✅
+This ***edge list*** completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules. 
 
-## The power of abstraction 🌍
-
-The same tabular representation works for any networked system:
+**The power of abstraction**: The same tabular representation works for any networked system:
 
 - **Social networks**: People connected by friendships
 - **Brain networks**: Neurons connected by synapses  
@@ -41,7 +39,7 @@ The same tabular representation works for any networked system:
 - **Citation networks**: Papers connected by citations
 - **Food webs**: Species connected by predator-prey relationships
 
-Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
+Whether your edge list contains "Node1 → Node2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is ***the power of abstraction*** that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
 
 # Why should we care about networks?
 
