@@ -100,14 +100,16 @@ This is called an ***edge table***. Each row represents a connection between two
 
 ## Why networks are hard to understand
 
-For centuries, scientists believed that if you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century Digesting Duck seemed to prove this reductionist approach worked.
+For centuries, scientists believed in a reductionist approach - if you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century Digesting Duck seemed to prove this approach worked remarkably well. Break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.
 
 ::: {.column-margin}
 
 ![Vaucanson's Digesting Duck](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg)
 
-See 
+Find more details in [Wikipedia](https://en.wikipedia.org/wiki/Digesting_Duck)
 
 :::
 
-However, networks challenge reductionist thinking because their most important properties emerge from *interactions* between components, not from the components themselves. You can understand every neuron in the brain, but this won't tell you how consciousness emerges. You can study every computer on the internet, but this won't explain how global information patterns form. The connections themselves are the source of complexity.
+However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.
+
+The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition - while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences - removing one connection might fragment an entire network, while removing another has no effect at all. This is why network science exists as a distinct field: the traditional reductionist toolkit simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity.
