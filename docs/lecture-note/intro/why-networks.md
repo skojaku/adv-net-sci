@@ -15,7 +15,11 @@ A network is simply a collection of *nodes* connected by *edges*. Despite this s
 
 ## How to represent a network 📊
 
-While we often visualize networks as diagrams with dots and lines, mathematically we can represent them as simple tables. Consider this small computer network:
+We can represent networks in two equivalent ways. Schematically, we draw them as dots and lines - nodes connected by edges, as shown in this network diagram:
+
+[![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
+
+But for analyzing networks, we represent them as tables with source and target columns. Consider this small computer network:
 
 | Source | Target |
 |--------|--------|
@@ -25,9 +29,9 @@ While we often visualize networks as diagrams with dots and lines, mathematicall
 | Router2 | Server1 |
 | Router3 | Server2 |
 
-This *edge list* completely describes the network structure. Each row represents a connection between two nodes. From this table, we can reconstruct the entire network topology, calculate shortest paths, identify critical components, or analyze resilience - all the complex network properties emerge from this simple tabular representation. ✅
+This *edge list* completely describes the same network structure. Each row represents a connection between two nodes. Once we write down networks in this tabular format, we can apply the same analytical tools regardless of the domain - whether it's routers, people, neurons, or molecules. ✅
 
-## Universal applicability 🌍
+## The power of abstraction 🌍
 
 The same tabular representation works for any networked system:
 
@@ -37,9 +41,7 @@ The same tabular representation works for any networked system:
 - **Citation networks**: Papers connected by citations
 - **Food webs**: Species connected by predator-prey relationships
 
-Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This universality is what makes network science so powerful - the same tools work everywhere. 🔧
-
-[![](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
+Whether your edge list contains "Router1 → Router2" or "Alice → Bob" or "Neuron_A → Neuron_B", the mathematical analysis is identical. This is the power of abstraction that makes network science versatile and broadly applicable across domains - once we write down any network as a table, we can apply the same analytical tools regardless of what the nodes and edges represent. 🔧
 
 # Why should we care about networks?
 
