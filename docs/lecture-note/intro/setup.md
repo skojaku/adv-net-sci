@@ -3,29 +3,30 @@
 title: Setup
 ---
 
-### Virtual Environments: Why You Must Avoid Dependency Hell
+## Python and Virtual Environments
 
 We'll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.
 
-
-We strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
+We strongly recommend using **virtual environments** to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
 
 - **Reproducibility**: Your code will work consistently across different machines and over time
 - **Flexibility**: You can use different versions of packages for different projects without conflicts
 - **Prevent project interference**: Changes to one project won't break another project's dependencies
 
-::: {fig-python-ecosystem}
+::: {#fig-python-ecosystem}
 
-![Dependency hell](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
+![](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
 
 Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.
 
 :::
-**Using UV (Recommended)**
 
-We recommend using [UV](https://docs.astral.sh/uv/), a fast Python package and project manager. UV is significantly faster than traditional tools and makes managing Python environments effortless.
 
-Install UV:
+**Using uv (Recommended)**
+
+We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. uv is significantly faster than traditional tools and makes managing Python environments effortless.
+
+Install uv:
 ```bash
 # On macOS and Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
