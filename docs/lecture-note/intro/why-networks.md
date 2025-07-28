@@ -1,5 +1,6 @@
 
-Vd
+# What do you imagine about networks? 🤔
+
 In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and his colleagues at Northwestern University tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
 
 The most natural way to think about disease spread is through geographic distance - but look at what the data actually shows:
@@ -9,8 +10,6 @@ The most natural way to think about disease spread is through geographic distanc
 But when we map the same data using "effective distance" based on mobility flows, the pattern becomes beautifully clear:
 
 [![Network distance vs arrival time](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
-
-# What do you imagine about networks? 🤔
 
 Consider the puzzle shown above: In 2009, the H1N1 influenza pandemic started in Mexico. If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places.
 
