@@ -105,15 +105,26 @@ marimo edit notebook.py
 
 ## Github
 
-We'll use GitHub for assignment collection and auto-grading in this course. At the minimum level, you'll need GitHub to upload your completed assignments for evaluation.
+We'll use GitHub for assignment collection and auto-grading in this course. 
 
-**For Beginners: GitHub Desktop (Recommended)**
+**Minimum Requirements**
 
-If you're new to Git and GitHub, we strongly recommend starting with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface that makes version control intuitive without requiring command-line knowledge.
+At the minimum level, you only need to:
+1. Create a GitHub account at [github.com](https://github.com)
+2. Know how to upload files to GitHub
 
-Download and install GitHub Desktop:
+Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course.
+
+**For Students Interested in Learning More**
+
+Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.
+
+**GitHub Desktop (Recommended for Beginners)**
+
+If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
+
 1. Go to [desktop.github.com](https://desktop.github.com/)
-2. Download for your operating system
+2. Download for your operating system  
 3. Install and sign in with your GitHub account
 
 **Understanding Git and Version Control**
@@ -129,17 +140,6 @@ GitHub is a cloud-based platform that hosts Git repositories and adds collaborat
 **Learning Resources**
 
 Essential resources to understand Git concepts:
-
 - [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
 - [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
 - [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
-
-**Creating a Github Account**
-
-1. Go to [github.com](https://github.com)
-2. Click "Sign up"
-3. Follow the registration process
-
-**Assignment Upload Instructions**
-
-Detailed instructions on how to upload your assignments to GitHub will be provided separately. For the course, you only need to know how to upload files - advanced Git features are optional.
