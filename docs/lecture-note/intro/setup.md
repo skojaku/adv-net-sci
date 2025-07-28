@@ -59,36 +59,27 @@ If you prefer tools other than uv, here are some alternatives:
 
 We'll use Marimo notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
 
-### Using Marimo's Sandbox Feature with uv
+**Using Marimo's Sandbox Feature with uv (Recommended)**
 
 Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.
 
-**Creating a sandboxed notebook:**
-
+Creating a sandboxed notebook:
 ```bash
 uvx marimo edit --sandbox my_notebook.py
 ```
 
-This command:
-- Installs marimo in a temporary environment
-- Tracks your dependencies and stores them in the notebook file
-- Automatically downloads and installs any existing dependencies
+This command installs marimo in a temporary environment, tracks your dependencies and stores them in the notebook file, and automatically downloads any existing dependencies.
 
-**Running sandboxed notebooks:**
-
+Running sandboxed notebooks:
 ```bash
 uv run my_notebook.py
 ```
 
-**Benefits of the sandbox approach:**
-- Dependencies are embedded in the notebook file itself
-- Perfect reproducibility - anyone can run your notebook with a single command
-- No need to manage separate dependency files
+Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.
 
-### Alternative Installation
+**Alternative Installation**
 
 If you're not using uv, you can install marimo with pip:
-
 ```bash
 pip install marimo
 ```
