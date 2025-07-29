@@ -105,31 +105,86 @@ marimo edit notebook.py
 
 ## Github
 
-We'll use GitHub for assignment collection and auto-grading in this course. 
+We'll use GitHub for assignment collection and auto-grading in this course.
+
+::: {.column-margin}
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/tRZGeaHPoaw?si=1zN_yNTx7O8bQYJJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
 
 **Minimum Requirements**
 
 At the minimum level, you only need to:
+
 1. Create a GitHub account at [github.com](https://github.com)
 2. Know how to upload files to GitHub
 
 Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this [assignment example](https://github.com/sk-classroom/starter) to get familiar with the format.
 
+## GitHub Copilot
+
+We strongly encourage you to use [GitHub Copilot](https://github.com/features/copilot), an AI-powered coding assistant that can significantly boost your productivity and learning experience in this course.
+
+**What is GitHub Copilot?**
+
+GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in your code editor. It's like having an experienced programmer looking over your shoulder, helping you write better code faster.
+
+**Benefits for Network Science Students:**
+
+- **Accelerated Learning**: Get instant suggestions for Python syntax, network analysis functions, and data manipulation
+- **Code Quality**: Receive well-structured code suggestions following best practices
+- **Documentation Help**: Generate comments and explanations for complex network algorithms
+- **Debugging Assistance**: Get help identifying and fixing errors in your code
+- **Library Usage**: Learn how to use NetworkX, igraph, and other network analysis libraries more effectively
+
+**Free Access for Students**
+
+Good news! Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the [GitHub Copilot Pro free access page](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro) to:
+
+1. Check your eligibility as a student
+2. Follow the guided process to activate your free access
+3. Start using Copilot in VS Code, your web browser, or directly in GitHub
+
+**Getting Started**
+
+Once you have access, install the GitHub Copilot extension in VS Code and start coding. Copilot will automatically provide suggestions as you type, making your network science assignments more efficient and educational.
+
+
 **For Students Interested in Learning More**
 
 Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.
+
+
+::: {.column-margin}
+
+Git(Hub) and AI tools are like a pair of best friends. Git ensures that all edits are tracked and can be reverted. GitHub makes it easy for you to collaborate with (multiple) AI agents with you.
+
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/vygKnE5M6as?si=UB54u4asmVzmv9M6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/NKkO8JL6IJg?si=Yv57-uVHLRQrtT5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+:::
+
+
+**GitHub Desktop (Recommended for Beginners)**
+
+If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
+
 
 **GitHub Desktop (Recommended for Beginners)**
 
 If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
 
 1. Go to [desktop.github.com](https://desktop.github.com/)
-2. Download for your operating system  
+2. Download for your operating system
 3. Install and sign in with your GitHub account
 
 **Understanding Git and Version Control**
 
 Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated "save" system that:
+
 - Keeps a complete history of all changes to your files
 - Lets you go back to any previous version
 - Allows multiple people to work on the same project simultaneously
@@ -140,6 +195,7 @@ GitHub is a cloud-based platform that hosts Git repositories and adds collaborat
 **Learning Resources**
 
 Essential resources to understand Git concepts:
+
 - [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
 - [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
 - [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
