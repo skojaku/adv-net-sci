@@ -2,169 +2,203 @@
 title: Preparation - Python and Graph Basics
 ---
 
-## Necessary Python Libraries
+## Why Do We Need to Code Graphs?
+
+Imagine you're trying to solve the Königsberg bridge puzzle by hand. You might draw the map, trace different paths with your finger, and keep track of which bridges you've crossed. This works fine for 7 bridges, but what if there were 700 bridges? Or 7,000?
+
+**This is exactly why we need to code graphs**: to let computers solve problems that would be impossible to tackle manually.
+
+When we represent graphs in code, we can:
+- **Analyze any size network** - from small puzzles to massive social networks
+- **Test algorithms systematically** - try different approaches and compare results
+- **Find patterns automatically** - detect Euler paths without manual checking
+- **Scale to real problems** - apply the same logic to circuit design, DNA sequencing, or route planning
+
+## Starting Simple: Graphs with Basic Python
+
+```{.tikz}
+%%| filename: stick-figure
+%%| caption: A Stick Figure
+
+\begin{tikzpicture}
+  % Head
+  \draw (0,0) circle (1cm);
+  % Body
+  \draw (0,-1) -- (0,-3);
+  % Arms
+  \draw (-1,-2) -- (0,-1) -- (1,-2);
+  % Legs
+  \draw (-1,-4) -- (0,-3) -- (1,-4);
+\end{tikzpicture}
+```
+
+Before using specialized libraries, let's see how to represent a simple graph using only basic Python data structures. This will help you understand what the libraries are actually doing behind the scenes.
+
+### A Tiny Example: Three Friends
 
 ```python
-# Core library for high-performance graph analysis
+# Let's represent a simple friendship network
+# Alice (0) is friends with Bob (1)
+# Bob (1) is friends with Charlie (2)
+# Charlie (2) is friends with Alice (0)
+
+# Method 1: List of connections
+friendships = [(0, 1), (1, 2), (2, 0)]
+
+# Method 2: Dictionary showing who each person knows
+friends = {
+    0: [1, 2],  # Alice knows Bob and Charlie
+    1: [0, 2],  # Bob knows Alice and Charlie
+    2: [0, 1]   # Charlie knows Alice and Bob
+}
+
+# Now we can ask questions:
+print("Who are Alice's friends?", friends[0])
+print("How many friends does Bob have?", len(friends[1]))
+```
+
+This simple approach works! But as graphs get larger and algorithms get more complex, we need better tools.
+
+### Why Our Simple Approach Has Limits
+
+Let's try to check if our friendship network has an Euler path (visiting every friendship exactly once):
+
+```python
+# Using our simple dictionary approach
+friends = {0: [1, 2], 1: [0, 2], 2: [0, 1]}
+
+# Count how many friends each person has (their "degree")
+degrees = {}
+for person in friends:
+    degrees[person] = len(friends[person])
+
+print("Degrees:", degrees)  # Should be {0: 2, 1: 2, 2: 2}
+
+# Check Euler's rule: all degrees even = Euler cycle exists
+odd_degrees = [person for person, degree in degrees.items() if degree % 2 == 1]
+print(f"People with odd number of friends: {len(odd_degrees)}")
+print("Has Euler cycle:", len(odd_degrees) == 0)
+```
+
+This works for 3 people, but imagine doing this for 1000 people with thousands of friendships. We'd need to write a lot of repetitive code!
+
+## Libraries: Convenient Tools for Graph Work
+
+Now let's see how specialized libraries make this much easier:
+
+```python
+# These libraries do the heavy lifting for us
+import igraph as ig
+import numpy as np  # For numerical calculations
+```
+
+### What These Libraries Give Us
+
+**igraph** is like having a graph expert assistant:
+- Handles all the tedious bookkeeping (adding/removing connections)
+- Provides pre-built algorithms (finding Euler paths, shortest routes, etc.)
+- Works efficiently even with millions of connections
+- Written in C (fast!) with Python interface (easy to use!)
+
+**NumPy** helps with mathematical calculations:
+- Fast operations on lists of numbers (like degrees of all vertices)
+- Matrix operations (if you want to represent graphs as grids of numbers)
+
+### Same Problem, Much Easier
+
+Let's solve the same friendship problem using igraph:
+
+```python
 import igraph as ig
 
-# Supporting libraries for computation and visualization
-import numpy as np
-from scipy import sparse
-```
-
-### Library Explanations
-
-**igraph**: High-performance graph analysis library written in C with Python bindings. Offers 10-100x better performance than NetworkX for graph operations - crucial when working with complex algorithms like Euler tour detection.
-
-**NumPy**: The foundation of scientific computing in Python. Provides:
-- **Efficient arrays**: Fast operations on large datasets
-- **Mathematical functions**: Linear algebra, statistics, and array operations
-- **Memory efficiency**: Dense arrays stored contiguously in memory
-- *For graphs*: Stores adjacency matrices, degree sequences, and numerical computations
-
-**SciPy Sparse**: Specialized for handling sparse matrices where most elements are zero. Essential for large graphs because:
-- **Memory savings**: Real networks are typically sparse (few edges relative to possible connections)
-- **Speed**: Operations only computed on non-zero elements
-- **Graph applications**: Adjacency matrices of large networks (social media, web graphs) are naturally sparse
-
-::: {#fig-sparse-example}
-```python
-# Example: 1000x1000 adjacency matrix with only 5000 edges
-# Dense matrix: 1,000,000 elements stored
-# Sparse matrix: only 5000 non-zero elements stored (99.5% memory savings!)
-
-import numpy as np
-from scipy import sparse
-
-# Dense matrix (memory intensive)
-dense_adj = np.zeros((1000, 1000))
-
-# Sparse matrix (memory efficient) 
-edges = [(0, 1), (1, 2), (2, 999)]  # Few connections
-sparse_adj = sparse.csr_matrix((1000, 1000))
-```
-
-**Key insight**: Real-world networks are sparse - Facebook users aren't friends with everyone, web pages don't link to every other page, proteins don't interact with all others.
-:::
-
-### How These Libraries Work Together
-
-::: {#fig-library-integration}
-```python
-import igraph as ig
-import numpy as np
-from scipy import sparse
-
-# Create a graph with igraph
-g = ig.Graph([(0, 1), (1, 2), (2, 3), (0, 3)])
-
-# Get adjacency matrix as NumPy array (for small graphs)
-adj_dense = np.array(g.get_adjacency().data)
-print("Dense adjacency matrix:")
-print(adj_dense)
-
-# For large graphs, use sparse representation
-adj_sparse = sparse.csr_matrix(adj_dense)
-print(f"\nMemory usage - Dense: {adj_dense.nbytes} bytes")
-print(f"Memory usage - Sparse: {adj_sparse.data.nbytes + adj_sparse.indices.nbytes + adj_sparse.indptr.nbytes} bytes")
-
-# Compute degrees using NumPy (sum rows of adjacency matrix)
-degrees_numpy = np.sum(adj_dense, axis=1)
-degrees_igraph = g.degree()
-print(f"\nDegrees (NumPy): {degrees_numpy}")
-print(f"Degrees (igraph): {degrees_igraph}")
-```
-
-This integration is powerful for Euler tour algorithms where you need fast degree calculations and efficient graph traversals.
-:::
-
-## Quick igraph Reference
-
-### Basic Graph Creation
-
-```python
-# Create from edge list (most common)
-edges = [(0, 1), (1, 2), (2, 3), (3, 0)]
-g = ig.Graph(edges)
-
-# Create empty graph and add elements
-g = ig.Graph()
-g.add_vertices(4)
-g.add_edges([(0, 1), (1, 2), (2, 3), (3, 0)])
-
-# Create with attributes
-g = ig.Graph(edges=[(0, 1), (1, 2)],
-             vertex_attrs={'name': ['A', 'B', 'C', 'D']})
-```
-
-### Essential Graph Properties
-
-```python
-# Basic properties
-print(f"Vertices: {g.vcount()}")
-print(f"Edges: {g.ecount()}")
-print(f"Connected: {g.is_connected()}")
-
-# Degree analysis (crucial for Euler tours!)
-degrees = g.degree()
-print(f"Degrees: {degrees}")
-print(f"Odd degree vertices: {sum(1 for d in degrees if d % 2 == 1)}")
-```
-
-### Useful Operations for Euler Tours
-
-```python
-# Check if vertex has odd/even degree
-vertex_id = 0
-is_odd_degree = g.degree(vertex_id) % 2 == 1
-
-# Get neighbors of a vertex
-neighbors = g.neighbors(vertex_id)
-
-# Remove an edge (useful for algorithm implementation)
-edge_id = g.get_eid(0, 1)  # Get edge ID between vertices 0 and 1
-g.delete_edges([edge_id])
-
-# Copy graph for experimentation
-g_copy = g.copy()
-```
-
-### Data Structures You'll Need
-
-```python
-# Stack for DFS-based algorithms
-stack = []
-stack.append(vertex)
-current = stack.pop()
-
-# Set for tracking visited elements
-visited = set()
-visited.add(vertex)
-
-# List for building paths
-path = []
-path.append(vertex)
-```
-
-## Quick Test: Can You Find an Euler Tour?
-
-```python
-# Create a simple graph
+# Create the same friendship network
 g = ig.Graph([(0, 1), (1, 2), (2, 0)])
 
-# Check degrees
+# Check degrees (one line instead of a loop!)
 degrees = g.degree()
-odd_vertices = [v for v in range(g.vcount()) if degrees[v] % 2 == 1]
+print("Degrees:", degrees)
 
+# Check for Euler cycle (built-in logic!)
+odd_count = sum(1 for d in degrees if d % 2 == 1)
+print("Has Euler cycle:", odd_count == 0)
+
+# Bonus: igraph can even visualize the network!
+# ig.plot(g)  # Uncomment to see a picture of your graph
+```
+
+**The key insight**: Libraries don't change what we're doing - they just make it much easier and faster!
+
+## Essential igraph Operations
+
+Here are the basic operations you'll need for Euler tour problems:
+
+### Creating Graphs
+
+```python
+# Most common way: list who's connected to whom
+g = ig.Graph([(0, 1), (1, 2), (2, 0)])  # Triangle
+
+# Alternative: build step by step
+g = ig.Graph()
+g.add_vertices(3)        # Add 3 vertices: 0, 1, 2
+g.add_edges([(0, 1), (1, 2), (2, 0)])  # Connect them
+```
+
+### Asking Questions About Your Graph
+
+```python
+# How big is my graph?
+print(f"Vertices: {g.vcount()}")
+print(f"Edges: {g.ecount()}")
+
+# The most important question for Euler tours:
+# How many connections does each vertex have?
+degrees = g.degree()
 print(f"Degrees: {degrees}")
-print(f"Odd degree vertices: {len(odd_vertices)}")
-print(f"Has Euler cycle: {len(odd_vertices) == 0}")
-print(f"Has Euler path: {len(odd_vertices) in [0, 2]}")
+
+# Count vertices with odd number of connections
+odd_count = sum(1 for d in degrees if d % 2 == 1)
+print(f"Vertices with odd degree: {odd_count}")
+```
+
+### Basic Tools You'll Use
+
+```python
+# Get neighbors of a vertex
+neighbors = g.neighbors(0)  # Who is vertex 0 connected to?
+
+# Make a copy to experiment with
+g_copy = g.copy()
+
+# Simple data structures for building algorithms
+path = []           # To store the path we're building
+visited = set()     # To remember where we've been
+```
+
+## Quick Test: Does This Graph Have an Euler Tour?
+
+```python
+# Create a triangle graph
+g = ig.Graph([(0, 1), (1, 2), (2, 0)])
+
+# Check each vertex's degree
+degrees = g.degree()
+print(f"Degrees: {degrees}")
+
+# Apply Euler's rule
+odd_count = sum(1 for d in degrees if d % 2 == 1)
+print(f"Vertices with odd degree: {odd_count}")
+
+if odd_count == 0:
+    print("✓ Has Euler cycle (can start anywhere and return)")
+elif odd_count == 2:
+    print("✓ Has Euler path (must start at one odd vertex, end at the other)")
+else:
+    print("✗ No Euler tour possible")
 ```
 
 ::: {.column-margin}
-**Remember Euler's rule**: A graph has an Euler cycle if all vertices have even degree, and an Euler path if exactly 0 or 2 vertices have odd degree.
+**Euler's simple rule**: If all vertices have an even number of connections, you can tour all edges and return home. If exactly 2 vertices have odd connections, you can tour all edges but must start at one odd vertex and end at the other.
 :::
 
 ## What's Next?
