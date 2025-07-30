@@ -1,0 +1,52 @@
+\documentclass[tikz]{standalone}
+% \usepackage{tikz} % already loaded by the documentclass
+
+
+\begin{document}
+%%| caption: Network Connections vs Geographic Distance - Why computational tools matter
+
+\begin{tikzpicture}[scale=1.5]
+  % Geographic view (left side)
+  \node[rectangle, draw, fill=red!10, text width=4cm, align=center] at (-3, 3) {
+    \textbf{Geographic Thinking}\\
+    Disease spreads to nearby places first
+  };
+  
+  % Cities with geographic layout
+  \node[circle, draw, fill=blue!20] (mexico) at (-4, 1) {Mexico};
+  \node[circle, draw, fill=blue!20] (usa) at (-3, 2) {USA};
+  \node[circle, draw, fill=blue!20] (guatemala) at (-4.5, 0.5) {Guatemala};
+  \node[circle, draw, fill=blue!20] (japan) at (-1, 1.5) {Japan};
+  
+  % Geographic distance arrows
+  \draw[dashed, gray] (mexico) -- (usa);
+  \draw[dashed, gray] (mexico) -- (guatemala);
+  \draw[dashed, gray] (mexico) -- (japan);
+  
+  \node[red] at (-3, 0) {❌ Poor prediction};
+  
+  % Network view (right side)
+  \node[rectangle, draw, fill=green!10, text width=4cm, align=center] at (3, 3) {
+    \textbf{Network Thinking}\\
+    Disease follows flight connections
+  };
+  
+  % Same cities with network layout
+  \node[circle, draw, fill=green!20] (mexico2) at (2, 1) {Mexico};
+  \node[circle, draw, fill=green!20] (usa2) at (3, 2) {USA};
+  \node[circle, draw, fill=green!20] (guatemala2) at (1.5, 0.5) {Guatemala};
+  \node[circle, draw, fill=green!20] (japan2) at (4, 1.5) {Japan};
+  
+  % Flight connections (thicker = more flights)
+  \draw[thick, blue] (mexico2) -- (usa2);
+  \draw[very thick, blue] (mexico2) -- (japan2);
+  \draw[thin, blue] (mexico2) -- (guatemala2);
+  
+  \node[green!70!black] at (3, 0) {✓ Accurate prediction};
+  
+  % Arrow between views
+  \draw[->, ultra thick, purple] (0, 2) -- (0, 1.5);
+  \node[purple, align=center] at (0, 0.8) {Computational\\analysis\\needed!};
+\end{tikzpicture}
+\end{document}
+      

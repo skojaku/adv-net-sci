@@ -1,6 +1,10 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "*.qmd"
+    - "*.md"
+    - "!tmp/"
 
 title: "Advanced Topics in Network Science"
 author: Sadamori Kojaku
@@ -17,7 +21,7 @@ website:
     right:
       - icon: github
         href: https://github.com/skojaku/adv-net-sci
-  
+
   navbar:
     logo: logo.jpg
     background: primary
@@ -28,19 +32,19 @@ website:
       - text: "Intro"
         menu:
           - text: "Why Networks?"
-            file: intro/why-networks.md
+            file: intro/why-networks.qmd
           - text: "Setup"
-            file: intro/setup.md
+            file: intro/setup.qmd
       - text: "Dojo 🥋"
         menu:
           - text: "Quiz Dojo"
-            file: dojo/quiz-dojo.md
+            file: dojo/quiz-dojo.qmd
       - text: "M01: Euler Tour"
         menu:
           - text: "Preparation"
             file: m01-euler_tour/00-preparation.qmd
           - text: "Concepts"
-            file: m01-euler_tour/01-concepts.md
+            file: m01-euler_tour/01-concepts.qmd
           - text: "Coding"
             file: m01-euler_tour/02-coding.qmd
           - text: "Exercises"
@@ -50,9 +54,9 @@ website:
       - text: "M02: Small World"
         menu:
           - text: "Preparation"
-            file: m02-small-world/00-preparation.md
+            file: m02-small-world/00-preparation.qmd
           - text: "Concepts"
-            file: m02-small-world/01-concepts.md
+            file: m02-small-world/01-concepts.qmd
           - text: "Coding"
             file: m02-small-world/02-coding.qmd
           - text: "Exercises"
@@ -64,11 +68,11 @@ website:
           - text: "Preparation"
             file: m03-robustness/00-preparation.md
           - text: "Concepts"
-            file: m03-robustness/01-concepts.md
+            file: m03-robustness/01-concepts.qmd
           - text: "Coding"
             file: m03-robustness/02-coding.qmd
           - text: "Exercises"
-            file: m03-robustness/03-exercises.md
+            file: m03-robustness/03-exercises.qmd
           - text: "Appendix"
             file: m03-robustness/04-appendix.md
       - text: "M04: Friendship Paradox"
@@ -96,7 +100,7 @@ website:
           - text: "Preparation"
             file: m06-centrality/00-preparation.md
           - text: "Concepts"
-            file: m06-centrality/01-concepts.md
+            file: m06-centrality/01-concepts.qmd
           - text: "Coding"
             file: m06-centrality/02-coding.qmd
           - text: "Exercises"
@@ -110,7 +114,7 @@ website:
           - text: "Coding"
             file: m07-random-walks/02-coding.qmd
           - text: "Exercises"
-            file: m07-random-walks/03-exercises.md
+            file: m07-random-walks/03-exercises.qmd
       - text: "M08: Embedding"
         menu:
           - text: "Preparation"
@@ -132,12 +136,12 @@ website:
           - text: "Coding"
             file: m09-graph-neural-networks/02-coding.qmd
           - text: "Exercises"
-            file: m09-graph-neural-networks/03-exercises.md
+            file: m09-graph-neural-networks/03-exercises.qmd
           - text: "Appendix"
             file: m09-graph-neural-networks/04-appendix.qmd
 
 execute:
-  enabled: true  # Disable execution for initial migration
+  enabled: false  # Disable execution for initial migration
   freeze: auto
 
 format:

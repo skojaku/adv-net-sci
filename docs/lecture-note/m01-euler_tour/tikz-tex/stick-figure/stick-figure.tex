@@ -1,0 +1,20 @@
+\documentclass[tikz]{standalone}
+% \usepackage{tikz} % already loaded by the documentclass
+
+
+\begin{document}
+%%| filename: stick-figure
+%%| caption: A Stick Figure
+
+\begin{tikzpicture}
+  % Head
+  \draw (0,0) circle (1cm);
+  % Body
+  \draw (0,-1) -- (0,-3);
+  % Arms
+  \draw (-1,-2) -- (0,-1) -- (1,-2);
+  % Legs
+  \draw (-1,-4) -- (0,-3) -- (1,-4);
+\end{tikzpicture}
+\end{document}
+      

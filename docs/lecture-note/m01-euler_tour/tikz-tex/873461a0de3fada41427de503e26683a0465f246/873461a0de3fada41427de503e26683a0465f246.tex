@@ -1,0 +1,25 @@
+\documentclass[tikz]{standalone}
+% \usepackage{tikz} % already loaded by the documentclass
+
+
+\begin{document}
+%%| caption: A Simple Friendship Network - Three people all connected to each other
+
+\begin{tikzpicture}[scale=1.5]
+  % Define nodes
+  \node[circle, draw, fill=lightblue, minimum size=1cm] (alice) at (0,2) {Alice};
+  \node[circle, draw, fill=lightgreen, minimum size=1cm] (bob) at (-1.5,0) {Bob};
+  \node[circle, draw, fill=lightcoral, minimum size=1cm] (charlie) at (1.5,0) {Charlie};
+  
+  % Draw edges (friendships)
+  \draw[thick, blue] (alice) -- (bob);
+  \draw[thick, blue] (bob) -- (charlie);
+  \draw[thick, blue] (charlie) -- (alice);
+  
+  % Add labels for the connections
+  \node[above left, small] at (-0.75,1) {friends};
+  \node[below, small] at (0,0) {friends};
+  \node[above right, small] at (0.75,1) {friends};
+\end{tikzpicture}
+\end{document}
+      
