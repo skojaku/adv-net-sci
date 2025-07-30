@@ -108,46 +108,4 @@ print(matrix)
 #  [0 0 1 1 0]]
 ```
 
-## Checking Euler Tour Conditions
-
-Now we can use any representation to check if an Euler tour exists:
-
-```python
-# Method 1: Count degrees using adjacency list
-degrees_from_list = [len(neighbors[i]) for i in range(5)]
-
-# Method 2: Count degrees using adjacency matrix  
-degrees_from_matrix = matrix.sum(axis=1)  # Sum each row
-
-print(f"Degrees: {degrees_from_list}")  # [2, 3, 3, 2, 2]
-
-# Count nodes with odd degree
-odd_count = sum(1 for degree in degrees_from_list if degree % 2 == 1)
-print(f"Odd degree nodes: {odd_count}")  # 2
-
-if odd_count == 0:
-    print("✓ Euler cycle exists")
-elif odd_count == 2:
-    print("✓ Euler path exists") 
-else:
-    print("✗ No Euler tour")
-```
-
-## Using Libraries for Convenience
-
-Once you understand these representations, libraries like **igraph** provide convenient shortcuts:
-
-```python
-import igraph as ig
-
-# Create graph directly from edge list
-g = ig.Graph(edges)
-
-# Get degrees instantly
-print(f"Degrees: {g.degree()}")  # [2, 3, 3, 2, 2]
-
-# Access neighbors easily
-print(f"Node 0 neighbors: {g.neighbors(0)}")  # [1, 2]
-```
-
 You now understand how to represent networks computationally!
