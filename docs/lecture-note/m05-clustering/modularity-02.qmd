@@ -1,8 +1,11 @@
 # Modularity (Cont.)
 
-![Illustration of how modularity measures assortativity relative to a null model.](../figs/modularity.jpg){#fig-modularity-game fig-alt="Single node failure" width="100%"}
+::: {#fig-fig-modularity-game}
 
-: Illustration of how modularity measures assortativity relative to a null model. {#fig-modularity-game}
+<img src="../figs/modularity.jpg" alt="Single node failure" width="100%">
+
+Illustration of how modularity measures assortativity relative to a null model.
+:::
 
 Let's dive into the modularity formula! To put modularity into math terms, we need a few ingredients:
 - $m$: The total number of strings (edges) in our bag
@@ -102,7 +105,7 @@ Let's learn how the modularity works by playing with a community detection game!
 ::: {.callout-note title="Exercise 1"}
 :class: tip
 
-Find communities by maximizing the modularity. [Modularity maximization (two communities) 🎮](vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json'>Modularity maximization (two communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
 :::
 
@@ -111,7 +114,7 @@ One of the good things about modularity is that it can figure out how many commu
 ::: {.callout-note title="Exercise 2"}
 :class: tip
 
-Find communities by maximizing the modularity. [Modularity maximization (four communities) 🎮](vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json)
+Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 :::
 
 Now, let's take our modularity maximization for a real-world example! 🥋 We're going to use the famous karate club network. This network represents friendships between members of a university karate club. It's a classic in the world of network science, and it's perfect for seeing how modularity works in practice.
@@ -119,7 +122,7 @@ Now, let's take our modularity maximization for a real-world example! 🥋 We're
 ::: {.callout-note title="Exercise 3"}
 :class: tip
 
-Find communities by maximizing the modularity. [Modularity maximization (four communities) 🎮](vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
+Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
 :::
 
@@ -136,14 +139,14 @@ Our intuition tells us that, because communities are *local* structure, the two 
 ::: {.callout-note title="Exercise 4"}
 :class: tip
 
-Find communities by maximizing the modularity. [Modularity maximization (four communities) 🎮](vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json)
+Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
 ::: {.callout-note collapse="true" title="Click here to see the solution"}
 
 The best modularity score actually comes from merging our two cliques into one big community. This behavior is what we call the **Resolution limit** {footcite}`fortunato2007resolution`. Modularity can't quite make out communities that are smaller than a certain size!
 
 Think of it like this: modularity is trying to see the big picture, but it misses the little details. In network terms, the number of edges $m_c$ in a community $c$ has to be bigger than a certain size. This size is related to the total number of edges $m$ in the whole network. We write this mathematically as ${\cal O}(m)$.
-:::
+```
 
 ### Spurious communities
 
@@ -152,9 +155,10 @@ What if the network does not have any communities at all? Does the modularity fi
 ::: {.callout-note title="Exercise 5"}
 :class: tip
 
-Find communities by maximizing the modularity. [Modularity maximization (four communities) 🎮](vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json)
+Find communities by maximizing the modularity. {{ "<a href='BASE_URL/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json'>Modularity maximization (four communities) 🎮</a>".replace('BASE_URL', base_url) }}
 
-::: {.callout-note collapse="true" title="Click here to see the solution"}
+::: {.callout collapse="true"}
+## Click here to see the solution
 
 Surprise, surprise! 😮 Modularity finds communities even in our random network, and with a very high score too! It's like finding shapes in clouds - sometimes our brains (or algorithms) see patterns where there aren't any.
 
@@ -167,7 +171,7 @@ This teaches us two important lessons:
 Interested readers can read more about this in [this tweet by Tiago Peixoto](https://twitter.com/tiagopeixoto/status/1466352013856358400) and the discussion [here](https://reticular.hypotheses.org/1924).
 
 <blockquote class="twitter-tweet" style="max-width: 550px;"><p lang="en" dir="ltr">Modularity maximization is not a reliable method to find communities in networks. Here&#39;s a simple example showing why:<br><br>1. Generate an Erdős-Rényi random graph with N nodes and average degree &lt;k&gt;.<br><br>2. Find the maximum modularity partition. <a href="https://t.co/MTt5DdFXSX">pic.twitter.com/MTt5DdFXSX</a></p>&mdash; Tiago Peixoto (@tiagopeixoto) <a href="https://twitter.com/tiagopeixoto/status/1466352013856358400?ref_src=twsrc%5Etfw">December 2, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-:::
+```
 
 
 ## So should we avoid modularity?
