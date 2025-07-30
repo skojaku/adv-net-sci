@@ -3,13 +3,26 @@ title: Quiz Dojo
 filters:
     - marimo-team/marimo
 search: false
+sidebar: false
 ---
 
-This is an experimental feature to help you practice for the quiz.
+This is an experimental AI-powered quiz practice feature to help you prepare for exams.
 
-Please provide the API key to use the LLM (contact the instructor if you don't have one).
+## 🌐 Access Requirements
+**This feature is only available within the Binghamton University campus network.** If you're off-campus, please connect to the Binghamton VPN first.
 
-Select the module you want to practice on. Then, you can ask questions about the module and create quiz questions.
+## 🚀 Getting Started
+1. **API Key**: Enter the API key provided by your instructor (contact them if you don't have one)
+2. **Select Module**: Choose the course module you want to practice on
+3. **Choose Mode**: 
+   - **Quiz Mode**: Get quizzed with interactive questions and receive feedback
+   - **Q&A Mode**: Have conversations about concepts and get explanations
+
+## 📚 How It Works
+The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
+
+## ⚠️ Important Disclaimer
+**AI-generated content may contain errors or inaccuracies.** Always verify important information with course materials, textbooks, or your instructor. Use this tool as a study aid, not as the definitive source of truth.
 
 ```python {.marimo}
 import marimo as mo
@@ -172,7 +185,7 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
 {module_context}
 
 Instructions for Quiz Mode:
-- STOP! READ THIS CAREFULLY: You must ask EXACTLY ONE question and STOP. 
+- STOP! READ THIS CAREFULLY: You must ask EXACTLY ONE question and STOP.
 - DO NOT create multiple questions (like 1., 2., 3.)
 - DO NOT provide answer keys or solutions
 - DO NOT give the answer in your response
@@ -198,7 +211,7 @@ User: "Ask me a question about Euler paths"
 You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Euler circuit? ANSWER KEY: 1) A path that visits every edge exactly once..."
 
 THIS IS WRONG! You violated EVERY rule:
-- Multiple questions (1, 2)  
+- Multiple questions (1, 2)
 - Provided answer key
 - Did not wait for user response
 
