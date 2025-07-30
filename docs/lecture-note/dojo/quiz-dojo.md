@@ -2,6 +2,7 @@
 title: Quiz Dojo
 filters:
     - marimo-team/marimo
+search: false
 ---
 
 This is an experimental feature to help you practice for the quiz.
@@ -9,7 +10,6 @@ This is an experimental feature to help you practice for the quiz.
 Please provide the API key to use the LLM (contact the instructor if you don't have one).
 
 Select the module you want to practice on. Then, you can ask questions about the module and create quiz questions.
-
 
 ```python {.marimo}
 import marimo as mo
@@ -155,7 +155,7 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     # Your API configuration
     base_url = "https://chat.binghamton.edu/api"
     api_key = api_key_holder.value
-    model = "gemma3:latest"
+    model = "llama3.2:latest"
 
     # Use config parameters if available
     temperature = getattr(config, "temperature", 0.1)
@@ -181,13 +181,14 @@ Instructions for Quiz Mode:
 - If the answer is incorrect, give hints and guide them toward the correct answer
 - Focus on creating engaging, single questions that test understanding of the module content
 - The goal is interactive learning, not information dumping
+- Use emojis to make interactions more engaging and friendly (e.g., 🤔, ✅, ❌, 💡, 🎯)
 
 EXAMPLE CORRECT BEHAVIOR:
 User: "Ask me a question about Euler paths"
-You: "What is the difference between an Euler path and an Euler circuit? Please provide your answer, and I'll give you feedback."
+You: "🤔 What is the difference between an Euler path and an Euler circuit? Please provide your answer, and I'll give you feedback!"
 
 EXAMPLE INCORRECT BEHAVIOR (DO NOT DO THIS):
-User: "Ask me a question about Euler paths"  
+User: "Ask me a question about Euler paths"
 You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Euler circuit? ANSWER KEY: 1) A path that visits every edge exactly once...\""""
         else:  # Q&A Mode
             system_prompt = f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and help students understand the material.
@@ -195,12 +196,13 @@ You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Eule
 {module_context}
 
 Instructions for Q&A Mode:
+- Keep answers CONCISE and to-the-point - avoid long explanations
 - Answer questions based on the module content provided above
-- Provide clear, educational explanations with examples when possible
-- Break down complex concepts into understandable parts
-- Reference specific concepts, algorithms, or examples from the module when helpful
+- Use bullet points or short paragraphs for clarity
+- Include relevant examples from the module when helpful
+- Use emojis to make responses more engaging (e.g., 📊, 🔗, 💡, ✨)
 - If asked about topics not covered in this module, politely redirect to the module content
-- Encourage deeper understanding through follow-up questions when appropriate"""
+- Focus on direct answers rather than lengthy educational discourse"""
 
         openai_messages.append({
             "role": "system",
