@@ -230,15 +230,30 @@ def llm_wrapper(messages, config):
     # Get the selected module
     selected_module = module_selector.value
     
-    if selected_module and selected_module != "":
-        # Read module content and format context
-        module_content = read_module_content(selected_module)
-        module_context = format_module_context(module_content, selected_module)
-        
-        # Pass context to custom_llm_api
-        return custom_llm_api(messages, config, module_context)
-    else:
+    # Debug: Add some error checking
+    if not selected_module:
         return custom_llm_api(messages, config)
+    
+    # Make sure we're using the correct module key
+    # In case the dropdown returns the display name, map it back to the key
+    module_key_map = {v: k for k, v in module_options.items()}
+    
+    if selected_module in module_key_map:
+        # It's a display name, get the key
+        module_key = module_key_map[selected_module]
+    elif selected_module in module_options:
+        # It's already a key
+        module_key = selected_module
+    else:
+        # Unknown module
+        return custom_llm_api(messages, config)
+    
+    # Read module content and format context
+    module_content = read_module_content(module_key)
+    module_context = format_module_context(module_content, module_key)
+    
+    # Pass context to custom_llm_api
+    return custom_llm_api(messages, config, module_context)
 
 # Module-specific prompts based on selection
 def get_module_prompts():
@@ -249,9 +264,21 @@ def get_module_prompts():
             "Select a module above to get started"
         ]
     
+    # Get the correct module key (same logic as llm_wrapper)
+    module_key_map = {v: k for k, v in module_options.items()}
+    
+    if selected in module_key_map:
+        module_key = module_key_map[selected]
+        module_display = selected
+    elif selected in module_options:
+        module_key = selected
+        module_display = module_options[selected]
+    else:
+        return ["Error: Unknown module selected"]
+    
     base_prompts = [
-        f"Explain the key concepts in {module_options.get(selected, selected)}",
-        f"Create a quiz question about {module_options.get(selected, selected)}",
+        f"Explain the key concepts in {module_display}",
+        f"Create a quiz question about {module_display}",
         "What are the main learning objectives for this module?",
         "Give me a practice problem from this module",
         "Explain {{concept}} from this module in simple terms",
@@ -302,8 +329,8 @@ def get_module_prompts():
         ]
     }
     
-    if selected in module_specific:
-        base_prompts.extend(module_specific[selected])
+    if module_key in module_specific:
+        base_prompts.extend(module_specific[module_key])
     
     return base_prompts
 
