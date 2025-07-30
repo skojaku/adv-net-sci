@@ -20,6 +20,8 @@ Back in the 18th century, there was a city called *Königsberg* situated on the 
 
 ::: {.column-margin}
 Königsberg was a major intellectual center of the Enlightenment. [Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant) spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/500px-Immanuel_Kant_-_Gemaelde_1.jpg)
 :::
 
 During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
@@ -39,8 +41,12 @@ This seemingly innocent recreational question would become one of the most impor
 [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
 ::: {.column-margin}
-This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.
+Leonhard Euler (1707-1783) was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/500px-Leonhard_Euler.jpg)
 :::
+
+This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.
 
 Euler realized that for this problem, only one thing mattered: ***which landmasses connect to which other landmasses***. Everything else—the bridge lengths, island shapes, water depths—was irrelevant distraction.
 
@@ -65,7 +71,7 @@ This shift from "trying all possibilities" to "analyzing constraints" is a hallm
 :::
 
 Euler considered the degree (number of connections) of each node and realized there were only two cases:
-- a node has an **even number** of edges, or  
+- a node has an **even number** of edges, or
 - a node has an **odd number** of edges.
 
 ### The Even Case: Perfect Balance
