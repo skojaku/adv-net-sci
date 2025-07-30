@@ -1,5 +1,5 @@
 ---
-title: Coding - From Visual to Computational
+title: Coding Networks in Python
 filters:
   - marimo-team/marimo
   - tikz
@@ -10,35 +10,14 @@ tikz:
 jupyter: python3
 ---
 
-# Computing with Networks
-
 Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.
 
 ## Network Representations: From Pictures to Data Structures
 
 Consider this network with 5 nodes and 6 edges:
 
-```{.tikz}
-%%| caption: A simple network that demonstrates the three fundamental computational representations
 
-\begin{tikzpicture}[scale=1.8, font=\Large]
-  % Define vertices
-  \node[circle, draw, fill=white, minimum size=1.2cm] (0) at (0,2) {\textbf{0}};
-  \node[circle, draw, fill=white, minimum size=1.2cm] (1) at (-1.5,0.5) {\textbf{1}};
-  \node[circle, draw, fill=white, minimum size=1.2cm] (2) at (1.5,0.5) {\textbf{2}};
-  \node[circle, draw, fill=white, minimum size=1.2cm] (3) at (-1,-1.5) {\textbf{3}};
-  \node[circle, draw, fill=white, minimum size=1.2cm] (4) at (1,-1.5) {\textbf{4}};
-
-  % Draw edges
-  \draw[thick, black] (0) -- (1);
-  \draw[thick, black] (0) -- (2);
-  \draw[thick, black] (1) -- (2);
-  \draw[thick, black] (1) -- (3);
-  \draw[thick, black] (2) -- (4);
-  \draw[thick, black] (3) -- (4);
-
-\end{tikzpicture}
-```
+![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg)
 
 How do we represent this graph in a format that a computer can understand and manipulate? Just as Euler needed to abstract Königsberg's bridges, we need data structures that capture the network's essential connectivity while enabling efficient analysis.
 
@@ -122,35 +101,6 @@ print(matrix)
 
 Notice the symmetry: if node i connects to node j, then node j connects to node i (for undirected networks). This symmetry disappears in directed networks, where relationships can be one-way.
 
-## Converting Between Representations
-
-Often we need to convert between these representations. Here's how:
-
-```{python}
-# Convert edge list to adjacency matrix
-def edge_list_to_matrix(edges, num_nodes):
-    matrix = np.zeros((num_nodes, num_nodes))
-    for i, j in edges:
-        matrix[i][j] = 1
-        matrix[j][i] = 1  # For undirected networks
-    return matrix
-
-# Convert edge list to adjacency list
-def edge_list_to_adjacency_list(edges, num_nodes):
-    adj_list = {i: [] for i in range(num_nodes)}
-    for i, j in edges:
-        adj_list[i].append(j)
-        adj_list[j].append(i)  # For undirected networks
-    return adj_list
-
-# Test conversions
-converted_matrix = edge_list_to_matrix(edges, 5)
-converted_adj_list = edge_list_to_adjacency_list(edges, 5)
-
-print("Converted matrix matches original:", np.array_equal(matrix, converted_matrix))
-print("Converted adjacency list matches original:", neighbors == converted_adj_list)
-```
-
 ## Counting Node Degrees: Euler's Key Insight
 
 The degree of a node is the number of edges connected to it. This simple concept was central to Euler's proof—he realized that a valid bridge walk requires each landmass to have an even degree (except possibly the starting and ending points).
@@ -201,19 +151,9 @@ For undirected networks, row sums equal column sums. For directed networks, row 
 
 ## The Königsberg Bridge Problem in Code
 
+![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png)
+
 Now let's apply these concepts to the original Königsberg bridge problem. The network has 4 nodes (landmasses) and 7 edges (bridges).
-
-```{figure-md} numbered-koningsberg-graph
-
-![Labeled Königsberg graph](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true)
-
-Labeled Königsberg graph
-
-```
-
-::: {.callout-note}
-We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is *not the only way* to label nodes.
-:::
 
 ### Representing the Königsberg Network
 
@@ -242,7 +182,9 @@ print(A.astype(int))  # Convert to int for cleaner display
 ```
 
 ::: {.callout-note}
+
 In the Königsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).
+
 :::
 
 ### Analyzing the Network
@@ -266,7 +208,9 @@ print(f"Odd degree nodes: {np.where(is_odd)[0]}")
 ```
 
 ::: {.callout-important}
+
 The number of edges connected to a node is called the ***degree*** of the node.
+
 :::
 
 ### Applying Euler's Theorem Computationally
@@ -277,13 +221,13 @@ Now we can implement Euler's theorem as code:
 def has_euler_path(degrees):
     """
     Check if a graph has an Euler path based on node degrees.
-    
+
     Euler's theorem: A graph has an Euler path if and only if:
     - All nodes have even degree, OR
     - Exactly two nodes have odd degree
     """
     odd_count = np.sum(degrees % 2 == 1)
-    
+
     if odd_count == 0:
         return True, "Euler circuit exists (all nodes have even degree)"
     elif odd_count == 2:
@@ -304,8 +248,10 @@ print(f"Reason: {reason_simple}")
 ```
 
 ::: {.callout-tip}
+
 The `np.sum(A, axis = 1)` computes the row sum of `A`. Alternatively, `np.sum(A, axis = 0)` computes the column sum of `A`.
 Check out the numpy [documentation](https://numpy.org/doc/stable/reference/generated/numpy.sum.html) for more details.
+
 :::
 
 ## Advanced: Working with Sparse Matrices
@@ -326,8 +272,10 @@ print("Degrees from sparse matrix:", degrees_sparse.astype(int))
 ```
 
 ::: {.callout-tip}
+
 If the adjacency matrix is `scipy` CSR format (or CSC format), you can use `A_csr.sum(axis=1)`, `A_csr.sum(axis=0)`, and `A_csr.sum()`.
 Check out the [scipy documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix) for more details.
+
 :::
 
 ## Summary: From Euler's Insight to Modern Computation
