@@ -39,7 +39,9 @@ How do we represent this graph in a format that a computer can understand and ma
 
 ## 1. Edge Table
 
-The most direct translation: list every connection as a pair of nodes.
+The edge table is the most intuitive representation because it directly mirrors how we naturally describe a network: as a list of connections. Each row captures one relationship between two nodes, making it conceptually straightforward and human-readable. This representation excels in storage efficiency for sparse networks where most nodes are not connected to each other, which describes most real-world networks. It also makes adding or removing connections trivial since you simply add or delete rows.
+
+However, the edge table becomes cumbersome when you need to answer questions about a specific node's relationships. Finding all neighbors of a particular node requires scanning the entire list, making operations like "show me all friends of person X" computationally expensive for large networks.
 
 ```python
 # Each row represents one edge (connection between two nodes)
@@ -57,7 +59,9 @@ print(f"Total edges: {len(edges)}")  # 6
 
 ## 2. Adjacency List
 
-For each node, store a list of its neighbors.
+The adjacency list reorganizes the same information by grouping connections around each node, creating a node-centric view of the network. This representation mirrors how we might naturally think about social relationships: each person maintains their own contact list. The key benefit lies in its efficiency for node-focused operations since finding all neighbors of any node takes constant time rather than requiring a full search.
+
+The adjacency list also maintains the storage efficiency of edge tables for sparse networks while dramatically speeding up common graph algorithms that need to explore a node's immediate neighborhood. However, determining whether two specific nodes are connected requires scanning through one node's neighbor list, making edge-existence queries slower than in matrix representations.
 
 ```python
 # Build adjacency list from edge table
@@ -84,7 +88,9 @@ for node, adj in neighbors.items():
 
 ## 3. Adjacency Matrix
 
-Create a 5×5 grid where entry (i,j) = 1 if nodes i and j are connected.
+The adjacency matrix transforms the network into a mathematical grid where every possible relationship is explicitly represented, either as present (1) or absent (0). This representation embodies a complete, symmetric view of all potential connections in the network. Its greatest strength lies in instant edge lookups: determining whether any two nodes are connected requires only a single array access, making it exceptionally fast for connectivity queries.
+
+The matrix format also enables powerful mathematical operations, allowing entire classes of network algorithms to leverage linear algebra for dramatic speed improvements. However, this completeness comes at a significant cost in memory usage, especially for sparse networks where most entries remain zero. A network with a million nodes requires a trillion matrix entries regardless of how few actual connections exist, making this representation impractical for large, sparse real-world networks.
 
 ```python
 import numpy as np
