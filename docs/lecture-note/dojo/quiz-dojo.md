@@ -30,6 +30,12 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 ```python {.marimo}
 import marimo as mo
 
+# Back to main page button
+back_button = mo.ui.button(
+    label="← Back to Main Page",
+    on_click=lambda: mo.redirect("../index.qmd")
+)
+
 api_key_holder = mo.ui.text(
     label="Enter the API key",
     placeholder="API key",
@@ -63,7 +69,7 @@ mode_selector = mo.ui.radio(
     label="Select interaction mode"
 )
 
-mo.vstack([api_key_holder, module_selector, mode_selector])
+mo.vstack([back_button, api_key_holder, module_selector, mode_selector])
 ```
 
 ```python {.marimo}
