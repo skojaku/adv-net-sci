@@ -17,8 +17,9 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 1. **API Key**: Enter the API key provided by your instructor (contact them if you don't have one)
 2. **Select Module**: Choose the course module you want to practice on
 3. **Choose Mode**:
-   - **Quiz Mode**: Get quizzed with interactive questions and receive feedback
    - **Q&A Mode**: Have conversations about concepts and get explanations
+   - **Quiz Mode**: Get quizzed with interactive questions and receive feedback
+   - **Adversarial Mode**: Create challenging questions to expose AI weaknesses and judge its responses
 
 **📚 How It Works**: The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
 
@@ -56,12 +57,28 @@ module_selector = mo.ui.dropdown(
 
 # Mode selector
 mode_selector = mo.ui.radio(
-    options=["Q&A Mode", "Quiz Mode"],
+    options=["Q&A Mode", "Quiz Mode", "Adversarial Mode"],
     value="Q&A Mode",
     label="Select interaction mode"
 )
 
-mo.vstack([api_key_holder, module_selector, mode_selector])
+# Function to get example message for selected mode
+def get_mode_example():
+    selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
+    
+    if selected_mode == "Q&A Mode":
+        return "**Example:** *Help me understand the main ideas in Module 1: Euler Tour*"
+    elif selected_mode == "Quiz Mode":
+        return "**Example:** *Ask me a free-form question about Module 1: Euler Tour*"
+    elif selected_mode == "Adversarial Mode":
+        return "**Example:** *🎯 Gotcha: Can a disconnected graph have an Euler circuit?*"
+    else:
+        return ""
+
+# Display the example message
+example_message = mo.md(get_mode_example()) if mode_selector.value else mo.md("")
+
+mo.vstack([api_key_holder, module_selector, mode_selector, example_message])
 ```
 
 ```python {.marimo}
@@ -180,7 +197,23 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
 
     # Add module context as system message if provided
     if module_context:
-        if mode == "Quiz Mode":
+        if mode == "Adversarial Mode":
+            system_prompt = f"""You are an AI assistant answering questions about an Advanced Network Science course. You have been provided with the module content below. Your role is to answer questions posed by the user, who will then evaluate whether your answers are correct.
+
+{module_context}
+
+Instructions for Adversarial Mode:
+- Answer questions based on the module content provided above
+- Try to be helpful but don't be overly cautious - give definitive answers even when uncertain
+- You may occasionally make mistakes, especially with:
+  - Complex mathematical details
+  - Edge cases or boundary conditions  
+  - Subtle distinctions between similar concepts
+  - Specific numerical values or exact formulas
+- Don't hedge too much with phrases like "I think" or "probably"
+- Use proper syntax highlighting for code: ```python for Python, ```r for R, etc.
+- The user is testing your knowledge and will provide corrections if needed"""
+        elif mode == "Quiz Mode":
             system_prompt = f"""You are a quiz creator and evaluator for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Your primary role is to create challenging quiz questions and evaluate student responses.
 
 {module_context}
@@ -351,7 +384,19 @@ def get_module_prompts():
     # Get the selected mode
     selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
 
-    if selected_mode == "Quiz Mode":
+    if selected_mode == "Adversarial Mode":
+        base_prompts = [
+            f"🎯 Test the AI: Ask about edge cases in {module_display}",
+            f"🎯 Challenge: Ask for exact numerical values or formulas",
+            f"🎯 Trick question: Mix up similar concepts from {module_display}",
+            f"🎯 Advanced: Ask about mathematical proofs or derivations",
+            f"🎯 Precision test: Ask for specific parameter values or constants",
+            f"🎯 Boundary testing: When does {{algorithm}} fail or break down?",
+            f"🎯 Adversarial: Create a misleading or ambiguous question about {{concept}}",
+            f"🎯 Counter-example: Ask about exceptions to general rules in {module_display}",
+            f"🎯 Gotcha: Test common misconceptions about {{topic}}",
+        ]
+    elif selected_mode == "Quiz Mode":
         base_prompts = [
             f"Ask me a free-form question about {module_display}",
             f"Give me an open-ended question for {module_display}",
@@ -375,7 +420,50 @@ def get_module_prompts():
         ]
 
     # Add module-specific prompts
-    if selected_mode == "Quiz Mode":
+    if selected_mode == "Adversarial Mode":
+        module_specific = {
+            "intro": [
+                "🎯 Trick: Are all networks the same type of mathematical object?",
+                "🎯 Edge case: What's the smallest possible network?"
+            ],
+            "m01-euler_tour": [
+                "🎯 Gotcha: Can a disconnected graph have an Euler circuit?",
+                "🎯 Precision: What's the exact degree requirement for Euler paths?"
+            ],
+            "m02-small-world": [
+                "🎯 Challenge: What's the exact clustering coefficient formula?",
+                "🎯 Boundary: When does the small-world model break down?"
+            ],
+            "m03-robustness": [
+                "🎯 Counter: Give an example where targeted attacks fail",
+                "🎯 Edge case: What happens with single-node networks?"
+            ],
+            "m04-friendship-paradox": [
+                "🎯 Trick: Does friendship paradox apply to directed graphs?",
+                "🎯 Exception: When might the friendship paradox not hold?"
+            ],
+            "m05-clustering": [
+                "🎯 Advanced: Prove the modularity optimization is NP-hard",
+                "🎯 Gotcha: Can modularity be negative?"
+            ],
+            "m06-centrality": [
+                "🎯 Precision: What's the exact eigenvector centrality formula?",
+                "🎯 Edge case: Centrality in disconnected graphs?"
+            ],
+            "m07-random-walks": [
+                "🎯 Challenge: Prove PageRank convergence conditions",
+                "🎯 Boundary: When do random walks not converge?"
+            ],
+            "m08-embedding": [
+                "🎯 Technical: What's the exact spectral embedding algorithm?",
+                "🎯 Limitation: When do embeddings lose information?"
+            ],
+            "m09-graph-neural-networks": [
+                "🎯 Deep: Derive the graph convolution backpropagation",
+                "🎯 Failure: When do GNNs perform poorly?"
+            ]
+        }
+    elif selected_mode == "Quiz Mode":
         module_specific = {
             "intro": [
                 "Quiz me on why we study networks",
