@@ -64,15 +64,14 @@ The adjacency list reorganizes the same information by grouping connections arou
 The adjacency list also maintains the storage efficiency of edge tables for sparse networks while dramatically speeding up common graph algorithms that need to explore a node's immediate neighborhood. However, determining whether two specific nodes are connected requires scanning through one node's neighbor list, making edge-existence queries slower than in matrix representations.
 
 ```python
-# Build adjacency list from edge table
-neighbors = {}
-for i in range(5):  # Initialize empty lists for nodes 0-4
-    neighbors[i] = []
-
-# Add each edge to both nodes' neighbor lists
-for node1, node2 in edges:
-    neighbors[node1].append(node2)
-    neighbors[node2].append(node1)
+# Define adjacency list directly as a dictionary
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1 and 2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0, 2, and 3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0, 1, and 4
+    3: [1, 4],     # Node 3 connects to nodes 1 and 4
+    4: [2, 3]      # Node 4 connects to nodes 2 and 3
+}
 
 print("Adjacency List:")
 for node, adj in neighbors.items():
