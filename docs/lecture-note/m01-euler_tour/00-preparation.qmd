@@ -1,0 +1,185 @@
+---
+title: Preparation - From Visual to Computational
+filters:
+  - marimo-team/marimo
+  - tikz
+tikz:
+  cache: false
+  save-tex: true  # Enable saving intermediate .tex files
+  tex-dir: tikz-tex  # Optional: Specify directory to save .tex files
+jupyter: python3
+---
+
+## The Bridge Between Mathematics and Computation
+
+In 1736, the residents of Königsberg (now Kaliningrad) faced a peculiar puzzle: could one walk through their city, crossing each of its seven bridges exactly once and return to the starting point? This seemingly simple question would launch an entirely new branch of mathematics.
+
+::: {.column-margin}
+Königsberg was the capital of Prussia and home to the famous philosopher Immanuel Kant. The city was built around the Pregel River and its two large islands.
+:::
+
+Leonhard Euler, the Swiss mathematician, proved this walk was impossible by abstracting the physical bridges into mathematical objects. He reduced the complex geography to its essential structure: ***nodes*** (landmasses) connected by ***edges*** (bridges). This abstraction—ignoring irrelevant details like bridge length or island size—became the foundation of graph theory.
+
+::: {.column-margin}
+Euler was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.
+:::
+
+Today, we face the same challenge Euler did: how do we translate visual, intuitive understanding into computational analysis? The difference is that where Euler worked with seven bridges, we now work with networks containing millions or billions of connections.
+
+## From Picture to Code
+
+Consider this network with 5 nodes and 6 edges:
+
+```{.tikz}
+%%| caption: A simple network that demonstrates the three fundamental computational representations
+
+\begin{tikzpicture}[scale=1.8, font=\Large]
+  % Define vertices
+  \node[circle, draw, fill=white, minimum size=1.2cm] (0) at (0,2) {\textbf{0}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (1) at (-1.5,0.5) {\textbf{1}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (2) at (1.5,0.5) {\textbf{2}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (3) at (-1,-1.5) {\textbf{3}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (4) at (1,-1.5) {\textbf{4}};
+
+  % Draw edges
+  \draw[thick, black] (0) -- (1);
+  \draw[thick, black] (0) -- (2);
+  \draw[thick, black] (1) -- (2);
+  \draw[thick, black] (1) -- (3);
+  \draw[thick, black] (2) -- (4);
+  \draw[thick, black] (3) -- (4);
+
+\end{tikzpicture}
+```
+
+How do we represent this graph in a format that a computer can understand and manipulate? This translation from visual to computational is crucial—just as Euler needed to abstract Königsberg's bridges, we need data structures that capture the network's essential connectivity while enabling efficient analysis.
+
+::: {.column-margin}
+The choice of representation can dramatically affect computational efficiency. For sparse networks (few edges), adjacency lists are memory-efficient. For dense networks or matrix operations, adjacency matrices are preferred.
+:::
+
+Let's explore three fundamental approaches that form the backbone of all network algorithms.
+
+### Edge Table: The Direct Approach
+
+The edge table directly lists connections as pairs—the most intuitive way to store network data.
+
+::: {.column-margin}
+Edge tables are also called "edge lists" and are the most common format for storing large-scale network data in files. Social media platforms like Twitter and Facebook store billions of connections this way.
+:::
+
+```{python}
+# Each row represents one edge (connection between two nodes)
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+
+```
+
+This mirrors how we'd naturally describe the network: "Node 0 connects to nodes 1 and 2, node 1 connects to nodes 0, 2, and 3..." It's the digital equivalent of Euler's original approach—simply listing which bridges connect which landmasses.
+
+### Adjacency List: The Neighborhood Map
+
+The adjacency list stores each node's neighbors in a dictionary—like a social network where each person has a list of friends.
+
+::: {.column-margin}
+Most graph algorithms prefer adjacency lists because they allow fast iteration over a node's neighbors. This is crucial for algorithms like breadth-first search or computing clustering coefficients.
+:::
+
+```{python}
+# Define adjacency list directly as a dictionary
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1 and 2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0, 2, and 3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0, 1, and 4
+    3: [1, 4],     # Node 3 connects to nodes 1 and 4
+    4: [2, 3]      # Node 4 connects to nodes 2 and 3
+}
+```
+
+### Adjacency Matrix: The Mathematical Grid
+
+The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected—the mathematician's favorite representation.
+
+::: {.column-margin}
+Adjacency matrices enable powerful mathematical operations. Matrix multiplication reveals paths of different lengths, and eigenvalue analysis can uncover community structure. Google's PageRank algorithm fundamentally relies on matrix operations.
+:::
+
+```{python}
+# Define adjacency matrix directly
+import numpy as np
+
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0 connects to nodes 1, 2
+    [1, 0, 1, 1, 0],  # Node 1 connects to nodes 0, 2, 3
+    [1, 1, 0, 0, 1],  # Node 2 connects to nodes 0, 1, 4
+    [0, 1, 0, 0, 1],  # Node 3 connects to nodes 1, 4
+    [0, 0, 1, 1, 0]   # Node 4 connects to nodes 2, 3
+])
+```
+
+Notice the symmetry: if node i connects to node j, then node j connects to node i (for undirected networks). This symmetry disappears in directed networks, where relationships can be one-way.
+
+## Counting Node Degrees: Euler's Key Insight
+
+The degree of a node is the number of edges connected to it. This simple concept was central to Euler's proof—he realized that a valid bridge walk requires each landmass to have an even degree (except possibly the starting and ending points).
+
+::: {.column-margin}
+In Königsberg, all four landmasses had odd degree, making the bridge walk impossible. This insight—that global properties emerge from local structure—remains fundamental to network analysis today.
+:::
+
+Here's how to compute degrees using each representation:
+
+### From Edge Table: Counting Appearances
+
+Count how many times each node appears in the edge list.
+
+```{python}
+_degrees = [0] * 5
+for node1, node2 in edges:
+    _degrees[node1] += 1
+    _degrees[node2] += 1
+print(_degrees)
+```
+
+::: {.column-margin}
+We increment the degree counter for both nodes in each edge because every edge contributes to two nodes' degrees. This is why the total degree always equals twice the number of edges.
+:::
+
+### From Adjacency List: Counting Friends
+
+Count the length of each node's neighbor list—the most direct approach.
+
+```{python}
+#| echo: true
+# Count degrees from adjacency list
+_degrees = [len(neighbors[i]) for i in range(5)]
+print(_degrees)
+```
+
+### From Adjacency Matrix: Linear Algebra Power
+
+Sum each row (or column) of the matrix—leveraging vectorized operations.
+
+```{python}
+# Count degrees from adjacency matrix
+_degrees = matrix.sum(axis=1)  # Sum rows
+print(_degrees)
+```
+
+::: {.column-margin}
+For undirected networks, row sums equal column sums. For directed networks, row sums give out-degree (outgoing connections) while column sums give in-degree (incoming connections).
+:::
+
+## From Euler's Bridges to Modern Networks
+
+You now understand the fundamental bridge between visual intuition and computational analysis. These three representations—edge tables, adjacency lists, and adjacency matrices—form the foundation for analyzing everything from social media networks with billions of users to protein interaction networks with thousands of molecules.
+
+Euler's insight that global properties emerge from local connectivity patterns remains as relevant today as it was in 1736. Whether we're studying how diseases spread through airline networks or how information flows through the internet, we're still fundamentally asking Euler's question: what paths are possible through this network?
+
+The computational tools have evolved dramatically, but the core challenge remains the same: ***how do we translate complex connectivity patterns into mathematical insights that reveal the hidden structure of our interconnected world?***
