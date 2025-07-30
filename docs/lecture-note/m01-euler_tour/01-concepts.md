@@ -55,9 +55,23 @@ Before we reveal Euler's brilliant solution, **take some time to think about thi
 - How might you prove that something is impossible, rather than just failing to find it?
 :::
 
-The beauty of mathematics lies not just in the answers, but in the process of discovery. Once you've given it some thought (or worked through the worksheet), explore Euler's solution through the tabs below.
+The beauty of mathematics lies not just in the answers, but in the process of discovery. 
 
-::: panel-tabset
+::: {.callout-warning}
+## ⚠️ Pause Here First!
+
+**Before reading Euler's solution below**, we strongly encourage you to:
+
+1. **Work through the [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)** by Esteban Moro
+2. **Try the puzzle yourself** - can you find a path that crosses each bridge exactly once?
+3. **Think about what makes this problem difficult** - what constraints do you notice?
+
+The learning experience is much richer when you discover the insights yourself first!
+:::
+
+Once you've given it some thought, continue reading to see how Euler approached this problem in 1736.
+
+---
 
 ## 🔍 Euler's Revolutionary Abstraction
 
@@ -123,6 +137,8 @@ A good Youtube video explaining the Euler's story:
 :::
 
 
+---
+
 ## ⚖️ The Verdict: Königsberg's Impossible Dream
 
 Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
@@ -133,7 +149,7 @@ In the original graph: North shore (3 bridges), South shore (3 bridges), Large i
 
 The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.
 
-:::
+---
 
 ## History's Dark Twist
 
