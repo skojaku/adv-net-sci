@@ -28,7 +28,7 @@ from scipy import sparse
 import time
 
 # Examples of real network sparsity
-networks = {
+_networks = {
     "Facebook (2012)": {"nodes": 1e9, "edges": 140e9},
     "Twitter (2010)": {"nodes": 40e6, "edges": 1.47e9},
     "Internet AS-level": {"nodes": 65000, "edges": 120000},
@@ -38,18 +38,18 @@ networks = {
 
 print("Network Sparsity Analysis:")
 print("=" * 50)
-for name, data in networks.items():
-    n_nodes = data["nodes"]
-    n_edges = data["edges"]
-    max_edges = n_nodes * (n_nodes - 1) / 2  # Undirected network
-    sparsity = n_edges / max_edges
+for name, data in _networks.items():
+    _n_nodes = data["nodes"]
+    _n_edges = data["edges"]
+    _max_edges = _n_nodes * (_n_nodes - 1) / 2  # Undirected network
+    _sparsity = _n_edges / _max_edges
     
     print(f"{name}:")
-    print(f"  Nodes: {n_nodes:,.0f}")
-    print(f"  Edges: {n_edges:,.0f}")
-    print(f"  Sparsity: {sparsity:.2e} ({sparsity*100:.8f}%)")
-    print(f"  Memory (dense): {n_nodes**2 * 8 / 1e9:.2f} GB")
-    print(f"  Memory (sparse): {n_edges * 16 / 1e9:.2f} GB")
+    print(f"  Nodes: {_n_nodes:,.0f}")
+    print(f"  Edges: {_n_edges:,.0f}")
+    print(f"  Sparsity: {_sparsity:.2e} ({_sparsity*100:.8f}%)")
+    print(f"  Memory (dense): {_n_nodes**2 * 8 / 1e9:.2f} GB")
+    print(f"  Memory (sparse): {_n_edges * 16 / 1e9:.2f} GB")
     print()
 ```
 
