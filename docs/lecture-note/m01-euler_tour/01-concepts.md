@@ -48,6 +48,7 @@ Before we reveal Euler's brilliant solution, **take some time to think about thi
 **Highly recommended**: Download and work through this excellent [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) created by Esteban Moro [@esteban-moro-worksheet]. It guides you through Euler's reasoning step by step, letting you discover the solution yourself.
 
 **Questions to consider while working:**
+
 - Can you trace a path that crosses each bridge exactly once?
 - What patterns do you notice when you try different routes?
 - What properties of the landmasses seem important?
@@ -56,10 +57,8 @@ Before we reveal Euler's brilliant solution, **take some time to think about thi
 
 The beauty of mathematics lies not just in the answers, but in the process of discovery. Once you've given it some thought (or worked through the worksheet), click below to see how Euler approached this problem in 1736.
 
----
-
-<details>
-<summary><strong>🔍 Click to reveal Euler's Revolutionary Abstraction</strong></summary>
+::: {.callout-note collapse="true"}
+## 🔍 Euler's Revolutionary Abstraction
 
 [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
@@ -80,13 +79,10 @@ He simplified the city into *a network of landmasses connected by bridges*:
 : Euler's graph of the bridges of Knigsberg {#fig-euler-graph}
 
 This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.
+:::
 
-</details>
-
----
-
-<details>
-<summary><strong>🧠 Click to reveal Euler's Brilliant Solution: The Power of Parity</strong></summary>
+::: {.callout-tip collapse="true"}
+## 🧠 Euler's Brilliant Solution: The Power of Parity
 
 Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***
 
@@ -119,13 +115,10 @@ A walk that crosses all edges exactly once exists **if and only if**:
 :::
 
 This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.
+:::
 
-</details>
-
----
-
-<details>
-<summary><strong>⚖️ Click to reveal The Verdict: Königsberg's Impossible Dream</strong></summary>
+::: {.callout-warning collapse="true"}
+## ⚖️ The Verdict: Königsberg's Impossible Dream
 
 Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
 
@@ -134,10 +127,7 @@ In the original graph: North shore (3 bridges), South shore (3 bridges), Large i
 :::
 
 The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.
-
-</details>
-
----
+:::
 
 ## History's Dark Twist
 
