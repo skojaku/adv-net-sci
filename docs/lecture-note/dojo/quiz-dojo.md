@@ -60,32 +60,22 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     github_repo = "adv-net-sci"
     github_branch = "main"
     
-    # Define the common files we expect in each module
-    common_files = [
-        "00-preparation.md",
-        "01-concepts.md", 
-        "03-exercises.md"
-    ]
-    
-    # Module-specific additional files
-    additional_files = {
-        "intro": ["setup.md", "why-networks.md"],
-        "m01-euler_tour": [],
-        "m02-small-world": ["assignment.md", "connectedness.md", "small-world-experiment.md", "wikirace.md", "which-tools.md", "what-to-learn.md", "pen-and-paper.md"],
-        "m03-robustness": ["robustness.md", "what-to-learn.md", "exercise-power-grid.md", "04-appendix.md"],
-        "m04-friendship-paradox": ["what-to-learn.md"],
-        "m05-clustering": ["what-is-community.md", "what-to-learn.md", "graph-cut.md", "modularity.md", "modularity-02.md", "pattern-matching.md", "pen-and-paper.md"],
-        "m06-centrality": ["degree-distance-based-centrality.md", "eigencentrality.md", "what-to-learn.md", "pen-and-paper.md"],
-        "m07-random-walks": ["amida-kuji.md", "what-to-learn.md", "pen-and-paper.md"],
-        "m08-embedding": ["software.md", "spectral-vs-neural-embedding.md", "what-to-learn.md", "pen-and-paper.md", "04-appendix.md"],
-        "m09-graph-neural-networks": ["what-to-learn.md", "pen-and-paper.md"]
+    # Define files based on _quarto.yml structure
+    module_files = {
+        "intro": ["why-networks.md", "setup.md"],
+        "m01-euler_tour": ["00-preparation.md", "01-concepts.md"],
+        "m02-small-world": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
+        "m03-robustness": ["00-preparation.md", "01-concepts.md", "03-exercises.md", "04-appendix.md"],
+        "m04-friendship-paradox": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
+        "m05-clustering": ["00-preparation.md"],
+        "m06-centrality": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
+        "m07-random-walks": ["00-preparation.md", "03-exercises.md"],
+        "m08-embedding": ["00-preparation.md", "01-concepts.md", "03-exercises.md", "04-appendix.md"],
+        "m09-graph-neural-networks": ["00-preparation.md", "01-concepts.md", "03-exercises.md"]
     }
     
     # Get files to fetch for this module
-    if module_name == "intro":
-        files_to_fetch = additional_files.get(module_name, [])
-    else:
-        files_to_fetch = common_files + additional_files.get(module_name, [])
+    files_to_fetch = module_files.get(module_name, [])
     
     content = {}
     
