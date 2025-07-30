@@ -1,5 +1,5 @@
 ---
-title: Preparation - Python and Graph Basics
+title: Preparation - From Visual to Computational
 filters:
   - marimo-team/marimo
   - tikz
@@ -9,98 +9,145 @@ tikz:
   tex-dir: tikz-tex  # Optional: Specify directory to save .tex files
 ---
 
-## Required Libraries
+## From Picture to Code
 
-```python
-import igraph as ig
-import numpy as np
-```
-
-**igraph**: High-performance C library with Python interface - essential for Euler tour algorithms.
-
-## Basic Graph Creation
+Consider this network with 5 nodes and 6 edges:
 
 ```{.tikz}
-%%| caption: 5-node Graph - Mix of even and odd degrees for Euler tour analysis
+%%| caption: A graph of five nodes
 
 \begin{tikzpicture}[scale=1.8, font=\Large]
   % Define vertices
-  \node[circle, draw, fill=blue!20, minimum size=1.2cm] (0) at (0,2) {\textbf{0}};
-  \node[circle, draw, fill=green!20, minimum size=1.2cm] (1) at (-1.5,0.5) {\textbf{1}};
-  \node[circle, draw, fill=red!20, minimum size=1.2cm] (2) at (1.5,0.5) {\textbf{2}};
-  \node[circle, draw, fill=orange!20, minimum size=1.2cm] (3) at (-1,-1.5) {\textbf{3}};
-  \node[circle, draw, fill=purple!20, minimum size=1.2cm] (4) at (1,-1.5) {\textbf{4}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (0) at (0,2) {\textbf{0}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (1) at (-1.5,0.5) {\textbf{1}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (2) at (1.5,0.5) {\textbf{2}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (3) at (-1,-1.5) {\textbf{3}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (4) at (1,-1.5) {\textbf{4}};
 
   % Draw edges
-  \draw[thick, blue] (0) -- (1);
-  \draw[thick, blue] (0) -- (2);
-  \draw[thick, blue] (1) -- (2);
-  \draw[thick, blue] (1) -- (3);
-  \draw[thick, blue] (2) -- (4);
-  \draw[thick, blue] (3) -- (4);
+  \draw[thick, black] (0) -- (1);
+  \draw[thick, black] (0) -- (2);
+  \draw[thick, black] (1) -- (2);
+  \draw[thick, black] (1) -- (3);
+  \draw[thick, black] (2) -- (4);
+  \draw[thick, black] (3) -- (4);
 
-  % Add degree labels
-  \node[above, font=\Large] at (0,2.7) {\textbf{degree: 2}};
-  \node[left, font=\Large] at (-2.2,0.5) {\textbf{degree: 3}};
-  \node[right, font=\Large] at (2.2,0.5) {\textbf{degree: 3}};
-  \node[below left, font=\Large] at (-1.5,-2.2) {\textbf{degree: 2}};
-  \node[below right, font=\Large] at (1.5,-2.2) {\textbf{degree: 2}};
 \end{tikzpicture}
 ```
 
-```python
-# Create 5-node graph
-g = ig.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 4), (3, 4)])
+How do we represent this graph in a format that a computer can understand and manipulate? Let's explore three fundamental approaches.
 
-# Basic properties
-print(f"Vertices: {g.vcount()}")  # 5
-print(f"Edges: {g.ecount()}")    # 6
-print(f"Degrees: {g.degree()}")  # [2, 3, 3, 2, 2]
+## 1. Edge Table
+
+The most direct translation: list every connection as a pair of nodes.
+
+```python
+# Each row represents one edge (connection between two nodes)
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2  
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+
+print(f"Total edges: {len(edges)}")  # 6
 ```
 
-## Euler Tour Check
+## 2. Adjacency List
+
+For each node, store a list of its neighbors.
 
 ```python
-# Check if Euler tour exists
-degrees = g.degree()  # [2, 3, 3, 2, 2]
-odd_count = sum(1 for d in degrees if d % 2 == 1)  # Count odd degrees
+# Build adjacency list from edge table
+neighbors = {}
+for i in range(5):  # Initialize empty lists for nodes 0-4
+    neighbors[i] = []
 
-print(f"Degrees: {degrees}")
-print(f"Odd degree vertices: {odd_count}")
+# Add each edge to both nodes' neighbor lists
+for node1, node2 in edges:
+    neighbors[node1].append(node2)
+    neighbors[node2].append(node1)
+
+print("Adjacency List:")
+for node, adj in neighbors.items():
+    print(f"Node {node}: {adj}")
+
+# Output:
+# Node 0: [1, 2]
+# Node 1: [0, 2, 3] 
+# Node 2: [0, 1, 4]
+# Node 3: [1, 4]
+# Node 4: [2, 3]
+```
+
+## 3. Adjacency Matrix
+
+Create a 5×5 grid where entry (i,j) = 1 if nodes i and j are connected.
+
+```python
+import numpy as np
+
+# Initialize 5x5 matrix with zeros
+matrix = np.zeros((5, 5), dtype=int)
+
+# Fill in connections from edge table
+for node1, node2 in edges:
+    matrix[node1][node2] = 1  # Mark connection
+    matrix[node2][node1] = 1  # Since graph is undirected
+
+print("Adjacency Matrix:")
+print(matrix)
+
+# Output:
+# [[0 1 1 0 0]
+#  [1 0 1 1 0]
+#  [1 1 0 0 1]
+#  [0 1 0 0 1]
+#  [0 0 1 1 0]]
+```
+
+## Checking Euler Tour Conditions
+
+Now we can use any representation to check if an Euler tour exists:
+
+```python
+# Method 1: Count degrees using adjacency list
+degrees_from_list = [len(neighbors[i]) for i in range(5)]
+
+# Method 2: Count degrees using adjacency matrix  
+degrees_from_matrix = matrix.sum(axis=1)  # Sum each row
+
+print(f"Degrees: {degrees_from_list}")  # [2, 3, 3, 2, 2]
+
+# Count nodes with odd degree
+odd_count = sum(1 for degree in degrees_from_list if degree % 2 == 1)
+print(f"Odd degree nodes: {odd_count}")  # 2
 
 if odd_count == 0:
     print("✓ Euler cycle exists")
 elif odd_count == 2:
-    print("✓ Euler path exists")
+    print("✓ Euler path exists") 
 else:
     print("✗ No Euler tour")
-# Output: Euler path exists (exactly 2 odd vertices: 1 and 2)
 ```
 
-## Essential Operations
+## Using Libraries for Convenience
+
+Once you understand these representations, libraries like **igraph** provide convenient shortcuts:
 
 ```python
-# Get neighbors
-neighbors = g.neighbors(0)
+import igraph as ig
 
-# Copy graph
-g_copy = g.copy()
+# Create graph directly from edge list
+g = ig.Graph(edges)
 
-# Data structures for algorithms
-path = []
-visited = set()
+# Get degrees instantly
+print(f"Degrees: {g.degree()}")  # [2, 3, 3, 2, 2]
+
+# Access neighbors easily
+print(f"Node 0 neighbors: {g.neighbors(0)}")  # [1, 2]
 ```
 
-## Quick Test
-
-```python
-# Test the 5-node graph
-g = ig.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 4), (3, 4)])
-degrees = g.degree()
-odd_count = sum(1 for d in degrees if d % 2 == 1)
-print(f"Degrees: {degrees}, Odd vertices: {odd_count}")
-# Output: Degrees: [2, 3, 3, 2, 2], Odd vertices: 2
-# → Has Euler path! (Must start at vertex 1 or 2, end at the other)
-```
-
-You're now ready to implement Euler tour algorithms!
+You now understand how to represent networks computationally!
