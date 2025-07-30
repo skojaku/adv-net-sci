@@ -21,15 +21,18 @@ Back in the 18th century, there was a city called *Königsberg* situated on the 
 
 ::: {.column-margin}
 Königsberg was a major intellectual center of the Enlightenment. [Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant) spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/200px-Immanuel_Kant_-_Gemaelde_1.jpg)
 :::
 
 During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
 
-::: {.callout-note title="The Königsberg Bridge Problem"}
-Is it possible to take a walk through the city that crosses each bridge exactly once and returns to the starting point?
-:::
+
+
+ ---
+
+<span style="font-size:1.5em"><b>The Königsberg Bridge Problem</b></span>: Is it possible to take a walk through the city that crosses each bridge exactly once and returns to the starting point?
+
+ ---
+
 
 ![alt text](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){#fig-seven-bridges fig-alt="The seven bridges of Königsberg"}
 
@@ -37,7 +40,26 @@ Is it possible to take a walk through the city that crosses each bridge exactly 
 
 This seemingly innocent recreational question would become one of the most important problems in the history of mathematics. What made it revolutionary wasn't the answer, but ***how*** the answer was found.
 
-## Euler's Revolutionary Abstraction
+## Try It Yourself First!
+
+Before we reveal Euler's brilliant solution, **take some time to think about this problem yourself**. This is exactly how mathematical discovery works—by wrestling with puzzles and developing your own insights.
+
+::: {.callout-tip title="Work Through It Step by Step"}
+**Highly recommended**: Download and work through this excellent [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) created by Esteban Moro [@esteban-moro-worksheet]. It guides you through Euler's reasoning step by step, letting you discover the solution yourself.
+
+**Questions to consider while working:**
+- Can you trace a path that crosses each bridge exactly once?
+- What patterns do you notice when you try different routes?
+- What properties of the landmasses seem important?
+- How might you prove that something is impossible, rather than just failing to find it?
+:::
+
+The beauty of mathematics lies not just in the answers, but in the process of discovery. Once you've given it some thought (or worked through the worksheet), click below to see how Euler approached this problem in 1736.
+
+---
+
+<details>
+<summary><strong>🔍 Click to reveal Euler's Revolutionary Abstraction</strong></summary>
 
 [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
@@ -59,11 +81,12 @@ He simplified the city into *a network of landmasses connected by bridges*:
 
 This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.
 
-::: {.column-margin}
-Try working through this problem yourself using this [interactive worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) [@esteban-moro-worksheet] that guides you through Euler's reasoning step by step.
-:::
+</details>
 
-## Euler's Brilliant Solution: The Power of Parity
+---
+
+<details>
+<summary><strong>🧠 Click to reveal Euler's Brilliant Solution: The Power of Parity</strong></summary>
 
 Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***
 
@@ -97,7 +120,12 @@ A walk that crosses all edges exactly once exists **if and only if**:
 
 This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.
 
-## The Verdict: Königsberg's Impossible Dream
+</details>
+
+---
+
+<details>
+<summary><strong>⚖️ Click to reveal The Verdict: Königsberg's Impossible Dream</strong></summary>
 
 Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
 
@@ -106,6 +134,10 @@ In the original graph: North shore (3 bridges), South shore (3 bridges), Large i
 :::
 
 The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.
+
+</details>
+
+---
 
 ## History's Dark Twist
 
