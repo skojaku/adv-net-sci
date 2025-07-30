@@ -1,57 +1,130 @@
-# Euler Tour Concepts
+# Euler Tour Concepts: The Birth of Network Science
 
 ## What to learn in this module
 
-In this module, we will learn a historical example that leads to the genesis of graph theory in mathematics and modern network science. Through this example, we will learn:
+In this module, we will explore the historical moment that gave birth to graph theory and modern network science. A simple Sunday stroll puzzle in an 18th-century Prussian city would spark a mathematical revolution that now powers everything from GPS navigation to social media algorithms.
+
+Through Euler's elegant solution, we will learn:
 - How to describe a network using mathematical language
-- How to code a network in Python
-- Keywords: **network**, **degree**, **Euler walk**
+- How mathematical abstraction reveals hidden structure in complex problems
+- The power of degree-based reasoning in network analysis
+- Keywords: **network**, **graph**, **degree**, **Euler walk**, **mathematical abstraction**
 
-## A puzzle
+::: {.column-margin}
+This is not just history—Euler's approach of abstracting complex systems into nodes and edges is the same method we use today to analyze internet routing, brain connectivity, and viral spread patterns.
+:::
 
-Back in 18th century, there was a city called *Königsberg* situated on the Pregel River in a historical region of Germany. The city had two large islands connected to each other and the mainland by seven bridges.
-The citizens of Königsberg pondered a puzzle during their Sunday walks:
+## A Sunday Stroll That Changed Mathematics
 
-::: {.callout-note title="Problem"}
-How could one walk through the city and cross each bridge exactly once?
+Back in the 18th century, there was a city called *Königsberg* situated on the Pregel River in what was then Prussia (now Kaliningrad, Russia). The city was built around two large islands, beautifully connected to each other and the mainland by seven elegant bridges.
+
+::: {.column-margin}
+Königsberg was a major intellectual center of the Enlightenment. Immanuel Kant spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
+:::
+
+During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
+
+::: {.callout-note title="The Königsberg Bridge Problem"}
+Is it possible to take a walk through the city that crosses each bridge exactly once and returns to the starting point?
 :::
 
 ![alt text](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){#fig-seven-bridges fig-alt="The seven bridges of Königsberg"}
 
 : The seven bridges of Königsberg {#fig-seven-bridges}
 
-Leonard Euler worked out the solution to this puzzle in 1736. He first simplified the city into *a network of landmasses connected by bridges*, by noting that the landareas, the positions of the islands and the bridges are nothing to do with the puzzle, and that the only thing that matters is the connections between the landmasses.
+This seemingly innocent recreational question would become one of the most important problems in the history of mathematics. What made it revolutionary wasn't the answer, but ***how*** the answer was found.
+
+## Euler's Revolutionary Abstraction
+
+Leonard Euler approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
+
+::: {.column-margin}
+This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.
+:::
+
+Euler realized that for this problem, only one thing mattered: ***which landmasses connect to which other landmasses***. Everything else—the bridge lengths, island shapes, water depths—was irrelevant distraction.
+
+He simplified the city into *a network of landmasses connected by bridges*:
 
 ![](https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600){#fig-euler-graph fig-alt="Euler's graph of the bridges of Knigsberg"}
 
 : Euler's graph of the bridges of Knigsberg {#fig-euler-graph}
 
-To better understand this problem, you can work through it step by step using this [worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) [@esteban-moro-worksheet] that guides you through the solution process.
+This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.
 
-## Euler's solution
-
-Euler consider two cases:
-- a node has an even number of edges, or
-- a node has an odd number of edges.
-
-When a node has an even number $2k$ of edges, one can enter and leave the node $k$ times by crossing different edges.
-
-When a node has an odd number $2k+1$ of edges, one can enter and leave the node $k$ times by crossing different edges but leave one last edge to cross. The only way to cross this last edge is that one starts or ends at the node.
-
-Based up on the above reasoning, Euler leads to the following necessary (and later shown as sufficient) conditions:
-
-::: {.callout-note title="Euler's path"}
-
-There exists a walk that crosses all edges exactly once if and only if all nodes have even number of edges, or exactly two nodes have an odd number of edges.
+::: {.column-margin}
+Try working through this problem yourself using this [interactive worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) [@esteban-moro-worksheet] that guides you through Euler's reasoning step by step.
 :::
 
-![alt text](https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600)
+## Euler's Brilliant Solution: The Power of Parity
 
-Back to the Konigsberg bridge problem, every node has an odd number of edges, meaning that there is no way to cross all edges exactly once. What a sad story for the citizens of Konigsberg. But the problem was solved during World War II, where Koingberg was bombarded by Soviet Union, losing two of the seven bridges 🫠.
+Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***
+
+::: {.column-margin}
+This shift from "trying all possibilities" to "analyzing constraints" is a hallmark of mathematical thinking. Instead of brute force, Euler used logical reasoning to prove impossibility.
+:::
+
+Euler considered the degree (number of connections) of each node and realized there were only two cases:
+- a node has an **even number** of edges, or  
+- a node has an **odd number** of edges.
+
+### The Even Case: Perfect Balance
+
+When a node has an even number $2k$ of edges, you can enter and leave the node exactly $k$ times by crossing different edges. Every time you enter through one bridge, you can leave through another. The bridges naturally pair up.
+
+### The Odd Case: The Leftover Problem
+
+When a node has an odd number $2k+1$ of edges, you can enter and leave the node $k$ times, but one edge is left over. The only way to cross this last edge is if your journey ***starts or ends*** at this node.
+
+::: {.column-margin}
+Think of it like a dance where everyone needs a partner. In nodes with even degree, every bridge has a "partner" for entering and leaving. Odd-degree nodes always have one "wallflower" bridge that can only be used at the very beginning or end.
+:::
+
+Based on this elegant reasoning, Euler arrived at his famous theorem:
+
+::: {.callout-note title="Euler's Path Theorem"}
+A walk that crosses all edges exactly once exists **if and only if**:
+- All nodes have even degree, **OR**
+- Exactly two nodes have odd degree
+:::
+
+This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.
+
+## The Verdict: Königsberg's Impossible Dream
+
+Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
+
+::: {.column-margin}
+In the original graph: North shore (3 bridges), South shore (3 bridges), Large island (5 bridges), Small island (3 bridges). Four nodes with odd degree—exactly two more than Euler's theorem allows.
+:::
+
+The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.
+
+## History's Dark Twist
+
+The story takes a sobering turn during World War II. In 1944, Königsberg was heavily bombed by Allied forces, and later captured by the Soviet Union. Two of the seven historic bridges were destroyed in the bombardment.
 
 ![](../figs/seven-bridge-bombared.png){#fig-markdown-fig fig-alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."}
 
-: Two bridges were bombed by Soviet Union, which allows the Euler path to exist. {#fig-markdown-fig}
+: After WWII bombing, only five bridges remained—finally making an Euler path possible. {#fig-markdown-fig}
+
+::: {.column-margin}
+The city was renamed Kaliningrad and became part of Russia. Today, it remains a Russian exclave, separated from the rest of Russia by Lithuania and Poland. The few remaining bridges span a river now in a very different political landscape.
+:::
+
+With only five bridges remaining, the network finally satisfied Euler's conditions: exactly two nodes had odd degree. The mathematical puzzle that had stumped citizens for two centuries was "solved" by the tragic circumstances of war.
+
+This ironic resolution reminds us that while mathematics reveals timeless truths about structure and possibility, the physical world—and human history—follows much more complex and unpredictable patterns.
+
+## The Lasting Legacy
+
+Euler's solution to the Königsberg bridge problem did far more than solve a recreational puzzle. It demonstrated that:
+
+- **Abstract thinking** can solve concrete problems
+- **Mathematical proof** is more powerful than trial and error
+- **Network structure** determines what's possible in interconnected systems
+
+These insights now underpin our understanding of everything from internet routing protocols to epidemic spreading models. Every time you use GPS navigation or analyze social network data, you're applying principles that trace back to Euler's Sunday stroll through Königsberg.
 
 ## References
 
