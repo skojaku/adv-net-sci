@@ -8,21 +8,22 @@ sidebar: false
 
 This is an experimental AI-powered quiz practice feature to help you prepare for exams.
 
-## 🌐 Access Requirements
-**This feature is only available within the Binghamton University campus network.** If you're off-campus, please connect to the Binghamton VPN first.
+::: {.callout-note collapse="true"}
+## Instructions & Important Information
 
-## 🚀 Getting Started
+**🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first.
+
+**🚀 Getting Started**:
 1. **API Key**: Enter the API key provided by your instructor (contact them if you don't have one)
 2. **Select Module**: Choose the course module you want to practice on
-3. **Choose Mode**: 
+3. **Choose Mode**:
    - **Quiz Mode**: Get quizzed with interactive questions and receive feedback
    - **Q&A Mode**: Have conversations about concepts and get explanations
 
-## 📚 How It Works
-The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
+**📚 How It Works**: The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
 
-## ⚠️ Important Disclaimer
-**Always doubt and verify AI responses.** The AI may generate plausible-sounding but incorrect answers. Cross-check all information with official course materials, textbooks, or your instructor. Think critically about every response and use this tool as a practice aid, not as an authoritative source.
+**⚠️ Important Disclaimer**: Always doubt and verify AI responses. The AI may generate plausible-sounding but incorrect answers. Cross-check all information with official course materials, textbooks, or your instructor. Think critically about every response and use this tool as a practice aid, not as an authoritative source.
+:::
 
 ```python {.marimo}
 import marimo as mo
