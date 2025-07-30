@@ -2,37 +2,82 @@
 title: Preparation - Python and Graph Basics
 ---
 
-## Getting Ready for Euler Tours
-
-This module explores one of mathematics' most elegant problems - finding paths that visit every connection exactly once. Before diving into the historical puzzle and algorithms, let's set up the computational tools you'll need to implement and experiment with Eulerian path algorithms.
-
-## Essential Python Setup
-
-### Required Libraries
+## Necessary Python Libraries
 
 ```python
 # Core library for high-performance graph analysis
 import igraph as ig
 
-# Supporting libraries for computation and visualization  
+# Supporting libraries for computation and visualization
 import numpy as np
-import matplotlib.pyplot as plt
-from collections import defaultdict, deque
+from scipy import sparse
 ```
 
-::: {.column-margin}
-**Why igraph?** Written in C with Python bindings, igraph offers 10-100x better performance than NetworkX for graph operations - crucial when working with complex algorithms like Euler tour detection.
+### Library Explanations
+
+**igraph**: High-performance graph analysis library written in C with Python bindings. Offers 10-100x better performance than NetworkX for graph operations - crucial when working with complex algorithms like Euler tour detection.
+
+**NumPy**: The foundation of scientific computing in Python. Provides:
+- **Efficient arrays**: Fast operations on large datasets
+- **Mathematical functions**: Linear algebra, statistics, and array operations
+- **Memory efficiency**: Dense arrays stored contiguously in memory
+- *For graphs*: Stores adjacency matrices, degree sequences, and numerical computations
+
+**SciPy Sparse**: Specialized for handling sparse matrices where most elements are zero. Essential for large graphs because:
+- **Memory savings**: Real networks are typically sparse (few edges relative to possible connections)
+- **Speed**: Operations only computed on non-zero elements
+- **Graph applications**: Adjacency matrices of large networks (social media, web graphs) are naturally sparse
+
+::: {#fig-sparse-example}
+```python
+# Example: 1000x1000 adjacency matrix with only 5000 edges
+# Dense matrix: 1,000,000 elements stored
+# Sparse matrix: only 5000 non-zero elements stored (99.5% memory savings!)
+
+import numpy as np
+from scipy import sparse
+
+# Dense matrix (memory intensive)
+dense_adj = np.zeros((1000, 1000))
+
+# Sparse matrix (memory efficient) 
+edges = [(0, 1), (1, 2), (2, 999)]  # Few connections
+sparse_adj = sparse.csr_matrix((1000, 1000))
+```
+
+**Key insight**: Real-world networks are sparse - Facebook users aren't friends with everyone, web pages don't link to every other page, proteins don't interact with all others.
 :::
 
-### Installing igraph
+### How These Libraries Work Together
 
-```bash
-# Install igraph for Python
-pip install python-igraph
+::: {#fig-library-integration}
+```python
+import igraph as ig
+import numpy as np
+from scipy import sparse
 
-# For visualization support (optional)
-pip install matplotlib numpy
+# Create a graph with igraph
+g = ig.Graph([(0, 1), (1, 2), (2, 3), (0, 3)])
+
+# Get adjacency matrix as NumPy array (for small graphs)
+adj_dense = np.array(g.get_adjacency().data)
+print("Dense adjacency matrix:")
+print(adj_dense)
+
+# For large graphs, use sparse representation
+adj_sparse = sparse.csr_matrix(adj_dense)
+print(f"\nMemory usage - Dense: {adj_dense.nbytes} bytes")
+print(f"Memory usage - Sparse: {adj_sparse.data.nbytes + adj_sparse.indices.nbytes + adj_sparse.indptr.nbytes} bytes")
+
+# Compute degrees using NumPy (sum rows of adjacency matrix)
+degrees_numpy = np.sum(adj_dense, axis=1)
+degrees_igraph = g.degree()
+print(f"\nDegrees (NumPy): {degrees_numpy}")
+print(f"Degrees (igraph): {degrees_igraph}")
 ```
+
+This integration is powerful for Euler tour algorithms where you need fast degree calculations and efficient graph traversals.
+:::
 
 ## Quick igraph Reference
 
@@ -49,7 +94,7 @@ g.add_vertices(4)
 g.add_edges([(0, 1), (1, 2), (2, 3), (3, 0)])
 
 # Create with attributes
-g = ig.Graph(edges=[(0, 1), (1, 2)], 
+g = ig.Graph(edges=[(0, 1), (1, 2)],
              vertex_attrs={'name': ['A', 'B', 'C', 'D']})
 ```
 
@@ -127,7 +172,7 @@ print(f"Has Euler path: {len(odd_vertices) in [0, 2]}")
 You're now equipped with the essential tools for Euler tour algorithms. In the next sections, you'll:
 
 1. **Learn** the historical Königsberg bridge problem that started it all
-2. **Understand** the mathematical theory behind Eulerian paths  
+2. **Understand** the mathematical theory behind Eulerian paths
 3. **Implement** algorithms to find Euler tours in any graph
 4. **Apply** these concepts to real-world problems
 
