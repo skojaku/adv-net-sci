@@ -55,27 +55,51 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     """Read all markdown files from the selected module"""
     import os
     
-    # Start from current working directory and find the lecture-note directory
+    # Since marimo is running locally, try to find the project directory
+    # Start by checking if we can find a reasonable project structure
     current_dir = os.getcwd()
     
-    # Look for the lecture-note directory structure
-    # Try different path combinations based on where marimo might be running
-    possible_paths = [
-        os.path.join(current_dir, ".."),  # If running from dojo/
-        current_dir,  # If running from lecture-note/
-        os.path.join(current_dir, "docs", "lecture-note"),  # If running from project root
-    ]
+    # For local marimo, the most likely scenario is that it's running from the project directory
+    # Let's try a few common scenarios
+    search_paths = []
+    
+    # Add current directory and parent directories
+    path_parts = current_dir.split(os.sep)
+    for i in range(len(path_parts)):
+        partial_path = os.sep.join(path_parts[:len(path_parts)-i])
+        if partial_path:  # Avoid empty strings
+            search_paths.extend([
+                os.path.join(partial_path, "docs", "lecture-note"),
+                os.path.join(partial_path, "lecture-note"), 
+                partial_path  # In case we're already in lecture-note
+            ])
+    
+    # Add some common development paths
+    home_dir = os.path.expanduser("~")
+    search_paths.extend([
+        os.path.join(home_dir, "Documents", "projects", "adv-net-sci", "docs", "lecture-note"),
+        os.path.join(home_dir, "projects", "adv-net-sci", "docs", "lecture-note"),
+        os.path.join(home_dir, "adv-net-sci", "docs", "lecture-note"),
+    ])
     
     lecture_note_dir = None
-    for path in possible_paths:
-        abs_path = os.path.abspath(path)
-        if os.path.exists(os.path.join(abs_path, "intro")) and os.path.exists(os.path.join(abs_path, "m01-euler_tour")):
-            lecture_note_dir = abs_path
-            break
+    
+    # Try each path to find the lecture-note directory
+    for search_path in search_paths:
+        try:
+            abs_path = os.path.abspath(search_path)
+            if (os.path.exists(abs_path) and 
+                os.path.exists(os.path.join(abs_path, "intro")) and 
+                os.path.exists(os.path.join(abs_path, "m01-euler_tour"))):
+                lecture_note_dir = abs_path
+                break
+        except:
+            continue
     
     if lecture_note_dir is None:
-        return {"error": f"Could not find lecture-note directory. Current dir: {current_dir}. Tried paths: {[os.path.abspath(p) for p in possible_paths]}"}
+        return {"error": f"Could not find lecture-note directory.\nCurrent dir: {current_dir}\nTried: {search_paths[:5]}...\n\nTip: Make sure marimo is running from your adv-net-sci project directory or a subdirectory."}
     
+    # Build module path
     if module_name == "intro":
         module_path = os.path.join(lecture_note_dir, "intro")
     else:
@@ -84,7 +108,7 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     content = {}
     
     if not os.path.exists(module_path):
-        return {"error": f"Module path {module_path} not found. Lecture note dir: {lecture_note_dir}"}
+        return {"error": f"Module '{module_name}' not found at {module_path}"}
     
     # Read all .md files in the module directory
     try:
