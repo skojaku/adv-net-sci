@@ -1,22 +1,45 @@
-/* Reduce sidebar width */
+/* Custom collapsible callout */
+div.callout-collapsible {
+  border: none !important;
+  background: transparent !important;
+  margin: 1em 0 !important;
+}
+
+div.callout-collapsible .callout-header {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+div.callout-collapsible .callout-title {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+  color: inherit !important;
+  margin: 0.83em 0 !important;
+}
+
+div.callout-collapsible .callout-body {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Simplify sidebar border */
 .sidebar {
-  width: 200px !important;
+  border-right: 1px solid #e9ecef !important;
 }
 
 .sidebar-navigation {
-  width: 200px !important;
+  border-right: 1px solid #e9ecef !important;
 }
 
-/* Adjust main content margin to account for narrower sidebar */
-.content {
-  margin-left: 220px !important;
+/* Remove heavy borders and shadows */
+.sidebar-navigation .sidebar-item {
+  border: none !important;
 }
 
-/* For floating sidebar style */
-@media (min-width: 992px) {
-  .sidebar.sidebar-navigation {
-    width: 200px !important;
-  }
+.sidebar .sidebar-content {
+  border-right: 1px solid #e9ecef !important;
 }
-
-/* Custom collapsible callout */
