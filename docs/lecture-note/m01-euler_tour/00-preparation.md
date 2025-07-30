@@ -94,13 +94,14 @@ The matrix format also enables powerful mathematical operations, allowing entire
 ```python
 import numpy as np
 
-# Initialize 5x5 matrix with zeros
-matrix = np.zeros((5, 5), dtype=int)
-
-# Fill in connections from edge table
-for node1, node2 in edges:
-    matrix[node1][node2] = 1  # Mark connection
-    matrix[node2][node1] = 1  # Since graph is undirected
+# Define adjacency matrix directly
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0 connects to nodes 1, 2
+    [1, 0, 1, 1, 0],  # Node 1 connects to nodes 0, 2, 3
+    [1, 1, 0, 0, 1],  # Node 2 connects to nodes 0, 1, 4
+    [0, 1, 0, 0, 1],  # Node 3 connects to nodes 1, 4
+    [0, 0, 1, 1, 0]   # Node 4 connects to nodes 2, 3
+])
 
 print("Adjacency Matrix:")
 print(matrix)
