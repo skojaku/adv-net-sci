@@ -62,6 +62,10 @@ mode_selector = mo.ui.radio(
     label="Select interaction mode"
 )
 
+mo.vstack([api_key_holder, module_selector, mode_selector])
+```
+
+```python {.marimo}
 # Function to get example message for selected mode
 def get_mode_example():
     selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
@@ -76,9 +80,7 @@ def get_mode_example():
         return ""
 
 # Display the example message
-example_message = mo.md(get_mode_example()) if mode_selector.value else mo.md("")
-
-mo.vstack([api_key_holder, module_selector, mode_selector, example_message])
+mo.md(get_mode_example())
 ```
 
 ```python {.marimo}
