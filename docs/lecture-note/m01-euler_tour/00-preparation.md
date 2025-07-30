@@ -37,7 +37,7 @@ Consider this network with 5 nodes and 6 edges:
 
 How do we represent this graph in a format that a computer can understand and manipulate? Let's explore three fundamental approaches.
 
-## 1. Edge Table
+### Edge Table
 
 The edge table directly lists connections as pairs. It's memory-efficient for sparse networks and makes adding/removing edges simple. However, finding a node's neighbors requires scanning the entire list.
 
@@ -45,17 +45,15 @@ The edge table directly lists connections as pairs. It's memory-efficient for sp
 # Each row represents one edge (connection between two nodes)
 edges = [
     (0, 1),  # Node 0 connects to Node 1
-    (0, 2),  # Node 0 connects to Node 2  
+    (0, 2),  # Node 0 connects to Node 2
     (1, 2),  # Node 1 connects to Node 2
     (1, 3),  # Node 1 connects to Node 3
     (2, 4),  # Node 2 connects to Node 4
     (3, 4)   # Node 3 connects to Node 4
 ]
-
-print(f"Total edges: {len(edges)}")  # 6
 ```
 
-## 2. Adjacency List
+### Adjacency List
 
 The adjacency list stores each node's neighbors in a dictionary. It allows instant neighbor lookup and remains memory-efficient for sparse networks. However, checking if two specific nodes are connected requires scanning a neighbor list.
 
@@ -68,20 +66,9 @@ neighbors = {
     3: [1, 4],     # Node 3 connects to nodes 1 and 4
     4: [2, 3]      # Node 4 connects to nodes 2 and 3
 }
-
-print("Adjacency List:")
-for node, adj in neighbors.items():
-    print(f"Node {node}: {adj}")
-
-# Output:
-# Node 0: [1, 2]
-# Node 1: [0, 2, 3] 
-# Node 2: [0, 1, 4]
-# Node 3: [1, 4]
-# Node 4: [2, 3]
 ```
 
-## 3. Adjacency Matrix
+### Adjacency Matrix
 
 The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected. It enables instant edge lookups and supports fast linear algebra operations. However, it uses excessive memory for sparse networks since it stores every possible connection.
 
@@ -96,16 +83,47 @@ matrix = np.array([
     [0, 1, 0, 0, 1],  # Node 3 connects to nodes 1, 4
     [0, 0, 1, 1, 0]   # Node 4 connects to nodes 2, 3
 ])
+```
 
-print("Adjacency Matrix:")
-print(matrix)
+## Counting Node Degrees
 
-# Output:
-# [[0 1 1 0 0]
-#  [1 0 1 1 0]
-#  [1 1 0 0 1]
-#  [0 1 0 0 1]
-#  [0 0 1 1 0]]
+The degree of a node is the number of edges connected to it. Here's how to compute degrees using each representation:
+
+### From Edge Table
+
+Count how many times each node appears in the edge list.
+
+```python
+# Count degrees from edge table
+degrees = {}
+for i in range(5):
+    degrees[i] = 0
+
+for node1, node2 in edges:
+    degrees[node1] += 1
+    degrees[node2] += 1
+
+print("Degrees:", [degrees[i] for i in range(5)])  # [2, 3, 3, 2, 2]
+```
+
+### From Adjacency List
+
+Count the length of each node's neighbor list.
+
+```python
+# Count degrees from adjacency list
+degrees = [len(neighbors[i]) for i in range(5)]
+print("Degrees:", degrees)  # [2, 3, 3, 2, 2]
+```
+
+### From Adjacency Matrix
+
+Sum each row (or column) of the matrix.
+
+```python
+# Count degrees from adjacency matrix
+degrees = matrix.sum(axis=1)  # Sum rows
+print("Degrees:", degrees)  # [2 3 3 2 2]
 ```
 
 You now understand how to represent networks computationally!
