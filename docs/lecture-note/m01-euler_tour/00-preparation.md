@@ -39,7 +39,7 @@ How do we represent this graph in a format that a computer can understand and ma
 
 ### Edge Table
 
-The edge table directly lists connections as pairs. It's memory-efficient for sparse networks and makes adding/removing edges simple. However, finding a node's neighbors requires scanning the entire list.
+The edge table directly lists connections as pairs.
 
 ```python
 # Each row represents one edge (connection between two nodes)
@@ -51,11 +51,12 @@ edges = [
     (2, 4),  # Node 2 connects to Node 4
     (3, 4)   # Node 3 connects to Node 4
 ]
+
 ```
 
 ### Adjacency List
 
-The adjacency list stores each node's neighbors in a dictionary. It allows instant neighbor lookup and remains memory-efficient for sparse networks. However, checking if two specific nodes are connected requires scanning a neighbor list.
+The adjacency list stores each node's neighbors in a dictionary.
 
 ```python
 # Define adjacency list directly as a dictionary
@@ -70,7 +71,7 @@ neighbors = {
 
 ### Adjacency Matrix
 
-The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected. It enables instant edge lookups and supports fast linear algebra operations. However, it uses excessive memory for sparse networks since it stores every possible connection.
+The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected.
 
 ```python
 import numpy as np
