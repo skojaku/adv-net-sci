@@ -22,108 +22,6 @@ The notebook will open in your web browser. All necessary packages will be insta
 :::
 
 
-## The Königsberg Bridge Problem in Code
-
-![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png)
-
-Let's apply the network representation concepts to the original Königsberg bridge problem. The network has 4 nodes (landmasses) and 7 edges (bridges).
-
-### Representing the Königsberg Network
-
-The Königsberg graph can be represented by a list of edges. Note that some bridges appear twice because there were multiple bridges between the same landmasses.
-
-```{python}
-import numpy as np
-
-# Königsberg bridge network
-koenigsberg_edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]
-print("Königsberg edges:", koenigsberg_edges)
-print("Total bridges:", len(koenigsberg_edges))
-```
-
-### Building the Adjacency Matrix
-
-Let's create the adjacency matrix for the Königsberg network:
-
-```{python}
-# Create adjacency matrix for Königsberg
-A = np.zeros((4, 4))
-for i, j in koenigsberg_edges:
-    A[i][j] += 1
-    A[j][i] += 1
-
-print("Königsberg adjacency matrix:")
-print(A.astype(int))  # Convert to int for cleaner display
-```
-
-::: {.callout-note}
-
-In the Königsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).
-
-:::
-
-### Analyzing the Network
-
-Let's use our computational tools to analyze the Königsberg network:
-
-```{python}
-# Count total edges
-_total_edges = np.sum(A) / 2  # Divide by 2 because each edge is counted twice
-print(f"Total edges: {_total_edges}")
-
-# Compute node degrees
-degrees = np.sum(A, axis=1)
-print("Node degrees:", degrees.astype(int))
-
-# Check for odd degrees
-_is_odd = degrees % 2 == 1
-_num_odd_nodes = np.sum(_is_odd)
-print(f"Nodes with odd degree: {_num_odd_nodes}")
-print(f"Odd degree nodes: {np.where(_is_odd)[0]}")
-```
-
-::: {.callout-important}
-
-The number of edges connected to a node is called the ***degree*** of the node.
-
-:::
-
-### Applying Euler's Theorem Computationally
-
-Now we can implement Euler's theorem as code:
-
-```{python}
-def has_euler_path(degrees):
-    """
-    Check if a graph has an Euler path based on node degrees.
-
-    Euler's theorem: A graph has an Euler path if and only if:
-    - All nodes have even degree, OR
-    - Exactly two nodes have odd degree
-    """
-    odd_count = np.sum(degrees % 2 == 1)
-
-    if odd_count == 0:
-        return True, "Euler circuit exists (all nodes have even degree)"
-    elif odd_count == 2:
-        return True, "Euler path exists (exactly 2 nodes have odd degree)"
-    else:
-        return False, f"No Euler path ({odd_count} nodes have odd degree)"
-
-# Test on Königsberg
-_has_path, _reason = has_euler_path(degrees)
-print(f"Königsberg network: {_has_path}")
-print(f"Reason: {_reason}")
-```
-
-::: {.callout-tip}
-
-The `np.sum(A, axis = 1)` computes the row sum of `A`. Alternatively, `np.sum(A, axis = 0)` computes the column sum of `A`.
-Check out the numpy [documentation](https://numpy.org/doc/stable/reference/generated/numpy.sum.html) for more details.
-
-:::
-
----
 
 ## Exercise 01
 
@@ -132,6 +30,9 @@ Check out the numpy [documentation](https://numpy.org/doc/stable/reference/gener
 
 ![Binghamton Map](https://github.com/skojaku/adv-net-sci/raw/main/docs/lecture-note/figs/binghamton-map.jpg)
 
+```{python}
+import numpy as np
+```
 
 ```{python}
 # If you are using colab, uncomment the following line
@@ -172,13 +73,26 @@ def visualize_graph(A, **params):
 visualize_graph(A)
 ```
 
-Check if the graph has an Euler path
+Check if the graph has an Euler path and implement Euler's theorem
 ```{python}
-# Use the has_euler_path function defined above
+# TODO: Implement a function to check if a graph has an Euler path
+# Hint: Euler's theorem states that a graph has an Euler path if and only if:
+# - All nodes have even degree (Euler circuit), OR  
+# - Exactly two nodes have odd degree (Euler path)
+
+def has_euler_path(degrees):
+    """
+    Check if a graph has an Euler path based on node degrees.
+    Complete this function based on Euler's theorem.
+    """
+    # Your code here
+    pass
+
+# Calculate degrees for Binghamton network
 degrees_binghamton = np.sum(A, axis=1)
-_has_path, _reason = has_euler_path(degrees_binghamton) 
-print(f"Binghamton network: {_has_path}")
-print(f"Reason: {_reason}")
+
+# Test your function
+# Your code here
 ```
 
 
@@ -226,8 +140,6 @@ visualize_graph(A)
 
 Check if the graph has an Euler path
 ```{python}
-# Use the has_euler_path function defined above
-_has_path, _reason = has_euler_path(deg)
-print(f"Network: {_has_path}")
-print(f"Reason: {_reason}")
+# Use the has_euler_path function you implemented in Exercise 01
+# Your code here
 ```
