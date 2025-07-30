@@ -5,6 +5,7 @@
 In this module, we will explore the historical moment that gave birth to graph theory and modern network science. A simple Sunday stroll puzzle in an 18th-century Prussian city would spark a mathematical revolution that now powers everything from GPS navigation to social media algorithms.
 
 Through Euler's elegant solution, we will learn:
+
 - How to describe a network using mathematical language
 - How mathematical abstraction reveals hidden structure in complex problems
 - The power of degree-based reasoning in network analysis
@@ -21,7 +22,7 @@ Back in the 18th century, there was a city called *Königsberg* situated on the 
 ::: {.column-margin}
 Königsberg was a major intellectual center of the Enlightenment. [Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant) spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/500px-Immanuel_Kant_-_Gemaelde_1.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/200px-Immanuel_Kant_-_Gemaelde_1.jpg)
 :::
 
 During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
@@ -43,7 +44,7 @@ This seemingly innocent recreational question would become one of the most impor
 ::: {.column-margin}
 Leonhard Euler (1707-1783) was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/500px-Leonhard_Euler.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/200px-Leonhard_Euler.jpg)
 :::
 
 This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.
