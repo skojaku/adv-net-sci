@@ -208,14 +208,16 @@ You: "What is an Euler path? Please provide your answer, and I'll give you feedb
 {module_context}
 
 Instructions for Q&A Mode:
-- Keep answers CONCISE and to-the-point - avoid long explanations
-- Answer questions based on the module content provided above
+- Engage in DIALOGUE-BASED conversation like a helpful tutor
+- Keep answers CONCISE but conversational and friendly
+- After answering, ask follow-up questions to deepen understanding
+- Encourage the student to think further: "What do you think happens if...?" or "How might this apply to...?"
 - Use bullet points or short paragraphs for clarity
 - Include relevant examples from the module when helpful
 - Use occasional emojis only for key concepts or important points (💡 for insights)
 - When providing code examples, always use proper syntax highlighting: ```python for Python, ```r for R, etc.
-- If asked about topics not covered in this module, politely redirect to the module content
-- Focus on direct answers rather than lengthy educational discourse"""
+- Build on student responses with "That's interesting! Let me add..." or "Good point! This connects to..."
+- Create a natural conversation flow rather than just answering and stopping"""
 
         openai_messages.append({
             "role": "system",
@@ -346,12 +348,13 @@ def get_module_prompts():
         ]
     else:  # Q&A Mode
         base_prompts = [
-            f"Explain the key concepts in {module_display}",
-            f"What are the main learning objectives for {module_display}?",
-            "Give me a practice problem from this module",
-            "Explain {{concept}} from this module in simple terms",
-            "How does {{algorithm}} work in network analysis?",
-            "What are some real-world applications covered in this module?",
+            f"Let's discuss the key concepts in {module_display}",
+            f"Help me understand the main ideas in {module_display}",
+            "Walk me through a practice problem from this module",
+            "Can you explain {{concept}} and help me think through it?",
+            "I'm curious about {{algorithm}} - can we explore how it works?",
+            "What real-world applications should I know about from this module?",
+            "I have a question about this module...",
         ]
 
     # Add module-specific prompts
@@ -401,44 +404,44 @@ def get_module_prompts():
     else:  # Q&A Mode
         module_specific = {
             "intro": [
-                "Why do we study networks?",
-                "What are some examples of real-world networks?"
+                "Help me understand why we study networks",
+                "Let's explore some real-world network examples together"
             ],
             "m01-euler_tour": [
-                "Explain the Seven Bridges of Königsberg problem",
-                "How do you determine if a graph has an Euler path?"
+                "Can we walk through the Seven Bridges of Königsberg problem?",
+                "I'm confused about Euler paths - can you help me understand?"
             ],
             "m02-small-world": [
-                "What is the small-world phenomenon?",
-                "Explain the Milgram experiment"
+                "What's interesting about the small-world phenomenon?",
+                "Tell me about the Milgram experiment and what we learned"
             ],
             "m03-robustness": [
-                "How do we measure network robustness?",
-                "What is the difference between random and targeted attacks?"
+                "How do we actually measure if a network is robust?",
+                "What's the difference between random and targeted attacks?"
             ],
             "m04-friendship-paradox": [
-                "Explain the friendship paradox",
-                "How does degree centrality relate to the friendship paradox?"
+                "The friendship paradox sounds confusing - can you explain it?",
+                "How does degree centrality connect to the friendship paradox?"
             ],
             "m05-clustering": [
-                "What is community detection?",
-                "Explain modularity and its role in clustering"
+                "What's the big deal about community detection?",
+                "Help me understand modularity and why it matters"
             ],
             "m06-centrality": [
-                "Compare different centrality measures",
-                "When would you use betweenness vs eigenvector centrality?"
+                "I'm trying to understand different centrality measures",
+                "When should I use betweenness vs eigenvector centrality?"
             ],
             "m07-random-walks": [
-                "How do random walks work on networks?",
-                "Explain PageRank algorithm"
+                "How do random walks actually work on networks?",
+                "Can you walk me through how PageRank works?"
             ],
             "m08-embedding": [
-                "What are network embeddings?",
-                "Compare spectral vs neural embedding methods"
+                "What are network embeddings and why do we need them?",
+                "Help me compare spectral vs neural embedding approaches"
             ],
             "m09-graph-neural-networks": [
-                "How do Graph Neural Networks work?",
-                "Explain graph convolution operations"
+                "I'm curious about how Graph Neural Networks work",
+                "Can you explain graph convolution operations?"
             ]
         }
 
