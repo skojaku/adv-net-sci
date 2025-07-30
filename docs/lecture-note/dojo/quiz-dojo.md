@@ -14,6 +14,7 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 **🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first.
 
 **🚀 Getting Started**:
+
 1. **API Key**: Enter the API key provided by your instructor (contact them if you don't have one)
 2. **Select Module**: Choose the course module you want to practice on
 3. **Choose Mode**:
@@ -66,18 +67,17 @@ mo.vstack([api_key_holder, module_selector, mode_selector])
 ```
 
 ```python {.marimo}
-import marimo as mo
 
 # Function to get example message for selected mode
 def get_mode_example():
     selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
-    
+
     if selected_mode == "Q&A Mode":
-        return "**Example:** *Help me understand the main ideas in Module 1: Euler Tour*"
+        return "**Prompt Example:** *Help me understand the main ideas this module*"
     elif selected_mode == "Quiz Mode":
-        return "**Example:** *Ask me a free-form question about Module 1: Euler Tour*"
+        return "**Prompt Example:** *Ask me a free-form question about this module*"
     elif selected_mode == "Adversarial Mode":
-        return "**Example:** *🎯 Gotcha: Can a disconnected graph have an Euler circuit?*"
+        return "**Prompt Example:** *Can a disconnected graph have an Euler circuit?*"
     else:
         return ""
 
@@ -211,7 +211,7 @@ Instructions for Adversarial Mode:
 - Try to be helpful but don't be overly cautious - give definitive answers even when uncertain
 - You may occasionally make mistakes, especially with:
   - Complex mathematical details
-  - Edge cases or boundary conditions  
+  - Edge cases or boundary conditions
   - Subtle distinctions between similar concepts
   - Specific numerical values or exact formulas
 - Don't hedge too much with phrases like "I think" or "probably"
@@ -261,16 +261,14 @@ You: "What is an Euler path? Please provide your answer, and I'll give you feedb
 {module_context}
 
 Instructions for Q&A Mode:
-- Engage in DIALOGUE-BASED conversation like a helpful tutor
-- Keep answers CONCISE but conversational and friendly
-- After answering, ask follow-up questions to deepen understanding
-- Encourage the student to think further: "What do you think happens if...?" or "How might this apply to...?"
-- Use bullet points or short paragraphs for clarity
-- Include relevant examples from the module when helpful
-- Use occasional emojis only for key concepts or important points (💡 for insights)
-- When providing code examples, always use proper syntax highlighting: ```python for Python, ```r for R, etc.
-- Build on student responses with "That's interesting! Let me add..." or "Good point! This connects to..."
-- Create a natural conversation flow rather than just answering and stopping"""
+- FOCUS ON WHAT THE STUDENT ASKS - answer their specific question directly
+- Keep responses SHORT and CONCISE - 2-3 sentences maximum unless they ask for detail
+- Use a conversational, dialogue-based style like talking to a friend
+- Only elaborate when students specifically ask for more explanation
+- Ask ONE focused follow-up question to continue the dialogue
+- When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
+- Avoid long explanations unless the student requests them
+- Let the student guide the conversation - respond to their interests and questions"""
 
         openai_messages.append({
             "role": "system",
@@ -320,7 +318,7 @@ Instructions for Q&A Mode:
             if "choices" in result and len(result["choices"]) > 0:
                 return result["choices"][0]["message"]["content"]
             else:
-                return "Error: No response from LLM"
+                return "Error: No response from LLM. Make sure you have entered the correct API key."
 
     except urllib.error.URLError as e:
         return f"Error: Connection failed - {str(e)}"
