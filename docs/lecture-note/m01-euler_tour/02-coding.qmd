@@ -116,11 +116,11 @@ Here's how to compute degrees using each representation:
 Count how many times each node appears in the edge list.
 
 ```{python}
-degrees = [0] * 5
+_degrees = [0] * 5
 for node1, node2 in edges:
-    degrees[node1] += 1
-    degrees[node2] += 1
-print("Degrees from edge list:", degrees)
+    _degrees[node1] += 1
+    _degrees[node2] += 1
+print("Degrees from edge list:", _degrees)
 ```
 
 ::: {.column-margin}
@@ -132,8 +132,8 @@ We increment the degree counter for both nodes in each edge because every edge c
 Count the length of each node's neighbor list—the most direct approach.
 
 ```{python}
-degrees = [len(neighbors[i]) for i in range(5)]
-print("Degrees from adjacency list:", degrees)
+_degrees = [len(neighbors[i]) for i in range(5)]
+print("Degrees from adjacency list:", _degrees)
 ```
 
 ### From Adjacency Matrix: Linear Algebra Power
@@ -141,8 +141,8 @@ print("Degrees from adjacency list:", degrees)
 Sum each row (or column) of the matrix—leveraging vectorized operations.
 
 ```{python}
-degrees = matrix.sum(axis=1)  # Sum rows
-print("Degrees from adjacency matrix:", degrees)
+_degrees = matrix.sum(axis=1)  # Sum rows
+print("Degrees from adjacency matrix:", _degrees)
 ```
 
 ::: {.column-margin}
@@ -193,18 +193,18 @@ Let's use our computational tools to analyze the Königsberg network:
 
 ```{python}
 # Count total edges
-total_edges = np.sum(A) / 2  # Divide by 2 because each edge is counted twice
-print(f"Total edges: {total_edges}")
+_total_edges = np.sum(A) / 2  # Divide by 2 because each edge is counted twice
+print(f"Total edges: {_total_edges}")
 
 # Compute node degrees
 degrees = np.sum(A, axis=1)
 print("Node degrees:", degrees.astype(int))
 
 # Check for odd degrees
-is_odd = degrees % 2 == 1
-num_odd_nodes = np.sum(is_odd)
-print(f"Nodes with odd degree: {num_odd_nodes}")
-print(f"Odd degree nodes: {np.where(is_odd)[0]}")
+_is_odd = degrees % 2 == 1
+_num_odd_nodes = np.sum(_is_odd)
+print(f"Nodes with odd degree: {_num_odd_nodes}")
+print(f"Odd degree nodes: {np.where(_is_odd)[0]}")
 ```
 
 ::: {.callout-important}
@@ -236,15 +236,15 @@ def has_euler_path(degrees):
         return False, f"No Euler path ({odd_count} nodes have odd degree)"
 
 # Test on Königsberg
-has_path, reason = has_euler_path(degrees)
-print(f"Königsberg network: {has_path}")
-print(f"Reason: {reason}")
+_has_path, _reason = has_euler_path(degrees)
+print(f"Königsberg network: {_has_path}")
+print(f"Reason: {_reason}")
 
 # Test on our simple example network
-simple_degrees = matrix.sum(axis=1)
-has_path_simple, reason_simple = has_euler_path(simple_degrees)
-print(f"\nSimple network: {has_path_simple}")
-print(f"Reason: {reason_simple}")
+_simple_degrees = matrix.sum(axis=1)
+_has_path_simple, _reason_simple = has_euler_path(_simple_degrees)
+print(f"\nSimple network: {_has_path_simple}")
+print(f"Reason: {_reason_simple}")
 ```
 
 ::: {.callout-tip}
@@ -254,29 +254,6 @@ Check out the numpy [documentation](https://numpy.org/doc/stable/reference/gener
 
 :::
 
-## Advanced: Working with Sparse Matrices
-
-For large networks, adjacency matrices can become memory-intensive. Python's `scipy` library provides efficient sparse matrix representations:
-
-```{python}
-from scipy import sparse
-
-# Convert to sparse matrix
-A_sparse = sparse.csr_matrix(A)
-print("Sparse matrix representation:")
-print(A_sparse)
-
-# Compute degrees from sparse matrix
-degrees_sparse = np.array(A_sparse.sum(axis=1)).flatten()
-print("Degrees from sparse matrix:", degrees_sparse.astype(int))
-```
-
-::: {.callout-tip}
-
-If the adjacency matrix is `scipy` CSR format (or CSC format), you can use `A_csr.sum(axis=1)`, `A_csr.sum(axis=0)`, and `A_csr.sum()`.
-Check out the [scipy documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix) for more details.
-
-:::
 
 ## Summary: From Euler's Insight to Modern Computation
 
