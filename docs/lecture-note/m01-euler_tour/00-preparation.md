@@ -1,38 +1,102 @@
 ---
 title: Preparation - Python and Graph Basics
+filters:
+  - marimo-team/marimo
+  - tikz
+tikz:
+  cache: false
+  save-tex: true  # Enable saving intermediate .tex files
+  tex-dir: tikz-tex  # Optional: Specify directory to save .tex files
 ---
 
 ## Why Do We Need to Code Graphs?
 
-Imagine you're trying to solve the Königsberg bridge puzzle by hand. You might draw the map, trace different paths with your finger, and keep track of which bridges you've crossed. This works fine for 7 bridges, but what if there were 700 bridges? Or 7,000?
+In 2009, the H1N1 influenza pandemic spread around the world in a pattern that surprised scientists. Geographic distance couldn't explain why some distant cities were infected early while nearby ones remained safe for weeks. The breakthrough came when researchers realized that **disease spread follows network connections - air travel routes - not physical distance**. 
+
+But analyzing a global air travel network with thousands of airports and millions of flight connections by hand? Impossible.
 
 **This is exactly why we need to code graphs**: to let computers solve problems that would be impossible to tackle manually.
 
-When we represent graphs in code, we can:
-- **Analyze any size network** - from small puzzles to massive social networks
+When we represent networks in code, we can:
+- **Analyze massive real-world networks** - like global air travel (25,000+ airports) or social media (billions of connections)
+- **Find hidden patterns automatically** - discover why diseases spread the way they do
 - **Test algorithms systematically** - try different approaches and compare results
-- **Find patterns automatically** - detect Euler paths without manual checking
-- **Scale to real problems** - apply the same logic to circuit design, DNA sequencing, or route planning
+- **Apply the same logic everywhere** - from pandemic tracking to circuit design, DNA sequencing, or route planning
 
-## Starting Simple: Graphs with Basic Python
+The same computational tools that helped scientists understand pandemic spread can help us solve the classic Königsberg bridge puzzle - and thousands of similar problems in engineering, biology, and computer science.
 
 ```{.tikz}
-%%| filename: stick-figure
-%%| caption: A Stick Figure
+%%| caption: Network Connections vs Geographic Distance - Why computational tools matter
 
-\begin{tikzpicture}
-  % Head
-  \draw (0,0) circle (1cm);
-  % Body
-  \draw (0,-1) -- (0,-3);
-  % Arms
-  \draw (-1,-2) -- (0,-1) -- (1,-2);
-  % Legs
-  \draw (-1,-4) -- (0,-3) -- (1,-4);
+\begin{tikzpicture}[scale=1.5]
+  % Geographic view (left side)
+  \node[rectangle, draw, fill=red!10, text width=4cm, align=center] at (-3, 3) {
+    \textbf{Geographic Thinking}\\
+    Disease spreads to nearby places first
+  };
+  
+  % Cities with geographic layout
+  \node[circle, draw, fill=blue!20] (mexico) at (-4, 1) {Mexico};
+  \node[circle, draw, fill=blue!20] (usa) at (-3, 2) {USA};
+  \node[circle, draw, fill=blue!20] (guatemala) at (-4.5, 0.5) {Guatemala};
+  \node[circle, draw, fill=blue!20] (japan) at (-1, 1.5) {Japan};
+  
+  % Geographic distance arrows
+  \draw[dashed, gray] (mexico) -- (usa);
+  \draw[dashed, gray] (mexico) -- (guatemala);
+  \draw[dashed, gray] (mexico) -- (japan);
+  
+  \node[red] at (-3, 0) {❌ Poor prediction};
+  
+  % Network view (right side)
+  \node[rectangle, draw, fill=green!10, text width=4cm, align=center] at (3, 3) {
+    \textbf{Network Thinking}\\
+    Disease follows flight connections
+  };
+  
+  % Same cities with network layout
+  \node[circle, draw, fill=green!20] (mexico2) at (2, 1) {Mexico};
+  \node[circle, draw, fill=green!20] (usa2) at (3, 2) {USA};
+  \node[circle, draw, fill=green!20] (guatemala2) at (1.5, 0.5) {Guatemala};
+  \node[circle, draw, fill=green!20] (japan2) at (4, 1.5) {Japan};
+  
+  % Flight connections (thicker = more flights)
+  \draw[thick, blue] (mexico2) -- (usa2);
+  \draw[very thick, blue] (mexico2) -- (japan2);
+  \draw[thin, blue] (mexico2) -- (guatemala2);
+  
+  \node[green!70!black] at (3, 0) {✓ Accurate prediction};
+  
+  % Arrow between views
+  \draw[->, ultra thick, purple] (0, 2) -- (0, 1.5);
+  \node[purple, align=center] at (0, 0.8) {Computational\\analysis\\needed!};
 \end{tikzpicture}
 ```
 
+## Starting Simple: Graphs with Basic Python
+
 Before using specialized libraries, let's see how to represent a simple graph using only basic Python data structures. This will help you understand what the libraries are actually doing behind the scenes.
+
+```{.tikz}
+%%| caption: A Simple Friendship Network - Three people all connected to each other
+
+\begin{tikzpicture}[scale=1.5]
+  % Define nodes
+  \node[circle, draw, fill=lightblue, minimum size=1cm] (alice) at (0,2) {Alice};
+  \node[circle, draw, fill=lightgreen, minimum size=1cm] (bob) at (-1.5,0) {Bob};
+  \node[circle, draw, fill=lightcoral, minimum size=1cm] (charlie) at (1.5,0) {Charlie};
+  
+  % Draw edges (friendships)
+  \draw[thick, blue] (alice) -- (bob);
+  \draw[thick, blue] (bob) -- (charlie);
+  \draw[thick, blue] (charlie) -- (alice);
+  
+  % Add labels for the connections
+  \node[above left, small] at (-0.75,1) {friends};
+  \node[below, small] at (0,0) {friends};
+  \node[above right, small] at (0.75,1) {friends};
+\end{tikzpicture}
+```
 
 ### A Tiny Example: Three Friends
 
@@ -82,6 +146,29 @@ print("Has Euler cycle:", len(odd_degrees) == 0)
 
 This works for 3 people, but imagine doing this for 1000 people with thousands of friendships. We'd need to write a lot of repetitive code!
 
+```{.tikz}
+%%| caption: Understanding Degrees - Each person's number of friendships determines if an Euler tour is possible
+
+\begin{tikzpicture}[scale=1.8]
+  % Define nodes with degree labels
+  \node[circle, draw, fill=lightblue, minimum size=1.2cm] (alice) at (0,2) {\begin{tabular}{c}Alice\\degree: 2\end{tabular}};
+  \node[circle, draw, fill=lightgreen, minimum size=1.2cm] (bob) at (-1.5,0) {\begin{tabular}{c}Bob\\degree: 2\end{tabular}};
+  \node[circle, draw, fill=lightcoral, minimum size=1.2cm] (charlie) at (1.5,0) {\begin{tabular}{c}Charlie\\degree: 2\end{tabular}};
+  
+  % Draw edges with numbers
+  \draw[thick, blue] (alice) -- (bob) node[midway, above left] {1};
+  \draw[thick, blue] (bob) -- (charlie) node[midway, below] {2};
+  \draw[thick, blue] (charlie) -- (alice) node[midway, above right] {3};
+  
+  % Add Euler rule explanation
+  \node[rectangle, draw, fill=yellow!20, text width=4cm, align=center] at (0,-2) {
+    All degrees are even (2)\\
+    $\Rightarrow$ Euler cycle exists!\\
+    Can start anywhere and return
+  };
+\end{tikzpicture}
+```
+
 ## Libraries: Convenient Tools for Graph Work
 
 Now let's see how specialized libraries make this much easier:
@@ -127,6 +214,49 @@ print("Has Euler cycle:", odd_count == 0)
 ```
 
 **The key insight**: Libraries don't change what we're doing - they just make it much easier and faster!
+
+```{.tikz}
+%%| caption: Manual vs Library Approach - Same result, much less work!
+
+\begin{tikzpicture}[scale=1.2]
+  % Manual approach box
+  \node[rectangle, draw, fill=red!10, text width=5.5cm, align=left] at (-3,2) {
+    \textbf{Manual Approach:}\\
+    \texttt{degrees = \{\}}\\
+    \texttt{for person in friends:}\\
+    \texttt{\ \ degrees[person] = len(friends[person])}\\
+    \texttt{odd\_degrees = [person for person, degree}\\
+    \texttt{\ \ \ \ \ \ \ \ \ \ \ \ \ in degrees.items()}\\
+    \texttt{\ \ \ \ \ \ \ \ \ \ \ \ \ if degree \% 2 == 1]}\\
+    \\
+    \textcolor{red}{Many lines of code!}
+  };
+  
+  % Library approach box
+  \node[rectangle, draw, fill=green!10, text width=5cm, align=left] at (3,2) {
+    \textbf{Library Approach:}\\
+    \texttt{g = ig.Graph([(0,1), (1,2), (2,0)])}\\
+    \texttt{degrees = g.degree()}\\
+    \texttt{odd\_count = sum(1 for d in degrees}\\
+    \texttt{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if d \% 2 == 1)}\\
+    \\
+    \\
+    \textcolor{green!70!black}{Clean and simple!}
+  };
+  
+  % Arrow pointing from manual to library
+  \draw[->, thick, blue] (-0.5,2) -- (0.5,2);
+  \node[above] at (0,2.2) {\textcolor{blue}{Libraries handle the details}};
+  
+  % Result box
+  \node[rectangle, draw, fill=blue!10, text width=6cm, align=center] at (0,-1) {
+    \textbf{Both approaches give the same result:}\\
+    Degrees: [2, 2, 2]\\
+    Odd vertices: 0\\
+    Has Euler cycle: True
+  };
+\end{tikzpicture}
+```
 
 ## Essential igraph Operations
 
