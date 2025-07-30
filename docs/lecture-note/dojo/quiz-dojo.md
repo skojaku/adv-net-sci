@@ -104,7 +104,7 @@ def format_module_context(content_dict: Dict[str, str], module_name: str) -> str
     return context
 
 
-def custom_llm_api(messages, config) -> str:
+def custom_llm_api(messages, config, module_context=None) -> str:
     """
     Custom LLM function that calls an OpenAI-compatible API endpoint
     """
@@ -119,11 +119,34 @@ def custom_llm_api(messages, config) -> str:
 
     # Convert marimo ChatMessage objects to OpenAI format
     openai_messages = []
-    for msg in messages:
+    
+    # Add module context as system message if provided
+    if module_context:
         openai_messages.append({
-            "role": msg.role,
-            "content": msg.content
+            "role": "system",
+            "content": f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and create relevant quiz questions.
+
+{module_context}
+
+Instructions:
+- Answer questions based on the module content provided above
+- When creating quiz questions, make them relevant to the concepts in this module
+- Reference specific concepts, algorithms, or examples from the module when helpful
+- If asked about topics not covered in this module, politely redirect to the module content"""
         })
+    
+    for msg in messages:
+        # Handle both dict and ChatMessage objects
+        if hasattr(msg, 'role') and hasattr(msg, 'content'):
+            openai_messages.append({
+                "role": msg.role,
+                "content": msg.content
+            })
+        elif isinstance(msg, dict) and 'role' in msg and 'content' in msg:
+            openai_messages.append({
+                "role": msg["role"],
+                "content": msg["content"]
+            })
 
     payload = {
         "model": model,
@@ -172,30 +195,14 @@ def llm_wrapper(messages, config):
     selected_module = module_selector.value
     
     if selected_module and selected_module != "":
-        # Read module content
+        # Read module content and format context
         module_content = read_module_content(selected_module)
         module_context = format_module_context(module_content, selected_module)
         
-        # Add module context as system message at the beginning
-        context_message = {
-            "role": "system",
-            "content": f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and create relevant quiz questions.
-
-{module_context}
-
-Instructions:
-- Answer questions based on the module content provided above
-- When creating quiz questions, make them relevant to the concepts in this module
-- Reference specific concepts, algorithms, or examples from the module when helpful
-- If asked about topics not covered in this module, politely redirect to the module content"""
-        }
-        
-        # Insert context message at the beginning
-        contextualized_messages = [context_message] + list(messages)
+        # Pass context to custom_llm_api
+        return custom_llm_api(messages, config, module_context)
     else:
-        contextualized_messages = messages
-    
-    return custom_llm_api(contextualized_messages, config)
+        return custom_llm_api(messages, config)
 
 # Module-specific prompts based on selection
 def get_module_prompts():
