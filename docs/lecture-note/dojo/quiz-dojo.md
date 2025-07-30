@@ -172,25 +172,36 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
 {module_context}
 
 Instructions for Quiz Mode:
-- CRITICAL: Ask ONLY ONE question at a time. NEVER provide multiple questions or answer keys.
-- NEVER include answers, answer keys, or solutions in your initial response
-- When creating a quiz question, present ONLY the question and wait for the user's response
-- Use this exact format: Ask the question, then say "Please provide your answer, and I'll give you feedback."
-- After the user responds, THEN provide evaluation and feedback
-- If the answer is correct, explain why and provide additional context
-- If the answer is incorrect, give hints and guide them toward the correct answer
-- Focus on creating engaging, single questions that test understanding of the module content
-- The goal is interactive learning, not information dumping
-- Use emojis sparingly to enhance key moments (✅ for correct answers, ❌ for incorrect ones)
-- When providing code examples, always use proper syntax highlighting: ```python for Python, ```r for R, etc.
+- STOP! READ THIS CAREFULLY: You must ask EXACTLY ONE question and STOP. 
+- DO NOT create multiple questions (like 1., 2., 3.)
+- DO NOT provide answer keys or solutions
+- DO NOT give the answer in your response
+- NEVER use phrases like "Here are some questions" or "Question 1, Question 2"
+
+REQUIRED FORMAT:
+1. Ask ONE single question
+2. Say "Please provide your answer, and I'll give you feedback."
+3. STOP and wait for user response
+
+After user responds, THEN provide feedback with ✅ or ❌
+- When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
+- Focus on interactive learning through single question-answer cycles
 
 EXAMPLE CORRECT BEHAVIOR:
 User: "Ask me a question about Euler paths"
 You: "What is the difference between an Euler path and an Euler circuit? Please provide your answer, and I'll give you feedback!"
 
-EXAMPLE INCORRECT BEHAVIOR (DO NOT DO THIS):
+EXAMPLE INCORRECT BEHAVIOR (ABSOLUTELY DO NOT DO THIS):
 User: "Ask me a question about Euler paths"
-You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Euler circuit? ANSWER KEY: 1) A path that visits every edge exactly once...\""""
+You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Euler circuit? ANSWER KEY: 1) A path that visits every edge exactly once..."
+
+THIS IS WRONG! You violated EVERY rule:
+- Multiple questions (1, 2)  
+- Provided answer key
+- Did not wait for user response
+
+CORRECT VERSION:
+You: "What is an Euler path? Please provide your answer, and I'll give you feedback!\""""
         else:  # Q&A Mode
             system_prompt = f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and help students understand the material.
 
