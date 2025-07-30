@@ -155,7 +155,7 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     # Your API configuration
     base_url = "https://chat.binghamton.edu/api"
     api_key = api_key_holder.value
-    model = "llama3.2:latest"
+    model = "gemma3:latest"
 
     # Use config parameters if available
     temperature = getattr(config, "temperature", 0.7)
@@ -172,12 +172,14 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
 {module_context}
 
 Instructions for Quiz Mode:
-- When asked to create quiz questions, generate multiple choice, short answer, or problem-solving questions based on the module content
+- When asked to create quiz questions, generate ONE question at a time based on the module content
+- Do NOT provide the answer immediately - ask the question and wait for the user to respond
 - Include a mix of difficulty levels: basic recall, conceptual understanding, and application
-- Provide clear, correct answers with explanations
-- When evaluating student answers, be constructive and educational
+- After the user provides their answer, evaluate it constructively with detailed feedback
+- If the answer is correct, explain why and provide additional context
+- If the answer is incorrect or incomplete, guide them toward the correct answer with hints
 - Focus on key concepts, algorithms, mathematical formulations, and real-world applications from the module
-- If asked general questions, still frame your response in terms of quiz preparation"""
+- Always encourage learning through the interactive question-answer process"""
         else:  # Q&A Mode
             system_prompt = f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and help students understand the material.
 
@@ -190,7 +192,7 @@ Instructions for Q&A Mode:
 - Reference specific concepts, algorithms, or examples from the module when helpful
 - If asked about topics not covered in this module, politely redirect to the module content
 - Encourage deeper understanding through follow-up questions when appropriate"""
-        
+
         openai_messages.append({
             "role": "system",
             "content": system_prompt
@@ -306,16 +308,17 @@ def get_module_prompts():
 
     # Get the selected mode
     selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
-    
+
     if selected_mode == "Quiz Mode":
         base_prompts = [
-            f"Create a multiple choice question about {module_display}",
-            f"Generate a short answer question for {module_display}",
-            f"Create a problem-solving question from {module_display}",
-            "Make a quiz question with different difficulty levels",
-            "Generate a question about {{concept}} with answer explanation",
-            "Create a quiz question testing understanding of {{algorithm}}",
-            "Evaluate my answer to your previous question",
+            f"Ask me a multiple choice question about {module_display}",
+            f"Give me a short answer question for {module_display}",
+            f"Test me with a problem-solving question from {module_display}",
+            "Quiz me on a key concept from this module",
+            "Ask me a question about {{concept}} and wait for my answer",
+            "Test my understanding of {{algorithm}}",
+            "Give me a challenging question from this module",
+            "Check my answer to your previous question",
         ]
     else:  # Q&A Mode
         base_prompts = [
@@ -331,47 +334,47 @@ def get_module_prompts():
     if selected_mode == "Quiz Mode":
         module_specific = {
             "intro": [
-                "Create a quiz question about why we study networks",
-                "Generate a question about real-world network examples"
+                "Quiz me on why we study networks",
+                "Ask me about real-world network examples"
             ],
             "m01-euler_tour": [
-                "Create a quiz question about the Seven Bridges of Königsberg",
-                "Generate a question about determining Euler paths"
+                "Test me on the Seven Bridges of Königsberg problem",
+                "Quiz me on determining Euler paths"
             ],
             "m02-small-world": [
-                "Create a quiz question about the small-world phenomenon",
-                "Generate a question about the Milgram experiment"
+                "Ask me about the small-world phenomenon",
+                "Test me on the Milgram experiment"
             ],
             "m03-robustness": [
-                "Create a quiz question about measuring network robustness",
-                "Generate a question comparing random vs targeted attacks"
+                "Quiz me on measuring network robustness",
+                "Ask me to compare random vs targeted attacks"
             ],
             "m04-friendship-paradox": [
-                "Create a quiz question explaining the friendship paradox",
-                "Generate a question about degree centrality and the friendship paradox"
+                "Test me on the friendship paradox",
+                "Quiz me on degree centrality and the friendship paradox"
             ],
             "m05-clustering": [
-                "Create a quiz question about community detection",
-                "Generate a question about modularity in clustering"
+                "Ask me about community detection",
+                "Test me on modularity in clustering"
             ],
             "m06-centrality": [
-                "Create a quiz question comparing centrality measures",
-                "Generate a question about when to use different centrality measures"
+                "Quiz me on comparing centrality measures",
+                "Ask me when to use different centrality measures"
             ],
             "m07-random-walks": [
-                "Create a quiz question about random walks on networks",
-                "Generate a question about the PageRank algorithm"
+                "Test me on random walks on networks",
+                "Quiz me on the PageRank algorithm"
             ],
             "m08-embedding": [
-                "Create a quiz question about network embeddings",
-                "Generate a question comparing spectral vs neural embeddings"
+                "Ask me about network embeddings",
+                "Test me on spectral vs neural embeddings"
             ],
             "m09-graph-neural-networks": [
-                "Create a quiz question about Graph Neural Networks",
-                "Generate a question about graph convolution operations"
+                "Quiz me on Graph Neural Networks",
+                "Ask me about graph convolution operations"
             ]
         }
-    else:  # Q&A Mode  
+    else:  # Q&A Mode
         module_specific = {
             "intro": [
                 "Why do we study networks?",
