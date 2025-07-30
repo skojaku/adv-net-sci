@@ -52,66 +52,76 @@ from typing import List, Dict, Any
 
 
 def read_module_content(module_name: str) -> Dict[str, str]:
-    """Read all markdown files from the selected module via GitHub API"""
+    """Read all markdown files from the selected module via GitHub raw URLs"""
     import urllib.request
-    import json
     
     # GitHub repository details
     github_user = "skojaku"
     github_repo = "adv-net-sci"
-    github_branch = "main"  # or "master" if that's the default branch
+    github_branch = "main"
     
-    # Build the API URL for the module directory
+    # Define the common files we expect in each module
+    common_files = [
+        "00-preparation.md",
+        "01-concepts.md", 
+        "03-exercises.md"
+    ]
+    
+    # Module-specific additional files
+    additional_files = {
+        "intro": ["setup.md", "why-networks.md"],
+        "m01-euler_tour": [],
+        "m02-small-world": ["assignment.md", "connectedness.md", "small-world-experiment.md", "wikirace.md", "which-tools.md", "what-to-learn.md", "pen-and-paper.md"],
+        "m03-robustness": ["robustness.md", "what-to-learn.md", "exercise-power-grid.md", "04-appendix.md"],
+        "m04-friendship-paradox": ["what-to-learn.md"],
+        "m05-clustering": ["what-is-community.md", "what-to-learn.md", "graph-cut.md", "modularity.md", "modularity-02.md", "pattern-matching.md", "pen-and-paper.md"],
+        "m06-centrality": ["degree-distance-based-centrality.md", "eigencentrality.md", "what-to-learn.md", "pen-and-paper.md"],
+        "m07-random-walks": ["amida-kuji.md", "what-to-learn.md", "pen-and-paper.md"],
+        "m08-embedding": ["software.md", "spectral-vs-neural-embedding.md", "what-to-learn.md", "pen-and-paper.md", "04-appendix.md"],
+        "m09-graph-neural-networks": ["what-to-learn.md", "pen-and-paper.md"]
+    }
+    
+    # Get files to fetch for this module
     if module_name == "intro":
-        api_url = f"https://api.github.com/repos/{github_user}/{github_repo}/contents/docs/lecture-note/intro"
+        files_to_fetch = additional_files.get(module_name, [])
     else:
-        api_url = f"https://api.github.com/repos/{github_user}/{github_repo}/contents/docs/lecture-note/{module_name}"
+        files_to_fetch = common_files + additional_files.get(module_name, [])
     
     content = {}
     
-    try:
-        # Get the list of files in the module directory
-        req = urllib.request.Request(api_url)
-        req.add_header('User-Agent', 'quiz-dojo-marimo-app')
+    # Build base raw URL
+    base_raw_url = f"https://raw.githubusercontent.com/{github_user}/{github_repo}/{github_branch}/docs/lecture-note"
+    
+    if module_name == "intro":
+        module_path = f"{base_raw_url}/intro"
+    else:
+        module_path = f"{base_raw_url}/{module_name}"
+    
+    # Fetch each file
+    for filename in files_to_fetch:
+        file_url = f"{module_path}/{filename}"
         
-        with urllib.request.urlopen(req, timeout=10) as response:
-            files_data = json.loads(response.read().decode('utf-8'))
-        
-        # Filter for .md files
-        md_files = [f for f in files_data if f['name'].endswith('.md') and f['type'] == 'file']
-        
-        if not md_files:
-            return {"error": f"No .md files found in module '{module_name}' on GitHub"}
-        
-        # Fetch content for each .md file
-        for file_info in md_files:
-            filename = file_info['name']
-            download_url = file_info['download_url']
+        try:
+            req = urllib.request.Request(file_url)
+            req.add_header('User-Agent', 'quiz-dojo-marimo-app')
             
-            try:
-                # Fetch the file content
-                with urllib.request.urlopen(download_url, timeout=10) as file_response:
-                    file_content = file_response.read().decode('utf-8')
-                    content[filename] = file_content
-            except Exception as e:
-                content[filename] = f"Error fetching {filename}: {str(e)}"
-        
-        if not content:
-            return {"error": f"No content could be loaded for module '{module_name}'"}
-            
-        return content
-        
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return {"error": f"Module '{module_name}' not found in GitHub repository.\nURL: {api_url}"}
-        else:
-            return {"error": f"GitHub API error {e.code}: {str(e)}"}
-    except urllib.error.URLError as e:
-        return {"error": f"Network error accessing GitHub: {str(e)}"}
-    except json.JSONDecodeError as e:
-        return {"error": f"Error parsing GitHub API response: {str(e)}"}
-    except Exception as e:
-        return {"error": f"Unexpected error fetching module content: {str(e)}"}
+            with urllib.request.urlopen(req, timeout=10) as response:
+                file_content = response.read().decode('utf-8')
+                content[filename] = file_content
+                
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                # File doesn't exist, skip it
+                continue
+            else:
+                content[filename] = f"Error fetching {filename}: HTTP {e.code}"
+        except Exception as e:
+            content[filename] = f"Error fetching {filename}: {str(e)}"
+    
+    if not content:
+        return {"error": f"No content could be loaded for module '{module_name}'. Tried files: {files_to_fetch}"}
+    
+    return content
 
 
 def format_module_context(content_dict: Dict[str, str], module_name: str) -> str:
