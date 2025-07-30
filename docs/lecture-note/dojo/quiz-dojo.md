@@ -184,6 +184,8 @@ REQUIRED FORMAT:
 3. STOP and wait for user response
 
 After user responds, THEN provide feedback with ✅ or ❌
+- DEFAULT to free-form, open-ended questions that require explanation and critical thinking
+- Only use multiple choice if specifically requested by the user
 - When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
 - Focus on interactive learning through single question-answer cycles
 
@@ -337,13 +339,14 @@ def get_module_prompts():
 
     if selected_mode == "Quiz Mode":
         base_prompts = [
-            f"Ask me a multiple choice question about {module_display}",
-            f"Give me a short answer question for {module_display}",
+            f"Ask me a free-form question about {module_display}",
+            f"Give me an open-ended question for {module_display}",
             f"Test me with a problem-solving question from {module_display}",
             "Quiz me on a key concept from this module",
             "Ask me a question about {{concept}} and wait for my answer",
             "Test my understanding of {{algorithm}}",
             "Give me a challenging question from this module",
+            "Ask me a multiple choice question about {{topic}}",
             "Check my answer to your previous question",
         ]
     else:  # Q&A Mode
