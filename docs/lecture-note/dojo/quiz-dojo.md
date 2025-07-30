@@ -52,84 +52,66 @@ from typing import List, Dict, Any
 
 
 def read_module_content(module_name: str) -> Dict[str, str]:
-    """Read all markdown files from the selected module"""
-    import os
+    """Read all markdown files from the selected module via GitHub API"""
+    import urllib.request
+    import json
     
-    # Since marimo is running locally, try to find the project directory
-    # Start by checking if we can find a reasonable project structure
-    current_dir = os.getcwd()
+    # GitHub repository details
+    github_user = "skojaku"
+    github_repo = "adv-net-sci"
+    github_branch = "main"  # or "master" if that's the default branch
     
-    # For local marimo, the most likely scenario is that it's running from the project directory
-    # Let's try a few common scenarios
-    search_paths = []
-    
-    # Add current directory and parent directories
-    path_parts = current_dir.split(os.sep)
-    for i in range(len(path_parts)):
-        partial_path = os.sep.join(path_parts[:len(path_parts)-i])
-        if partial_path:  # Avoid empty strings
-            search_paths.extend([
-                os.path.join(partial_path, "docs", "lecture-note"),
-                os.path.join(partial_path, "lecture-note"), 
-                partial_path  # In case we're already in lecture-note
-            ])
-    
-    # Add some common development paths
-    home_dir = os.path.expanduser("~")
-    search_paths.extend([
-        os.path.join(home_dir, "Documents", "projects", "adv-net-sci", "docs", "lecture-note"),
-        os.path.join(home_dir, "projects", "adv-net-sci", "docs", "lecture-note"),
-        os.path.join(home_dir, "adv-net-sci", "docs", "lecture-note"),
-    ])
-    
-    lecture_note_dir = None
-    
-    # Try each path to find the lecture-note directory
-    for search_path in search_paths:
-        try:
-            abs_path = os.path.abspath(search_path)
-            if (os.path.exists(abs_path) and 
-                os.path.exists(os.path.join(abs_path, "intro")) and 
-                os.path.exists(os.path.join(abs_path, "m01-euler_tour"))):
-                lecture_note_dir = abs_path
-                break
-        except:
-            continue
-    
-    if lecture_note_dir is None:
-        return {"error": f"Could not find lecture-note directory.\nCurrent dir: {current_dir}\nTried: {search_paths[:5]}...\n\nTip: Make sure marimo is running from your adv-net-sci project directory or a subdirectory."}
-    
-    # Build module path
+    # Build the API URL for the module directory
     if module_name == "intro":
-        module_path = os.path.join(lecture_note_dir, "intro")
+        api_url = f"https://api.github.com/repos/{github_user}/{github_repo}/contents/docs/lecture-note/intro"
     else:
-        module_path = os.path.join(lecture_note_dir, module_name)
+        api_url = f"https://api.github.com/repos/{github_user}/{github_repo}/contents/docs/lecture-note/{module_name}"
     
     content = {}
     
-    if not os.path.exists(module_path):
-        return {"error": f"Module '{module_name}' not found at {module_path}"}
-    
-    # Read all .md files in the module directory
     try:
-        files_found = os.listdir(module_path)
-        md_files = [f for f in files_found if f.endswith('.md')]
+        # Get the list of files in the module directory
+        req = urllib.request.Request(api_url)
+        req.add_header('User-Agent', 'quiz-dojo-marimo-app')
+        
+        with urllib.request.urlopen(req, timeout=10) as response:
+            files_data = json.loads(response.read().decode('utf-8'))
+        
+        # Filter for .md files
+        md_files = [f for f in files_data if f['name'].endswith('.md') and f['type'] == 'file']
         
         if not md_files:
-            return {"error": f"No .md files found in {module_path}.\nFiles found: {files_found}"}
+            return {"error": f"No .md files found in module '{module_name}' on GitHub"}
         
-        for filename in md_files:
-            file_path = os.path.join(module_path, filename)
+        # Fetch content for each .md file
+        for file_info in md_files:
+            filename = file_info['name']
+            download_url = file_info['download_url']
+            
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content[filename] = f.read()
+                # Fetch the file content
+                with urllib.request.urlopen(download_url, timeout=10) as file_response:
+                    file_content = file_response.read().decode('utf-8')
+                    content[filename] = file_content
             except Exception as e:
-                content[filename] = f"Error reading file: {str(e)}"
-                
+                content[filename] = f"Error fetching {filename}: {str(e)}"
+        
+        if not content:
+            return {"error": f"No content could be loaded for module '{module_name}'"}
+            
+        return content
+        
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return {"error": f"Module '{module_name}' not found in GitHub repository.\nURL: {api_url}"}
+        else:
+            return {"error": f"GitHub API error {e.code}: {str(e)}"}
+    except urllib.error.URLError as e:
+        return {"error": f"Network error accessing GitHub: {str(e)}"}
+    except json.JSONDecodeError as e:
+        return {"error": f"Error parsing GitHub API response: {str(e)}"}
     except Exception as e:
-        return {"error": f"Error accessing directory {module_path}: {str(e)}"}
-    
-    return content
+        return {"error": f"Unexpected error fetching module content: {str(e)}"}
 
 
 def format_module_context(content_dict: Dict[str, str], module_name: str) -> str:
