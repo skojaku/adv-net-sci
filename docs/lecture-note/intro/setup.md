@@ -1,6 +1,8 @@
 
 ---
 title: Setup
+filters:
+    - marimo-team/marimo
 ---
 
 ## Python and Virtual Environments
@@ -29,9 +31,30 @@ Without virtual environments, you risk dependency hell where package conflicts m
 :::
 
 
-**Using uv (Recommended)**
+We recommend using [mamba](https://mamba.readthedocs.io/) and [uv](https://docs.astral.sh/uv/).
+Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects.
+uv is a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. [See here for installation instructions](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
-We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. [See here for installation instructions](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
+Follow the following steps to install mamba, uv, along with the minimum Python packages required for this course.
+
+1. [Install mamba] (https://github.com/conda-forge/miniforge)
+2. Run the following command to create a new environment with the minimum Python packages required for this course.
+
+```bash
+mamba create -n advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv
+```
+
+3. Activate the environment.
+
+```bash
+mamba activate advnetsci
+```
+
+4. Pip install marimo.
+
+```bash
+pip install marimo
+```
 
 ::: {.column-margin}
 
@@ -41,7 +64,7 @@ We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package and p
 
 
 
-**Other Options**
+#### Other Options
 
 If you prefer tools other than uv, here are some alternatives:
 
@@ -63,8 +86,6 @@ We'll use [Marimo](https://marimo.io/) ([GitHub](https://github.com/marimo-team/
 
 :::
 
-**Using Marimo's Sandbox Feature with uv (Recommended)**
-
 Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.
 
 Creating a sandboxed notebook:
@@ -81,14 +102,14 @@ uv run my_notebook.py
 
 Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.
 
-**Alternative Installation**
+#### Alternative Installation
 
 If you're not using uv, you can install marimo with pip:
 ```bash
 pip install marimo
 ```
 
-**Running Marimo**
+#### Running Marimo
 
 To start a new marimo notebook:
 
@@ -103,7 +124,7 @@ marimo edit notebook.py
 ```
 
 
-## Github
+## Github and GitHub Copilot
 
 We'll use GitHub for assignment collection and auto-grading in this course.
 
@@ -113,7 +134,7 @@ We'll use GitHub for assignment collection and auto-grading in this course.
 
 :::
 
-**Minimum Requirements**
+### Minimum Requirements
 
 At the minimum level, you only need to:
 
@@ -122,36 +143,18 @@ At the minimum level, you only need to:
 
 Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this [assignment example](https://github.com/sk-classroom/starter) to get familiar with the format.
 
-## GitHub Copilot
+### Subscribing to GitHub Copilot
 
-We strongly encourage you to use [GitHub Copilot](https://github.com/features/copilot), an AI-powered coding assistant that can significantly boost your productivity and learning experience in this course.
+We strongly encourage you to use [GitHub Copilot](https://github.com/features/copilot), an AI-powered coding assistant that helps you write code faster and more efficiently.
+GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in code editor, including VS Code and Marimo.
 
-**What is GitHub Copilot?**
+Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the [GitHub Copilot Pro free access page](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro) to get started.
 
-GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in your code editor. It's like having an experienced programmer looking over your shoulder, helping you write better code faster.
-
-**Benefits for Network Science Students:**
-
-- **Accelerated Learning**: Get instant suggestions for Python syntax, network analysis functions, and data manipulation
-- **Code Quality**: Receive well-structured code suggestions following best practices
-- **Documentation Help**: Generate comments and explanations for complex network algorithms
-- **Debugging Assistance**: Get help identifying and fixing errors in your code
-- **Library Usage**: Learn how to use NetworkX, igraph, and other network analysis libraries more effectively
-
-**Free Access for Students**
-
-Good news! Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the [GitHub Copilot Pro free access page](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro) to:
-
-1. Check your eligibility as a student
-2. Follow the guided process to activate your free access
-3. Start using Copilot in VS Code, your web browser, or directly in GitHub
-
-**Getting Started**
-
-Once you have access, install the GitHub Copilot extension in VS Code and start coding. Copilot will automatically provide suggestions as you type, making your network science assignments more efficient and educational.
+Marimo notebook supports GitHub Copilot out of the box. [See the instruction](https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot) to enable it. If you are using VS Code, you can also install the [GitHub Copilot extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) to get the same experience.
 
 
-**For Students Interested in Learning More**
+
+### For Students Interested in Learning More {.unnumbered}
 
 Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.
 
@@ -168,12 +171,7 @@ Git(Hub) and AI tools are like a pair of best friends. Git ensures that all edit
 :::
 
 
-**GitHub Desktop (Recommended for Beginners)**
-
-If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
-
-
-**GitHub Desktop (Recommended for Beginners)**
+#### GitHub Desktop (Recommended for Beginners)
 
 If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
 
@@ -181,7 +179,7 @@ If you want to learn more about version control, start with [GitHub Desktop](htt
 2. Download for your operating system
 3. Install and sign in with your GitHub account
 
-**Understanding Git and Version Control**
+#### Understanding Git and Version Control
 
 Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated "save" system that:
 
@@ -192,10 +190,11 @@ Git is a version control system that tracks changes in your code over time. Thin
 
 GitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.
 
-**Learning Resources**
+#### Learning Resources
 
 Essential resources to understand Git concepts:
 
 - [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
 - [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
 - [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
+

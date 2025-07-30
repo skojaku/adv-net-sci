@@ -98,12 +98,13 @@ While the schematic representation is useful, things can get complicated as soon
 
 This is called an ***edge table***. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
 
-## Why networks are hard to understand
+## Are we done with networks?
 
-If we can represent a network in a table---a familiar data format that can be analyzed by statistical methods, machine learning, and other tools---aren't we done?
+If we can represent a network in a table---a familiar data format that can be analyzed by statistical methods, machine learning, and other tools---can we just use these tools to analyze networks? Why do we need to learn network science?
 
-In a nutshell, the answer is no. A network is not just a collection of nodes and edges. They work in tandem to create a complex system. And this view---that a system is not just a collection of parts---represents a critical shift in science.
-For centuries, scientists believed in a reductionist approach. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century [Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck) seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.
+**Long story short, a network is not just a collection of nodes and edges. They work in tandem to create a complex system**. And this view---that a system is not just a collection of parts---represents a critical shift in science.
+
+For centuries, scientists believed in **reductionism**. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century [Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck) seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.
 
 ::: {.column-margin}
 

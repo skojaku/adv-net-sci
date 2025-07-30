@@ -2,6 +2,9 @@ project:
   type: book
   output-dir: _book
 
+author: Sadamori Kojaku
+date: last-modified
+date-format: long
 
 book:
   title: "Advanced Topics in Network Science"
@@ -14,8 +17,10 @@ book:
     - part: "Intro"
       chapters:
         - intro/why-networks.md
-        - intro/zoo-of-networks.md
         - intro/setup.md
+    - part: "Dojo 🥋"
+      chapters:
+        - dojo/quiz-dojo.md
     - part: "M01: Euler Tour"
       chapters:
         - m01-euler_tour/00-preparation.md
@@ -81,12 +86,20 @@ execute:
 
 format:
   html:
-    theme: materia
-    toc: true
+    theme:
+      light:
+         - cosmo
+         - scss/style.scss
+      dark:
+         - cosmo
+         - scss/style.scss
+    toc: false
+    page-layout: full
     toc-depth: 2
     number-sections: true
+    number-depth: 2
     html-math-method: katex
-    code-fold: true
+    code-fold: false
     code-copy: hover
     code-tools: true
 
@@ -98,14 +111,14 @@ website:
   repo-url: https://github.com/skojaku/adv-net-sci
   repo-actions: [edit, issue]
   search: true
-  page-navigation: true
+  page-navigation: false
   page-footer:
     left: "Copyright 2024, Sadamori Kojaku"
     right:
       - icon: github
         href: https://github.com/skojaku/adv-net-sci
   navbar:
-    left:
+    top:
       - text: "More"
         menu:
            - text: "GitHub"
