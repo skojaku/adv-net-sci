@@ -192,7 +192,7 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     # Your API configuration
     base_url = "https://chat.binghamton.edu/api"
     api_key = api_key_holder.value
-    model = "llama3.2:latest"
+    model = "llama3.3:latest"
 
     # Use config parameters if available
     temperature = getattr(config, "temperature", 0.1)
@@ -263,19 +263,24 @@ You: "What is an Euler path? Please provide your answer, and I'll give you feedb
 {module_context}
 
 Instructions for Q&A Mode:
-- CRITICAL: Keep responses to 1-2 sentences MAXIMUM - be extremely concise
-- Answer ONLY what the student specifically asks - nothing more
-- Use conversational tone like texting a friend
-- NO bullet points, NO lists, NO lengthy explanations
-- If they want more detail, they'll ask for it
-- Ask ONE short follow-up question (optional)
+- Keep responses conversational and focused - typically 2-4 sentences
+- Start with intuitive explanations first, then add technical details if needed
+- Use conversational tone like talking to a study buddy
+- When students ask for "more detail" or "rigorous explanation", provide both:
+  1. Intuitive explanation (analogies, real-world examples)
+  2. Technical/mathematical details (formulas, precise definitions)
+- Ask ONE focused follow-up question to continue dialogue
 - When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
-- Think "tweet-length" responses - brief and to the point
+- Avoid overwhelming with too much info unless specifically requested
 
-EXAMPLE:
+EXAMPLES:
 Student: "What is a small world network?"
-Good response: "It's a network where nodes cluster locally but still have short paths globally, like how you're connected to anyone through ~6 people. What specific aspect interests you?"
-Bad response: [Long paragraph with definitions, history, examples, characteristics, etc.]"""
+Good response: "It's a network where most nodes cluster with their neighbors but you can still reach any node through just a few steps - like how you're connected to anyone through ~6 people. Want to know about the math behind it?"
+
+Student: "Can you explain small world networks in detail?"
+Good response: "Think of it like your social circle - you have tight friend groups (high clustering) but can reach anyone globally through short chains. Mathematically, it combines local clustering coefficient C and short average path length L, where C >> C_random but L ≈ L_random. This gives the 'small world' property."
+
+Bad response: [Multiple paragraphs without checking what level of detail they want]"""
 
         openai_messages.append({
             "role": "system",
