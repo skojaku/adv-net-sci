@@ -40,11 +40,11 @@ import numpy as np
   \draw[thick, blue] (3) -- (4);
 
   % Add degree labels
-  \node[above, font=\large] at (0,2.7) {degree: 2};
-  \node[left, font=\large] at (-2.2,0.5) {degree: 3};
-  \node[right, font=\large] at (2.2,0.5) {degree: 3};
-  \node[below left, font=\large] at (-1.5,-2.2) {degree: 2};
-  \node[below right, font=\large] at (1.5,-2.2) {degree: 2};
+  \node[above, font=\Large] at (0,2.7) {\textbf{degree: 2}};
+  \node[left, font=\Large] at (-2.2,0.5) {\textbf{degree: 3}};
+  \node[right, font=\Large] at (2.2,0.5) {\textbf{degree: 3}};
+  \node[below left, font=\Large] at (-1.5,-2.2) {\textbf{degree: 2}};
+  \node[below right, font=\Large] at (1.5,-2.2) {\textbf{degree: 2}};
 \end{tikzpicture}
 ```
 
