@@ -1,0 +1,12 @@
+{
+  "hash": "e670a06d1f5571579317b1817448b872",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Advanced: Sparse Matrices for Large-Scale Networks\"\njupyter: python3\n---\n\n## The Scale Problem: From Königsberg to Global Networks\n\nWhile Euler's analysis worked perfectly for Königsberg's 4 landmasses and 7 bridges, today's networks operate at vastly different scales. Suppose we want to represent the social network of all people on Earth using an adjacency matrix. How much memory would we need?\nFor an adjacency matrix with 8 billion nodes, the matrix size is $8 \\times 10^9 \\times 8 \\times 10^9 = 64 \\times 10^{18}$ entries, and the memory required is $64 \\times 10^{18} \\times 8$ bytes ≈ 512 exabytes! Clearly, this approach is not feasible!\n\nA way to solve this problem is to exploit the fact that real networks are **sparse**: most pairs of nodes are not connected.\n\nTo give you an idea, let's consider a social network of 8 billion people on Earth. How likely do you think that two randomly picked people are friends? If the network is dense, it should be likely. But in reality, it is very unlikely, right? So much so that the probability is almost zero (less than 3.1e-23 if each person has 100 friends on average)!\n\nThis means that working with the edge list is a good idea as it retains only the connections, not the non-connections (which are much more than the connections!). But the edge list is not efficient for many operaitions\n\n::: {.column-margin}\n\nThink about the following operations:\n\n- **Degree**: How many friends does a person have?\n- **Neighbors**: Who are the friends of a person?\n\nThese operations are very common in network analysis. To do so, you need to go through **all the edges** in the network. This is not efficient, especially for large networks.\n\n:::\n\n## Solution: Sparse Matrices\n\nWe say a matrix is sparse if the matrix has only a handful of non-zero entries. This is indeed the case for most real-world networks. For such networks, we can use a special type of data type called **Compressed Sparse Row (CSR)** or **Compressed Sparse Column (CSC)** to represent the network. This is widely used in many network analysis tools and makes it possible to process large networks in practice.\n\n\nTo learn more, [here is a very good blog post by Matt Eding about efficient network representations](https://matteding.github.io/2019/04/25/sparse-matrices/).\n\n",
+    "supporting": [
+      "04-advanced_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
