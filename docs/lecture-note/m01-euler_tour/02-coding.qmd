@@ -1,23 +1,213 @@
-<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/docs/lecture-note/m01-euler_tour/how-to-code-network.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
+---
+title: Coding - From Visual to Computational
+filters:
+  - marimo-team/marimo
+  - tikz
+tikz:
+  cache: false
+  save-tex: true  # Enable saving intermediate .tex files
+  tex-dir: tikz-tex  # Optional: Specify directory to save .tex files
+jupyter: python3
+---
 
-# Compute with networks
+# Computing with Networks
 
-So far we worked out the network of bridges of Konigsberg by illustrating the network with points and lines.
-From now, we will work with a representation of the network that can be easily computed with code.
+Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.
 
-## Network representation
+## Network Representations: From Pictures to Data Structures
 
-An atomic element of a network is a node, i.e., a network is a collection of edges which are pairs of nodes.
-We *label* a unique integer as an identifier for each node. For instance, the bridges of Konigsberg has 4 nodes, and we assign the number 0 to 3 to the nodes. An edge can be represented by a pair of nodes. For instance, the edge between node 0 and node 1 can be represented by the pair `(0, 1)`.
+Consider this network with 5 nodes and 6 edges:
 
+```{.tikz}
+%%| caption: A simple network that demonstrates the three fundamental computational representations
+
+\begin{tikzpicture}[scale=1.8, font=\Large]
+  % Define vertices
+  \node[circle, draw, fill=white, minimum size=1.2cm] (0) at (0,2) {\textbf{0}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (1) at (-1.5,0.5) {\textbf{1}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (2) at (1.5,0.5) {\textbf{2}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (3) at (-1,-1.5) {\textbf{3}};
+  \node[circle, draw, fill=white, minimum size=1.2cm] (4) at (1,-1.5) {\textbf{4}};
+
+  % Draw edges
+  \draw[thick, black] (0) -- (1);
+  \draw[thick, black] (0) -- (2);
+  \draw[thick, black] (1) -- (2);
+  \draw[thick, black] (1) -- (3);
+  \draw[thick, black] (2) -- (4);
+  \draw[thick, black] (3) -- (4);
+
+\end{tikzpicture}
+```
+
+How do we represent this graph in a format that a computer can understand and manipulate? Just as Euler needed to abstract Königsberg's bridges, we need data structures that capture the network's essential connectivity while enabling efficient analysis.
+
+::: {.column-margin}
+The choice of representation can dramatically affect computational efficiency. For sparse networks (few edges), adjacency lists are memory-efficient. For dense networks or matrix operations, adjacency matrices are preferred.
+:::
+
+Let's explore three fundamental approaches that form the backbone of all network algorithms.
+
+### Edge Table: The Direct Approach
+
+The edge table directly lists connections as pairs—the most intuitive way to store network data.
+
+::: {.column-margin}
+Edge tables are also called "edge lists" and are the most common format for storing large-scale network data in files. Social media platforms like Twitter and Facebook store billions of connections this way.
+:::
+
+```{python}
+# Each row represents one edge (connection between two nodes)
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+
+print(f"Network has {len(edges)} edges")
+print("Edge list:", edges)
+```
+
+This mirrors how we'd naturally describe the network: "Node 0 connects to nodes 1 and 2, node 1 connects to nodes 0, 2, and 3..." It's the digital equivalent of Euler's original approach—simply listing which bridges connect which landmasses.
+
+### Adjacency List: The Neighborhood Map
+
+The adjacency list stores each node's neighbors in a dictionary—like a social network where each person has a list of friends.
+
+::: {.column-margin}
+Most graph algorithms prefer adjacency lists because they allow fast iteration over a node's neighbors. This is crucial for algorithms like breadth-first search or computing clustering coefficients.
+:::
+
+```{python}
+# Define adjacency list directly as a dictionary
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1 and 2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0, 2, and 3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0, 1, and 4
+    3: [1, 4],     # Node 3 connects to nodes 1 and 4
+    4: [2, 3]      # Node 4 connects to nodes 2 and 3
+}
+
+print("Adjacency list representation:")
+for node, neighbor_list in neighbors.items():
+    print(f"Node {node}: {neighbor_list}")
+```
+
+### Adjacency Matrix: The Mathematical Grid
+
+The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected—the mathematician's favorite representation.
+
+::: {.column-margin}
+Adjacency matrices enable powerful mathematical operations. Matrix multiplication reveals paths of different lengths, and eigenvalue analysis can uncover community structure. Google's PageRank algorithm fundamentally relies on matrix operations.
+:::
+
+```{python}
+# Define adjacency matrix directly
+import numpy as np
+
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0 connects to nodes 1, 2
+    [1, 0, 1, 1, 0],  # Node 1 connects to nodes 0, 2, 3
+    [1, 1, 0, 0, 1],  # Node 2 connects to nodes 0, 1, 4
+    [0, 1, 0, 0, 1],  # Node 3 connects to nodes 1, 4
+    [0, 0, 1, 1, 0]   # Node 4 connects to nodes 2, 3
+])
+
+print("Adjacency matrix:")
+print(matrix)
+```
+
+Notice the symmetry: if node i connects to node j, then node j connects to node i (for undirected networks). This symmetry disappears in directed networks, where relationships can be one-way.
+
+## Converting Between Representations
+
+Often we need to convert between these representations. Here's how:
+
+```{python}
+# Convert edge list to adjacency matrix
+def edge_list_to_matrix(edges, num_nodes):
+    matrix = np.zeros((num_nodes, num_nodes))
+    for i, j in edges:
+        matrix[i][j] = 1
+        matrix[j][i] = 1  # For undirected networks
+    return matrix
+
+# Convert edge list to adjacency list
+def edge_list_to_adjacency_list(edges, num_nodes):
+    adj_list = {i: [] for i in range(num_nodes)}
+    for i, j in edges:
+        adj_list[i].append(j)
+        adj_list[j].append(i)  # For undirected networks
+    return adj_list
+
+# Test conversions
+converted_matrix = edge_list_to_matrix(edges, 5)
+converted_adj_list = edge_list_to_adjacency_list(edges, 5)
+
+print("Converted matrix matches original:", np.array_equal(matrix, converted_matrix))
+print("Converted adjacency list matches original:", neighbors == converted_adj_list)
+```
+
+## Counting Node Degrees: Euler's Key Insight
+
+The degree of a node is the number of edges connected to it. This simple concept was central to Euler's proof—he realized that a valid bridge walk requires each landmass to have an even degree (except possibly the starting and ending points).
+
+::: {.column-margin}
+In Königsberg, all four landmasses had odd degree, making the bridge walk impossible. This insight—that global properties emerge from local structure—remains fundamental to network analysis today.
+:::
+
+Here's how to compute degrees using each representation:
+
+### From Edge Table: Counting Appearances
+
+Count how many times each node appears in the edge list.
+
+```{python}
+degrees = [0] * 5
+for node1, node2 in edges:
+    degrees[node1] += 1
+    degrees[node2] += 1
+print("Degrees from edge list:", degrees)
+```
+
+::: {.column-margin}
+We increment the degree counter for both nodes in each edge because every edge contributes to two nodes' degrees. This is why the total degree always equals twice the number of edges.
+:::
+
+### From Adjacency List: Counting Friends
+
+Count the length of each node's neighbor list—the most direct approach.
+
+```{python}
+degrees = [len(neighbors[i]) for i in range(5)]
+print("Degrees from adjacency list:", degrees)
+```
+
+### From Adjacency Matrix: Linear Algebra Power
+
+Sum each row (or column) of the matrix—leveraging vectorized operations.
+
+```{python}
+degrees = matrix.sum(axis=1)  # Sum rows
+print("Degrees from adjacency matrix:", degrees)
+```
+
+::: {.column-margin}
+For undirected networks, row sums equal column sums. For directed networks, row sums give out-degree (outgoing connections) while column sums give in-degree (incoming connections).
+:::
+
+## The Königsberg Bridge Problem in Code
+
+Now let's apply these concepts to the original Königsberg bridge problem. The network has 4 nodes (landmasses) and 7 edges (bridges).
 
 ```{figure-md} numbered-koningsberg-graph
 
-![file](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true)
+![Labeled Königsberg graph](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/labeled-koningsberg.jpg?raw=true)
 
-Labeled Knigsberg graph
+Labeled Königsberg graph
 
 ```
 
@@ -25,73 +215,131 @@ Labeled Knigsberg graph
 We label nodes starting from 0 with consecutive numbers, which is convenient for Python. However, this is *not the only way* to label nodes.
 :::
 
-The Konigsberg graph can be represented by a list of edges.
+### Representing the Königsberg Network
+
+The Königsberg graph can be represented by a list of edges. Note that some bridges appear twice because there were multiple bridges between the same landmasses.
 
 ```{python}
-edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]
+# Königsberg bridge network
+koenigsberg_edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]
+print("Königsberg edges:", koenigsberg_edges)
+print("Total bridges:", len(koenigsberg_edges))
 ```
 
-Another, more convenient format is the *adjacency matrix*.
-In this form, one regard the node index as a coordinate in the matrix. For instance, edge $(1,3)$ is represented by the entry in the second row and fourth column. The entry of the matrix represents the number of edges between two nodes. Thus, the zeros in the matrix represent the absence of edges.
+### Building the Adjacency Matrix
+
+Let's create the adjacency matrix for the Königsberg network:
 
 ```{python}
-A = [[0, 2, 0, 1],
-     [2, 0, 2, 1],
-     [0, 2, 0, 1],
-     [1, 1, 1, 0]]
-```
-
-or equivalently, using for loops:
-```{python}
-import numpy as np
-
+# Create adjacency matrix for Königsberg
 A = np.zeros((4, 4))
-for i, j in edges:
+for i, j in koenigsberg_edges:
     A[i][j] += 1
     A[j][i] += 1
+
+print("Königsberg adjacency matrix:")
+print(A.astype(int))  # Convert to int for cleaner display
 ```
 
 ::: {.callout-note}
-In the Konigsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).
+In the Königsberg graph, the edges are *undirected*, meaning edge (i,j) is the same as edge (j,i), which is why we increment both entries $(i,j)$ and $(j,i)$ in the for loop. If the edges are *directed*, we treat (i,j) and (j,i) as two different edges, and increment only (i,j).
 :::
 
-## Edge counting
+### Analyzing the Network
 
-Let us showcase the convenience of the adjacency matrix by counting the number of edges in the network.
+Let's use our computational tools to analyze the Königsberg network:
 
-The total number of edges in the network is the sum of the entities in the
 ```{python}
-np.sum(A) / 2
-```
-We divide by 2 because an edge corresponds to two entries in the matrix. Now, let us consider
+# Count total edges
+total_edges = np.sum(A) / 2  # Divide by 2 because each edge is counted twice
+print(f"Total edges: {total_edges}")
 
-It is also easy to compute the number of edges pertained to individual nodes by taking the row or column sum of the matrix.
-```{python}
-np.sum(A, axis = 1)
+# Compute node degrees
+degrees = np.sum(A, axis=1)
+print("Node degrees:", degrees.astype(int))
+
+# Check for odd degrees
+is_odd = degrees % 2 == 1
+num_odd_nodes = np.sum(is_odd)
+print(f"Nodes with odd degree: {num_odd_nodes}")
+print(f"Odd degree nodes: {np.where(is_odd)[0]}")
 ```
-The result is an array of length 4, where the i-th entry is the number of edges connected to node i.
 
 ::: {.callout-important}
 The number of edges connected to a node is called the ***degree*** of the node.
 :::
+
+### Applying Euler's Theorem Computationally
+
+Now we can implement Euler's theorem as code:
+
+```{python}
+def has_euler_path(degrees):
+    """
+    Check if a graph has an Euler path based on node degrees.
+    
+    Euler's theorem: A graph has an Euler path if and only if:
+    - All nodes have even degree, OR
+    - Exactly two nodes have odd degree
+    """
+    odd_count = np.sum(degrees % 2 == 1)
+    
+    if odd_count == 0:
+        return True, "Euler circuit exists (all nodes have even degree)"
+    elif odd_count == 2:
+        return True, "Euler path exists (exactly 2 nodes have odd degree)"
+    else:
+        return False, f"No Euler path ({odd_count} nodes have odd degree)"
+
+# Test on Königsberg
+has_path, reason = has_euler_path(degrees)
+print(f"Königsberg network: {has_path}")
+print(f"Reason: {reason}")
+
+# Test on our simple example network
+simple_degrees = matrix.sum(axis=1)
+has_path_simple, reason_simple = has_euler_path(simple_degrees)
+print(f"\nSimple network: {has_path_simple}")
+print(f"Reason: {reason_simple}")
+```
+
 ::: {.callout-tip}
-The `np.sum(A, axis = 1)` is the column sum of `A`. Alternatively, `np.sum(A, axis = 0)` is the row sum of `A`.
+The `np.sum(A, axis = 1)` computes the row sum of `A`. Alternatively, `np.sum(A, axis = 0)` computes the column sum of `A`.
 Check out the numpy [documentation](https://numpy.org/doc/stable/reference/generated/numpy.sum.html) for more details.
 :::
+
+## Advanced: Working with Sparse Matrices
+
+For large networks, adjacency matrices can become memory-intensive. Python's `scipy` library provides efficient sparse matrix representations:
+
+```{python}
+from scipy import sparse
+
+# Convert to sparse matrix
+A_sparse = sparse.csr_matrix(A)
+print("Sparse matrix representation:")
+print(A_sparse)
+
+# Compute degrees from sparse matrix
+degrees_sparse = np.array(A_sparse.sum(axis=1)).flatten()
+print("Degrees from sparse matrix:", degrees_sparse.astype(int))
+```
+
 ::: {.callout-tip}
-If the adjacency matrix is `scipy` CSR format (or CSC format), you can instead use `A_csr.sum(axis=1)`, `A_csr.sum(axis=0)`, and `A_csr.sum()`.
+If the adjacency matrix is `scipy` CSR format (or CSC format), you can use `A_csr.sum(axis=1)`, `A_csr.sum(axis=0)`, and `A_csr.sum()`.
 Check out the [scipy documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix) for more details.
 :::
 
-We can check the number of nodes with odd degree by taking the modulus of the degree by 2.
-```{python}
-deg = np.sum(A, axis = 1)
-is_odd = deg % 2 == 1
-is_odd
-```
-```{python}
-if np.sum(is_odd) == 2 or np.sum(is_odd) == 0:
-    print("The graph has a Euler path.")
-else:
-    print("The graph does not have a Euler path.")
-```
+## Summary: From Euler's Insight to Modern Computation
+
+You now understand how to:
+
+1. **Represent networks** using edge lists, adjacency lists, and adjacency matrices
+2. **Convert between representations** as needed for different algorithms
+3. **Compute node degrees** efficiently using different data structures
+4. **Apply Euler's theorem** computationally to determine if Euler paths exist
+5. **Handle large networks** using sparse matrix representations
+
+These computational tools, built on Euler's 300-year-old insight, now power everything from GPS navigation systems to social media algorithms. The fundamental principle remains the same: ***abstract the essential structure, then apply mathematical reasoning to solve concrete problems***.
+
+The next step is to practice these concepts with real network data and explore more advanced network analysis techniques!
