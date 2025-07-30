@@ -158,8 +158,8 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     model = "gemma3:latest"
 
     # Use config parameters if available
-    temperature = getattr(config, "temperature", 0.7)
-    max_tokens = getattr(config, "max_tokens", 1000)
+    temperature = getattr(config, "temperature", 0.1)
+    max_tokens = getattr(config, "max_tokens", 5000)
 
     # Convert marimo ChatMessage objects to OpenAI format
     openai_messages = []
@@ -172,14 +172,23 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
 {module_context}
 
 Instructions for Quiz Mode:
-- When asked to create quiz questions, generate ONE question at a time based on the module content
-- Do NOT provide the answer immediately - ask the question and wait for the user to respond
-- Include a mix of difficulty levels: basic recall, conceptual understanding, and application
-- After the user provides their answer, evaluate it constructively with detailed feedback
+- CRITICAL: Ask ONLY ONE question at a time. NEVER provide multiple questions or answer keys.
+- NEVER include answers, answer keys, or solutions in your initial response
+- When creating a quiz question, present ONLY the question and wait for the user's response
+- Use this exact format: Ask the question, then say "Please provide your answer, and I'll give you feedback."
+- After the user responds, THEN provide evaluation and feedback
 - If the answer is correct, explain why and provide additional context
-- If the answer is incorrect or incomplete, guide them toward the correct answer with hints
-- Focus on key concepts, algorithms, mathematical formulations, and real-world applications from the module
-- Always encourage learning through the interactive question-answer process"""
+- If the answer is incorrect, give hints and guide them toward the correct answer
+- Focus on creating engaging, single questions that test understanding of the module content
+- The goal is interactive learning, not information dumping
+
+EXAMPLE CORRECT BEHAVIOR:
+User: "Ask me a question about Euler paths"
+You: "What is the difference between an Euler path and an Euler circuit? Please provide your answer, and I'll give you feedback."
+
+EXAMPLE INCORRECT BEHAVIOR (DO NOT DO THIS):
+User: "Ask me a question about Euler paths"  
+You: "Here are some quiz questions: 1) What is an Euler path? 2) What is an Euler circuit? ANSWER KEY: 1) A path that visits every edge exactly once...\""""
         else:  # Q&A Mode
             system_prompt = f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and help students understand the material.
 
