@@ -5,92 +5,56 @@ filters:
 jupyter: python3
 ---
 
-# Sparse Matrices: Scaling Network Analysis to the Real World
-
-## How to Run This Notebook
-
 ::: {.callout-tip}
 ## Running with Marimo
 
-To run the notebook, first download it as a .py file, then use the following steps:
+To run the notebook, first download it as a .py file, then:
 
-1. **Install marimo:**
-   ```bash
-   pip install marimo
-   ```
-
-2. **Install uv** (a Python package manager that automatically manages dependencies):
-   ```bash
-   pip install uv
-   ```
-
-3. **Launch the notebook:**
-   ```bash
-   marimo edit --sandbox <filename>.py
-   ```
+```bash
+marimo edit --sandbox <filename>.py
+```
 
 The notebook will open in your web browser. All necessary packages will be installed automatically in a dedicated virtual environment managed by uv.
 :::
 
 ## The Scale Problem: From Königsberg to Global Networks
 
-While Euler's analysis worked perfectly for Königsberg's 4 landmasses and 7 bridges, today's networks operate at vastly different scales. Consider these real-world examples:
+While Euler's analysis worked perfectly for Königsberg's 4 landmasses and 7 bridges, today's networks operate at vastly different scales. Suppose we want to represent the social network of all people on Earth using an adjacency matrix. How much memory would we need?
+For an adjacency matrix with 8 billion nodes, the matrix size is $8 \times 10^9 \times 8 \times 10^9 = 64 \times 10^{18}$ entries, and the memory required is $64 \times 10^{18} \times 8$ bytes ≈ 512 exabytes! Clearly, this approach is not feasible.
 
-- **Social networks**: If each person on Earth (8 billion people) had 100 friends on average, we'd have roughly 400 billion friendships
-- **The internet**: Billions of web pages with trillions of hyperlinks
-- **Brain networks**: 86 billion neurons with approximately 100 trillion synaptic connections
 
 ::: {.column-margin}
-**Quick calculation**: 8 billion people × 100 friends ÷ 2 (since friendships are mutual) = 400 billion edges. The maximum possible friendships would be 8 billion × 7.999 billion ÷ 2 ≈ 32 × 10^18, making the network extremely sparse!
+
+Real networks are **sparse**: most pairs of nodes are not connected.
+To give you an idea, let's consider a social network of 8 billion people on Earth. How likely do you think that two randomly picked people are friends? If the network is dense, it should be likely. But in reality, it is very unlikely, right? So much so that the probability is almost zero (less than 3.1e-23 if each person has 100 friends on average)!
+
 :::
-
-## The Memory Challenge
-
-Suppose we want to represent the social network of all people on Earth using an adjacency matrix. How much memory would we need?
-
-For an adjacency matrix with 8 billion nodes:
-- **Matrix size**: 8 × 10^9 × 8 × 10^9 = 64 × 10^18 entries
-- **Memory required**: 64 × 10^18 × 8 bytes ≈ 512 exabytes
-
-To put this in perspective, this is roughly **1000 times more storage than all the data in the world combined**! Clearly, this approach is not feasible.
-
-::: {.callout-important}
-## The Sparsity Insight
-
-Real networks are **sparse**: most pairs of nodes are not connected. In our social network example, only 400 billion out of 32 × 10^18 possible connections exist—that's 0.000000000125% of all possible edges!
-:::
-
-## The Edge List Solution
 
 The most memory-efficient way to store a network is as an **edge list**—simply listing which pairs of nodes are connected:
 
-```
+```bash
 (person_1, person_2)
 (person_1, person_5)
 (person_2, person_3)
 ...
 ```
 
-For our global social network, we'd need:
-- **400 billion entries** × **16 bytes per entry** ≈ **6.4 terabytes**
 
-This is a dramatic reduction from 512 exabytes to 6.4 terabytes—over 80 million times smaller!
+For our global social network, we'd need: 400 billion entries × 16 bytes per entry ≈ 6.4 terabytes. This is a dramatic reduction from 512 exabytes to 6.4 terabytes---over 80 million times smaller!
 
 ::: {.column-margin}
 Each edge entry needs two node IDs. With 8 billion people, each ID requires about 8 bytes, so each edge takes 16 bytes to store.
 :::
 
-## The Computational Paradox
+### The Computational Paradox
 
 While edge lists are memory-efficient, they create a computational challenge. **Edge lists are not ideal for computing network statistics** because:
 
 1. **Finding neighbors** requires scanning the entire edge list
-2. **Computing degrees** requires counting occurrences across all edges  
+2. **Computing degrees** requires counting occurrences across all edges
 3. **Matrix operations** (like those used in PageRank) are impossible
 
 Edge lists, being sets of node pairs, don't blend well with efficient computing techniques that rely on structured data access patterns.
-
-## The Matrix Advantage
 
 Adjacency matrices are much easier for computers to process because they provide:
 
@@ -100,11 +64,9 @@ Adjacency matrices are much easier for computers to process because they provide
 
 But as we've seen, dense matrices become prohibitively large for real networks.
 
-## Finding the Sweet Spot: Sparse Matrices
+## Solution: Sparse Matrices
 
-We need to find a good balance between memory efficiency (edge lists) and computational efficiency (dense matrices). The solution is **sparse matrix representations**.
-
-The key insight: **store only the non-zero entries of the adjacency matrix**.
+sparse matrix representations take the best of both worlds: they are memory-efficient and computationally efficient.
 
 ### The Adjacency List Foundation
 
@@ -112,7 +74,7 @@ The basis for sparse representation stems from **adjacency lists** that list onl
 
 ```
 Node 0: [1, 2, 5]
-Node 1: [0, 3, 7, 9]  
+Node 1: [0, 3, 7, 9]
 Node 2: [0, 4]
 ...
 ```
@@ -143,7 +105,7 @@ Node 0's neighbors are at positions 0 to 2, Node 1's neighbors are at positions 
 The **Compressed Sparse Row (CSR)** format uses exactly this approach with three one-dimensional arrays:
 
 1. **`data`**: Values of non-zero entries (1 for unweighted networks)
-2. **`indices`**: Column indices of non-zero entries (the neighbor IDs)  
+2. **`indices`**: Column indices of non-zero entries (the neighbor IDs)
 3. **`indptr`**: Index pointers marking where each row's data begins
 
 These three arrays maintain exactly the same information as the full adjacency matrix but use only as much memory as needed for the actual connections.
@@ -156,9 +118,9 @@ These three arrays maintain exactly the same information as the full adjacency m
 
 Sparse matrices give us:
 
-✓ **Memory efficiency**: Store only non-zero entries (like edge lists)  
-✓ **Computational efficiency**: Enable fast matrix operations  
-✓ **Flexibility**: Convert between different sparse formats as needed  
+✓ **Memory efficiency**: Store only non-zero entries (like edge lists)
+✓ **Computational efficiency**: Enable fast matrix operations
+✓ **Flexibility**: Convert between different sparse formats as needed
 ✓ **Library support**: Work seamlessly with scientific computing libraries
 
 This makes sparse matrices the **standard representation for large-scale network analysis** in practice.
@@ -168,7 +130,7 @@ This makes sparse matrices the **standard representation for large-scale network
 Let's walk through a concrete example to understand how CSR format works. Consider a small network with 4 nodes and these connections:
 
 - Node 0 connects to nodes 1 and 3
-- Node 1 connects to nodes 0 and 2  
+- Node 1 connects to nodes 0 and 2
 - Node 2 connects to node 1
 - Node 3 connects to node 0
 
@@ -178,7 +140,7 @@ The full adjacency matrix would be:
 ```
     0  1  2  3
 0 [ 0  1  0  1 ]
-1 [ 1  0  1  0 ]  
+1 [ 1  0  1  0 ]
 2 [ 0  1  0  0 ]
 3 [ 1  0  0  0 ]
 ```
@@ -205,7 +167,7 @@ The sparse matrix approach becomes crucial as networks grow:
 - **Dense matrix**: Memory grows as n² (quadratic)
 - **Sparse matrix**: Memory grows as number of edges (linear for sparse networks)
 
-### Computational Efficiency  
+### Computational Efficiency
 - **Matrix operations** remain fast because computers can efficiently process the compact arrays
 - **Neighbor finding** is optimized through the index pointer system
 - **Linear algebra** algorithms work seamlessly with sparse formats
@@ -214,7 +176,7 @@ The sparse matrix approach becomes crucial as networks grow:
 
 This technology enables:
 - **Google's PageRank** to rank billions of web pages
-- **Social media platforms** to analyze billions of user connections  
+- **Social media platforms** to analyze billions of user connections
 - **Neuroscientists** to study brain networks with trillions of synapses
 - **Epidemiologists** to model disease spread through global populations
 
@@ -228,12 +190,132 @@ Sparse matrices solve the fundamental scaling challenge in network science by:
 
 This elegant solution—storing only what matters—transforms network analysis from impossible to practical at any scale. It's the same principle Euler used: **focus on the essential structure, ignore the irrelevant details**.
 
+# Appendix: Working with CSR Format in Practice
+
+## How CSR Arrays Are Generated
+
+Let's walk through how to create CSR format from an adjacency matrix using a concrete example. Consider this small adjacency matrix:
+
+|     | 0 | 1 | 2 | 3 | 4 |
+|-----|---|---|---|---|---|
+| 0   |   |   |   |   | 1 |
+| 1   |   |   | 1 |   | 1 |
+| 2   |   | 1 |   | 1 | 1 |
+| 3   |   |   | 1 |   | 1 |
+| 4   |   |   |   | 1 |   |
+
+First, we create an **adjacency list** - a dictionary mapping each row to its non-zero entries:
+
+```{python}
+# Adjacency list: {Row ID: [(Column ID, Value), ...]}
+adj_list = {
+    0: [(4, 1)],
+    1: [(2, 1), (4, 1)],
+    2: [(1, 1), (3, 1), (4, 1)],
+    3: [(2, 1), (4, 1)],
+    4: [(3, 1)]
+}
+```
+
+The CSR format **concatenates** the values from this adjacency list into three arrays:
+
+### Creating the `indices` Array
+Contains column IDs of all non-zero entries, concatenated row by row:
+
+```{python}
+import numpy as np
+
+indices = np.array([col_id for row_data in adj_list.values() for col_id, value in row_data])
+print("indices:", indices)  # [4, 2, 4, 1, 3, 4, 2, 4, 3]
+```
+
+### Creating the `data` Array
+Contains values of all non-zero entries:
+
+```{python}
+data = np.array([value for row_data in adj_list.values() for col_id, value in row_data])
+print("data:", data)  # [1, 1, 1, 1, 1, 1, 1, 1, 1]
+```
+
+### Creating the `indptr` Array
+Marks where each row's data begins in the `indices` and `data` arrays:
+
+```{python}
+indptr = np.cumsum([0] + [len(adj_list[i]) for i in range(len(adj_list))])
+print("indptr:", indptr)  # [0, 1, 3, 6, 8, 9]
+```
+
+::: {.column-margin}
+`indptr[i]` tells you where row i's neighbors start in the `indices` array. Row 0's neighbors are at positions 0 to 0, row 1's neighbors are at positions 1 to 2, etc.
+:::
+
+## Efficient Operations with CSR Format
+
+### Computing Node Degree
+The degree of a node is simply the number of entries in its row:
+
+```{python}
+node = 2
+degree = indptr[node + 1] - indptr[node]
+print(f"Degree of node {node}: {degree}")  # Degree of node 2: 3
+```
+
+### Finding Node Neighbors
+Extract the column IDs for a specific row:
+
+```{python}
+neighbors = indices[indptr[node]:indptr[node + 1]]
+print(f"Neighbors of node {node}: {neighbors}")  # Neighbors of node 2: [1 3 4]
+```
+
+### Getting Edge Weights
+Extract the values for connections from a specific node:
+
+```{python}
+edge_weights = data[indptr[node]:indptr[node + 1]]
+print(f"Edge weights from node {node}: {edge_weights}")  # Edge weights from node 2: [1 1 1]
+```
+
+## Real Network Example
+
+Let's see this in action with a real network:
+
+```{python}
+import networkx as nx
+from scipy import sparse
+
+# Load Karate Club network (34 nodes, 78 edges)
+G = nx.karate_club_graph()
+A = sparse.csr_matrix(nx.adjacency_matrix(G))
+
+print(f"Network: {A.shape[0]} nodes, {A.nnz//2} edges")
+print(f"First 5 indices: {A.indices[:5]}")
+print(f"First 5 indptr values: {A.indptr[:5]}")
+
+# Analyze node 0
+node = 0
+degree = A.indptr[node + 1] - A.indptr[node]
+neighbors = A.indices[A.indptr[node]:A.indptr[node + 1]]
+print(f"Node {node}: degree = {degree}, neighbors = {neighbors}")
+```
+
+## Why This Matters
+
+This compact representation enables:
+
+1. **Fast degree computation**: O(1) time using pointer arithmetic
+2. **Efficient neighbor lookup**: Direct array slicing  
+3. **Memory efficiency**: Store only existing connections
+4. **Matrix operations**: Seamless integration with linear algebra libraries
+
+The CSR format transforms what would be expensive operations on large sparse matrices into simple, fast array operations - exactly what we need for analyzing real-world networks!
+
 ::: {.callout-tip}
 ## For the Curious
 
 If you want to explore this further:
 - Try implementing a simple CSR representation by hand
-- Compare memory usage of edge lists vs. sparse matrices for different network sizes
+- Compare memory usage of edge lists vs. sparse matrices for different network sizes  
 - Experiment with real network datasets from [SNAP](https://snap.stanford.edu/data/) or [Network Repository](https://networkrepository.com/)
 - Learn about specialized sparse matrix algorithms in libraries like SciPy
 :::
