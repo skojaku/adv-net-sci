@@ -19,7 +19,7 @@ This is not just history—Euler's approach of abstracting complex systems into 
 Back in the 18th century, there was a city called *Königsberg* situated on the Pregel River in what was then Prussia (now Kaliningrad, Russia). The city was built around two large islands, beautifully connected to each other and the mainland by seven elegant bridges.
 
 ::: {.column-margin}
-Königsberg was a major intellectual center of the Enlightenment. Immanuel Kant spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
+Königsberg was a major intellectual center of the Enlightenment. [Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant) spent his entire life there, never traveling more than 10 miles from the city. The university attracted scholars from across Europe.
 :::
 
 During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
@@ -36,7 +36,7 @@ This seemingly innocent recreational question would become one of the most impor
 
 ## Euler's Revolutionary Abstraction
 
-Leonard Euler approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
+[Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
 ::: {.column-margin}
 This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.
@@ -125,6 +125,14 @@ Euler's solution to the Königsberg bridge problem did far more than solve a rec
 - **Network structure** determines what's possible in interconnected systems
 
 These insights now underpin our understanding of everything from internet routing protocols to epidemic spreading models. Every time you use GPS navigation or analyze social network data, you're applying principles that trace back to Euler's Sunday stroll through Königsberg.
+
+## Key Historical Figures
+
+For students interested in learning more about the people mentioned in this chapter:
+
+**[Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler)** (1707-1783): Swiss mathematician and physicist, widely regarded as one of the most prolific mathematicians in history. Beyond solving the Königsberg bridge problem, he made fundamental contributions to calculus, topology, number theory, and physics. Despite losing sight in one eye and later becoming completely blind, he continued his mathematical work and produced nearly half of his total output after losing his sight.
+
+**[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by them.
 
 ## References
 
