@@ -278,17 +278,30 @@ print(f"Edge weights from node {node}: {edge_weights}")  # Edge weights from nod
 
 ## Real Network Example
 
-Let's see this in action with a real network:
+Let's see this in action by building a CSR matrix from scratch:
 
 ```{python}
-import networkx as nx
 from scipy import sparse
 
-# Load Karate Club network (34 nodes, 78 edges)
-G = nx.karate_club_graph()
-A = sparse.csr_matrix(nx.adjacency_matrix(G))
+# Create a larger example network from edge list
+edges = [(0, 1), (0, 3), (1, 2), (1, 4), (2, 3), (2, 4), (2, 5), (3, 5), (4, 5)]
+n_nodes = 6
 
-print(f"Network: {A.shape[0]} nodes, {A.nnz//2} edges")
+# Build CSR matrix directly from edge list
+row_indices = []
+col_indices = []
+data = []
+
+for i, j in edges:
+    # Add edge in both directions (undirected network)
+    row_indices.extend([i, j])
+    col_indices.extend([j, i])
+    data.extend([1, 1])
+
+# Create the sparse matrix
+A = sparse.csr_matrix((data, (row_indices, col_indices)), shape=(n_nodes, n_nodes))
+
+print(f"Network: {A.shape[0]} nodes, {len(edges)} edges")
 print(f"First 5 indices: {A.indices[:5]}")
 print(f"First 5 indptr values: {A.indptr[:5]}")
 
