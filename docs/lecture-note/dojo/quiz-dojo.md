@@ -22,7 +22,7 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
 
 ## ⚠️ Important Disclaimer
-**AI-generated content may contain errors or inaccuracies.** Always verify important information with course materials, textbooks, or your instructor. Use this tool as a study aid, not as the definitive source of truth.
+**Always doubt and verify AI responses.** The AI may generate plausible-sounding but incorrect answers. Cross-check all information with official course materials, textbooks, or your instructor. Think critically about every response and use this tool as a practice aid, not as an authoritative source.
 
 ```python {.marimo}
 import marimo as mo
