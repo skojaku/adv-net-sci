@@ -53,27 +53,57 @@ from typing import List, Dict, Any
 
 def read_module_content(module_name: str) -> Dict[str, str]:
     """Read all markdown files from the selected module"""
-    base_path = "../"  # Relative to dojo folder
+    import os
+    
+    # Start from current working directory and find the lecture-note directory
+    current_dir = os.getcwd()
+    
+    # Look for the lecture-note directory structure
+    # Try different path combinations based on where marimo might be running
+    possible_paths = [
+        os.path.join(current_dir, ".."),  # If running from dojo/
+        current_dir,  # If running from lecture-note/
+        os.path.join(current_dir, "docs", "lecture-note"),  # If running from project root
+    ]
+    
+    lecture_note_dir = None
+    for path in possible_paths:
+        abs_path = os.path.abspath(path)
+        if os.path.exists(os.path.join(abs_path, "intro")) and os.path.exists(os.path.join(abs_path, "m01-euler_tour")):
+            lecture_note_dir = abs_path
+            break
+    
+    if lecture_note_dir is None:
+        return {"error": f"Could not find lecture-note directory. Current dir: {current_dir}. Tried paths: {[os.path.abspath(p) for p in possible_paths]}"}
     
     if module_name == "intro":
-        module_path = os.path.join(base_path, "intro")
+        module_path = os.path.join(lecture_note_dir, "intro")
     else:
-        module_path = os.path.join(base_path, module_name)
+        module_path = os.path.join(lecture_note_dir, module_name)
     
     content = {}
     
     if not os.path.exists(module_path):
-        return {"error": f"Module path {module_path} not found"}
+        return {"error": f"Module path {module_path} not found. Lecture note dir: {lecture_note_dir}"}
     
     # Read all .md files in the module directory
-    for filename in os.listdir(module_path):
-        if filename.endswith('.md'):
+    try:
+        files_found = os.listdir(module_path)
+        md_files = [f for f in files_found if f.endswith('.md')]
+        
+        if not md_files:
+            return {"error": f"No .md files found in {module_path}.\nFiles found: {files_found}"}
+        
+        for filename in md_files:
             file_path = os.path.join(module_path, filename)
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content[filename] = f.read()
             except Exception as e:
                 content[filename] = f"Error reading file: {str(e)}"
+                
+    except Exception as e:
+        return {"error": f"Error accessing directory {module_path}: {str(e)}"}
     
     return content
 
