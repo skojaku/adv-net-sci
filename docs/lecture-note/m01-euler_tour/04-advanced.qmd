@@ -32,483 +32,208 @@ To run the notebook, first download it as a .py file, then use the following ste
 The notebook will open in your web browser. All necessary packages will be installed automatically in a dedicated virtual environment managed by uv.
 :::
 
-While the basic adjacency matrix representation works well for small networks like Königsberg's 4 nodes, real-world networks can have millions or billions of nodes. Facebook has 3 billion users, the internet has billions of web pages, and the human brain has roughly 86 billion neurons. For such networks, dense adjacency matrices become computationally prohibitive.
+## The Scale Problem: From Königsberg to Global Networks
 
-::: {.callout-note}
-## Why This Matters
+While Euler's analysis worked perfectly for Königsberg's 4 landmasses and 7 bridges, today's networks operate at vastly different scales. Consider these real-world examples:
 
-A dense adjacency matrix for Facebook's network would require $(3 \times 10^9)^2 \times 8$ bytes ≈ 72 exabytes of memory—more than all the data storage in the world combined! Clearly, we need smarter approaches.
-:::
-
-This notebook explores **sparse matrix** representations that make large-scale network analysis feasible by exploiting a fundamental property of real networks: they are **sparse** (most pairs of nodes are not connected).
-
-## The Sparsity of Real Networks
-
-Most real-world networks are extremely sparse. Let's quantify this:
-
-```{python}
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import sparse
-import time
-
-# Examples of real network sparsity
-_networks = {
-    "Facebook (2012)": {"nodes": 1e9, "edges": 140e9},
-    "Twitter (2010)": {"nodes": 40e6, "edges": 1.47e9},
-    "Internet AS-level": {"nodes": 65000, "edges": 120000},
-    "Human Brain": {"nodes": 86e9, "edges": 100e12},
-    "Academic Collaboration": {"nodes": 1.7e6, "edges": 11e6}
-}
-
-print("Network Sparsity Analysis:")
-print("=" * 50)
-for name, data in _networks.items():
-    _n_nodes = data["nodes"]
-    _n_edges = data["edges"]
-    _max_edges = _n_nodes * (_n_nodes - 1) / 2  # Undirected network
-    _sparsity = _n_edges / _max_edges
-
-    print(f"{name}:")
-    print(f"  Nodes: {_n_nodes:,.0f}")
-    print(f"  Edges: {_n_edges:,.0f}")
-    print(f"  Sparsity: {_sparsity:.2e} ({_sparsity*100:.8f}%)")
-    print(f"  Memory (dense): {_n_nodes**2 * 8 / 1e9:.2f} GB")
-    print(f"  Memory (sparse): {_n_edges * 16 / 1e9:.2f} GB")
-    print()
-```
+- **Social networks**: If each person on Earth (8 billion people) had 100 friends on average, we'd have roughly 400 billion friendships
+- **The internet**: Billions of web pages with trillions of hyperlinks
+- **Brain networks**: 86 billion neurons with approximately 100 trillion synaptic connections
 
 ::: {.column-margin}
-**Sparsity** = (actual edges) / (maximum possible edges). Real networks typically have sparsity < 0.001, meaning over 99.9% of potential connections don't exist.
+**Quick calculation**: 8 billion people × 100 friends ÷ 2 (since friendships are mutual) = 400 billion edges. The maximum possible friendships would be 8 billion × 7.999 billion ÷ 2 ≈ 32 × 10^18, making the network extremely sparse!
 :::
 
-The key insight: since most matrix entries are zero, we only need to store the non-zero entries!
+## The Memory Challenge
 
-## Sparse Matrix Formats
+Suppose we want to represent the social network of all people on Earth using an adjacency matrix. How much memory would we need?
 
-SciPy provides several sparse matrix formats, each optimized for different operations:
+For an adjacency matrix with 8 billion nodes:
+- **Matrix size**: 8 × 10^9 × 8 × 10^9 = 64 × 10^18 entries
+- **Memory required**: 64 × 10^18 × 8 bytes ≈ 512 exabytes
 
-### 1. COO (Coordinate) Format
+To put this in perspective, this is roughly **1000 times more storage than all the data in the world combined**! Clearly, this approach is not feasible.
 
-The coordinate format stores three arrays: row indices, column indices, and values. This is conceptually closest to an edge list.
+::: {.callout-important}
+## The Sparsity Insight
 
-```{python}
-# Create a simple example network
-edges = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4), (3, 4)]
-n_nodes = 5
+Real networks are **sparse**: most pairs of nodes are not connected. In our social network example, only 400 billion out of 32 × 10^18 possible connections exist—that's 0.000000000125% of all possible edges!
+:::
 
-# Build COO matrix from edge list
-row_indices = []
-col_indices = []
-values = []
+## The Edge List Solution
 
-for i, j in edges:
-    # Add edge in both directions (undirected)
-    row_indices.extend([i, j])
-    col_indices.extend([j, i])
-    values.extend([1, 1])
+The most memory-efficient way to store a network is as an **edge list**—simply listing which pairs of nodes are connected:
 
-# Create COO sparse matrix
-coo_matrix = sparse.coo_matrix((values, (row_indices, col_indices)),
-                               shape=(n_nodes, n_nodes))
-
-print("COO Matrix representation:")
-print(f"Data: {coo_matrix.data}")
-print(f"Row indices: {coo_matrix.row}")
-print(f"Col indices: {coo_matrix.col}")
-print(f"Shape: {coo_matrix.shape}")
-print(f"Non-zero entries: {coo_matrix.nnz}")
+```
+(person_1, person_2)
+(person_1, person_5)
+(person_2, person_3)
+...
 ```
 
-### 2. CSR (Compressed Sparse Row) Format
+For our global social network, we'd need:
+- **400 billion entries** × **16 bytes per entry** ≈ **6.4 terabytes**
 
-CSR is optimized for fast row-wise operations—perfect for computing node degrees and many graph algorithms.
-
-```{python}
-# Convert to CSR format
-csr_matrix = coo_matrix.tocsr()
-
-print("CSR Matrix representation:")
-print(f"Data: {csr_matrix.data}")
-print(f"Indices: {csr_matrix.indices}")
-print(f"Index pointers: {csr_matrix.indptr}")
-print(f"Shape: {csr_matrix.shape}")
-
-# The dense representation for comparison
-print("\nDense matrix:")
-print(csr_matrix.toarray())
-```
+This is a dramatic reduction from 512 exabytes to 6.4 terabytes—over 80 million times smaller!
 
 ::: {.column-margin}
-**CSR encoding**: `indptr[i]` to `indptr[i+1]` tells you where node i's neighbors are stored in the `indices` array. The `data` array contains the corresponding edge weights.
+Each edge entry needs two node IDs. With 8 billion people, each ID requires about 8 bytes, so each edge takes 16 bytes to store.
 :::
 
-### 3. CSC (Compressed Sparse Column) Format
+## The Computational Paradox
 
-CSC is optimized for column-wise operations.
+While edge lists are memory-efficient, they create a computational challenge. **Edge lists are not ideal for computing network statistics** because:
 
-```{python}
-# Convert to CSC format
-csc_matrix = coo_matrix.tocsc()
+1. **Finding neighbors** requires scanning the entire edge list
+2. **Computing degrees** requires counting occurrences across all edges  
+3. **Matrix operations** (like those used in PageRank) are impossible
 
-print("CSC Matrix representation:")
-print(f"Data: {csc_matrix.data}")
-print(f"Indices: {csc_matrix.indices}")
-print(f"Index pointers: {csc_matrix.indptr}")
+Edge lists, being sets of node pairs, don't blend well with efficient computing techniques that rely on structured data access patterns.
+
+## The Matrix Advantage
+
+Adjacency matrices are much easier for computers to process because they provide:
+
+1. **Fast neighbor lookup**: Check matrix[i][j] in constant time
+2. **Efficient degree computation**: Sum row i to get node i's degree
+3. **Matrix operations**: Enable linear algebra algorithms like PageRank
+
+But as we've seen, dense matrices become prohibitively large for real networks.
+
+## Finding the Sweet Spot: Sparse Matrices
+
+We need to find a good balance between memory efficiency (edge lists) and computational efficiency (dense matrices). The solution is **sparse matrix representations**.
+
+The key insight: **store only the non-zero entries of the adjacency matrix**.
+
+### The Adjacency List Foundation
+
+The basis for sparse representation stems from **adjacency lists** that list only the neighboring nodes of each node:
+
+```
+Node 0: [1, 2, 5]
+Node 1: [0, 3, 7, 9]  
+Node 2: [0, 4]
+...
 ```
 
-## Performance Comparison: Dense vs Sparse
+However, computers find it hard to handle **variable-length arrays** efficiently.
 
-Let's create a realistic example to demonstrate the performance differences:
+::: {.column-margin}
+Variable-length data structures require dynamic memory allocation and pointer indirection, which slows down computation and complicates vectorized operations.
+:::
 
-```{python}
-def create_sparse_network(n_nodes, sparsity=0.001):
-    """Create a sparse random network"""
-    n_edges = int(n_nodes * (n_nodes - 1) * sparsity / 2)
+### The Concatenation Solution
 
-    # Generate random edges
-    edges = set()
-    while len(edges) < n_edges:
-        i, j = np.random.choice(n_nodes, 2, replace=False)
-        edges.add((min(i, j), max(i, j)))
+An easier approach for computers is to:
 
-    return list(edges)
+1. **Concatenate** all neighbor lists into one long array
+2. **Create a pointer array** that remembers where each node's neighbors start and end
 
-# Create networks of different sizes
-sizes = [100, 500, 1000, 2000]
-results = []
-
-for n in sizes:
-    print(f"\nTesting network with {n} nodes...")
-
-    edges = create_sparse_network(n, sparsity=0.01)  # 1% sparsity
-
-    # Create dense matrix
-    start_time = time.time()
-    dense_matrix = np.zeros((n, n))
-    for i, j in edges:
-        dense_matrix[i, j] = 1
-        dense_matrix[j, i] = 1
-    dense_time = time.time() - start_time
-
-    # Create sparse matrix
-    start_time = time.time()
-    row_idx, col_idx = zip(*[(i, j) for i, j in edges] + [(j, i) for i, j in edges])
-    values = [1] * (2 * len(edges))
-    sparse_matrix = sparse.csr_matrix((values, (row_idx, col_idx)), shape=(n, n))
-    sparse_time = time.time() - start_time
-
-    # Memory usage
-    dense_memory = dense_matrix.nbytes / 1024  # KB
-    sparse_memory = (sparse_matrix.data.nbytes +
-                    sparse_matrix.indices.nbytes +
-                    sparse_matrix.indptr.nbytes) / 1024  # KB
-
-    # Degree computation performance
-    start_time = time.time()
-    dense_degrees = dense_matrix.sum(axis=1)
-    dense_degree_time = time.time() - start_time
-
-    start_time = time.time()
-    sparse_degrees = np.array(sparse_matrix.sum(axis=1)).flatten()
-    sparse_degree_time = time.time() - start_time
-
-    results.append({
-        'nodes': n,
-        'edges': len(edges),
-        'dense_memory': dense_memory,
-        'sparse_memory': sparse_memory,
-        'memory_ratio': dense_memory / sparse_memory,
-        'dense_degree_time': dense_degree_time,
-        'sparse_degree_time': sparse_degree_time,
-        'time_ratio': dense_degree_time / sparse_degree_time
-    })
-
-    print(f"  Edges: {len(edges)}")
-    print(f"  Dense memory: {dense_memory:.1f} KB")
-    print(f"  Sparse memory: {sparse_memory:.1f} KB")
-    print(f"  Memory savings: {dense_memory/sparse_memory:.1f}x")
-    print(f"  Degree computation speedup: {dense_degree_time/sparse_degree_time:.1f}x")
+For example:
+```
+Neighbors: [1, 2, 5, 0, 3, 7, 9, 0, 4, ...]
+Pointers:  [0, 3, 7, 9, ...]
 ```
 
-## Visualizing Performance Gains
+Node 0's neighbors are at positions 0 to 2, Node 1's neighbors are at positions 3 to 6, etc.
 
-```{python}
-# Extract data for plotting
-nodes = [r['nodes'] for r in results]
-memory_ratios = [r['memory_ratio'] for r in results]
-time_ratios = [r['time_ratio'] for r in results]
+### The CSR Format: Three Arrays
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+The **Compressed Sparse Row (CSR)** format uses exactly this approach with three one-dimensional arrays:
 
-# Memory efficiency
-ax1.plot(nodes, memory_ratios, 'bo-', linewidth=2, markersize=8)
-ax1.set_xlabel('Number of Nodes')
-ax1.set_ylabel('Memory Savings (Dense/Sparse)')
-ax1.set_title('Memory Efficiency of Sparse Matrices')
-ax1.grid(True, alpha=0.3)
-ax1.set_yscale('log')
+1. **`data`**: Values of non-zero entries (1 for unweighted networks)
+2. **`indices`**: Column indices of non-zero entries (the neighbor IDs)  
+3. **`indptr`**: Index pointers marking where each row's data begins
 
-# Computational efficiency
-ax2.plot(nodes, time_ratios, 'ro-', linewidth=2, markersize=8)
-ax2.set_xlabel('Number of Nodes')
-ax2.set_ylabel('Speed Improvement (Dense/Sparse)')
-ax2.set_title('Computational Efficiency for Degree Calculation')
-ax2.grid(True, alpha=0.3)
+These three arrays maintain exactly the same information as the full adjacency matrix but use only as much memory as needed for the actual connections.
 
-plt.tight_layout()
-plt.show()
+::: {.column-margin}
+**CSC (Compressed Sparse Column)** format works similarly but optimizes for column-wise operations instead of row-wise operations.
+:::
 
-print(f"Average memory savings: {np.mean(memory_ratios):.1f}x")
-print(f"Average speed improvement: {np.mean(time_ratios):.1f}x")
+## The Best of Both Worlds
+
+Sparse matrices give us:
+
+✓ **Memory efficiency**: Store only non-zero entries (like edge lists)  
+✓ **Computational efficiency**: Enable fast matrix operations  
+✓ **Flexibility**: Convert between different sparse formats as needed  
+✓ **Library support**: Work seamlessly with scientific computing libraries
+
+This makes sparse matrices the **standard representation for large-scale network analysis** in practice.
+
+## A Simple Example: Understanding CSR Format
+
+Let's walk through a concrete example to understand how CSR format works. Consider a small network with 4 nodes and these connections:
+
+- Node 0 connects to nodes 1 and 3
+- Node 1 connects to nodes 0 and 2  
+- Node 2 connects to node 1
+- Node 3 connects to node 0
+
+### The Dense Adjacency Matrix
+
+The full adjacency matrix would be:
+```
+    0  1  2  3
+0 [ 0  1  0  1 ]
+1 [ 1  0  1  0 ]  
+2 [ 0  1  0  0 ]
+3 [ 1  0  0  0 ]
 ```
 
-## Advanced Operations with Sparse Matrices
+### The CSR Representation
 
-### Matrix-Vector Multiplication
+The CSR format stores this as three arrays:
 
-One of the most common operations in network analysis is matrix-vector multiplication, used in algorithms like PageRank.
+1. **`data`**: `[1, 1, 1, 1, 1, 1]` (all the 1s from the matrix)
+2. **`indices`**: `[1, 3, 0, 2, 1, 0]` (column positions of each 1)
+3. **`indptr`**: `[0, 2, 4, 5, 6]` (where each row's data starts)
 
-```{python}
-# Create a larger sparse network for demonstration
-n = 10000
-edges = create_sparse_network(n, sparsity=0.0005)
-print(f"Created network with {n} nodes and {len(edges)} edges")
+::: {.column-margin}
+To find node 1's neighbors: look at positions `indptr[1]` to `indptr[2]-1` in the `indices` array, which gives positions 2 to 3, containing `[0, 2]`—node 1's neighbors!
+:::
 
-# Build sparse matrix
-row_idx = [i for i, j in edges] + [j for i, j in edges]
-col_idx = [j for i, j in edges] + [i for i, j in edges]
-data = [1.0] * (2 * len(edges))
-A_sparse = sparse.csr_matrix((data, (row_idx, col_idx)), shape=(n, n))
+The beauty is that these three arrays contain exactly the same information as the full 4×4 matrix, but only store the 6 non-zero entries instead of all 16 positions.
 
-# Normalize rows (for PageRank-style computation)
-row_sums = np.array(A_sparse.sum(axis=1)).flatten()
-row_sums[row_sums == 0] = 1  # Avoid division by zero
-A_normalized = sparse.diags(1.0 / row_sums) @ A_sparse
+## Why This Matters for Real Networks
 
-print(f"Sparse matrix: {A_sparse.shape}, {A_sparse.nnz} non-zeros")
-print(f"Sparsity: {A_sparse.nnz / (n*n):.6f}")
+The sparse matrix approach becomes crucial as networks grow:
 
-# Matrix-vector multiplication benchmark
-x = np.random.random(n)
+### Memory Scaling
+- **Dense matrix**: Memory grows as n² (quadratic)
+- **Sparse matrix**: Memory grows as number of edges (linear for sparse networks)
 
-# Sparse multiplication
-start_time = time.time()
-y_sparse = A_normalized @ x
-sparse_matvec_time = time.time() - start_time
+### Computational Efficiency  
+- **Matrix operations** remain fast because computers can efficiently process the compact arrays
+- **Neighbor finding** is optimized through the index pointer system
+- **Linear algebra** algorithms work seamlessly with sparse formats
 
-print(f"Sparse matrix-vector multiplication: {sparse_matvec_time:.4f} seconds")
-print(f"Result norm: {np.linalg.norm(y_sparse):.6f}")
-```
+### Real-World Impact
 
-### Finding Connected Components
+This technology enables:
+- **Google's PageRank** to rank billions of web pages
+- **Social media platforms** to analyze billions of user connections  
+- **Neuroscientists** to study brain networks with trillions of synapses
+- **Epidemiologists** to model disease spread through global populations
 
-Sparse matrices excel at graph traversal algorithms:
+## The Takeaway
 
-```{python}
-from scipy.sparse.csgraph import connected_components
+Sparse matrices solve the fundamental scaling challenge in network science by:
 
-# Find connected components
-n_components, labels = connected_components(A_sparse, directed=False)
+1. **Recognizing sparsity**: Most real networks have very few connections relative to what's possible
+2. **Storing efficiently**: Keep only the actual connections, not the empty spaces
+3. **Computing smartly**: Use data structures that enable fast operations on sparse data
 
-print(f"Number of connected components: {n_components}")
-
-# Analyze component sizes
-component_sizes = np.bincount(labels)
-print(f"Largest component size: {np.max(component_sizes)}")
-print(f"Component size distribution: {sorted(component_sizes, reverse=True)[:10]}")
-```
-
-### Shortest Path Calculations
-
-```{python}
-from scipy.sparse.csgraph import shortest_path
-
-# Calculate shortest paths from node 0 (for a smaller subgraph)
-if A_sparse.shape[0] > 1000:
-    # Use subgraph for demonstration
-    subgraph = A_sparse[:1000, :1000]
-else:
-    subgraph = A_sparse
-
-distances = shortest_path(subgraph, indices=0, directed=False)
-finite_distances = distances[np.isfinite(distances)]
-
-print(f"Shortest paths from node 0:")
-print(f"  Reachable nodes: {len(finite_distances)}")
-print(f"  Average distance: {np.mean(finite_distances):.2f}")
-print(f"  Maximum distance: {np.max(finite_distances):.0f}")
-```
-
-## Best Practices for Sparse Network Analysis
-
-### 1. Choose the Right Format
-
-```{python}
-# Format selection guide
-def recommend_format(operation_type):
-    recommendations = {
-        "row_operations": "CSR (fast row slicing, matrix-vector multiply)",
-        "column_operations": "CSC (fast column slicing, vector-matrix multiply)",
-        "construction": "COO (easy to build from edge lists)",
-        "arithmetic": "CSR or CSC (efficient arithmetic operations)",
-        "random_access": "DOK or LIL (but convert to CSR/CSC for computation)"
-    }
-    return recommendations.get(operation_type, "CSR (general purpose)")
-
-operations = ["row_operations", "column_operations", "construction", "arithmetic"]
-for op in operations:
-    print(f"{op}: {recommend_format(op)}")
-```
-
-### 2. Memory-Efficient Construction
-
-```{python}
-def build_sparse_efficiently(edges, n_nodes):
-    """Efficiently build sparse matrix from edge list"""
-
-    # Method 1: Direct COO construction (recommended)
-    row_idx = [i for i, j in edges] + [j for i, j in edges]
-    col_idx = [j for i, j in edges] + [i for i, j in edges]
-    data = [1] * (2 * len(edges))
-
-    matrix = sparse.coo_matrix((data, (row_idx, col_idx)),
-                              shape=(n_nodes, n_nodes))
-    return matrix.tocsr()  # Convert to CSR for efficient operations
-
-# Demonstrate with timing
-edges = create_sparse_network(5000, sparsity=0.002)
-
-start_time = time.time()
-efficient_matrix = build_sparse_efficiently(edges, 5000)
-efficient_time = time.time() - start_time
-
-print(f"Efficient construction: {efficient_time:.4f} seconds")
-print(f"Matrix shape: {efficient_matrix.shape}")
-print(f"Non-zeros: {efficient_matrix.nnz}")
-```
-
-### 3. Avoiding Dense Operations
-
-```{python}
-# DON'T do this - creates dense matrix!
-# bad_result = sparse_matrix.toarray() @ vector
-
-# DO this - keeps everything sparse
-A = A_sparse[:1000, :1000]  # Use smaller matrix for demo
-x = np.random.random(1000)
-
-# Good: sparse matrix operations
-start_time = time.time()
-good_result = A @ x  # Stays sparse
-good_time = time.time() - start_time
-
-print(f"Sparse operation time: {good_time:.6f} seconds")
-print(f"Result type: {type(good_result)}")
-print(f"Memory efficient: True")
-```
-
-## Real-World Example: Analyzing a Large Network
-
-Let's simulate analyzing a network similar to a social media platform:
-
-```{python}
-# Simulate a social network with realistic properties
-def create_realistic_network(n_users=50000):
-    """Create a network with power-law degree distribution"""
-
-    # Generate degrees following power law (realistic for social networks)
-    degrees = np.random.zipf(2, n_users) + 1  # Zipf distribution
-    degrees = np.minimum(degrees, n_users - 1)  # Cap at n-1
-
-    # Make sum even (required for simple graph)
-    if np.sum(degrees) % 2 == 1:
-        degrees[0] += 1
-
-    edges = []
-    node_degrees = degrees.copy()
-
-    # Simple degree sequence realization (not perfect, but demonstrates concept)
-    for i in range(n_users):
-        target_degree = min(degrees[i], 50)  # Limit for computational feasibility
-        candidates = [j for j in range(n_users) if j != i and node_degrees[j] > 0]
-
-        for _ in range(min(target_degree, len(candidates))):
-            if not candidates:
-                break
-            j = np.random.choice(candidates)
-            edges.append((i, j))
-            node_degrees[j] -= 1
-            if node_degrees[j] == 0:
-                candidates.remove(j)
-            if len(edges) > 100000:  # Limit for demonstration
-                break
-
-        if len(edges) > 100000:
-            break
-
-    return edges[:100000]  # Return first 100k edges
-
-print("Creating realistic large network...")
-large_edges = create_realistic_network(20000)
-n_large = 20000
-
-print(f"Generated {len(large_edges)} edges for {n_large} nodes")
-
-# Build sparse representation
-print("Building sparse matrix...")
-start_time = time.time()
-large_sparse = build_sparse_efficiently(large_edges, n_large)
-construction_time = time.time() - start_time
-
-print(f"Construction time: {construction_time:.2f} seconds")
-print(f"Matrix size: {large_sparse.shape}")
-print(f"Non-zero entries: {large_sparse.nnz:,}")
-print(f"Sparsity: {large_sparse.nnz / (n_large**2):.6f}")
-print(f"Memory usage: {(large_sparse.data.nbytes + large_sparse.indices.nbytes + large_sparse.indptr.nbytes) / 1024**2:.1f} MB")
-
-# Network analysis
-print("\nNetwork analysis:")
-degrees = np.array(large_sparse.sum(axis=1)).flatten()
-print(f"Average degree: {np.mean(degrees):.2f}")
-print(f"Degree standard deviation: {np.std(degrees):.2f}")
-print(f"Max degree: {np.max(degrees)}")
-
-# Connected components
-n_comp, comp_labels = connected_components(large_sparse, directed=False)
-comp_sizes = np.bincount(comp_labels)
-print(f"Connected components: {n_comp}")
-print(f"Largest component: {np.max(comp_sizes):,} nodes ({100*np.max(comp_sizes)/n_large:.1f}%)")
-```
-
-## Summary: When and How to Use Sparse Matrices
-
-### Use Sparse Matrices When:
-- **Network has > 1000 nodes** with typical sparsity
-- **Memory is limited** and network is large
-- **Performing many matrix operations** (multiplication, linear algebra)
-- **Working with real-world networks** (they're almost always sparse)
-
-### Format Selection Guide:
-- **CSR**: Row operations, matrix-vector multiplication, general purpose
-- **CSC**: Column operations, vector-matrix multiplication
-- **COO**: Building matrices, format conversion
-- **CSR/CSC**: Arithmetic operations, most algorithms
-
-### Performance Tips:
-1. **Build once, use many times**: Construction is expensive, operations are fast
-2. **Stay sparse**: Avoid `.toarray()` unless absolutely necessary
-3. **Use appropriate formats**: CSR for most operations, COO for construction
-4. **Leverage SciPy**: Use `scipy.sparse.csgraph` for graph algorithms
-
-Sparse matrices transform network analysis from impossible to practical for real-world scales. They're essential tools for any serious network scientist working with large datasets!
+This elegant solution—storing only what matters—transforms network analysis from impossible to practical at any scale. It's the same principle Euler used: **focus on the essential structure, ignore the irrelevant details**.
 
 ::: {.callout-tip}
-## Next Steps
+## For the Curious
 
-Try applying these techniques to real network datasets:
-- Download a network from [SNAP](https://snap.stanford.edu/data/) or [Network Repository](https://networkrepository.com/)
-- Practice building sparse representations
-- Experiment with different formats and operations
-- Compare performance with dense approaches
+If you want to explore this further:
+- Try implementing a simple CSR representation by hand
+- Compare memory usage of edge lists vs. sparse matrices for different network sizes
+- Experiment with real network datasets from [SNAP](https://snap.stanford.edu/data/) or [Network Repository](https://networkrepository.com/)
+- Learn about specialized sparse matrix algorithms in libraries like SciPy
 :::
