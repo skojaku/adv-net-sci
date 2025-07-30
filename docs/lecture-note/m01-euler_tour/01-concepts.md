@@ -1,4 +1,7 @@
-# Euler Tour Concepts: The Birth of Network Science
+---
+title: Euler Tour Concepts - The Birth of Network Science
+---
+
 
 ## What to learn in this module
 
@@ -26,12 +29,9 @@ Königsberg was a major intellectual center of the Enlightenment. [Immanuel Kant
 During their leisurely Sunday walks, the citizens of Königsberg found themselves pondering an intriguing puzzle:
 
 
-
- ---
-
-<span style="font-size:1.5em"><b>The Königsberg Bridge Problem</b></span>: Is it possible to take a walk through the city that crosses each bridge exactly once and returns to the starting point?
-
- ---
+::: {.callout-note title="The Königsberg Bridge Problem"}
+Is it possible to take a walk through the city that crosses each bridge exactly once and returns to the starting point?
+:::
 
 
 ![alt text](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){#fig-seven-bridges fig-alt="The seven bridges of Königsberg"}
@@ -57,8 +57,9 @@ Before we reveal Euler's brilliant solution, **take some time to think about thi
 
 The beauty of mathematics lies not just in the answers, but in the process of discovery. Once you've given it some thought (or worked through the worksheet), click below to see how Euler approached this problem in 1736.
 
-::: {.callout-note collapse="true"}
-## 🔍 Euler's Revolutionary Abstraction
+
+<details>
+<summary>🔍 **Euler's Revolutionary Abstraction** (Click to expand)</summary>
 
 [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
@@ -74,15 +75,15 @@ Euler realized that for this problem, only one thing mattered: ***which landmass
 
 He simplified the city into *a network of landmasses connected by bridges*:
 
-![](https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600){#fig-euler-graph fig-alt="Euler's graph of the bridges of Knigsberg"}
+::: {#fig-euler-graph}
 
-: Euler's graph of the bridges of Knigsberg {#fig-euler-graph}
+![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png)
 
-This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.
+Euler's graph of the bridges of Knigsberg. Taken from  [The Essential Guide to Graph Theory: From an 18th Century Riddle to AI Frameworks](https://towardsdatascience.com/the-essential-guide-to-graph-theory-from-an-18th-century-riddle-to-artificial-intelligence-c441cb9400de/)
+
 :::
 
-::: {.callout-tip collapse="true"}
-## 🧠 Euler's Brilliant Solution: The Power of Parity
+This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.
 
 Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***
 
@@ -94,11 +95,7 @@ Euler considered the degree (number of connections) of each node and realized th
 - a node has an **even number** of edges, or
 - a node has an **odd number** of edges.
 
-### The Even Case: Perfect Balance
-
 When a node has an even number $2k$ of edges, you can enter and leave the node exactly $k$ times by crossing different edges. Every time you enter through one bridge, you can leave through another. The bridges naturally pair up.
-
-### The Odd Case: The Leftover Problem
 
 When a node has an odd number $2k+1$ of edges, you can enter and leave the node $k$ times, but one edge is left over. The only way to cross this last edge is if your journey ***starts or ends*** at this node.
 
@@ -110,15 +107,28 @@ Based on this elegant reasoning, Euler arrived at his famous theorem:
 
 ::: {.callout-note title="Euler's Path Theorem"}
 A walk that crosses all edges exactly once exists **if and only if**:
+
 - All nodes have even degree, **OR**
 - Exactly two nodes have odd degree
+
 :::
 
 This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.
+
+
+::: {.column-margin}
+A good Youtube video explaining the Euler's story:
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/nZwSo4vfw6c?si=DVOe6vis6iIUuqrv" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 :::
 
-::: {.callout-warning collapse="true"}
-## ⚖️ The Verdict: Königsberg's Impossible Dream
+
+</details>
+
+<details>
+<summary>⚖️ **The Verdict: Königsberg's Impossible Dream** (Click to expand)</summary>
+
+### ⚖️ The Verdict: Königsberg's Impossible Dream
 
 Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
 
@@ -127,7 +137,8 @@ In the original graph: North shore (3 bridges), South shore (3 bridges), Large i
 :::
 
 The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.
-:::
+
+</details>
 
 ## History's Dark Twist
 
@@ -155,13 +166,11 @@ Euler's solution to the Königsberg bridge problem did far more than solve a rec
 
 These insights now underpin our understanding of everything from internet routing protocols to epidemic spreading models. Every time you use GPS navigation or analyze social network data, you're applying principles that trace back to Euler's Sunday stroll through Königsberg.
 
-## Key Historical Figures
-
-For students interested in learning more about the people mentioned in this chapter:
+### Fun trivia:
 
 **[Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler)** (1707-1783): Swiss mathematician and physicist, widely regarded as one of the most prolific mathematicians in history. Beyond solving the Königsberg bridge problem, he made fundamental contributions to calculus, topology, number theory, and physics. Despite losing sight in one eye and later becoming completely blind, he continued his mathematical work and produced nearly half of his total output after losing his sight.
 
-**[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by them.
+**[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by his daily walks.
 
 ## References
 
