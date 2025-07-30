@@ -40,7 +40,14 @@ module_selector = mo.ui.dropdown(
     label="Select module to practice"
 )
 
-mo.vstack([api_key_holder, module_selector])
+# Mode selector
+mode_selector = mo.ui.radio(
+    options=["Q&A Mode", "Quiz Mode"],
+    value="Q&A Mode",
+    label="Select interaction mode"
+)
+
+mo.vstack([api_key_holder, module_selector, mode_selector])
 ```
 
 ```python {.marimo}
@@ -54,12 +61,12 @@ from typing import List, Dict, Any
 def read_module_content(module_name: str) -> Dict[str, str]:
     """Read all markdown files from the selected module via GitHub raw URLs"""
     import urllib.request
-    
+
     # GitHub repository details
     github_user = "skojaku"
     github_repo = "adv-net-sci"
     github_branch = "main"
-    
+
     # Define files based on _quarto.yml structure
     module_files = {
         "intro": ["why-networks.md", "setup.md"],
@@ -73,32 +80,33 @@ def read_module_content(module_name: str) -> Dict[str, str]:
         "m08-embedding": ["00-preparation.md", "01-concepts.md", "03-exercises.md", "04-appendix.md"],
         "m09-graph-neural-networks": ["00-preparation.md", "01-concepts.md", "03-exercises.md"]
     }
-    
+
     # Get files to fetch for this module
     files_to_fetch = module_files.get(module_name, [])
-    
+
     content = {}
-    
+
     # Build base raw URL
     base_raw_url = f"https://raw.githubusercontent.com/{github_user}/{github_repo}/{github_branch}/docs/lecture-note"
-    
+
     if module_name == "intro":
         module_path = f"{base_raw_url}/intro"
     else:
         module_path = f"{base_raw_url}/{module_name}"
-    
+
     # Fetch each file
     for filename in files_to_fetch:
         file_url = f"{module_path}/{filename}"
-        
+
         try:
             req = urllib.request.Request(file_url)
             req.add_header('User-Agent', 'quiz-dojo-marimo-app')
-            
+
             with urllib.request.urlopen(req, timeout=10) as response:
                 file_content = response.read().decode('utf-8')
                 content[filename] = file_content
-                
+
+
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 # File doesn't exist, skip it
@@ -107,10 +115,10 @@ def read_module_content(module_name: str) -> Dict[str, str]:
                 content[filename] = f"Error fetching {filename}: HTTP {e.code}"
         except Exception as e:
             content[filename] = f"Error fetching {filename}: {str(e)}"
-    
+
     if not content:
         return {"error": f"No content could be loaded for module '{module_name}'. Tried files: {files_to_fetch}"}
-    
+
     return content
 
 
@@ -118,29 +126,29 @@ def format_module_context(content_dict: Dict[str, str], module_name: str) -> str
     """Format module content for LLM context"""
     if "error" in content_dict:
         return f"Error loading module content: {content_dict['error']}"
-    
+
     context = f"=== COURSE MODULE CONTEXT: {module_name.upper().replace('-', ' ')} ===\n\n"
-    
+
     # Order files by importance
     file_order = ['00-preparation.md', '01-concepts.md', '03-exercises.md']
-    
+
     # Add ordered files first
     for filename in file_order:
         if filename in content_dict:
             context += f"--- {filename.replace('.md', '').replace('-', ' ').title()} ---\n"
             context += content_dict[filename] + "\n\n"
-    
+
     # Add remaining files
     for filename, content_text in content_dict.items():
         if filename not in file_order:
             context += f"--- {filename.replace('.md', '').replace('-', ' ').title()} ---\n"
             context += content_text + "\n\n"
-    
+
     context += "=== END MODULE CONTEXT ===\n\n"
     return context
 
 
-def custom_llm_api(messages, config, module_context=None) -> str:
+def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> str:
     """
     Custom LLM function that calls an OpenAI-compatible API endpoint
     """
@@ -155,22 +163,39 @@ def custom_llm_api(messages, config, module_context=None) -> str:
 
     # Convert marimo ChatMessage objects to OpenAI format
     openai_messages = []
-    
+
     # Add module context as system message if provided
     if module_context:
-        openai_messages.append({
-            "role": "system",
-            "content": f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and create relevant quiz questions.
+        if mode == "Quiz Mode":
+            system_prompt = f"""You are a quiz creator and evaluator for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Your primary role is to create challenging quiz questions and evaluate student responses.
 
 {module_context}
 
-Instructions:
+Instructions for Quiz Mode:
+- When asked to create quiz questions, generate multiple choice, short answer, or problem-solving questions based on the module content
+- Include a mix of difficulty levels: basic recall, conceptual understanding, and application
+- Provide clear, correct answers with explanations
+- When evaluating student answers, be constructive and educational
+- Focus on key concepts, algorithms, mathematical formulations, and real-world applications from the module
+- If asked general questions, still frame your response in terms of quiz preparation"""
+        else:  # Q&A Mode
+            system_prompt = f"""You are a helpful teaching assistant for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Use this content to answer questions accurately and help students understand the material.
+
+{module_context}
+
+Instructions for Q&A Mode:
 - Answer questions based on the module content provided above
-- When creating quiz questions, make them relevant to the concepts in this module
+- Provide clear, educational explanations with examples when possible
+- Break down complex concepts into understandable parts
 - Reference specific concepts, algorithms, or examples from the module when helpful
-- If asked about topics not covered in this module, politely redirect to the module content"""
+- If asked about topics not covered in this module, politely redirect to the module content
+- Encourage deeper understanding through follow-up questions when appropriate"""
+        
+        openai_messages.append({
+            "role": "system",
+            "content": system_prompt
         })
-    
+
     for msg in messages:
         # Handle both dict and ChatMessage objects
         if hasattr(msg, 'role') and hasattr(msg, 'content'):
@@ -229,15 +254,15 @@ def llm_wrapper(messages, config):
     """
     # Get the selected module
     selected_module = module_selector.value
-    
+
     # Debug: Add some error checking
     if not selected_module:
         return custom_llm_api(messages, config)
-    
+
     # Make sure we're using the correct module key
     # In case the dropdown returns the display name, map it back to the key
     module_key_map = {v: k for k, v in module_options.items()}
-    
+
     if selected_module in module_key_map:
         # It's a display name, get the key
         module_key = module_key_map[selected_module]
@@ -247,13 +272,16 @@ def llm_wrapper(messages, config):
     else:
         # Unknown module
         return custom_llm_api(messages, config)
-    
+
     # Read module content and format context
     module_content = read_module_content(module_key)
     module_context = format_module_context(module_content, module_key)
-    
-    # Pass context to custom_llm_api
-    return custom_llm_api(messages, config, module_context)
+
+    # Get the selected mode
+    selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
+
+    # Pass context and mode to custom_llm_api
+    return custom_llm_api(messages, config, module_context, selected_mode)
 
 # Module-specific prompts based on selection
 def get_module_prompts():
@@ -263,10 +291,10 @@ def get_module_prompts():
             "Hello! How can you help me today?",
             "Select a module above to get started"
         ]
-    
+
     # Get the correct module key (same logic as llm_wrapper)
     module_key_map = {v: k for k, v in module_options.items()}
-    
+
     if selected in module_key_map:
         module_key = module_key_map[selected]
         module_display = selected
@@ -275,63 +303,121 @@ def get_module_prompts():
         module_display = module_options[selected]
     else:
         return ["Error: Unknown module selected"]
+
+    # Get the selected mode
+    selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
     
-    base_prompts = [
-        f"Explain the key concepts in {module_display}",
-        f"Create a quiz question about {module_display}",
-        "What are the main learning objectives for this module?",
-        "Give me a practice problem from this module",
-        "Explain {{concept}} from this module in simple terms",
-        "How does {{algorithm}} work in network analysis?",
-    ]
-    
-    # Add module-specific prompts
-    module_specific = {
-        "intro": [
-            "Why do we study networks?",
-            "What are some examples of real-world networks?"
-        ],
-        "m01-euler_tour": [
-            "Explain the Seven Bridges of Königsberg problem",
-            "How do you determine if a graph has an Euler path?"
-        ],
-        "m02-small-world": [
-            "What is the small-world phenomenon?",
-            "Explain the Milgram experiment"
-        ],
-        "m03-robustness": [
-            "How do we measure network robustness?",
-            "What is the difference between random and targeted attacks?"
-        ],
-        "m04-friendship-paradox": [
-            "Explain the friendship paradox",
-            "How does degree centrality relate to the friendship paradox?"
-        ],
-        "m05-clustering": [
-            "What is community detection?",
-            "Explain modularity and its role in clustering"
-        ],
-        "m06-centrality": [
-            "Compare different centrality measures",
-            "When would you use betweenness vs eigenvector centrality?"
-        ],
-        "m07-random-walks": [
-            "How do random walks work on networks?",
-            "Explain PageRank algorithm"
-        ],
-        "m08-embedding": [
-            "What are network embeddings?",
-            "Compare spectral vs neural embedding methods"
-        ],
-        "m09-graph-neural-networks": [
-            "How do Graph Neural Networks work?",
-            "Explain graph convolution operations"
+    if selected_mode == "Quiz Mode":
+        base_prompts = [
+            f"Create a multiple choice question about {module_display}",
+            f"Generate a short answer question for {module_display}",
+            f"Create a problem-solving question from {module_display}",
+            "Make a quiz question with different difficulty levels",
+            "Generate a question about {{concept}} with answer explanation",
+            "Create a quiz question testing understanding of {{algorithm}}",
+            "Evaluate my answer to your previous question",
         ]
-    }
-    
+    else:  # Q&A Mode
+        base_prompts = [
+            f"Explain the key concepts in {module_display}",
+            f"What are the main learning objectives for {module_display}?",
+            "Give me a practice problem from this module",
+            "Explain {{concept}} from this module in simple terms",
+            "How does {{algorithm}} work in network analysis?",
+            "What are some real-world applications covered in this module?",
+        ]
+
+    # Add module-specific prompts
+    if selected_mode == "Quiz Mode":
+        module_specific = {
+            "intro": [
+                "Create a quiz question about why we study networks",
+                "Generate a question about real-world network examples"
+            ],
+            "m01-euler_tour": [
+                "Create a quiz question about the Seven Bridges of Königsberg",
+                "Generate a question about determining Euler paths"
+            ],
+            "m02-small-world": [
+                "Create a quiz question about the small-world phenomenon",
+                "Generate a question about the Milgram experiment"
+            ],
+            "m03-robustness": [
+                "Create a quiz question about measuring network robustness",
+                "Generate a question comparing random vs targeted attacks"
+            ],
+            "m04-friendship-paradox": [
+                "Create a quiz question explaining the friendship paradox",
+                "Generate a question about degree centrality and the friendship paradox"
+            ],
+            "m05-clustering": [
+                "Create a quiz question about community detection",
+                "Generate a question about modularity in clustering"
+            ],
+            "m06-centrality": [
+                "Create a quiz question comparing centrality measures",
+                "Generate a question about when to use different centrality measures"
+            ],
+            "m07-random-walks": [
+                "Create a quiz question about random walks on networks",
+                "Generate a question about the PageRank algorithm"
+            ],
+            "m08-embedding": [
+                "Create a quiz question about network embeddings",
+                "Generate a question comparing spectral vs neural embeddings"
+            ],
+            "m09-graph-neural-networks": [
+                "Create a quiz question about Graph Neural Networks",
+                "Generate a question about graph convolution operations"
+            ]
+        }
+    else:  # Q&A Mode  
+        module_specific = {
+            "intro": [
+                "Why do we study networks?",
+                "What are some examples of real-world networks?"
+            ],
+            "m01-euler_tour": [
+                "Explain the Seven Bridges of Königsberg problem",
+                "How do you determine if a graph has an Euler path?"
+            ],
+            "m02-small-world": [
+                "What is the small-world phenomenon?",
+                "Explain the Milgram experiment"
+            ],
+            "m03-robustness": [
+                "How do we measure network robustness?",
+                "What is the difference between random and targeted attacks?"
+            ],
+            "m04-friendship-paradox": [
+                "Explain the friendship paradox",
+                "How does degree centrality relate to the friendship paradox?"
+            ],
+            "m05-clustering": [
+                "What is community detection?",
+                "Explain modularity and its role in clustering"
+            ],
+            "m06-centrality": [
+                "Compare different centrality measures",
+                "When would you use betweenness vs eigenvector centrality?"
+            ],
+            "m07-random-walks": [
+                "How do random walks work on networks?",
+                "Explain PageRank algorithm"
+            ],
+            "m08-embedding": [
+                "What are network embeddings?",
+                "Compare spectral vs neural embedding methods"
+            ],
+            "m09-graph-neural-networks": [
+                "How do Graph Neural Networks work?",
+                "Explain graph convolution operations"
+            ]
+        }
+
     if module_key in module_specific:
         base_prompts.extend(module_specific[module_key])
-    
+
     return base_prompts
 
 # Create the chat interface
@@ -344,7 +430,8 @@ chat = mo.ui.chat(
 
 # Display module status and chat
 selected_module_name = module_options.get(module_selector.value, "None") if module_selector.value else "None"
-status_text = f"**Selected Module:** {selected_module_name}"
+selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
+status_text = f"**Selected Module:** {selected_module_name} | **Mode:** {selected_mode}"
 
 mo.vstack([
     mo.md(status_text),
