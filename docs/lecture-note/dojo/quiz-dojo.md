@@ -66,6 +66,8 @@ mo.vstack([api_key_holder, module_selector, mode_selector])
 ```
 
 ```python {.marimo}
+import marimo as mo
+
 # Function to get example message for selected mode
 def get_mode_example():
     selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
