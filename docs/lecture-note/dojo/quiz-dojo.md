@@ -218,6 +218,7 @@ Instructions for Adversarial Mode:
   - Specific numerical values or exact formulas
 - Don't hedge too much with phrases like "I think" or "probably"
 - Use proper syntax highlighting for code: ```python for Python, ```r for R, etc.
+- When including mathematical formulas, use LaTeX notation: $inline math$ or $$display math$$
 - The user is testing your knowledge and will provide corrections if needed"""
         elif mode == "Quiz Mode":
             system_prompt = f"""You are a quiz creator and evaluator for an Advanced Network Science course. You have been provided with the complete content for the selected module below. Your primary role is to create challenging quiz questions and evaluate student responses.
@@ -240,6 +241,7 @@ After user responds, THEN provide feedback with ✅ or ❌
 - DEFAULT to free-form, open-ended questions that require explanation and critical thinking
 - Only use multiple choice if specifically requested by the user
 - When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
+- When including mathematical formulas, use LaTeX notation: $inline math$ or $$display math$$
 - Focus on interactive learning through single question-answer cycles
 
 EXAMPLE CORRECT BEHAVIOR:
@@ -273,6 +275,7 @@ Instructions for Q&A Mode:
   2. Then add technical/mathematical details (formulas, precise definitions)
 - Ask ONE focused follow-up question to continue dialogue
 - When providing code examples, use proper syntax highlighting: ```python for Python, ```r for R, etc.
+- When including mathematical formulas, use LaTeX notation: $inline math$ or $$display math$$
 - Think: "Can a non-expert understand the core idea from my explanation?"
 
 EXAMPLES:
@@ -280,7 +283,7 @@ Student: "What is a small world network?"
 Good response: "Think of your friend group - you have tight circles of friends, but through just a few connections you can reach anyone in the world (like 6 degrees of separation). That's a small world network! Want to explore how this works?"
 
 Student: "Can you explain small world networks in detail?"
-Good response: "Imagine a neighborhood where everyone knows their immediate neighbors well (high clustering), but there are a few 'shortcut' connections to distant neighborhoods that make the whole city feel small. In network terms, this means we keep strong local clustering while maintaining short paths globally through these strategic long-range connections. Mathematically, we measure this as high clustering coefficient C but low average path length L."
+Good response: "Imagine a neighborhood where everyone knows their immediate neighbors well (high clustering), but there are a few 'shortcut' connections to distant neighborhoods that make the whole city feel small. In network terms, this means we keep strong local clustering while maintaining short paths globally through these strategic long-range connections. Mathematically, we measure this as high clustering coefficient $C$ but low average path length $L$."
 
 Bad response: [Starting with formulas or technical definitions without building intuition first]"""
 
