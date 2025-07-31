@@ -256,7 +256,6 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
                 "Authorization": f"Bearer {api_key}"
             }
         )
-
         # Make the request
         with urllib.request.urlopen(req, timeout=30) as response:
             result = json.loads(response.read().decode('utf-8'))
@@ -513,11 +512,11 @@ test_question_func = test_question
 ```
 
 ```python {.marimo}
-# Match Quiz Dojo pattern exactly - the button acts as a trigger, accessing its value in the same cell
+# The button needs to be referenced to trigger reactivity
 test_button
 
-# Check if all required fields are filled
-if not question_input.value or not answer_input.value or not api_key_holder.value:
+# Check if button was clicked and all fields are filled
+if test_button.value == 0 or not question_input.value or not answer_input.value or not api_key_holder.value:
     mo.md("""## 📝 Test Your Question
 
 Fill in your question and expected answer above, then click **🧪 Test Question** to see:
@@ -535,7 +534,7 @@ Fill in your question and expected answer above, then click **🧪 Test Question
 
 **⏱️ Processing Time:** Testing takes 30-60 seconds. Watch the browser console (F12) for real-time progress updates!
 
-❌ **Please fill in all required fields above.**""")
+{("❌ **Please fill in all required fields above.**" if not question_input.value or not answer_input.value or not api_key_holder.value else "✅ **All fields filled! Click the Test Question button above to start.**")}""")
 else:
     # Add console logging for debugging
     print("🔧 DEBUG: Test button triggered and all fields filled!")
