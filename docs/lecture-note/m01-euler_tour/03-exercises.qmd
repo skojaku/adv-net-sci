@@ -5,10 +5,6 @@ filters:
 jupyter: python3
 ---
 
-#  Exercise
-
-## How to Run This Notebook
-
 ::: {.callout-tip}
 ## Running with Marimo
 
@@ -19,6 +15,18 @@ marimo edit --sandbox <filename>.py
 ```
 
 The notebook will open in your web browser. All necessary packages will be installed automatically in a dedicated virtual environment managed by uv.
+:::
+
+::: {.callout-tip}
+## Running with Google Colab
+
+If you are using colab, run the following code to install the necessary packages:
+```python
+# If you are using colab, uncomment the following line
+!sudo apt install libcairo2-dev pkg-config python3-dev
+!pip install pycairo cairocffi
+!pip install igraph
+```
 :::
 
 
@@ -34,13 +42,6 @@ The notebook will open in your web browser. All necessary packages will be insta
 import numpy as np
 ```
 
-```{python}
-# If you are using colab, uncomment the following line
-# !sudo apt install libcairo2-dev pkg-config python3-dev
-# !pip install pycairo cairocffi
-# !pip install igraph
-
-```
 
 Define the edges
 ```{python}
@@ -58,18 +59,23 @@ Visualize the graph
 ```{python}
 import igraph
 import matplotlib.pyplot as plt
-import numpy as np
+
 
 def visualize_graph(A, **params):
-  A = np.array(A)
-  src, trg = np.where(A)
-  g = igraph.Graph(directed=False)
-  g.add_vertices(A.shape[0])
-  for s, t in zip(src, trg):
-    for _ in range(A[s, t]):
-      g.add_edge(s, t)
-  return igraph.plot(g, **params)
+    A = np.array(A)
+    src, trg = np.where(A)
+    g = igraph.Graph(directed=False)
+    g.add_vertices(A.shape[0])
+    for s, t in zip(src, trg):
+        for _ in range(A[s, t]):
+            g.add_edge(s, t)
 
+    fig, ax = plt.subplots()
+    igraph.plot(g, target=ax, **params)
+    return fig
+
+
+# This should work directly in marimo
 visualize_graph(A)
 ```
 
@@ -77,7 +83,7 @@ Check if the graph has an Euler path and implement Euler's theorem
 ```{python}
 # TODO: Implement a function to check if a graph has an Euler path
 # Hint: Euler's theorem states that a graph has an Euler path if and only if:
-# - All nodes have even degree (Euler circuit), OR  
+# - All nodes have even degree (Euler circuit), OR
 # - Exactly two nodes have odd degree (Euler path)
 
 def has_euler_path(degrees):
@@ -113,8 +119,9 @@ Let's create a network from pre-existing data and check if it has an Euler path.
 Load the data by
 ```{python}
 import pandas as pd
-df = pd.read_csv('edges.csv') # load the data
-display(df)
+
+df = ...  # pd.read_csv("edges.csv")  # load the data
+df
 ```
 
 Then, get the srce and target nodes to compose an edge list

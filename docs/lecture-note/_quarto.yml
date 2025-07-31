@@ -22,12 +22,12 @@ website:
     right:
       - icon: github
         href: https://github.com/skojaku/adv-net-sci
-  
+
   sidebar:
     style: "docked"
     search: true
-    collapse-level: 2
-    border: true
+    collapse-level: 1
+    border: false
     background: "white"
     contents:
       - section: "Introduction"
@@ -215,7 +215,7 @@ execute:
 format:
   html:
     theme:
-      - cosmo
+      - litera
       - scss/style.scss
     toc: false
     page-layout: full
@@ -226,9 +226,14 @@ format:
     code-fold: false
     code-copy: hover
     code-tools: true
-    fontsize: 21px
-    margin-left: 50px
-    margin-right: 50px
+    highlight-style: github-dark
+    #code-block-bg: true
+    code-block-border-left: "#22c55e"
+    #fontsize: 24px
+    grid:
+      body-width: 2000px
+      sidebar-width: 200px
+      margin-width: 200px
     css:
       - assets/custom.css
 
