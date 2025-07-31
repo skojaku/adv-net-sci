@@ -246,7 +246,7 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
     try:
         # Prepare the request - exact same pattern as Quiz Dojo
         base_url = "https://chat.binghamton.edu/api"
-        url = f"{base_url}/chat/completions"
+        url = f"{base_url}"
         data = json.dumps(payload).encode('utf-8')
 
         req = urllib.request.Request(
@@ -264,8 +264,12 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
 
             # Extract the assistant's response
             if "choices" in result and len(result["choices"]) > 0:
-                return result["choices"][0]["message"]["content"].strip()
+                response_content = result["choices"][0]["message"]["content"].strip()
+                print(f"🔧 DEBUG: LLM Response received (length: {len(response_content)})")
+                print(f"🔧 DEBUG: LLM Response content: {response_content[:200]}...")
+                return response_content
             else:
+                print(f"🚨 ERROR: No choices in API response: {result}")
                 return "Error: No response from LLM. Make sure you have entered the correct API key."
 
     except urllib.error.URLError as e:
@@ -293,7 +297,7 @@ def test_question(question: str, expected_answer: str, module_name: str, api_key
         return "❌ Please fill in all fields (question, answer, and API key)"
 
     print(f"🔧 DEBUG: Loading module content for {module_name}...")
-    
+
     # Map display name to module key (same logic as Quiz Dojo)
     module_options = {
         "intro": "Introduction",
@@ -307,12 +311,12 @@ def test_question(question: str, expected_answer: str, module_name: str, api_key
         "m08-embedding": "Module 8: Embedding",
         "m09-graph-neural-networks": "Module 9: Graph Neural Networks"
     }
-    
+
     # Map display name back to key
     module_key_map = {v: k for k, v in module_options.items()}
     actual_module_key = module_key_map.get(module_name, module_name)
     print(f"🔧 DEBUG: Mapped '{module_name}' to '{actual_module_key}'")
-    
+
     # Load module content
     try:
         module_content = read_module_content(actual_module_key)
@@ -355,18 +359,24 @@ VALIDATION: [PASS/FAIL]
 ISSUES: [List any specific problems found, or "None" if valid]
 REASON: [Brief explanation of decision]"""
 
+    print("🔧 DEBUG: Calling validation API...")
     validation_result = call_llm_api(validation_prompt, validation_system, "gemma3:27b", api_key)
+    print(f"🔧 DEBUG: Validation API returned: {validation_result[:100] if validation_result else 'None'}...")
+    
     if not validation_result or validation_result.startswith("❌"):
+        print(f"🚨 ERROR: Validation failed: {validation_result}")
         return f"❌ Validation failed: {validation_result or 'API error'}"
 
     # Parse validation
     is_valid = "PASS" in validation_result.upper()
+    print(f"🔧 DEBUG: Validation result - Valid: {is_valid}")
     results['validation'] = {
         'valid': is_valid,
         'response': validation_result
     }
 
     if not is_valid:
+        print(f"🚨 ERROR: Question validation failed")
         return f"❌ Question validation failed:\n\n{validation_result}"
 
     # Step 2: Get LLM answer
@@ -382,8 +392,12 @@ Instructions:
 
     quiz_prompt = f"Question: {question}\n\nPlease provide your answer:"
 
+    print("🔧 DEBUG: Calling LLM quiz API...")
     llm_answer = call_llm_api(quiz_prompt, quiz_system, "llama3.2:latest", api_key)
+    print(f"🔧 DEBUG: LLM quiz API returned: {llm_answer[:100] if llm_answer else 'None'}...")
+    
     if not llm_answer or llm_answer.startswith("❌"):
+        print(f"🚨 ERROR: Failed to get LLM answer: {llm_answer}")
         return f"❌ Failed to get LLM answer: {llm_answer or 'API error'}"
 
     results['llm_answer'] = llm_answer
@@ -409,8 +423,12 @@ EXPLANATION: [Brief explanation of your decision]
 VERDICT: [CORRECT/INCORRECT]
 CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
+    print("🔧 DEBUG: Calling evaluation API...")
     evaluation_result = call_llm_api(evaluator_prompt, evaluator_system, "gemma3:27b", api_key)
+    print(f"🔧 DEBUG: Evaluation API returned: {evaluation_result[:100] if evaluation_result else 'None'}...")
+    
     if not evaluation_result or evaluation_result.startswith("❌"):
+        print(f"🚨 ERROR: Failed to get evaluation: {evaluation_result}")
         return f"❌ Failed to get evaluation: {evaluation_result or 'API error'}"
 
     results['evaluation'] = evaluation_result
@@ -421,11 +439,13 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
         verdict = "CORRECT"
     elif "INCORRECT" in evaluation_result.upper():
         verdict = "INCORRECT"
+    
+    print(f"🔧 DEBUG: Evaluation verdict: {verdict}")
 
     # Format final results
     winner = "🤖 LLM" if verdict == "CORRECT" else "🎉 You"
-
-    return f"""## 🧪 Test Results
+    
+    final_result = f"""## 🧪 Test Results
 
 **Winner: {winner}**
 
@@ -443,6 +463,11 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
 ---
 *Ready to use this question? Add it to your TOML quiz file and run the full Quiz Challenge!*"""
+
+    print(f"🔧 DEBUG: Final result generated (length: {len(final_result)})")
+    print(f"🔧 DEBUG: Final result preview: {final_result[:200]}...")
+    
+    return final_result
 
 # Store the test function for use in the button click
 test_question_func = test_question
@@ -488,7 +513,6 @@ else:
             module_selector.value,
             api_key_holder.value
         )
-
         print(f"🔧 DEBUG: Function completed, result length: {len(str(result))}")
         mo.md(result)
 
