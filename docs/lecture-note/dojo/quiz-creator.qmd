@@ -34,7 +34,7 @@ This tool helps you create and test quiz questions before submitting them to the
 
 **🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first.
 
-**🎯 Purpose**: 
+**🎯 Purpose**:
 - Test individual questions before adding them to your quiz
 - Get immediate feedback on question quality and difficulty
 - See how the LLM interprets and answers your questions
@@ -80,7 +80,7 @@ api_key_holder = mo.ui.text(
 # Module selector
 module_options = {
     "intro": "Introduction",
-    "m01-euler_tour": "Module 1: Euler Tour", 
+    "m01-euler_tour": "Module 1: Euler Tour",
     "m02-small-world": "Module 2: Small World",
     "m03-robustness": "Module 3: Robustness",
     "m04-friendship-paradox": "Module 4: Friendship Paradox",
@@ -99,7 +99,7 @@ module_selector = mo.ui.dropdown(
 
 mo.vstack([
     mo.md("## Configuration"),
-    api_key_holder, 
+    api_key_holder,
     module_selector
 ])
 ```
@@ -147,7 +147,7 @@ def read_module_content(module_name: str) -> Dict[str, str]:
 
     # Standard files to fetch for each module (automatically determined)
     standard_files = ["01-concepts", "02-coding", "04-advanced"]
-    
+
     # Special case for intro module
     if module_name == "intro":
         standard_files = ["why-networks", "setup"]
@@ -208,20 +208,20 @@ def format_module_context(content_dict: Dict[str, str], module_name: str) -> str
     """Format the loaded content for use in prompts"""
     if "error" in content_dict:
         return f"Module content unavailable: {content_dict['error']}"
-    
+
     formatted_sections = []
-    
+
     # Sort files by name for consistent ordering
     for filename in sorted(content_dict.keys()):
         if not filename.endswith('.md') or content_dict[filename].startswith('Error'):
             continue
-            
+
         content = content_dict[filename]
         formatted_sections.append(f"## {filename}\n\n{content}")
-    
+
     if not formatted_sections:
         return f"No valid content found for module '{module_name}'"
-    
+
     return f"# Module: {module_name}\n\n" + "\n\n---\n\n".join(formatted_sections)
 
 def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> Optional[str]:
@@ -230,7 +230,7 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
         "model": model,
         "messages": [
             {
-                "role": "system", 
+                "role": "system",
                 "content": system_message
             },
             {
@@ -286,11 +286,11 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
 def test_question(question: str, expected_answer: str, module_name: str, api_key: str):
     """Test a single question and return results"""
     print(f"🔧 DEBUG: test_question called with module: {module_name}")
-    
+
     if not question.strip() or not expected_answer.strip() or not api_key.strip():
         print("🔧 DEBUG: Missing required fields")
         return "❌ Please fill in all fields (question, answer, and API key)"
-    
+
     print(f"🔧 DEBUG: Loading module content for {module_name}...")
     # Load module content
     try:
@@ -301,11 +301,11 @@ def test_question(question: str, expected_answer: str, module_name: str, api_key
     except Exception as e:
         print(f"🚨 ERROR: Module content loading failed: {str(e)}")
         return f"❌ Error loading module content: {str(e)}"
-    
+
     results = {}
-    
+
     # Step 1: Validate question
-    validation_system = """You are a quiz validator for a Network Science course. Your job is to check if questions and answers are appropriate for the course. 
+    validation_system = """You are a quiz validator for a Network Science course. Your job is to check if questions and answers are appropriate for the course.
 
 Check for the following issues:
 1. HEAVY MATH: Complex mathematical derivations, advanced calculus, or computations that require extensive calculation
@@ -333,21 +333,21 @@ Respond with:
 VALIDATION: [PASS/FAIL]
 ISSUES: [List any specific problems found, or "None" if valid]
 REASON: [Brief explanation of decision]"""
-    
+
     validation_result = call_llm_api(validation_prompt, validation_system, "gemma3:27b", api_key)
     if not validation_result or validation_result.startswith("❌"):
         return f"❌ Validation failed: {validation_result or 'API error'}"
-    
+
     # Parse validation
     is_valid = "PASS" in validation_result.upper()
     results['validation'] = {
         'valid': is_valid,
         'response': validation_result
     }
-    
+
     if not is_valid:
         return f"❌ Question validation failed:\n\n{validation_result}"
-    
+
     # Step 2: Get LLM answer
     quiz_system = f"""You are a student taking a network science quiz. You have been provided with the module content below. Use this content to answer questions accurately.
 
@@ -360,13 +360,13 @@ Instructions:
 - If you're unsure about something, refer back to the provided content"""
 
     quiz_prompt = f"Question: {question}\n\nPlease provide your answer:"
-    
+
     llm_answer = call_llm_api(quiz_prompt, quiz_system, "llama3.2:latest", api_key)
     if not llm_answer or llm_answer.startswith("❌"):
         return f"❌ Failed to get LLM answer: {llm_answer or 'API error'}"
-    
+
     results['llm_answer'] = llm_answer
-    
+
     # Step 3: Evaluate the answer
     evaluator_system = """You are an expert evaluator for network science questions. Your job is to determine if a student's answer is correct or incorrect. Be strict but fair in your evaluation."""
 
@@ -391,19 +391,19 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
     evaluation_result = call_llm_api(evaluator_prompt, evaluator_system, "gemma3:27b", api_key)
     if not evaluation_result or evaluation_result.startswith("❌"):
         return f"❌ Failed to get evaluation: {evaluation_result or 'API error'}"
-    
+
     results['evaluation'] = evaluation_result
-    
+
     # Parse evaluation
     verdict = "INCORRECT"  # Default
     if "CORRECT" in evaluation_result.upper() and "INCORRECT" not in evaluation_result.upper():
         verdict = "CORRECT"
     elif "INCORRECT" in evaluation_result.upper():
         verdict = "INCORRECT"
-    
+
     # Format final results
     winner = "🤖 LLM" if verdict == "CORRECT" else "🎉 You"
-    
+
     return f"""## 🧪 Test Results
 
 **Winner: {winner}**
@@ -438,7 +438,7 @@ if not question_input.value or not answer_input.value or not api_key_holder.valu
 Fill in your question and expected answer above, then click **🧪 Test Question** to see:
 
 - **Validation**: Whether your question meets quality standards
-- **LLM Response**: How the AI interprets and answers your question  
+- **LLM Response**: How the AI interprets and answers your question
 - **Evaluation**: Whether the LLM got it right or wrong
 - **Feedback**: Tips for improving your question
 
@@ -456,30 +456,30 @@ else:
     print(f"🔧 DEBUG: Answer: {answer_input.value[:50]}...")
     print(f"🔧 DEBUG: Module: {module_selector.value}")
     print(f"🔧 DEBUG: API key length: {len(api_key_holder.value)}")
-    
+
     try:
         print("🔧 DEBUG: About to call test_question_func...")
-        
+
         # Execute test when button is clicked and all inputs are filled
         result = test_question_func(
             question_input.value,
-            answer_input.value, 
+            answer_input.value,
             module_selector.value,
             api_key_holder.value
         )
-        
+
         print(f"🔧 DEBUG: Function completed, result length: {len(str(result))}")
         mo.md(result)
-        
+
     except Exception as e:
         error_msg = f"❌ **Error occurred**: {str(e)}"
         print(f"🚨 ERROR: {error_msg}")
         print(f"🚨 ERROR: Exception type: {type(e).__name__}")
-        
+
         import traceback
         traceback_str = traceback.format_exc()
         print(f"🚨 ERROR: Full traceback:\n{traceback_str}")
-        
+
         mo.md(f"{error_msg}\n\n**Debug Info**: Check browser console for detailed error logs.\n\n```\n{traceback_str}\n```")
 ```
 
@@ -493,7 +493,7 @@ mo.md("""
 - **Comparisons**: "Why might betweenness centrality be misleading in directed networks?"
 - **Applications**: "How would you detect communities in a social network with fake accounts?"
 
-### ❌ **Question Types to Avoid**  
+### ❌ **Question Types to Avoid**
 - **Heavy math**: "Calculate eigenvalues of this adjacency matrix..."
 - **Off-topic**: "What's the capital of France?"
 - **Too broad**: "Explain everything about networks."
