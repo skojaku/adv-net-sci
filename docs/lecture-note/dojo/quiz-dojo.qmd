@@ -36,6 +36,7 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 **💡 Solution**: Connect to the Binghamton University VPN first, then try again.
 
 **🔧 Steps to Fix**:
+
 1. **Connect to BU VPN**: Use the official Binghamton University VPN client
 2. **Verify Connection**: Make sure your VPN shows "Connected" status
 3. **Refresh & Retry**: Reload this page and try submitting a question again
@@ -211,7 +212,12 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     # Your API configuration
     base_url = "https://chat.binghamton.edu/api"
     api_key = api_key_holder.value
-    model = "llama3.3:latest"
+    
+    # Use different models based on mode
+    if mode == "Adversarial Mode":
+        model = "llama3.1"
+    else:
+        model = "gemma3:27b"
 
     # Use config parameters if available
     temperature = getattr(config, "temperature", 0.1)

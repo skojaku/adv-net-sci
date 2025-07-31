@@ -1,0 +1,86 @@
+[
+  {
+    "objectID": "m02-small-world/00-preparation.html",
+    "href": "m02-small-world/00-preparation.html",
+    "title": "Advanced Topics in Network Science",
+    "section": "",
+    "text": "Before studying small-world networks, you should understand these concepts from the Euler Tour module: - Basic graph representations (adjacency matrix, edge lists) - Node degree calculations\nIf you are not familiar with these, please refer to the Euler Tour module.",
+    "crumbs": [
+      "Home",
+      "M02: Small World",
+      "Advanced Topics in Network Science"
+    ]
+  },
+  {
+    "objectID": "m02-small-world/00-preparation.html#required-knowledge-from-module-1",
+    "href": "m02-small-world/00-preparation.html#required-knowledge-from-module-1",
+    "title": "Advanced Topics in Network Science",
+    "section": "",
+    "text": "Before studying small-world networks, you should understand these concepts from the Euler Tour module: - Basic graph representations (adjacency matrix, edge lists) - Node degree calculations\nIf you are not familiar with these, please refer to the Euler Tour module.",
+    "crumbs": [
+      "Home",
+      "M02: Small World",
+      "Advanced Topics in Network Science"
+    ]
+  },
+  {
+    "objectID": "intro/setup.html",
+    "href": "intro/setup.html",
+    "title": "Setup",
+    "section": "",
+    "text": "We’ll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.\nWe strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:\n\n\nDon’t confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.\n\nReproducibility: Your code will work consistently across different machines and over time\nFlexibility: You can use different versions of packages for different projects without conflicts\nPrevent project interference: Changes to one project won’t break another project’s dependencies\n\n\n\n\n\n\n\nFigure 1: Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.\n\n\n\nWe recommend using mamba and uv. Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects. uv is a fast Python package and project manager. While we won’t be running uv commands directly in this course, you’ll need uv to properly run Marimo notebooks, which provides a much better development experience. See here for installation instructions.\nFollow the following steps to install mamba, uv, along with the minimum Python packages required for this course.\n\n[Install mamba] (https://github.com/conda-forge/miniforge)\nRun the following command to create a new environment with the minimum Python packages required for this course.\n\nmamba create -n advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv\n\nActivate the environment.\n\nmamba activate advnetsci\n\nPip install marimo.\n\npip install marimo\n\n\n\n\n\n\nIf you prefer tools other than uv, here are some alternatives:\n\nvenv: The standard library for creating virtual environments;\npyenv: Great for managing multiple Python versions;\nConda: Popular in data science, includes non-Python packages;\nMamba: Faster drop-in replacement for conda;\nMiniforge: Community-driven conda distribution with mamba included;",
+    "crumbs": [
+      "Home",
+      "Introduction",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "intro/setup.html#python-and-virtual-environments",
+    "href": "intro/setup.html#python-and-virtual-environments",
+    "title": "Setup",
+    "section": "",
+    "text": "We’ll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.\nWe strongly recommend using virtual environments to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:\n\n\nDon’t confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.\n\nReproducibility: Your code will work consistently across different machines and over time\nFlexibility: You can use different versions of packages for different projects without conflicts\nPrevent project interference: Changes to one project won’t break another project’s dependencies\n\n\n\n\n\n\n\nFigure 1: Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.\n\n\n\nWe recommend using mamba and uv. Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects. uv is a fast Python package and project manager. While we won’t be running uv commands directly in this course, you’ll need uv to properly run Marimo notebooks, which provides a much better development experience. See here for installation instructions.\nFollow the following steps to install mamba, uv, along with the minimum Python packages required for this course.\n\n[Install mamba] (https://github.com/conda-forge/miniforge)\nRun the following command to create a new environment with the minimum Python packages required for this course.\n\nmamba create -n advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv\n\nActivate the environment.\n\nmamba activate advnetsci\n\nPip install marimo.\n\npip install marimo\n\n\n\n\n\n\nIf you prefer tools other than uv, here are some alternatives:\n\nvenv: The standard library for creating virtual environments;\npyenv: Great for managing multiple Python versions;\nConda: Popular in data science, includes non-Python packages;\nMamba: Faster drop-in replacement for conda;\nMiniforge: Community-driven conda distribution with mamba included;",
+    "crumbs": [
+      "Home",
+      "Introduction",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "intro/setup.html#marimo-notebook",
+    "href": "intro/setup.html#marimo-notebook",
+    "title": "Setup",
+    "section": "2 Marimo Notebook",
+    "text": "2 Marimo Notebook\nWe’ll use Marimo (GitHub) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.\nFamiliarize yourself with Marimo by taking a look at the “Getting Started” section of the Marimo documentation.\n\n\n\n\nMarimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.\nCreating a sandboxed notebook:\nuvx marimo edit --sandbox my_notebook.py\nThis command installs marimo in a temporary environment, tracks your dependencies and stores them in the notebook file, and automatically downloads any existing dependencies.\nRunning sandboxed notebooks:\nuv run my_notebook.py\nBenefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.\n\nAlternative Installation\nIf you’re not using uv, you can install marimo with pip:\npip install marimo\n\n\nRunning Marimo\nTo start a new marimo notebook:\nmarimo edit\nTo open an existing marimo notebook:\nmarimo edit notebook.py",
+    "crumbs": [
+      "Home",
+      "Introduction",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "intro/setup.html#github-and-github-copilot",
+    "href": "intro/setup.html#github-and-github-copilot",
+    "title": "Setup",
+    "section": "3 Github and GitHub Copilot",
+    "text": "3 Github and GitHub Copilot\nWe’ll use GitHub for assignment collection and auto-grading in this course.\n\n\n\n\n\nMinimum Requirements\nAt the minimum level, you only need to:\n\nCreate a GitHub account at github.com\nKnow how to upload files to GitHub\n\nDetailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this assignment example to get familiar with the format.\n\n\nSubscribing to GitHub Copilot\nWe strongly encourage you to use GitHub Copilot, an AI-powered coding assistant that helps you write code faster and more efficiently. GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in code editor, including VS Code and Marimo.\nStudents can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the GitHub Copilot Pro free access page to get started.\nMarimo notebook supports GitHub Copilot out of the box. See the instruction to enable it. If you are using VS Code, you can also install the GitHub Copilot extension to get the same experience.\n\n\nFor Students Interested in Learning More\nUnderstanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.\n\n\nGit(Hub) and AI tools are like a pair of best friends. Git ensures that all edits are tracked and can be reverted. GitHub makes it easy for you to collaborate with (multiple) AI agents with you.\n\n\n\n\n\nGitHub Desktop (Recommended for Beginners)\nIf you want to learn more about version control, start with GitHub Desktop, a user-friendly graphical interface:\n\nGo to desktop.github.com\nDownload for your operating system\nInstall and sign in with your GitHub account\n\n\n\nUnderstanding Git and Version Control\nGit is a version control system that tracks changes in your code over time. Think of it as a sophisticated “save” system that:\n\nKeeps a complete history of all changes to your files\nLets you go back to any previous version\nAllows multiple people to work on the same project simultaneously\nHelps you manage different versions or “branches” of your work\n\nGitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.\n\n\nLearning Resources\nEssential resources to understand Git concepts:\n\nInteractive Git Tutorial - Visual, hands-on learning\nGitHub Desktop Documentation - Official desktop app guide\nAtlassian Git Tutorials - Detailed tutorials with examples",
+    "crumbs": [
+      "Home",
+      "Introduction",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "m01-euler_tour/03-exercises.html",
+    "href": "m01-euler_tour/03-exercises.html",
+    "title": "Exercises",
+    "section": "",
+    "text": "Open in molab\n\n\nExercise Notebook",
+    "crumbs": [
+      "Home",
+      "M01: Euler Tour",
+      "Exercises"
+    ]
+  }
+]
