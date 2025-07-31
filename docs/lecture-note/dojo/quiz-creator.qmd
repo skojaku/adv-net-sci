@@ -118,9 +118,20 @@ answer_input = mo.ui.text_area(
     rows=4
 )
 
+def handle_test_click():
+    """Handle the test button click"""
+    if not question_input.value or not answer_input.value or not api_key_holder.value:
+        return "❌ Please fill in all required fields"
+    
+    return test_question_func(
+        question_input.value,
+        answer_input.value,
+        module_selector.value,
+        api_key_holder.value
+    )
+
 test_button = mo.ui.button(
-    value=0,
-    on_click=lambda value: value + 1,
+    on_click=handle_test_click,
     label="🧪 Test Question"
 )
 
@@ -516,12 +527,15 @@ test_question_func = test_question
 ```
 
 ```python {.marimo}
-# The button needs to be referenced to trigger reactivity
+# Display the button and show its result
 test_button
 
-# Show instructions if button hasn't been clicked OR fields are empty
-if not question_input.value or not answer_input.value or not api_key_holder.value:
-    mo.md("""## 📝 Test Your Question
+# Show the result if button has been clicked
+if test_button.value:
+    mo.md(test_button.value)
+else:
+    # Show instructions when no result yet
+    mo.md(f"""## 📝 Test Your Question
 
 Fill in your question and expected answer above, then click **🧪 Test Question** to see:
 
@@ -539,7 +553,6 @@ Fill in your question and expected answer above, then click **🧪 Test Question
 **⏱️ Processing Time:** Testing takes 30-60 seconds. Watch the browser console (F12) for real-time progress updates!
 
 {("❌ **Please fill in all required fields above.**" if not question_input.value or not answer_input.value or not api_key_holder.value else "✅ **All fields filled! Click the Test Question button above to start.**")}""")
-elif test_button.value > 0:  # Button has been clicked AND all fields are filled
     # Add console logging for debugging
     print("🔧 DEBUG: Test button triggered and all fields filled!")
     print(f"🔧 DEBUG: Question: {question_input.value[:50]}...")
