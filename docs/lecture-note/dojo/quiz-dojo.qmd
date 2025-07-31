@@ -3,7 +3,27 @@ title: Quiz Dojo
 filters:
     - marimo-team/marimo
 search: false
+title-block-banner: ../figs/dojo.jpeg
+author: ""
+date: ""
 ---
+<style>
+
+#title-block-header {
+  margin-block-end: 1rem;
+  position: relative;
+  margin-top: -1px;
+  height: 300px;
+}
+
+
+.quarto-title-banner {
+  margin-block-end: 2rem;
+  position: relative;
+  height: 100%;
+}
+
+</style>
 
 [← Back to Main Page](../index.qmd)
 
@@ -124,22 +144,22 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     github_repo = "adv-net-sci"
     github_branch = "main"
 
-    # Define files based on _quarto.yml structure
+    # Define base filenames (without extensions)
     module_files = {
-        "intro": ["why-networks.md", "setup.md"],
-        "m01-euler_tour": ["00-preparation.md", "01-concepts.md"],
-        "m02-small-world": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
-        "m03-robustness": ["00-preparation.md", "01-concepts.md", "03-exercises.md", "04-appendix.md"],
-        "m04-friendship-paradox": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
-        "m05-clustering": ["00-preparation.md"],
-        "m06-centrality": ["00-preparation.md", "01-concepts.md", "03-exercises.md"],
-        "m07-random-walks": ["00-preparation.md", "03-exercises.md"],
-        "m08-embedding": ["00-preparation.md", "01-concepts.md", "03-exercises.md", "04-appendix.md"],
-        "m09-graph-neural-networks": ["00-preparation.md", "01-concepts.md", "03-exercises.md"]
+        "intro": ["why-networks", "setup"],
+        "m01-euler_tour": ["00-preparation", "01-concepts"],
+        "m02-small-world": ["00-preparation", "01-concepts", "03-exercises"],
+        "m03-robustness": ["00-preparation", "01-concepts", "03-exercises", "04-appendix"],
+        "m04-friendship-paradox": ["00-preparation", "01-concepts", "03-exercises"],
+        "m05-clustering": ["00-preparation"],
+        "m06-centrality": ["00-preparation", "01-concepts", "03-exercises"],
+        "m07-random-walks": ["00-preparation", "03-exercises"],
+        "m08-embedding": ["00-preparation", "01-concepts", "03-exercises", "04-appendix"],
+        "m09-graph-neural-networks": ["00-preparation", "01-concepts", "03-exercises"]
     }
 
     # Get files to fetch for this module
-    files_to_fetch = module_files.get(module_name, [])
+    base_filenames = module_files.get(module_name, [])
 
     content = {}
 
@@ -151,30 +171,46 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     else:
         module_path = f"{base_raw_url}/{module_name}"
 
-    # Fetch each file
-    for filename in files_to_fetch:
-        file_url = f"{module_path}/{filename}"
+    # Fetch each file, trying both .qmd and .md extensions
+    for base_filename in base_filenames:
+        file_content = None
+        used_filename = None
+        
+        # Try both extensions
+        for ext in [".qmd", ".md"]:
+            filename = base_filename + ext
+            file_url = f"{module_path}/{filename}"
 
-        try:
-            req = urllib.request.Request(file_url)
-            req.add_header('User-Agent', 'quiz-dojo-marimo-app')
+            try:
+                req = urllib.request.Request(file_url)
+                req.add_header('User-Agent', 'quiz-dojo-marimo-app')
 
-            with urllib.request.urlopen(req, timeout=10) as response:
-                file_content = response.read().decode('utf-8')
-                content[filename] = file_content
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    file_content = response.read().decode('utf-8')
+                    used_filename = filename
+                    break  # Successfully found file, stop trying extensions
 
-
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                # File doesn't exist, skip it
-                continue
-            else:
-                content[filename] = f"Error fetching {filename}: HTTP {e.code}"
-        except Exception as e:
-            content[filename] = f"Error fetching {filename}: {str(e)}"
+            except urllib.error.HTTPError as e:
+                if e.code == 404:
+                    # File doesn't exist with this extension, try next
+                    continue
+                else:
+                    # Other HTTP error, record and stop trying
+                    content[base_filename + ".md"] = f"Error fetching {filename}: HTTP {e.code}"
+                    break
+            except Exception as e:
+                # Other error, record and stop trying
+                content[base_filename + ".md"] = f"Error fetching {filename}: {str(e)}"
+                break
+        
+        # Store the content if we found the file
+        if file_content and used_filename:
+            content[used_filename] = file_content
+        elif base_filename + ".md" not in content:  # Only add error if we haven't already
+            content[base_filename + ".md"] = f"File not found: tried {base_filename}.qmd and {base_filename}.md"
 
     if not content:
-        return {"error": f"No content could be loaded for module '{module_name}'. Tried files: {files_to_fetch}"}
+        return {"error": f"No content could be loaded for module '{module_name}'. Tried files: {base_filenames}"}
 
     return content
 
@@ -212,10 +248,10 @@ def custom_llm_api(messages, config, module_context=None, mode="Q&A Mode") -> st
     # Your API configuration
     base_url = "https://chat.binghamton.edu/api"
     api_key = api_key_holder.value
-    
+
     # Use different models based on mode
     if mode == "Adversarial Mode":
-        model = "llama3.1"
+        model = "llama3.2:latest"
     else:
         model = "gemma3:27b"
 
@@ -620,7 +656,7 @@ selected_module_name = module_options.get(module_selector.value, "None") if modu
 selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
 
 # Show which model is being used
-current_model = "llama3.1" if selected_mode == "Adversarial Mode" else "gemma3:27b"
+current_model = "llama3.2:latest" if selected_mode == "Adversarial Mode" else "gemma3:27b"
 status_text = f"**Selected Module:** {selected_module_name} | **Mode:** {selected_mode} | **Model:** {current_model}"
 
 mo.vstack([
