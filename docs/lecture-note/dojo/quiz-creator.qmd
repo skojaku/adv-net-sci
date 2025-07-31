@@ -281,6 +281,8 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
         return "Error: Invalid JSON response from server. Please try again or contact your instructor if the issue persists."
     except Exception as e:
         error_msg = str(e)
+        print(f"🚨 ERROR: Exception in call_llm_api: {error_msg}")
+        print(f"🚨 ERROR: Exception type: {type(e).__name__}")
         if "timeout" in error_msg.lower() or "connection" in error_msg.lower():
             return "🚨 **Network Timeout**: The connection to the API server timed out. This often indicates you're accessing from off-campus.\\n\\n**💡 Solution**: Connect to the Binghamton University VPN and try again."
         else:
@@ -543,7 +545,28 @@ else:
         traceback_str = traceback.format_exc()
         print(f"🚨 ERROR: Full traceback:\n{traceback_str}")
 
-        mo.md(f"{error_msg}\n\n**Debug Info**: Check browser console for detailed error logs.\n\n```\n{traceback_str}\n```")
+        # Check if it's a timeout or connection issue
+        if "timeout" in str(e).lower() or "connection" in str(e).lower() or "RPC request timed out" in str(e):
+            mo.md(f"""## 🚨 Connection Timeout
+
+**The Quiz Creator timed out while trying to reach the API server.**
+
+### 💡 **Most Common Solutions:**
+1. **Connect to Binghamton VPN** - This is usually an off-campus access issue
+2. **Try a shorter question** - Very long questions can take longer to process
+3. **Wait and try again** - The server might be temporarily busy
+
+### 🔧 **Technical Details:**
+```
+{error_msg}
+```
+
+### 📞 **Still Having Issues?**
+- Check that you're connected to Binghamton University VPN
+- Contact your instructor if the problem persists
+- The system works best from on-campus networks""")
+        else:
+            mo.md(f"{error_msg}\n\n**Debug Info**: Check browser console for detailed error logs.\n\n```\n{traceback_str}\n```")
 ```
 
 ```python {.marimo}
