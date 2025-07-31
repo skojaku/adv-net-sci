@@ -618,7 +618,10 @@ chat = mo.ui.chat(
 # Display module status and chat
 selected_module_name = module_options.get(module_selector.value, "None") if module_selector.value else "None"
 selected_mode = mode_selector.value if hasattr(mode_selector, 'value') else "Q&A Mode"
-status_text = f"**Selected Module:** {selected_module_name} | **Mode:** {selected_mode}"
+
+# Show which model is being used
+current_model = "llama3.1" if selected_mode == "Adversarial Mode" else "gemma3:27b"
+status_text = f"**Selected Module:** {selected_module_name} | **Mode:** {selected_mode} | **Model:** {current_model}"
 
 mo.vstack([
     mo.md(status_text),
