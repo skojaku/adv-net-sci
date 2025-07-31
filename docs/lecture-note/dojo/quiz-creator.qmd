@@ -245,7 +245,8 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
 
     try:
         # Prepare the request - exact same pattern as Quiz Dojo
-        url = "https://chat.binghamton.edu/api/chat/completions"
+        base_url = "https://chat.binghamton.edu/api"
+        url = f"{base_url}/chat/completions"
         data = json.dumps(payload).encode('utf-8')
 
         req = urllib.request.Request(
@@ -292,11 +293,31 @@ def test_question(question: str, expected_answer: str, module_name: str, api_key
         return "❌ Please fill in all fields (question, answer, and API key)"
 
     print(f"🔧 DEBUG: Loading module content for {module_name}...")
+    
+    # Map display name to module key (same logic as Quiz Dojo)
+    module_options = {
+        "intro": "Introduction",
+        "m01-euler_tour": "Module 1: Euler Tour",
+        "m02-small-world": "Module 2: Small World",
+        "m03-robustness": "Module 3: Robustness",
+        "m04-friendship-paradox": "Module 4: Friendship Paradox",
+        "m05-clustering": "Module 5: Clustering",
+        "m06-centrality": "Module 6: Centrality",
+        "m07-random-walks": "Module 7: Random Walks",
+        "m08-embedding": "Module 8: Embedding",
+        "m09-graph-neural-networks": "Module 9: Graph Neural Networks"
+    }
+    
+    # Map display name back to key
+    module_key_map = {v: k for k, v in module_options.items()}
+    actual_module_key = module_key_map.get(module_name, module_name)
+    print(f"🔧 DEBUG: Mapped '{module_name}' to '{actual_module_key}'")
+    
     # Load module content
     try:
-        module_content = read_module_content(module_name)
+        module_content = read_module_content(actual_module_key)
         print(f"🔧 DEBUG: Module content loaded, keys: {list(module_content.keys()) if isinstance(module_content, dict) else 'Not a dict'}")
-        module_context = format_module_context(module_content, module_name)
+        module_context = format_module_context(module_content, actual_module_key)
         print(f"🔧 DEBUG: Module context formatted, length: {len(module_context)}")
     except Exception as e:
         print(f"🚨 ERROR: Module content loading failed: {str(e)}")
