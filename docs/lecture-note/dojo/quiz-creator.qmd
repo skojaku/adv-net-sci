@@ -105,46 +105,6 @@ mo.vstack([
 ```
 
 ```python {.marimo}
-# Question and answer input
-question_input = mo.ui.text_area(
-    label="Your Quiz Question",
-    placeholder="Enter your quiz question here...",
-    rows=4
-)
-
-answer_input = mo.ui.text_area(
-    label="Your Expected Answer",
-    placeholder="Enter what you think is the correct answer...",
-    rows=4
-)
-
-def handle_test_click(value):
-    """Handle the test button click"""
-    if not question_input.value or not answer_input.value or not api_key_holder.value:
-        return "❌ Please fill in all required fields"
-
-    return test_question_func(
-        question_input.value,
-        answer_input.value,
-        module_selector.value,
-        api_key_holder.value
-    )
-
-test_button = mo.ui.button(
-    on_click=handle_test_click,
-    label="🧪 Test Question"
-)
-
-mo.vstack([
-    mo.md("## Create Your Question"),
-    question_input,
-    answer_input,
-    test_button
-])
-```
-
-```python {.marimo}
-#| echo: true
 import json
 import urllib.request
 import urllib.error
@@ -522,11 +482,185 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
     return final_result
 
-# Store the test function for use in the button click
-test_question_func = test_question
+# Custom LLM function for Quiz Creator chat
+def quiz_creator_llm(messages, config):
+    """
+    Custom LLM function that handles quiz creation, testing, and evaluation
+    """
+    # Get API key and module selection
+    api_key = api_key_holder.value
+    if not api_key:
+        return "❌ **Error**: Please enter your API key in the configuration section above."
+    
+    # Get the selected module
+    selected_module = module_selector.value
+    if not selected_module:
+        return "❌ **Error**: Please select a module in the configuration section above."
+
+    # Map display name back to key
+    module_key_map = {v: k for k, v in module_options.items()}
+    if selected_module in module_key_map:
+        module_key = module_key_map[selected_module]
+    elif selected_module in module_options:
+        module_key = selected_module
+    else:
+        module_key = "intro"  # fallback
+
+    # Load module content
+    try:
+        module_content = read_module_content(module_key)
+        module_context = format_module_context(module_content, module_key)
+    except Exception as e:
+        return f"❌ **Error loading module content**: {str(e)}"
+
+    # Get the user's last message
+    if not messages or len(messages) == 0:
+        return "Please provide your quiz question and expected answer."
+    
+    user_message = messages[-1].content if hasattr(messages[-1], 'content') else str(messages[-1])
+
+    # System message for the parsing agent (gemma3:27b)
+    parser_system = f"""You are a quiz question parser for a Network Science course. Your job is to extract quiz questions and expected answers from student input.
+
+The student will provide their quiz question and expected answer in natural language. Extract:
+1. QUESTION: The quiz question they want to test
+2. ANSWER: Their expected correct answer
+
+Module Context: {module_context}
+
+If you cannot clearly identify both a question and answer, ask the student to clarify.
+
+Respond in this exact format:
+QUESTION: [extracted question]
+ANSWER: [extracted answer]
+
+If unclear, respond with:
+CLARIFICATION_NEEDED: [what you need clarified]"""
+
+    # Parse the user input to extract question and answer
+    try:
+        parsing_response = call_llm_api(
+            user_message, 
+            parser_system, 
+            "gemma3:27b", 
+            api_key
+        )
+        
+        if not parsing_response:
+            return "❌ **Error**: Could not parse your input. Please try again."
+        
+        # Check if clarification is needed
+        if "CLARIFICATION_NEEDED:" in parsing_response:
+            clarification = parsing_response.split("CLARIFICATION_NEEDED:", 1)[1].strip()
+            return f"""## 🤔 Need Clarification
+
+{clarification}
+
+**📝 Please provide both:**
+1. **Your quiz question** - What you want to ask
+2. **Your expected answer** - What you think the correct answer should be
+
+**Example format:**
+```
+My question: "What is an Euler path?"
+My answer: "An Euler path is a path in a graph that visits every edge exactly once."
+```"""
+
+        # Extract question and answer
+        lines = parsing_response.split('\n')
+        question = None
+        answer = None
+        
+        for line in lines:
+            if line.startswith('QUESTION:'):
+                question = line.replace('QUESTION:', '').strip()
+            elif line.startswith('ANSWER:'):
+                answer = line.replace('ANSWER:', '').strip()
+        
+        if not question or not answer:
+            return """## 📝 Please Provide Both Question and Answer
+
+I need both your quiz question and expected answer to test them.
+
+**Example format:**
+```
+Question: "What is the difference between an Euler path and Euler circuit?"
+Answer: "An Euler path visits every edge exactly once, while an Euler circuit is an Euler path that starts and ends at the same vertex."
+```
+
+**Or just describe them naturally:**
+```
+I want to ask about Euler paths. My question is "What conditions must a graph satisfy to have an Euler path?" and I think the answer is "A graph has an Euler path if it has exactly 0 or 2 vertices of odd degree."
+```"""
+
+        # Now test the extracted question using our existing function
+        try:
+            result = test_question(question, answer, module_key, api_key)
+            return f"""## 🧪 Quiz Question Test Results
+
+**🔍 Extracted Question:** {question}
+
+**📝 Your Expected Answer:** {answer}
+
+---
+
+{result}"""
+            
+        except Exception as e:
+            return f"""## ❌ Error Testing Question
+
+**🔍 Extracted Question:** {question}
+**📝 Your Expected Answer:** {answer}
+
+**Error:** {str(e)}
+
+Please try again or check your VPN connection if you're off-campus."""
+
+    except Exception as e:
+        return f"❌ **Error**: {str(e)}"
+
+# Create the chat interface
+quiz_creator_chat = mo.ui.chat(
+    quiz_creator_llm,
+    prompts=[
+        "Test my question: What is an Euler path? Answer: A path that visits every edge exactly once.",
+        "Question: Why might betweenness centrality be misleading? Answer: Because it assumes shortest paths are always used.",
+        "I want to ask about small-world networks. Question: What makes a network 'small-world'? Answer: High clustering with short path lengths.",
+        "Question: How do you detect communities in networks? Answer: Using modularity optimization algorithms.",
+        "Test this: What happens to clustering coefficient when you add a hub node? Answer: It generally decreases.",
+    ],
+    show_configuration_controls=True,
+    allow_attachments=False
+)
+
+# Display the chat with status
+selected_module_name = module_options.get(module_selector.value, "None") if module_selector.value else "None"
+status_text = f"**Selected Module:** {selected_module_name} | **Ready for Quiz Testing**"
 ```
 
 ```python {.marimo}
+mo.vstack([
+    mo.md(status_text),
+    mo.md("""## 💬 Quiz Creator Chat
+
+**How to use:**
+1. **Configure** your API key and module above
+2. **Type your question and answer** in the chat below
+3. **Get instant feedback** on validation, AI performance, and improvements
+
+**Example inputs:**
+- "My question: What is clustering coefficient? My answer: A measure of how connected a node's neighbors are."
+- "Question: Why do small-world networks matter? Answer: They show how global connectivity emerges from local clustering."
+
+**💡 The system will:**
+- ✅ Extract your question and answer automatically  
+- 🔍 Validate appropriateness for network science
+- 🤖 Test how AI performs on your question  
+- ⚖️ Evaluate if AI got it right/wrong
+- 💬 Provide improvement suggestions"""),
+    quiz_creator_chat
+])
+```
 # Display the button and show its result
 test_button
 
