@@ -225,25 +225,26 @@ def format_module_context(content_dict: Dict[str, str], module_name: str) -> str
     return f"# Module: {module_name}\n\n" + "\n\n---\n\n".join(formatted_sections)
 
 def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> Optional[str]:
-    """Make API call to LLM endpoint"""
-    try:
-        payload = {
-            "model": model,
-            "messages": [
-                {
-                    "role": "system", 
-                    "content": system_message
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            "max_tokens": 500,
-            "temperature": 0.1,
-            "stream": False
-        }
+    """Make API call to LLM endpoint - matches Quiz Dojo pattern exactly"""
+    payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system", 
+                "content": system_message
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "max_tokens": 500,
+        "temperature": 0.1,
+        "stream": False
+    }
 
+    try:
+        # Prepare the request - exact same pattern as Quiz Dojo
         url = "https://chat.binghamton.edu/api/chat/completions"
         data = json.dumps(payload).encode('utf-8')
 
@@ -256,25 +257,30 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
             }
         )
 
+        # Make the request
         with urllib.request.urlopen(req, timeout=30) as response:
             result = json.loads(response.read().decode('utf-8'))
 
+            # Extract the assistant's response
             if "choices" in result and len(result["choices"]) > 0:
                 return result["choices"][0]["message"]["content"].strip()
             else:
-                return None
+                return "Error: No response from LLM. Make sure you have entered the correct API key."
 
-    except urllib.error.HTTPError as e:
-        if e.code == 401:
-            return f"❌ Authentication failed. Please check your API key."
-        elif e.code == 404:
-            return f"❌ Model '{model}' not found."
-        else:
-            return f"❌ HTTP Error {e.code}: {e.reason}"
     except urllib.error.URLError as e:
-        return f"❌ Connection Error: {e.reason}"
+        error_msg = str(e)
+        if "timed out" in error_msg.lower() or "connection" in error_msg.lower():
+            return "🚨 **Connection Error**: Cannot reach the API server. This usually happens when you're off-campus.\\n\\n**💡 Solution**: Please connect to the Binghamton University VPN and try again.\\n\\n**🔗 VPN Setup**: https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html"
+        else:
+            return f"Error: Connection failed - {error_msg}"
+    except json.JSONDecodeError:
+        return "Error: Invalid JSON response from server. Please try again or contact your instructor if the issue persists."
     except Exception as e:
-        return f"❌ Unexpected error: {e}"
+        error_msg = str(e)
+        if "timeout" in error_msg.lower() or "connection" in error_msg.lower():
+            return "🚨 **Network Timeout**: The connection to the API server timed out. This often indicates you're accessing from off-campus.\\n\\n**💡 Solution**: Connect to the Binghamton University VPN and try again."
+        else:
+            return f"Error: {error_msg}"
 
 # This function will be called when the test button is clicked
 def test_question(question: str, expected_answer: str, module_name: str, api_key: str):
@@ -422,8 +428,11 @@ test_question_func = test_question
 ```
 
 ```python {.marimo}
-# This approach matches the Quiz Dojo pattern more closely
-if not test_button.value:
+# Match Quiz Dojo pattern exactly - the button acts as a trigger, accessing its value in the same cell
+test_button
+
+# Check if all required fields are filled
+if not question_input.value or not answer_input.value or not api_key_holder.value:
     mo.md("""## 📝 Test Your Question
 
 Fill in your question and expected answer above, then click **🧪 Test Question** to see:
@@ -437,12 +446,12 @@ Fill in your question and expected answer above, then click **🧪 Test Question
 - Focus on concepts, not heavy calculations
 - Ask about edge cases or subtle differences
 - Create scenario-based questions
-- Test understanding, not memorization""")
-elif not question_input.value or not answer_input.value or not api_key_holder.value:
-    mo.md("❌ Please fill in all required fields above.")
+- Test understanding, not memorization
+
+❌ **Please fill in all required fields above.**""")
 else:
     # Add console logging for debugging
-    print("🔧 DEBUG: Test button clicked and all fields filled!")
+    print("🔧 DEBUG: Test button triggered and all fields filled!")
     print(f"🔧 DEBUG: Question: {question_input.value[:50]}...")
     print(f"🔧 DEBUG: Answer: {answer_input.value[:50]}...")
     print(f"🔧 DEBUG: Module: {module_selector.value}")
