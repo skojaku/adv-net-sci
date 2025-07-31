@@ -1,38 +1,37 @@
 ---
 title: Coding Networks in Python
-filters:
-  - marimo-team/marimo
-  - tikz
-tikz:
-  cache: false
-  save-tex: true  # Enable saving intermediate .tex files
-  tex-dir: tikz-tex  # Optional: Specify directory to save .tex files
 jupyter: python3
+execute:
+    enabled: true
 ---
 
-Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.
+Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. Given a network of any size, our goal is to create a function that can tell us whether the network has an Euler path or not.
 
-## How to Run This Notebook
+```python
+def has_euler_path(A):
+    """
+    Check if a graph has an Euler path based on node degrees.
+    Complete this function based on Euler's theorem.
 
-::: {.callout-tip}
-## Running with Marimo
-
-To run the notebook, first download it as a .py file, then use the following steps:
-
-
-```bash
-marimo edit --sandbox <filename>.py
+    A: network
+    return: True if the network has an Euler path, False otherwise
+    """
+    pass
 ```
 
-The notebook will open in your web browser. All necessary packages will be installed automatically in a dedicated virtual environment managed by uv.
-:::
+We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.
 
 ## Network Representations: From Pictures to Data Structures
 
 Consider this network with 5 nodes and 6 edges:
 
+::: {#fig-small-graph}
 
-![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg)
+![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg){width=200px}
+
+A small graph of five nodes and six edges.
+
+:::
 
 How do we represent this graph in a format that a computer can understand and manipulate? Just as Euler needed to abstract Königsberg's bridges, we need data structures that capture the network's essential connectivity while enabling efficient analysis.
 
