@@ -376,7 +376,26 @@ REASON: [Brief explanation of decision]"""
 
     if not is_valid:
         print(f"🚨 ERROR: Question validation failed")
-        return f"❌ Question validation failed:\n\n{validation_result}"
+        return f"""## ❌ Question Validation Failed
+
+**Your question did not meet the quality standards.**
+
+### 🚫 Validation Result:
+{validation_result}
+
+### 💡 How to Fix This:
+- **Keep it relevant**: Ensure your question is about network science, graph theory, or course concepts
+- **Avoid heavy math**: No complex derivations or extensive calculations
+- **Stay on-topic**: Don't ask about unrelated subjects
+- **Provide good answers**: Make sure your expected answer is clear and correct
+- **No prompt injection**: Don't try to manipulate the AI system
+
+### ✅ **Good Question Examples:**
+- "What happens to clustering coefficient when you add a hub node?"
+- "Why might betweenness centrality be misleading in directed networks?"
+- "In what scenario would a small-world network have long path lengths?"
+
+Try creating a question that focuses on understanding network concepts rather than testing trivia or off-topic knowledge!"""
 
     # Step 2: Get LLM answer
     quiz_system = f"""You are a student taking a network science quiz. You have been provided with the module content below. Use this content to answer questions accurately.
