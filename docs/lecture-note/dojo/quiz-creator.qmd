@@ -297,7 +297,22 @@ def test_question(question: str, expected_answer: str, module_name: str, api_key
         print("🔧 DEBUG: Missing required fields")
         return "❌ Please fill in all fields (question, answer, and API key)"
 
+    # Show initial progress message
+    progress_msg = """## 🔄 Testing Your Question...
+
+**Please wait - this process takes 30-60 seconds and involves multiple AI models.**
+
+### ⏳ **Current Status:** Loading module content and preparing validation...
+
+**💡 What's happening:**
+- Loading course module content from GitHub
+- Preparing to validate your question for quality standards
+- Setting up multiple AI models (validator, quiz-taker, evaluator)
+
+**🌐 Connection:** Make sure you're on Binghamton VPN if accessing from off-campus."""
+
     print(f"🔧 DEBUG: Loading module content for {module_name}...")
+    print("👀 USER: Showing progress message...")
 
     # Map display name to module key (same logic as Quiz Dojo)
     module_options = {
@@ -361,6 +376,7 @@ ISSUES: [List any specific problems found, or "None" if valid]
 REASON: [Brief explanation of decision]"""
 
     print("🔧 DEBUG: Calling validation API...")
+    print("👀 USER: Step 1/3 - Validating question quality...")
     validation_result = call_llm_api(validation_prompt, validation_system, "gemma3:27b", api_key)
     print(f"🔧 DEBUG: Validation API returned: {validation_result[:100] if validation_result else 'None'}...")
 
@@ -413,6 +429,7 @@ Instructions:
     quiz_prompt = f"Question: {question}\n\nPlease provide your answer:"
 
     print("🔧 DEBUG: Calling LLM quiz API...")
+    print("👀 USER: Step 2/3 - Getting AI's answer to your question...")
     llm_answer = call_llm_api(quiz_prompt, quiz_system, "llama3.2:latest", api_key)
     print(f"🔧 DEBUG: LLM quiz API returned: {llm_answer[:100] if llm_answer else 'None'}...")
 
@@ -444,6 +461,7 @@ VERDICT: [CORRECT/INCORRECT]
 CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
     print("🔧 DEBUG: Calling evaluation API...")
+    print("👀 USER: Step 3/3 - Evaluating if the AI got it right...")
     evaluation_result = call_llm_api(evaluator_prompt, evaluator_system, "gemma3:27b", api_key)
     print(f"🔧 DEBUG: Evaluation API returned: {evaluation_result[:100] if evaluation_result else 'None'}...")
 
@@ -486,6 +504,7 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
     print(f"🔧 DEBUG: Final result generated (length: {len(final_result)})")
     print(f"🔧 DEBUG: Final result preview: {final_result[:200]}...")
+    print("👀 USER: ✅ Complete! Showing final results...")
 
     return final_result
 
@@ -513,6 +532,8 @@ Fill in your question and expected answer above, then click **🧪 Test Question
 - Ask about edge cases or subtle differences
 - Create scenario-based questions
 - Test understanding, not memorization
+
+**⏱️ Processing Time:** Testing takes 30-60 seconds. Watch the browser console (F12) for real-time progress updates!
 
 ❌ **Please fill in all required fields above.**""")
 else:
