@@ -661,98 +661,6 @@ mo.vstack([
     quiz_creator_chat
 ])
 ```
-# Display the button and show its result
-test_button
-
-# Show the result if button has been clicked
-if test_button.value:
-    mo.md(test_button.value)
-else:
-    # Show instructions when no result yet
-    mo.md(f"""## 📝 Test Your Question
-
-Fill in your question and expected answer above, then click **🧪 Test Question** to see:
-
-- **Validation**: Whether your question meets quality standards
-- **LLM Response**: How the AI interprets and answers your question
-- **Evaluation**: Whether the LLM got it right or wrong
-- **Feedback**: Tips for improving your question
-
-**💡 Tips for Good Questions:**
-- Focus on concepts, not heavy calculations
-- Ask about edge cases or subtle differences
-- Create scenario-based questions
-- Test understanding, not memorization
-
-**⏱️ Processing Time:** Testing takes 30-60 seconds. Watch the browser console (F12) for real-time progress updates!
-
-{("❌ **Please fill in all required fields above.**" if not question_input.value or not answer_input.value or not api_key_holder.value else "✅ **All fields filled! Click the Test Question button above to start.**")}""")
-    # Add console logging for debugging
-    print("🔧 DEBUG: Test button triggered and all fields filled!")
-    print(f"🔧 DEBUG: Question: {question_input.value[:50]}...")
-    print(f"🔧 DEBUG: Answer: {answer_input.value[:50]}...")
-    print(f"🔧 DEBUG: Module: {module_selector.value}")
-    print(f"🔧 DEBUG: API key length: {len(api_key_holder.value)}")
-
-
-    try:
-        print("🔧 DEBUG: About to call test_question_func...")
-
-        # Execute test when button is clicked and all inputs are filled
-        result = test_question_func(
-            question_input.value,
-            answer_input.value,
-            module_selector.value,
-            api_key_holder.value
-        )
-        print(f"🔧 DEBUG: Function completed, result length: {len(str(result))}")
-        mo.md(result)
-
-    except Exception as e:
-        error_msg = f"❌ **Error occurred**: {str(e)}"
-        print(f"🚨 ERROR: {error_msg}")
-        print(f"🚨 ERROR: Exception type: {type(e).__name__}")
-
-        import traceback
-        traceback_str = traceback.format_exc()
-        print(f"🚨 ERROR: Full traceback:\n{traceback_str}")
-
-        # Check if it's a timeout or connection issue
-        if "timeout" in str(e).lower() or "connection" in str(e).lower() or "RPC request timed out" in str(e):
-            mo.md(f"""## 🚨 Connection Timeout
-
-**The Quiz Creator timed out while trying to reach the API server.**
-
-### 💡 **Most Common Solutions:**
-1. **Connect to Binghamton VPN** - This is usually an off-campus access issue
-2. **Try a shorter question** - Very long questions can take longer to process
-3. **Wait and try again** - The server might be temporarily busy
-
-### 🔧 **Technical Details:**
-```
-{error_msg}
-```
-
-### 📞 **Still Having Issues?**
-- Check that you're connected to Binghamton University VPN
-- Contact your instructor if the problem persists
-- The system works best from on-campus networks""")
-        else:
-            mo.md(f"{error_msg}\n\n**Debug Info**: Check browser console for detailed error logs.\n\n```\n{traceback_str}\n```")
-else:
-    # Fields are filled but button hasn't been clicked yet
-    mo.md("""## ✅ Ready to Test!
-
-**All fields are filled. Click the "🧪 Test Question" button above to start the testing process.**
-
-The system will:
-1. **Validate** your question for quality and appropriateness
-2. **Test** how the AI answers your question using module content
-3. **Evaluate** whether the AI got it right or wrong
-4. **Provide feedback** on how to improve your question
-
-**⏱️ Expected time:** 30-60 seconds (watch console for progress)""")
-```
 
 ```python {.marimo}
 mo.md("""
@@ -777,6 +685,6 @@ mo.md("""
 4. **Test limitations**: Ask when algorithms fail or give misleading results
 
 ---
-*Remember: The goal is to create questions that test deep understanding while staying within course scope!*
+*💬 **Just type your questions naturally in the chat above** - the system will handle everything automatically!*
 """)
 ```
