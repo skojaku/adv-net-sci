@@ -119,6 +119,8 @@ answer_input = mo.ui.text_area(
 )
 
 test_button = mo.ui.button(
+    value=0,
+    on_click=lambda value: value + 1,
     label="🧪 Test Question"
 )
 
@@ -131,6 +133,7 @@ mo.vstack([
 ```
 
 ```python {.marimo}
+#| echo: true
 import json
 import urllib.request
 import urllib.error
@@ -256,7 +259,7 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
                 "Authorization": f"Bearer {api_key}"
             }
         )
-
+        print(req)
         # Make the request
         with urllib.request.urlopen(req, timeout=30) as response:
             result = json.loads(response.read().decode('utf-8'))
@@ -596,7 +599,7 @@ else:
 
 The system will:
 1. **Validate** your question for quality and appropriateness
-2. **Test** how the AI answers your question using module content  
+2. **Test** how the AI answers your question using module content
 3. **Evaluate** whether the AI got it right or wrong
 4. **Provide feedback** on how to improve your question
 
