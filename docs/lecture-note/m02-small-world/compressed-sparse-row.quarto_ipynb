@@ -1,0 +1,103 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Efficient representation for large sparse networks\n",
+        "\n",
+        "An adjacency matrix is a convenient way to represent a network.\n",
+        "A challenge of handling large networks is that the adjacency matrix can be too large to fit in memrory.\n",
+        "For example, a network with $10^5$ nodes requires a $10^5 \\times 10^5$ matrix, totaling $10$ billion entries!\n",
+        "A good news is that we do not need to hold all these entries in memory, if we know the network is *sparse*.\n",
+        "\n",
+        "Many networks in real-world are sparse, meaning most nodes connect to only a few others.\n",
+        "The result is that the adjacency matrix often contains many zeros.\n",
+        "This is where we can save significant memory by storing only the non-zero entries.\n",
+        "\n",
+        "**Compressed Sparse Row (CSR)** is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the \"coordinates\" (row and column indices) of non-zero entries, along with their values.\n",
+        "\n",
+        "::: {.callout-note title=\"Optional Exercise\"}\n",
+        ":class: tip\n",
+        "For those who are interested in the details of CSR format, please do the following:\n",
+        "- 📝 Pen and paper exercise [here](./pen-paper-csr/exercise.pdf)\n",
+        "- 💻 (Advanced) Coding exercise in the [Appendix](./appendix.qmd).\n",
+        "\n",
+        ":::\n",
+        "\n",
+        "\n",
+        "::: {#fig-csr_matirx}\n",
+        "\n",
+        "<img src=\"https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif\" width=\"100%\">\n",
+        "\n",
+        "Compressed Sparse Row (CSR) matrix. Source: [Medium: Sparse GEMM and Tensor Core’s Structured Sparsity](https://medium.com/@hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791)\n",
+        ":::\n",
+        "\n",
+        "The CSR format is implemented in the [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html) library. It is straightforward to convert the CSR matrix from the *dense* adjacency matrix."
+      ],
+      "id": "bc325e8c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from scipy.sparse import csr_matrix\n",
+        "\n",
+        "A = [[0, 2, 0, 1],\n",
+        "     [2, 0, 2, 1],\n",
+        "     [0, 2, 0, 1],\n",
+        "     [1, 1, 1, 0]]\n",
+        "\n",
+        "A_csr = csr_matrix(A)\n",
+        "A_csr"
+      ],
+      "id": "5b2f7290",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "If you have an *edge list*, you can directly generate the CSR matrix without creating the dense matrix first."
+      ],
+      "id": "cbed2105"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from scipy.sparse import csr_matrix\n",
+        "\n",
+        "edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]\n",
+        "\n",
+        "src = [edge[0] for edge in edges]\n",
+        "trg = [edge[1] for edge in edges]\n",
+        "values = [1 for _ in edges]\n",
+        "A_csr = csr_matrix((values, (src, trg)), shape=(4, 4))\n",
+        "A_csr"
+      ],
+      "id": "86282f3f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "where `src`, `trg`, and `values` are lists of the source nodes, target nodes, and edge weights, respectively."
+      ],
+      "id": "9829ad55"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "netdatasci",
+      "language": "python",
+      "display_name": "netdatasci",
+      "path": "/Users/skojaku-admin/Library/Jupyter/kernels/netdatasci"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

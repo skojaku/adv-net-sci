@@ -1,0 +1,266 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: Coding Networks in Python\n",
+        "jupyter: python3\n",
+        "execute:\n",
+        "    enabled: true\n",
+        "---\n",
+        "\n",
+        "Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. Given a network of any size, our goal is to create a function that can tell us whether the network has an Euler path or not.\n",
+        "\n",
+        "```python\n",
+        "def has_euler_path(A):\n",
+        "    \"\"\"\n",
+        "    Check if a graph has an Euler path based on node degrees.\n",
+        "    Complete this function based on Euler's theorem.\n",
+        "\n",
+        "    A: network\n",
+        "    return: True if the network has an Euler path, False otherwise\n",
+        "    \"\"\"\n",
+        "    pass\n",
+        "```\n",
+        "\n",
+        "We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.\n",
+        "\n",
+        "## Network Representations: From Pictures to Data Structures\n",
+        "\n",
+        "Consider this network with 5 nodes and 6 edges:\n",
+        "\n",
+        "::: {#fig-small-graph}\n",
+        "\n",
+        "![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg){width=200px}\n",
+        "\n",
+        "A small graph of five nodes and six edges.\n",
+        "\n",
+        ":::\n",
+        "\n",
+        "How do we represent this graph in a format that a computer can understand and manipulate? Just as Euler needed to abstract Königsberg's bridges, we need data structures that capture the network's essential connectivity while enabling efficient analysis.\n",
+        "\n",
+        "::: {.column-margin}\n",
+        "The choice of representation can dramatically affect computational efficiency. For sparse networks (few edges), adjacency lists are memory-efficient. For dense networks or matrix operations, adjacency matrices are preferred.\n",
+        ":::\n",
+        "\n",
+        "Let's explore three fundamental approaches that form the backbone of all network algorithms.\n",
+        "\n",
+        "### Edge Table: The Direct Approach\n",
+        "\n",
+        "The edge table directly lists connections as pairs—the most intuitive way to store network data.\n",
+        "\n",
+        "::: {.column-margin}\n",
+        "Edge tables are also called \"edge lists\" and are the most common format for storing large-scale network data in files. Social media platforms like Twitter and Facebook store billions of connections this way.\n",
+        ":::"
+      ],
+      "id": "412eb8e6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Each row represents one edge (connection between two nodes)\n",
+        "edges = [\n",
+        "    (0, 1),  # Node 0 connects to Node 1\n",
+        "    (0, 2),  # Node 0 connects to Node 2\n",
+        "    (1, 2),  # Node 1 connects to Node 2\n",
+        "    (1, 3),  # Node 1 connects to Node 3\n",
+        "    (2, 4),  # Node 2 connects to Node 4\n",
+        "    (3, 4)   # Node 3 connects to Node 4\n",
+        "]\n",
+        "\n",
+        "print(f\"Network has {len(edges)} edges\")\n",
+        "print(\"Edge list:\", edges)"
+      ],
+      "id": "d58ff7e6",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This mirrors how we'd naturally describe the network: \"Node 0 connects to nodes 1 and 2, node 1 connects to nodes 0, 2, and 3...\" It's the digital equivalent of Euler's original approach—simply listing which bridges connect which landmasses.\n",
+        "\n",
+        "### Adjacency List: The Neighborhood Map\n",
+        "\n",
+        "The adjacency list stores each node's neighbors in a dictionary—like a social network where each person has a list of friends.\n",
+        "\n",
+        "::: {.column-margin}\n",
+        "Most graph algorithms prefer adjacency lists because they allow fast iteration over a node's neighbors. This is crucial for algorithms like breadth-first search or computing clustering coefficients.\n",
+        ":::"
+      ],
+      "id": "251cd17d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Define adjacency list directly as a dictionary\n",
+        "neighbors = {\n",
+        "    0: [1, 2],     # Node 0 connects to nodes 1 and 2\n",
+        "    1: [0, 2, 3],  # Node 1 connects to nodes 0, 2, and 3\n",
+        "    2: [0, 1, 4],  # Node 2 connects to nodes 0, 1, and 4\n",
+        "    3: [1, 4],     # Node 3 connects to nodes 1 and 4\n",
+        "    4: [2, 3]      # Node 4 connects to nodes 2 and 3\n",
+        "}\n",
+        "\n",
+        "print(\"Adjacency list representation:\")\n",
+        "for node, neighbor_list in neighbors.items():\n",
+        "    print(f\"Node {node}: {neighbor_list}\")"
+      ],
+      "id": "1d1ad8fa",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Adjacency Matrix: The Mathematical Grid\n",
+        "\n",
+        "The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected—the mathematician's favorite representation.\n",
+        "\n",
+        "::: {.column-margin}\n",
+        "Adjacency matrices enable powerful mathematical operations. Matrix multiplication reveals paths of different lengths, and eigenvalue analysis can uncover community structure. Google's PageRank algorithm fundamentally relies on matrix operations.\n",
+        ":::"
+      ],
+      "id": "5464df44"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Define adjacency matrix directly\n",
+        "import numpy as np\n",
+        "\n",
+        "matrix = np.array([\n",
+        "    [0, 1, 1, 0, 0],  # Node 0 connects to nodes 1, 2\n",
+        "    [1, 0, 1, 1, 0],  # Node 1 connects to nodes 0, 2, 3\n",
+        "    [1, 1, 0, 0, 1],  # Node 2 connects to nodes 0, 1, 4\n",
+        "    [0, 1, 0, 0, 1],  # Node 3 connects to nodes 1, 4\n",
+        "    [0, 0, 1, 1, 0]   # Node 4 connects to nodes 2, 3\n",
+        "])\n",
+        "\n",
+        "print(\"Adjacency matrix:\")\n",
+        "print(matrix)"
+      ],
+      "id": "435e3670",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Notice the symmetry: if node i connects to node j, then node j connects to node i (for undirected networks). This symmetry disappears in directed networks, where relationships can be one-way.\n",
+        "\n",
+        "## Counting Node Degrees: Euler's Key Insight\n",
+        "\n",
+        "The degree of a node is the number of edges connected to it. This simple concept was central to Euler's proof—he realized that a valid bridge walk requires each landmass to have an even degree (except possibly the starting and ending points).\n",
+        "\n",
+        "::: {.column-margin}\n",
+        "In Königsberg, all four landmasses had odd degree, making the bridge walk impossible. This insight—that global properties emerge from local structure—remains fundamental to network analysis today.\n",
+        ":::\n",
+        "\n",
+        "Here's how to compute degrees using each representation:\n",
+        "\n",
+        "### From Edge Table: Counting Appearances\n",
+        "\n",
+        "Count how many times each node appears in the edge list."
+      ],
+      "id": "9c60a6f6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "_degrees = [0] * 5\n",
+        "for node1, node2 in edges:\n",
+        "    _degrees[node1] += 1\n",
+        "    _degrees[node2] += 1\n",
+        "print(\"Degrees from edge list:\", _degrees)"
+      ],
+      "id": "b26a3a6e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "::: {.column-margin}\n",
+        "We increment the degree counter for both nodes in each edge because every edge contributes to two nodes' degrees. This is why the total degree always equals twice the number of edges.\n",
+        ":::\n",
+        "\n",
+        "### From Adjacency List: Counting Friends\n",
+        "\n",
+        "Count the length of each node's neighbor list—the most direct approach."
+      ],
+      "id": "36b2c480"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "_degrees = [len(neighbors[i]) for i in range(5)]\n",
+        "print(\"Degrees from adjacency list:\", _degrees)"
+      ],
+      "id": "2bbd0faa",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### From Adjacency Matrix: Linear Algebra Power\n",
+        "\n",
+        "Sum each row (or column) of the matrix—leveraging vectorized operations."
+      ],
+      "id": "a471a6c8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "_degrees = matrix.sum(axis=1)  # Sum rows\n",
+        "print(\"Degrees from adjacency matrix:\", _degrees)"
+      ],
+      "id": "414750f4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "::: {.column-margin}\n",
+        "For undirected networks, row sums equal column sums. For directed networks, row sums give out-degree (outgoing connections) while column sums give in-degree (incoming connections).\n",
+        ":::\n",
+        "\n",
+        "## Summary: From Euler's Insight to Modern Computation\n",
+        "\n",
+        "You now understand how to:\n",
+        "\n",
+        "1. **Represent networks** using edge lists, adjacency lists, and adjacency matrices\n",
+        "2. **Compute node degrees** efficiently using different data structures\n",
+        "\n",
+        "The next step is to practice these concepts with real network data and explore more advanced network analysis techniques!"
+      ],
+      "id": "e3153ea3"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/skojaku-admin/miniforge3/envs/advnetsci/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

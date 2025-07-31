@@ -136,7 +136,7 @@ from typing import List, Dict, Any
 
 
 def read_module_content(module_name: str) -> Dict[str, str]:
-    """Read all markdown files from the selected module via GitHub raw URLs"""
+    """Automatically fetch standard module content files via GitHub raw URLs"""
     import urllib.request
 
     # GitHub repository details
@@ -144,22 +144,12 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     github_repo = "adv-net-sci"
     github_branch = "main"
 
-    # Define base filenames (without extensions)
-    module_files = {
-        "intro": ["why-networks", "setup"],
-        "m01-euler_tour": ["00-preparation", "01-concepts"],
-        "m02-small-world": ["00-preparation", "01-concepts", "03-exercises"],
-        "m03-robustness": ["00-preparation", "01-concepts", "03-exercises", "04-appendix"],
-        "m04-friendship-paradox": ["00-preparation", "01-concepts", "03-exercises"],
-        "m05-clustering": ["00-preparation"],
-        "m06-centrality": ["00-preparation", "01-concepts", "03-exercises"],
-        "m07-random-walks": ["00-preparation", "03-exercises"],
-        "m08-embedding": ["00-preparation", "01-concepts", "03-exercises", "04-appendix"],
-        "m09-graph-neural-networks": ["00-preparation", "01-concepts", "03-exercises"]
-    }
-
-    # Get files to fetch for this module
-    base_filenames = module_files.get(module_name, [])
+    # Standard files to fetch for each module (automatically determined)
+    standard_files = ["01-concepts", "02-coding", "04-advanced"]
+    
+    # Special case for intro module
+    if module_name == "intro":
+        standard_files = ["why-networks", "setup"]
 
     content = {}
 
@@ -171,8 +161,8 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     else:
         module_path = f"{base_raw_url}/{module_name}"
 
-    # Fetch each file, trying both .qmd and .md extensions
-    for base_filename in base_filenames:
+    # Fetch each standard file, trying both .qmd and .md extensions
+    for base_filename in standard_files:
         file_content = None
         used_filename = None
 
@@ -206,11 +196,10 @@ def read_module_content(module_name: str) -> Dict[str, str]:
         # Store the content if we found the file
         if file_content and used_filename:
             content[used_filename] = file_content
-        elif base_filename + ".md" not in content:  # Only add error if we haven't already
-            content[base_filename + ".md"] = f"File not found: tried {base_filename}.qmd and {base_filename}.md"
+        # Skip error recording for missing files - we expect some might not exist
 
     if not content:
-        return {"error": f"No content could be loaded for module '{module_name}'. Tried files: {base_filenames}"}
+        return {"error": f"No content could be loaded for module '{module_name}'. Tried standard files: {standard_files}"}
 
     return content
 

@@ -1,0 +1,447 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Random Walks in Python\n",
+        "\n",
+        "## Simulating Random Walks\n",
+        "\n",
+        "We will simulate random walks on a simple graph of five nodes as follows."
+      ],
+      "id": "103c6fc9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "import igraph\n",
+        "\n",
+        "g = igraph.Graph()\n",
+        "\n",
+        "g.add_vertices([0, 1, 2, 3, 4])\n",
+        "g.add_edges([(0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (2, 4), (3, 4)])\n",
+        "igraph.plot(g, vertex_size=20, vertex_label=g.vs[\"name\"])"
+      ],
+      "id": "eb3e0c92",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "A random walk is characterized by the transition probabilities between nodes.\n",
+        "\n",
+        "$$\n",
+        "P_{ij} = \\frac{A_{ij}}{k_i}\n",
+        "$$\n",
+        "\n",
+        "Let us first compute the transition probabilities and store them in a matrix, $\\mathbf{P}$."
+      ],
+      "id": "e67c379a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "A = g.get_adjacency_sparse().toarray()\n",
+        "k = np.array(g.degree())\n",
+        "n_nodes = g.vcount()\n",
+        "\n",
+        "# A simple but inefficient way to compute P\n",
+        "P = np.zeros((n_nodes, n_nodes))\n",
+        "for i in range(n_nodes):\n",
+        "    for j in range(n_nodes):\n",
+        "        if k[i] > 0:\n",
+        "            P[i, j] = A[i, j] / k[i]\n",
+        "        else:\n",
+        "            P[i, j] = 0\n",
+        "\n",
+        "# Alternative, more efficient way to compute P\n",
+        "P = A / k[:, np.newaxis]\n",
+        "\n",
+        "# or even more efficiently\n",
+        "P = np.einsum(\"ij,i->ij\", A, 1 / k)"
+      ],
+      "id": "3f8c3a5b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"Transition probability matrix:\\n\", P)"
+      ],
+      "id": "29d73dcd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "\n",
+        "sns.heatmap(P, annot=True, cmap=\"YlGnBu\")\n",
+        "plt.show()"
+      ],
+      "id": "7812cfeb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Each row and column of $\\mathbf{P}$ corresponds to a node, with entries representing the transition probabilities from the row node to the column node.\n",
+        "\n",
+        "Now, let us simulate a random walk on this graph. We represent a position of the walker by a vector, $\\mathbf{x}$, with five elements, each of which represents a node. We mark the node that the walker is currently at by `1` and others as `0`."
+      ],
+      "id": "bd1566a1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "x = np.array([0, 0, 0, 0, 0])\n",
+        "x[0] = 1\n",
+        "print(\"Initial position of the walker:\\n\", x)"
+      ],
+      "id": "628c214c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This vector representation is convenient to get the probabilities of transitions to other nodes from the current node:\n",
+        "\n",
+        "$$\n",
+        "\\mathbf{x} \\mathbf{P}\n",
+        "$$\n",
+        "\n",
+        "which is translated into the following code:"
+      ],
+      "id": "1cddf227"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "probs = x @ P\n",
+        "print(\"Position of the walker after one step:\\n\", probs)"
+      ],
+      "id": "1fb6cb37",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We can then draw the next node based on the probabilities"
+      ],
+      "id": "758cc0ad"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "next_node = np.random.choice(n_nodes, p=probs)\n",
+        "x[:] = 0 # zero out the vector\n",
+        "x[next_node] = 1 # set the next node to 1\n",
+        "print(\"Position of the walker after one step:\\n\", x)"
+      ],
+      "id": "c340dcef",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "By repeating this process, we can simulate the random walk.\n",
+        "\n",
+        "### Exercise 01\n",
+        "\n",
+        "Write the following function to simulate the random walk for a given number of steps and return the $x$ for each step."
+      ],
+      "id": "483aea3a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def random_walk(A, n_steps):\n",
+        "    \"\"\"\n",
+        "    Simulate the random walk on a graph with adjacency matrix A.\n",
+        "\n",
+        "    Args:\n",
+        "        A (np.ndarray): The adjacency matrix of the graph.\n",
+        "        x (np.ndarray): The initial position of the walker.\n",
+        "        n_steps (int): The number of steps to simulate.\n",
+        "\n",
+        "    Returns:\n",
+        "        np.ndarray: The position of the walker after each step.\n",
+        "    \"\"\"\n",
+        "    # Your code here\n",
+        "    pass"
+      ],
+      "id": "1100a8fc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Expected behavior of random walks\n",
+        "\n",
+        "What is the expected position of the walker after multiple steps? It is easy to compute the expected position of the walker after one step from initial position $x(0)$:\n",
+        "\n",
+        "$$\n",
+        "\\mathbb{E}[x(1)] = x(0) P\n",
+        "$$\n",
+        "\n",
+        "where $x(t)$ is the probability distribution of the walker at time $t$. In Python, the expected position of the walker at time $t=1$ is given by"
+      ],
+      "id": "b1c46f2d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "x_0 = np.array([1, 0, 0, 0, 0])\n",
+        "x_1 = x_0 @ P\n",
+        "print(\"Expected position of the walker after one step:\\n\", x_1)"
+      ],
+      "id": "5462ec96",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "For the second step, the expected position of the walker is given by\n",
+        "\n",
+        "$$\n",
+        "\\mathbb{E}[x(2)] = \\mathbb{E}[x(1) P] = \\mathbb{E}[x(0) P] P = x(0) P^2\n",
+        "$$\n",
+        "\n",
+        "In other words,"
+      ],
+      "id": "1c775bb9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "x_2 = x_1 @ P\n",
+        "print(\"Expected position of the walker after two steps:\\n\", x_2)"
+      ],
+      "id": "affa749b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Following the same argument, the expected position of the walker at time $t$ is given by\n",
+        "\n",
+        "$$\n",
+        "\\mathbb{E}[x(t)] = x(0) P^t\n",
+        "$$\n",
+        "\n",
+        "### Exercise 02\n",
+        "\n",
+        "Write a function to compute the expected position of the walker at time $t$ using the above formula:"
+      ],
+      "id": "a377514f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def expected_position(A, x_0, t):\n",
+        "    \"\"\"\n",
+        "    Compute the expected position of the walker at time t.\n",
+        "\n",
+        "    Args:\n",
+        "        A (np.ndarray): The adjacency matrix of the graph.\n",
+        "        x_0 (np.ndarray): The initial position of the walker.\n",
+        "        t (int): The number of steps to simulate.\n",
+        "    \"\"\"\n",
+        "    # Your code here\n",
+        "    pass"
+      ],
+      "id": "4cfe5c19",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Exercise 03\n",
+        "\n",
+        "Plot each element of $x(t)$ as a function of $t$ for $t=0,1,2,\\ldots, 1000$. Try different initial positions and compare the results!\n",
+        "\n",
+        "Steps:\n",
+        "1. Define the initial position of the walker.\n",
+        "2. Compute the expected position of the walker at time $t$ using the function you wrote above.\n",
+        "3. Draw a line for each element of $x(t)$, totalling 5 lines.\n",
+        "4. Create multiple such plots for different initial positions and compare them.\n",
+        "\n",
+        "## Community structure\n",
+        "\n",
+        "Random walks can capture community structure of a network.\n",
+        "To see this, let us consider a network of a ring of cliques."
+      ],
+      "id": "bfc61db5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import networkx as nx\n",
+        "import igraph\n",
+        "import numpy as np\n",
+        "import seaborn as sns\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "n_cliques = 3\n",
+        "n_nodes_per_clique = 5\n",
+        "\n",
+        "G = nx.ring_of_cliques(n_cliques, n_nodes_per_clique)\n",
+        "g = igraph.Graph().Adjacency(nx.to_numpy_array(G).tolist()).as_undirected()\n",
+        "membership = np.repeat(np.arange(n_cliques), n_nodes_per_clique)\n",
+        "\n",
+        "color_map = [sns.color_palette()[i] for i in membership]\n",
+        "igraph.plot(g, vertex_size=20, vertex_color=color_map)"
+      ],
+      "id": "5f7efa58",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Let us compute the expected position of the walker after 1 to 10 steps.\n",
+        "\n",
+        "**Compute the transition matrix**:"
+      ],
+      "id": "cb4c72a2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        ":tags: [hide-cell]\n",
+        "from scipy import sparse\n",
+        "\n",
+        "# Get the adjacency matrix and degree\n",
+        "A = g.get_adjacency_sparse()\n",
+        "k = np.array(g.degree())\n",
+        "\n",
+        "# This is an efficient way to compute the transition matrix\n",
+        "# using scipy.sparse\n",
+        "P = sparse.diags(1 / k) @ A"
+      ],
+      "id": "46bdb846",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Compute the expected position of the walker after 1 to 300 steps**:"
+      ],
+      "id": "dbd3cb5d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        ":tags: [hide-cell]\n",
+        "\n",
+        "x_t = np.zeros(g.vcount())\n",
+        "x_t[2] = 1\n",
+        "x_list = [x_t]\n",
+        "for t in range(300):\n",
+        "    x_t = x_t @ P\n",
+        "    x_list.append(x_t)\n",
+        "x_list = np.array(x_list)"
+      ],
+      "id": "80334631",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Plot the expected position of the walker at each step**:"
+      ],
+      "id": "5c4c822e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        ":tags: [hide-input]\n",
+        "\n",
+        "cmap = sns.color_palette(\"viridis\", as_cmap=True)\n",
+        "\n",
+        "sns.set_style('white')\n",
+        "sns.set(font_scale=1.2)\n",
+        "sns.set_style('ticks')\n",
+        "\n",
+        "fig, axes = plt.subplots(figsize=(15,10), ncols = 3, nrows = 2)\n",
+        "\n",
+        "t_list = [0, 1, 3, 5, 10, 299]\n",
+        "for i, t in enumerate(t_list):\n",
+        "    igraph.plot(g, vertex_size=20, vertex_color=[cmap(x_list[t][j] / np.max(x_list[t])) for j in range(g.vcount())], target = axes[i//3][i%3])\n",
+        "    axes[i//3][i%3].set_title(f\"$t$ = {t}\", fontsize = 25)"
+      ],
+      "id": "7f4dd82b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "where the color of each node represents the probability of the walker being at that node.\n",
+        "\n",
+        "An important observation is that the walker spends more time in the clique that it started from and then diffuse to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.\n",
+        "\n",
+        "## Exercise 04\n",
+        "\n",
+        "1. Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability $0.05$ and intra-community edge probability $0.2$. Then, compute the expected position of the walker starting from node zero after $x$ steps. Plot the results for $x = 0, 5, 10, 1000$.\n",
+        "\n",
+        "2. Increase the inter-community edge probability to $0.15$ and repeat the simulation. Compare the results with the previous simulation."
+      ],
+      "id": "d3dfa5a3"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "netdatasci",
+      "language": "python",
+      "display_name": "netdatasci",
+      "path": "/Users/skojaku-admin/Library/Jupyter/kernels/netdatasci"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
