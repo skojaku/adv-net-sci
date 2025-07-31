@@ -279,12 +279,22 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
 # This function will be called when the test button is clicked
 def test_question(question: str, expected_answer: str, module_name: str, api_key: str):
     """Test a single question and return results"""
+    print(f"🔧 DEBUG: test_question called with module: {module_name}")
+    
     if not question.strip() or not expected_answer.strip() or not api_key.strip():
+        print("🔧 DEBUG: Missing required fields")
         return "❌ Please fill in all fields (question, answer, and API key)"
     
+    print(f"🔧 DEBUG: Loading module content for {module_name}...")
     # Load module content
-    module_content = read_module_content(module_name)
-    module_context = format_module_context(module_content, module_name)
+    try:
+        module_content = read_module_content(module_name)
+        print(f"🔧 DEBUG: Module content loaded, keys: {list(module_content.keys()) if isinstance(module_content, dict) else 'Not a dict'}")
+        module_context = format_module_context(module_content, module_name)
+        print(f"🔧 DEBUG: Module context formatted, length: {len(module_context)}")
+    except Exception as e:
+        print(f"🚨 ERROR: Module content loading failed: {str(e)}")
+        return f"❌ Error loading module content: {str(e)}"
     
     results = {}
     
@@ -412,8 +422,8 @@ test_question_func = test_question
 ```
 
 ```python {.marimo}
-# Display results when test button is clicked using proper Marimo reactivity
-mo.stop(not test_button.value, 
+# This approach matches the Quiz Dojo pattern more closely
+if not test_button.value:
     mo.md("""## 📝 Test Your Question
 
 Fill in your question and expected answer above, then click **🧪 Test Question** to see:
@@ -427,20 +437,41 @@ Fill in your question and expected answer above, then click **🧪 Test Question
 - Focus on concepts, not heavy calculations
 - Ask about edge cases or subtle differences
 - Create scenario-based questions
-- Test understanding, not memorization"""))
-
-# Validate inputs
-mo.stop(not question_input.value or not answer_input.value or not api_key_holder.value,
-    mo.md("❌ Please fill in all required fields above."))
-
-# Execute test when button is clicked and all inputs are filled
-result = test_question_func(
-    question_input.value,
-    answer_input.value, 
-    module_selector.value,
-    api_key_holder.value
-)
-mo.md(result)
+- Test understanding, not memorization""")
+elif not question_input.value or not answer_input.value or not api_key_holder.value:
+    mo.md("❌ Please fill in all required fields above.")
+else:
+    # Add console logging for debugging
+    print("🔧 DEBUG: Test button clicked and all fields filled!")
+    print(f"🔧 DEBUG: Question: {question_input.value[:50]}...")
+    print(f"🔧 DEBUG: Answer: {answer_input.value[:50]}...")
+    print(f"🔧 DEBUG: Module: {module_selector.value}")
+    print(f"🔧 DEBUG: API key length: {len(api_key_holder.value)}")
+    
+    try:
+        print("🔧 DEBUG: About to call test_question_func...")
+        
+        # Execute test when button is clicked and all inputs are filled
+        result = test_question_func(
+            question_input.value,
+            answer_input.value, 
+            module_selector.value,
+            api_key_holder.value
+        )
+        
+        print(f"🔧 DEBUG: Function completed, result length: {len(str(result))}")
+        mo.md(result)
+        
+    except Exception as e:
+        error_msg = f"❌ **Error occurred**: {str(e)}"
+        print(f"🚨 ERROR: {error_msg}")
+        print(f"🚨 ERROR: Exception type: {type(e).__name__}")
+        
+        import traceback
+        traceback_str = traceback.format_exc()
+        print(f"🚨 ERROR: Full traceback:\n{traceback_str}")
+        
+        mo.md(f"{error_msg}\n\n**Debug Info**: Check browser console for detailed error logs.\n\n```\n{traceback_str}\n```")
 ```
 
 ```python {.marimo}
