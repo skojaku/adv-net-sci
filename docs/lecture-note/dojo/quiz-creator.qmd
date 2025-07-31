@@ -238,15 +238,14 @@ def call_llm_api(prompt: str, system_message: str, model: str, api_key: str) -> 
                 "content": prompt
             }
         ],
-        "max_tokens": 500,
+        "max_tokens": 2000,
         "temperature": 0.1,
         "stream": False
     }
-
     try:
         # Prepare the request - exact same pattern as Quiz Dojo
         base_url = "https://chat.binghamton.edu/api"
-        url = f"{base_url}"
+        url = f"{base_url}/chat/completions"
         data = json.dumps(payload).encode('utf-8')
 
         req = urllib.request.Request(
@@ -362,7 +361,7 @@ REASON: [Brief explanation of decision]"""
     print("🔧 DEBUG: Calling validation API...")
     validation_result = call_llm_api(validation_prompt, validation_system, "gemma3:27b", api_key)
     print(f"🔧 DEBUG: Validation API returned: {validation_result[:100] if validation_result else 'None'}...")
-    
+
     if not validation_result or validation_result.startswith("❌"):
         print(f"🚨 ERROR: Validation failed: {validation_result}")
         return f"❌ Validation failed: {validation_result or 'API error'}"
@@ -395,7 +394,7 @@ Instructions:
     print("🔧 DEBUG: Calling LLM quiz API...")
     llm_answer = call_llm_api(quiz_prompt, quiz_system, "llama3.2:latest", api_key)
     print(f"🔧 DEBUG: LLM quiz API returned: {llm_answer[:100] if llm_answer else 'None'}...")
-    
+
     if not llm_answer or llm_answer.startswith("❌"):
         print(f"🚨 ERROR: Failed to get LLM answer: {llm_answer}")
         return f"❌ Failed to get LLM answer: {llm_answer or 'API error'}"
@@ -426,7 +425,7 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
     print("🔧 DEBUG: Calling evaluation API...")
     evaluation_result = call_llm_api(evaluator_prompt, evaluator_system, "gemma3:27b", api_key)
     print(f"🔧 DEBUG: Evaluation API returned: {evaluation_result[:100] if evaluation_result else 'None'}...")
-    
+
     if not evaluation_result or evaluation_result.startswith("❌"):
         print(f"🚨 ERROR: Failed to get evaluation: {evaluation_result}")
         return f"❌ Failed to get evaluation: {evaluation_result or 'API error'}"
@@ -439,12 +438,12 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
         verdict = "CORRECT"
     elif "INCORRECT" in evaluation_result.upper():
         verdict = "INCORRECT"
-    
+
     print(f"🔧 DEBUG: Evaluation verdict: {verdict}")
 
     # Format final results
     winner = "🤖 LLM" if verdict == "CORRECT" else "🎉 You"
-    
+
     final_result = f"""## 🧪 Test Results
 
 **Winner: {winner}**
@@ -466,7 +465,7 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]"""
 
     print(f"🔧 DEBUG: Final result generated (length: {len(final_result)})")
     print(f"🔧 DEBUG: Final result preview: {final_result[:200]}...")
-    
+
     return final_result
 
 # Store the test function for use in the button click
