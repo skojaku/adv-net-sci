@@ -26,21 +26,13 @@ def _(mo):
 
     /// admonition | Running with Marimo
 
-    To run the notebook, first download it as a .py file, then use the following steps:
+    You can run this notebook with Marimo. To do so, download the notebook (click `...` button on the top, then `Download` button) and use the following steps:
 
     ```bash
     marimo edit --sandbox <filename>.py
     ```
 
     The notebook will open in your web browser. All necessary packages will be installed automatically in a dedicated virtual environment managed by uv.
-
-    If you are using colab, run the following code to install the necessary packages:
-    ```python
-    # If you are using colab, uncomment the following line
-    !sudo apt install libcairo2-dev pkg-config python3-dev
-    !pip install pycairo cairocffi
-    !pip install igraph
-    ```
     ///
 
 
