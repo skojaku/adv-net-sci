@@ -3,7 +3,6 @@ title: Quiz Dojo
 filters:
     - marimo-team/marimo
 search: false
-sidebar: false
 ---
 
 [← Back to Main Page](../index.qmd)
@@ -13,7 +12,7 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 ::: {.callout-note collapse="true"}
 ## Instructions & Important Information
 
-**🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first.
+**🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first. Find the VPN setup guide [here](https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html).
 
 **🚀 Getting Started**:
 
@@ -27,6 +26,26 @@ This is an experimental AI-powered quiz practice feature to help you prepare for
 **📚 How It Works**: The AI has access to all course materials for the selected module and will provide contextually accurate responses and questions based on the official content.
 
 **⚠️ Important Disclaimer**: Always doubt and verify AI responses. The AI may generate plausible-sounding but incorrect answers. Cross-check all information with official course materials, textbooks, or your instructor. Think critically about every response and use this tool as a practice aid, not as an authoritative source.
+:::
+
+::: {.callout-warning collapse="true"}
+## Troubleshooting: Connection Issues
+
+**🚨 Common Problem**: If you see errors like "Connection failed", "URLError", or "timeout" when trying to use the quiz, this usually means you're accessing from outside the campus network.
+
+**💡 Solution**: Connect to the Binghamton University VPN first, then try again.
+
+**🔧 Steps to Fix**:
+1. **Connect to BU VPN**: Use the official Binghamton University VPN client
+2. **Verify Connection**: Make sure your VPN shows "Connected" status
+3. **Refresh & Retry**: Reload this page and try submitting a question again
+4. **Still Having Issues?**: Contact your instructor for assistance
+
+**📍 VPN Resources**:
+- [Binghamton University VPN Setup Guide](https://www.binghamton.edu/its/services/network-communications/vpn/)
+- Contact BU ITS Help Desk: (607) 777-6420
+
+**⚙️ Technical Details**: The LLM API endpoint is only accessible from within the campus network for security reasons. Off-campus access requires VPN connection to authenticate your location.
 :::
 
 ```python {.marimo}
@@ -338,11 +357,19 @@ Bad response: [Starting with formulas or technical definitions without building 
                 return "Error: No response from LLM. Make sure you have entered the correct API key."
 
     except urllib.error.URLError as e:
-        return f"Error: Connection failed - {str(e)}"
+        error_msg = str(e)
+        if "timed out" in error_msg.lower() or "connection" in error_msg.lower():
+            return "🚨 **Connection Error**: Cannot reach the API server. This usually happens when you're off-campus.\n\n**💡 Solution**: Please connect to the Binghamton University VPN and try again.\n\n**🔗 VPN Setup**: https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html"
+        else:
+            return f"Error: Connection failed - {error_msg}"
     except json.JSONDecodeError:
-        return "Error: Invalid JSON response"
+        return "Error: Invalid JSON response from server. Please try again or contact your instructor if the issue persists."
     except Exception as e:
-        return f"Error: {str(e)}"
+        error_msg = str(e)
+        if "timeout" in error_msg.lower() or "connection" in error_msg.lower():
+            return "🚨 **Network Timeout**: The connection to the API server timed out. This often indicates you're accessing from off-campus.\n\n**💡 Solution**: Connect to the Binghamton University VPN and try again."
+        else:
+            return f"Error: {error_msg}"
 
 def llm_wrapper(messages, config):
     """
