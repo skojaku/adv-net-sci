@@ -118,11 +118,11 @@ answer_input = mo.ui.text_area(
     rows=4
 )
 
-def handle_test_click():
+def handle_test_click(value):
     """Handle the test button click"""
     if not question_input.value or not answer_input.value or not api_key_holder.value:
         return "❌ Please fill in all required fields"
-    
+
     return test_question_func(
         question_input.value,
         answer_input.value,
@@ -559,6 +559,7 @@ Fill in your question and expected answer above, then click **🧪 Test Question
     print(f"🔧 DEBUG: Answer: {answer_input.value[:50]}...")
     print(f"🔧 DEBUG: Module: {module_selector.value}")
     print(f"🔧 DEBUG: API key length: {len(api_key_holder.value)}")
+
 
     try:
         print("🔧 DEBUG: About to call test_question_func...")
