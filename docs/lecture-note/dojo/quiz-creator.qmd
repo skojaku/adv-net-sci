@@ -105,33 +105,30 @@ run_button = mo.ui.button(
     on_click=lambda value: value + 1,
 )
 
-
-mo.vstack([question_input, run_button])
-```
-
-```python {.marimo}
-# System message box - shows errors, warnings, and status messages
-def get_system_message():
+# System message callout - shows errors, warnings, and status messages
+def get_system_callout():
     if run_button.value > 1:  # Button has been clicked
         if not api_key_holder.value.strip():
-            return mo.md("❌ **Error**: Please enter an API key first.")
+            return mo.callout("Please enter an API key first.", kind="danger")
         elif not question_input.value.strip():
-            return mo.md("⚠️ **Warning**: Please enter a question and answer before clicking Test Questions.")
+            return mo.callout("Please enter a question and answer before clicking Test Questions.", kind="warn")
         else:
             # Try to process and show any errors
             try:
                 results = process_questions(question_input.value)
                 if not results["success"]:
-                    return mo.md(f"❌ **Error**: {results['error']}")
+                    return mo.callout(f"Processing Error: {results['error']}", kind="danger")
                 else:
-                    return mo.md("✅ **Success**: Questions processed successfully!")
+                    return mo.callout("Questions processed successfully! See results below.", kind="success")
             except Exception as e:
-                return mo.md(f"❌ **System Error**: {str(e)}")
+                return mo.callout(f"System Error: {str(e)}", kind="danger")
     else:
-        return mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Questions'.")
+        return mo.callout("Ready to test questions. Enter your question and answer above, then click 'Test Questions'.", kind="info")
 
-# Display the system message box
-get_system_message()
+# Create the system callout
+system_callout = get_system_callout()
+
+mo.vstack([question_input, run_button, system_callout])
 ```
 
 
@@ -742,9 +739,9 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 
 ```python {.marimo}
 # Display detailed results when processing is successful
-if (run_button.value > 1 and question_input.value and question_input.value.strip() 
+if (run_button.value > 1 and question_input.value and question_input.value.strip()
     and api_key_holder.value.strip()):
-    
+
     try:
         results = process_questions(question_input.value)
         if results["success"]:
