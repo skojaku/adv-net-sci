@@ -70,8 +70,8 @@ mo.vstack([api_key_holder, module_selector])
 ```
 
 ```python {.marimo}
-# Question and answer input form
-form = mo.ui.text_area(
+# Question and answer input
+question_input = mo.ui.text_area(
     label="Enter your question and correct answer",
     placeholder="""Example formats supported:
 
@@ -95,9 +95,9 @@ answer = "All nodes must have even degree.""",
     value="",
     full_width = True,
     rows=12
-).form(submit_button_label="Test Question")
+)
 
-form
+question_input
 ```
 
 ```python {.marimo}
@@ -705,15 +705,13 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 ```
 
 ```python {.marimo}
-# Process questions when form is submitted
-if form.value:
+# Display results based on question input
+if question_input.value and question_input.value.strip():
     if not api_key_holder.value.strip():
         mo.md("❌ **Error**: Please enter an API key first.")
-    elif not form.value.strip():
-        mo.md("⚠️ **Warning**: Please enter a question and answer before submitting.")
     else:
-        # Process the questions
-        results = process_questions(form.value)
+        # Process the questions (this happens via on_change)
+        results = process_questions(question_input.value)
 
         if not results["success"]:
             mo.md(f"❌ **Error**: {results['error']}")
@@ -730,9 +728,9 @@ if form.value:
 
             summary_text = f"""## 📋 Quiz Testing Results
 
-**Module**: {module_options.get(results['module_context'], results['module_context'])}
-**Questions Processed**: {total_results}
-**Successfully Evaluated**: {len(evaluated_results)}
+**Module**: {module_options.get(results['module_context'], results['module_context'])}  
+**Questions Processed**: {total_results}  
+**Successfully Evaluated**: {len(evaluated_results)}  
 **Student Wins**: {student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"""
 
             callouts.append(mo.md(summary_text))
@@ -818,7 +816,7 @@ if form.value:
             # Display all callouts
             mo.vstack(callouts)
 else:
-    mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Question'.")
+    mo.md("**Ready to test questions.** Enter your question and answer above to get started.")
 ```
 
 ::: {.callout-note collapse="true"}
