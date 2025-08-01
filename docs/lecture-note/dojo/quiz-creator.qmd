@@ -730,14 +730,18 @@ if run_button.value and question_input.value and question_input.value.strip():
             evaluated_results = [r for r in results["results"] if r["status"] == "evaluated"]
             student_wins = sum(1 for r in evaluated_results if r.get("student_wins", False))
 
-            success_rate = (student_wins/len(evaluated_results)*100) if evaluated_results else 0
+            if evaluated_results:
+                success_rate = (student_wins/len(evaluated_results)*100)
+                success_text = f"{student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"
+            else:
+                success_text = "0/0 (0.0%)"
 
             summary_text = f"""## 📋 Quiz Testing Results
 
 **Module**: {module_options.get(results['module_context'], results['module_context'])}  
 **Questions Processed**: {total_results}  
 **Successfully Evaluated**: {len(evaluated_results)}  
-**Student Wins**: {student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"""
+**Student Wins**: {success_text}"""
 
             callouts.append(mo.md(summary_text))
 
