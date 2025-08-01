@@ -712,7 +712,7 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 
 ```python {.marimo}
 # Display results when run button is clicked
-if run_button.value > 0 and question_input.value and question_input.value.strip():
+if run_button.value and question_input.value and question_input.value.strip():
     if not api_key_holder.value.strip():
         mo.md("❌ **Error**: Please enter an API key first.")
     else:
@@ -821,7 +821,7 @@ if run_button.value > 0 and question_input.value and question_input.value.strip(
 
             # Display all callouts
             mo.vstack(callouts)
-elif run_button.value > 0 and not question_input.value.strip():
+elif run_button.value and not question_input.value.strip():
     mo.md("⚠️ **Warning**: Please enter a question and answer before clicking Test Questions.")
 else:
     mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Questions'.")
