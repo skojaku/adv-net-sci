@@ -370,7 +370,10 @@ def call_llm_api(messages, model="gemma3:27b", temperature=0.1, max_tokens=500) 
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "stream": False
+        "stream": False,
+        "options": {
+            "num_ctx": 32768
+        }
     }
 
     try:
@@ -690,7 +693,7 @@ def validate_question(question: str, answer: str, selected_module: str = None, m
         {"role": "user", "content": user_template}
     ]
 
-    validation = call_llm_api(messages, model="llama3.3:latest", temperature=0.1, max_tokens=500)
+    validation = call_llm_api(messages, model="gemma3:27b", temperature=0.1, max_tokens=500)
 
     if validation.startswith("Error:") or validation.startswith("🚨"):
         return {
@@ -742,7 +745,7 @@ def send_question_to_quiz_llm(question: str, module_context: str) -> Dict[str, A
         {"role": "user", "content": PROMPTS["quiz_llm"]["user_template"].format(question=question)}
     ]
 
-    llm_response = call_llm_api(messages, model="llama3.2:latest", temperature=0.1, max_tokens=300)
+    llm_response = call_llm_api(messages, model="hermes3:latest", temperature=0.1, max_tokens=500)
 
     if llm_response.startswith("Error:") or llm_response.startswith("🚨"):
         return {
