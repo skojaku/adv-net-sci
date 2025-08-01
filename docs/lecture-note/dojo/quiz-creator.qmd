@@ -504,7 +504,7 @@ REASON: [Brief explanation of decision]"""
 
 Instructions:
 - Answer questions based on the module content provided above
-- Be concise but thorough in your explanations. No more than 300 words.
+- Be concise and direct - aim for 2-3 sentences maximum
 - Use the concepts and terminology from the course materials
 - If you're unsure about something, refer back to the provided content
 - Do not ask for clarification - provide your best answer based on the information available""",
@@ -740,7 +740,7 @@ def send_question_to_quiz_llm(question: str, module_context: str) -> Dict[str, A
         {"role": "user", "content": PROMPTS["quiz_llm"]["user_template"].format(question=question)}
     ]
 
-    llm_response = call_llm_api(messages, model="hermes3:latest", temperature=0.1, max_tokens=500)
+    llm_response = call_llm_api(messages, model="hermes3:latest", temperature=0.1, max_tokens=200)
 
     if llm_response.startswith("Error:") or llm_response.startswith("🚨"):
         return {
