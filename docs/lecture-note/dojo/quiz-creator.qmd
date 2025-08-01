@@ -674,14 +674,14 @@ def validate_question(question: str, answer: str, selected_module: str = None, m
         module_name = module_options.get(selected_module, selected_module)
         user_template = PROMPTS["validate_question"]["enhanced_template"].format(
             module_name=module_name,
-            module_context=module_context[:1000],
+            module_context=module_context,
             question=question,
             answer=answer
         )
     else:
         # Fallback to basic template when no module context available
         user_template = PROMPTS["validate_question"]["user_template"].format(
-            question=question, 
+            question=question,
             answer=answer
         )
 
@@ -690,7 +690,7 @@ def validate_question(question: str, answer: str, selected_module: str = None, m
         {"role": "user", "content": user_template}
     ]
 
-    validation = call_llm_api(messages, model="gemma3:27b", temperature=0.1, max_tokens=300)
+    validation = call_llm_api(messages, model="llama3.3:latest", temperature=0.1, max_tokens=500)
 
     if validation.startswith("Error:") or validation.startswith("🚨"):
         return {
@@ -824,95 +824,6 @@ def evaluate_llm_answer(question: str, correct_answer: str, llm_answer: str) -> 
         }
 
 
-def process_questions(raw_input: str) -> Dict[str, Any]:
-    """Main processing pipeline that combines all steps."""
-    # Get selected module
-    selected_module = module_selector.value
-
-    # Get module context
-    module_content = read_module_content(selected_module)
-    module_context = format_module_context(module_content, selected_module)
-
-    # Step 1: Parse questions and answers
-    parse_result = parse_question_and_answer(raw_input)
-
-    if not parse_result["success"]:
-        return {
-            "success": False,
-            "error": parse_result["error"],
-            "results": []
-        }
-
-    if not parse_result["questions"]:
-        return {
-            "success": False,
-            "error": "No valid questions found in your input.",
-            "results": []
-        }
-
-    results = []
-
-    for i, q in enumerate(parse_result["questions"], 1):
-        question = q["question"]
-        answer = q["answer"]
-
-        # Skip questions without answers
-        if not q["has_answer"]:
-            results.append({
-                "question_number": i,
-                "question": question,
-                "status": "skipped",
-                "reason": "No answer provided"
-            })
-            continue
-
-        # Step 2: Validate question
-        validation = validate_question(question, answer)
-
-        if not validation["valid"]:
-            results.append({
-                "question_number": i,
-                "question": question,
-                "answer": answer,
-                "status": "invalid",
-                "validation": validation
-            })
-            continue
-
-        # Step 3: Send to quiz LLM
-        llm_response = send_question_to_quiz_llm(question, module_context)
-
-        if not llm_response["success"]:
-            results.append({
-                "question_number": i,
-                "question": question,
-                "answer": answer,
-                "status": "llm_error",
-                "error": llm_response["error"],
-                "validation": validation
-            })
-            continue
-
-        # Step 4: Evaluate LLM answer
-        evaluation = evaluate_llm_answer(question, answer, llm_response["answer"])
-
-        results.append({
-            "question_number": i,
-            "question": question,
-            "answer": answer,
-            "llm_answer": llm_response["answer"],
-            "evaluation": evaluation,
-            "validation": validation,
-            "status": "evaluated",
-            "student_wins": evaluation.get("student_wins", False)
-        })
-
-    return {
-        "success": True,
-        "error": None,
-        "results": results,
-        "module_context": selected_module
-    }
 
 ```
 
@@ -953,19 +864,16 @@ def show_results():
 
         if result["status"] == "skipped":
             callout_content = f"""
-::: {{.callout-warning}}
 ## ⏭️ Question {q_num}: Skipped
 
 **Question**: {question}
 
 **Reason**: {result["reason"]}
-:::
 """
             callouts.append(callout_content)
 
         elif result["status"] == "invalid":
             callout_content = f"""
-::: {{.callout-danger}}
 ## ❌ Question {q_num}: Invalid
 
 **Question**: {question}
@@ -988,7 +896,6 @@ def show_results():
 **Your Answer**: {result["answer"]}
 
 **Error**: {result["error"]}
-:::
 """
             callouts.append(callout_content)
 
