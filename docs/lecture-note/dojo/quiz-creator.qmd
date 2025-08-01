@@ -100,11 +100,41 @@ answer = "All nodes must have even degree.""",
 # Run button to trigger processing
 run_button = mo.ui.button(
     label="Test Questions",
-    kind="success"
+    kind="success",
+    value = 1,
+    on_click=lambda value: value + 1,
 )
+
 
 mo.vstack([question_input, run_button])
 ```
+
+```python {.marimo}
+# System message box - shows errors, warnings, and status messages
+def get_system_message():
+    if run_button.value > 1:  # Button has been clicked
+        if not api_key_holder.value.strip():
+            return mo.md("❌ **Error**: Please enter an API key first.")
+        elif not question_input.value.strip():
+            return mo.md("⚠️ **Warning**: Please enter a question and answer before clicking Test Questions.")
+        else:
+            # Try to process and show any errors
+            try:
+                results = process_questions(question_input.value)
+                if not results["success"]:
+                    return mo.md(f"❌ **Error**: {results['error']}")
+                else:
+                    return mo.md("✅ **Success**: Questions processed successfully!")
+            except Exception as e:
+                return mo.md(f"❌ **System Error**: {str(e)}")
+    else:
+        return mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Questions'.")
+
+# Display the system message box
+get_system_message()
+```
+
+
 
 ```python {.marimo}
 # Shared functions adapted from quiz-dojo.qmd and llm_quiz_grading.py
@@ -711,17 +741,13 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 ```
 
 ```python {.marimo}
-# Display results when run button is clicked
-if run_button.value and question_input.value and question_input.value.strip():
-    if not api_key_holder.value.strip():
-        mo.md("❌ **Error**: Please enter an API key first.")
-    else:
-        # Process the questions
+# Display detailed results when processing is successful
+if (run_button.value > 1 and question_input.value and question_input.value.strip() 
+    and api_key_holder.value.strip()):
+    
+    try:
         results = process_questions(question_input.value)
-
-        if not results["success"]:
-            mo.md(f"❌ **Error**: {results['error']}")
-        else:
+        if results["success"]:
             # Display results
             callouts = []
 
@@ -738,9 +764,9 @@ if run_button.value and question_input.value and question_input.value.strip():
 
             summary_text = f"""## 📋 Quiz Testing Results
 
-**Module**: {module_options.get(results['module_context'], results['module_context'])}  
-**Questions Processed**: {total_results}  
-**Successfully Evaluated**: {len(evaluated_results)}  
+**Module**: {module_options.get(results['module_context'], results['module_context'])}
+**Questions Processed**: {total_results}
+**Successfully Evaluated**: {len(evaluated_results)}
 **Student Wins**: {success_text}"""
 
             callouts.append(mo.md(summary_text))
@@ -825,10 +851,12 @@ if run_button.value and question_input.value and question_input.value.strip():
 
             # Display all callouts
             mo.vstack(callouts)
-elif run_button.value and not question_input.value.strip():
-    mo.md("⚠️ **Warning**: Please enter a question and answer before clicking Test Questions.")
+    except Exception as e:
+        # Errors are handled in the system message box above
+        mo.md("")  # Empty display when there are errors
 else:
-    mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Questions'.")
+    # No results to display yet
+    mo.md("")
 ```
 
 ::: {.callout-note collapse="true"}
