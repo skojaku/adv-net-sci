@@ -43,7 +43,7 @@ from typing import List, Dict, Any
 api_key_holder = mo.ui.text(
     label="Enter the API key",
     placeholder="API key",
-    value="",
+    value="sk-7b747530179c4cc992159b7aaec18155",
 )
 
 # Module selector (same as quiz-dojo)
@@ -62,7 +62,7 @@ module_options = {
 
 module_selector = mo.ui.dropdown(
     options=module_options,
-    value="intro",
+    value="m01-euler_tour",
     label="Select module for context"
 )
 
@@ -92,7 +92,11 @@ answer = "A path that visits every edge exactly once."
 [[questions]]
 question = "What are the conditions for Euler circuits?"
 answer = "All nodes must have even degree.""",
-    value="",
+    value="""# Question 1:
+[[questions]]
+question = "According to Euler's Path Theorem, what are the necessary and sufficient conditions for a graph to have an Euler path (a walk that crosses every edge exactly once)?"
+answer = "A graph has an Euler path if and only if: (1) All nodes have even degree, OR (2) Exactly two nodes have odd degree. If all nodes have even degree, the path forms a cycle. If exactly two nodes have odd degree, the path must start at one odd-degree node and end at the other."
+    """,
     full_width = True,
     rows=12
 )
@@ -126,98 +130,126 @@ def get_system_callout():
         return mo.callout("Ready to test questions. Enter your question and answer above, then click 'Test Questions'.", kind="info")
 
 def process_with_progress(raw_input):
-    """Process questions with progress updates"""
-    
+    """Process questions with progress updates using marimo progress bar"""
+
     # Step 1: Parsing
-    progress_msg = "🔄 **Step 1/4**: Parsing questions and answers..."
-    
-    # Get selected module and context
     selected_module = module_selector.value
     module_content = read_module_content(selected_module)
     module_context = format_module_context(module_content, selected_module)
-    
+
     # Parse questions
     parse_result = parse_question_and_answer(raw_input)
-    
+
     if not parse_result["success"]:
         return mo.callout(f"Parsing Error: {parse_result['error']}", kind="danger")
-    
+
     if not parse_result["questions"]:
         return mo.callout("No valid questions found in your input.", kind="warn")
-    
-    # Step 2: Validation
+
+    # Step 2: Process questions with progress bar
     total_questions = len(parse_result["questions"])
-    valid_questions = 0
-    
     results = []
-    
+
+    # Create a processing pipeline with individual steps
+    # Each question with answer gets 3 steps: parsing/validation, AI quiz, evaluation
+    questions_with_answers = [(i, q) for i, q in enumerate(parse_result["questions"], 1) if q["has_answer"]]
+    total_steps = len(questions_with_answers) * 3  # 3 steps per question
+
+    current_question_data = {}  # Store data between steps for the same question
+
+    # Use mo.status.progress_bar with total parameter and async pattern
+    with mo.status.progress_bar(total=total_steps) as bar:
+        step_counter = 0
+
+        for i, q in questions_with_answers:
+            question = q["question"]
+            answer = q["answer"]
+
+            # Step 1: Validation
+            step_counter += 1
+            bar.update(subtitle=f"📋 Question {i}: Validating question and answer...")
+            validation = validate_question(question, answer)
+
+            if not validation["valid"]:
+                results.append({
+                    "question_number": i,
+                    "question": question,
+                    "answer": answer,
+                    "status": "invalid",
+                    "validation": validation
+                })
+                # Skip the remaining steps for this question but still update progress
+                step_counter += 2  # Skip quiz and evaluation steps
+                bar.update(subtitle=f"❌ Question {i}: Invalid - skipping remaining steps")
+                continue
+
+            # Store validation result for later steps
+            current_question_data[i] = {
+                "question": question,
+                "answer": answer,
+                "validation": validation
+            }
+
+            # Step 2: Quiz LLM Processing
+            step_counter += 1
+            bar.update(subtitle=f"🤖 Question {i}: AI taking quiz...")
+
+            llm_response = send_question_to_quiz_llm(question, module_context)
+
+            if not llm_response["success"]:
+                results.append({
+                    "question_number": i,
+                    "question": question,
+                    "answer": answer,
+                    "status": "llm_error",
+                    "error": llm_response["error"],
+                    "validation": validation
+                })
+                # Skip evaluation step
+                step_counter += 1
+                bar.update(subtitle=f"⚠️ Question {i}: LLM error - skipping evaluation")
+                continue
+
+            # Store LLM response for evaluation step
+            current_question_data[i]["llm_response"] = llm_response
+
+            # Step 3: Evaluation
+            step_counter += 1
+            bar.update(subtitle=f"⚖️ Question {i}: Evaluating answers...")
+
+            evaluation = evaluate_llm_answer(question, answer, llm_response["answer"])
+
+            results.append({
+                "question_number": i,
+                "question": question,
+                "answer": answer,
+                "llm_answer": llm_response["answer"],
+                "evaluation": evaluation,
+                "validation": validation,
+                "status": "evaluated",
+                "student_wins": evaluation.get("student_wins", False)
+            })
+
+        # Final update
+        bar.update(subtitle="✅ Processing complete!")
+
+    # Add skipped questions (those without answers)
     for i, q in enumerate(parse_result["questions"], 1):
-        question = q["question"]  
-        answer = q["answer"]
-        
-        # Skip questions without answers
         if not q["has_answer"]:
             results.append({
                 "question_number": i,
-                "question": question,
+                "question": q["question"],
                 "status": "skipped",
                 "reason": "No answer provided"
             })
-            continue
-        
-        # Validate question
-        validation = validate_question(question, answer)
-        
-        if not validation["valid"]:
-            results.append({
-                "question_number": i,
-                "question": question,
-                "answer": answer,
-                "status": "invalid",
-                "validation": validation
-            })
-            continue
-        
-        valid_questions += 1
-        
-        # Step 3: Quiz LLM Processing
-        progress_msg = f"🤖 **Step 3/4**: Question {i}/{total_questions} - AI taking quiz..."
-        
-        llm_response = send_question_to_quiz_llm(question, module_context)
-        
-        if not llm_response["success"]:
-            results.append({
-                "question_number": i,
-                "question": question,
-                "answer": answer,
-                "status": "llm_error", 
-                "error": llm_response["error"],
-                "validation": validation
-            })
-            continue
-        
-        # Step 4: Evaluation
-        progress_msg = f"⚖️ **Step 4/4**: Question {i}/{total_questions} - Evaluating answers..."
-        
-        evaluation = evaluate_llm_answer(question, answer, llm_response["answer"])
-        
-        results.append({
-            "question_number": i,
-            "question": question,
-            "answer": answer,
-            "llm_answer": llm_response["answer"],
-            "evaluation": evaluation,
-            "validation": validation,
-            "status": "evaluated",
-            "student_wins": evaluation.get("student_wins", False)
-        })
-    
+
+    # Sort results by question number
+    results.sort(key=lambda x: x["question_number"])
+
     # Final success message
     evaluated_count = len([r for r in results if r["status"] == "evaluated"])
     wins = len([r for r in results if r.get("student_wins", False)])
-    
-    success_text = f"✅ **Complete!** Processed {total_questions} questions. {evaluated_count} evaluated, {wins} wins."
-    
+
     # Store results globally so the results cell can access them
     global processing_results
     processing_results = {
@@ -226,8 +258,8 @@ def process_with_progress(raw_input):
         "results": results,
         "module_context": selected_module
     }
-    
-    return mo.callout(success_text, kind="success")
+
+    return mo.callout(f"✅ **Complete!** Processed {total_questions} questions. {evaluated_count} evaluated, {wins} wins.", kind="success")
 
 # Initialize global results storage
 processing_results = None
@@ -844,10 +876,13 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 
 ```python {.marimo}
 # Display detailed results when processing is successful
-if processing_results and processing_results["success"]:
+def show_results():
+    if not processing_results or not processing_results["success"]:
+        return mo.md("")
+    
     # Display results
     callouts = []
-    results = processing_results  # Use the stored results
+    results = processing_results
 
     # Summary
     total_results = len(results["results"])
@@ -948,10 +983,10 @@ if processing_results and processing_results["success"]:
             callouts.append(mo.md(callout_content))
 
     # Display all callouts
-    mo.vstack(callouts)
-else:
-    # No results to display yet
-    mo.md("")
+    return mo.vstack(callouts)
+
+# Call the function to display results
+show_results()
 ```
 
 ::: {.callout-note collapse="true"}
