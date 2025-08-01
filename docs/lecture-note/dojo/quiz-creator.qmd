@@ -68,20 +68,33 @@ mo.vstack([api_key_holder, module_selector])
 ```
 
 ```python {.marimo}
-# Question and answer input
-question_input = mo.ui.text_area(
+# Question and answer input form
+form = mo.ui.text_area(
     label="Enter your question and correct answer",
-    placeholder="Example:\nQuestion: What is an Euler path?\nAnswer: A path that visits every edge exactly once.",
+    placeholder="""Example formats supported:
+
+Simple format:
+Question: What is an Euler path?
+Answer: A path that visits every edge exactly once.
+
+TOML format:
+[[questions]]
+question = "What is an Euler path?"
+answer = "A path that visits every edge exactly once."
+
+Multiple questions in TOML:
+[[questions]]
+question = "What is an Euler path?"
+answer = "A path that visits every edge exactly once."
+
+[[questions]]
+question = "What are the conditions for Euler circuits?"
+answer = "All nodes must have even degree.""",
     value="",
-    rows=8
-)
+    rows=12
+).form(submit_button_label="Test Question")
 
-submit_button = mo.ui.button(
-    label="Test Question",
-    kind="success"
-)
-
-mo.vstack([question_input, submit_button])
+form
 ```
 
 ```python {.marimo}
@@ -339,7 +352,57 @@ mo.md(status_text)
 ```python {.marimo}
 # Main processing functions
 def parse_question_and_answer(raw_input: str) -> Dict[str, Any]:
-    """Parse questions and answers from student input using LLM."""
+    """Parse questions and answers from student input - supports both TOML and natural formats."""
+    
+    # First try to parse as TOML if it looks like TOML format
+    if "[[questions]]" in raw_input:
+        try:
+            # Simple TOML-like parsing for questions
+            questions = []
+            sections = raw_input.split("[[questions]]")
+            
+            for section in sections[1:]:  # Skip first empty section
+                question_text = None
+                answer_text = None
+                
+                for line in section.strip().split('\n'):
+                    line = line.strip()
+                    if line.startswith('question = "') and line.endswith('"'):
+                        question_text = line[12:-1]  # Remove 'question = "' and '"'
+                    elif line.startswith('answer = "') and line.endswith('"'):
+                        answer_text = line[10:-1]  # Remove 'answer = "' and '"'
+                
+                if question_text and answer_text:
+                    questions.append({
+                        "question": question_text,
+                        "answer": answer_text,
+                        "has_answer": True
+                    })
+                elif question_text:
+                    questions.append({
+                        "question": question_text,
+                        "answer": "MISSING",
+                        "has_answer": False
+                    })
+            
+            if questions:
+                return {
+                    "success": True,
+                    "error": None,
+                    "questions": questions
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": "No valid questions found in TOML format",
+                    "questions": []
+                }
+                
+        except Exception as e:
+            # Fall back to LLM parsing if TOML parsing fails
+            pass
+    
+    # Fall back to LLM-based parsing for natural language formats
     messages = [
         {"role": "system", "content": PROMPTS["parse_question"]["system"]},
         {"role": "user", "content": PROMPTS["parse_question"]["user_template"].format(raw_input=raw_input)}
@@ -636,20 +699,18 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
         "module_context": selected_module
     }
 
-# Processing status holder
-processing_status = {"processing": False, "results": None}
 ```
 
 ```python {.marimo}
-# Process questions when button is clicked
-if submit_button.value and question_input.value.strip():
+# Process questions when form is submitted
+if form.value:
     if not api_key_holder.value.strip():
         mo.md("❌ **Error**: Please enter an API key first.")
+    elif not form.value.strip():
+        mo.md("⚠️ **Warning**: Please enter a question and answer before submitting.")
     else:
         # Process the questions
-        results = process_questions(question_input.value)
-        processing_status["results"] = results
-        processing_status["processing"] = False
+        results = process_questions(form.value)
         
         if not results["success"]:
             mo.md(f"❌ **Error**: {results['error']}")
@@ -662,12 +723,14 @@ if submit_button.value and question_input.value.strip():
             evaluated_results = [r for r in results["results"] if r["status"] == "evaluated"]
             student_wins = sum(1 for r in evaluated_results if r.get("student_wins", False))
             
+            success_rate = (student_wins/len(evaluated_results)*100) if evaluated_results else 0
+            
             summary_text = f"""## 📋 Quiz Testing Results
             
 **Module**: {module_options.get(results['module_context'], results['module_context'])}  
 **Questions Processed**: {total_results}  
 **Successfully Evaluated**: {len(evaluated_results)}  
-**Student Wins**: {student_wins}/{len(evaluated_results)} ({student_wins/len(evaluated_results)*100:.1f}% if evaluated_results else 0:.1f}%)"""
+**Student Wins**: {student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"""
             
             callouts.append(mo.md(summary_text))
             
@@ -751,9 +814,6 @@ if submit_button.value and question_input.value.strip():
             
             # Display all callouts
             mo.vstack(callouts)
-            
-elif submit_button.value and not question_input.value.strip():
-    mo.md("⚠️ **Warning**: Please enter a question and answer before submitting.")
 else:
     mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Question'.")
 ```
