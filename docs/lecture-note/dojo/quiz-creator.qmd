@@ -39,6 +39,7 @@ from typing import List, Dict, Any
 
 # Note: Using manual TOML parsing for better cross-environment compatibility
 
+
 # Embedded API key
 API_KEY = "sk-7b747530179c4cc992159b7aaec18155"
 
@@ -271,7 +272,7 @@ def read_module_content(module_name: str) -> Dict[str, str]:
     github_branch = "main"
 
     # Standard files to fetch for each module
-    standard_files = ["01-concepts", "04-advanced"]
+    standard_files = ["01-concepts", "02-coding", "03-exercises", "04-advanced"]
 
     # Special case for intro module
     if module_name == "intro":
