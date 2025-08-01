@@ -105,6 +105,10 @@ run_button = mo.ui.button(
     on_click=lambda value: value + 1,
 )
 
+mo.vstack([question_input, run_button])
+```
+
+```python {.marimo}
 # System message callout - shows errors, warnings, and status messages
 def get_system_callout():
     if run_button.value > 1:  # Button has been clicked
@@ -125,10 +129,8 @@ def get_system_callout():
     else:
         return mo.callout("Ready to test questions. Enter your question and answer above, then click 'Test Questions'.", kind="info")
 
-# Create the system callout
-system_callout = get_system_callout()
-
-mo.vstack([question_input, run_button, system_callout])
+# Display the system callout
+get_system_callout()
 ```
 
 
