@@ -109,7 +109,7 @@ mo.vstack([question_input, run_button])
 ```
 
 ```python {.marimo}
-# System message callout - shows errors, warnings, and status messages
+# System message callout with progress tracking
 def get_system_callout():
     if run_button.value > 1:  # Button has been clicked
         if not api_key_holder.value.strip():
@@ -117,17 +117,120 @@ def get_system_callout():
         elif not question_input.value.strip():
             return mo.callout("Please enter a question and answer before clicking Test Questions.", kind="warn")
         else:
-            # Try to process and show any errors
+            # Show progress during processing
             try:
-                results = process_questions(question_input.value)
-                if not results["success"]:
-                    return mo.callout(f"Processing Error: {results['error']}", kind="danger")
-                else:
-                    return mo.callout("Questions processed successfully! See results below.", kind="success")
+                return process_with_progress(question_input.value)
             except Exception as e:
                 return mo.callout(f"System Error: {str(e)}", kind="danger")
     else:
         return mo.callout("Ready to test questions. Enter your question and answer above, then click 'Test Questions'.", kind="info")
+
+def process_with_progress(raw_input):
+    """Process questions with progress updates"""
+    
+    # Step 1: Parsing
+    progress_msg = "🔄 **Step 1/4**: Parsing questions and answers..."
+    
+    # Get selected module and context
+    selected_module = module_selector.value
+    module_content = read_module_content(selected_module)
+    module_context = format_module_context(module_content, selected_module)
+    
+    # Parse questions
+    parse_result = parse_question_and_answer(raw_input)
+    
+    if not parse_result["success"]:
+        return mo.callout(f"Parsing Error: {parse_result['error']}", kind="danger")
+    
+    if not parse_result["questions"]:
+        return mo.callout("No valid questions found in your input.", kind="warn")
+    
+    # Step 2: Validation
+    total_questions = len(parse_result["questions"])
+    valid_questions = 0
+    
+    results = []
+    
+    for i, q in enumerate(parse_result["questions"], 1):
+        question = q["question"]  
+        answer = q["answer"]
+        
+        # Skip questions without answers
+        if not q["has_answer"]:
+            results.append({
+                "question_number": i,
+                "question": question,
+                "status": "skipped",
+                "reason": "No answer provided"
+            })
+            continue
+        
+        # Validate question
+        validation = validate_question(question, answer)
+        
+        if not validation["valid"]:
+            results.append({
+                "question_number": i,
+                "question": question,
+                "answer": answer,
+                "status": "invalid",
+                "validation": validation
+            })
+            continue
+        
+        valid_questions += 1
+        
+        # Step 3: Quiz LLM Processing
+        progress_msg = f"🤖 **Step 3/4**: Question {i}/{total_questions} - AI taking quiz..."
+        
+        llm_response = send_question_to_quiz_llm(question, module_context)
+        
+        if not llm_response["success"]:
+            results.append({
+                "question_number": i,
+                "question": question,
+                "answer": answer,
+                "status": "llm_error", 
+                "error": llm_response["error"],
+                "validation": validation
+            })
+            continue
+        
+        # Step 4: Evaluation
+        progress_msg = f"⚖️ **Step 4/4**: Question {i}/{total_questions} - Evaluating answers..."
+        
+        evaluation = evaluate_llm_answer(question, answer, llm_response["answer"])
+        
+        results.append({
+            "question_number": i,
+            "question": question,
+            "answer": answer,
+            "llm_answer": llm_response["answer"],
+            "evaluation": evaluation,
+            "validation": validation,
+            "status": "evaluated",
+            "student_wins": evaluation.get("student_wins", False)
+        })
+    
+    # Final success message
+    evaluated_count = len([r for r in results if r["status"] == "evaluated"])
+    wins = len([r for r in results if r.get("student_wins", False)])
+    
+    success_text = f"✅ **Complete!** Processed {total_questions} questions. {evaluated_count} evaluated, {wins} wins."
+    
+    # Store results globally so the results cell can access them
+    global processing_results
+    processing_results = {
+        "success": True,
+        "error": None,
+        "results": results,
+        "module_context": selected_module
+    }
+    
+    return mo.callout(success_text, kind="success")
+
+# Initialize global results storage
+processing_results = None
 
 # Display the system callout
 get_system_callout()
@@ -741,42 +844,38 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 
 ```python {.marimo}
 # Display detailed results when processing is successful
-if (run_button.value > 1 and question_input.value and question_input.value.strip()
-    and api_key_holder.value.strip()):
+if processing_results and processing_results["success"]:
+    # Display results
+    callouts = []
+    results = processing_results  # Use the stored results
 
-    try:
-        results = process_questions(question_input.value)
-        if results["success"]:
-            # Display results
-            callouts = []
+    # Summary
+    total_results = len(results["results"])
+    evaluated_results = [r for r in results["results"] if r["status"] == "evaluated"]
+    student_wins = sum(1 for r in evaluated_results if r.get("student_wins", False))
 
-            # Summary
-            total_results = len(results["results"])
-            evaluated_results = [r for r in results["results"] if r["status"] == "evaluated"]
-            student_wins = sum(1 for r in evaluated_results if r.get("student_wins", False))
+    if evaluated_results:
+        success_rate = (student_wins/len(evaluated_results)*100)
+        success_text = f"{student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"
+    else:
+        success_text = "0/0 (0.0%)"
 
-            if evaluated_results:
-                success_rate = (student_wins/len(evaluated_results)*100)
-                success_text = f"{student_wins}/{len(evaluated_results)} ({success_rate:.1f}%)"
-            else:
-                success_text = "0/0 (0.0%)"
-
-            summary_text = f"""## 📋 Quiz Testing Results
+    summary_text = f"""## 📋 Quiz Testing Results
 
 **Module**: {module_options.get(results['module_context'], results['module_context'])}
 **Questions Processed**: {total_results}
 **Successfully Evaluated**: {len(evaluated_results)}
 **Student Wins**: {success_text}"""
 
-            callouts.append(mo.md(summary_text))
+    callouts.append(mo.md(summary_text))
 
-            # Individual question results
-            for result in results["results"]:
-                q_num = result["question_number"]
-                question = result["question"]
+    # Individual question results
+    for result in results["results"]:
+        q_num = result["question_number"]
+        question = result["question"]
 
-                if result["status"] == "skipped":
-                    callout_content = f"""
+        if result["status"] == "skipped":
+            callout_content = f"""
 ::: {{.callout-warning}}
 ## ⏭️ Question {q_num}: Skipped
 
@@ -785,10 +884,10 @@ if (run_button.value > 1 and question_input.value and question_input.value.strip
 **Reason**: {result["reason"]}
 :::
 """
-                    callouts.append(mo.md(callout_content))
+            callouts.append(mo.md(callout_content))
 
-                elif result["status"] == "invalid":
-                    callout_content = f"""
+        elif result["status"] == "invalid":
+            callout_content = f"""
 ::: {{.callout-danger}}
 ## ❌ Question {q_num}: Invalid
 
@@ -800,10 +899,10 @@ if (run_button.value > 1 and question_input.value and question_input.value.strip
 {f"**Specific Issues**: {', '.join(result['validation']['issues'])}" if result["validation"]["issues"] else ""}
 :::
 """
-                    callouts.append(mo.md(callout_content))
+            callouts.append(mo.md(callout_content))
 
-                elif result["status"] == "llm_error":
-                    callout_content = f"""
+        elif result["status"] == "llm_error":
+            callout_content = f"""
 ::: {{.callout-warning}}
 ## ⚠️ Question {q_num}: Processing Error
 
@@ -814,22 +913,22 @@ if (run_button.value > 1 and question_input.value and question_input.value.strip
 **Error**: {result["error"]}
 :::
 """
-                    callouts.append(mo.md(callout_content))
+            callouts.append(mo.md(callout_content))
 
-                elif result["status"] == "evaluated":
-                    student_wins = result.get("student_wins", False)
-                    evaluation = result["evaluation"]
+        elif result["status"] == "evaluated":
+            student_wins = result.get("student_wins", False)
+            evaluation = result["evaluation"]
 
-                    if student_wins:
-                        callout_type = "success"
-                        icon = "🎉"
-                        title = "You Win!"
-                    else:
-                        callout_type = "info"
-                        icon = "🤖"
-                        title = "LLM Wins"
+            if student_wins:
+                callout_type = "success"
+                icon = "🎉"
+                title = "You Win!"
+            else:
+                callout_type = "info"
+                icon = "🤖"
+                title = "LLM Wins"
 
-                    callout_content = f"""
+            callout_content = f"""
 ::: {{.callout-{callout_type}}}
 ## {icon} Question {q_num}: {title}
 
@@ -846,13 +945,10 @@ if (run_button.value > 1 and question_input.value and question_input.value.strip
 **Validation**: ✅ Passed
 :::
 """
-                    callouts.append(mo.md(callout_content))
+            callouts.append(mo.md(callout_content))
 
-            # Display all callouts
-            mo.vstack(callouts)
-    except Exception as e:
-        # Errors are handled in the system message box above
-        mo.md("")  # Empty display when there are errors
+    # Display all callouts
+    mo.vstack(callouts)
 else:
     # No results to display yet
     mo.md("")
