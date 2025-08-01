@@ -97,7 +97,13 @@ answer = "All nodes must have even degree.""",
     rows=12
 )
 
-question_input
+# Run button to trigger processing
+run_button = mo.ui.button(
+    label="Test Questions",
+    kind="success"
+)
+
+mo.vstack([question_input, run_button])
 ```
 
 ```python {.marimo}
@@ -705,12 +711,12 @@ def process_questions(raw_input: str) -> Dict[str, Any]:
 ```
 
 ```python {.marimo}
-# Display results based on question input
-if question_input.value and question_input.value.strip():
+# Display results when run button is clicked
+if run_button.value and question_input.value and question_input.value.strip():
     if not api_key_holder.value.strip():
         mo.md("❌ **Error**: Please enter an API key first.")
     else:
-        # Process the questions (this happens via on_change)
+        # Process the questions
         results = process_questions(question_input.value)
 
         if not results["success"]:
@@ -815,8 +821,10 @@ if question_input.value and question_input.value.strip():
 
             # Display all callouts
             mo.vstack(callouts)
+elif run_button.value and not question_input.value.strip():
+    mo.md("⚠️ **Warning**: Please enter a question and answer before clicking Test Questions.")
 else:
-    mo.md("**Ready to test questions.** Enter your question and answer above to get started.")
+    mo.md("**Ready to test questions.** Enter your question and answer above, then click 'Test Questions'.")
 ```
 
 ::: {.callout-note collapse="true"}
