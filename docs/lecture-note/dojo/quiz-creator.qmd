@@ -51,28 +51,12 @@ Craft questions that *stump the LLM* and help you (and your classmates) think mo
 :::
 
 ::: {.callout-important collapse="true"}
-## 📝 Input Formats: Questions and Answers
+## 📝 Input Format: Please Use TOML
 
-The Quiz Creator supports multiple input formats to make it easy to enter your questions and answers. Choose the format that works best for you:
+**Please write your questions in TOML format** for the best experience. This format is the most reliable and handles complex content properly.
 
-### **Format 1: Simple Question-Answer**
-The most straightforward format for single questions:
-
-```
-Question: What is an Euler path?
-Answer: A path that visits every edge exactly once.
-```
-
-### **Format 2: Natural Language**
-Write questions and answers naturally:
-
-```
-What are the conditions for a graph to have an Euler circuit?
-The answer is that all vertices must have even degree.
-```
-
-### **Format 3: TOML Format (Recommended)**
-Perfect for multiple questions or when you want precision:
+### **TOML Format (Required)**
+Use this format for all your questions:
 
 ```toml
 [[questions]]
@@ -84,30 +68,43 @@ question = "What are the conditions for Euler circuits?"
 answer = "All nodes must have even degree."
 ```
 
-### **Format 4: Q&A Style**
-Simple abbreviation format:
+### **📋 TOML Guidelines**
 
-```
-Q: What is network robustness?
-A: The ability of a network to maintain functionality when nodes or edges are removed.
+- **Single Question**: Still use the `[[questions]]` format even for one question
+- **Multiple Questions**: Add additional `[[questions]]` blocks for each question
+- **Quotes**: Always wrap questions and answers in double quotes
+- **Special Characters**: TOML handles quotes, punctuation, and mathematical notation properly
+- **Line Breaks**: Keep each question and answer on separate lines for clarity
 
-Q: How do you measure centrality?
-A: Using metrics like degree, betweenness, or eigenvector centrality.
-```
-
-### **📋 Format Guidelines**
-
-- **Question Quality**: Make questions clear, specific, and focused on key concepts
-- **Answer Completeness**: Provide comprehensive answers that demonstrate understanding
-- **Multiple Questions**: Use TOML format for multiple questions in one submission
-- **Special Characters**: All formats handle quotes, punctuation, and mathematical notation
-- **Length**: No strict limits, but aim for clarity over length
-
-### **💡 Pro Tips**
-- Use **TOML format** for multiple questions - it's the most reliable
+### **💡 TOML Tips**
 - Include **context** in your questions (e.g., "According to Euler's theorem...")
 - Make answers **complete** but **concise** - explain the key points clearly
 - Test **edge cases** and **conceptual understanding** rather than memorization
+- Use mathematical notation freely - TOML preserves formatting
+
+---
+
+### **Alternative Formats** (if TOML doesn't work)
+
+If you have trouble with TOML, these backup formats are also supported:
+
+**Simple Format:**
+```
+Question: What is an Euler path?
+Answer: A path that visits every edge exactly once.
+```
+
+**Natural Language:**
+```
+What are the conditions for a graph to have an Euler circuit?
+The answer is that all vertices must have even degree.
+```
+
+**Q&A Style:**
+```
+Q: What is network robustness?
+A: The ability of a network to maintain functionality when nodes or edges are removed.
+```
 :::
 
 ::: {.callout-warning collapse="true"}
