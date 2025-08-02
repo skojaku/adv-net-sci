@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-30">
+<meta name="dcterms.date" content="2025-08-02">
 
-<title>Euler Tour Concepts - The Birth of Network Science – Advanced Topics in Network Science</title>
+<title>Euler Path Concepts - The Birth of Network Science – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -95,10 +95,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-12356c59ce4c95a257ae3574e44b8524.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-1e2fdcd8b4375472d2c8ead8a2445307.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -107,11 +107,8 @@ div.csl-indent {
   "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -211,18 +208,18 @@ window.Quarto = {
     <a class="dropdown-item" href="../intro/setup.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../dojo/quiz-dojo.html">
- <span class="dropdown-text">Quiz Dojo</span></a>
-  </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../dojo/quiz-dojo.html" aria-current="page"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Tour ───</li>
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
  <span class="dropdown-text">Preparation</span></a>
@@ -427,7 +424,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">M01: Euler Tour</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">Euler Tour Concepts - The Birth of Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">M01: Euler Path</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">Euler Path Concepts - The Birth of Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -474,12 +471,18 @@ window.Quarto = {
  <span class="menu-text">Quiz Dojo</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Creator &amp; Tester</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">M01: Euler Tour</span></a>
+ <span class="menu-text">M01: Euler Path</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -494,7 +497,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Euler Tour Concepts - The Birth of Network Science</span></a>
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -831,9 +834,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content page-columns page-full column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">M01: Euler Tour</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">Euler Tour Concepts - The Birth of Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">M01: Euler Path</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">Euler Path Concepts - The Birth of Network Science</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Euler Tour Concepts - The Birth of Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Euler Path Concepts - The Birth of Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -850,7 +853,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 30, 2025</p>
+      <p class="date">August 2, 2025</p>
     </div>
   </div>
   
@@ -963,7 +966,7 @@ Work Through It Step by Step
 <div id="fig-euler-graph" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-euler-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" class="img-fluid figure-img">
+<img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" class="img-fluid figure-img" width="800">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-euler-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Euler’s graph of the bridges of Knigsberg. Taken from <a href="https://towardsdatascience.com/the-essential-guide-to-graph-theory-from-an-18th-century-riddle-to-artificial-intelligence-c441cb9400de/">The Essential Guide to Graph Theory: From an 18th Century Riddle to AI Frameworks</a>
@@ -993,10 +996,14 @@ Euler’s Path Theorem
 </div>
 <div class="callout-body-container callout-body">
 <p>A walk that crosses all edges exactly once exists <strong>if and only if</strong>:</p>
+<ol type="1">
+<li><strong>The graph is connected</strong> (you can reach any node from any other node), <strong>AND</strong></li>
+<li><strong>Either:</strong>
 <ul>
-<li>All nodes have even degree, <strong>OR</strong></li>
-<li>Exactly two nodes have odd degree</li>
-</ul>
+<li>All nodes have even degree (forms an Euler circuit), <strong>OR</strong></li>
+<li>Exactly two nodes have odd degree (forms an Euler path)</li>
+</ul></li>
+</ol>
 </div>
 </div>
 <p>This wasn’t just a solution—it was a <strong>proof</strong>. Euler had shown not just whether such a path exists, but exactly when it’s possible.</p>
@@ -1518,7 +1525,7 @@ Moro, Esteban. 2017. <span>“Network Science for Kids!”</span> <a href="http:
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Euler Tour Concepts - The Birth of Network Science</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Euler Path Concepts - The Birth of Network Science</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -1600,106 +1607,110 @@ Moro, Esteban. 2017. <span>“Network Science for Kids!”</span> <a href="http:
 <span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>Leonhard Euler (1707-1783) was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.</span>
 <span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/200px-Leonhard_Euler.jpg)</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.</span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>Euler realized that for this problem, only one thing mattered: ***which landmasses connect to which other landmasses***. Everything else—the bridge lengths, island shapes, water depths—was irrelevant distraction.</span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>He simplified the city into *a network of landmasses connected by bridges*:</span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>::: {#fig-euler-graph}</span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png)</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>Euler's graph of the bridges of Knigsberg. Taken from  <span class="co">[</span><span class="ot">The Essential Guide to Graph Theory: From an 18th Century Riddle to AI Frameworks</span><span class="co">](https://towardsdatascience.com/the-essential-guide-to-graph-theory-from-an-18th-century-riddle-to-artificial-intelligence-c441cb9400de/)</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>This was revolutionary thinking for its time. Before Euler, mathematics focused on quantities, measurements, and calculations. Euler showed that sometimes the *relationships* between objects matter more than the objects themselves.</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>Euler realized that for this problem, only one thing mattered: ***which landmasses connect to which other landmasses***. Everything else—the bridge lengths, island shapes, water depths—was irrelevant distraction.</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>He simplified the city into *a network of landmasses connected by bridges*:</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>::: {#fig-euler-graph}</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png)</span>{width=800}</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>Euler's graph of the bridges of Knigsberg. Taken from  <span class="co">[</span><span class="ot">The Essential Guide to Graph Theory: From an 18th Century Riddle to AI Frameworks</span><span class="co">](https://towardsdatascience.com/the-essential-guide-to-graph-theory-from-an-18th-century-riddle-to-artificial-intelligence-c441cb9400de/)</span></span>
 <span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>This abstraction—reducing a complex physical system to its essential connectivity—was the birth of ***graph theory***. Euler had invented a new mathematical language for describing relationships.</span>
 <span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>This shift from "trying all possibilities" to "analyzing constraints" is a hallmark of mathematical thinking. Instead of brute force, Euler used logical reasoning to prove impossibility.</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>Euler considered the degree (number of connections) of each node and realized there were only two cases:</span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an **even number** of edges, or</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an **odd number** of edges.</span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>When a node has an even number $2k$ of edges, you can enter and leave the node exactly $k$ times by crossing different edges. Every time you enter through one bridge, you can leave through another. The bridges naturally pair up.</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>Once Euler had his abstract graph, he made another crucial insight. Instead of trying different walking routes (which would take forever), he focused on a fundamental property: ***how many bridges connect to each landmass?***</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>This shift from "trying all possibilities" to "analyzing constraints" is a hallmark of mathematical thinking. Instead of brute force, Euler used logical reasoning to prove impossibility.</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>Euler considered the degree (number of connections) of each node and realized there were only two cases:</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an **even number** of edges, or</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>a node has an **odd number** of edges.</span>
 <span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>When a node has an odd number $2k+1$ of edges, you can enter and leave the node $k$ times, but one edge is left over. The only way to cross this last edge is if your journey ***starts or ends*** at this node.</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>When a node has an even number $2k$ of edges, you can enter and leave the node exactly $k$ times by crossing different edges. Every time you enter through one bridge, you can leave through another. The bridges naturally pair up.</span>
 <span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>Think of it like a dance where everyone needs a partner. In nodes with even degree, every bridge has a "partner" for entering and leaving. Odd-degree nodes always have one "wallflower" bridge that can only be used at the very beginning or end.</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>Based on this elegant reasoning, Euler arrived at his famous theorem:</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>When a node has an odd number $2k+1$ of edges, you can enter and leave the node $k$ times, but one edge is left over. The only way to cross this last edge is if your journey ***starts or ends*** at this node.</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>Think of it like a dance where everyone needs a partner. In nodes with even degree, every bridge has a "partner" for entering and leaving. Odd-degree nodes always have one "wallflower" bridge that can only be used at the very beginning or end.</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Euler's Path Theorem"}</span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>A walk that crosses all edges exactly once exists **if and only if**:</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>All nodes have even degree, **OR**</span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Exactly two nodes have odd degree</span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>Based on this elegant reasoning, Euler arrived at his famous theorem:</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Euler's Path Theorem"}</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>A walk that crosses all edges exactly once exists **if and only if**:</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**The graph is connected** (you can reach any node from any other node), **AND**</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Either:**</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>All nodes have even degree (forms an Euler circuit), **OR**</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Exactly two nodes have odd degree (forms an Euler path)</span>
 <span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>A good Youtube video explaining the Euler's story:</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>This wasn't just a solution—it was a **proof**. Euler had shown not just whether such a path exists, but exactly when it's possible.</span>
 <span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/nZwSo4vfw6c?si=DVOe6vis6iIUuqrv"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>A good Youtube video explaining the Euler's story:</span>
 <span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="fu">## ⚖️ The Verdict: Königsberg's Impossible Dream</span></span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/nZwSo4vfw6c?si=DVOe6vis6iIUuqrv"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>In the original graph: North shore (3 bridges), South shore (3 bridges), Large island (5 bridges), Small island (3 bridges). Four nodes with odd degree—exactly two more than Euler's theorem allows.</span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a><span class="fu">## ⚖️ The Verdict: Königsberg's Impossible Dream</span></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.</span>
 <span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.</span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>The story takes a sobering turn during World War II. In 1944, Königsberg was heavily bombed by Allied forces, and later captured by the Soviet Union. Two of the seven historic bridges were destroyed in the bombardment.</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>In the original graph: North shore (3 bridges), South shore (3 bridges), Large island (5 bridges), Small island (3 bridges). Four nodes with odd degree—exactly two more than Euler's theorem allows.</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/seven-bridge-bombared.png)</span>{#fig-markdown-fig fig-alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."}</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>The citizens of Königsberg had been attempting the impossible. Their Sunday stroll puzzle had no solution, and Euler had proven it with mathematical certainty.</span>
 <span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>: After WWII bombing, only five bridges remained—finally making an Euler path possible. {#fig-markdown-fig}</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>The story takes a sobering turn during World War II. In 1944, Königsberg was heavily bombed by Allied forces, and later captured by the Soviet Union. Two of the seven historic bridges were destroyed in the bombardment.</span>
 <span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>The city was renamed Kaliningrad and became part of Russia. Today, it remains a Russian exclave, separated from the rest of Russia by Lithuania and Poland. The few remaining bridges span a river now in a very different political landscape.</span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/seven-bridge-bombared.png)</span>{#fig-markdown-fig fig-alt="Two bridges were bombed by Soviet Union, which allows the Euler path to exist."}</span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>: After WWII bombing, only five bridges remained—finally making an Euler path possible. {#fig-markdown-fig}</span>
 <span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>With only five bridges remaining, the network finally satisfied Euler's conditions: exactly two nodes had odd degree. The mathematical puzzle that had stumped citizens for two centuries was "solved" by the tragic circumstances of war.</span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>This ironic resolution reminds us that while mathematics reveals timeless truths about structure and possibility, the physical world—and human history—follows much more complex and unpredictable patterns.</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>The city was renamed Kaliningrad and became part of Russia. Today, it remains a Russian exclave, separated from the rest of Russia by Lithuania and Poland. The few remaining bridges span a river now in a very different political landscape.</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Lasting Legacy</span></span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>With only five bridges remaining, the network finally satisfied Euler's conditions: exactly two nodes had odd degree. The mathematical puzzle that had stumped citizens for two centuries was "solved" by the tragic circumstances of war.</span>
 <span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>Euler's solution to the Königsberg bridge problem did far more than solve a recreational puzzle. It demonstrated that:</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>This ironic resolution reminds us that while mathematics reveals timeless truths about structure and possibility, the physical world—and human history—follows much more complex and unpredictable patterns.</span>
 <span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Abstract thinking** can solve concrete problems</span>
-<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mathematical proof** is more powerful than trial and error</span>
-<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Network structure** determines what's possible in interconnected systems</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Lasting Legacy</span></span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>Euler's solution to the Königsberg bridge problem did far more than solve a recreational puzzle. It demonstrated that:</span>
 <span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>These insights now underpin our understanding of everything from internet routing protocols to epidemic spreading models. Every time you use GPS navigation or analyze social network data, you're applying principles that trace back to Euler's Sunday stroll through Königsberg.</span>
-<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fun trivia:</span></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Abstract thinking** can solve concrete problems</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mathematical proof** is more powerful than trial and error</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Network structure** determines what's possible in interconnected systems</span>
 <span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>**[Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler)** (1707-1783): Swiss mathematician and physicist, widely regarded as one of the most prolific mathematicians in history. Beyond solving the Königsberg bridge problem, he made fundamental contributions to calculus, topology, number theory, and physics. Despite losing sight in one eye and later becoming completely blind, he continued his mathematical work and produced nearly half of his total output after losing his sight.</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>These insights now underpin our understanding of everything from internet routing protocols to epidemic spreading models. Every time you use GPS navigation or analyze social network data, you're applying principles that trace back to Euler's Sunday stroll through Königsberg.</span>
 <span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>**[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by his daily walks.</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fun trivia:</span></span>
 <span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>**[Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler)** (1707-1783): Swiss mathematician and physicist, widely regarded as one of the most prolific mathematicians in history. Beyond solving the Königsberg bridge problem, he made fundamental contributions to calculus, topology, number theory, and physics. Despite losing sight in one eye and later becoming completely blind, he continued his mathematical work and produced nearly half of his total output after losing his sight.</span>
 <span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
-<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>**[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by his daily walks.</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
