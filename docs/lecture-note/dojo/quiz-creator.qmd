@@ -3,60 +3,111 @@ title: Quiz Game
 filters:
     - marimo-team/marimo
 search: false
-title-block-banner: ../figs/dojo.jpeg
 author: ""
 date: ""
 html:
   page-layout: article
 ---
-<style>
-
-#title-block-header {
-  margin-block-end: 1rem;
-  position: relative;
-  margin-top: -1px;
-  height: 300px;
-}
-
-
-.quarto-title-banner {
-  margin-block-end: 2rem;
-  position: relative;
-  height: 100%;
-}
-
-</style>
 
 [← Back to Main Page](../index.qmd)
 
-Welcome to the Quiz Creator Dojo.
+<p align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjlHKrBdBIO7hyuXygw_c4F1vwztHkr9cu9Rssl8c6SDEMBAJzYxsJe2IJsDqgLKU6Qx7GJRBlYqI0zvpbD_LdDbCbux_L3GSjQGX6PhHSYv8nf7-QdO4yjVMTQZr25TfnAwRnOt7NG9l4/s180-c/samurai_kettou.png" alt="Quiz Dojo" />
+</p>
 
-This space is for serious practice: refine and test your quiz questions before submitting them to the LLM Quiz Challenge. Treat each question as a training exercise—evaluate its clarity, relevance, and difficulty, and see how the LLM responds. Use this dojo to hone your skills and ensure your questions are ready for the main event.
+Here, you take on the role of the teacher (師範, *shihan*), and the LLM is your pupil (*minarai*). Challenge your minarai by crafting questions that test deep understanding of network science concepts. Use this dojo to refine your questioning technique—focus on clarity, relevance, and conceptual depth. Observe how your minarai responds, and sharpen your skills as a shihan before entering the main Quiz Challenge.
+
+::: {.callout-tip collapse="true"}
+## How to Play: Quiz Creator Dojo
+
+1. **Select Module**
+   Choose the course module that matches the topic of your question. This gives the LLM the right context.
+
+2. **Enter Your Question**
+   Type a question that tests understanding of a network science concept. Aim for clarity and depth—think like a teacher!
+
+3. **Provide the Expected Answer**
+   Write the correct answer you expect from a well-prepared student.
+
+4. **Submit for Evaluation**
+   The system will:
+   - **Validate** your question for relevance and clarity
+   - **Challenge the LLM** to answer it
+   - **Evaluate** the LLM's response against your answer
+   - **Give feedback** on question quality and how well it stumped the LLM
+
+5. **Refine and Repeat**
+   Use the feedback to improve your question. Try to create questions that are clear, relevant, and challenging—even for an advanced AI!
+
+**Goal:**
+Craft questions that *stump the LLM* and help you (and your classmates) think more deeply about the material. The better your questions, the sharper your skills as a quiz master!
+:::
+
 
 ::: {.callout-note collapse="true"}
-## Instructions & Important Information
-
+## Important Information
 **🌐 Access Requirements**: This feature is only available within the Binghamton University campus network. If you're off-campus, please connect to the Binghamton VPN first.
-
-**🎯 Purpose**:
-- Test individual questions before adding them to your quiz
-- Get immediate feedback on question quality and difficulty
-- See how the LLM interprets and answers your questions
-- Understand what makes a good challenging question
-
-**🔧 How to Use**:
-1. **API Key**: Enter the API key provided by your instructor
-2. **Module**: Select the relevant course module for context
-3. **Chat**: Type your question and expected answer naturally
-4. **Results**: Get validation, LLM response, evaluation, and feedback
-
-**📋 Validation**: Questions are automatically checked for:
-- ✅ Relevance to network science/graph theory
-- ❌ Heavy mathematical computations
-- ❌ Off-topic content
-- ❌ Prompt injection attempts
-
 **⚠️ Important**: This tool helps you refine questions, but the final evaluation happens in the main Quiz Challenge system.
+:::
+
+::: {.callout-important collapse="true"}
+## 📝 Input Formats: Questions and Answers
+
+The Quiz Creator supports multiple input formats to make it easy to enter your questions and answers. Choose the format that works best for you:
+
+### **Format 1: Simple Question-Answer**
+The most straightforward format for single questions:
+
+```
+Question: What is an Euler path?
+Answer: A path that visits every edge exactly once.
+```
+
+### **Format 2: Natural Language**
+Write questions and answers naturally:
+
+```
+What are the conditions for a graph to have an Euler circuit?
+The answer is that all vertices must have even degree.
+```
+
+### **Format 3: TOML Format (Recommended)**
+Perfect for multiple questions or when you want precision:
+
+```toml
+[[questions]]
+question = "What is an Euler path?"
+answer = "A path that visits every edge exactly once."
+
+[[questions]]
+question = "What are the conditions for Euler circuits?"
+answer = "All nodes must have even degree."
+```
+
+### **Format 4: Q&A Style**
+Simple abbreviation format:
+
+```
+Q: What is network robustness?
+A: The ability of a network to maintain functionality when nodes or edges are removed.
+
+Q: How do you measure centrality?
+A: Using metrics like degree, betweenness, or eigenvector centrality.
+```
+
+### **📋 Format Guidelines**
+
+- **Question Quality**: Make questions clear, specific, and focused on key concepts
+- **Answer Completeness**: Provide comprehensive answers that demonstrate understanding
+- **Multiple Questions**: Use TOML format for multiple questions in one submission
+- **Special Characters**: All formats handle quotes, punctuation, and mathematical notation
+- **Length**: No strict limits, but aim for clarity over length
+
+### **💡 Pro Tips**
+- Use **TOML format** for multiple questions - it's the most reliable
+- Include **context** in your questions (e.g., "According to Euler's theorem...")
+- Make answers **complete** but **concise** - explain the key points clearly
+- Test **edge cases** and **conceptual understanding** rather than memorization
 :::
 
 ::: {.callout-warning collapse="true"}
