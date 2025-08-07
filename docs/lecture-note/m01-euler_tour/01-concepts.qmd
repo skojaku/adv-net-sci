@@ -181,6 +181,85 @@ These insights now underpin our understanding of everything from internet routin
 
 **[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by his daily walks.
 
+
+## Walk, Path, and Trail: Your Adventure Through Networks
+
+Before we dive deeper into Euler's mathematical framework, let's establish the vocabulary that network scientists use to describe movement through graphs. Think of these as different ways to travel through a network, each with its own rules and constraints.
+
+### Walk: The Most Flexible Journey
+
+A **walk** is the most general type of movement through a network. Imagine you're exploring a city with no restrictions:
+
+- You can visit any vertex (intersection) multiple times
+- You can traverse any edge (street) multiple times  
+- You simply move from one connected vertex to another
+
+::: {.column-margin}
+**Example**: In a social network, a walk might represent how gossip spreads—the same person can hear and retell the same piece of information multiple times, and the same social connection can be used repeatedly.
+:::
+
+**Formal definition**: A walk of length $k$ is a sequence of vertices $v_0, v_1, v_2, \ldots, v_k$ where each consecutive pair $(v_i, v_{i+1})$ is connected by an edge.
+
+### Path: The Efficient Route
+
+A **path** is a more restrictive type of walk where efficiency matters:
+
+- Each vertex can be visited **at most once**
+- Edges can still be repeated (though this rarely happens in simple paths)
+- No backtracking to previously visited vertices
+
+::: {.column-margin}
+**Example**: In a computer network, a path represents the most efficient route for data packets—you don't want to revisit the same router unnecessarily, as this wastes time and resources.
+:::
+
+**Formal definition**: A path is a walk where all vertices are distinct.
+
+### Trail: The Scenic Route
+
+A **trail** offers a different kind of constraint, perfect for certain applications:
+
+- Vertices can be visited multiple times
+- Each edge can be traversed **at most once**
+- Think of it as "never taking the same road twice"
+
+::: {.column-margin}
+**Example**: A mail carrier's route through a neighborhood—they might return to the same intersection multiple times but should traverse each street exactly once for efficiency.
+:::
+
+**Formal definition**: A trail is a walk where all edges are distinct.
+
+### Euler's Special Cases
+
+Now we can precisely define what Euler was looking for in Königsberg:
+
+- **Euler Trail**: A trail that includes every edge in the graph exactly once
+- **Euler Circuit/Cycle**: An Euler trail that starts and ends at the same vertex
+
+The Königsberg citizens were seeking an **Euler circuit**—a closed trail that would cross every bridge exactly once and return them home.
+
+### The Mathematical Hierarchy
+
+These concepts form a natural hierarchy of restrictions:
+
+```
+Walk (most general)
+├── Trail (distinct edges)
+│   └── Euler Trail (all edges exactly once)  
+└── Path (distinct vertices)
+    └── Hamiltonian Path (all vertices exactly once)
+```
+
+::: {.callout-tip title="Memory Aid"}
+**Walk**: "I can **walk** anywhere, anytime"
+**Trail**: "I leave a **trail** behind me (no repeated edges)"  
+**Path**: "I follow a **path** without circling back (no repeated vertices)"
+:::
+
+Understanding these distinctions is crucial because different network problems require different types of movement. Euler's bridge problem required a trail (specifically, an Euler trail), not a path. This distinction—focusing on edges rather than vertices—was key to his solution.
+
+In the next sections, we'll see how these concepts apply to modern network analysis and why the difference between paths, trails, and walks matters in applications from GPS routing to circuit design.
+
+
 ## References
 
 ::: {#refs}
