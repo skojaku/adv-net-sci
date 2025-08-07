@@ -222,59 +222,15 @@ In airline route maps, a *trail* means you never repeat a specific flight segmen
 
 **Cycle** and **Circuit** are two special types of walks that start and end at the same node—they form closed loops in the network.
 
-A **circuit** is a closed trail—a trail that starts and ends at the same vertex. Think of it as making a round trip where you never use the same road twice, but you can pass through the same intersections multiple times.
+A **circuit** is a closed trail, i.e., a trail that starts and ends at the same node. Think of it as making a round trip where you never use the same road twice, but you can pass through the same intersections multiple times.
+
+A **cycle** is a closed path, i.e., a path that starts and ends at the same node with no repeated nodes (except for the starting/ending node). It's the most restrictive type of closed walk.
 
 ::: {.column-margin}
-**Example**: A tourist exploring a city who wants to end up back at their hotel without taking any street twice. They might pass through Times Square multiple times via different streets, but never walk down Broadway twice.
+
+The definition of cycle is a bit tricky 🤔. It is a path that does not allow revisiting the same node, but a cycle must be a roud-trip that starts and ends at the same node. Strictly speaking, a cycle is not a path since it has the same starting and ending node. You can think of a cycle as a special version of a path where no intermediate node is repeated.
+
 :::
-
-**Formal definition**: A circuit is a trail where the first and last vertices are the same.
-
-A **cycle** is a closed path—a path that starts and ends at the same vertex with no repeated vertices (except for the starting/ending vertex). It's the most restrictive type of closed walk.
-
-::: {.column-margin}
-**Example**: A delivery truck route that visits each neighborhood exactly once before returning to the depot. Each stop is unique, forming a perfect loop.
-:::
-
-**Formal definition**: A cycle is a path where the first and last vertices are the same, and no other vertex is repeated.
-
-### Key Distinctions
-
-The difference between cycles and circuits mirrors the difference between paths and trails:
-
-- **Circuit**: Closed trail (distinct edges, vertices can repeat)
-- **Cycle**: Closed path (distinct vertices except start/end, edges automatically distinct)
-
-### Special Cases in Network Analysis
-
-**Simple Cycle**: The most basic cycle with exactly 3 or more vertices. For example, a triangle (3-cycle) is the smallest possible cycle in a simple graph.
-
-**Euler Circuit**: A circuit that traverses every edge in the graph exactly once—this was what the Königsberg citizens were actually seeking! An Euler circuit exists if and only if:
-- The graph is connected, AND
-- Every vertex has even degree
-
-**Hamiltonian Cycle**: A cycle that visits every vertex in the graph exactly once. Unlike Euler's focus on edges, Hamiltonian cycles focus on vertices.
-
-::: {.callout-important title="Euler vs. Hamiltonian"}
-- **Euler Circuit**: Uses every **edge** exactly once (may revisit vertices)
-- **Hamiltonian Cycle**: Visits every **vertex** exactly once (uses subset of edges)
-
-These are fundamentally different problems! Euler's theorem gives us clear conditions for Euler circuits, but determining Hamiltonian cycles is much more complex (NP-complete).
-:::
-
-### Real-World Applications
-
-**Circuits** are crucial for:
-- **Mail delivery routes**: Cover every street (edge) exactly once
-- **Snow plow routes**: Clear every road without redundancy  
-- **Circuit board design**: Electrical paths that return to source
-
-**Cycles** are essential for:
-- **Delivery optimization**: Visit every customer (vertex) exactly once
-- **DNA sequencing**: Reconstruct circular genomes
-- **Chemical ring detection**: Identify molecular cycles
-
-The Königsberg bridge problem was fundamentally about finding an **Euler circuit**—a way to traverse every bridge (edge) exactly once while returning home. Understanding this distinction between edge-focused (Euler) and vertex-focused (Hamiltonian) problems is crucial for applying graph theory to real-world challenges.
 
 
 ### Euler's Special Cases
@@ -284,30 +240,114 @@ Now we can precisely define what Euler was looking for in Königsberg:
 - **Euler Trail**: A trail that includes every edge in the graph exactly once
 - **Euler Circuit/Cycle**: An Euler trail that starts and ends at the same vertex
 
-The Königsberg citizens were seeking an **Euler circuit**—a closed trail that would cross every bridge exactly once and return them home.
+The Königsberg citizens were seeking an **Euler circuit**---a closed trail that would cross every bridge exactly once and return them home.
 
-### The Mathematical Hierarchy
 
-These concepts form a natural hierarchy of restrictions:
+## Checking for Trails, Walks, and Paths
+
+Now that we understand the theoretical definitions, how do we actually determine if a sequence of nodes represents a valid walk, trail, path, or cycle in practice? Let's develop systematic approaches to verify each type.
+
+### Verifying a Walk
+
+A **walk** is the most permissive—we simply need to check that each consecutive pair of nodes is connected by an edge.
+
+**Algorithm**:
+1. For each consecutive pair of nodes $(v_i, v_{i+1})$ in the sequence
+2. Check if there exists an edge between $v_i$ and $v_{i+1}$
+3. If any pair is not connected, it's not a valid walk
+
+**Example**: In a friendship network, sequence [Alice, Bob, Charlie, Bob, David] is a valid walk if:
+- Alice is friends with Bob ✓
+- Bob is friends with Charlie ✓  
+- Charlie is friends with Bob ✓
+- Bob is friends with David ✓
+
+### Verifying a Trail
+
+A **trail** requires all edges to be distinct, but nodes can repeat.
+
+**Algorithm**:
+1. First verify it's a valid walk (all consecutive pairs connected)
+2. Create a list of all edges used in the sequence
+3. Check for duplicate edges—if any edge appears twice, it's not a trail
+
+**Key consideration**: In directed graphs, edge $(A,B)$ is different from edge $(B,A)$.
+
+**Example**: Sequence [A, B, C, B, D] uses edges: $(A,B)$, $(B,C)$, $(C,B)$, $(B,D)$
+- If undirected: $(B,C)$ and $(C,B)$ are the same edge → Not a trail
+- If directed: All edges are distinct → Valid trail
+
+### Verifying a Path
+
+A **path** requires all nodes (except possibly start/end for cycles) to be distinct.
+
+**Algorithm**:
+1. First verify it's a valid walk
+2. Check if any intermediate node appears more than once
+3. For cycles: allow start node = end node, but all other nodes must be unique
+
+**Example**: Sequence [A, B, C, D] is a valid path if A, B, C, D are all different nodes and properly connected.
+
+### Practical Verification Steps
+
+Here's a systematic approach to classify any node sequence:
 
 ```
-Walk (most general)
-├── Trail (distinct edges)
-│   └── Euler Trail (all edges exactly once)
-└── Path (distinct vertices)
-    └── Hamiltonian Path (all vertices exactly once)
+Given sequence: [v₀, v₁, v₂, ..., vₖ]
+
+1. CONNECTIVITY CHECK
+   For i = 0 to k-1:
+     If no edge exists between vᵢ and vᵢ₊₁:
+       → Not a valid walk
+   
+2. NODE UNIQUENESS CHECK  
+   If all nodes are unique:
+     → Valid path
+   If start = end AND all intermediate nodes unique:
+     → Valid cycle
+     
+3. EDGE UNIQUENESS CHECK
+   If all edges are unique but some nodes repeat:
+     → Valid trail (but not path)
+   If start = end AND all edges unique:
+     → Valid circuit (but not cycle)
+     
+4. OTHERWISE
+   → Valid walk only
 ```
 
-::: {.callout-tip title="Memory Aid"}
-**Walk**: "I can **walk** anywhere, anytime"
-**Trail**: "I leave a **trail** behind me (no repeated edges)"
-**Path**: "I follow a **path** without circling back (no repeated vertices)"
+### Common Pitfalls
+
+::: {.callout-warning title="Watch Out For These Mistakes"}
+**Directed vs Undirected**: In directed graphs, $(A,B) \neq (B,A)$. Always consider edge direction when checking for duplicates.
+
+**Self-loops**: An edge from a node to itself $(A,A)$ can be tricky. It's both the start and end of an edge, affecting degree calculations.
+
+**Multiple edges**: Some graphs allow multiple edges between the same pair of nodes. Each is considered distinct for trail verification.
+
+**Empty paths**: A sequence with just one node is technically a valid path of length 0.
 :::
 
-Understanding these distinctions is crucial because different network problems require different types of movement. Euler's bridge problem required a trail (specifically, an Euler trail), not a path. This distinction—focusing on edges rather than vertices—was key to his solution.
+### Quick Decision Tree
 
-In the next sections, we'll see how these concepts apply to modern network analysis and why the difference between paths, trails, and walks matters in applications from GPS routing to circuit design.
+```
+Is the sequence connected? → No: Not a walk
+                         → Yes: Continue
 
+Are all nodes unique? → Yes: Path (or cycle if closed)
+                    → No: Continue  
+
+Are all edges unique? → Yes: Trail (or circuit if closed)
+                    → No: Walk only
+```
+
+### Quiz
+
+1. Is a path always a trail?
+2. What is the condition for a graph to have an Euler circuit?
+3. Is the condition for Euler circuit different from the condition for Euler trail?
+4. Given sequence [A, B, C, B, D] in an undirected graph, is this a valid trail? Why or why not?
+5. In a directed graph, can sequence [X, Y, X] be both a valid trail and invalid trail depending on the edges present?
 
 ## References
 
