@@ -204,17 +204,18 @@ def is_walk(sequence, adjacency_matrix):
     current_nodes = sequence[:-1]  # All nodes except the last
     next_nodes = sequence[1:]      # All nodes except the first
 
+    # Simple but slower: for loop version (slower but more explicit)
+    # for i, j in zip(current_nodes, next_nodes):
+    #     if adjacency_matrix[i, j] == 0:
+    #         return False
+    # return True
+
     # Check all edges at once using advanced indexing
     edges_exist = adjacency_matrix[current_nodes, next_nodes]
 
     # All edges must exist (all values must be 1)
     return np.all(edges_exist == 1)
-    
-    # Alternative: for loop version (slower but more explicit)
-    # for i, j in zip(current_nodes, next_nodes):
-    #     if adjacency_matrix[i, j] == 0:
-    #         return False
-    # return True
+
 
 # Test with our sample network
 test_sequence = [0, 1, 2, 4, 3, 1]
@@ -226,8 +227,8 @@ print(f"Sequence {invalid_sequence} is a valid walk: {is_walk(invalid_sequence, 
 ```
 
 
-```{.column-margin}
-**Avoiding loops**: For loops in Python is the notorious source of computational bottlenecks.
+::: {.callout-note title = "Mind the loops!"}
+For loops in Python is the notorious source of computational bottlenecks.
 Avoiding for loops significantly boosts the speed. In `is_walk`, we use one for loop but you can avoid it by using NumPy's advanced indexing, i.e., `adjacency_matrix[(current_nodes, next_nodes)]`. The way to think about this is that `(current_nodes, next_nodes)` is a tuple of indices, acting as a multi-dimensional index.
 `adjacency_matrix[(current_nodes, next_nodes)]` is 1d array of length the same as `current_nodes` and `next_nodes`. If the value is 0, then the edge does not exist. We can then check if all the values are not zero.
 :::
@@ -254,22 +255,34 @@ def is_trail(sequence, adjacency_matrix):
     if len(sequence) < 2:
         return True
 
-    # Track used edges (for undirected graphs, (i,j) same as (j,i))
-    used_edges = set()
-
-    for i in range(len(sequence) - 1):
-        current_node = sequence[i]
-        next_node = sequence[i + 1]
-
-        # Create edge tuple (smaller index first for undirected graphs)
-        edge = (min(current_node, next_node), max(current_node, next_node))
-
-        if edge in used_edges:
-            return False  # Edge already used
-
-        used_edges.add(edge)
-
-    return True
+    # Convert to numpy for efficient operations
+    sequence = np.array(sequence)
+    current_nodes = sequence[:-1]
+    next_nodes = sequence[1:]
+    
+    # Create normalized edge pairs (smaller index first for undirected graphs)
+    # Using np.minimum and np.maximum for vectorized min/max operations
+    edge_starts = np.minimum(current_nodes, next_nodes)
+    edge_ends = np.maximum(current_nodes, next_nodes)
+    
+    # Stack to create array of edge pairs, then convert to tuples for set operations
+    edges = np.column_stack((edge_starts, edge_ends))
+    edge_tuples = [tuple(edge) for edge in edges]
+    
+    # Check if all edges are unique using set comparison
+    return len(edge_tuples) == len(set(edge_tuples))
+    
+    # Alternative: Original for loop version (slower but more explicit)
+    # used_edges = set()
+    # for i in range(len(sequence) - 1):
+    #     current_node = sequence[i]
+    #     next_node = sequence[i + 1]
+    #     # Create edge tuple (smaller index first for undirected graphs)
+    #     edge = (min(current_node, next_node), max(current_node, next_node))
+    #     if edge in used_edges:
+    #         return False  # Edge already used
+    #     used_edges.add(edge)
+    # return True
 
 # Test trail verification
 trail_sequence = [0, 1, 3, 4, 2]
@@ -279,6 +292,10 @@ print(f"Sequence {trail_sequence} is a valid trail: {is_trail(trail_sequence, ma
 invalid_trail = [0, 1, 2, 1, 3]
 print(f"Sequence {invalid_trail} is a valid trail: {is_trail(invalid_trail, matrix)}")
 ```
+
+::: {.callout-note title="NumPy Trail Optimization"}
+For trail verification, we use **vectorized min/max operations** (`np.minimum`, `np.maximum`) instead of loops to create normalized edge pairs. The key insight is using `np.column_stack()` to efficiently create edge tuples, then leveraging Python's set operations for uniqueness checking. This approach scales much better than the nested loop version for long sequences.
+:::
 
 ### Verifying a Path
 
@@ -305,7 +322,7 @@ def is_path(sequence, adjacency_matrix, allow_cycle=False):
 
     sequence = np.array(sequence)
 
-    # Check node uniqueness using NumPy
+    # NumPy optimized version: Check node uniqueness using np.unique
     if allow_cycle and len(sequence) > 2:
         # For cycles, all intermediate nodes must be unique
         if sequence[0] == sequence[-1]:
@@ -318,6 +335,16 @@ def is_path(sequence, adjacency_matrix, allow_cycle=False):
     else:
         # Standard path: all nodes must be unique
         return len(sequence) == len(np.unique(sequence))
+    
+    # Alternative: Set-based version (can be faster for small sequences)
+    # if allow_cycle and len(sequence) > 2:
+    #     if sequence[0] == sequence[-1]:
+    #         intermediate_nodes = sequence[1:-1]
+    #         return len(intermediate_nodes) == len(set(intermediate_nodes))
+    #     else:
+    #         return len(sequence) == len(set(sequence))
+    # else:
+    #     return len(sequence) == len(set(sequence))
 
 # Test path verification
 path_sequence = [0, 1, 3, 4]
@@ -331,6 +358,10 @@ print(f"Sequence {cycle_sequence} is a valid cycle: {is_path(cycle_sequence, mat
 invalid_path = [0, 1, 2, 1, 3]
 print(f"Sequence {invalid_path} is a valid path: {is_path(invalid_path, matrix)}")
 ```
+
+::: {.callout-note title="Path Uniqueness Check"}
+Path verification uses `np.unique()` which implements efficient sorting-based uniqueness detection. For very small sequences (< 10 elements), Python's `set()` might be faster due to lower overhead, but `np.unique()` scales better and integrates seamlessly with other NumPy operations.
+:::
 
 ### Complete Classification Function
 
