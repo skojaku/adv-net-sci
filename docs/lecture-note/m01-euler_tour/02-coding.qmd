@@ -206,9 +206,15 @@ def is_walk(sequence, adjacency_matrix):
 
     # Check all edges at once using advanced indexing
     edges_exist = adjacency_matrix[current_nodes, next_nodes]
-    
+
     # All edges must exist (all values must be 1)
     return np.all(edges_exist == 1)
+    
+    # Alternative: for loop version (slower but more explicit)
+    # for i, j in zip(current_nodes, next_nodes):
+    #     if adjacency_matrix[i, j] == 0:
+    #         return False
+    # return True
 
 # Test with our sample network
 test_sequence = [0, 1, 2, 4, 3, 1]
