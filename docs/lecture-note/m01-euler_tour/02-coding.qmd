@@ -4,6 +4,7 @@ jupyter: python3
 execute:
     enabled: true
 ---
+import numpy as np
 
 Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. Given a network of any size, our goal is to create a function that can tell us whether the network has an Euler path or not.
 
@@ -13,10 +14,22 @@ def has_euler_path(A):
     Check if a graph has an Euler path based on node degrees.
     Complete this function based on Euler's theorem.
 
-    A: network
+    A: network (assumed to be an adjacency matrix)
     return: True if the network has an Euler path, False otherwise
     """
-    pass
+    # Calculate degrees of all nodes
+    degrees = A.sum(axis=1)
+
+    # Count nodes with odd degrees
+    odd_degree_count = 0
+    for degree in degrees:
+        if degree % 2 != 0:
+            odd_degree_count += 1
+
+    # According to Euler's theorem, an Euler path exists if:
+    # 1. The graph is connected (we assume this for now)
+    # 2. Exactly 0 or 2 nodes have odd degrees
+    return odd_degree_count == 0 or odd_degree_count == 2
 ```
 
 We'll work through both general network representations and apply them specifically to the Königsberg bridge problem.
@@ -89,7 +102,7 @@ for node, neighbor_list in neighbors.items():
     print(f"Node {node}: {neighbor_list}")
 ```
 
-### Adjacency Matrix: The Mathematical Grid
+### Adjacency Matrix
 
 The adjacency matrix uses a grid where entry (i,j) = 1 if nodes are connected—the mathematician's favorite representation.
 
@@ -115,7 +128,7 @@ print(matrix)
 
 Notice the symmetry: if node i connects to node j, then node j connects to node i (for undirected networks). This symmetry disappears in directed networks, where relationships can be one-way.
 
-## Counting Node Degrees: Euler's Key Insight
+## Node Degrees
 
 The degree of a node is the number of edges connected to it. This simple concept was central to Euler's proof—he realized that a valid bridge walk requires each landmass to have an even degree (except possibly the starting and ending points).
 
@@ -125,7 +138,7 @@ In Königsberg, all four landmasses had odd degree, making the bridge walk impos
 
 Here's how to compute degrees using each representation:
 
-### From Edge Table: Counting Appearances
+### From Edge Table
 
 Count how many times each node appears in the edge list.
 
@@ -141,7 +154,7 @@ print("Degrees from edge list:", _degrees)
 We increment the degree counter for both nodes in each edge because every edge contributes to two nodes' degrees. This is why the total degree always equals twice the number of edges.
 :::
 
-### From Adjacency List: Counting Friends
+### From Adjacency List
 
 Count the length of each node's neighbor list—the most direct approach.
 
@@ -150,7 +163,7 @@ _degrees = [len(neighbors[i]) for i in range(5)]
 print("Degrees from adjacency list:", _degrees)
 ```
 
-### From Adjacency Matrix: Linear Algebra Power
+### From Adjacency Matrix
 
 Sum each row (or column) of the matrix—leveraging vectorized operations.
 
@@ -161,6 +174,280 @@ print("Degrees from adjacency matrix:", _degrees)
 
 ::: {.column-margin}
 For undirected networks, row sums equal column sums. For directed networks, row sums give out-degree (outgoing connections) while column sums give in-degree (incoming connections).
+:::
+
+## Checking for Trails, Walks, and Paths
+
+Now that we understand how to represent networks and compute degrees, let's implement functions to verify whether a sequence of nodes represents a valid walk, trail, path, or cycle. These verification algorithms are essential for network analysis and implementing graph traversal algorithms.
+
+### Verifying a Walk
+
+A **walk** is the most permissive—we simply need to check that each consecutive pair of nodes is connected by an edge.
+
+```{python}
+def is_walk(sequence, adjacency_matrix):
+    """
+    Check if a sequence of nodes forms a valid walk.
+    
+    Args:
+        sequence: List of node indices [v0, v1, v2, ...]
+        adjacency_matrix: 2D numpy array representing the graph
+    
+    Returns:
+        bool: True if sequence is a valid walk, False otherwise
+    """
+    if len(sequence) < 2:
+        return True  # Single node or empty sequence is trivially a walk
+    
+    for i in range(len(sequence) - 1):
+        current_node = sequence[i]
+        next_node = sequence[i + 1]
+        
+        # Check if there's an edge between current and next node
+        if adjacency_matrix[current_node][next_node] == 0:
+            return False
+    
+    return True
+
+# Test with our sample network
+test_sequence = [0, 1, 2, 4, 3, 1]
+print(f"Sequence {test_sequence} is a valid walk: {is_walk(test_sequence, matrix)}")
+
+# Test an invalid walk
+invalid_sequence = [0, 3]  # No direct edge between 0 and 3
+print(f"Sequence {invalid_sequence} is a valid walk: {is_walk(invalid_sequence, matrix)}")
+```
+
+### Verifying a Trail
+
+A **trail** requires all edges to be distinct, but nodes can repeat.
+
+```{python}
+def is_trail(sequence, adjacency_matrix):
+    """
+    Check if a sequence of nodes forms a valid trail.
+    
+    Args:
+        sequence: List of node indices [v0, v1, v2, ...]
+        adjacency_matrix: 2D numpy array representing the graph
+    
+    Returns:
+        bool: True if sequence is a valid trail, False otherwise
+    """
+    if not is_walk(sequence, adjacency_matrix):
+        return False  # Must be a valid walk first
+    
+    if len(sequence) < 2:
+        return True
+    
+    # Track used edges (for undirected graphs, (i,j) same as (j,i))
+    used_edges = set()
+    
+    for i in range(len(sequence) - 1):
+        current_node = sequence[i]
+        next_node = sequence[i + 1]
+        
+        # Create edge tuple (smaller index first for undirected graphs)
+        edge = (min(current_node, next_node), max(current_node, next_node))
+        
+        if edge in used_edges:
+            return False  # Edge already used
+        
+        used_edges.add(edge)
+    
+    return True
+
+# Test trail verification
+trail_sequence = [0, 1, 3, 4, 2]
+print(f"Sequence {trail_sequence} is a valid trail: {is_trail(trail_sequence, matrix)}")
+
+# Test invalid trail (reuses edge 1-2)
+invalid_trail = [0, 1, 2, 1, 3]
+print(f"Sequence {invalid_trail} is a valid trail: {is_trail(invalid_trail, matrix)}")
+```
+
+### Verifying a Path
+
+A **path** requires all nodes (except possibly start/end for cycles) to be distinct.
+
+```{python}
+def is_path(sequence, adjacency_matrix, allow_cycle=False):
+    """
+    Check if a sequence of nodes forms a valid path.
+    
+    Args:
+        sequence: List of node indices [v0, v1, v2, ...]
+        adjacency_matrix: 2D numpy array representing the graph
+        allow_cycle: If True, allows start node = end node (cycle)
+    
+    Returns:
+        bool: True if sequence is a valid path, False otherwise
+    """
+    if not is_walk(sequence, adjacency_matrix):
+        return False  # Must be a valid walk first
+    
+    if len(sequence) < 2:
+        return True
+    
+    # Check node uniqueness
+    if allow_cycle and len(sequence) > 2:
+        # For cycles, all intermediate nodes must be unique
+        if sequence[0] == sequence[-1]:
+            # Check if all intermediate nodes are unique
+            intermediate_nodes = sequence[1:-1]
+            return len(intermediate_nodes) == len(set(intermediate_nodes))
+        else:
+            # Not a cycle, so all nodes must be unique
+            return len(sequence) == len(set(sequence))
+    else:
+        # Standard path: all nodes must be unique
+        return len(sequence) == len(set(sequence))
+
+# Test path verification
+path_sequence = [0, 1, 3, 4]
+print(f"Sequence {path_sequence} is a valid path: {is_path(path_sequence, matrix)}")
+
+# Test cycle
+cycle_sequence = [0, 1, 2, 0]
+print(f"Sequence {cycle_sequence} is a valid cycle: {is_path(cycle_sequence, matrix, allow_cycle=True)}")
+
+# Test invalid path (repeats node 1)
+invalid_path = [0, 1, 2, 1, 3]
+print(f"Sequence {invalid_path} is a valid path: {is_path(invalid_path, matrix)}")
+```
+
+### Complete Classification Function
+
+Let's create a comprehensive function that classifies any sequence:
+
+```{python}
+def classify_sequence(sequence, adjacency_matrix):
+    """
+    Classify a sequence of nodes as walk, trail, path, cycle, or circuit.
+    
+    Args:
+        sequence: List of node indices
+        adjacency_matrix: 2D numpy array representing the graph
+    
+    Returns:
+        str: Classification of the sequence
+    """
+    if len(sequence) < 2:
+        return "trivial path (single node)"
+    
+    # Check basic connectivity
+    if not is_walk(sequence, adjacency_matrix):
+        return "invalid (not connected)"
+    
+    # Check if it's closed (starts and ends at same node)
+    is_closed = sequence[0] == sequence[-1] and len(sequence) > 2
+    
+    # Check node and edge uniqueness
+    nodes_unique = len(sequence) == len(set(sequence))
+    
+    # For closed sequences, check if all intermediate nodes are unique
+    if is_closed:
+        intermediate_nodes = sequence[1:-1]
+        intermediate_unique = len(intermediate_nodes) == len(set(intermediate_nodes))
+    else:
+        intermediate_unique = nodes_unique
+    
+    edges_unique = is_trail(sequence, adjacency_matrix)
+    
+    # Classify based on properties
+    if is_closed:
+        if intermediate_unique:
+            return "cycle"
+        elif edges_unique:
+            return "circuit"
+        else:
+            return "closed walk"
+    else:
+        if nodes_unique:
+            return "path"
+        elif edges_unique:
+            return "trail"
+        else:
+            return "walk"
+
+# Test various sequences
+test_sequences = [
+    [0, 1, 2, 4],           # Expected: path
+    [0, 1, 2, 0],           # Expected: cycle  
+    [0, 1, 2, 1, 3],        # Expected: trail
+    [0, 1, 2, 4, 3, 1, 0],  # Expected: circuit or closed walk
+    [0, 1, 2, 1, 2, 4]      # Expected: walk
+]
+
+print("Sequence Classification:")
+for seq in test_sequences:
+    classification = classify_sequence(seq, matrix)
+    print(f"{seq} → {classification}")
+```
+
+### Practical Applications
+
+These verification functions are building blocks for more complex algorithms:
+
+```{python}
+def find_all_paths(adjacency_matrix, start, end, max_length=None):
+    """
+    Find all simple paths between two nodes using depth-first search.
+    
+    Args:
+        adjacency_matrix: 2D numpy array representing the graph
+        start: Starting node index
+        end: Ending node index
+        max_length: Maximum path length to consider
+    
+    Returns:
+        List of paths (each path is a list of node indices)
+    """
+    all_paths = []
+    
+    def dfs(current_path, visited):
+        current_node = current_path[-1]
+        
+        if current_node == end and len(current_path) > 1:
+            all_paths.append(current_path.copy())
+            return
+        
+        if max_length and len(current_path) >= max_length:
+            return
+        
+        # Explore neighbors
+        for neighbor in range(len(adjacency_matrix)):
+            if (adjacency_matrix[current_node][neighbor] == 1 and 
+                neighbor not in visited):
+                current_path.append(neighbor)
+                visited.add(neighbor)
+                dfs(current_path, visited)
+                current_path.pop()
+                visited.remove(neighbor)
+    
+    dfs([start], {start})
+    return all_paths
+
+# Find all paths from node 0 to node 4
+paths = find_all_paths(matrix, start=0, end=4, max_length=5)
+print(f"\nAll paths from node 0 to node 4:")
+for i, path in enumerate(paths, 1):
+    print(f"Path {i}: {path}")
+    print(f"  Classification: {classify_sequence(path, matrix)}")
+```
+
+::: {.callout-tip title="Performance Notes"}
+**Time Complexity**:
+- Walk verification: O(n) where n is sequence length
+- Trail verification: O(n) for sequence, O(n) for edge tracking
+- Path verification: O(n) for uniqueness checking
+
+**Space Complexity**:
+- Walk: O(1) additional space
+- Trail: O(n) for edge set storage
+- Path: O(n) for node set storage (if using sets for uniqueness)
+
+For large networks, consider using more efficient data structures like hash sets for faster lookups.
 :::
 
 ## Summary: From Euler's Insight to Modern Computation
