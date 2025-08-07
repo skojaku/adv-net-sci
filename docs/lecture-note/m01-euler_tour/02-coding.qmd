@@ -188,25 +188,26 @@ A **walk** is the most permissive—we simply need to check that each consecutiv
 def is_walk(sequence, adjacency_matrix):
     """
     Check if a sequence of nodes forms a valid walk.
-    
+
     Args:
         sequence: List of node indices [v0, v1, v2, ...]
         adjacency_matrix: 2D numpy array representing the graph
-    
+
     Returns:
         bool: True if sequence is a valid walk, False otherwise
     """
     if len(sequence) < 2:
         return True  # Single node or empty sequence is trivially a walk
-    
-    for i in range(len(sequence) - 1):
-        current_node = sequence[i]
-        next_node = sequence[i + 1]
-        
-        # Check if there's an edge between current and next node
-        if adjacency_matrix[current_node][next_node] == 0:
+
+    # Use NumPy vectorized operations for efficient edge checking
+    sequence = np.array(sequence)
+    current_nodes = sequence[:-1]  # All nodes except the last
+    next_nodes = sequence[1:]      # All nodes except the first
+
+    # Check all edges at once using advanced indexing
+    for i, j in zip(current_nodes, next_nodes):
+        if adjacency_matrix[i, j] == 0:
             return False
-    
     return True
 
 # Test with our sample network
@@ -218,6 +219,11 @@ invalid_sequence = [0, 3]  # No direct edge between 0 and 3
 print(f"Sequence {invalid_sequence} is a valid walk: {is_walk(invalid_sequence, matrix)}")
 ```
 
+
+```{.column-margin}
+**Avoiding loops**: For loops in Python 
+:::
+
 ### Verifying a Trail
 
 A **trail** requires all edges to be distinct, but nodes can repeat.
@@ -226,35 +232,35 @@ A **trail** requires all edges to be distinct, but nodes can repeat.
 def is_trail(sequence, adjacency_matrix):
     """
     Check if a sequence of nodes forms a valid trail.
-    
+
     Args:
         sequence: List of node indices [v0, v1, v2, ...]
         adjacency_matrix: 2D numpy array representing the graph
-    
+
     Returns:
         bool: True if sequence is a valid trail, False otherwise
     """
     if not is_walk(sequence, adjacency_matrix):
         return False  # Must be a valid walk first
-    
+
     if len(sequence) < 2:
         return True
-    
+
     # Track used edges (for undirected graphs, (i,j) same as (j,i))
     used_edges = set()
-    
+
     for i in range(len(sequence) - 1):
         current_node = sequence[i]
         next_node = sequence[i + 1]
-        
+
         # Create edge tuple (smaller index first for undirected graphs)
         edge = (min(current_node, next_node), max(current_node, next_node))
-        
+
         if edge in used_edges:
             return False  # Edge already used
-        
+
         used_edges.add(edge)
-    
+
     return True
 
 # Test trail verification
@@ -274,34 +280,36 @@ A **path** requires all nodes (except possibly start/end for cycles) to be disti
 def is_path(sequence, adjacency_matrix, allow_cycle=False):
     """
     Check if a sequence of nodes forms a valid path.
-    
+
     Args:
         sequence: List of node indices [v0, v1, v2, ...]
         adjacency_matrix: 2D numpy array representing the graph
         allow_cycle: If True, allows start node = end node (cycle)
-    
+
     Returns:
         bool: True if sequence is a valid path, False otherwise
     """
     if not is_walk(sequence, adjacency_matrix):
         return False  # Must be a valid walk first
-    
+
     if len(sequence) < 2:
         return True
-    
-    # Check node uniqueness
+
+    sequence = np.array(sequence)
+
+    # Check node uniqueness using NumPy
     if allow_cycle and len(sequence) > 2:
         # For cycles, all intermediate nodes must be unique
         if sequence[0] == sequence[-1]:
             # Check if all intermediate nodes are unique
             intermediate_nodes = sequence[1:-1]
-            return len(intermediate_nodes) == len(set(intermediate_nodes))
+            return len(intermediate_nodes) == len(np.unique(intermediate_nodes))
         else:
             # Not a cycle, so all nodes must be unique
-            return len(sequence) == len(set(sequence))
+            return len(sequence) == len(np.unique(sequence))
     else:
         # Standard path: all nodes must be unique
-        return len(sequence) == len(set(sequence))
+        return len(sequence) == len(np.unique(sequence))
 
 # Test path verification
 path_sequence = [0, 1, 3, 4]
@@ -324,36 +332,38 @@ Let's create a comprehensive function that classifies any sequence:
 def classify_sequence(sequence, adjacency_matrix):
     """
     Classify a sequence of nodes as walk, trail, path, cycle, or circuit.
-    
+
     Args:
         sequence: List of node indices
         adjacency_matrix: 2D numpy array representing the graph
-    
+
     Returns:
         str: Classification of the sequence
     """
     if len(sequence) < 2:
         return "trivial path (single node)"
-    
+
     # Check basic connectivity
     if not is_walk(sequence, adjacency_matrix):
         return "invalid (not connected)"
-    
+
+    sequence = np.array(sequence)
+
     # Check if it's closed (starts and ends at same node)
     is_closed = sequence[0] == sequence[-1] and len(sequence) > 2
-    
-    # Check node and edge uniqueness
-    nodes_unique = len(sequence) == len(set(sequence))
-    
+
+    # Check node and edge uniqueness using NumPy
+    nodes_unique = len(sequence) == len(np.unique(sequence))
+
     # For closed sequences, check if all intermediate nodes are unique
     if is_closed:
         intermediate_nodes = sequence[1:-1]
-        intermediate_unique = len(intermediate_nodes) == len(set(intermediate_nodes))
+        intermediate_unique = len(intermediate_nodes) == len(np.unique(intermediate_nodes))
     else:
         intermediate_unique = nodes_unique
-    
+
     edges_unique = is_trail(sequence, adjacency_matrix)
-    
+
     # Classify based on properties
     if is_closed:
         if intermediate_unique:
@@ -373,7 +383,7 @@ def classify_sequence(sequence, adjacency_matrix):
 # Test various sequences
 test_sequences = [
     [0, 1, 2, 4],           # Expected: path
-    [0, 1, 2, 0],           # Expected: cycle  
+    [0, 1, 2, 0],           # Expected: cycle
     [0, 1, 2, 1, 3],        # Expected: trail
     [0, 1, 2, 4, 3, 1, 0],  # Expected: circuit or closed walk
     [0, 1, 2, 1, 2, 4]      # Expected: walk
@@ -393,38 +403,41 @@ These verification functions are building blocks for more complex algorithms:
 def find_all_paths(adjacency_matrix, start, end, max_length=None):
     """
     Find all simple paths between two nodes using depth-first search.
-    
+    Uses NumPy operations for efficient neighbor finding.
+
     Args:
         adjacency_matrix: 2D numpy array representing the graph
         start: Starting node index
         end: Ending node index
         max_length: Maximum path length to consider
-    
+
     Returns:
         List of paths (each path is a list of node indices)
     """
+    adjacency_matrix = np.array(adjacency_matrix)
     all_paths = []
-    
+
     def dfs(current_path, visited):
         current_node = current_path[-1]
-        
+
         if current_node == end and len(current_path) > 1:
             all_paths.append(current_path.copy())
             return
-        
+
         if max_length and len(current_path) >= max_length:
             return
-        
-        # Explore neighbors
-        for neighbor in range(len(adjacency_matrix)):
-            if (adjacency_matrix[current_node][neighbor] == 1 and 
-                neighbor not in visited):
+
+        # Use NumPy to find neighbors efficiently
+        neighbors = np.where(adjacency_matrix[current_node] == 1)[0]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
                 current_path.append(neighbor)
                 visited.add(neighbor)
                 dfs(current_path, visited)
                 current_path.pop()
                 visited.remove(neighbor)
-    
+
     dfs([start], {start})
     return all_paths
 
