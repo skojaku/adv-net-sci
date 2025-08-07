@@ -5,14 +5,9 @@ jupyter: python3
 
 ## The Scale Problem: From Königsberg to Global Networks
 
-While Euler's analysis worked perfectly for Königsberg's 4 landmasses and 7 bridges, today's networks operate at vastly different scales. Suppose we want to represent the social network of all people on Earth using an adjacency matrix. How much memory would we need?
-For an adjacency matrix with 8 billion nodes, the matrix size is $8 \times 10^9 \times 8 \times 10^9 = 64 \times 10^{18}$ entries, and the memory required is $64 \times 10^{18} \times 8$ bytes ≈ 512 exabytes! Clearly, this approach is not feasible!
+Modern networks have billions of nodes—far beyond Königsberg's 4 landmasses. A dense adjacency matrix for Earth's 8 billion people would require 512 exabytes of memory!
 
-A way to solve this problem is to exploit the fact that real networks are **sparse**: most pairs of nodes are not connected.
-
-To give you an idea, let's consider a social network of 8 billion people on Earth. How likely do you think that two randomly picked people are friends? If the network is dense, it should be likely. But in reality, it is very unlikely, right? So much so that the probability is almost zero (less than 3.1e-23 if each person has 100 friends on average)!
-
-This means that working with the edge list is a good idea as it retains only the connections, not the non-connections (which are much more than the connections!). But the edge list is not efficient for many operaitions
+Real networks are **sparse**: most node pairs aren't connected. Edge lists save memory but are inefficient for common operations like finding neighbors or computing degrees.
 
 ::: {.column-margin}
 
@@ -41,7 +36,7 @@ CSR stores only non-zero matrix entries using three arrays, making it the standa
 CSR format uses three arrays to represent a sparse matrix:
 
 1. **`data`**: Contains all non-zero values
-2. **`indices`**: Column indices of each non-zero value  
+2. **`indices`**: Column indices of each non-zero value
 3. **`indptr`**: Row pointers indicating where each row starts in the data array
 
 ::: {.column-margin}
@@ -78,7 +73,7 @@ Let's examine the internal structure of our CSR matrix:
 ```{python}
 print("CSR internal arrays:")
 print("data (non-zero values):", csr_matrix.data)
-print("indices (column positions):", csr_matrix.indices)  
+print("indices (column positions):", csr_matrix.indices)
 print("indptr (row pointers):", csr_matrix.indptr)
 
 # Let's trace through how CSR works
@@ -105,7 +100,7 @@ The most common way to create network CSR matrices is from edge lists:
 # Define our network as an edge list
 edges = [
     (0, 1), (0, 2),  # Node 0 connections
-    (1, 2), (1, 3),  # Node 1 connections  
+    (1, 2), (1, 3),  # Node 1 connections
     (2, 4),          # Node 2 connections
     (3, 4)           # Node 3 connections
 ]
@@ -124,7 +119,7 @@ data_values = np.ones(len(all_sources))
 # Create CSR matrix directly from edge list
 n_nodes = 5
 csr_from_edges = sparse.csr_matrix(
-    (data_values, (all_sources, all_targets)), 
+    (data_values, (all_sources, all_targets)),
     shape=(n_nodes, n_nodes)
 )
 
@@ -146,10 +141,18 @@ node_1_neighbors = csr_matrix.indices[csr_matrix.indptr[1]:csr_matrix.indptr[2]]
 print("Node 1 neighbors:", node_1_neighbors)
 
 # Matrix multiplication for 2-hop paths
-two_hop_matrix = csr_matrix * csr_matrix
+two_hop_matrix = csr_matrix @ csr_matrix
 print("Two-hop connections (shows paths of length 2):")
 print(two_hop_matrix.toarray())
 ```
+
+::: {.column-margin}
+**Matrix multiplication**: `@` is the matrix multiplication operator in NumPy. It is equivalent to `np.dot` but more efficient.
+:::
+
+
+
+
 
 ### Memory Comparison: Dense vs CSR
 
@@ -183,40 +186,31 @@ def is_walk_sparse(sequence, csr_matrix):
     """
     if len(sequence) < 2:
         return True
-        
+
     sequence = np.array(sequence)
     current_nodes = sequence[:-1]
     next_nodes = sequence[1:]
-    
+
     # Use CSR matrix indexing - still works with advanced indexing!
-    edges_exist = csr_matrix[current_nodes, next_nodes]
-    
+    edges_exist = csr_matrix[(current_nodes, next_nodes)]
+
     # Convert sparse result to array and check
-    return np.all(edges_exist.toarray() == 1)
+    return np.all(edges_exist == 1)
 
 # Test with our CSR matrix
 test_walk = [0, 1, 2, 4, 3, 1]
 print(f"Walk {test_walk} is valid: {is_walk_sparse(test_walk, csr_matrix)}")
 ```
 
-### Real-World CSR Applications
-
-CSR format is essential for:
-
-- **Social networks**: Facebook, Twitter friendship graphs
-- **Web networks**: PageRank algorithm on billions of web pages
-- **Biological networks**: Protein interaction networks
-- **Transportation**: Road networks, flight connections
-
 ::: {.callout-tip title="Best Practices"}
 **When to use CSR**:
-- Sparse matrices (< 20% non-zero entries)
+- Sparse matrices
 - Row-based operations (computing degrees, finding neighbors)
 - Matrix-vector multiplication
 
 **When to use dense matrices**:
-- Small networks (< 1000 nodes)
-- Dense networks (> 50% edges)
+- Small networks
+- Dense networks
 - Frequent random access to individual entries
 :::
 
@@ -239,6 +233,7 @@ paths_3 = csr_matrix ** 3  # Counts 3-step paths
 print("3-step path counts:")
 print(paths_3.toarray())
 ```
+
 
 The CSR format transforms network analysis from impossible to practical for large-scale networks. By storing only the essential information (non-zero connections), we can analyze networks with millions of nodes and billions of edges on standard hardware—something that would require exabytes of memory with dense matrices!
 
