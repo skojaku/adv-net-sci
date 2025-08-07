@@ -18,7 +18,9 @@ Through Euler's elegant solution, we will learn:
 This is not just history—Euler's approach of abstracting complex systems into nodes and edges is the same method we use today to analyze internet routing, brain connectivity, and viral spread patterns.
 :::
 
-## A Sunday Stroll That Changed Mathematics
+## The Königsberg Bridge Problem
+
+### A Sunday Stroll That Changed Mathematics
 
 Back in the 18th century, there was a city called *Königsberg* situated on the Pregel River in what was then Prussia (now Kaliningrad, Russia). The city was built around two large islands, beautifully connected to each other and the mainland by seven elegant bridges.
 
@@ -73,7 +75,7 @@ Once you've given it some thought, continue reading to see how Euler approached 
 
 ---
 
-## 🔍 Euler's Revolutionary Abstraction
+### 🔍 Euler's Revolutionary Abstraction
 
 [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) approached this puzzle in 1736 with a stroke of genius that would define mathematical thinking for centuries. Instead of getting bogged down in the physical details—the width of the bridges, the size of the islands, the beauty of the architecture—he made a ***radical simplification***.
 
@@ -141,7 +143,7 @@ A good Youtube video explaining the Euler's story:
 :::
 
 
-## ⚖️ The Verdict: Königsberg's Impossible Dream
+### ⚖️ The Verdict: Königsberg's Impossible Dream
 
 Applying Euler's theorem to the original Königsberg bridges reveals the truth: **every landmass has an odd number of bridges**. According to Euler's conditions, this makes the desired walk impossible.
 
@@ -165,7 +167,7 @@ With only five bridges remaining, the network finally satisfied Euler's conditio
 
 This ironic resolution reminds us that while mathematics reveals timeless truths about structure and possibility, the physical world—and human history—follows much more complex and unpredictable patterns.
 
-## The Lasting Legacy
+### The Lasting Legacy
 
 Euler's solution to the Königsberg bridge problem did far more than solve a recreational puzzle. It demonstrated that:
 
@@ -182,51 +184,98 @@ These insights now underpin our understanding of everything from internet routin
 **[Immanuel Kant](https://en.wikipedia.org/wiki/Immanuel_Kant)** (1724-1804): German philosopher and one of the central thinkers of the Enlightenment. Born and died in Königsberg, never traveling more than 10 miles from the city. His systematic works in epistemology, metaphysics, ethics, and aesthetics have made him one of the most influential figures in modern Western philosophy. His regular daily walks were so punctual that neighbors reportedly set their clocks by his daily walks.
 
 
-## Walk, Path, and Trail: Your Adventure Through Networks
+## Walk, Path, and Trail
 
-Before we dive deeper into Euler's mathematical framework, let's establish the vocabulary that network scientists use to describe movement through graphs. Think of these as different ways to travel through a network, each with its own rules and constraints.
-
-### Walk: The Most Flexible Journey
+We used the term `walk` and `path` in the previous section. But what are they? Let's define them formally in the following.
 
 A **walk** is the most general type of movement through a network. Imagine you're exploring a city with no restrictions:
 
 - You can visit any vertex (intersection) multiple times
-- You can traverse any edge (street) multiple times  
+- You can traverse any edge (street) multiple times
 - You simply move from one connected vertex to another
 
-::: {.column-margin}
-**Example**: In a social network, a walk might represent how gossip spreads—the same person can hear and retell the same piece of information multiple times, and the same social connection can be used repeatedly.
+Formally, a walk is a sequence of nodes where each consecutive node pair is connected by an edge. No teleportation is allowed in a walk on a network.
+
+A **trail** is a walk without traversing the same edge twice. You can still visit the same node multiple times though via different edges.
+
+::: {.callout-note title="Trail"}
+
+If edges are directed and two nodes are bidirectionally connected, then an edge from one node to the other is a different edge from the other node to the first node.
+
 :::
 
-**Formal definition**: A walk of length $k$ is a sequence of vertices $v_0, v_1, v_2, \ldots, v_k$ where each consecutive pair $(v_i, v_{i+1})$ is connected by an edge.
-
-### Path: The Efficient Route
-
-A **path** is a more restrictive type of walk where efficiency matters:
-
-- Each vertex can be visited **at most once**
-- Edges can still be repeated (though this rarely happens in simple paths)
-- No backtracking to previously visited vertices
-
 ::: {.column-margin}
-**Example**: In a computer network, a path represents the most efficient route for data packets—you don't want to revisit the same router unnecessarily, as this wastes time and resources.
+A mail carrier's route through a neighborhood: they might return to the same intersection multiple times but should traverse each street exactly once for efficiency.
 :::
 
-**Formal definition**: A path is a walk where all vertices are distinct.
-
-### Trail: The Scenic Route
-
-A **trail** offers a different kind of constraint, perfect for certain applications:
-
-- Vertices can be visited multiple times
-- Each edge can be traversed **at most once**
-- Think of it as "never taking the same road twice"
+A **path** is a more restrictive type of walk without revisiting the same node.
 
 ::: {.column-margin}
-**Example**: A mail carrier's route through a neighborhood—they might return to the same intersection multiple times but should traverse each street exactly once for efficiency.
+- **Walk**: You can fly from New York to London, then back to New York, then to Paris, possibly using the same flight routes multiple times.
+- **Trail**: You plan a trip where you never take the same flight route twice, but you might visit the same city more than once (e.g., New York $\rightarrow$ London $\rightarrow$ Paris $\rightarrow$ New York $\rightarrow$ Rome).
+- **Path**: You visit a sequence of cities where you never visit the same city twice (e.g., New York $\rightarrow$ London $\rightarrow$ Paris $\rightarrow$ Rome).
+
+In airline route maps, a *trail* means you never repeat a specific flight segment, while a *path* means you never return to a city you've already visited.
 :::
 
-**Formal definition**: A trail is a walk where all edges are distinct.
+### Cycle and Circuit
+
+**Cycle** and **Circuit** are two special types of walks that start and end at the same node—they form closed loops in the network.
+
+A **circuit** is a closed trail—a trail that starts and ends at the same vertex. Think of it as making a round trip where you never use the same road twice, but you can pass through the same intersections multiple times.
+
+::: {.column-margin}
+**Example**: A tourist exploring a city who wants to end up back at their hotel without taking any street twice. They might pass through Times Square multiple times via different streets, but never walk down Broadway twice.
+:::
+
+**Formal definition**: A circuit is a trail where the first and last vertices are the same.
+
+A **cycle** is a closed path—a path that starts and ends at the same vertex with no repeated vertices (except for the starting/ending vertex). It's the most restrictive type of closed walk.
+
+::: {.column-margin}
+**Example**: A delivery truck route that visits each neighborhood exactly once before returning to the depot. Each stop is unique, forming a perfect loop.
+:::
+
+**Formal definition**: A cycle is a path where the first and last vertices are the same, and no other vertex is repeated.
+
+### Key Distinctions
+
+The difference between cycles and circuits mirrors the difference between paths and trails:
+
+- **Circuit**: Closed trail (distinct edges, vertices can repeat)
+- **Cycle**: Closed path (distinct vertices except start/end, edges automatically distinct)
+
+### Special Cases in Network Analysis
+
+**Simple Cycle**: The most basic cycle with exactly 3 or more vertices. For example, a triangle (3-cycle) is the smallest possible cycle in a simple graph.
+
+**Euler Circuit**: A circuit that traverses every edge in the graph exactly once—this was what the Königsberg citizens were actually seeking! An Euler circuit exists if and only if:
+- The graph is connected, AND
+- Every vertex has even degree
+
+**Hamiltonian Cycle**: A cycle that visits every vertex in the graph exactly once. Unlike Euler's focus on edges, Hamiltonian cycles focus on vertices.
+
+::: {.callout-important title="Euler vs. Hamiltonian"}
+- **Euler Circuit**: Uses every **edge** exactly once (may revisit vertices)
+- **Hamiltonian Cycle**: Visits every **vertex** exactly once (uses subset of edges)
+
+These are fundamentally different problems! Euler's theorem gives us clear conditions for Euler circuits, but determining Hamiltonian cycles is much more complex (NP-complete).
+:::
+
+### Real-World Applications
+
+**Circuits** are crucial for:
+- **Mail delivery routes**: Cover every street (edge) exactly once
+- **Snow plow routes**: Clear every road without redundancy  
+- **Circuit board design**: Electrical paths that return to source
+
+**Cycles** are essential for:
+- **Delivery optimization**: Visit every customer (vertex) exactly once
+- **DNA sequencing**: Reconstruct circular genomes
+- **Chemical ring detection**: Identify molecular cycles
+
+The Königsberg bridge problem was fundamentally about finding an **Euler circuit**—a way to traverse every bridge (edge) exactly once while returning home. Understanding this distinction between edge-focused (Euler) and vertex-focused (Hamiltonian) problems is crucial for applying graph theory to real-world challenges.
+
 
 ### Euler's Special Cases
 
@@ -244,14 +293,14 @@ These concepts form a natural hierarchy of restrictions:
 ```
 Walk (most general)
 ├── Trail (distinct edges)
-│   └── Euler Trail (all edges exactly once)  
+│   └── Euler Trail (all edges exactly once)
 └── Path (distinct vertices)
     └── Hamiltonian Path (all vertices exactly once)
 ```
 
 ::: {.callout-tip title="Memory Aid"}
 **Walk**: "I can **walk** anywhere, anytime"
-**Trail**: "I leave a **trail** behind me (no repeated edges)"  
+**Trail**: "I leave a **trail** behind me (no repeated edges)"
 **Path**: "I follow a **path** without circling back (no repeated vertices)"
 :::
 
