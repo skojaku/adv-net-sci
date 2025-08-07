@@ -205,10 +205,10 @@ def is_walk(sequence, adjacency_matrix):
     next_nodes = sequence[1:]      # All nodes except the first
 
     # Check all edges at once using advanced indexing
-    for i, j in zip(current_nodes, next_nodes):
-        if adjacency_matrix[i, j] == 0:
-            return False
-    return True
+    edges_exist = adjacency_matrix[current_nodes, next_nodes]
+    
+    # All edges must exist (all values must be 1)
+    return np.all(edges_exist == 1)
 
 # Test with our sample network
 test_sequence = [0, 1, 2, 4, 3, 1]
@@ -221,7 +221,9 @@ print(f"Sequence {invalid_sequence} is a valid walk: {is_walk(invalid_sequence, 
 
 
 ```{.column-margin}
-**Avoiding loops**: For loops in Python 
+**Avoiding loops**: For loops in Python is the notorious source of computational bottlenecks.
+Avoiding for loops significantly boosts the speed. In `is_walk`, we use one for loop but you can avoid it by using NumPy's advanced indexing, i.e., `adjacency_matrix[(current_nodes, next_nodes)]`. The way to think about this is that `(current_nodes, next_nodes)` is a tuple of indices, acting as a multi-dimensional index.
+`adjacency_matrix[(current_nodes, next_nodes)]` is 1d array of length the same as `current_nodes` and `next_nodes`. If the value is 0, then the edge does not exist. We can then check if all the values are not zero.
 :::
 
 ### Verifying a Trail
