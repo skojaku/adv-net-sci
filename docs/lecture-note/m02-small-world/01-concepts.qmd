@@ -234,23 +234,22 @@ where a **connected triplet** is a set of three nodes connected by at least two 
 //| fig-cap: "Connected triplets: closed (triangle) vs open (wedge)"
 //| fig-align: center
 graph G {
+  layout=dot;
   rankdir=LR;
 
   subgraph cluster_0 {
-    label="Closed Triplet (Triangle)";
+    label="Closed Triplet";
     style=filled;
     color=lightgrey;
-    node [style=filled,color=white];
     A1 -- B1;
     B1 -- C1;
     C1 -- A1;
   }
 
   subgraph cluster_1 {
-    label="Open Triplet (Wedge)";
+    label="Open Triplet";
     style=filled;
     color=lightgrey;
-    node [style=filled,color=white];
     A2 -- B2;
     B2 -- C2;
   }
