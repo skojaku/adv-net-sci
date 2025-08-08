@@ -299,48 +299,147 @@ $$
 
 where $\overline{C}$ is the average local clustering coefficient and $\overline{L}$ is the average path length.
 
-A high $s_{\text{naive}}$ value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example
-
-- A **fully-connected network** has $\overline{L} = 1$ (minimum possible) and $\overline{C} = 1$ (maximum possible), giving $s_{\text{naive}} = 1$
-- A **complete bipartite network** has short paths but zero clustering, giving $s_{\text{naive}} = 0$
-- A **ring lattice** has high clustering but long paths in large networks
-
+A high $s_{\text{naive}}$ value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example,
+a fully-connected network has $\overline{L} = 1$ (minimum possible) and $\overline{C} = 1$ (maximum possible), giving $s_{\text{naive}} = 1$.
 This leads us to normalize against **random networks** with the same basic properties.
-
-
-
-
-
-
-
-
-
-
-#### Watts-Strogatz Small-World Index
 
 To address this issue, Watts and Strogatz proposed normalizing by equivalent random networks. The **small-world index** (or small-world coefficient) is defined as:
 
 $$
-\sigma = \frac{C/C_{\text{random}}}{L/L_{\text{random}}} = \frac{C \cdot L_{\text{random}}}{L \cdot C_{\text{random}}}
+\sigma = \frac{\overline{C}/\overline{C}_{\text{random}}}{\overline{L}/\overline{L}_{\text{random}}} = \frac{\overline{C} \cdot \overline{L}_{\text{random}}}{\overline{L} \cdot \overline{C}_{\text{random}}}
 $$
 
-where:
-- $C$ is the clustering coefficient of the network
-- $L$ is the average path length of the network
-- $C_{\text{random}}$ is the clustering coefficient of an equivalent random network
-- $L_{\text{random}}$ is the average path length of an equivalent random network
+where: $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ are the average local clustering coefficient and the average path length of an equivalent random network. The "equivalent random network" typically refers to an Erdős–Rényi random graph, where edges are randomly connected with the same number of nodes and edges (or same average degree) as the original network (thus it represents a trivial random network of the same number of nodes and edges).
 
-**Interpretation:**
-- $\sigma \gg 1$: Strong small-world property (high clustering relative to random, short paths relative to random)
-- $\sigma \approx 1$: Similar to random networks
-- $\sigma \ll 1$: Anti-small-world behavior
+A high $\sigma$ value greater than 1 indicates a strong small-world property. If $\sigma$ is close to 1, the network is not small-world but comparable to a random network in terms of the small-world property.
+If $\sigma$ is less than 1, the network is anti-small-world, i.e., it has a large average path length and low clustering compared to a random counterpart.
 
-**Why this normalization works:**
-- Random networks typically have low clustering ($C_{\text{random}} \ll C$) but short paths ($L_{\text{random}} \approx L$)
-- Small-world networks maintain high clustering while achieving short paths similar to random networks
-- This gives $\sigma = \frac{C \gg C_{\text{random}}}{L \approx L_{\text{random}}} \gg 1$
+Now, we have a way to measure the small-world property of a network. It has been shown in many different studies that the small-world property is surprisingly common in real-world networks.
 
-The "equivalent random network" typically refers to an Erdős–Rényi random graph with the same number of nodes and edges (or same average degree) as the original network.
+This leads to a question: what is the underlying mechanism? The Watts-Strogatz model provides a way to generate small-world networks, as we will see in the next section.
+
+
+## Watts-Strogatz Model
+
+::: {.column-margin}
+> "What I cannot create, I do not understand." - Richard Feynman
+
+This quote captures the essence of why models like Watts-Strogatz are crucial: by building networks that exhibit small-world properties, we gain deeper insight into how these properties emerge in real systems.
+:::
+
+The **Watts-Strogatz model** provides a elegant way to generate networks that interpolate between regular lattices (high clustering, long paths) and random graphs (low clustering, short paths), capturing the small-world phenomenon.
+
+### The Algorithm
+
+The Watts-Strogatz model starts with a **ring lattice** and introduces randomness through edge **rewiring**:
+
+**Step 1: Start with a Ring Lattice**
+- Create a ring of $N$ nodes
+- Connect each node to its $k$ nearest neighbors (k/2 on each side)
+- This gives high clustering but long average path length
+
+**Step 2: Rewire Edges with Probability p**
+- For each edge in the lattice:
+  - With probability $p$: remove the edge and reconnect one endpoint to a randomly chosen node
+  - With probability $(1-p)$: keep the original edge
+- Avoid self-loops and duplicate edges
+
+**Step 3: Resulting Network Properties**
+- $p = 0$: Regular ring lattice (high clustering, long paths)
+- $p = 1$: Random graph (low clustering, short paths)  
+- $0 < p < 1$: Small-world network (high clustering, short paths)
+
+```{dot}
+//| fig-width: 6
+//| fig-height: 2.5
+//| fig-cap: "Watts-Strogatz model progression from regular lattice to random graph"
+//| fig-align: center
+graph G {
+  layout=neato;
+  fontsize=14;
+  
+  subgraph cluster_0 {
+    label="p = 0 (Regular Lattice)";
+    fontsize=12;
+    style=filled;
+    color=lightgrey;
+    
+    A1 [pos="-4,0!" shape=circle];
+    B1 [pos="-3.5,0.8!" shape=circle];
+    C1 [pos="-2.8,0.8!" shape=circle];
+    D1 [pos="-2.3,0!" shape=circle];
+    E1 [pos="-2.8,-0.8!" shape=circle];
+    F1 [pos="-3.5,-0.8!" shape=circle];
+    
+    A1 -- B1; B1 -- C1; C1 -- D1; D1 -- E1; E1 -- F1; F1 -- A1;
+    A1 -- C1; B1 -- D1; C1 -- E1; D1 -- F1; E1 -- A1; F1 -- B1;
+  }
+  
+  subgraph cluster_1 {
+    label="0 < p < 1 (Small World)";
+    fontsize=12;
+    style=filled;
+    color=lightgrey;
+    
+    A2 [pos="0,0!" shape=circle];
+    B2 [pos="0.5,0.8!" shape=circle];
+    C2 [pos="1.2,0.8!" shape=circle];
+    D2 [pos="1.7,0!" shape=circle];
+    E2 [pos="1.2,-0.8!" shape=circle];
+    F2 [pos="0.5,-0.8!" shape=circle];
+    
+    A2 -- B2; B2 -- C2; C2 -- D2; D2 -- E2; E2 -- F2; F2 -- A2;
+    A2 -- C2; B2 -- D2; E2 -- A2; F2 -- B2;
+    C2 -- F2 [color=red, penwidth=2]; // rewired edge
+    D2 -- A2 [color=red, penwidth=2]; // rewired edge
+  }
+  
+  subgraph cluster_2 {
+    label="p = 1 (Random Graph)";
+    fontsize=12;
+    style=filled;
+    color=lightgrey;
+    
+    A3 [pos="4,0!" shape=circle];
+    B3 [pos="4.5,0.8!" shape=circle];
+    C3 [pos="5.2,0.8!" shape=circle];
+    D3 [pos="5.7,0!" shape=circle];
+    E3 [pos="5.2,-0.8!" shape=circle];
+    F3 [pos="4.5,-0.8!" shape=circle];
+    
+    A3 -- D3; B3 -- E3; C3 -- F3; D3 -- B3; E3 -- C3; F3 -- A3;
+    A3 -- B3; C3 -- D3; E3 -- F3; A3 -- E3; B3 -- F3; C3 -- A3;
+  }
+}
+```
+
+### Key Insights
+
+**The Magic of Small p Values:**
+Even a small rewiring probability ($p \approx 0.01$) dramatically reduces average path length while maintaining high clustering. This happens because:
+
+1. **Clustering preservation**: Most edges remain local (probability $1-p$), maintaining triangular relationships
+2. **Shortcut creation**: A few random edges (probability $p$) act as "shortcuts" across the network
+3. **Diameter collapse**: These shortcuts reduce the network diameter from $O(N)$ to $O(\log N)$
+
+**Mathematical Properties:**
+- **Clustering coefficient**: $C(p) \approx C(0) \cdot (1-p)^3$ for small $p$
+- **Average path length**: $L(p)$ drops rapidly even for small $p$ 
+- **Small-world regime**: Optimal $\sigma$ typically occurs around $p \approx 0.01$ to $0.1$
+
+### Biological and Social Relevance
+
+The Watts-Strogatz model captures essential features of real networks:
+
+**Neural networks**: Neurons are primarily connected locally (clustering) but have some long-range connections (shortcuts) that enable rapid information transmission.
+
+**Social networks**: People have local social groups (high clustering) but occasional distant connections (through travel, online interaction) that reduce social distances.
+
+**Internet topology**: Routers are connected regionally for efficiency but have backbone connections that span continents.
+
+The model's success lies in showing that small-world properties emerge naturally from the tension between local organization and random connectivity - a fundamental principle observed across many natural and social systems.
+
+
 
 
 
