@@ -57,16 +57,8 @@ g = igraph.Graph() # Create an empty graph
 g.add_vertices(4) # Add 4 vertices
 g.add_edges(edge_list) # Add edges to the graph
 
-# Plot the graph (requires cairocffi or pycairo)
-try:
-    igraph.plot(g, bbox=(150, 150), vertex_label=list(range(4)))
-except AttributeError as e:
-    print("Plotting not available. Install plotting dependencies:")
-    print("pip install cairocffi  # or pycairo")
-    print("\nGraph structure:")
-    print(f"Vertices: {g.vcount()}")
-    print(f"Edges: {g.ecount()}")
-    print(f"Edge list: {[(e.source, e.target) for e in g.es]}")
+# Plot the graph
+igraph.plot(g, bbox=(150, 150), vertex_label=list(range(4)))
 ```
 
 ### Shortest Paths
