@@ -86,19 +86,14 @@ def _(mo):
     return
 
 
+@app.cell
+def _(CL_chart, mo, network_chart, sigma_chart):
+    mo.hstack([network_chart, mo.vstack([CL_chart, sigma_chart])])
+    return
+
+
 @app.cell(hide_code=True)
-def _(
-    G_random,
-    G_ws,
-    N_slider,
-    alt,
-    k_slider,
-    mo,
-    np,
-    nx,
-    p_slider,
-    pd,
-):
+def _(G_random, G_ws, N_slider, k_slider, np, p_slider, pd):
     def create_network_data(G, network_type, N, k, p_value):
         """Create network data for Altair visualization"""
         # Create circular layout
@@ -106,237 +101,241 @@ def _(
         angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
         for idx, node in enumerate(G.nodes()):
             pos[node] = (np.cos(angles[idx]), np.sin(angles[idx]))
-        
+
         # Create nodes dataframe
         nodes_data = []
         for node in G.nodes():
             x, y = pos[node]
-            nodes_data.append({
-                'node': node,
-                'x': x,
-                'y': y,
-                'network_type': network_type
-            })
-        
+            nodes_data.append(
+                {"node": node, "x": x, "y": y, "network_type": network_type}
+            )
+
         # Create edges dataframe
         edges_data = []
         for edge in G.edges():
             node_i, node_j = edge
             x1, y1 = pos[node_i]
             x2, y2 = pos[node_j]
-            
+
             # Determine edge type for WS network
             edge_type = "Regular"
             if network_type == "Watts-Strogatz":
                 ring_distance = min(abs(node_i - node_j), N - abs(node_i - node_j))
                 if ring_distance > k // 2:
                     edge_type = "Rewired"
-            
-            edges_data.append({
-                'source': node_i,
-                'target': node_j,
-                'x1': x1,
-                'y1': y1,
-                'x2': x2,
-                'y2': y2,
-                'edge_type': edge_type,
-                'network_type': network_type
-            })
-        
+
+            edges_data.append(
+                {
+                    "source": node_i,
+                    "target": node_j,
+                    "x1": x1,
+                    "y1": y1,
+                    "x2": x2,
+                    "y2": y2,
+                    "edge_type": edge_type,
+                    "network_type": network_type,
+                }
+            )
+
         return pd.DataFrame(nodes_data), pd.DataFrame(edges_data)
-    
+
+
     # Create network data
     N = N_slider.value
     k = k_slider.value
     p_val = p_slider.value
-    
+
     nodes_ws, edges_ws = create_network_data(G_ws, "Watts-Strogatz", N, k, p_val)
     nodes_rand, edges_rand = create_network_data(G_random, "Random", N, k, p_val)
-    
+
     # Combine data
     all_nodes = pd.concat([nodes_ws, nodes_rand], ignore_index=True)
     all_edges = pd.concat([edges_ws, edges_rand], ignore_index=True)
-    
     return all_edges, all_nodes
 
 
 @app.cell(hide_code=True)
-def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
+def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
     # Create network visualization with Altair
     def create_network_chart():
         # Base chart for edges
         edge_base = alt.Chart(all_edges)
-        
+
         # WS network edges
-        ws_edges = edge_base.transform_filter(
-            alt.datum.network_type == 'Watts-Strogatz'
-        ).mark_rule(
-            strokeWidth=1.5,
-            opacity=0.7
-        ).encode(
-            x=alt.X('x1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            y=alt.Y('y1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            x2='x2:Q',
-            y2='y2:Q',
-            color=alt.Color(
-                'edge_type:N',
-                scale=alt.Scale(
-                    domain=['Regular', 'Rewired'], 
-                    range=['steelblue', 'red']
+        ws_edges = (
+            edge_base.transform_filter(alt.datum.network_type == "Watts-Strogatz")
+            .mark_rule(strokeWidth=1.5, opacity=0.7)
+            .encode(
+                x=alt.X("x1:Q", scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+                y=alt.Y("y1:Q", scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+                x2="x2:Q",
+                y2="y2:Q",
+                color=alt.Color(
+                    "edge_type:N",
+                    scale=alt.Scale(
+                        domain=["Regular", "Rewired"], range=["steelblue", "red"]
+                    ),
+                    legend=alt.Legend(title="Edge Type", orient="top-right"),
                 ),
-                legend=alt.Legend(title="Edge Type", orient="top-right")
-            ),
-            tooltip=['source:O', 'target:O', 'edge_type:N']
-        ).properties(
-            width=250,
-            height=250,
-            title=f"Watts-Strogatz Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.3f})"
+                tooltip=["source:O", "target:O", "edge_type:N"],
+            )
+            .properties(
+                width=250,
+                height=250,
+                title=f"Watts-Strogatz Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.3f})",
+            )
         )
-        
+
         # WS network nodes
-        ws_nodes = alt.Chart(all_nodes).transform_filter(
-            alt.datum.network_type == 'Watts-Strogatz'
-        ).mark_circle(
-            size=100,
-            stroke='black',
-            strokeWidth=1
-        ).encode(
-            x=alt.X('x:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            y=alt.Y('y:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            fill=alt.value('lightblue'),
-            tooltip=['node:O']
+        ws_nodes = (
+            alt.Chart(all_nodes)
+            .transform_filter(alt.datum.network_type == "Watts-Strogatz")
+            .mark_circle(size=100, stroke="black", strokeWidth=1)
+            .encode(
+                x=alt.X("x:Q", scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+                y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+                fill=alt.value("lightblue"),
+                tooltip=["node:O"],
+            )
         )
-        
-        # Random network edges
-        rand_edges = edge_base.transform_filter(
-            alt.datum.network_type == 'Random'
-        ).mark_rule(
-            strokeWidth=1,
-            opacity=0.5,
-            color='gray'
-        ).encode(
-            x=alt.X('x1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            y=alt.Y('y1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            x2='x2:Q',
-            y2='y2:Q',
-            tooltip=['source:O', 'target:O']
-        ).properties(
-            width=250,
-            height=250,
-            title="Random Network (same N, similar density)"
-        )
-        
-        # Random network nodes
-        rand_nodes = alt.Chart(all_nodes).transform_filter(
-            alt.datum.network_type == 'Random'
-        ).mark_circle(
-            size=100,
-            stroke='black',
-            strokeWidth=1
-        ).encode(
-            x=alt.X('x:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            y=alt.Y('y:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
-            fill=alt.value('lightcoral'),
-            tooltip=['node:O']
-        )
-        
+
         # Combine networks
-        ws_network = (ws_edges + ws_nodes)
-        rand_network = (rand_edges + rand_nodes)
-        
-        return alt.hconcat(ws_network, rand_network)
-    
+        ws_network = ws_edges + ws_nodes
+
+        return ws_network
+
+
     # Display networks
     network_chart = create_network_chart()
-    mo.ui.altair_chart(network_chart)
+    network_chart = mo.ui.altair_chart(network_chart)
     return (network_chart,)
 
 
-@app.cell(hide_code=True) 
-def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_values):
-    # Create properties plot data  
+@app.cell(hide_code=True)
+def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd):
+    # Create properties plot data
     def _create_props_data():
         C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
         L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
-        
+
+        # Only include data up to current p value
+        current_p = p_slider.value
         props_data = []
         for idx, p_val in enumerate(p_values):
-            props_data.extend([
-                {
-                    'p': p_val,
-                    'value': clustering_ws[idx] / C_initial,
-                    'metric': 'C(p) / C(0)',
-                },
-                {
-                    'p': p_val,
-                    'value': path_length_ws[idx] / L_initial,
-                    'metric': 'L(p) / L(0)',
-                }
-            ])
+            if p_val <= current_p:
+                props_data.extend(
+                    [
+                        {
+                            "p": p_val,
+                            "value": clustering_ws[idx] / C_initial,
+                            "metric": "C(p) / C(0)",
+                        },
+                        {
+                            "p": p_val,
+                            "value": path_length_ws[idx] / L_initial,
+                            "metric": "L(p) / L(0)",
+                        },
+                    ]
+                )
         return props_data
-    
+
+
     props_data = _create_props_data()
-    
+
     props_df = pd.DataFrame(props_data)
-    
+
     # Properties plot
-    properties_chart = alt.Chart(props_df).mark_line(
-        point=True,
-        strokeWidth=2.5
-    ).encode(
-        x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
-        y=alt.Y('value:Q', title='Normalized Values'),
-        color=alt.Color(
-            'metric:N',
-            scale=alt.Scale(
-                domain=['C(p) / C(0)', 'L(p) / L(0)'],
-                range=['steelblue', 'red']
+    properties_chart = (
+        alt.Chart(props_df)
+        .mark_line(point=True, strokeWidth=2.5)
+        .encode(
+            x=alt.X(
+                "p:Q",
+                title="Rewiring Probability (p)",
+                scale=alt.Scale(domain=[0, 1]),
             ),
-            legend=alt.Legend(title="Metric")
-        ),
-        tooltip=['p:Q', 'value:Q', 'metric:N']
-    ).properties(
-        width=350,
-        height=200,
-        title="Network Properties vs Rewiring Probability"
+            y=alt.Y("value:Q", title="Normalized Values"),
+            color=alt.Color(
+                "metric:N",
+                scale=alt.Scale(
+                    domain=["C(p) / C(0)", "L(p) / L(0)"],
+                    range=["steelblue", "red"],
+                ),
+                legend=alt.Legend(title="Metric"),
+            ),
+            tooltip=["p:Q", "value:Q", "metric:N"],
+        )
+        .properties(
+            width=350,
+            height=200,
+            title="Network Properties vs Rewiring Probability",
+        )
     )
     
-    mo.ui.altair_chart(properties_chart)
-    return (properties_chart,)
+    # Add vertical line at current p value
+    current_p_line = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
+        color='gray', 
+        strokeDash=[5, 5], 
+        strokeWidth=2
+    ).encode(
+        x='p:Q'
+    )
+    
+    properties_chart = properties_chart + current_p_line
+
+    CL_chart = mo.ui.altair_chart(properties_chart)
+    return (CL_chart,)
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, p_slider, p_values, pd, sigma_values, np):
+def _(alt, mo, p_slider, p_values, pd, sigma_values):
     # Create sigma plot data
     def _create_sigma_data():
+        # Only include data up to current p value
+        current_p = p_slider.value
         sigma_data = []
         for idx, p_val in enumerate(p_values):
-            sigma_data.append({
-                'p': p_val,
-                'sigma': sigma_values[idx]
-            })
+            if p_val <= current_p:
+                sigma_data.append({"p": p_val, "sigma": sigma_values[idx]})
         return sigma_data
-    
+
+
     sigma_data = _create_sigma_data()
-    
+
     sigma_df = pd.DataFrame(sigma_data)
-    
-    # Sigma plot  
-    sigma_chart = alt.Chart(sigma_df).mark_line(
-        point=True,
-        color='green',
-        strokeWidth=2.5
-    ).encode(
-        x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
-        y=alt.Y('sigma:Q', title='Small-World Coefficient (σ)'),
-        tooltip=['p:Q', 'sigma:Q']
-    ).properties(
-        width=350,
-        height=200,
-        title="Small-World Property vs Rewiring Probability"
+
+    # Sigma plot
+    sigma_chart = (
+        alt.Chart(sigma_df)
+        .mark_line(point=True, color="green", strokeWidth=2.5)
+        .encode(
+            x=alt.X(
+                "p:Q",
+                title="Rewiring Probability (p)",
+                scale=alt.Scale(domain=[0, 1]),
+            ),
+            y=alt.Y("sigma:Q", title="Small-World Coefficient (σ)"),
+            tooltip=["p:Q", "sigma:Q"],
+        )
+        .properties(
+            width=350,
+            height=200,
+            title="Small-World Property vs Rewiring Probability",
+        )
     )
     
-    mo.ui.altair_chart(sigma_chart)
+    # Add vertical line at current p value
+    current_p_line_sigma = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
+        color='gray', 
+        strokeDash=[5, 5], 
+        strokeWidth=2
+    ).encode(
+        x='p:Q'
+    )
+    
+    sigma_chart = sigma_chart + current_p_line_sigma
+
+    sigma_chart = mo.ui.altair_chart(sigma_chart)
     return (sigma_chart,)
 
 
@@ -419,10 +418,11 @@ def _():
     import matplotlib.patches as patches
     from matplotlib.collections import LineCollection
     import warnings
+    import pyarrow
 
     warnings.filterwarnings("ignore")
-    alt.data_transformers.enable('csv')
-    return alt, mo, np, nx, patches, pd, plt
+    alt.data_transformers.enable("csv")
+    return alt, mo, np, nx, pd
 
 
 @app.cell(hide_code=True)
@@ -533,7 +533,9 @@ def _(N_slider, k_slider, np, nx):
 
             # Compute small-world coefficient
             if C_random_temp > 0 and L_random_temp > 0:
-                sigma_temp = (C_ws_temp / C_random_temp) / (L_ws_temp / L_random_temp)
+                sigma_temp = (C_ws_temp / C_random_temp) / (
+                    L_ws_temp / L_random_temp
+                )
             else:
                 sigma_temp = 0
 
