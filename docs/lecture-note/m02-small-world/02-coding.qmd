@@ -154,10 +154,6 @@ The clustering coefficient measures how densely connected a node's neighbors are
 In social networks, clustering represents the tendency for friends of friends to be friends. In biological networks, it can indicate functional modules or pathways.
 :::
 
-### Local Clustering Coefficient
-
-The **local clustering coefficient** of a node measures the fraction of possible triangles that actually exist around that node. For a node with degree k, there are k(k-1)/2 possible edges between its neighbors.
-
 Let's create a more interesting graph to demonstrate clustering:
 
 ```{python}
@@ -175,11 +171,14 @@ g_cluster.add_edges(edges)
 igraph.plot(g_cluster, bbox=(300, 200), vertex_label=list(range(8)))
 ```
 
-Now let's compute the local clustering coefficient for each node:
+### Local Clustering Coefficient
+
+The local clustering coefficient measures the fraction of possible triangles that actually exist around each node. For a node with degree k, there are k(k-1)/2 possible edges between its neighbors. The `transitivity_local_undirected()` function computes this for each node, returning a list of float values (one per node). The formula is: (actual edges between neighbors) / (k(k-1)/2), and it returns `NaN` for nodes with degree < 2.
 
 ```{python}
 # Local clustering coefficient for each node
 local_clustering = g_cluster.transitivity_local_undirected()
+
 print("Local clustering coefficients:")
 for i, coeff in enumerate(local_clustering):
     print(f"Node {i}: {coeff:.3f}")
@@ -192,7 +191,7 @@ for i, coeff in enumerate(local_clustering):
 - NaN = Node has degree < 2 (clustering undefined)
 :::
 
-Let's analyze what these values mean:
+Analyze how clustering values relate to actual neighborhood connectivity:
 
 ```{python}
 # Analyze clustering for specific nodes
@@ -200,9 +199,9 @@ for node in range(g_cluster.vcount()):
     neighbors = g_cluster.neighbors(node)
     degree = len(neighbors)
     clustering = local_clustering[node]
-    
+
     print(f"Node {node}: degree={degree}, neighbors={neighbors}, clustering={clustering:.3f}")
-    
+
     if degree >= 2:
         # Count actual triangles
         possible_edges = degree * (degree - 1) // 2
@@ -217,7 +216,7 @@ for node in range(g_cluster.vcount()):
 
 ### Average Local Clustering
 
-The **average local clustering coefficient** is simply the mean of all local clustering coefficients:
+The average local clustering coefficient is simply the mean of all local clustering coefficients across nodes. The `transitivity_avglocal_undirected()` function computes this directly, returning a single float value. It automatically ignores NaN values from low-degree nodes when calculating the mean.
 
 ```{python}
 # Average local clustering (mean of local values)
@@ -232,23 +231,21 @@ print(f"Manual calculation: {manual_avg:.3f}")
 
 ### Global Clustering Coefficient
 
-The **global clustering coefficient** (also called transitivity) is defined as:
-
-**Global clustering = 3 × (number of triangles) / (number of connected triples)**
-
-Where a "connected triple" is a path of length 2 (three nodes connected by two edges).
+The global clustering coefficient (also called transitivity) is defined as 3 × (number of triangles) / (number of connected triples), where a "connected triple" is a path of length 2. The `transitivity_undirected()` function computes this single float value, giving more weight to high-degree nodes since they contribute more triples to the denominator.
 
 ```{python}
 # Global clustering coefficient
 global_clustering = g_cluster.transitivity_undirected()
 print(f"Global clustering: {global_clustering:.3f}")
 
-# Let's understand this calculation
+# Let's understand this calculation using supporting functions
+# list_triangles() returns all triangles in the graph
 triangles_count = len(g_cluster.list_triangles())
 print(f"Number of triangles: {triangles_count}")
 print(f"Triangles in graph: {g_cluster.list_triangles()}")
 
 # Count connected triples (paths of length 2)
+# degree(node) returns the degree of a specific node
 triples = 0
 for node in range(g_cluster.vcount()):
     degree = g_cluster.degree(node)
@@ -262,7 +259,7 @@ print(f"Global clustering = 3 * {triangles_count} / {triples} = {3 * triangles_c
 
 ### Comparing Different Networks
 
-Let's compare clustering in different network structures:
+We can use igraph's built-in network generators to create different network types for comparison: `Graph.Full()` creates complete graphs, `Graph.Erdos_Renyi()` creates random graphs, and `Graph.Lattice()` creates regular lattices. This allows us to compare clustering patterns across different topologies.
 
 ```{python}
 # Create different network types for comparison
@@ -284,7 +281,7 @@ g_ring = igraph.Graph.Lattice(dim=[n_ring], circular=True, nei=k_ring//2)
 
 networks = {
     "Complete": g_complete,
-    "Random": g_random, 
+    "Random": g_random,
     "Ring Lattice": g_ring,
     "Our Example": g_cluster
 }
@@ -299,7 +296,7 @@ for name, graph in networks.items():
     global_clust = graph.transitivity_undirected()
     nodes = graph.vcount()
     edges = graph.ecount()
-    
+
     print(f"{name:<15} {avg_local:<12.3f} {global_clust:<12.3f} {nodes:<8} {edges:<8}")
 ```
 
@@ -314,7 +311,7 @@ In social networks, global clustering is often higher because popular individual
 
 ### Real-World Network Example
 
-Let's analyze clustering in a well-known network structure:
+The `Graph.Watts_Strogatz()` function creates small-world networks using the Watts-Strogatz model, which starts with a ring lattice and randomly rewires edges with probability p. We can also use `average_path_length()` to compute the mean shortest path length across all node pairs.
 
 ```{python}
 # Create a small-world network (Watts-Strogatz model)
@@ -342,7 +339,7 @@ print(f"Random average path length: {g_random_compare.average_path_length():.3f}
 
 ::: {.callout-tip title="Small-World Networks"}
 Small-world networks are characterized by:
-1. **High clustering** (like regular lattices)  
+1. **High clustering** (like regular lattices)
 2. **Short path lengths** (like random graphs)
 
 This combination makes them efficient for information spread while maintaining local structure.
