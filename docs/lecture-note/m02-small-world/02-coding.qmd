@@ -1,6 +1,7 @@
 ---
 title: "Efficient Network Representation and Computing Paths"
-execute: true
+execute:
+    enabled: true
 ---
 
 ## Convenient libraries for network analysis
@@ -18,17 +19,20 @@ Throughout this course, we'll primarily use `igraph`, a mature and robust librar
 **Installing igraph**
 
 ```bash
-# Using pip
-pip install igraph
+# Using pip (with plotting support)
+pip install igraph cairocffi
 
-# Using conda
-conda install -c conda-forge igraph
+# Using conda (recommended)
+conda install -c conda-forge igraph cairocffi
+
+# Alternative plotting backend
+pip install igraph pycairo
 
 # For development version
 pip install git+https://github.com/igraph/python-igraph.git
 ```
 
-Note: igraph requires compiled C libraries. If you encounter installation issues, try using conda instead of pip.
+Note: igraph requires compiled C libraries and plotting needs `cairocffi` or `pycairo`. Use conda for easier installation.
 :::
 
 For advanced users comfortable with `scipy`, the `csgraph` submodule provides an excellent alternative that leverages one of Python's most well-tested and optimized libraries. For example, `csgraph.shortest_path` and `csgraph.connected_components` offer high-performance implementations.
