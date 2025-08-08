@@ -13,7 +13,7 @@ __generated_with = "0.14.13"
 app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -32,26 +32,6 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _():
-    import marimo as mo
-    import networkx as nx
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as patches
-    from matplotlib.collections import LineCollection
-    import warnings
-    warnings.filterwarnings('ignore')
-    return mo, np, nx, patches, plt
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    # Create the main control panel
-    mo.md("## Controls")
-    return
-
-
-@app.cell(hide_code=True)
 def _(mo):
     # Rewiring probability slider
     p_slider = mo.ui.slider(
@@ -61,7 +41,7 @@ def _(mo):
         value=0.1,
         show_value=True,
         label="Rewiring Probability (p)",
-        full_width=True
+        full_width=True,
     )
 
     # Network size slider
@@ -72,7 +52,7 @@ def _(mo):
         value=20,
         show_value=True,
         label="Number of Nodes (N)",
-        full_width=True
+        full_width=True,
     )
 
     # Degree slider
@@ -83,93 +63,21 @@ def _(mo):
         value=4,
         show_value=True,
         label="Node Degree (k)",
-        full_width=True
+        full_width=True,
     )
 
     # Display controls in a nice layout
-    mo.vstack([
-        mo.md("**Adjust the parameters to explore different network configurations:**"),
-        p_slider,
-        N_slider, 
-        k_slider
-    ])
+    mo.vstack(
+        [
+            mo.md(
+                "**Adjust the parameters to explore different network configurations:**"
+            ),
+            p_slider,
+            N_slider,
+            k_slider,
+        ]
+    )
     return N_slider, k_slider, p_slider
-
-
-@app.cell(hide_code=True)
-def _(N_slider, k_slider, nx, p_slider):
-    def generate_networks(N, k, p, seed=42):
-        """Generate Watts-Strogatz network and equivalent random graph"""
-        # Generate Watts-Strogatz network
-        G_ws = nx.watts_strogatz_graph(N, k, p, seed=seed)
-
-        # Generate random network with same number of edges
-        num_edges = G_ws.number_of_edges()
-        prob_random = num_edges / (N * (N-1) / 2)  # Probability for same edge density
-        G_random = nx.erdos_renyi_graph(N, prob_random, seed=seed)
-
-        return G_ws, G_random
-
-    def compute_metrics(G):
-        """Compute clustering coefficient and average path length"""
-        try:
-            C = nx.average_clustering(G)
-            if nx.is_connected(G):
-                L = nx.average_shortest_path_length(G)
-            else:
-                # For disconnected graphs, use the largest component
-                largest_cc = max(nx.connected_components(G), key=len)
-                G_sub = G.subgraph(largest_cc)
-                L = nx.average_shortest_path_length(G_sub)
-        except:
-            C = 0
-            L = float('inf')
-        return C, L
-
-    def compute_small_world_coefficient(C, L, C_random, L_random):
-        """Compute the Watts-Strogatz small-world coefficient σ"""
-        if C_random > 0 and L_random > 0 and L != float('inf'):
-            sigma = (C / C_random) / (L / L_random)
-        else:
-            sigma = 0
-        return sigma
-
-    # Generate networks with current parameters
-    G_ws, G_random = generate_networks(N_slider.value, k_slider.value, p_slider.value)
-    return G_random, G_ws, compute_metrics, compute_small_world_coefficient
-
-
-@app.cell(hide_code=True)
-def _(G_random, G_ws, compute_metrics, compute_small_world_coefficient):
-    # Compute metrics for both networks
-    C_ws, L_ws = compute_metrics(G_ws)
-    C_random, L_random = compute_metrics(G_random)
-    sigma = compute_small_world_coefficient(C_ws, L_ws, C_random, L_random)
-
-    # Store metrics for display
-    metrics = {
-        'C_ws': C_ws,
-        'L_ws': L_ws,
-        'C_random': C_random,
-        'L_random': L_random,
-        'sigma': sigma
-    }
-    return (metrics,)
-
-
-@app.cell(hide_code=True)
-def _(metrics, mo):
-    # Display current metrics
-    mo.md(f"""
-    ## Current Network Metrics
-
-    | Metric | Watts-Strogatz | Random | Ratio |
-    |--------|----------------|---------|-------|
-    | **Clustering (C)** | {metrics['C_ws']:.4f} | {metrics['C_random']:.4f} | {metrics['C_ws']/max(metrics['C_random'], 0.001):.2f} |
-    | **Path Length (L)** | {metrics['L_ws']:.4f} | {metrics['L_random']:.4f} | {metrics['L_ws']/max(metrics['L_random'], 0.001):.2f} |
-    | **Small-world σ** | {metrics['sigma']:.4f} | - | {'Strong' if metrics['sigma'] > 1 else 'Weak'} |
-    """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -179,272 +87,308 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(N_slider, k_slider, nx):
-    def compute_metrics_for_p_range(N, k, p_values, seed=42):
-        """Compute metrics for different values of p to show the transition"""
-        clustering_ws = []
-        path_length_ws = []
-        sigma_values = []
-        clustering_random = []
-        path_length_random = []
-        
-        for p in p_values:
-            # Generate Watts-Strogatz network
-            G_ws = nx.watts_strogatz_graph(N, k, p, seed=seed)
-            
-            # Generate equivalent random network
-            num_edges = G_ws.number_of_edges()
-            prob_random = num_edges / (N * (N-1) / 2)
-            G_random = nx.erdos_renyi_graph(N, prob_random, seed=seed)
-            
-            # Compute clustering
-            C_ws = nx.average_clustering(G_ws)
-            C_random = nx.average_clustering(G_random)
-            
-            # Compute path length
-            if nx.is_connected(G_ws):
-                L_ws = nx.average_shortest_path_length(G_ws)
-            else:
-                largest_cc = max(nx.connected_components(G_ws), key=len)
-                G_sub = G_ws.subgraph(largest_cc)
-                L_ws = nx.average_shortest_path_length(G_sub)
-                
-            if nx.is_connected(G_random):
-                L_random = nx.average_shortest_path_length(G_random)
-            else:
-                largest_cc = max(nx.connected_components(G_random), key=len)
-                G_sub = G_random.subgraph(largest_cc)
-                L_random = nx.average_shortest_path_length(G_sub)
-            
-            # Compute small-world coefficient
-            if C_random > 0 and L_random > 0:
-                sigma = (C_ws / C_random) / (L_ws / L_random)
-            else:
-                sigma = 0
-                
-            clustering_ws.append(C_ws)
-            path_length_ws.append(L_ws)
-            clustering_random.append(C_random)
-            path_length_random.append(L_random)
-            sigma_values.append(sigma)
-            
-        return clustering_ws, path_length_ws, clustering_random, path_length_random, sigma_values
-    
-    # Compute metrics across p values
-    p_values = np.linspace(0, 1, 21)  # 21 points from 0 to 1
-    clustering_ws, path_length_ws, clustering_random, path_length_random, sigma_values = compute_metrics_for_p_range(
-        N_slider.value, k_slider.value, p_values
-    )
-    
-    return clustering_ws, path_length_ws, clustering_random, path_length_random, sigma_values, p_values
-
-
-@app.cell(hide_code=True)
 def _(
     G_random,
     G_ws,
     N_slider,
+    alt,
     k_slider,
-    metrics,
     mo,
     np,
     nx,
     p_slider,
-    patches,
-    plt,
-    clustering_ws,
-    path_length_ws,
-    clustering_random,
-    path_length_random,
-    sigma_values,
-    p_values,
+    pd,
 ):
-    def create_visualization():
-        """Create the main network visualization and metrics plots"""
-        fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(14, 18))
-
-        # Plot 1: Watts-Strogatz Network
-        N = N_slider.value
-        k = k_slider.value
-
+    def create_network_data(G, network_type, N, k, p_value):
+        """Create network data for Altair visualization"""
         # Create circular layout
         pos = {}
-        angles = np.linspace(0, 2*np.pi, N, endpoint=False)
-        for i, node in enumerate(G_ws.nodes()):
+        angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
+        for i, node in enumerate(G.nodes()):
             pos[node] = (np.cos(angles[i]), np.sin(angles[i]))
-
-        # Draw edges with different colors for original vs rewired
-        edge_colors = []
-        for edge in G_ws.edges():
+        
+        # Create nodes dataframe
+        nodes_data = []
+        for node in G.nodes():
+            x, y = pos[node]
+            nodes_data.append({
+                'node': node,
+                'x': x,
+                'y': y,
+                'network_type': network_type
+            })
+        
+        # Create edges dataframe
+        edges_data = []
+        for edge in G.edges():
             i, j = edge
-            # Calculate ring distance (minimum distance around the circle)
-            ring_distance = min(abs(i-j), N-abs(i-j))
-            # Original edges connect to k/2 nearest neighbors on each side
-            if ring_distance <= k//2:
-                edge_colors.append('blue')  # Original edge
-            else:
-                edge_colors.append('red')   # Rewired edge
-
-        # Draw the network
-        nx.draw_networkx_edges(G_ws, pos, ax=ax1, edge_color=edge_colors, 
-                              alpha=0.7, width=1.5)
-        nx.draw_networkx_nodes(G_ws, pos, ax=ax1, node_color='lightblue', 
-                              node_size=200, edgecolors='black')
-
-        if N <= 30:  # Only show labels for smaller networks
-            nx.draw_networkx_labels(G_ws, pos, ax=ax1, font_size=8)
-
-        ax1.set_title(f'Watts-Strogatz Network\n(N={N}, k={k}, p={p_slider.value:.3f})', 
-                     fontsize=12, fontweight='bold')
-        ax1.set_aspect('equal')
-        ax1.axis('off')
-
-        # Add legend
-        blue_patch = patches.Patch(color='blue', label='Original edges', alpha=0.7)
-        red_patch = patches.Patch(color='red', label='Rewired edges', alpha=0.7)
-        ax1.legend(handles=[blue_patch, red_patch], loc='upper right')
-
-        # Plot 2: Random Network (for comparison)
-        pos_random = {}
-        for i, node in enumerate(G_random.nodes()):
-            pos_random[node] = (np.cos(angles[i]), np.sin(angles[i]))
-
-        nx.draw_networkx_edges(G_random, pos_random, ax=ax2, edge_color='gray', 
-                              alpha=0.5, width=1)
-        nx.draw_networkx_nodes(G_random, pos_random, ax=ax2, node_color='lightcoral', 
-                              node_size=200, edgecolors='black')
-
-        if N <= 30:
-            nx.draw_networkx_labels(G_random, pos_random, ax=ax2, font_size=8)
-
-        ax2.set_title(f'Random Network\n(Same N, similar edge density)', 
-                     fontsize=12, fontweight='bold')
-        ax2.set_aspect('equal')
-        ax2.axis('off')
-
-        # Plot 3: Clustering Coefficient Comparison
-        C_ws = metrics['C_ws']
-        C_random = metrics['C_random']
-
-        bars = ax3.bar(['Watts-Strogatz', 'Random'], [C_ws, C_random],
-                      color=['skyblue', 'lightcoral'], alpha=0.8, width=0.6)
-        ax3.set_ylabel('Clustering Coefficient (C)', fontweight='bold')
-        ax3.set_title('Clustering Comparison', fontweight='bold')
-        ax3.set_ylim(0, max(C_ws, C_random, 0.1) * 1.2)
-
-        # Add value labels
-        for i, (bar, val) in enumerate(zip(bars, [C_ws, C_random])):
-            ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
-                    f'{val:.3f}', ha='center', va='bottom', fontweight='bold')
-
-        ax3.grid(True, alpha=0.3)
-
-        # Plot 4: Small-World Coefficient and Path Length
-        L_ws = metrics['L_ws']
-        L_random = metrics['L_random']
-        sigma = metrics['sigma']
-
-        # Create dual y-axis plot
-        ax4_twin = ax4.twinx()
-
-        # Path length comparison (left y-axis)
-        if L_ws != float('inf'):
-            bars_L = ax4.bar(['WS', 'Random'], [L_ws, L_random], 
-                           color=['lightgreen', 'lightcoral'], alpha=0.8, width=0.4)
-            ax4.set_ylabel('Average Path Length (L)', color='darkgreen', fontweight='bold')
-            ax4.tick_params(axis='y', labelcolor='darkgreen')
-
-            # Add path length labels
-            for bar, val in zip(bars_L, [L_ws, L_random]):
-                ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.05,
-                        f'{val:.2f}', ha='center', va='bottom', fontweight='bold')
-
-        # Small-world coefficient (right y-axis) 
-        sigma_bar = ax4_twin.bar([1.5], [sigma], color='gold', 
-                                alpha=0.8, width=0.3)
-        ax4_twin.axhline(y=1, color='red', linestyle='--', alpha=0.7, 
-                        label='σ = 1 (Random baseline)')
-        ax4_twin.set_ylabel('Small-World Coefficient (σ)', color='darkorange', 
-                           fontweight='bold')
-        ax4_twin.tick_params(axis='y', labelcolor='darkorange')
-        ax4_twin.set_ylim(0, max(sigma * 1.3, 2))
-
-        # Add sigma label and interpretation
-        ax4_twin.text(1.5, sigma + max(sigma * 0.1, 0.1), f'{sigma:.2f}', 
-                     ha='center', va='bottom', fontweight='bold', fontsize=12)
-
-        # Interpretation
-        if sigma > 1.5:
-            interpretation = "Strong Small-World"
-            interp_color = 'darkgreen'
-        elif sigma > 1:
-            interpretation = "Small-World"  
-            interp_color = 'green'
-        elif sigma > 0.5:
-            interpretation = "Moderate"
-            interp_color = 'orange'
-        else:
-            interpretation = "Random-like"
-            interp_color = 'red'
-
-        ax4_twin.text(1.5, max(sigma * 0.7, 0.3), interpretation, ha='center', va='center',
-                     bbox=dict(boxstyle='round', facecolor=interp_color, alpha=0.3),
-                     fontweight='bold')
-
-        ax4.set_title('Path Length & Small-World Property', fontweight='bold')
-        ax4_twin.legend(loc='upper left')
-        ax4.grid(True, alpha=0.3)
+            x1, y1 = pos[i]
+            x2, y2 = pos[j]
+            
+            # Determine edge type for WS network
+            edge_type = "Regular"
+            if network_type == "Watts-Strogatz":
+                ring_distance = min(abs(i - j), N - abs(i - j))
+                if ring_distance > k // 2:
+                    edge_type = "Rewired"
+            
+            edges_data.append({
+                'source': i,
+                'target': j,
+                'x1': x1,
+                'y1': y1,
+                'x2': x2,
+                'y2': y2,
+                'edge_type': edge_type,
+                'network_type': network_type
+            })
         
-        # Set custom x-tick labels for both axes
-        ax4.set_xticks([0, 1])
-        ax4.set_xticklabels(['WS', 'Random'])
-        ax4_twin.set_xticks([1.5])
-        ax4_twin.set_xticklabels(['Small-World σ'])
+        return pd.DataFrame(nodes_data), pd.DataFrame(edges_data)
+    
+    # Create network data
+    N = N_slider.value
+    k = k_slider.value
+    p_val = p_slider.value
+    
+    nodes_ws, edges_ws = create_network_data(G_ws, "Watts-Strogatz", N, k, p_val)
+    nodes_rand, edges_rand = create_network_data(G_random, "Random", N, k, p_val)
+    
+    # Combine data
+    all_nodes = pd.concat([nodes_ws, nodes_rand], ignore_index=True)
+    all_edges = pd.concat([edges_ws, edges_rand], ignore_index=True)
+    
+    return all_edges, all_nodes
+
+
+@app.cell(hide_code=True)
+def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
+    # Create network visualization with Altair
+    def create_network_chart():
+        # Base chart for edges
+        edge_base = alt.Chart(all_edges).add_selection(
+            alt.selection_single()
+        )
         
-        # Plot 5: Clustering vs p
-        # Normalize clustering by initial values for better comparison
+        # WS network edges
+        ws_edges = edge_base.transform_filter(
+            alt.datum.network_type == 'Watts-Strogatz'
+        ).mark_rule(
+            strokeWidth=1.5,
+            opacity=0.7
+        ).encode(
+            x=alt.X('x1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            y=alt.Y('y1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            x2='x2:Q',
+            y2='y2:Q',
+            color=alt.Color(
+                'edge_type:N',
+                scale=alt.Scale(
+                    domain=['Regular', 'Rewired'], 
+                    range=['steelblue', 'red']
+                ),
+                legend=alt.Legend(title="Edge Type", orient="top-right")
+            ),
+            tooltip=['source:O', 'target:O', 'edge_type:N']
+        ).properties(
+            width=250,
+            height=250,
+            title=f"Watts-Strogatz Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.3f})"
+        )
+        
+        # WS network nodes
+        ws_nodes = alt.Chart(all_nodes).transform_filter(
+            alt.datum.network_type == 'Watts-Strogatz'
+        ).mark_circle(
+            size=100,
+            stroke='black',
+            strokeWidth=1
+        ).encode(
+            x=alt.X('x:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            y=alt.Y('y:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            fill=alt.value('lightblue'),
+            tooltip=['node:O']
+        )
+        
+        # Random network edges
+        rand_edges = edge_base.transform_filter(
+            alt.datum.network_type == 'Random'
+        ).mark_rule(
+            strokeWidth=1,
+            opacity=0.5,
+            color='gray'
+        ).encode(
+            x=alt.X('x1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            y=alt.Y('y1:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            x2='x2:Q',
+            y2='y2:Q',
+            tooltip=['source:O', 'target:O']
+        ).properties(
+            width=250,
+            height=250,
+            title="Random Network (same N, similar density)"
+        )
+        
+        # Random network nodes
+        rand_nodes = alt.Chart(all_nodes).transform_filter(
+            alt.datum.network_type == 'Random'
+        ).mark_circle(
+            size=100,
+            stroke='black',
+            strokeWidth=1
+        ).encode(
+            x=alt.X('x:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            y=alt.Y('y:Q', scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
+            fill=alt.value('lightcoral'),
+            tooltip=['node:O']
+        )
+        
+        # Combine networks
+        ws_network = (ws_edges + ws_nodes)
+        rand_network = (rand_edges + rand_nodes)
+        
+        return alt.hconcat(ws_network, rand_network).resolve_scale(
+            color='independent'
+        )
+    
+    # Display networks
+    network_chart = create_network_chart()
+    mo.ui.altair_chart(network_chart)
+    return (network_chart,)
+
+
+@app.cell(hide_code=True) 
+def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_values):
+    # Create line plots with Altair
+    def create_line_plots():
+        # Prepare data for line plots
         C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
         L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
         
-        clustering_normalized = [c / C_initial for c in clustering_ws]
-        path_length_normalized = [l / L_initial for l in path_length_ws]
+        # Create dataframe for properties vs p
+        props_data = []
+        for i, p in enumerate(p_values):
+            props_data.extend([
+                {
+                    'p': p,
+                    'value': clustering_ws[i] / C_initial,
+                    'metric': 'C(p) / C(0)',
+                    'type': 'Clustering'
+                },
+                {
+                    'p': p,
+                    'value': path_length_ws[i] / L_initial,
+                    'metric': 'L(p) / L(0)',
+                    'type': 'Path Length'
+                }
+            ])
         
-        ax5.plot(p_values, clustering_normalized, 'b-', linewidth=2.5, label='C(p) / C(0)', marker='o', markersize=4)
-        ax5.plot(p_values, path_length_normalized, 'r-', linewidth=2.5, label='L(p) / L(0)', marker='s', markersize=4)
-        ax5.axvline(x=p_slider.value, color='gray', linestyle='--', alpha=0.7, linewidth=2, label=f'Current p={p_slider.value:.3f}')
+        props_df = pd.DataFrame(props_data)
         
-        ax5.set_xlabel('Rewiring Probability (p)', fontweight='bold')
-        ax5.set_ylabel('Normalized Values', fontweight='bold')
-        ax5.set_title('Network Properties vs Rewiring Probability', fontweight='bold')
-        ax5.legend(fontsize=10)
-        ax5.grid(True, alpha=0.3)
-        ax5.set_xlim(0, 1)
+        # Create dataframe for sigma vs p
+        sigma_data = []
+        for i, p in enumerate(p_values):
+            sigma_data.append({
+                'p': p,
+                'sigma': sigma_values[i]
+            })
         
-        # Plot 6: Small-world coefficient vs p
-        ax6.plot(p_values, sigma_values, 'g-', linewidth=2.5, marker='D', markersize=4, label='σ(p)')
-        ax6.axhline(y=1, color='red', linestyle='--', alpha=0.7, label='σ = 1 (Random baseline)')
-        ax6.axvline(x=p_slider.value, color='gray', linestyle='--', alpha=0.7, linewidth=2, label=f'Current p={p_slider.value:.3f}')
+        sigma_df = pd.DataFrame(sigma_data)
         
-        # Highlight the small-world regime (σ > 1)
-        max_sigma_idx = np.argmax(sigma_values)
-        ax6.scatter([p_values[max_sigma_idx]], [sigma_values[max_sigma_idx]], 
-                   color='gold', s=100, zorder=5, label=f'Max σ = {sigma_values[max_sigma_idx]:.2f}')
+        # Properties plot
+        properties_plot = alt.Chart(props_df).mark_line(
+            point=True,
+            strokeWidth=2.5
+        ).encode(
+            x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
+            y=alt.Y('value:Q', title='Normalized Values'),
+            color=alt.Color(
+                'metric:N',
+                scale=alt.Scale(
+                    domain=['C(p) / C(0)', 'L(p) / L(0)'],
+                    range=['steelblue', 'red']
+                ),
+                legend=alt.Legend(title="Metric")
+            ),
+            tooltip=['p:Q', 'value:Q', 'metric:N']
+        ).properties(
+            width=350,
+            height=200,
+            title="Network Properties vs Rewiring Probability"
+        )
         
-        ax6.set_xlabel('Rewiring Probability (p)', fontweight='bold')
-        ax6.set_ylabel('Small-World Coefficient (σ)', fontweight='bold')
-        ax6.set_title('Small-World Property vs Rewiring Probability', fontweight='bold')
-        ax6.legend(fontsize=10)
-        ax6.grid(True, alpha=0.3)
-        ax6.set_xlim(0, 1)
-        ax6.set_ylim(0, max(max(sigma_values) * 1.1, 2))
-
-        plt.tight_layout()
-        return fig
-
-    # Create and display the visualization
-    visualization_fig = create_visualization()
-    mo.mpl.interactive(visualization_fig)
-    return
+        # Add current p line to properties plot
+        current_p_line = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
+            color='gray',
+            strokeDash=[5, 5],
+            strokeWidth=2
+        ).encode(
+            x='p:Q',
+            tooltip=alt.value(f'Current p = {p_slider.value:.3f}')
+        )
+        
+        properties_with_line = properties_plot + current_p_line
+        
+        # Sigma plot
+        sigma_plot = alt.Chart(sigma_df).mark_line(
+            point=alt.OverlayMarkDef(shape='diamond', size=60),
+            color='green',
+            strokeWidth=2.5
+        ).encode(
+            x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
+            y=alt.Y('sigma:Q', title='Small-World Coefficient (σ)'),
+            tooltip=['p:Q', 'sigma:Q']
+        ).properties(
+            width=350,
+            height=200,
+            title="Small-World Property vs Rewiring Probability"
+        )
+        
+        # Add sigma = 1 baseline
+        baseline = alt.Chart(pd.DataFrame({'y': [1]})).mark_rule(
+            color='red',
+            strokeDash=[3, 3]
+        ).encode(
+            y='y:Q',
+            tooltip=alt.value('σ = 1 (Random baseline)')
+        )
+        
+        # Add current p line to sigma plot
+        sigma_p_line = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
+            color='gray',
+            strokeDash=[5, 5],
+            strokeWidth=2
+        ).encode(
+            x='p:Q',
+            tooltip=alt.value(f'Current p = {p_slider.value:.3f}')
+        )
+        
+        # Highlight max sigma
+        max_sigma_idx = sigma_values.index(max(sigma_values))
+        max_point = alt.Chart(pd.DataFrame([{
+            'p': p_values[max_sigma_idx], 
+            'sigma': sigma_values[max_sigma_idx]
+        }])).mark_circle(
+            size=150,
+            color='gold',
+            stroke='black',
+            strokeWidth=2
+        ).encode(
+            x='p:Q',
+            y='sigma:Q',
+            tooltip=alt.value(f'Max σ = {sigma_values[max_sigma_idx]:.2f} at p = {p_values[max_sigma_idx]:.2f}')
+        )
+        
+        sigma_with_annotations = sigma_plot + baseline + sigma_p_line + max_point
+        
+        return alt.vconcat(
+            properties_with_line,
+            sigma_with_annotations
+        ).resolve_scale(color='independent')
+    
+    # Display line plots
+    line_plots = create_line_plots()
+    mo.ui.altair_chart(line_plots)
+    return (line_plots,)
 
 
 @app.cell(hide_code=True)
@@ -471,14 +415,14 @@ def _(mo, p_slider):
     - Notice how just a few rewired edges (red) dramatically reduce path lengths
     - Observe that clustering remains high even with moderate rewiring
     - Watch the line plots below to see how the current p value compares to the full transition
-    
+
     ### Understanding the Line Plots:
-    
+
     **Left Plot - Normalized Properties:**
     - **Blue line (C(p)/C(0))**: Shows how clustering decreases as p increases (normalized by initial value)
     - **Red line (L(p)/L(0))**: Shows how path length decreases rapidly even for small p (normalized by initial value)
     - The **small-world regime** occurs where clustering remains high but path length drops dramatically
-    
+
     **Right Plot - Small-World Coefficient:**
     - **Green line**: Shows σ(p) across all rewiring probabilities
     - **Gold dot**: Highlights the maximum small-world effect (optimal p value)
@@ -512,6 +456,177 @@ def _(mo):
     This normalization ensures we're comparing against meaningful baselines rather than absolute values.
     """
     )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    import marimo as mo
+    import networkx as nx
+    import numpy as np
+    import pandas as pd
+    import altair as alt
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
+    from matplotlib.collections import LineCollection
+    import warnings
+
+    warnings.filterwarnings("ignore")
+    alt.data_transformers.enable('json')
+    return alt, mo, np, nx, patches, pd, plt
+
+
+@app.cell(hide_code=True)
+def _(N_slider, k_slider, nx, p_slider):
+    def generate_networks(N, k, p, seed=42):
+        """Generate Watts-Strogatz network and equivalent random graph"""
+        # Generate Watts-Strogatz network
+        G_ws = nx.watts_strogatz_graph(N, k, p, seed=seed)
+
+        # Generate random network with same number of edges
+        num_edges = G_ws.number_of_edges()
+        prob_random = num_edges / (
+            N * (N - 1) / 2
+        )  # Probability for same edge density
+        G_random = nx.erdos_renyi_graph(N, prob_random, seed=seed)
+
+        return G_ws, G_random
+
+
+    def compute_metrics(G):
+        """Compute clustering coefficient and average path length"""
+        try:
+            C = nx.average_clustering(G)
+            if nx.is_connected(G):
+                L = nx.average_shortest_path_length(G)
+            else:
+                # For disconnected graphs, use the largest component
+                largest_cc = max(nx.connected_components(G), key=len)
+                G_sub = G.subgraph(largest_cc)
+                L = nx.average_shortest_path_length(G_sub)
+        except:
+            C = 0
+            L = float("inf")
+        return C, L
+
+
+    def compute_small_world_coefficient(C, L, C_random, L_random):
+        """Compute the Watts-Strogatz small-world coefficient σ"""
+        if C_random > 0 and L_random > 0 and L != float("inf"):
+            sigma = (C / C_random) / (L / L_random)
+        else:
+            sigma = 0
+        return sigma
+
+
+    # Generate networks with current parameters
+    G_ws, G_random = generate_networks(
+        N_slider.value, k_slider.value, p_slider.value
+    )
+    return G_random, G_ws, compute_metrics, compute_small_world_coefficient
+
+
+@app.cell(hide_code=True)
+def _(G_random, G_ws, compute_metrics, compute_small_world_coefficient):
+    # Compute metrics for both networks
+    C_ws, L_ws = compute_metrics(G_ws)
+    C_random, L_random = compute_metrics(G_random)
+    sigma = compute_small_world_coefficient(C_ws, L_ws, C_random, L_random)
+
+    # Store metrics for display
+    metrics = {
+        "C_ws": C_ws,
+        "L_ws": L_ws,
+        "C_random": C_random,
+        "L_random": L_random,
+        "sigma": sigma,
+    }
+    return (metrics,)
+
+
+@app.cell(hide_code=True)
+def _(N_slider, k_slider, np, nx):
+    def compute_metrics_for_p_range(N, k, p_values, seed=42):
+        """Compute metrics for different values of p to show the transition"""
+        clustering_ws = []
+        path_length_ws = []
+        sigma_values = []
+        clustering_random = []
+        path_length_random = []
+
+        for p in p_values:
+            # Generate Watts-Strogatz network
+            G_ws = nx.watts_strogatz_graph(N, k, p, seed=seed)
+
+            # Generate equivalent random network
+            num_edges = G_ws.number_of_edges()
+            prob_random = num_edges / (N * (N - 1) / 2)
+            G_random = nx.erdos_renyi_graph(N, prob_random, seed=seed)
+
+            # Compute clustering
+            C_ws = nx.average_clustering(G_ws)
+            C_random = nx.average_clustering(G_random)
+
+            # Compute path length
+            if nx.is_connected(G_ws):
+                L_ws = nx.average_shortest_path_length(G_ws)
+            else:
+                largest_cc = max(nx.connected_components(G_ws), key=len)
+                G_sub = G_ws.subgraph(largest_cc)
+                L_ws = nx.average_shortest_path_length(G_sub)
+
+            if nx.is_connected(G_random):
+                L_random = nx.average_shortest_path_length(G_random)
+            else:
+                largest_cc = max(nx.connected_components(G_random), key=len)
+                G_sub = G_random.subgraph(largest_cc)
+                L_random = nx.average_shortest_path_length(G_sub)
+
+            # Compute small-world coefficient
+            if C_random > 0 and L_random > 0:
+                sigma = (C_ws / C_random) / (L_ws / L_random)
+            else:
+                sigma = 0
+
+            clustering_ws.append(C_ws)
+            path_length_ws.append(L_ws)
+            clustering_random.append(C_random)
+            path_length_random.append(L_random)
+            sigma_values.append(sigma)
+
+        return (
+            clustering_ws,
+            path_length_ws,
+            clustering_random,
+            path_length_random,
+            sigma_values,
+        )
+
+
+    # Compute metrics across p values
+    p_values = np.linspace(0, 1, 21)  # 21 points from 0 to 1
+    (
+        clustering_ws,
+        path_length_ws,
+        clustering_random,
+        path_length_random,
+        sigma_values,
+    ) = compute_metrics_for_p_range(N_slider.value, k_slider.value, p_values)
+    return clustering_ws, p_values, path_length_ws, sigma_values
+
+
+@app.cell(hide_code=True)
+def _(metrics, mo):
+    # Display current metrics
+    mo.md(f"""
+    ## Current Network Metrics
+
+    | Metric | Watts-Strogatz | Random | Ratio |
+    |--------|----------------|---------|-------|
+    | **Clustering (C)** | {metrics["C_ws"]:.4f} | {metrics["C_random"]:.4f} | {metrics["C_ws"] / max(metrics["C_random"], 0.001):.2f} |
+    | **Path Length (L)** | {metrics["L_ws"]:.4f} | {metrics["L_random"]:.4f} | {metrics["L_ws"] / max(metrics["L_random"], 0.001):.2f} |
+    | **Small-world σ** | {metrics["sigma"]:.4f} | - | {"Strong" if metrics["sigma"] > 1 else "Weak"} |
+    """)
     return
 
 
