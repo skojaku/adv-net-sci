@@ -1,75 +1,23 @@
-<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m02-small-world.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
+---
+title: "Efficient Network Representation and Computing Paths"
+exercise: true
+---
 
-# Efficient Network Representation and Computing Paths
+## Convenient libraries for network analysis
 
-## Efficient representation for large sparse networks
+The Python ecosystem offers several powerful libraries for network analysis, each with distinct strengths:
 
-An adjacency matrix is a convenient way to represent a network.
-A challenge of handling large networks is that the adjacency matrix can be too large to fit in memrory.
-For example, a network with $10^5$ nodes requires a $10^5 \times 10^5$ matrix, totaling $10$ billion entries!
-A good news is that we do not need to hold all these entries in memory, if we know the network is *sparse*.
+- [networkx](https://networkx.org/) - a beginner-friendly library for network analysis
+- [igraph](https://igraph.org/python/) - a mature library with a wide range of algorithms
+- [graph-tool](https://graph-tool.skewed.de/) - specialized for stochastic block models
+- [scipy](https://scipy.org/) - efficient tools for analyzing large networks
 
-Many networks in real-world are sparse, meaning most nodes connect to only a few others.
-The result is that the adjacency matrix often contains many zeros.
-This is where we can save significant memory by storing only the non-zero entries.
+Throughout this course, we'll primarily use `igraph`, a mature and robust library originally developed for R and later ported to Python. While `networkx` enjoys popularity for its accessibility, `igraph` offers several compelling advantages for serious network analysis: it provides more reliable algorithm implementations (avoiding persistent bugs found in some `networkx` functions like LFR benchmark and weighted degree assortativity), and its optimized C core delivers the performance needed for large-scale network computations.
 
-**Compressed Sparse Row (CSR)** is an efficient way to store sparse networks by treating the adjacency matrix like a scatter plot. Instead of storing all entries, CSR only keeps track of the "coordinates" (row and column indices) of non-zero entries, along with their values.
+For advanced users comfortable with `scipy`, the `csgraph` submodule provides an excellent alternative that leverages one of Python's most battle-tested and optimized libraries. Functions like `csgraph.shortest_path` and `csgraph.connected_components` offer high-performance implementations backed by `scipy`'s proven track record. You can explore more about using `scipy` for network analysis in the [Appendix](appendix.qmd).
 
-::: {.callout-note title="Optional Exercise"}
-:class: tip
-For those who are interested in the details of CSR format, please do the following:
-- 📝 Pen and paper exercise [here](./pen-paper-csr/exercise.pdf)
-- 💻 (Advanced) Coding exercise in the [Appendix](./appendix.qmd).
+![](../figs/scipy.jpg)
 
-:::
-
-
-::: {#fig-csr_matirx}
-
-<img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*zWhtdW4nYTSO3nya.gif" width="100%">
-
-Compressed Sparse Row (CSR) matrix. Source: [Medium: Sparse GEMM and Tensor Core's Structured Sparsity](https://medium.com/@hxu296/exploring-spgemm-and-nvidias-leap-in-deep-neural-network-efficiency-d367adc68791)
-:::
-
-The CSR format is implemented in the [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html) library. It is straightforward to convert the CSR matrix from the *dense* adjacency matrix.
-```{python}
-from scipy.sparse import csr_matrix
-
-A = [[0, 2, 0, 1],
-     [2, 0, 2, 1],
-     [0, 2, 0, 1],
-     [1, 1, 1, 0]]
-
-A_csr = csr_matrix(A)
-A_csr
-```
-
-If you have an *edge list*, you can directly generate the CSR matrix without creating the dense matrix first.
-```{python}
-from scipy.sparse import csr_matrix
-
-edges = [(0,1), (0, 1), (0, 3), (1, 2), (1, 2), (1, 3), (2, 3)]
-
-src = [edge[0] for edge in edges]
-trg = [edge[1] for edge in edges]
-values = [1 for _ in edges]
-A_csr = csr_matrix((values, (src, trg)), shape=(4, 4))
-A_csr
-```
-where `src`, `trg`, and `values` are lists of the source nodes, target nodes, and edge weights, respectively.
-
-## Computing Shortest Paths and Connected Components
-
-Let's use `igraph` to compute the shortest paths and connected components. We will then use `scipy` to compute them.
-
-```{python}
-# If you are using Google Colab, uncomment the following line to install igraph
-# !sudo apt install libcairo2-dev pkg-config python3-dev
-# !pip install pycairo cairocffi
-# !pip install igraph
-```
 
 ### igraph
 
