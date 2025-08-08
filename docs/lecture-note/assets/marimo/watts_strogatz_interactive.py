@@ -31,7 +31,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
     import networkx as nx
@@ -44,14 +44,14 @@ def _():
     return mo, np, nx, patches, plt
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     # Create the main control panel
     mo.md("## Controls")
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     # Rewiring probability slider
     p_slider = mo.ui.slider(
@@ -96,7 +96,7 @@ def _(mo):
     return N_slider, k_slider, p_slider
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(N_slider, k_slider, nx, p_slider):
     def generate_networks(N, k, p, seed=42):
         """Generate Watts-Strogatz network and equivalent random graph"""
@@ -139,7 +139,7 @@ def _(N_slider, k_slider, nx, p_slider):
     return G_random, G_ws, compute_metrics, compute_small_world_coefficient
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(G_random, G_ws, compute_metrics, compute_small_world_coefficient):
     # Compute metrics for both networks
     C_ws, L_ws = compute_metrics(G_ws)
@@ -157,7 +157,7 @@ def _(G_random, G_ws, compute_metrics, compute_small_world_coefficient):
     return (metrics,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(metrics, mo):
     # Display current metrics
     mo.md(f"""
@@ -172,13 +172,13 @@ def _(metrics, mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""## Network Visualization""")
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(N_slider, k_slider, nx):
     def compute_metrics_for_p_range(N, k, p_values, seed=42):
         """Compute metrics for different values of p to show the transition"""
@@ -239,7 +239,7 @@ def _(N_slider, k_slider, nx):
     return clustering_ws, path_length_ws, clustering_random, path_length_random, sigma_values, p_values
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     G_random,
     G_ws,
@@ -447,7 +447,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, p_slider):
     mo.md(
         f"""
@@ -489,7 +489,7 @@ def _(mo, p_slider):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         """
