@@ -1,5 +1,7 @@
 ---
 title: "Small-World Networks: Core Concepts"
+filters:
+    - marimo-team/marimo
 ---
 
 ## What to learn in this module
@@ -330,6 +332,12 @@ Watts-Strogatz model.
 :::
 
 ::: {.column-margin}
+
+Here is a nice blog post about the Watts-Strogatz model: [https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz](https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz).
+
+:::
+
+::: {.column-margin}
 > "What I cannot create, I do not understand." - Richard Feynman
 
 This quote captures the essence of why models like Watts-Strogatz are crucial: by building networks that exhibit small-world properties, we gain deeper insight into how these properties emerge in real systems.
@@ -451,21 +459,19 @@ The model's success lies in showing that small-world properties emerge naturally
 
 Explore the Watts-Strogatz model interactively by adjusting the rewiring probability and observing how network properties change:
 
-```{python}
-#| echo: false
-#| output: true
+```python {.marimo}
 import marimo as mo
-import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.collections import LineCollection
+from collections import deque
+import random
 
 # Create the rewiring probability slider
 p_slider = mo.ui.slider(
-    start=0.0, 
-    stop=1.0, 
-    step=0.01, 
+    start=0.0,
+    stop=1.0,
+    step=0.01,
     value=0.1,
     show_value=True,
     label="Rewiring Probability (p)"
@@ -475,74 +481,206 @@ p_slider = mo.ui.slider(
 mo.md(f"**Control the rewiring probability:** {p_slider}")
 ```
 
-```{python}
-#| echo: false
-#| output: true
+```python {.marimo}
+def generate_watts_strogatz(N=20, k=4, p=0.1, seed=42):
+    """Generate Watts-Strogatz network from scratch"""
+    np.random.seed(seed)
+    random.seed(seed)
+    
+    # Start with ring lattice - adjacency matrix
+    adj_matrix = np.zeros((N, N), dtype=int)
+    
+    # Connect each node to k nearest neighbors (k/2 on each side)
+    for i in range(N):
+        for j in range(1, k//2 + 1):
+            # Connect to neighbors on both sides, wrapping around
+            neighbor_right = (i + j) % N
+            neighbor_left = (i - j) % N
+            adj_matrix[i][neighbor_right] = 1
+            adj_matrix[i][neighbor_left] = 1
+    
+    # Make symmetric (undirected)
+    adj_matrix = np.maximum(adj_matrix, adj_matrix.T)
+    
+    # Rewire edges with probability p
+    edges_to_process = []
+    for i in range(N):
+        for j in range(i+1, N):
+            if adj_matrix[i][j] == 1:
+                edges_to_process.append((i, j))
+    
+    for i, j in edges_to_process:
+        if np.random.random() < p:
+            # Remove original edge
+            adj_matrix[i][j] = 0
+            adj_matrix[j][i] = 0
+            
+            # Find a new target for node i (avoid self-loops and duplicates)
+            possible_targets = []
+            for k in range(N):
+                if k != i and adj_matrix[i][k] == 0:
+                    possible_targets.append(k)
+            
+            if possible_targets:
+                new_target = np.random.choice(possible_targets)
+                adj_matrix[i][new_target] = 1
+                adj_matrix[new_target][i] = 1
+    
+    return adj_matrix
+
+def generate_random_graph(N, num_edges, seed=42):
+    """Generate Erdős–Rényi random graph with same number of edges"""
+    np.random.seed(seed)
+    adj_matrix = np.zeros((N, N), dtype=int)
+    
+    # Get all possible edges
+    possible_edges = []
+    for i in range(N):
+        for j in range(i+1, N):
+            possible_edges.append((i, j))
+    
+    # Randomly select edges
+    if len(possible_edges) >= num_edges:
+        selected_edges = np.random.choice(len(possible_edges), size=num_edges, replace=False)
+        for edge_idx in selected_edges:
+            i, j = possible_edges[edge_idx]
+            adj_matrix[i][j] = 1
+            adj_matrix[j][i] = 1
+    
+    return adj_matrix
+
+def bfs_shortest_paths(adj_matrix, start):
+    """Compute shortest paths from start node using BFS"""
+    N = len(adj_matrix)
+    distances = [-1] * N
+    distances[start] = 0
+    queue = deque([start])
+    
+    while queue:
+        node = queue.popleft()
+        for neighbor in range(N):
+            if adj_matrix[node][neighbor] == 1 and distances[neighbor] == -1:
+                distances[neighbor] = distances[node] + 1
+                queue.append(neighbor)
+    
+    return distances
+
+def compute_average_path_length(adj_matrix):
+    """Compute average shortest path length"""
+    N = len(adj_matrix)
+    total_distance = 0
+    total_pairs = 0
+    
+    for i in range(N):
+        distances = bfs_shortest_paths(adj_matrix, i)
+        for j in range(i+1, N):
+            if distances[j] != -1:  # Connected
+                total_distance += distances[j]
+                total_pairs += 1
+    
+    if total_pairs == 0:
+        return float('inf')
+    return total_distance / total_pairs
+
+def compute_clustering_coefficient(adj_matrix):
+    """Compute average local clustering coefficient"""
+    N = len(adj_matrix)
+    clustering_sum = 0
+    valid_nodes = 0
+    
+    for i in range(N):
+        # Find neighbors of node i
+        neighbors = [j for j in range(N) if adj_matrix[i][j] == 1]
+        
+        if len(neighbors) < 2:
+            continue
+        
+        # Count triangles involving node i
+        triangles = 0
+        possible_triangles = len(neighbors) * (len(neighbors) - 1) // 2
+        
+        for j in range(len(neighbors)):
+            for k in range(j+1, len(neighbors)):
+                if adj_matrix[neighbors[j]][neighbors[k]] == 1:
+                    triangles += 1
+        
+        clustering_sum += triangles / possible_triangles if possible_triangles > 0 else 0
+        valid_nodes += 1
+    
+    return clustering_sum / valid_nodes if valid_nodes > 0 else 0
+
 def watts_strogatz_with_metrics(N=20, k=4, p=0.1):
     """Generate Watts-Strogatz network and compute metrics"""
     # Generate the network
-    G = nx.watts_strogatz_graph(N, k, p, seed=42)
+    adj_matrix = generate_watts_strogatz(N, k, p, seed=42)
     
-    # Generate random network for comparison (same N, M)
-    num_edges = G.number_of_edges()
-    G_random = nx.erdos_renyi_graph(N, num_edges / (N * (N-1) / 2), seed=42)
+    # Count edges
+    num_edges = np.sum(adj_matrix) // 2
+    
+    # Generate random network for comparison
+    adj_random = generate_random_graph(N, num_edges, seed=42)
     
     # Compute metrics for original network
     try:
-        C = nx.average_clustering(G)
-        L = nx.average_shortest_path_length(G)
+        C = compute_clustering_coefficient(adj_matrix)
+        L = compute_average_path_length(adj_matrix)
     except:
         C = 0
         L = float('inf')
     
     # Compute metrics for random network
     try:
-        C_random = nx.average_clustering(G_random)
-        L_random = nx.average_shortest_path_length(G_random)
+        C_random = compute_clustering_coefficient(adj_random)
+        L_random = compute_average_path_length(adj_random)
     except:
         C_random = 0.001  # Small value to avoid division by zero
         L_random = 1
     
     # Compute small-world coefficient
-    if C_random > 0 and L_random > 0:
+    if C_random > 0 and L_random > 0 and L != float('inf'):
         sigma = (C / C_random) / (L / L_random)
     else:
         sigma = 0
     
-    return G, C, L, C_random, L_random, sigma
+    return adj_matrix, adj_random, C, L, C_random, L_random, sigma
 
 def plot_network_and_metrics(p_value):
     """Create network visualization and metrics plots"""
-    G, C, L, C_random, L_random, sigma = watts_strogatz_with_metrics(N=20, k=4, p=p_value)
+    adj_matrix, adj_random, C, L, C_random, L_random, sigma = watts_strogatz_with_metrics(N=20, k=4, p=p_value)
     
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
     
+    N = len(adj_matrix)
+    
     # Plot 1: Network visualization
-    pos = {}
-    N = len(G.nodes())
-    for i, node in enumerate(G.nodes()):
-        angle = 2 * np.pi * i / N
-        pos[node] = (np.cos(angle), np.sin(angle))
+    # Calculate node positions in a circle
+    angles = np.linspace(0, 2*np.pi, N, endpoint=False)
+    pos_x = np.cos(angles)
+    pos_y = np.sin(angles)
     
     # Draw edges
-    edge_colors = []
-    for edge in G.edges():
-        # Check if this edge would exist in a regular ring lattice
-        i, j = edge
-        ring_distance = min(abs(i-j), N-abs(i-j))
-        if ring_distance <= 2:  # k=4 means connect to 2 neighbors on each side
-            edge_colors.append('blue')  # Original edge
-        else:
-            edge_colors.append('red')   # Rewired edge
+    for i in range(N):
+        for j in range(i+1, N):
+            if adj_matrix[i][j] == 1:
+                # Determine if this is an original or rewired edge
+                ring_distance = min(abs(i-j), N-abs(i-j))
+                edge_color = 'blue' if ring_distance <= 2 else 'red'  # k=4 means connect to 2 neighbors on each side
+                
+                ax1.plot([pos_x[i], pos_x[j]], [pos_y[i], pos_y[j]], 
+                        color=edge_color, alpha=0.6, linewidth=1.5)
     
-    nx.draw_networkx_edges(G, pos, ax=ax1, edge_color=edge_colors, alpha=0.6, width=1.5)
-    nx.draw_networkx_nodes(G, pos, ax=ax1, node_color='lightblue', 
-                          node_size=300, edgecolors='black')
-    nx.draw_networkx_labels(G, pos, ax=ax1, font_size=8)
+    # Draw nodes
+    ax1.scatter(pos_x, pos_y, c='lightblue', s=300, edgecolors='black', zorder=5)
+    
+    # Add node labels
+    for i in range(N):
+        ax1.text(pos_x[i], pos_y[i], str(i), ha='center', va='center', fontsize=8, zorder=6)
     
     ax1.set_title(f'Watts-Strogatz Network (p = {p_value:.3f})')
     ax1.set_aspect('equal')
     ax1.axis('off')
+    ax1.set_xlim(-1.3, 1.3)
+    ax1.set_ylim(-1.3, 1.3)
     
     # Add legend
     blue_patch = patches.Patch(color='blue', label='Original edges')
@@ -550,29 +688,30 @@ def plot_network_and_metrics(p_value):
     ax1.legend(handles=[blue_patch, red_patch], loc='upper right')
     
     # Plot 2: Clustering coefficient comparison
-    ax2.bar(['Network', 'Random'], [C, C_random], 
+    ax2.bar(['Network', 'Random'], [C, C_random],
             color=['skyblue', 'lightcoral'], alpha=0.7)
     ax2.set_ylabel('Clustering Coefficient')
     ax2.set_title('Clustering Coefficient Comparison')
-    ax2.set_ylim(0, max(C, C_random) * 1.2 if max(C, C_random) > 0 else 1)
+    ax2.set_ylim(0, max(C, C_random, 0.1) * 1.2)
     
     # Add value labels
-    ax2.text(0, C + 0.01, f'{C:.3f}', ha='center', va='bottom')
-    ax2.text(1, C_random + 0.01, f'{C_random:.3f}', ha='center', va='bottom')
+    ax2.text(0, C + max(C, C_random, 0.1) * 0.05, f'{C:.3f}', ha='center', va='bottom')
+    ax2.text(1, C_random + max(C, C_random, 0.1) * 0.05, f'{C_random:.3f}', ha='center', va='bottom')
     
-    # Plot 3: Average path length comparison  
+    # Plot 3: Average path length comparison
     if L != float('inf'):
-        ax3.bar(['Network', 'Random'], [L, L_random], 
+        ax3.bar(['Network', 'Random'], [L, L_random],
                 color=['skyblue', 'lightcoral'], alpha=0.7)
-        ax3.text(0, L + 0.05, f'{L:.3f}', ha='center', va='bottom')
-        ax3.text(1, L_random + 0.05, f'{L_random:.3f}', ha='center', va='bottom')
+        ax3.text(0, L + max(L, L_random) * 0.05, f'{L:.3f}', ha='center', va='bottom')
+        ax3.text(1, L_random + max(L, L_random) * 0.05, f'{L_random:.3f}', ha='center', va='bottom')
         ax3.set_ylim(0, max(L, L_random) * 1.2)
     else:
-        ax3.bar(['Network', 'Random'], [10, L_random], 
+        ax3.bar(['Network', 'Random'], [10, L_random],
                 color=['skyblue', 'lightcoral'], alpha=0.7)
         ax3.text(0, 10.5, '∞', ha='center', va='bottom')
-        ax3.text(1, L_random + 0.05, f'{L_random:.3f}', ha='center', va='bottom')
-        
+        ax3.text(1, L_random + L_random * 0.05, f'{L_random:.3f}', ha='center', va='bottom')
+        ax3.set_ylim(0, max(10, L_random * 1.2))
+    
     ax3.set_ylabel('Average Path Length')
     ax3.set_title('Average Path Length Comparison')
     
@@ -581,20 +720,21 @@ def plot_network_and_metrics(p_value):
     ax4.axhline(y=1, color='red', linestyle='--', alpha=0.7, label='σ = 1 (Random)')
     ax4.set_ylabel('Small-world Coefficient (σ)')
     ax4.set_title('Small-world Property')
-    ax4.text(0, sigma + 0.1, f'{sigma:.2f}', ha='center', va='bottom', fontweight='bold')
+    ax4.text(0, sigma + max(sigma * 0.1, 0.1), f'{sigma:.2f}', ha='center', va='bottom', fontweight='bold')
     
     # Interpretation text
     if sigma > 1:
         interpretation = "Strong small-world"
         color = 'green'
     elif sigma > 0.5:
-        interpretation = "Moderate small-world" 
+        interpretation = "Moderate small-world"
         color = 'orange'
     else:
         interpretation = "Random-like"
         color = 'red'
     
-    ax4.text(0, max(sigma * 0.8, 0.5), interpretation, ha='center', va='center',
+    y_pos = max(sigma * 0.8, 0.5)
+    ax4.text(0, y_pos, interpretation, ha='center', va='center',
              bbox=dict(boxstyle='round', facecolor=color, alpha=0.3))
     
     ax4.legend()
@@ -608,25 +748,23 @@ current_fig = plot_network_and_metrics(p_slider.value)
 mo.mpl.interactive(current_fig)
 ```
 
-```{python}
-#| echo: false  
-#| output: true
+```python {.marimo}
+# Get current metrics for display
+_, _, C, L, C_random, L_random, sigma = watts_strogatz_with_metrics(N=20, k=4, p=p_slider.value)
+
 mo.md(f"""
 ### Key Observations
 
 - **Network Structure**: Blue edges represent original ring lattice connections, red edges show rewired shortcuts
-- **Clustering**: Measures local triangle density - starts high and decreases with rewiring  
+- **Clustering**: Measures local triangle density - starts high and decreases with rewiring
 - **Path Length**: Average shortest path between nodes - drops rapidly even with small p values
 - **Small-world Coefficient (σ)**: When σ > 1, the network exhibits small-world properties
 
-**Current values**: C = {watts_strogatz_with_metrics(N=20, k=4, p=p_slider.value)[1]:.3f}, 
-L = {watts_strogatz_with_metrics(N=20, k=4, p=p_slider.value)[2]:.3f}, 
-σ = {watts_strogatz_with_metrics(N=20, k=4, p=p_slider.value)[5]:.2f}
+**Current values**: C = {C:.3f}, L = {L:.3f}, σ = {sigma:.2f}
 
 Try different values of p and observe how even small amounts of rewiring (p ≈ 0.01-0.1) can create the small-world effect!
 """)
-
-
+```
 
 
 
