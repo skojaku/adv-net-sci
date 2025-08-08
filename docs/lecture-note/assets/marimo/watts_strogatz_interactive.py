@@ -165,9 +165,7 @@ def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
     # Create network visualization with Altair
     def create_network_chart():
         # Base chart for edges
-        edge_base = alt.Chart(all_edges).add_selection(
-            alt.selection_single()
-        )
+        edge_base = alt.Chart(all_edges)
         
         # WS network edges
         ws_edges = edge_base.transform_filter(
@@ -246,9 +244,7 @@ def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
         ws_network = (ws_edges + ws_nodes)
         rand_network = (rand_edges + rand_nodes)
         
-        return alt.hconcat(ws_network, rand_network).resolve_scale(
-            color='independent'
-        )
+        return alt.hconcat(ws_network, rand_network)
     
     # Display networks
     network_chart = create_network_chart()
@@ -363,10 +359,11 @@ def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_valu
         )
         
         # Highlight max sigma
-        max_sigma_idx = sigma_values.index(max(sigma_values))
+        max_sigma = max(sigma_values)
+        max_sigma_idx = np.argmax(sigma_values)
         max_point = alt.Chart(pd.DataFrame([{
             'p': p_values[max_sigma_idx], 
-            'sigma': sigma_values[max_sigma_idx]
+            'sigma': max_sigma
         }])).mark_circle(
             size=150,
             color='gold',
@@ -375,7 +372,7 @@ def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_valu
         ).encode(
             x='p:Q',
             y='sigma:Q',
-            tooltip=alt.value(f'Max σ = {sigma_values[max_sigma_idx]:.2f} at p = {p_values[max_sigma_idx]:.2f}')
+            tooltip=alt.value(f'Max σ = {max_sigma:.2f} at p = {p_values[max_sigma_idx]:.2f}')
         )
         
         sigma_with_annotations = sigma_plot + baseline + sigma_p_line + max_point
@@ -383,7 +380,7 @@ def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_valu
         return alt.vconcat(
             properties_with_line,
             sigma_with_annotations
-        ).resolve_scale(color='independent')
+        )
     
     # Display line plots
     line_plots = create_line_plots()
@@ -472,7 +469,7 @@ def _():
     import warnings
 
     warnings.filterwarnings("ignore")
-    alt.data_transformers.enable('json')
+    alt.data_transformers.disable_max_rows()
     return alt, mo, np, nx, patches, pd, plt
 
 
