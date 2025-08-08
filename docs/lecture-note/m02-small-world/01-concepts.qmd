@@ -78,7 +78,7 @@ In summary:
 - **Small-world networks** have both high clustering *and* short average path lengths, thanks to a few edges that connect distant parts of the network.
 - This structure is non-trivial because it cannot be explained by local connections alone; the presence of long-range links is essential for the "small world" phenomenon.
 
-## Local Clustering vs. Global Clustering
+## Quantifying Small-World Properties
 
 ::: {.column-margin}
 
@@ -93,7 +93,7 @@ Let us approach the small-world properties from mathematical angle. Two key char
 - **High clustering**: Friends of friends are often friends.
 
 
-**Short Average Path Length:**
+### Short Average Path Length
 
 ::: {.column-margin}
 A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.
@@ -105,9 +105,14 @@ Let's understand what **average path length** means. When we talk about how "far
 //| fig-width: 3
 //| fig-height: 2.5
 //| fig-cap: "Simple network example for understanding shortest paths"
+//| label: fig-shortest-path
 //| fig-align: center
 graph G {
-  layout=fdp
+  layout=circo
+  A [shape=circle, fillcolor="#f5cbcc", style="filled,bold", penwidth=2, ];
+  B [shape=circle];
+  C [shape=circle];
+  D [shape=circle];
   A -- B;
   A -- C;
   B -- C;
@@ -116,52 +121,126 @@ graph G {
 }
 ```
 
-**Step 2: Finding Shortest Paths**
-
 In this simple network, let's find the distance between nodes A and D:
-- **Path 1**: A → B → D (2 edges)
-- **Path 2**: A → C → D (2 edges)
-- **Path 3**: A → C → B → D (3 edges)
+
+- Path 1: A $\rightarrow$ B $\rightarrow$ D (2 edges)
+- Path 2: A $\rightarrow$ C $\rightarrow$ D (2 edges)
+- Path 3: A $\rightarrow$ C $\rightarrow$ B $\rightarrow$ D (3 edges)
 
 Even though there are multiple paths, the **shortest path length** (distance) from A to D is **2 edges**.
 
-**Step 3: Calculate All Pairwise Distances**
+Building on this, let us calculate the *average* path length between two nodes. We have four nodes in the network, so there are 6 pairs of nodes. Let us enumerate them as follows:
 
-Now let's find the distance between every pair of nodes:
-- A to B: 1 edge (A → B)
-- A to C: 1 edge (A → C)
-- A to D: 2 edges (A → B → D or A → C → D)
-- B to C: 1 edge (B → C)
-- B to D: 1 edge (B → D)
-- C to D: 1 edge (C → D)
-
-**Step 4: Calculate Average Path Length**
-
-The **average path length** is simply the average of all these distances:
-
-Total distances: 1 + 1 + 2 + 1 + 1 + 1 = 7
-Number of node pairs: 6
-Average path length = 7 ÷ 6 = **1.17**
-
-This tells us that, on average, any two nodes in this network are about 1.17 edges apart.
+| Pair    | Shortest Path                | Length |
+|---------|------------------------------|--------|
+| A - B   | A $\rightarrow$ B                        | 1      |
+| A - C   | A $\rightarrow$ C                        | 1      |
+| A - D   | A $\rightarrow$ B $\rightarrow$ D or A $\rightarrow$ C $\rightarrow$ D       | 2      |
+| B - C   | B $\rightarrow$ C                        | 1      |
+| B - D   | B $\rightarrow$ D                        | 1      |
+| C - D   | C $\rightarrow$ D                        | 1      |
 
 
-**High clustering**
-**Local Clustering:**
+The **average path length** is simply the average of all these distances, which is $7 / 6 \simeq 1.16$.
 
-Local clustering measures how tightly connected a node's immediate neighbors are to each other. If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.
 
-- **Mathematical definition**: For a node *i*, local clustering coefficient *C_i* is the fraction of possible triangles that actually exist among node *i* and its neighbors.
-- **Range**: Local clustering coefficients range from 0 (no triangles) to 1 (all possible triangles exist).
-- **Example**: In social networks, high local clustering reflects the fact that people in the same social circles (work, school, neighborhood) tend to know each other.
+### Clustering Coefficient
 
-**Global Clustering:**
+In social networks, your friends tend to know each other.
+If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.
+
+There are two ways to measure clustering: **local clustering** and **global clustering**. The key difference is the focus of the measurement:
+
+- **Local clustering** focuses on the clustering of a node's immediate neighbors.
+- **Global clustering** focuses on the clustering of the entire network.
+
+Let us explain each of them one by one.
+
+#### Local Clustering
+
+**Local clustering** asks: given all your friends, how many of triangles you and your friends form, relative to the maximum possible number of triangles?
+
+The local clustering coefficient $C_i$ of a node $i$ is defined as:
+
+$$
+C_i = \dfrac{\text{\# of triangles involving } i \text{ and its neighbors}}{\text{\# of edges possibly exist in the neighborhood of } i}
+$$
+
+Or alternatively, using the adjacency matrix $A$ and the degree $k_i$ of node $i$,
+$$
+\begin{aligned}
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+\end{aligned}
+$$
+
+::: {.callout-note collapse="true" title="Note: Derivation of the local clustering coefficient"}
+Numerator $A_{ij}A_{j\ell} A_{\ell i}$ is a binary indicator of whether three nodes $i$, $j$, and $\ell$ form a triangle; $A_{ij}A_{j\ell} A_{\ell i}=1$ if a cycle $i \rightarrow j \rightarrow \ell \rightarrow i$ exists, and $0$ otherwise.
+By summing up all nodes, we have the number of triangles in the neighbors of $i$ given by $\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} / 2$.
+Note that we divide the sum by 2 because the same triangle forms two cycles, i.g., $i \rightarrow j \rightarrow \ell \rightarrow i$ and $i \rightarrow \ell \rightarrow j \rightarrow i$.
+
+The number of possible triangles in the neighborhood of $i$ is given by $\binom{k_i}{2} = k_i(k_i-1)/2$.
+
+Putting them together:
+
+$$
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+$$
+:::
+
+
+For example, let us compute the local clustering coefficient of node A in the following network. There are two triangles in the neighborhood of A. The number of possible triangles is $5 \times 4 / 2 = 10$. Thus, the local clustering coefficient of A is $2 / 10 = 0.2$.
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-cap: "A network of friends"
+//| label: fig-shortest-path
+//| fig-align: center
+graph G {
+  layout=circo
+  A [shape=circle, fillcolor="#f5cbcc", style="filled,bold", penwidth=2, pos="0,0!"];
+  B [shape=circle];
+  C [shape=circle];
+  D [shape=circle];
+  E [shape=circle];
+  F [shape=circle];
+
+  A -- B;
+  A -- C;
+  A -- D;
+  A -- E;
+  A -- F;
+  B -- F;
+  C -- E;
+}
+```
+
+
+#### Global Clustering
 
 Global clustering, also known as **transitivity**, measures the overall tendency for triangles to form throughout the entire network. It answers the question: "Across the whole network, how likely is it that two nodes connected to a common neighbor are also connected to each other?"
 
-- **Mathematical definition**: Global clustering coefficient is the ratio of the number of actual triangles to the number of possible triangles in the network.
-- **Range**: Like local clustering, it ranges from 0 to 1.
-- **Network-wide perspective**: Global clustering captures the overall "clumpiness" of connections across the entire network structure.
+The global clustering coefficient $C$ is defined as:
+
+$$
+C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}
+$$
+
+where a **connected triplet** is a set of three nodes connected by at least two edges (forming either a triangle or a "wedge" shape).
+
+Alternatively, we can express this using the adjacency matrix $A$:
+
+$$
+C = \frac{\text{tr}(A^3)}{\sum_i k_i(k_i-1)}
+$$
+
+where $\text{tr}(A^3)$ is the trace of $A^3$ (sum of diagonal elements, which counts triangles), and $k_i$ is the degree of node $i$.
+
+::: {.callout-note collapse="true" title="Note: Why multiply by 3 in the numerator?"}
+Each triangle contributes to exactly 3 connected triplets (one for each vertex of the triangle). Therefore, we multiply the number of triangles by 3 to get the number of "closed" triplets. The denominator counts all possible triplets (both closed and open), so the ratio gives us the fraction of triplets that form complete triangles.
+:::
+
+The global clustering coefficient ranges from 0 (no triangles) to 1 (every connected triplet forms a triangle).
 
 **Why This Distinction Matters for Small-World Networks:**
 
