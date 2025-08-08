@@ -228,6 +228,61 @@ $$
 
 where a **connected triplet** is a set of three nodes connected by at least two edges (forming either a triangle or a "wedge" shape).
 
+```{dot}
+//| fig-width: 4
+//| fig-height: 2
+//| fig-cap: "Connected triplets: closed (triangle) vs open (wedge)"
+//| fig-align: center
+digraph G {
+  rankdir=LR;
+  
+  subgraph cluster_0 {
+    label="Closed Triplet (Triangle)";
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];
+    A1 -- B1;
+    B1 -- C1;
+    C1 -- A1;
+  }
+  
+  subgraph cluster_1 {
+    label="Open Triplet (Wedge)";
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];
+    A2 -- B2;
+    B2 -- C2;
+  }
+}
+```
+
+A **closed triplet** forms a complete triangle, while an **open triplet** forms a wedge shape (missing one edge to complete the triangle).
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-cap: "Why one triangle counts as three triplets"
+//| fig-align: center
+graph G {
+  layout=neato
+  A [pos="0,1.5!", style=filled, fillcolor="#ffcccc"]
+  B [pos="-1,0!", style=filled, fillcolor="#ccffcc"] 
+  C [pos="1,0!", style=filled, fillcolor="#ccccff"]
+  
+  A -- B [color=red, penwidth=2]
+  B -- C [color=green, penwidth=2]
+  C -- A [color=blue, penwidth=2]
+}
+```
+
+This triangle contains **three connected triplets**:
+- Triplet 1: A-B-C (centered at B, red-green path)
+- Triplet 2: B-C-A (centered at C, green-blue path)  
+- Triplet 3: C-A-B (centered at A, blue-red path)
+
+Each triplet has a different "center" node that connects to the other two.
+
 Alternatively, we can express this using the adjacency matrix $A$:
 
 $$
