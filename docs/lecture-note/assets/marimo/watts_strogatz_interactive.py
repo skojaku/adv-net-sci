@@ -421,7 +421,7 @@ def _():
     import warnings
 
     warnings.filterwarnings("ignore")
-    alt.data_transformers.disable_max_rows()
+    alt.data_transformers.enable('csv')
     return alt, mo, np, nx, patches, pd, plt
 
 
