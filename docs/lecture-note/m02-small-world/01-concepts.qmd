@@ -107,13 +107,10 @@ When we talk about how "far apart" two nodes are in a network, we mean the short
 
 ```{dot}
 //| fig-cap: "Simple network example for understanding shortest paths"
+//| fig-width: 3
+//| fig-height: 2.5
 graph G {
-  layout=neato
-  A [pos="0,0!"]
-  B [pos="2,0!"]
-  C [pos="1,1.5!"]
-  D [pos="3,1!"]
-  
+  layout=fdp
   A -- B;
   A -- C;
   B -- C;
@@ -126,7 +123,7 @@ graph G {
 
 In this simple network, let's find the distance between nodes A and D:
 - **Path 1**: A → B → D (2 edges)
-- **Path 2**: A → C → D (2 edges) 
+- **Path 2**: A → C → D (2 edges)
 - **Path 3**: A → C → B → D (3 edges)
 
 Even though there are multiple paths, the **shortest path length** (distance) from A to D is **2 edges**.
