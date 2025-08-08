@@ -12,14 +12,29 @@ The Python ecosystem offers several powerful libraries for network analysis, eac
 - [graph-tool](https://graph-tool.skewed.de/) - specialized for stochastic block models
 - [scipy](https://scipy.org/) - efficient tools for analyzing large networks
 
-Throughout this course, we'll primarily use `igraph`, a mature and robust library originally developed for R and later ported to Python. While `networkx` enjoys popularity for its accessibility, `igraph` offers several compelling advantages for serious network analysis: it provides more reliable algorithm implementations (avoiding persistent bugs found in some `networkx` functions like LFR benchmark and weighted degree assortativity), and its optimized C core delivers the performance needed for large-scale network computations.
+Throughout this course, we'll primarily use `igraph`, a mature and robust library originally developed for R and later ported to Python. While `networkx` is by far the most popular library, `igraph` offers several compelling advantages for serious network analysis: it provides more reliable algorithm implementations (avoiding persistent bugs found in some `networkx` functions like LFR benchmark and weighted degree assortativity), and its optimized C core delivers the performance needed for large-scale network computations.
 
-For advanced users comfortable with `scipy`, the `csgraph` submodule provides an excellent alternative that leverages one of Python's most battle-tested and optimized libraries. Functions like `csgraph.shortest_path` and `csgraph.connected_components` offer high-performance implementations backed by `scipy`'s proven track record. You can explore more about using `scipy` for network analysis in the [Appendix](appendix.qmd).
+::: {.column-margin}
+**Installing igraph**
+
+```bash
+# Using pip
+pip install igraph
+
+# Using conda
+conda install -c conda-forge igraph
+
+# For development version
+pip install git+https://github.com/igraph/python-igraph.git
+```
+
+Note: igraph requires compiled C libraries. If you encounter installation issues, try using conda instead of pip.
+:::
+
+For advanced users comfortable with `scipy`, the `csgraph` submodule provides an excellent alternative that leverages one of Python's most well-tested and optimized libraries. For example, `csgraph.shortest_path` and `csgraph.connected_components` offer high-performance implementations.
 
 ![](../figs/scipy.jpg)
 
-
-### igraph
 
 ### Create a graph
 
