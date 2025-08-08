@@ -149,9 +149,10 @@ The **average path length** is simply the average of all these distances, which 
 In social networks, your friends tend to know each other.
 If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.
 
-There are two ways to measure clustering: **local clustering** and **global clustering**. The key difference is the focus of the measurement:
+There are three ways to measure clustering: **local clustering**, **average local clustering**, and **global clustering**. The key difference is the focus of the measurement:
 
-- **Local clustering** focuses on the clustering of a node's immediate neighbors.
+- **Local clustering** focuses on the clustering of the neighbors of a specific node
+- **Average local clustering** focuses on the clustering of the neighbors of a node
 - **Global clustering** focuses on the clustering of the entire network.
 
 Let us explain each of them one by one.
@@ -215,6 +216,13 @@ graph G {
 }
 ```
 
+#### Average Local Clustering
+
+Local clustering focuses on the clustering of a node's neighborhood, while the global clustering focuses on the clustering of the entire network. One can adapt the local clustering for measuring the global clustering by taking the average of the local clustering coefficients of all nodes, i.e.,
+
+$$
+\overline {C} = \frac{1}{N} \sum_{i=1}^N C_i
+$$
 
 #### Global Clustering
 
@@ -226,12 +234,12 @@ $$
 C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}
 $$
 
-where a **connected triplet** is a set of three nodes connected by at least two edges (forming either a triangle or a "wedge" shape).
+where a **connected triplet** is a set of three nodes connected by at least two edges, forming either a closed triplet (triangle) or an open triplet (wedge) shown below.
 
 ```{dot}
 //| fig-width: 5
 //| fig-height: 2.5
-//| fig-cap: "Connected triplets: closed (triangle) vs open (wedge)"
+//| fig-cap: "Closed triplet (left) and open triplet (right)"
 //| fig-align: center
 graph G {
   layout=neato;
@@ -244,6 +252,7 @@ graph G {
     fontsize=16;
     style=filled;
     color=lightgrey;
+    node [shape=circle, fillcolor="#f5cbcc", style="filled,bold", penwidth=2];
     A1 [pos="-1.5,0!" shape=circle];
     B1 [pos="-2.5,-1!" shape=circle];
     C1 [pos="-0.5,-1!" shape=circle];
@@ -257,63 +266,83 @@ graph G {
     fontsize=16;
     style=filled;
     color=lightgrey;
-    A2 [pos="1.5,0!" shape=circle];
-    B2 [pos="0.5,-1!" shape=circle];
-    C2 [pos="2.5,-1!" shape=circle];
+    node [shape=circle, fillcolor="#d0e2f3", style="filled,bold", penwidth=2];
+    A2 [pos="1.5,0!" ];
+    B2 [pos="0.5,-1!" ];
+    C2 [pos="2.5,-1!" ];
     A2 -- B2;
     B2 -- C2;
   }
 }
 ```
 
-A **closed triplet** forms a complete triangle, while an **open triplet** forms a wedge shape (missing one edge to complete the triangle).
+In triplets, the order of the nodes matters. For example, $(A_1, B_1, C_1)$ and $(B_1, C_1, A_1)$ are two different triplets. A triangle pertains to three triplets, i.e., $(A_1, B_1, C_1)$, $(B_1, C_1, A_1)$, and $(C_1, A_1, B_1)$. This is why we multiple three to the number of triangles in the numerator.
 
-```{dot}
-//| fig-width: 3
-//| fig-height: 2.5
-//| fig-cap: "Why one triangle counts as three triplets"
-//| fig-align: center
-graph G {
-  layout=neato
-  A [pos="0,1.5!", style=filled, fillcolor="#ffcccc"]
-  B [pos="-1,0!", style=filled, fillcolor="#ccffcc"]
-  C [pos="1,0!", style=filled, fillcolor="#ccccff"]
+::: {.callout-note collapse="true" title="Key difference between average local and global clustering"}
 
-  A -- B [color=red, penwidth=2]
-  B -- C [color=green, penwidth=2]
-  C -- A [color=blue, penwidth=2]
-}
-```
+It is confusing to have two different global clustering measures, but the distinction becomes clearer if we think in terms of micro and macro perspectives:
 
-This triangle contains **three connected triplets**:
-- Triplet 1: A-B-C (centered at B, red-green path)
-- Triplet 2: B-C-A (centered at C, green-blue path)
-- Triplet 3: C-A-B (centered at A, blue-red path)
+- The global clustering coefficient $C$ (based on the total number of triangles and triplets in the network) is a **micro-level** measure. It looks at the prevalence of triangles relative to all possible connected triples in the entire network, essentially aggregating over all small, local patterns (triplets) to get a sense of how likely it is for any three connected nodes to form a closed triangle.
 
-Each triplet has a different "center" node that connects to the other two.
+- The average local clustering coefficient $\overline{C}$ is a **macro-level** measure. It first computes the clustering coefficient for each individual node (how clustered each node's neighborhood is), and then averages these values across all nodes. This gives a sense of the overall tendency for nodes in the network to have tightly knit neighborhoods.
 
-Alternatively, we can express this using the adjacency matrix $A$:
-
-$$
-C = \frac{\text{tr}(A^3)}{\sum_i k_i(k_i-1)}
-$$
-
-where $\text{tr}(A^3)$ is the trace of $A^3$ (sum of diagonal elements, which counts triangles), and $k_i$ is the degree of node $i$.
-
-::: {.callout-note collapse="true" title="Note: Why multiply by 3 in the numerator?"}
-Each triangle contributes to exactly 3 connected triplets (one for each vertex of the triangle). Therefore, we multiply the number of triangles by 3 to get the number of "closed" triplets. The denominator counts all possible triplets (both closed and open), so the ratio gives us the fraction of triplets that form complete triangles.
+So the focal scope remains the same: the average local clustering focuses on a node's neighborhood, while the global clustering focuses on the entire network.
 :::
 
-The global clustering coefficient ranges from 0 (no triangles) to 1 (every connected triplet forms a triangle).
+### Small-world coefficient
 
-**Why This Distinction Matters for Small-World Networks:**
+Now let's define a coefficient to measure the small-world property. Recall that a small-world network has both **high clustering** and **short average path length**. A naive approach is to take the ratio between the average local clustering coefficient and the average path length:
 
-The key insight is that small-world networks exhibit **high local clustering** (friends of friends are often friends) while maintaining **short average path lengths** (you can reach distant parts of the network quickly). This combination seems contradictory:
+$$
+s_{\text{naive}} = \frac{\overline{C}}{\overline{L}}
+$$
 
-- **High clustering** suggests a "clumpy" network where connections are mostly local, which should make distant nodes hard to reach.
-- **Short path lengths** suggest efficient global connectivity, which typically requires more random, long-range connections.
+where $\overline{C}$ is the average local clustering coefficient and $\overline{L}$ is the average path length.
 
-Small-world networks resolve this apparent contradiction through a clever structure: they maintain dense local clusters while having just enough long-range "shortcut" connections to dramatically reduce distances. This is what makes them both highly clustered locally and globally efficient for information flow.
+A high $s_{\text{naive}}$ value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example
+
+- A **fully-connected network** has $\overline{L} = 1$ (minimum possible) and $\overline{C} = 1$ (maximum possible), giving $s_{\text{naive}} = 1$
+- A **complete bipartite network** has short paths but zero clustering, giving $s_{\text{naive}} = 0$
+- A **ring lattice** has high clustering but long paths in large networks
+
+This leads us to normalize against **random networks** with the same basic properties.
+
+
+
+
+
+
+
+
+
+
+#### Watts-Strogatz Small-World Index
+
+To address this issue, Watts and Strogatz proposed normalizing by equivalent random networks. The **small-world index** (or small-world coefficient) is defined as:
+
+$$
+\sigma = \frac{C/C_{\text{random}}}{L/L_{\text{random}}} = \frac{C \cdot L_{\text{random}}}{L \cdot C_{\text{random}}}
+$$
+
+where:
+- $C$ is the clustering coefficient of the network
+- $L$ is the average path length of the network
+- $C_{\text{random}}$ is the clustering coefficient of an equivalent random network
+- $L_{\text{random}}$ is the average path length of an equivalent random network
+
+**Interpretation:**
+- $\sigma \gg 1$: Strong small-world property (high clustering relative to random, short paths relative to random)
+- $\sigma \approx 1$: Similar to random networks
+- $\sigma \ll 1$: Anti-small-world behavior
+
+**Why this normalization works:**
+- Random networks typically have low clustering ($C_{\text{random}} \ll C$) but short paths ($L_{\text{random}} \approx L$)
+- Small-world networks maintain high clustering while achieving short paths similar to random networks
+- This gives $\sigma = \frac{C \gg C_{\text{random}}}{L \approx L_{\text{random}}} \gg 1$
+
+The "equivalent random network" typically refers to an Erdős–Rényi random graph with the same number of nodes and edges (or same average degree) as the original network.
+
+
 
 ## Paths, Walks, and Network Connectivity
 
