@@ -35,10 +35,10 @@ def _(mo):
 def _(mo):
     # Network parameters
     N_slider = mo.ui.slider(
-        start=10,
-        stop=30,
+        start=30,
+        stop=100,
         step=2,
-        value=20,
+        value=50,
         show_value=True,
         label="Number of Nodes (N)",
         full_width=True,
@@ -46,8 +46,8 @@ def _(mo):
 
     k_slider = mo.ui.slider(
         start=2,
-        stop=6,
-        step=2,
+        stop=20,
+        step=1,
         value=4,
         show_value=True,
         label="Node Degree (k)",
@@ -84,8 +84,11 @@ def _(mo):
 
 
 @app.cell
-def _(CL_chart, mo, network_chart, sigma_chart):
-    mo.hstack([network_chart, mo.vstack([CL_chart, sigma_chart])])
+def _(CL_chart, mo, network_chart, sigma_chart, raw_chart):
+    mo.hstack([
+        network_chart, 
+        mo.vstack([CL_chart, sigma_chart, raw_chart])
+    ])
     return
 
 
@@ -98,100 +101,112 @@ def _(N_slider, k_slider, np, nx):
         G = nx.watts_strogatz_graph(N, k, 0, seed=seed)
         original_edges = list(G.edges())
         total_edges = len(original_edges)
-        
+
         # Create all p values from 0 to 1
         p_values = np.linspace(0, 1, num_steps)
-        
+
         # Store all network states and metrics
         network_states = {}
         all_metrics = []
-        
+
         # Pre-determine complete rewiring order
-        edges_to_rewire_order = np.random.choice(total_edges, size=total_edges, replace=False)
+        edges_to_rewire_order = np.random.choice(
+            total_edges, size=total_edges, replace=False
+        )
         edges_rewired_so_far = 0
-        
+
         for p_val in p_values:
             target_rewires = int(p_val * total_edges)
-            
+
             # Rewire additional edges to reach target_rewires
             while edges_rewired_so_far < target_rewires:
                 edge_idx = edges_to_rewire_order[edges_rewired_so_far]
                 u, v = original_edges[edge_idx]
-                
+
                 if G.has_edge(u, v):  # Only rewire if edge still exists
                     G.remove_edge(u, v)
-                    
+
                     # Find valid rewiring target
-                    possible_targets = [node for node in G.nodes() 
-                                      if node != u and not G.has_edge(u, node)]
-                    
+                    possible_targets = [
+                        node
+                        for node in G.nodes()
+                        if node != u and not G.has_edge(u, node)
+                    ]
+
                     if possible_targets:
                         new_target = np.random.choice(possible_targets)
                         G.add_edge(u, new_target)
                     else:
                         # If no valid target, restore original edge
                         G.add_edge(u, v)
-                
+
                 edges_rewired_so_far += 1
-            
+
             # Store network state (deep copy to preserve each state)
             network_states[p_val] = G.copy()
-            
+
             # Compute network metrics
             C_temp = nx.average_clustering(G)
-            
+
             if nx.is_connected(G):
                 L_temp = nx.average_shortest_path_length(G)
             else:
                 largest_cc = max(nx.connected_components(G), key=len)
                 G_sub = G.subgraph(largest_cc)
                 L_temp = nx.average_shortest_path_length(G_sub)
-            
+
             # Analytical reference values
             C_random_temp = k / (N - 1)
             L_random_temp = np.log(N) / np.log(k)
-            
+
             # Small-world coefficient
             if C_random_temp > 0 and L_random_temp > 0:
                 sigma_temp = (C_temp / C_random_temp) / (L_temp / L_random_temp)
+
             else:
                 sigma_temp = 0
+
+            # Unnormalized small-world index (naive approach)
+            unnormalized_sigma = C_temp / L_temp if L_temp > 0 else 0
             
-            all_metrics.append({
-                'p': p_val,
-                'edges_rewired': edges_rewired_so_far,
-                'C': C_temp,
-                'L': L_temp,
-                'C_normalized': C_temp / C_random_temp,
-                'L_normalized': L_temp / L_random_temp,
-                'sigma': sigma_temp
-            })
-        
+            all_metrics.append(
+                {
+                    "p": p_val,
+                    "edges_rewired": edges_rewired_so_far,
+                    "C": C_temp,
+                    "L": L_temp,
+                    "C_normalized": C_temp / C_random_temp,
+                    "L_normalized": L_temp / L_random_temp,
+                    "sigma": sigma_temp,
+                    "sigma_unnormalized": unnormalized_sigma,
+                }
+            )
+
         return network_states, all_metrics, p_values
+
 
     # Precompute all network states
     network_states, all_metrics, all_p_values = precompute_all_network_states(
         N_slider.value, k_slider.value
     )
-    
-    return network_states, all_metrics, all_p_values
+    return all_metrics, all_p_values, network_states
 
 
 @app.cell(hide_code=True)
-def _(network_states, p_slider, all_p_values):
+def _(all_p_values, network_states, p_slider):
     def find_closest_p(target_p, p_values_list):
         """Find the closest precomputed p value to the target"""
         return min(p_values_list, key=lambda x: abs(x - target_p))
-    
+
+
     # Get the network state closest to current p slider value
     closest_p = find_closest_p(p_slider.value, all_p_values)
     current_network = network_states[closest_p]
-    
-    return current_network, closest_p
+    return closest_p, current_network
 
 
 @app.cell(hide_code=True)
-def _(current_network, N_slider, k_slider, np, pd):
+def _(N_slider, current_network, k_slider, np, pd):
     def create_network_data(G, N, k):
         """Create network data for Altair visualization"""
         # Create circular layout
@@ -232,8 +247,11 @@ def _(current_network, N_slider, k_slider, np, pd):
 
         return pd.DataFrame(nodes_data), pd.DataFrame(edges_data)
 
+
     # Create network data for current state
-    all_nodes, all_edges = create_network_data(current_network, N_slider.value, k_slider.value)
+    all_nodes, all_edges = create_network_data(
+        current_network, N_slider.value, k_slider.value
+    )
     return all_edges, all_nodes
 
 
@@ -278,9 +296,12 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
             width=400,
             height=400,
             title=f"Precomputed Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.2f})",
+        ).resolve_scale(
+            color='independent'
         )
 
         return network
+
 
     network_chart = create_network_chart()
     network_chart = mo.ui.altair_chart(network_chart)
@@ -290,56 +311,58 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
 @app.cell(hide_code=True)
 def _(all_metrics, closest_p):
     # Find current metrics from precomputed data
-    current_metrics = next(m for m in all_metrics if m['p'] == closest_p)
-    
-    C = current_metrics['C']
-    L = current_metrics['L']
-    C_random = current_metrics['C_normalized']  # This is already computed as C/C_random, so get original
-    L_random = current_metrics['L_normalized']  # Same here
-    sigma = current_metrics['sigma']
-    edges_rewired = current_metrics['edges_rewired']
-    
-    return C, L, C_random, L_random, sigma, edges_rewired
+    current_metrics = next(m for m in all_metrics if m["p"] == closest_p)
+
+    C = current_metrics["C"]
+    L = current_metrics["L"]
+    sigma = current_metrics["sigma"]
+    sigma_unnormalized = current_metrics["sigma_unnormalized"]
+    edges_rewired = current_metrics["edges_rewired"]
+    return C, L, edges_rewired, sigma, sigma_unnormalized
 
 
 @app.cell(hide_code=True)
-def _(all_metrics, p_slider, all_p_values):
+def _(all_metrics, p_slider):
     # Get data up to current p value for progressive display
     current_p = p_slider.value
-    progressive_data = [m for m in all_metrics if m['p'] <= current_p]
-    
+    progressive_data = [m for m in all_metrics if m["p"] <= current_p]
     return (progressive_data,)
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, pd, progressive_data, p_slider):
+def _(alt, mo, p_slider, pd, progressive_data):
     # Create properties plot
     def create_properties_chart():
         # Prepare data for line plots
         props_data = []
         for data_point in progressive_data:
-            props_data.extend([
-                {
-                    'p': data_point['p'],
-                    'value': data_point['C_normalized'],
-                    'metric': 'C(p) / C(random)'
-                },
-                {
-                    'p': data_point['p'],
-                    'value': data_point['L_normalized'],
-                    'metric': 'L(p) / L(random)'
-                }
-            ])
-        
+            props_data.extend(
+                [
+                    {
+                        "p": data_point["p"],
+                        "value": data_point["C_normalized"],
+                        "metric": "C(p) / C(random)",
+                    },
+                    {
+                        "p": data_point["p"],
+                        "value": data_point["L_normalized"],
+                        "metric": "L(p) / L(random)",
+                    },
+                ]
+            )
+
         props_df = pd.DataFrame(props_data)
-        
+
         # Properties chart
         properties_chart = (
             alt.Chart(props_df)
             .mark_line(point=True, strokeWidth=2.5)
             .encode(
-                x=alt.X("p:Q", title="Fraction of Edges Rewired (p)", 
-                       scale=alt.Scale(domain=[0, 1])),
+                x=alt.X(
+                    "p:Q",
+                    title="Fraction of Edges Rewired (p)",
+                    scale=alt.Scale(domain=[0, 1]),
+                ),
                 y=alt.Y("value:Q", title="Normalized Values"),
                 color=alt.Color(
                     "metric:N",
@@ -367,23 +390,27 @@ def _(alt, mo, pd, progressive_data, p_slider):
 
         return properties_chart + current_p_line
 
+
     CL_chart = mo.ui.altair_chart(create_properties_chart())
     return (CL_chart,)
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, pd, progressive_data, p_slider):
+def _(alt, mo, p_slider, pd, progressive_data):
     # Create small-world coefficient plot
     def create_sigma_chart():
-        sigma_data = [{'p': d['p'], 'sigma': d['sigma']} for d in progressive_data]
+        sigma_data = [{"p": d["p"], "sigma": d["sigma"]} for d in progressive_data]
         sigma_df = pd.DataFrame(sigma_data)
-        
+
         sigma_chart = (
             alt.Chart(sigma_df)
             .mark_line(point=True, color="green", strokeWidth=2.5)
             .encode(
-                x=alt.X("p:Q", title="Fraction of Edges Rewired (p)", 
-                       scale=alt.Scale(domain=[0, 1])),
+                x=alt.X(
+                    "p:Q",
+                    title="Fraction of Edges Rewired (p)",
+                    scale=alt.Scale(domain=[0, 1]),
+                ),
                 y=alt.Y("sigma:Q", title="Small-World Coefficient (σ)"),
                 tooltip=["p:Q", "sigma:Q"],
             )
@@ -403,17 +430,85 @@ def _(alt, mo, pd, progressive_data, p_slider):
 
         return sigma_chart + current_p_line
 
+
     sigma_chart = mo.ui.altair_chart(create_sigma_chart())
     return (sigma_chart,)
 
 
 @app.cell(hide_code=True)
-def _(C, L, mo, N_slider, k_slider, edges_rewired, p_slider, sigma):
+def _(alt, mo, pd, progressive_data, p_slider):
+    # Create raw values and unnormalized small-world coefficient plot
+    def create_raw_chart():
+        # Prepare data for raw values
+        raw_data = []
+        for data_point in progressive_data:
+            raw_data.extend([
+                {
+                    'p': data_point['p'],
+                    'value': data_point['C'],
+                    'metric': 'C(p) - Clustering'
+                },
+                {
+                    'p': data_point['p'],
+                    'value': data_point['L'],
+                    'metric': 'L(p) - Path Length'
+                },
+                {
+                    'p': data_point['p'],
+                    'value': data_point['sigma_unnormalized'],
+                    'metric': 'σ_naive = C/L'
+                }
+            ])
+        
+        raw_df = pd.DataFrame(raw_data)
+        
+        # Raw values chart
+        raw_chart = (
+            alt.Chart(raw_df)
+            .mark_line(point=True, strokeWidth=2.5)
+            .encode(
+                x=alt.X("p:Q", title="Fraction of Edges Rewired (p)", 
+                       scale=alt.Scale(domain=[0, 1])),
+                y=alt.Y("value:Q", title="Raw Values"),
+                color=alt.Color(
+                    "metric:N",
+                    scale=alt.Scale(
+                        domain=["C(p) - Clustering", "L(p) - Path Length", "σ_naive = C/L"],
+                        range=["blue", "orange", "purple"],
+                    ),
+                    legend=alt.Legend(title="Metric"),
+                ),
+                tooltip=["p:Q", "value:Q", "metric:N"],
+            )
+            .properties(
+                width=350,
+                height=200,
+                title="Raw Values: C(p), L(p), and Unnormalized σ",
+            )
+        )
+
+        # Add vertical line at current p
+        current_p_line = (
+            alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
+            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=2)
+            .encode(x="p:Q")
+        )
+
+        return raw_chart + current_p_line
+
+    raw_chart = mo.ui.altair_chart(create_raw_chart())
+    return (raw_chart,)
+
+
+@app.cell(hide_code=True)
+def _(C, L, N_slider, edges_rewired, k_slider, mo, np, p_slider, sigma, sigma_unnormalized):
     # Calculate reference values for display
     C_random_display = k_slider.value / (N_slider.value - 1)
     L_random_display = np.log(N_slider.value) / np.log(k_slider.value)
-    total_edges = N_slider.value * k_slider.value // 2  # Total edges in ring lattice
-    
+    total_edges = (
+        N_slider.value * k_slider.value // 2
+    )  # Total edges in ring lattice
+
     mo.md(
         f"""
     ## Understanding the Small-World Effect
@@ -423,11 +518,12 @@ def _(C, L, mo, N_slider, k_slider, edges_rewired, p_slider, sigma):
     - **{total_edges - edges_rewired} original ring edges remain**
 
     ### Current Network Metrics:
-    | Metric | Value | Random Reference | Ratio |
-    |--------|-------|------------------|-------|
-    | **Clustering (C)** | {C:.4f} | {C_random_display:.4f} | {C/max(C_random_display, 0.001):.2f} |
-    | **Path Length (L)** | {L:.4f} | {L_random_display:.4f} | {L/max(L_random_display, 0.001):.2f} |
+    | Metric | Value | Random Reference | Ratio/Index |
+    |--------|-------|------------------|-------------|
+    | **Clustering (C)** | {C:.4f} | {C_random_display:.4f} | {C / max(C_random_display, 0.001):.2f} |
+    | **Path Length (L)** | {L:.4f} | {L_random_display:.4f} | {L / max(L_random_display, 0.001):.2f} |
     | **Small-world σ** | {sigma:.4f} | - | {"Strong" if sigma > 1 else "Weak"} |
+    | **Unnormalized σ_naive** | {sigma_unnormalized:.4f} | - | C/L ratio |
 
     ### Key Insights:
     1. **Precomputed approach**: All network states computed once → instant visualization
@@ -439,7 +535,7 @@ def _(C, L, mo, N_slider, k_slider, edges_rewired, p_slider, sigma):
     - **p = 0**: Regular ring lattice (high clustering, long paths)
     - **Small p** (0.01-0.2): Sweet spot where clustering stays high but paths shorten
     - **Large p** (0.5-1.0): Approaches random graph (short paths but low clustering)
-    
+
     **Notice**: Even rewiring just {int(0.1 * total_edges)} edges (10%) creates dramatic shortcuts!
     """
     )
@@ -452,23 +548,27 @@ def _(mo):
         """
     ## Mathematical Background
 
-    The **small-world coefficient** σ quantifies the small-world property:
+    We compute both **normalized** and **unnormalized** small-world measures:
 
+    **1. Normalized Small-World Coefficient (σ):**
     $$σ = \\frac{C/C_{\\text{random}}}{L/L_{\\text{random}}} = \\frac{C \\cdot L_{\\text{random}}}{L \\cdot C_{\\text{random}}}$$
+
+    **2. Unnormalized Small-World Index (σ_naive):**
+    $$σ_{\\text{naive}} = \\frac{C}{L}$$
 
     **Analytical Reference Values:**
     - $C_{\\text{random}} = \\frac{k}{n-1}$ (exact for Erdős-Rényi graphs)
     - $L_{\\text{random}} = \\frac{\\ln n}{\\ln k}$ (approximation for connected random graphs)
 
+    **Why Both Measures Matter:**
+    - **σ_naive**: Simple ratio but can be misleading (doesn't account for network size/density)
+    - **σ**: Normalized against random networks, provides meaningful comparison baseline
+    - **Raw C(p), L(p)**: Show actual network properties without normalization
+
     **Interpretation:**
-    - σ >> 1: Strong small-world property
+    - σ >> 1: Strong small-world property (high clustering relative to random + short paths relative to lattice)
     - σ ≈ 1: Similar to random networks  
     - σ < 1: Regular/lattice-like behavior
-
-    **Precomputation Advantage:**
-    - All network states computed once at startup
-    - Instant response to parameter changes
-    - No redundant calculations during exploration
     """
     )
     return
