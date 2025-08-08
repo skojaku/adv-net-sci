@@ -4,7 +4,6 @@ jupyter: python3
 execute:
     enabled: true
 ---
-import numpy as np
 
 Now that you understand the conceptual foundation from Euler's work, let's explore how to represent and analyze networks computationally. Given a network of any size, our goal is to create a function that can tell us whether the network has an Euler path or not.
 
@@ -306,7 +305,7 @@ Think of complex numbers as natural 2D coordinates for representing node pairs.
 A **path** requires all nodes (except possibly start/end for cycles) to be distinct.
 
 ```{python}
-def is_path(sequence, adjacency_matrix, allow_cycle=False):
+def is_path(sequence, adjacency_matrix):
     """
     Check if a sequence of nodes forms a valid path.
 
@@ -326,46 +325,16 @@ def is_path(sequence, adjacency_matrix, allow_cycle=False):
 
     sequence = np.array(sequence)
 
-    # NumPy optimized version: Check node uniqueness using np.unique
-    if allow_cycle and len(sequence) > 2:
-        # For cycles, all intermediate nodes must be unique
-        if sequence[0] == sequence[-1]:
-            # Check if all intermediate nodes are unique
-            intermediate_nodes = sequence[1:-1]
-            return len(intermediate_nodes) == len(np.unique(intermediate_nodes))
-        else:
-            # Not a cycle, so all nodes must be unique
-            return len(sequence) == len(np.unique(sequence))
-    else:
-        # Standard path: all nodes must be unique
-        return len(sequence) == len(np.unique(sequence))
-
-    # Alternative: Set-based version (can be faster for small sequences)
-    # if allow_cycle and len(sequence) > 2:
-    #     if sequence[0] == sequence[-1]:
-    #         intermediate_nodes = sequence[1:-1]
-    #         return len(intermediate_nodes) == len(set(intermediate_nodes))
-    #     else:
-    #         return len(sequence) == len(set(sequence))
-    # else:
-    #     return len(sequence) == len(set(sequence))
+    return len(sequence) == len(np.unique(sequence))
 
 # Test path verification
 path_sequence = [0, 1, 3, 4]
 print(f"Sequence {path_sequence} is a valid path: {is_path(path_sequence, matrix)}")
 
-# Test cycle
-cycle_sequence = [0, 1, 2, 0]
-print(f"Sequence {cycle_sequence} is a valid cycle: {is_path(cycle_sequence, matrix, allow_cycle=True)}")
-
 # Test invalid path (repeats node 1)
 invalid_path = [0, 1, 2, 1, 3]
 print(f"Sequence {invalid_path} is a valid path: {is_path(invalid_path, matrix)}")
 ```
-
-::: {.callout-note title="Path Uniqueness Check"}
-Path verification uses `np.unique()` which implements efficient sorting-based uniqueness detection. For very small sequences (< 10 elements), Python's `set()` might be faster due to lower overhead, but `np.unique()` scales better and integrates seamlessly with other NumPy operations.
-:::
 
 ## Summary
 

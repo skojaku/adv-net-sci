@@ -1,7 +1,5 @@
 ---
 title: "Small-World Networks: Core Concepts"
-filters:
-    - marimo-team/marimo
 ---
 
 ## What to learn in this module
@@ -299,11 +297,11 @@ $$
 s_{\text{naive}} = \frac{\overline{C}}{\overline{L}}
 $$
 
-where $\overline{C}$ is the average local clustering coefficient and $\overline{L}$ is the average path length.
+where $\overline{C}$ is a clustering coefficient and $\overline{L}$ is the average path length. The original work by Watts and Strogatz used the average local clustering coefficient [@watts1998collective] but one can use the global clustering coefficient as well, which leads to different results [@humphries2008network].
 
 A high $s_{\text{naive}}$ value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example,
 a fully-connected network has $\overline{L} = 1$ (minimum possible) and $\overline{C} = 1$ (maximum possible), giving $s_{\text{naive}} = 1$.
-This leads us to normalize against **random networks** with the same basic properties.
+This leads us to normalize against **random networks** with the same basic properties [@humphries2008network].
 
 To address this issue, Watts and Strogatz proposed normalizing by equivalent random networks. The **small-world index** (or small-world coefficient) is defined as:
 
@@ -311,14 +309,23 @@ $$
 \sigma = \frac{\overline{C}/\overline{C}_{\text{random}}}{\overline{L}/\overline{L}_{\text{random}}} = \frac{\overline{C} \cdot \overline{L}_{\text{random}}}{\overline{L} \cdot \overline{C}_{\text{random}}}
 $$
 
-where: $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ are the average local clustering coefficient and the average path length of an equivalent random network. The "equivalent random network" typically refers to an Erdős–Rényi random graph, where edges are randomly connected with the same number of nodes and edges (or same average degree) as the original network (thus it represents a trivial random network of the same number of nodes and edges).
+where: $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ are the average clustering coefficient and the average path length of an equivalent random network. The "equivalent random network" typically refers to an Erdős–Rényi random graph, where edges are randomly connected with the same number of nodes and edges (or same average degree) as the original network (thus it represents a trivial random network of the same number of nodes and edges).
 
 A high $\sigma$ value greater than 1 indicates a strong small-world property. If $\sigma$ is close to 1, the network is not small-world but comparable to a random network in terms of the small-world property.
 If $\sigma$ is less than 1, the network is anti-small-world, i.e., it has a large average path length and low clustering compared to a random counterpart.
 
-Now, we have a way to measure the small-world property of a network. It has been shown in many different studies that the small-world property is surprisingly common in real-world networks.
+So how do we compute the reference value of $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$?
+We can compute them numerically by generating many random networks and computing the average of the clustering coefficient and the path length. For Erdős–Rényi random graph, it has been shown that the reference value of $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ follow on average [@humphries2008network] [@newman2001random]:
+$$
+\begin{aligned}
+\overline{C}_{\text{random}} & \approx \frac{\langle k \rangle}{n-1} \\
+\overline{L}_{\text{random}} &\approx \frac{\ln n }{\ln \langle k \rangle}
+\end{aligned}
+$$
 
-This leads to a question: what is the underlying mechanism? The Watts-Strogatz model provides a way to generate small-world networks, as we will see in the next section.
+where $\langle k \rangle$ is the average degree of the network, and $n$ is the number of nodes.
+
+
 
 
 ## Watts-Strogatz Model
@@ -331,9 +338,12 @@ Watts-Strogatz model.
 
 :::
 
+We have a way to measure the small-world property of a network, which reveals that the small-world property is surprisingly common in real-world networks.
+This leads to a question: what is the underlying mechanism? The Watts-Strogatz model provides a way to generate small-world networks, as we will see in the next section.
+
 ::: {.column-margin}
 
-Here is a nice blog post about the Watts-Strogatz model: [https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz](https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz).
+[Here is a nice blog post about the Watts-Strogatz model](https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz).
 
 :::
 
@@ -343,502 +353,53 @@ Here is a nice blog post about the Watts-Strogatz model: [https://chih-ling-hsu.
 This quote captures the essence of why models like Watts-Strogatz are crucial: by building networks that exhibit small-world properties, we gain deeper insight into how these properties emerge in real systems.
 :::
 
-The **Watts-Strogatz model** provides a elegant way to generate networks that interpolate between regular lattices (high clustering, long paths) and random graphs (low clustering, short paths), capturing the small-world phenomenon.
 
-### The Algorithm
 
+### What is the Watts-Strogatz Model?
+
+The **Watts-Strogatz model** provides one explanation for the small-world phenomenon.
 The Watts-Strogatz model starts with a **ring lattice** and introduces randomness through edge **rewiring**:
 
 **Step 1: Start with a Ring Lattice**
+
 - Create a ring of $N$ nodes
 - Connect each node to its $k$ nearest neighbors (k/2 on each side)
 - This gives high clustering but long average path length
 
 **Step 2: Rewire Edges with Probability p**
+
 - For each edge in the lattice:
   - With probability $p$: remove the edge and reconnect one endpoint to a randomly chosen node
   - With probability $(1-p)$: keep the original edge
 - Avoid self-loops and duplicate edges
 
-**Step 3: Resulting Network Properties**
-- $p = 0$: Regular ring lattice (high clustering, long paths)
-- $p = 1$: Random graph (low clustering, short paths)
-- $0 < p < 1$: Small-world network (high clustering, short paths)
 
-```{dot}
-//| fig-width: 6
-//| fig-height: 2.5
-//| fig-cap: "Watts-Strogatz model progression from regular lattice to random graph"
-//| fig-align: center
-graph G {
-  layout=neato;
-  fontsize=14;
+At $p = 0$, the network is a regular ring lattice (high clustering, long paths); at $p = 1$, it becomes a random graph (low clustering, short paths). For $0 < p < 1$, the network combines high clustering with short path lengths---the hallmark of the small-world property.
 
-  subgraph cluster_0 {
-    label="p = 0 (Regular Lattice)";
-    fontsize=12;
-    style=filled;
-    color=lightgrey;
+::: {.callout-tip title="interactive exploration"}
 
-    A1 [pos="-4,0!" shape=circle];
-    B1 [pos="-3.5,0.8!" shape=circle];
-    C1 [pos="-2.8,0.8!" shape=circle];
-    D1 [pos="-2.3,0!" shape=circle];
-    E1 [pos="-2.8,-0.8!" shape=circle];
-    F1 [pos="-3.5,-0.8!" shape=circle];
+Here is the interactive visualization of the Watts-Strogatz model 😎: [![Open in Marimo](https://marimo.io/static/badge.svg)](https://marimo.io/notebooks/nb_2qUDsuBA6KW2NrM4dTfxCJ).
 
-    A1 -- B1; B1 -- C1; C1 -- D1; D1 -- E1; E1 -- F1; F1 -- A1;
-    A1 -- C1; B1 -- D1; C1 -- E1; D1 -- F1; E1 -- A1; F1 -- B1;
-  }
+:::
 
-  subgraph cluster_1 {
-    label="0 < p < 1 (Small World)";
-    fontsize=12;
-    style=filled;
-    color=lightgrey;
+### Why does the small-world property emerge?
 
-    A2 [pos="0,0!" shape=circle];
-    B2 [pos="0.5,0.8!" shape=circle];
-    C2 [pos="1.2,0.8!" shape=circle];
-    D2 [pos="1.7,0!" shape=circle];
-    E2 [pos="1.2,-0.8!" shape=circle];
-    F2 [pos="0.5,-0.8!" shape=circle];
-
-    A2 -- B2; B2 -- C2; C2 -- D2; D2 -- E2; E2 -- F2; F2 -- A2;
-    A2 -- C2; B2 -- D2; E2 -- A2; F2 -- B2;
-    C2 -- F2 [color=red, penwidth=2]; // rewired edge
-    D2 -- A2 [color=red, penwidth=2]; // rewired edge
-  }
-
-  subgraph cluster_2 {
-    label="p = 1 (Random Graph)";
-    fontsize=12;
-    style=filled;
-    color=lightgrey;
-
-    A3 [pos="4,0!" shape=circle];
-    B3 [pos="4.5,0.8!" shape=circle];
-    C3 [pos="5.2,0.8!" shape=circle];
-    D3 [pos="5.7,0!" shape=circle];
-    E3 [pos="5.2,-0.8!" shape=circle];
-    F3 [pos="4.5,-0.8!" shape=circle];
-
-    A3 -- D3; B3 -- E3; C3 -- F3; D3 -- B3; E3 -- C3; F3 -- A3;
-    A3 -- B3; C3 -- D3; E3 -- F3; A3 -- E3; B3 -- F3; C3 -- A3;
-  }
-}
-```
-
-### Key Insights
-
-**The Magic of Small p Values:**
-Even a small rewiring probability ($p \approx 0.01$) dramatically reduces average path length while maintaining high clustering. This happens because:
-
-1. **Clustering preservation**: Most edges remain local (probability $1-p$), maintaining triangular relationships
-2. **Shortcut creation**: A few random edges (probability $p$) act as "shortcuts" across the network
-3. **Diameter collapse**: These shortcuts reduce the network diameter from $O(N)$ to $O(\log N)$
-
-**Mathematical Properties:**
-- **Clustering coefficient**: $C(p) \approx C(0) \cdot (1-p)^3$ for small $p$
-- **Average path length**: $L(p)$ drops rapidly even for small $p$
-- **Small-world regime**: Optimal $\sigma$ typically occurs around $p \approx 0.01$ to $0.1$
-
-### Biological and Social Relevance
-
-The Watts-Strogatz model captures essential features of real networks:
-
-**Neural networks**: Neurons are primarily connected locally (clustering) but have some long-range connections (shortcuts) that enable rapid information transmission.
-
-**Social networks**: People have local social groups (high clustering) but occasional distant connections (through travel, online interaction) that reduce social distances.
-
-**Internet topology**: Routers are connected regionally for efficiency but have backbone connections that span continents.
-
-The model's success lies in showing that small-world properties emerge naturally from the tension between local organization and random connectivity - a fundamental principle observed across many natural and social systems.
+The Watts-Strogatz model explains that the small-world property emerges from a small number of long-range connections that connect distant parts of the network, despite the nodes being connected to their local neighbors. While we have focused on social networks, the same explanation applies to different domains, such as biological networks (e.g., neurons are primarily connected locally but have some long-range connections that enable rapid information transmission), and technological networks (e.g., the Internet topology is regional but has some long-range connections that span continents).
 
 ### Interactive Exploration
 
+<iframe
+  src="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/docs/lecture-note/assets/marimo/watts_strogatz_wasm.py?embed=true&show-chrome=false&mode=app"
+  width="100%"
+  height="800"
+  frameborder="0"
+></iframe>
+
+
 Explore the Watts-Strogatz model interactively by adjusting the rewiring probability and observing how network properties change:
 
-```python {.marimo}
-import marimo as mo
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from collections import deque
-import random
-
-# Create the rewiring probability slider
-p_slider = mo.ui.slider(
-    start=0.0,
-    stop=1.0,
-    step=0.01,
-    value=0.1,
-    show_value=True,
-    label="Rewiring Probability (p)"
-)
-
-# Display the slider
-mo.md(f"**Control the rewiring probability:** {p_slider}")
-```
-
-```python {.marimo}
-def generate_watts_strogatz(N=20, k=4, p=0.1, seed=42):
-    """Generate Watts-Strogatz network from scratch"""
-    np.random.seed(seed)
-    random.seed(seed)
-    
-    # Start with ring lattice - adjacency matrix
-    adj_matrix = np.zeros((N, N), dtype=int)
-    
-    # Connect each node to k nearest neighbors (k/2 on each side)
-    for i in range(N):
-        for j in range(1, k//2 + 1):
-            # Connect to neighbors on both sides, wrapping around
-            neighbor_right = (i + j) % N
-            neighbor_left = (i - j) % N
-            adj_matrix[i][neighbor_right] = 1
-            adj_matrix[i][neighbor_left] = 1
-    
-    # Make symmetric (undirected)
-    adj_matrix = np.maximum(adj_matrix, adj_matrix.T)
-    
-    # Rewire edges with probability p
-    edges_to_process = []
-    for i in range(N):
-        for j in range(i+1, N):
-            if adj_matrix[i][j] == 1:
-                edges_to_process.append((i, j))
-    
-    for i, j in edges_to_process:
-        if np.random.random() < p:
-            # Remove original edge
-            adj_matrix[i][j] = 0
-            adj_matrix[j][i] = 0
-            
-            # Find a new target for node i (avoid self-loops and duplicates)
-            possible_targets = []
-            for k in range(N):
-                if k != i and adj_matrix[i][k] == 0:
-                    possible_targets.append(k)
-            
-            if possible_targets:
-                new_target = np.random.choice(possible_targets)
-                adj_matrix[i][new_target] = 1
-                adj_matrix[new_target][i] = 1
-    
-    return adj_matrix
-
-def generate_random_graph(N, num_edges, seed=42):
-    """Generate Erdős–Rényi random graph with same number of edges"""
-    np.random.seed(seed)
-    adj_matrix = np.zeros((N, N), dtype=int)
-    
-    # Get all possible edges
-    possible_edges = []
-    for i in range(N):
-        for j in range(i+1, N):
-            possible_edges.append((i, j))
-    
-    # Randomly select edges
-    if len(possible_edges) >= num_edges:
-        selected_edges = np.random.choice(len(possible_edges), size=num_edges, replace=False)
-        for edge_idx in selected_edges:
-            i, j = possible_edges[edge_idx]
-            adj_matrix[i][j] = 1
-            adj_matrix[j][i] = 1
-    
-    return adj_matrix
-
-def bfs_shortest_paths(adj_matrix, start):
-    """Compute shortest paths from start node using BFS"""
-    N = len(adj_matrix)
-    distances = [-1] * N
-    distances[start] = 0
-    queue = deque([start])
-    
-    while queue:
-        node = queue.popleft()
-        for neighbor in range(N):
-            if adj_matrix[node][neighbor] == 1 and distances[neighbor] == -1:
-                distances[neighbor] = distances[node] + 1
-                queue.append(neighbor)
-    
-    return distances
-
-def compute_average_path_length(adj_matrix):
-    """Compute average shortest path length"""
-    N = len(adj_matrix)
-    total_distance = 0
-    total_pairs = 0
-    
-    for i in range(N):
-        distances = bfs_shortest_paths(adj_matrix, i)
-        for j in range(i+1, N):
-            if distances[j] != -1:  # Connected
-                total_distance += distances[j]
-                total_pairs += 1
-    
-    if total_pairs == 0:
-        return float('inf')
-    return total_distance / total_pairs
-
-def compute_clustering_coefficient(adj_matrix):
-    """Compute average local clustering coefficient"""
-    N = len(adj_matrix)
-    clustering_sum = 0
-    valid_nodes = 0
-    
-    for i in range(N):
-        # Find neighbors of node i
-        neighbors = [j for j in range(N) if adj_matrix[i][j] == 1]
-        
-        if len(neighbors) < 2:
-            continue
-        
-        # Count triangles involving node i
-        triangles = 0
-        possible_triangles = len(neighbors) * (len(neighbors) - 1) // 2
-        
-        for j in range(len(neighbors)):
-            for k in range(j+1, len(neighbors)):
-                if adj_matrix[neighbors[j]][neighbors[k]] == 1:
-                    triangles += 1
-        
-        clustering_sum += triangles / possible_triangles if possible_triangles > 0 else 0
-        valid_nodes += 1
-    
-    return clustering_sum / valid_nodes if valid_nodes > 0 else 0
-
-def watts_strogatz_with_metrics(N=20, k=4, p=0.1):
-    """Generate Watts-Strogatz network and compute metrics"""
-    # Generate the network
-    adj_matrix = generate_watts_strogatz(N, k, p, seed=42)
-    
-    # Count edges
-    num_edges = np.sum(adj_matrix) // 2
-    
-    # Generate random network for comparison
-    adj_random = generate_random_graph(N, num_edges, seed=42)
-    
-    # Compute metrics for original network
-    try:
-        C = compute_clustering_coefficient(adj_matrix)
-        L = compute_average_path_length(adj_matrix)
-    except:
-        C = 0
-        L = float('inf')
-    
-    # Compute metrics for random network
-    try:
-        C_random = compute_clustering_coefficient(adj_random)
-        L_random = compute_average_path_length(adj_random)
-    except:
-        C_random = 0.001  # Small value to avoid division by zero
-        L_random = 1
-    
-    # Compute small-world coefficient
-    if C_random > 0 and L_random > 0 and L != float('inf'):
-        sigma = (C / C_random) / (L / L_random)
-    else:
-        sigma = 0
-    
-    return adj_matrix, adj_random, C, L, C_random, L_random, sigma
-
-def plot_network_and_metrics(p_value):
-    """Create network visualization and metrics plots"""
-    adj_matrix, adj_random, C, L, C_random, L_random, sigma = watts_strogatz_with_metrics(N=20, k=4, p=p_value)
-    
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
-    
-    N = len(adj_matrix)
-    
-    # Plot 1: Network visualization
-    # Calculate node positions in a circle
-    angles = np.linspace(0, 2*np.pi, N, endpoint=False)
-    pos_x = np.cos(angles)
-    pos_y = np.sin(angles)
-    
-    # Draw edges
-    for i in range(N):
-        for j in range(i+1, N):
-            if adj_matrix[i][j] == 1:
-                # Determine if this is an original or rewired edge
-                ring_distance = min(abs(i-j), N-abs(i-j))
-                edge_color = 'blue' if ring_distance <= 2 else 'red'  # k=4 means connect to 2 neighbors on each side
-                
-                ax1.plot([pos_x[i], pos_x[j]], [pos_y[i], pos_y[j]], 
-                        color=edge_color, alpha=0.6, linewidth=1.5)
-    
-    # Draw nodes
-    ax1.scatter(pos_x, pos_y, c='lightblue', s=300, edgecolors='black', zorder=5)
-    
-    # Add node labels
-    for i in range(N):
-        ax1.text(pos_x[i], pos_y[i], str(i), ha='center', va='center', fontsize=8, zorder=6)
-    
-    ax1.set_title(f'Watts-Strogatz Network (p = {p_value:.3f})')
-    ax1.set_aspect('equal')
-    ax1.axis('off')
-    ax1.set_xlim(-1.3, 1.3)
-    ax1.set_ylim(-1.3, 1.3)
-    
-    # Add legend
-    blue_patch = patches.Patch(color='blue', label='Original edges')
-    red_patch = patches.Patch(color='red', label='Rewired edges')
-    ax1.legend(handles=[blue_patch, red_patch], loc='upper right')
-    
-    # Plot 2: Clustering coefficient comparison
-    ax2.bar(['Network', 'Random'], [C, C_random],
-            color=['skyblue', 'lightcoral'], alpha=0.7)
-    ax2.set_ylabel('Clustering Coefficient')
-    ax2.set_title('Clustering Coefficient Comparison')
-    ax2.set_ylim(0, max(C, C_random, 0.1) * 1.2)
-    
-    # Add value labels
-    ax2.text(0, C + max(C, C_random, 0.1) * 0.05, f'{C:.3f}', ha='center', va='bottom')
-    ax2.text(1, C_random + max(C, C_random, 0.1) * 0.05, f'{C_random:.3f}', ha='center', va='bottom')
-    
-    # Plot 3: Average path length comparison
-    if L != float('inf'):
-        ax3.bar(['Network', 'Random'], [L, L_random],
-                color=['skyblue', 'lightcoral'], alpha=0.7)
-        ax3.text(0, L + max(L, L_random) * 0.05, f'{L:.3f}', ha='center', va='bottom')
-        ax3.text(1, L_random + max(L, L_random) * 0.05, f'{L_random:.3f}', ha='center', va='bottom')
-        ax3.set_ylim(0, max(L, L_random) * 1.2)
-    else:
-        ax3.bar(['Network', 'Random'], [10, L_random],
-                color=['skyblue', 'lightcoral'], alpha=0.7)
-        ax3.text(0, 10.5, '∞', ha='center', va='bottom')
-        ax3.text(1, L_random + L_random * 0.05, f'{L_random:.3f}', ha='center', va='bottom')
-        ax3.set_ylim(0, max(10, L_random * 1.2))
-    
-    ax3.set_ylabel('Average Path Length')
-    ax3.set_title('Average Path Length Comparison')
-    
-    # Plot 4: Small-world coefficient
-    ax4.bar(['σ (Small-world coefficient)'], [sigma], color='gold', alpha=0.7)
-    ax4.axhline(y=1, color='red', linestyle='--', alpha=0.7, label='σ = 1 (Random)')
-    ax4.set_ylabel('Small-world Coefficient (σ)')
-    ax4.set_title('Small-world Property')
-    ax4.text(0, sigma + max(sigma * 0.1, 0.1), f'{sigma:.2f}', ha='center', va='bottom', fontweight='bold')
-    
-    # Interpretation text
-    if sigma > 1:
-        interpretation = "Strong small-world"
-        color = 'green'
-    elif sigma > 0.5:
-        interpretation = "Moderate small-world"
-        color = 'orange'
-    else:
-        interpretation = "Random-like"
-        color = 'red'
-    
-    y_pos = max(sigma * 0.8, 0.5)
-    ax4.text(0, y_pos, interpretation, ha='center', va='center',
-             bbox=dict(boxstyle='round', facecolor=color, alpha=0.3))
-    
-    ax4.legend()
-    ax4.set_ylim(0, max(sigma * 1.3, 2))
-    
-    plt.tight_layout()
-    return fig
-
-# Generate the plot based on slider value
-current_fig = plot_network_and_metrics(p_slider.value)
-mo.mpl.interactive(current_fig)
-```
-
-```python {.marimo}
-# Get current metrics for display
-_, _, C, L, C_random, L_random, sigma = watts_strogatz_with_metrics(N=20, k=4, p=p_slider.value)
-
-mo.md(f"""
-### Key Observations
-
-- **Network Structure**: Blue edges represent original ring lattice connections, red edges show rewired shortcuts
-- **Clustering**: Measures local triangle density - starts high and decreases with rewiring
-- **Path Length**: Average shortest path between nodes - drops rapidly even with small p values
-- **Small-world Coefficient (σ)**: When σ > 1, the network exhibits small-world properties
-
-**Current values**: C = {C:.3f}, L = {L:.3f}, σ = {sigma:.2f}
-
-Try different values of p and observe how even small amounts of rewiring (p ≈ 0.01-0.1) can create the small-world effect!
-""")
-```
 
 
-
-## Paths, Walks, and Network Connectivity
-
-While we have already used the term **path**, let us make clear its definition, together with other related terms and concepts of network connectivity.
-
-**Basic Definitions:**
-
-- A **walk** is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.
-
-- A **trail** is a walk with no repeated edge. For instance, walk (0, 1, 2, 3) is also a trail as it does not cross the same edge twice. But walk (0,2,3,1,3) is not a trail due to the repeated edge (1,3).
-
-- A **path** is a walk without repeated node. For instance, walk (0,1,2,3) is a path. But walk (0, 1, 2, 1, 2, 3) is not a path due to the repeated node 1 and 2.
-
-- When a walk starts and ends at the same node, it is called a **loop*. If the loop is a trail, it is called a **circuit**. If the loop is a path, it is called a **cycle**.
-
-***Question***: Is a path always a trail, and is a trail always a path?
-
-::: {#fig-numbered-koningsberg-graph2}
-
-<img src= "../figs/labeled-koningsberg.jpg" width="30%">
-
-Labeled Knigsberg graph
-
-:::
-
-**Shortest Paths:**
-
-- **Shortest Path** is the path with the smallest number of edges (or nodes) between two nodes. A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).
-- **The shortest path length** is the number of edges in the shortest path, *not the number of nodes!* 👈👈
-
-::: {.callout-note}
-## Are there **shortest trails** and **shortest walks**?
-Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.
-:::
-
-## Network Connectivity
-
-**Basic Connectivity Concepts:**
-
-- A network is **connected** if there is a path between every pair of nodes.
-- A network is **disconnected** if there is no path between some pairs of nodes.
-- **A connected component** of a network is a set of nodes that are connected to each other.
-- **The giant component** of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).
-
-::: {#fig-connected-components}
-
-<img src= "../figs/connected-component.jpg" width="50%">
-
-connected components of a network. the nodes with the same color form a connected component.
-
-:::
-
-**Connectivity in Directed Networks:**
-
-We call a network is *directed* if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.
-
-In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.
-
-This leads to two different types of `connectedness` as follows:
-
-- **Strong connectedness**: A directed network is said to be strongly connected if there is a path from every node to every other node.
-- **Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.
-
-::: {#fig-connected-components-directed}
-
-<img src= "../figs/connected-component-directed.jpg" width="50%">
-
-connected components of a network. the nodes with the same color form a connected component.
-
-:::
-
-**Question**: Is a strongly-connected component always a weakly-connected component?
 
 In the next section, we will learn how to compute the shortest paths and connected components of a network using a library [igraph](https://python.igraph.org/en/stable/).
 

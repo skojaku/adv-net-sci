@@ -1,55 +1,90 @@
-# Advanced Topics in Network Science
-
-**Fall 2024 | Binghamton University**
+---
+title: "Advanced Topics in Network Science"
+---
 
 Networks are everywhere—from the Internet connecting billions of devices to the social connections that shape our daily lives. This course explores network data analysis from the ground up, combining hands-on coding with theoretical foundations to unlock the secrets of complex systems.
 
-## Course Information
-
-<div style="display: flex; align-items: flex-start; gap: 2em; flex-wrap: wrap;">
-  <div style="flex: 1 1 250px; min-width: 220px;">
-    <ul style="list-style: none; padding-left: 0;">
-      <li><strong>Instructor:</strong> Sadamori Kojaku</li>
-      <li><strong>Time:</strong> Wednesdays 16:40 - 19:40</li>
-      <li><strong>Location:</strong> G22 Engineering Building</li>
-      <li><strong>Credits:</strong> 3</li>
-      <li><strong>Office Hours:</strong> Tuesdays &amp; Thursdays 14:30 - 16:30 (J19 Engineering Building)</li>
-    </ul>
-  </div>
-  <div style="flex: 0 0 180px; text-align: center;">
-    <img src="https://skojaku.github.io/assets/attachments/selfy/sada-2021.jpg" alt="Sadamori Kojaku" style="max-width: 160px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
-  </div>
-</div>
+## About us
 
 
-## Learning Philosophy
+### Instructor
 
-> "Don't think! Feeeeeel" - Bruce Lee, *Enter the Dragon*
+:::: {layout-ncol=2}
 
-This quote guides our approach. Rather than just memorizing formulas, you'll **feel** network concepts through:
+::: {#first-column}
+Welcome! My name is Sadamori Kojaku, the instructor of this course.
+I started my career as a computer scientist but couldn't resist to fall in love with Network Science right after I got Ph.D.
+Network Science is about a science on networks, and networks appear in many different forms in our daily lives.
+The internet, social media, and biological networks, power grid, and you name it.
+But when we abstract them into a bunch of dots connected by lines, we can compare them and understand them in a unified way.
+We can study them using the same toolkit no matter what the domain is, and can find universal patterns and principles that govern seemingly different systems.
+Sounds fun, right 😉?
 
-- **Hands-on coding** with real network data
-- **Pen-and-paper exercises** to build intuition
-- **Interactive visualizations** to see patterns emerge
-- **Weekly quizzes** to reinforce understanding
+This course will guide you through the fascinating world of networks, from foundational theory to hands-on coding and real-world applications.
+I hope you will enjoy and find the course useful in your future endeavors.
 
-## Course Structure
+:::
 
-### Learning Outcomes
+::: {#second-column}
 
-After completing this course, you will:
+![](https://skojaku.github.io/assets/attachments/selfy/sada-2021.jpg){width=260px}
 
-- **Interpret and evaluate** modern network science literature and methodologies
-- **Conduct advanced network analysis** using mathematical and computational tools
-- **Design original research** using network science methods
-- **Integrate systems engineering** knowledge with network modeling skills
+:::
 
-### Assessment
+:::
 
-- **Attendance & Quizzes:** 20%
-- **Assignments:** 20%
-- **Exam:** 30%
-- **Final Project:** 30%
+
+### TA
+
+Teaching Assistant is not yet assigned.
+
+
+### AI Tutor (Minidora)
+
+
+:::: {layout-ncol=2}
+
+::: {#first-column}
+
+**Minidora** is an AI tutor robot conceived in the 22nd century and deployed in the present era to support students. (the original character is designed by [Fujiko Fujio](https://en.wikipedia.org/wiki/Fujiko_Fujio) for a famous Japanese manga called [Doraemon](https://en.wikipedia.org/wiki/Doraemon)). Minidora supports students in this course by providing dialogic explanations, quiz questions, and coding guidance on the course Discord.
+
+:::
+
+::: {#second-column}
+
+![](../figs/minidora.png){width=260px}
+
+:::
+
+:::
+
+
+## Learning activities
+
+### In class activities
+
+- **Quiz**: Each lecture begins with a short paper‑based quiz reviewing the previous week’s material, graded immediately when possible, followed by a discussion of common mistakes at the end of the lecture.
+- **Pen‑and‑Paper Exercise**: Before the lecture, students complete a brief exercise to practice key concepts, then discuss solutions in class while the instructor synthesizes the answers.
+- **Lecture**: A recorded lecture covering core network‑science fundamentals is delivered and posted on the course website.
+- **Network of the Week**: Weekly, a student or group presents a 10‑minute paper on a network‑related topic of their choice.
+- **Coding**: Each module includes a Python coding exercise (using Marimo notebooks) to apply the concepts to real data.
+
+### Homework
+
+- **Coding assignment**: Every module comes with a coding assignment. The assignment will be distributed via [GitHub Classroom](https://classroom.github.com/).
+Students will submit their solutions to the assignment via GitHub and get automatic grading.
+
+- **LLM Quiz Challenge**: Every assignment also includes a task of formulating two quiz questions and correct answers. These quiz questions will be taken by a large language model that learns the course content without seeing the correct answers. The students pass the test if they can generate questions that LLM fails to answer correctly.
+
+### Project
+
+- **Project Proposal**: The students will submit a project proposal on the course content.
+- **Project Paper**: The students will submit a project paper on the course content.
+- **Project Presentation**: The students will present their project.
+
+### Exam
+
+A final exam will be given at the end of the course during the exam period. This exam will be a take-home exam, and will be distributed via Brightspace.
 
 ## Resources
 
@@ -58,66 +93,3 @@ After completing this course, you will:
 - Mark Newman, *Networks (Second Edition)*, Oxford University Press, 2018
 - Filippo Menczer, Santo Fortunato, and Clayton A. Davis, *A First Course in Network Science*, Cambridge University Press, 2020
 - James Bagrow and Yong-Yeol Ahn, *Working with Network Data: A Data Science Perspective*, Cambridge University Press, 2024
-
-### Tools & Technologies
-
-- **Python** (NetworkX, SciPy, NumPy)
-- **Jupyter Notebooks** for interactive analysis
-- **Git/GitHub** for version control
-- **Discord** for course communication
-
-## Prerequisites
-
-- SSIE-523 or equivalent
-- Fluency in Python programming
-- Basic understanding of mathematics and statistics
-
----
-
-## About the Instructor
-
-### Sadamori Kojaku
-
-I am an Assistant Professor in the Department of Systems Science and Industrial Engineering at Binghamton University. My research focuses on computational social science, network science, and machine learning.
-
-**Research Interests:**
-- Network science and complex systems
-- Computational social science
-- Machine learning for networks
-- Social dynamics and information spread
-
-**Background:**
-- PhD in Physics, Hokkaido University
-- Postdoc at Indiana University's Network Science Institute
-- Research experience at the University of Tokyo and RIKEN
-
-### Contact Information
-
-- **Email:** [skojaku@binghamton.edu](mailto:skojaku@binghamton.edu)
-- **Office:** J19 Engineering Building
-- **Website:** [https://skojaku.github.io](https://skojaku.github.io)
-- **Office Hours:** Tuesdays & Thursdays 14:30-16:30
-- **Zoom:** [binghamton.zoom.us/my/skojaku.zoom](https://binghamton.zoom.us/my/skojaku.zoom)
-
-### Research Philosophy
-
-I believe in learning through doing. Network science is not just about equations and algorithms—it's about understanding the hidden patterns that connect our world. Whether analyzing social media networks, studying epidemic spread, or designing resilient infrastructure, the goal is to develop intuition alongside technical skills.
-
----
-
-## Course Links
-
-- **Course Website:** [skojaku.github.io/adv-net-sci](https://skojaku.github.io/adv-net-sci)
-- **GitHub Repository:** [github.com/skojaku/adv-net-sci](https://github.com/skojaku/adv-net-sci)
-- **Discord:** Invitation sent via Brightspace
-
-## Important Dates
-
-- **Project Proposal:** September 29
-- **Final Project Paper:** December 4
-- **Project Presentations:** December 8
-- **Final Exam:** December 9-13
-
----
-
-*Ready to explore the connected world around us? Let's dive into the fascinating field of network science!*

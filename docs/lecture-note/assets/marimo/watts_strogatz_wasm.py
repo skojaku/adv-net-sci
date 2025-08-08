@@ -91,38 +91,38 @@ def _(C_chart, L_chart, mo, network_chart, sigma_chart):
 def _(N_slider, k_slider, np):
     class Graph:
         """Lightweight graph implementation for WASM compatibility"""
-        
+
         def __init__(self):
             self.adj_list = {}
             self._nodes = set()
-        
+
         def add_node(self, node):
             """Add a node to the graph"""
             if node not in self.adj_list:
                 self.adj_list[node] = set()
                 self._nodes.add(node)
-        
+
         def add_edge(self, u, v):
             """Add an edge between nodes u and v"""
             self.add_node(u)
             self.add_node(v)
             self.adj_list[u].add(v)
             self.adj_list[v].add(u)
-        
+
         def remove_edge(self, u, v):
             """Remove edge between nodes u and v"""
             if u in self.adj_list and v in self.adj_list[u]:
                 self.adj_list[u].remove(v)
                 self.adj_list[v].remove(u)
-        
+
         def has_edge(self, u, v):
             """Check if edge exists between nodes u and v"""
             return u in self.adj_list and v in self.adj_list[u]
-        
+
         def nodes(self):
             """Return list of nodes"""
             return list(self._nodes)
-        
+
         def edges(self):
             """Return list of edges as tuples"""
             edges = []
@@ -131,7 +131,7 @@ def _(N_slider, k_slider, np):
                     if u < v:  # Avoid duplicates
                         edges.append((u, v))
             return edges
-        
+
         def copy(self):
             """Create a deep copy of the graph"""
             new_graph = Graph()
@@ -140,72 +140,72 @@ def _(N_slider, k_slider, np):
             for u, v in self.edges():
                 new_graph.add_edge(u, v)
             return new_graph
-        
+
         def degree(self, node):
             """Get degree of a node"""
             return len(self.adj_list.get(node, set()))
-        
+
         def clustering_coefficient(self):
             """Calculate global clustering coefficient (transitivity)"""
             triangles = 0
             triplets = 0
-            
+
             for node in self._nodes:
                 neighbors = list(self.adj_list[node])
                 degree = len(neighbors)
-                
+
                 if degree < 2:
                     continue
-                
+
                 # Count triplets centered at this node
                 possible_triplets = degree * (degree - 1) // 2
                 triplets += possible_triplets
-                
+
                 # Count triangles (closed triplets) centered at this node
                 node_triangles = 0
                 for i in range(len(neighbors)):
                     for j in range(i + 1, len(neighbors)):
                         if self.has_edge(neighbors[i], neighbors[j]):
                             node_triangles += 1
-                
+
                 triangles += node_triangles
-            
+
             # Global clustering coefficient = 3 * triangles / triplets
             if triplets == 0:
                 return 0.0
             return (3.0 * triangles) / triplets
-        
+
         def shortest_path_lengths(self, source):
             """BFS to find shortest path lengths from source to all other nodes"""
             distances = {source: 0}
             queue = [source]
-            
+
             while queue:
                 current = queue.pop(0)
                 current_dist = distances[current]
-                
+
                 for neighbor in self.adj_list[current]:
                     if neighbor not in distances:
                         distances[neighbor] = current_dist + 1
                         queue.append(neighbor)
-            
+
             return distances
-        
+
         def average_shortest_path_length(self):
             """Calculate average shortest path length (assumes connected graph)"""
             total_distance = 0
             total_paths = 0
-            
+
             nodes_list = list(self._nodes)
             n = len(nodes_list)
-            
+
             for i in range(n):
                 distances = self.shortest_path_lengths(nodes_list[i])
                 for j in range(i + 1, n):
                     if nodes_list[j] in distances:
                         total_distance += distances[nodes_list[j]]
                         total_paths += 1
-            
+
             if total_paths == 0:
                 return float('inf')
             return total_distance / total_paths
@@ -214,11 +214,11 @@ def _(N_slider, k_slider, np):
         """Create a ring lattice with N nodes, each connected to k nearest neighbors"""
         np.random.seed(seed)
         G = Graph()
-        
+
         # Add all nodes
         for i in range(N):
             G.add_node(i)
-        
+
         # Connect each node to k/2 neighbors on each side
         half_k = k // 2
         for i in range(N):
@@ -226,7 +226,7 @@ def _(N_slider, k_slider, np):
                 # Connect to neighbors on the right
                 neighbor = (i + j) % N
                 G.add_edge(i, neighbor)
-        
+
         return G
 
     def precompute_all_network_states(N, k, num_steps=21, seed=42):
@@ -416,8 +416,8 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
         network = (
             (edges_chart + nodes_chart)
             .properties(
-                width=400,
-                height=400,
+                width=200,
+                height=200,
                 title=f"Precomputed Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.2f})",
             )
             .resolve_scale(color="independent")
@@ -682,9 +682,9 @@ def _(mo):
 
     **Interpretation:**
     - σ >> 1: Strong small-world property (high clustering relative to random + short paths relative to lattice)
-    - σ ≈ 1: Similar to random networks  
+    - σ ≈ 1: Similar to random networks
     - σ < 1: Regular/lattice-like behavior
-    
+
     **WebAssembly Implementation:**
     - Custom Graph class with adjacency list representation
     - BFS algorithm for shortest path computation

@@ -186,6 +186,16 @@ These insights now underpin our understanding of everything from internet routin
 
 ## Walk, Path, and Trail
 
+
+::: {.column-margin}
+
+Here is a short video explaining the difference between walk, path, and trail. Good one to watch if you are visual learner.
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/hlHWguJVAdU?si=QogRhzGsaxE0iKWO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+:::
+
 We used the term `walk` and `path` in the previous section. But what are they? Let's define them formally in the following.
 
 A **walk** is the most general type of movement through a network. Imagine you're exploring a city with no restrictions:
@@ -218,7 +228,7 @@ A **path** is a more restrictive type of walk without revisiting the same node.
 In airline route maps, a *trail* means you never repeat a specific flight segment, while a *path* means you never return to a city you've already visited.
 :::
 
-### Cycle and Circuit
+## Cycle and Circuit
 
 **Cycle** and **Circuit** are two special types of walks that start and end at the same node—they form closed loops in the network.
 
@@ -228,56 +238,13 @@ A **circuit** is a closed trail—a trail that starts and ends at the same verte
 **Example**: A tourist exploring a city who wants to end up back at their hotel without taking any street twice. They might pass through Times Square multiple times via different streets, but never walk down Broadway twice.
 :::
 
-**Formal definition**: A circuit is a trail where the first and last vertices are the same.
-
 A **cycle** is a closed path—a path that starts and ends at the same vertex with no repeated vertices (except for the starting/ending vertex). It's the most restrictive type of closed walk.
 
 ::: {.column-margin}
 **Example**: A delivery truck route that visits each neighborhood exactly once before returning to the depot. Each stop is unique, forming a perfect loop.
 :::
 
-**Formal definition**: A cycle is a path where the first and last vertices are the same, and no other vertex is repeated.
-
-### Key Distinctions
-
-The difference between cycles and circuits mirrors the difference between paths and trails:
-
-- **Circuit**: Closed trail (distinct edges, vertices can repeat)
-- **Cycle**: Closed path (distinct vertices except start/end, edges automatically distinct)
-
-### Special Cases in Network Analysis
-
-**Simple Cycle**: The most basic cycle with exactly 3 or more vertices. For example, a triangle (3-cycle) is the smallest possible cycle in a simple graph.
-
-**Euler Circuit**: A circuit that traverses every edge in the graph exactly once—this was what the Königsberg citizens were actually seeking! An Euler circuit exists if and only if:
-- The graph is connected, AND
-- Every vertex has even degree
-
-**Hamiltonian Cycle**: A cycle that visits every vertex in the graph exactly once. Unlike Euler's focus on edges, Hamiltonian cycles focus on vertices.
-
-::: {.callout-important title="Euler vs. Hamiltonian"}
-- **Euler Circuit**: Uses every **edge** exactly once (may revisit vertices)
-- **Hamiltonian Cycle**: Visits every **vertex** exactly once (uses subset of edges)
-
-These are fundamentally different problems! Euler's theorem gives us clear conditions for Euler circuits, but determining Hamiltonian cycles is much more complex (NP-complete).
-:::
-
-### Real-World Applications
-
-**Circuits** are crucial for:
-- **Mail delivery routes**: Cover every street (edge) exactly once
-- **Snow plow routes**: Clear every road without redundancy  
-- **Circuit board design**: Electrical paths that return to source
-
-**Cycles** are essential for:
-- **Delivery optimization**: Visit every customer (vertex) exactly once
-- **DNA sequencing**: Reconstruct circular genomes
-- **Chemical ring detection**: Identify molecular cycles
-
-The Königsberg bridge problem was fundamentally about finding an **Euler circuit**—a way to traverse every bridge (edge) exactly once while returning home. Understanding this distinction between edge-focused (Euler) and vertex-focused (Hamiltonian) problems is crucial for applying graph theory to real-world challenges.
-
-
-### Euler's Special Cases
+## Euler's Special Cases
 
 Now we can precisely define what Euler was looking for in Königsberg:
 
@@ -286,28 +253,43 @@ Now we can precisely define what Euler was looking for in Königsberg:
 
 The Königsberg citizens were seeking an **Euler circuit**—a closed trail that would cross every bridge exactly once and return them home.
 
-### The Mathematical Hierarchy
+## Network Connectivity
 
-These concepts form a natural hierarchy of restrictions:
+**Basic Connectivity Concepts:**
 
-```
-Walk (most general)
-├── Trail (distinct edges)
-│   └── Euler Trail (all edges exactly once)
-└── Path (distinct vertices)
-    └── Hamiltonian Path (all vertices exactly once)
-```
+- A network is **connected** if there is a path between every pair of nodes.
+- A network is **disconnected** if there is no path between some pairs of nodes.
+- **A connected component** of a network is a set of nodes that are connected to each other.
+- **The giant component** of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).
 
-::: {.callout-tip title="Memory Aid"}
-**Walk**: "I can **walk** anywhere, anytime"
-**Trail**: "I leave a **trail** behind me (no repeated edges)"
-**Path**: "I follow a **path** without circling back (no repeated vertices)"
+::: {#fig-connected-components}
+
+<img src= "../figs/connected-component.jpg" width="50%">
+
+connected components of a network. the nodes with the same color form a connected component.
+
 :::
 
-Understanding these distinctions is crucial because different network problems require different types of movement. Euler's bridge problem required a trail (specifically, an Euler trail), not a path. This distinction—focusing on edges rather than vertices—was key to his solution.
+**Connectivity in Directed Networks:**
 
-In the next sections, we'll see how these concepts apply to modern network analysis and why the difference between paths, trails, and walks matters in applications from GPS routing to circuit design.
+We call a network is *directed* if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.
 
+In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.
+
+This leads to two different types of `connectedness` as follows:
+
+- **Strong connectedness**: A directed network is said to be strongly connected if there is a path from every node to every other node.
+- **Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.
+
+::: {#fig-connected-components-directed}
+
+<img src= "../figs/connected-component-directed.jpg" width="50%">
+
+connected components of a network. the nodes with the same color form a connected component.
+
+:::
+
+**Question**: Is a strongly-connected component always a weakly-connected component?
 
 ## References
 

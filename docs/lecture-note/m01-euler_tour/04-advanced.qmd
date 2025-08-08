@@ -1,6 +1,8 @@
 ---
 title: "Advanced: Sparse Matrices for Large-Scale Networks"
 jupyter: python3
+execute:
+    enabled: true
 ---
 
 ## The Scale Problem: From Königsberg to Global Networks
@@ -22,12 +24,35 @@ These operations are very common in network analysis. To do so, you need to go t
 
 ## Solution: Sparse Matrices
 
+
 We say a matrix is sparse if the matrix has only a handful of non-zero entries. This is indeed the case for most real-world networks. For such networks, we can use a special type of data type called **Compressed Sparse Row (CSR)** or **Compressed Sparse Column (CSC)** to represent the network. This is widely used in many network analysis tools and makes it possible to process large networks in practice.
 
 
 To learn more, [here is a very good blog post by Matt Eding about efficient network representations](https://matteding.github.io/2019/04/25/sparse-matrices/).
 
 ## SciPy's Compressed Sparse Row (CSR) Format
+
+
+::: {.column-margin}
+
+Here is a short video explaining the CSR format. Good one to watch if you are visual learner.
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/a2LXVFmGH_Q?si=F25ylU_vMHkQ0SP1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+:::
+
+
+
+
+::: {#fig-csr}
+
+![](https://matteding.github.io/images/csr.gif)
+
+A sparse matrix is a matrix with only a handful of non-zero entries represented with a compressed sparse frmat.
+
+:::
+
 
 CSR stores only non-zero matrix entries using three arrays, making it the standard for large-scale network analysis.
 
@@ -147,7 +172,7 @@ print(two_hop_matrix.toarray())
 ```
 
 ::: {.column-margin}
-**Matrix multiplication**: `@` is the matrix multiplication operator in NumPy. It is equivalent to `np.dot` but more efficient.
+**Matrix multiplication**: `@` is the matrix multiplication operator in SciPy and NumPy. It is equivalent to `np.dot`.
 :::
 
 
@@ -214,6 +239,15 @@ print(f"Walk {test_walk} is valid: {is_walk_sparse(test_walk, csr_matrix)}")
 - Frequent random access to individual entries
 :::
 
+::: {.column-margin}
+
+There are several different sparse matrix formats such as COO, CSC, and LIL. If you are interested in learning more, you can check out [this blog post by Matt Eding](https://matteding.github.io/2019/04/25/sparse-matrices/). The following video is also a good one to watch.
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/SRgFScHYTy4?si=C75vxEnUjuLCerWF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
+
+
 ### Advanced CSR Features
 
 ```{python}
@@ -236,4 +270,3 @@ print(paths_3.toarray())
 
 
 The CSR format transforms network analysis from impossible to practical for large-scale networks. By storing only the essential information (non-zero connections), we can analyze networks with millions of nodes and billions of edges on standard hardware—something that would require exabytes of memory with dense matrices!
-
