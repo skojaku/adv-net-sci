@@ -339,120 +339,44 @@ def _(all_metrics, p_slider):
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, p_slider, pd, progressive_data):
-    # Create properties plot
-    def create_properties_chart():
-        # Prepare clustering data
+def _(alt, k_slider, N_slider, mo, p_slider, pd, progressive_data):
+    # Create clustering coefficient chart
+    def create_clustering_chart():
+        # Prepare clustering data (only raw values)
         C_data = []
         for data_point in progressive_data:
-            C_data.extend(
-                [
-                    {
-                        "p": data_point["p"],
-                        "value": data_point["C"],
-                        "metric": "C(p) - Raw",
-                    },
-                    {
-                        "p": data_point["p"],
-                        "value": data_point["C_normalized"],
-                        "metric": "C(p) / C(random)",
-                    },
-                ]
-            )
+            C_data.append({
+                "p": data_point["p"],
+                "C": data_point["C"],
+            })
 
         C_df = pd.DataFrame(C_data)
+        
+        # Calculate reference value
+        C_random = k_slider.value / (N_slider.value - 1)
 
-        # Clustering chart
-        properties_chart = (
+        # Clustering coefficient line
+        clustering_line = (
             alt.Chart(C_df)
-            .mark_line(point=True, strokeWidth=2.5)
+            .mark_line(point=True, strokeWidth=2.5, color="steelblue")
             .encode(
                 x=alt.X(
                     "p:Q",
                     title="Rewiring Probability (p)",
                     scale=alt.Scale(domain=[0, 1]),
                 ),
-                y=alt.Y("value:Q", title="Clustering Values"),
-                color=alt.Color(
-                    "metric:N",
-                    scale=alt.Scale(
-                        domain=["C(p) - Raw", "C(p) / C(random)"],
-                        range=["steelblue", "lightblue"],
-                    ),
-                    legend=alt.Legend(title="Clustering"),
-                ),
-                tooltip=["p:Q", "value:Q", "metric:N"],
-            )
-            .properties(
-                width=175,
-                height=160,
-                title="Clustering Coefficient",
+                y=alt.Y("C:Q", title="Clustering Coefficient C(p)"),
+                tooltip=["p:Q", "C:Q"],
             )
         )
-
-        # Add vertical line at current p
-        current_p_line = (
-            alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
-            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=2)
-            .encode(x="p:Q")
-        )
-
-        return properties_chart + current_p_line
-
-
-    C_chart = mo.ui.altair_chart(create_properties_chart())
-    return (C_chart,)
-
-
-@app.cell(hide_code=True)
-def _(alt, mo, p_slider, pd, progressive_data):
-    # Create path length chart
-    def create_path_length_chart():
-        # Prepare path length data
-        L_data = []
-        for data_point in progressive_data:
-            L_data.extend(
-                [
-                    {
-                        "p": data_point["p"],
-                        "value": data_point["L"],
-                        "metric": "L(p) - Raw",
-                    },
-                    {
-                        "p": data_point["p"],
-                        "value": data_point["L_normalized"],
-                        "metric": "L(p) / L(random)",
-                    },
-                ]
-            )
-
-        L_df = pd.DataFrame(L_data)
-
-        # Path length chart
-        path_length_chart = (
-            alt.Chart(L_df)
-            .mark_line(point=True, strokeWidth=2.5)
+        
+        # Random reference horizontal line
+        reference_line = (
+            alt.Chart(pd.DataFrame({"C_random": [C_random]}))
+            .mark_rule(color="red", strokeDash=[3, 3], strokeWidth=2)
             .encode(
-                x=alt.X(
-                    "p:Q",
-                    title="Rewiring Probability (p)",
-                    scale=alt.Scale(domain=[0, 1]),
-                ),
-                y=alt.Y("value:Q", title="Path Length Values"),
-                color=alt.Color(
-                    "metric:N",
-                    scale=alt.Scale(
-                        domain=["L(p) - Raw", "L(p) / L(random)"],
-                        range=["red", "orange"],
-                    ),
-                    legend=alt.Legend(title="Path Length"),
-                ),
-                tooltip=["p:Q", "value:Q", "metric:N"],
-            )
-            .properties(
-                width=175,
-                height=160,
-                title="Average Path Length",
+                y="C_random:Q",
+                tooltip=alt.value(f"C_random = {C_random:.4f}")
             )
         )
 
@@ -463,8 +387,76 @@ def _(alt, mo, p_slider, pd, progressive_data):
             .encode(x="p:Q")
         )
 
-        return path_length_chart + current_p_line
+        return (
+            (clustering_line + reference_line + current_p_line)
+            .properties(
+                width=175,
+                height=160,
+                title="Clustering Coefficient C(p)",
+            )
+        )
 
+    C_chart = mo.ui.altair_chart(create_clustering_chart())
+    return (C_chart,)
+
+
+@app.cell(hide_code=True)
+def _(alt, k_slider, N_slider, mo, np, p_slider, pd, progressive_data):
+    # Create path length chart
+    def create_path_length_chart():
+        # Prepare path length data (only raw values)
+        L_data = []
+        for data_point in progressive_data:
+            L_data.append({
+                "p": data_point["p"],
+                "L": data_point["L"],
+            })
+
+        L_df = pd.DataFrame(L_data)
+        
+        # Calculate reference value
+        L_random = np.log(N_slider.value) / np.log(k_slider.value)
+
+        # Path length line
+        path_length_line = (
+            alt.Chart(L_df)
+            .mark_line(point=True, strokeWidth=2.5, color="red")
+            .encode(
+                x=alt.X(
+                    "p:Q",
+                    title="Rewiring Probability (p)",
+                    scale=alt.Scale(domain=[0, 1]),
+                ),
+                y=alt.Y("L:Q", title="Average Path Length L(p)"),
+                tooltip=["p:Q", "L:Q"],
+            )
+        )
+        
+        # Random reference horizontal line
+        reference_line = (
+            alt.Chart(pd.DataFrame({"L_random": [L_random]}))
+            .mark_rule(color="blue", strokeDash=[3, 3], strokeWidth=2)
+            .encode(
+                y="L_random:Q",
+                tooltip=alt.value(f"L_random = {L_random:.4f}")
+            )
+        )
+
+        # Add vertical line at current p
+        current_p_line = (
+            alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
+            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=1)
+            .encode(x="p:Q")
+        )
+
+        return (
+            (path_length_line + reference_line + current_p_line)
+            .properties(
+                width=175,
+                height=160,
+                title="Average Path Length L(p)",
+            )
+        )
 
     L_chart = mo.ui.altair_chart(create_path_length_chart())
     return (L_chart,)
@@ -593,7 +585,7 @@ def _(
 
     ### Key Insights:
     1. **Precomputed approach**: All network states computed once → instant visualization
-    2. **Analytical references**: C_random = k/(n-1), L_random = ln(n)/ln(k) 
+    2. **Analytical references**: C_random = k/(n-1), L_random = ln(n)/ln(k) shown as horizontal dashed lines
     3. **Small-world regime**: σ > 1 means high clustering + short paths
     4. **Visual feedback**: Blue edges = original ring, Red edges = rewired shortcuts
 
@@ -629,7 +621,7 @@ def _(mo):
     **Why Both Measures Matter:**
     - **σ_naive**: Simple ratio but can be misleading (doesn't account for network size/density)
     - **σ**: Normalized against random networks, provides meaningful comparison baseline
-    - **Raw C(p), L(p)**: Show actual network properties without normalization
+    - **Raw C(p), L(p)**: Show actual network properties with random reference lines for comparison
 
     **Interpretation:**
     - σ >> 1: Strong small-world property (high clustering relative to random + short paths relative to lattice)
