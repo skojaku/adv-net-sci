@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-27">
+<meta name="dcterms.date" content="2025-08-08">
 
-<title>Advanced Topics in Network Science</title>
+<title>Small-World Networks: Core Concepts – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,6 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -86,16 +87,18 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../m02-small-world/02-coding.html" rel="next">
+<link href="../m02-small-world/00-preparation.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8c04e634bc84bb2e203b8a8c05997813.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,11 +107,8 @@ div.csl-indent {
   "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -124,11 +124,54 @@ div.csl-indent {
   }
 }</script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -152,6 +195,10 @@ div.csl-indent {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -165,18 +212,18 @@ div.csl-indent {
     <a class="dropdown-item" href="../intro/setup.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../dojo/quiz-dojo.html">
- <span class="dropdown-text">Quiz Dojo</span></a>
-  </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Tour ───</li>
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
  <span class="dropdown-text">Preparation</span></a>
@@ -368,26 +415,460 @@ div.csl-indent {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">Small-World Networks: Core Concepts</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Coding Networks in Python</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">M02: Small World</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">M03: Robustness</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">M04: Friendship Paradox</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">M05: Clustering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">M07: Random Walks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">Small-World Networks: Core Concepts</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Small-World Networks: Core Concepts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -399,7 +880,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2025</p>
+      <p class="date">August 8, 2025</p>
     </div>
   </div>
   
@@ -411,15 +892,22 @@ div.csl-indent {
 </header>
 
 
-<section id="small-world-networks-core-concepts" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Small-World Networks: Core Concepts</h1>
-<section id="what-to-learn-in-this-module" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">1.1</span> What to learn in this module</h2>
-<p>In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn: - Small-world experiment by Milgram - Different concepts of <em>distance</em>: path, walks, circuits, cycles, connectedness - How to load a large sparse network efficiently into memory - How to measure a <em>distance</em> between two nodes using <code>igraph</code> - <strong>Keywords</strong>: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component, compressed sparse row format.</p>
+<section id="what-to-learn-in-this-module" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">1</span> What to learn in this module</h2>
+<p>In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn:</p>
+<ul>
+<li>Small-world experiment by Milgram</li>
+<li>Different concepts of <em>distance</em>: path, walks, circuits, cycles, connectedness</li>
+<li>How to measure a <em>distance</em> between two nodes</li>
+<li><strong>Keywords</strong>: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component.</li>
+</ul>
 </section>
-<section id="small-world-experiment" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="small-world-experiment"><span class="header-section-number">1.2</span> Small-world experiment</h2>
-<p>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</p>
+<section id="small-world-experiment" class="level2 page-columns page-full" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="small-world-experiment"><span class="header-section-number">2</span> Small-world experiment</h2>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><a href="https://en.wikipedia.org/wiki/Stanley_Milgram">Stanley Milgram</a> (1933-1984) was an American social psychologist best known for his controversial <a href="https://en.wikipedia.org/wiki/Milgram_experiment">obedience experiments</a> at Yale University in the early 1960s. Beyond the obedience studies, Milgram conducted groundbreaking research on social networks, including the famous <a href="https://en.wikipedia.org/wiki/Small-world_experiment">“small world” experiment</a> that revealed the surprisingly short chains connecting any two people in society.</p>
+</div></div><p>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</p>
 <div id="fig-milgram-small-world-experiment" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-milgram-small-world-experiment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -430,125 +918,555 @@ Figure&nbsp;1: Milgram’s small world experiment.
 </figcaption>
 </figure>
 </div>
-<p>The experiment went as follows: 1. Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas. 2. The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target. 3. The recipient continued to forward the packet to their acquaintances until it reached the target.</p>
+<p>The experiment went as follows:</p>
+<ol type="1">
+<li>Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas.</li>
+<li>The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target.</li>
+<li>The recipient continued to forward the packet to their acquaintances until it reached the target.</li>
+</ol>
 <p>The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called <strong>six degrees of separation</strong>. The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
+
+<div class="no-row-height column-margin column-container"><div class="">
 <p>The term “Six degrees of separation” is commonly associated with Milgram’s experiment, but Milgram never used it. John Guare coined the term for his 1991 play and movie <a href="https://en.wikipedia.org/wiki/Six_Degrees_of_Separation_(film)">“Six Degrees of Separation.”</a></p>
-</div>
-</div>
-<p>The results were later confirmed independently.</p>
+</div></div><p>The results were later confirmed independently.</p>
 <ul>
-<li><p>Yahoo research replicate the Milgram’s experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7.{footcite}<code>goel2009social</code></p></li>
-<li><p>Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. {footcite}<code>backstrom2012four</code></p></li>
+<li><p>Yahoo research replicate the Milgram’s experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7. <span class="citation" data-cites="goel2009social">(<a href="#ref-goel2009social" role="doc-biblioref">Goel, Muhamad, and Watts 2009</a>)</span></p></li>
+<li><p>Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. <span class="citation" data-cites="backstrom2012four">(<a href="#ref-backstrom2012four" role="doc-biblioref">Backstrom et al. 2012</a>)</span></p></li>
 </ul>
 </section>
-<section id="wikirace-experiencing-small-world-networks" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="wikirace-experiencing-small-world-networks"><span class="header-section-number">1.3</span> Wikirace: Experiencing Small-World Networks</h2>
+<section id="wikirace-experiencing-small-world-networks" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="wikirace-experiencing-small-world-networks"><span class="header-section-number">3</span> Wikirace: Experiencing Small-World Networks</h2>
 <p>Let us feel how small a large network can be by playing the <a href="https://wiki-race.com">Wikirace</a> game.</p>
 <div data-align="center">
 <p><img src="https://cdn.sparkfun.com/assets/home_page_posts/3/8/8/0/Wikirace.jpeg" alt="Wikirace" width="70%"></p>
 </div>
 <p>At the end of the module, we will measure the average path length in a social network. Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.</p>
 </section>
-<section id="paths-walks-and-network-connectivity" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="paths-walks-and-network-connectivity"><span class="header-section-number">1.4</span> Paths, Walks, and Network Connectivity</h2>
-<p>While we have already used the term <strong>path</strong>, let us make clear its definition, together with other related terms and concepts of network connectivity.</p>
-<p><strong>Basic Definitions:</strong></p>
+<section id="why-is-small-world-networks-non-trivial" class="level2 page-columns page-full" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="why-is-small-world-networks-non-trivial"><span class="header-section-number">4</span> Why is small-world networks non-trivial?</h2>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<iframe width="250" height="150" src="https://www.youtube.com/embed/TcxZSmzPw8k?si=J7DZ-7gmBPPruTSV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+</div></div><p>When we think about social networks, it’s natural to imagine that most people are friends with others who are nearby—friends of friends, classmates, colleagues, or neighbors. These are <strong>local connections</strong>, and they tend to form tightly-knit groups where everyone knows each other. In network terms, this means there are many <strong>triangles</strong>: if Alice is friends with Bob, and Bob is friends with Carol, then Alice is also likely to be friends with Carol.</p>
+<p>However, if a network only had these local, clustered connections, it would be difficult for information or influence to travel quickly across the entire network. You would have to go through many intermediaries to reach someone far away, resulting in a <strong>large diameter</strong> (the longest shortest path between any two nodes).</p>
+<p>What makes <strong>small-world networks</strong> non-trivial and surprising is that, despite having lots of local clustering (many triangles), they also have a few <strong>long-range connections</strong>—edges that link distant parts of the network. These “shortcuts” dramatically reduce the average distance between nodes. As a result, even in a huge network, you can reach almost anyone in just a few steps. This combination of high clustering and short path lengths is what defines the small-world property.</p>
+<p>In summary:</p>
 <ul>
-<li><p>A <strong>walk</strong> is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.</p></li>
-<li><p>A <strong>trail</strong> is a walk with no repeated edge. For instance, walk (0, 1, 2, 3) is also a trail as it does not cross the same edge twice. But walk (0,2,3,1,3) is not a trail due to the repeated edge (1,3).</p></li>
-<li><p>A <strong>path</strong> is a walk without repeated node. For instance, walk (0,1,2,3) is a path. But walk (0, 1, 2, 1, 2, 3) is not a path due to the repeated node 1 and 2.</p></li>
-<li><p>When a walk starts and ends at the same node, it is called a **loop*. If the loop is a trail, it is called a <strong>circuit</strong>. If the loop is a path, it is called a <strong>cycle</strong>.</p></li>
+<li><strong>Local connections</strong> create clustering (many triangles), but by themselves would make the network “large” in terms of path length.</li>
+<li><strong>Small-world networks</strong> have both high clustering <em>and</em> short average path lengths, thanks to a few edges that connect distant parts of the network.</li>
+<li>This structure is non-trivial because it cannot be explained by local connections alone; the presence of long-range links is essential for the “small world” phenomenon.</li>
 </ul>
-<p><strong><em>Question</em></strong>: Is a path always a trail, and is a trail always a path?</p>
-<div id="fig-numbered-koningsberg-graph2" class="quarto-float quarto-figure quarto-figure-center anchored">
+</section>
+<section id="quantifying-small-world-properties" class="level2 page-columns page-full" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="quantifying-small-world-properties"><span class="header-section-number">5</span> Quantifying Small-World Properties</h2>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<iframe width="250" height="150" src="https://www.youtube.com/embed/mgcNO58BLk4?si=9wjqYyDzlMB0z6DH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+</div></div><p>Let us approach the small-world properties from mathematical angle. Two key characteristics of small-world networks are:</p>
+<ul>
+<li><strong>Short average path length</strong>: You can reach distant parts of the network quickly.</li>
+<li><strong>High clustering</strong>: Friends of friends are often friends.</li>
+</ul>
+<section id="short-average-path-length" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="short-average-path-length">Short Average Path Length</h3>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.</p>
+</div></div><p>Let’s understand what <strong>average path length</strong> means. When we talk about how “far apart” two nodes are in a network, we mean the shortest number of edges you need to traverse to get from one node to the other. This is called the <strong>distance</strong> between nodes.</p>
+<div class="cell" data-fig-width="3" data-fig-height="2.5" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-shortest-path" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-numbered-koningsberg-graph2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<p><img src="../figs/labeled-koningsberg.jpg" width="30%" class="figure-img"></p>
+<div aria-describedby="fig-shortest-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<svg width="288" height="240" viewbox="0.00 0.00 181.54 181.56" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 177.56)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-177.56 177.54,-177.56 177.54,4 -4,4"></polygon>
+<!-- A -->
+<g id="node1" class="node">
+<title>A</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="86.77" cy="-18.01" rx="18.02" ry="18.02"></ellipse>
+<text text-anchor="middle" x="86.77" y="-13.81" font-family="Times,serif" font-size="14.00">A</text>
+</g>
+<!-- B -->
+<g id="node2" class="node">
+<title>B</title>
+<ellipse fill="none" stroke="black" cx="18" cy="-86.78" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="18" y="-82.58" font-family="Times,serif" font-size="14.00">B</text>
+</g>
+<!-- A&#45;&#45;B -->
+<g id="edge1" class="edge">
+<title>A--B</title>
+<path fill="none" stroke="black" d="M73.83,-30.95C61.54,-43.24 43.15,-61.63 30.88,-73.9"></path>
+</g>
+<!-- C -->
+<g id="node3" class="node">
+<title>C</title>
+<ellipse fill="none" stroke="black" cx="155.54" cy="-86.78" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="155.54" y="-82.58" font-family="Times,serif" font-size="14.00">C</text>
+</g>
+<!-- A&#45;&#45;C -->
+<g id="edge2" class="edge">
+<title>A--C</title>
+<path fill="none" stroke="black" d="M99.7,-30.95C112,-43.24 130.38,-61.63 142.66,-73.9"></path>
+</g>
+<!-- B&#45;&#45;C -->
+<g id="edge3" class="edge">
+<title>B--C</title>
+<path fill="none" stroke="black" d="M36.26,-86.78C62.57,-86.78 110.85,-86.78 137.2,-86.78"></path>
+</g>
+<!-- D -->
+<g id="node4" class="node">
+<title>D</title>
+<ellipse fill="none" stroke="black" cx="86.77" cy="-155.55" rx="18.02" ry="18.02"></ellipse>
+<text text-anchor="middle" x="86.77" y="-151.35" font-family="Times,serif" font-size="14.00">D</text>
+</g>
+<!-- B&#45;&#45;D -->
+<g id="edge4" class="edge">
+<title>B--D</title>
+<path fill="none" stroke="black" d="M30.93,-99.71C43.23,-112.01 61.62,-130.39 73.89,-142.67"></path>
+</g>
+<!-- C&#45;&#45;D -->
+<g id="edge5" class="edge">
+<title>C--D</title>
+<path fill="none" stroke="black" d="M142.6,-99.71C130.31,-112.01 111.92,-130.39 99.65,-142.67"></path>
+</g>
+</g>
+</svg>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-numbered-koningsberg-graph2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Labeled Knigsberg graph
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shortest-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Simple network example for understanding shortest paths
 </figcaption>
 </figure>
 </div>
-<p><strong>Shortest Paths:</strong></p>
+</div>
+</div>
+<p>In this simple network, let’s find the distance between nodes A and D:</p>
 <ul>
-<li><strong>Shortest Path</strong> is the path with the smallest number of edges (or nodes) between two nodes. A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).</li>
-<li><strong>The shortest path length</strong> is the number of edges in the shortest path, <em>not the number of nodes!</em> 👈👈</li>
+<li>Path 1: A <span class="math inline">\rightarrow</span> B <span class="math inline">\rightarrow</span> D (2 edges)</li>
+<li>Path 2: A <span class="math inline">\rightarrow</span> C <span class="math inline">\rightarrow</span> D (2 edges)</li>
+<li>Path 3: A <span class="math inline">\rightarrow</span> C <span class="math inline">\rightarrow</span> B <span class="math inline">\rightarrow</span> D (3 edges)</li>
 </ul>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>Even though there are multiple paths, the <strong>shortest path length</strong> (distance) from A to D is <strong>2 edges</strong>.</p>
+<p>Building on this, let us calculate the <em>average</em> path length between two nodes. We have four nodes in the network, so there are 6 pairs of nodes. Let us enumerate them as follows:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 63%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pair</th>
+<th>Shortest Path</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A - B</td>
+<td>A <span class="math inline">\rightarrow</span> B</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>A - C</td>
+<td>A <span class="math inline">\rightarrow</span> C</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>A - D</td>
+<td>A <span class="math inline">\rightarrow</span> B <span class="math inline">\rightarrow</span> D or A <span class="math inline">\rightarrow</span> C <span class="math inline">\rightarrow</span> D</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>B - C</td>
+<td>B <span class="math inline">\rightarrow</span> C</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>B - D</td>
+<td>B <span class="math inline">\rightarrow</span> D</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>C - D</td>
+<td>C <span class="math inline">\rightarrow</span> D</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>average path length</strong> is simply the average of all these distances, which is <span class="math inline">7 / 6 \simeq 1.16</span>.</p>
+</section>
+<section id="clustering-coefficient" class="level3">
+<h3 class="anchored" data-anchor-id="clustering-coefficient">Clustering Coefficient</h3>
+<p>In social networks, your friends tend to know each other. If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: “Are Bob and Carol also friends with each other?” High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.</p>
+<p>There are three ways to measure clustering: <strong>local clustering</strong>, <strong>average local clustering</strong>, and <strong>global clustering</strong>. The key difference is the focus of the measurement:</p>
+<ul>
+<li><strong>Local clustering</strong> focuses on the clustering of the neighbors of a specific node</li>
+<li><strong>Average local clustering</strong> focuses on the clustering of the neighbors of a node</li>
+<li><strong>Global clustering</strong> focuses on the clustering of the entire network.</li>
+</ul>
+<p>Let us explain each of them one by one.</p>
+<section id="local-clustering" class="level4">
+<h4 class="anchored" data-anchor-id="local-clustering">Local Clustering</h4>
+<p><strong>Local clustering</strong> asks: given all your friends, how many of triangles you and your friends form, relative to the maximum possible number of triangles?</p>
+<p>The local clustering coefficient <span class="math inline">C_i</span> of a node <span class="math inline">i</span> is defined as:</p>
+<p><span class="math display">
+C_i = \dfrac{\text{\# of triangles involving } i \text{ and its neighbors}}{\text{\# of edges possibly exist in the neighborhood of } i}
+</span></p>
+<p>Or alternatively, using the adjacency matrix <span class="math inline">A</span> and the degree <span class="math inline">k_i</span> of node <span class="math inline">i</span>, <span class="math display">
+\begin{aligned}
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+\end{aligned}
+</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Derivation of the local clustering coefficient">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note: Derivation of the local clustering coefficient
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Numerator <span class="math inline">A_{ij}A_{j\ell} A_{\ell i}</span> is a binary indicator of whether three nodes <span class="math inline">i</span>, <span class="math inline">j</span>, and <span class="math inline">\ell</span> form a triangle; <span class="math inline">A_{ij}A_{j\ell} A_{\ell i}=1</span> if a cycle <span class="math inline">i \rightarrow j \rightarrow \ell \rightarrow i</span> exists, and <span class="math inline">0</span> otherwise. By summing up all nodes, we have the number of triangles in the neighbors of <span class="math inline">i</span> given by <span class="math inline">\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} / 2</span>. Note that we divide the sum by 2 because the same triangle forms two cycles, i.g., <span class="math inline">i \rightarrow j \rightarrow \ell \rightarrow i</span> and <span class="math inline">i \rightarrow \ell \rightarrow j \rightarrow i</span>.</p>
+<p>The number of possible triangles in the neighborhood of <span class="math inline">i</span> is given by <span class="math inline">\binom{k_i}{2} = k_i(k_i-1)/2</span>.</p>
+<p>Putting them together:</p>
+<p><span class="math display">
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+</span></p>
+</div>
+</div>
+</div>
+<p>For example, let us compute the local clustering coefficient of node A in the following network. There are two triangles in the neighborhood of A. The number of possible triangles is <span class="math inline">5 \times 4 / 2 = 10</span>. Thus, the local clustering coefficient of A is <span class="math inline">2 / 10 = 0.2</span>.</p>
+<div class="cell" data-fig-width="3" data-fig-height="2.5" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-shortest-path" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shortest-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<svg width="288" height="240" viewbox="0.00 0.00 230.12 197.43" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 193.43)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-193.43 226.12,-193.43 226.12,4 -4,4"></polygon>
+<!-- A -->
+<g id="node1" class="node">
+<title>A</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="95.36" cy="-103.35" rx="18.02" ry="18.02"></ellipse>
+<text text-anchor="middle" x="95.36" y="-99.15" font-family="Times,serif" font-size="14.00">A</text>
+</g>
+<!-- B -->
+<g id="node2" class="node">
+<title>B</title>
+<ellipse fill="none" stroke="black" cx="18" cy="-58.69" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="18" y="-54.49" font-family="Times,serif" font-size="14.00">B</text>
+</g>
+<!-- A&#45;&#45;B -->
+<g id="edge1" class="edge">
+<title>A--B</title>
+<path fill="none" stroke="black" d="M79.71,-94.31C66.29,-86.56 47.05,-75.46 33.63,-67.71"></path>
+</g>
+<!-- C -->
+<g id="node3" class="node">
+<title>C</title>
+<ellipse fill="none" stroke="black" cx="204.12" cy="-82.77" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="204.12" y="-78.57" font-family="Times,serif" font-size="14.00">C</text>
+</g>
+<!-- A&#45;&#45;C -->
+<g id="edge2" class="edge">
+<title>A--C</title>
+<path fill="none" stroke="black" d="M113.32,-99.95C133.48,-96.14 165.98,-89.99 186.14,-86.18"></path>
+</g>
+<!-- D -->
+<g id="node4" class="node">
+<title>D</title>
+<ellipse fill="none" stroke="black" cx="186.32" cy="-171.42" rx="18.02" ry="18.02"></ellipse>
+<text text-anchor="middle" x="186.32" y="-167.22" font-family="Times,serif" font-size="14.00">D</text>
+</g>
+<!-- A&#45;&#45;D -->
+<g id="edge3" class="edge">
+<title>A--D</title>
+<path fill="none" stroke="black" d="M109.98,-114.29C126.95,-126.99 154.79,-147.82 171.74,-160.51"></path>
+</g>
+<!-- E -->
+<g id="node5" class="node">
+<title>E</title>
+<ellipse fill="none" stroke="black" cx="181.07" cy="-18" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="181.07" y="-13.8" font-family="Times,serif" font-size="14.00">E</text>
+</g>
+<!-- A&#45;&#45;E -->
+<g id="edge4" class="edge">
+<title>A--E</title>
+<path fill="none" stroke="black" d="M108.38,-90.39C124.58,-74.25 152.08,-46.87 168.21,-30.81"></path>
+</g>
+<!-- F -->
+<g id="node6" class="node">
+<title>F</title>
+<ellipse fill="none" stroke="black" cx="18" cy="-148.02" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="18" y="-143.82" font-family="Times,serif" font-size="14.00">F</text>
+</g>
+<!-- A&#45;&#45;F -->
+<g id="edge5" class="edge">
+<title>A--F</title>
+<path fill="none" stroke="black" d="M79.71,-112.39C66.29,-120.14 47.05,-131.25 33.63,-138.99"></path>
+</g>
+<!-- B&#45;&#45;F -->
+<g id="edge6" class="edge">
+<title>B--F</title>
+<path fill="none" stroke="black" d="M18,-76.76C18,-92.26 18,-114.48 18,-129.97"></path>
+</g>
+<!-- C&#45;&#45;E -->
+<g id="edge7" class="edge">
+<title>C--E</title>
+<path fill="none" stroke="black" d="M198.07,-65.76C194.71,-56.31 190.54,-44.59 187.17,-35.13"></path>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shortest-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: A network of friends
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="average-local-clustering" class="level4">
+<h4 class="anchored" data-anchor-id="average-local-clustering">Average Local Clustering</h4>
+<p>Local clustering focuses on the clustering of a node’s neighborhood, while the global clustering focuses on the clustering of the entire network. One can adapt the local clustering for measuring the global clustering by taking the average of the local clustering coefficients of all nodes, i.e.,</p>
+<p><span class="math display">
+\overline {C} = \frac{1}{N} \sum_{i=1}^N C_i
+</span></p>
+</section>
+<section id="global-clustering" class="level4">
+<h4 class="anchored" data-anchor-id="global-clustering">Global Clustering</h4>
+<p>Global clustering, also known as <strong>transitivity</strong>, measures the overall tendency for triangles to form throughout the entire network. It answers the question: “Across the whole network, how likely is it that two nodes connected to a common neighbor are also connected to each other?”</p>
+<p>The global clustering coefficient <span class="math inline">C</span> is defined as:</p>
+<p><span class="math display">
+C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}
+</span></p>
+<p>where a <strong>connected triplet</strong> is a set of three nodes connected by at least two edges, forming either a closed triplet (triangle) or an open triplet (wedge) shown below.</p>
+<div class="cell" data-fig-width="5" data-fig-height="2.5" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<svg width="480" height="240" viewbox="0.00 0.00 412.61 125.15" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 121.15)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-121.15 408.61,-121.15 408.61,4 -4,4"></polygon>
+<!-- A1 -->
+<g id="node1" class="node">
+<title>A1</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="94.31" cy="-94.31" rx="22.68" ry="22.68"></ellipse>
+<text text-anchor="middle" x="94.31" y="-90.11" font-family="Times,serif" font-size="14.00">A1</text>
+</g>
+<!-- B1 -->
+<g id="node2" class="node">
+<title>B1</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="22.31" cy="-22.31" rx="22.11" ry="22.11"></ellipse>
+<text text-anchor="middle" x="22.31" y="-18.11" font-family="Times,serif" font-size="14.00">B1</text>
+</g>
+<!-- A1&#45;&#45;B1 -->
+<g id="edge1" class="edge">
+<title>A1--B1</title>
+<path fill="none" stroke="black" d="M77.97,-77.97C66.02,-66.02 49.9,-49.9 38.08,-38.08"></path>
+</g>
+<!-- C1 -->
+<g id="node3" class="node">
+<title>C1</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="166.31" cy="-22.31" rx="22.11" ry="22.11"></ellipse>
+<text text-anchor="middle" x="166.31" y="-18.11" font-family="Times,serif" font-size="14.00">C1</text>
+</g>
+<!-- B1&#45;&#45;C1 -->
+<g id="edge2" class="edge">
+<title>B1--C1</title>
+<path fill="none" stroke="black" d="M44.81,-22.31C71.86,-22.31 116.98,-22.31 143.96,-22.31"></path>
+</g>
+<!-- C1&#45;&#45;A1 -->
+<g id="edge3" class="edge">
+<title>C1--A1</title>
+<path fill="none" stroke="black" d="M150.33,-38.29C138.48,-50.13 122.39,-66.23 110.49,-78.12"></path>
+</g>
+<!-- A2 -->
+<g id="node4" class="node">
+<title>A2</title>
+<ellipse fill="#d0e2f3" stroke="black" stroke-width="2" cx="310.31" cy="-94.31" rx="22.68" ry="22.68"></ellipse>
+<text text-anchor="middle" x="310.31" y="-90.11" font-family="Times,serif" font-size="14.00">A2</text>
+</g>
+<!-- B2 -->
+<g id="node5" class="node">
+<title>B2</title>
+<ellipse fill="#d0e2f3" stroke="black" stroke-width="2" cx="238.31" cy="-22.31" rx="22.11" ry="22.11"></ellipse>
+<text text-anchor="middle" x="238.31" y="-18.11" font-family="Times,serif" font-size="14.00">B2</text>
+</g>
+<!-- A2&#45;&#45;B2 -->
+<g id="edge4" class="edge">
+<title>A2--B2</title>
+<path fill="none" stroke="black" d="M293.97,-77.97C282.02,-66.02 265.9,-49.9 254.08,-38.08"></path>
+</g>
+<!-- C2 -->
+<g id="node6" class="node">
+<title>C2</title>
+<ellipse fill="#d0e2f3" stroke="black" stroke-width="2" cx="382.31" cy="-22.31" rx="22.11" ry="22.11"></ellipse>
+<text text-anchor="middle" x="382.31" y="-18.11" font-family="Times,serif" font-size="14.00">C2</text>
+</g>
+<!-- B2&#45;&#45;C2 -->
+<g id="edge5" class="edge">
+<title>B2--C2</title>
+<path fill="none" stroke="black" d="M260.81,-22.31C287.86,-22.31 332.98,-22.31 359.96,-22.31"></path>
+</g>
+</g>
+</svg>
+</div>
+<p></p><figcaption> Closed triplet (left) and open triplet (right)</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<p>In triplets, the order of the nodes matters. For example, <span class="math inline">(A_1, B_1, C_1)</span> and <span class="math inline">(B_1, C_1, A_1)</span> are two different triplets. A triangle pertains to three triplets, i.e., <span class="math inline">(A_1, B_1, C_1)</span>, <span class="math inline">(B_1, C_1, A_1)</span>, and <span class="math inline">(C_1, A_1, B_1)</span>. This is why we multiple three to the number of triangles in the numerator.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Key difference between average local and global clustering">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key difference between average local and global clustering
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It is confusing to have two different global clustering measures, but the distinction becomes clearer if we think in terms of micro and macro perspectives:</p>
+<ul>
+<li><p>The global clustering coefficient <span class="math inline">C</span> (based on the total number of triangles and triplets in the network) is a <strong>micro-level</strong> measure. It looks at the prevalence of triangles relative to all possible connected triples in the entire network, essentially aggregating over all small, local patterns (triplets) to get a sense of how likely it is for any three connected nodes to form a closed triangle.</p></li>
+<li><p>The average local clustering coefficient <span class="math inline">\overline{C}</span> is a <strong>macro-level</strong> measure. It first computes the clustering coefficient for each individual node (how clustered each node’s neighborhood is), and then averages these values across all nodes. This gives a sense of the overall tendency for nodes in the network to have tightly knit neighborhoods.</p></li>
+</ul>
+<p>So the focal scope remains the same: the average local clustering focuses on a node’s neighborhood, while the global clustering focuses on the entire network.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="small-world-coefficient" class="level3">
+<h3 class="anchored" data-anchor-id="small-world-coefficient">Small-world coefficient</h3>
+<p>Now let’s define a coefficient to measure the small-world property. Recall that a small-world network has both <strong>high clustering</strong> and <strong>short average path length</strong>. A naive approach is to take the ratio between the average local clustering coefficient and the average path length:</p>
+<p><span class="math display">
+s_{\text{naive}} = \frac{\overline{C}}{\overline{L}}
+</span></p>
+<p>where <span class="math inline">\overline{C}</span> is a clustering coefficient and <span class="math inline">\overline{L}</span> is the average path length. The original work by Watts and Strogatz used the average local clustering coefficient <span class="citation" data-cites="watts1998collective">(<a href="#ref-watts1998collective" role="doc-biblioref">Watts and Strogatz 1998</a>)</span> but one can use the global clustering coefficient as well, which leads to different results <span class="citation" data-cites="humphries2008network">(<a href="#ref-humphries2008network" role="doc-biblioref">Humphries and Gurney 2008</a>)</span>.</p>
+<p>A high <span class="math inline">s_{\text{naive}}</span> value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example, a fully-connected network has <span class="math inline">\overline{L} = 1</span> (minimum possible) and <span class="math inline">\overline{C} = 1</span> (maximum possible), giving <span class="math inline">s_{\text{naive}} = 1</span>. This leads us to normalize against <strong>random networks</strong> with the same basic properties <span class="citation" data-cites="humphries2008network">(<a href="#ref-humphries2008network" role="doc-biblioref">Humphries and Gurney 2008</a>)</span>.</p>
+<p>To address this issue, Watts and Strogatz proposed normalizing by equivalent random networks. The <strong>small-world index</strong> (or small-world coefficient) is defined as:</p>
+<p><span class="math display">
+\sigma = \frac{\overline{C}/\overline{C}_{\text{random}}}{\overline{L}/\overline{L}_{\text{random}}} = \frac{\overline{C} \cdot \overline{L}_{\text{random}}}{\overline{L} \cdot \overline{C}_{\text{random}}}
+</span></p>
+<p>where: <span class="math inline">\overline{C}_{\text{random}}</span> and <span class="math inline">\overline{L}_{\text{random}}</span> are the average clustering coefficient and the average path length of an equivalent random network. The “equivalent random network” typically refers to an Erdős–Rényi random graph, where edges are randomly connected with the same number of nodes and edges (or same average degree) as the original network (thus it represents a trivial random network of the same number of nodes and edges).</p>
+<p>A high <span class="math inline">\sigma</span> value greater than 1 indicates a strong small-world property. If <span class="math inline">\sigma</span> is close to 1, the network is not small-world but comparable to a random network in terms of the small-world property. If <span class="math inline">\sigma</span> is less than 1, the network is anti-small-world, i.e., it has a large average path length and low clustering compared to a random counterpart.</p>
+<p>So how do we compute the reference value of <span class="math inline">\overline{C}_{\text{random}}</span> and <span class="math inline">\overline{L}_{\text{random}}</span>? We can compute them numerically by generating many random networks and computing the average of the clustering coefficient and the path length. For Erdős–Rényi random graph, it has been shown that the reference value of <span class="math inline">\overline{C}_{\text{random}}</span> and <span class="math inline">\overline{L}_{\text{random}}</span> follow on average <span class="citation" data-cites="humphries2008network">(<a href="#ref-humphries2008network" role="doc-biblioref">Humphries and Gurney 2008</a>)</span> <span class="citation" data-cites="newman2001random">(<a href="#ref-newman2001random" role="doc-biblioref">Newman, Strogatz, and Watts 2001</a>)</span>: <span class="math display">
+\begin{aligned}
+\overline{C}_{\text{random}} &amp; \approx \frac{\langle k \rangle}{n-1} \\
+\overline{L}_{\text{random}} &amp;\approx \frac{\ln n }{\ln \langle k \rangle}
+\end{aligned}
+</span></p>
+<p>where <span class="math inline">\langle k \rangle</span> is the average degree of the network, and <span class="math inline">n</span> is the number of nodes.</p>
+</section>
+</section>
+<section id="watts-strogatz-model" class="level2 page-columns page-full" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="watts-strogatz-model"><span class="header-section-number">6</span> Watts-Strogatz Model</h2>
+<div id="fig-watts-strogatz-model" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-watts-strogatz-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://imgur.com/pnEl4X1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-watts-strogatz-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Watts-Strogatz model.
+</figcaption>
+</figure>
+</div>
+<p>We have a way to measure the small-world property of a network, which reveals that the small-world property is surprisingly common in real-world networks. This leads to a question: what is the underlying mechanism? The Watts-Strogatz model provides a way to generate small-world networks, as we will see in the next section.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><a href="https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz">Here is a nice blog post about the Watts-Strogatz model</a>.</p>
+</div><div class="">
+<blockquote class="blockquote">
+<p>“What I cannot create, I do not understand.” - Richard Feynman</p>
+</blockquote>
+<p>This quote captures the essence of why models like Watts-Strogatz are crucial: by building networks that exhibit small-world properties, we gain deeper insight into how these properties emerge in real systems.</p>
+</div></div>
+<section id="what-is-the-watts-strogatz-model" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-the-watts-strogatz-model">What is the Watts-Strogatz Model?</h3>
+<p>The <strong>Watts-Strogatz model</strong> provides one explanation for the small-world phenomenon. The Watts-Strogatz model starts with a <strong>ring lattice</strong> and introduces randomness through edge <strong>rewiring</strong>:</p>
+<p><strong>Step 1: Start with a Ring Lattice</strong></p>
+<ul>
+<li>Create a ring of <span class="math inline">N</span> nodes</li>
+<li>Connect each node to its <span class="math inline">k</span> nearest neighbors (k/2 on each side)</li>
+<li>This gives high clustering but long average path length</li>
+</ul>
+<p><strong>Step 2: Rewire Edges with Probability p</strong></p>
+<ul>
+<li>For each edge in the lattice:
+<ul>
+<li>With probability <span class="math inline">p</span>: remove the edge and reconnect one endpoint to a randomly chosen node</li>
+<li>With probability <span class="math inline">(1-p)</span>: keep the original edge</li>
+</ul></li>
+<li>Avoid self-loops and duplicate edges</li>
+</ul>
+<p>At <span class="math inline">p = 0</span>, the network is a regular ring lattice (high clustering, long paths); at <span class="math inline">p = 1</span>, it becomes a random graph (low clustering, short paths). For <span class="math inline">0 &lt; p &lt; 1</span>, the network combines high clustering with short path lengths—the hallmark of the small-world property.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="interactive exploration">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Are there <strong>shortest trails</strong> and <strong>shortest walks</strong>?
+interactive exploration
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.</p>
+<p>Here is the interactive visualization of the Watts-Strogatz model 😎: <a href="https://marimo.io/notebooks/nb_2qUDsuBA6KW2NrM4dTfxCJ"><img src="https://marimo.io/static/badge.svg" class="img-fluid" alt="Open in Marimo"></a>.</p>
 </div>
 </div>
 </section>
-<section id="network-connectivity" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="network-connectivity"><span class="header-section-number">1.5</span> Network Connectivity</h2>
-<p><strong>Basic Connectivity Concepts:</strong></p>
-<ul>
-<li>A network is <strong>connected</strong> if there is a path between every pair of nodes.</li>
-<li>A network is <strong>disconnected</strong> if there is no path between some pairs of nodes.</li>
-<li><strong>A connected component</strong> of a network is a set of nodes that are connected to each other.</li>
-<li><strong>The giant component</strong> of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).</li>
-</ul>
-<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<p><img src="../figs/connected-component.jpg" width="50%" class="figure-img"></p>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: connected components of a network. the nodes with the same color form a connected component.
-</figcaption>
-</figure>
-</div>
-<p><strong>Connectivity in Directed Networks:</strong></p>
-<p>We call a network is <em>directed</em> if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.</p>
-<p>In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.</p>
-<p>This leads to two different types of <code>connectedness</code> as follows:</p>
-<ul>
-<li><strong>Strong connectedness</strong>: A directed network is said to be strongly connected if there is a path from every node to every other node.</li>
-<li><strong>Weak connectedness</strong>: A directed network is said to be weakly connected if there is a path from every node to every other node on its <em>undirected</em> counterpart.</li>
-</ul>
-<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<p><img src="../figs/connected-component-directed.jpg" width="50%" class="figure-img"></p>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: connected components of a network. the nodes with the same color form a connected component.
-</figcaption>
-</figure>
-</div>
-<p><strong>Question</strong>: Is a strongly-connected component always a weakly-connected component?</p>
+<section id="why-does-the-small-world-property-emerge" class="level3">
+<h3 class="anchored" data-anchor-id="why-does-the-small-world-property-emerge">Why does the small-world property emerge?</h3>
+<p>The Watts-Strogatz model explains that the small-world property emerges from a small number of long-range connections that connect distant parts of the network, despite the nodes being connected to their local neighbors. While we have focused on social networks, the same explanation applies to different domains, such as biological networks (e.g., neurons are primarily connected locally but have some long-range connections that enable rapid information transmission), and technological networks (e.g., the Internet topology is regional but has some long-range connections that span continents).</p>
+</section>
+<section id="interactive-exploration" class="level3">
+<h3 class="anchored" data-anchor-id="interactive-exploration">Interactive Exploration</h3>
+<iframe src="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/docs/lecture-note/assets/marimo/watts_strogatz_wasm.py?embed=true&amp;show-chrome=false&amp;mode=app" width="100%" height="800" frameborder="0">
+</iframe>
+<p>Explore the Watts-Strogatz model interactively by adjusting the rewiring probability and observing how network properties change:</p>
 <p>In the next section, we will learn how to compute the shortest paths and connected components of a network using a library <a href="https://python.igraph.org/en/stable/">igraph</a>.</p>
 </section>
-<section id="references" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="references"><span class="header-section-number">1.6</span> References</h2>
-<div id="refs" role="list">
-
+</section>
+<section id="references" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="references"><span class="header-section-number">7</span> References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-backstrom2012four" class="csl-entry" role="listitem">
+Backstrom, Lars, Paolo Boldi, Marco Rosa, Johan Ugander, and Sebastiano Vigna. 2012. <span>“Four Degrees of Separation.”</span> In <em>Proceedings of the 4th Annual ACM Web Science Conference</em>, 33–42.
+</div>
+<div id="ref-goel2009social" class="csl-entry" role="listitem">
+Goel, Sharad, Roby Muhamad, and Duncan Watts. 2009. <span>“Social Search in" Small-World" Experiments.”</span> In <em>Proceedings of the 18th International Conference on World Wide Web</em>, 701–10.
+</div>
+<div id="ref-humphries2008network" class="csl-entry" role="listitem">
+Humphries, Mark D., and Kevin Gurney. 2008. <span>“<span class="nocase">Network <span>‘Small-World-Ness’</span>: A Quantitative Method for Determining Canonical Network Equivalence</span>.”</span> Edited by Olaf Sporns. <em>PLoS ONE</em> 3 (4): e0002051. <a href="https://doi.org/10.1371/journal.pone.0002051">https://doi.org/10.1371/journal.pone.0002051</a>.
+</div>
+<div id="ref-newman2001random" class="csl-entry" role="listitem">
+Newman, M. E. J., S. H. Strogatz, and D. J. Watts. 2001. <span>“<span class="nocase">Random graphs with arbitrary degree distributions and their applications</span>.”</span> <em>Physical Review E</em> 64 (2). <a href="https://doi.org/10.1103/physreve.64.026118">https://doi.org/10.1103/physreve.64.026118</a>.
+</div>
+<div id="ref-watts1998collective" class="csl-entry" role="listitem">
+Watts, Duncan J, and Steven H Strogatz. 1998. <span>“Collective Dynamics of ‘Small-World’networks.”</span> <em>Nature</em> 393 (6684): 440–42.
+</div>
 </div>
 
 
 <!-- -->
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1001,137 +1919,429 @@ Figure&nbsp;4: connected components of a network. the nodes with the same color 
       }
     }
   });
-  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Small-World Networks: Core Concepts</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to learn in this module</span></span>
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../m02-small-world/00-preparation.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../m02-small-world/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Small-World Networks: Core Concepts"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn:</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small-world experiment by Milgram</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Different concepts of *distance*: path, walks, circuits, cycles, connectedness</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How to load a large sparse network efficiently into memory</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How to measure a *distance* between two nodes using <span class="in">`igraph`</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keywords**: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component, compressed sparse row format.</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Small-world experiment</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to learn in this module</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small-world experiment by Milgram</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Different concepts of *distance*: path, walks, circuits, cycles, connectedness</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How to measure a *distance* between two nodes</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keywords**: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component.</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">## Small-world experiment</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>::: {#fig-milgram-small-world-experiment}</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"../figs/milgram-small-world-experiment.png"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"70%"</span><span class="dt">&gt;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Stanley Milgram</span><span class="co">](https://en.wikipedia.org/wiki/Stanley_Milgram)</span> (1933-1984) was an American social psychologist best known for his controversial <span class="co">[</span><span class="ot">obedience experiments</span><span class="co">](https://en.wikipedia.org/wiki/Milgram_experiment)</span> at Yale University in the early 1960s. Beyond the obedience studies, Milgram conducted groundbreaking research on social networks, including the famous <span class="co">[</span><span class="ot">"small world" experiment</span><span class="co">](https://en.wikipedia.org/wiki/Small-world_experiment)</span> that revealed the surprisingly short chains connecting any two people in society.</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Milgram's small world experiment.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>How far are two people in a social network? Milgram and his colleagues conducted a series of expriment to find out in the 1960s.</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>::: {#fig-milgram-small-world-experiment}</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>The experiment went as follows:</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas.</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target.</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The recipient continued to forward the packet to their acquaintances until it reached the target.</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"../figs/milgram-small-world-experiment.png"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"70%"</span><span class="dt">&gt;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>Milgram's small world experiment.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called **six degrees of separation**.</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>The experiment went as follows:</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>The term "Six degrees of separation" is commonly associated with Milgram's experiment, but Milgram never used it. John Guare coined the term for his 1991 play and movie <span class="co">[</span><span class="ot">"Six Degrees of Separation."</span><span class="co">]</span>(https://en.wikipedia.org/wiki/Six_Degrees_of_Separation_(film))</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas.</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The recipient continued to forward the packet to their acquaintances until it reached the target.</span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>The results were later confirmed independently.</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">-  </span>Yahoo research replicate the Milgram's experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7.{footcite}<span class="in">`goel2009social`</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. {footcite}<span class="in">`backstrom2012four`</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## Wikirace: Experiencing Small-World Networks</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>Let us feel how small a large network can be by playing the <span class="co">[</span><span class="ot">Wikirace</span><span class="co">](https://wiki-race.com)</span> game.</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://cdn.sparkfun.com/assets/home_page_posts/3/8/8/0/Wikirace.jpeg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Wikirace"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"70%"</span><span class="dt">&gt;</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>At the end of the module, we will measure the average path length in a social network. Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paths, Walks, and Network Connectivity</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>While we have already used the term **path**, let us make clear its definition, together with other related terms and concepts of network connectivity.</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>**Basic Definitions:**</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A **walk** is a sequence of nodes that are connected to form a continous route in a network. For instance, walk (0, 1, 2, 3) is a walk in the graph of the bridges of Konigsberg. But the sequence (0,2,3,1) is not a walk, because the node 0 is not directly connected to node 2.</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A **trail** is a walk with no repeated edge. For instance, walk (0, 1, 2, 3) is also a trail as it does not cross the same edge twice. But walk (0,2,3,1,3) is not a trail due to the repeated edge (1,3).</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called **six degrees of separation**.</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>The term "Six degrees of separation" is commonly associated with Milgram's experiment, but Milgram never used it. John Guare coined the term for his 1991 play and movie <span class="co">[</span><span class="ot">"Six Degrees of Separation."</span><span class="co">]</span>(https://en.wikipedia.org/wiki/Six_Degrees_of_Separation_(film))</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>The results were later confirmed independently.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">-  </span>Yahoo research replicate the Milgram's experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7. <span class="co">[</span><span class="ot">@goel2009social</span><span class="co">]</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. <span class="co">[</span><span class="ot">@backstrom2012four</span><span class="co">]</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Wikirace: Experiencing Small-World Networks</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>Let us feel how small a large network can be by playing the <span class="co">[</span><span class="ot">Wikirace</span><span class="co">](https://wiki-race.com)</span> game.</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> align</span><span class="op">=</span><span class="st">"center"</span><span class="dt">&gt;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://cdn.sparkfun.com/assets/home_page_posts/3/8/8/0/Wikirace.jpeg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Wikirace"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"70%"</span><span class="dt">&gt;</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>At the end of the module, we will measure the average path length in a social network. Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why is small-world networks non-trivial?</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A **path** is a walk without repeated node. For instance, walk (0,1,2,3) is a path. But walk (0, 1, 2, 1, 2, 3) is not a path due to the repeated node 1 and 2.</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
 <span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>When a walk starts and ends at the same node, it is called a **loop*. If the loop is a trail, it is called a **circuit**. If the loop is a path, it is called a **cycle**.</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/TcxZSmzPw8k?si=J7DZ-7gmBPPruTSV"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>***Question***: Is a path always a trail, and is a trail always a path?</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>::: {#fig-numbered-koningsberg-graph2}</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>When we think about social networks, it's natural to imagine that most people are friends with others who are nearby—friends of friends, classmates, colleagues, or neighbors. These are **local connections**, and they tend to form tightly-knit groups where everyone knows each other. In network terms, this means there are many **triangles**: if Alice is friends with Bob, and Bob is friends with Carol, then Alice is also likely to be friends with Carol.</span>
 <span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span> <span class="st">"../figs/labeled-koningsberg.jpg"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"30%"</span><span class="dt">&gt;</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>However, if a network only had these local, clustered connections, it would be difficult for information or influence to travel quickly across the entire network. You would have to go through many intermediaries to reach someone far away, resulting in a **large diameter** (the longest shortest path between any two nodes).</span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>Labeled Knigsberg graph</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>What makes **small-world networks** non-trivial and surprising is that, despite having lots of local clustering (many triangles), they also have a few **long-range connections**—edges that link distant parts of the network. These "shortcuts" dramatically reduce the average distance between nodes. As a result, even in a huge network, you can reach almost anyone in just a few steps. This combination of high clustering and short path lengths is what defines the small-world property.</span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>In summary:</span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>**Shortest Paths:**</span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Shortest Path** is the path with the smallest number of edges (or nodes) between two nodes. A shortest path from node 0 to 2 is (0, 1, 2). Two nodes can have multiple shortest paths e.g., (0, 3, 2).</span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The shortest path length** is the number of edges in the shortest path, *not the number of nodes!* 👈👈</span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## Are there **shortest trails** and **shortest walks**?</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>Shortest trails and shortest walks are fundamentally equivalent to shortest paths. A shortest trail must visit each node only once (otherwise it would not be the shortest), and similarly, a shortest walk does not repeat nodes (otherwise it would not be the shortest), both forming a shortest path.</span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Local connections** create clustering (many triangles), but by themselves would make the network "large" in terms of path length.</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world networks** have both high clustering *and* short average path lengths, thanks to a few edges that connect distant parts of the network.</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>This structure is non-trivial because it cannot be explained by local connections alone; the presence of long-range links is essential for the "small world" phenomenon.</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quantifying Small-World Properties</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/mgcNO58BLk4?si=9wjqYyDzlMB0z6DH"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
 <span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network Connectivity</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>**Basic Connectivity Concepts:**</span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A network is **connected** if there is a path between every pair of nodes.</span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A network is **disconnected** if there is no path between some pairs of nodes.</span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**A connected component** of a network is a set of nodes that are connected to each other.</span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The giant component** of a network is the largest connected component that contains a significant fraction of nodes in the network (in order of the number of nodes).</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>Let us approach the small-world properties from mathematical angle. Two key characteristics of small-world networks are:</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Short average path length**: You can reach distant parts of the network quickly.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**High clustering**: Friends of friends are often friends.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>::: {#fig-connected-components}</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="fu">### Short Average Path Length</span></span>
 <span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span> <span class="st">"../figs/connected-component.jpg"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"50%"</span><span class="dt">&gt;</span></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>connected components of a network. the nodes with the same color form a connected component.</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>Let's understand what **average path length** means. When we talk about how "far apart" two nodes are in a network, we mean the shortest number of edges you need to traverse to get from one node to the other. This is called the **distance** between nodes.</span>
 <span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>**Connectivity in Directed Networks:**</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>We call a network is *directed* if the edges have a direction. Example directed networks include the network of Web pages, the network of friendships on X, the network of citations on academic papers.</span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>In a directed network, a walk must follow the edge directions. Paths, trails, and loops extend similarly to directed networks. But one thing to keep in mind: a walk may not be reversible, meaning there can be a walk from one node to another but not vice versa.</span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>This leads to two different types of <span class="in">`connectedness`</span> as follows:</span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Strong connectedness**: A directed network is said to be strongly connected if there is a path from every node to every other node.</span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Weak connectedness**: A directed network is said to be weakly connected if there is a path from every node to every other node on its *undirected* counterpart.</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>::: {#fig-connected-components-directed}</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span> <span class="st">"../figs/connected-component-directed.jpg"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"50%"</span><span class="dt">&gt;</span></span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>connected components of a network. the nodes with the same color form a connected component.</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>**Question**: Is a strongly-connected component always a weakly-connected component?</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>In the next section, we will learn how to compute the shortest paths and connected components of a network using a library <span class="co">[</span><span class="ot">igraph</span><span class="co">](https://python.igraph.org/en/stable/)</span>.</span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="in">```{dot}</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-width: 3</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-height: 2.5</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-cap: "Simple network example for understanding shortest paths"</span></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="co">//| label: fig-shortest-path</span></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-align: center</span></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">layout</span><span class="ot">=</span><span class="va">circo</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="co">, </span><span class="at">fillcolor</span><span class="ot">=</span><span class="st">"#f5cbcc"</span><span class="co">, </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled,bold"</span><span class="co">, </span><span class="va">penwidth</span><span class="ot">=</span><span class="dv">2</span><span class="co">, </span><span class="ot">];</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">B</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">C</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">D</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">B</span><span class="ot">;</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">C</span><span class="ot">;</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">B</span><span class="co"> -- </span><span class="va">C</span><span class="ot">;</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">B</span><span class="co"> -- </span><span class="va">D</span><span class="ot">;</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">C</span><span class="co"> -- </span><span class="va">D</span><span class="ot">;</span></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>In this simple network, let's find the distance between nodes A and D:</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Path 1: A $\rightarrow$ B $\rightarrow$ D (2 edges)</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Path 2: A $\rightarrow$ C $\rightarrow$ D (2 edges)</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Path 3: A $\rightarrow$ C $\rightarrow$ B $\rightarrow$ D (3 edges)</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>Even though there are multiple paths, the **shortest path length** (distance) from A to D is **2 edges**.</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>Building on this, let us calculate the *average* path length between two nodes. We have four nodes in the network, so there are 6 pairs of nodes. Let us enumerate them as follows:</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Pair    <span class="pp">|</span> Shortest Path                <span class="pp">|</span> Length <span class="pp">|</span></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|------------------------------|--------|</span></span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> A - B   <span class="pp">|</span> A $\rightarrow$ B                        <span class="pp">|</span> 1      <span class="pp">|</span></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> A - C   <span class="pp">|</span> A $\rightarrow$ C                        <span class="pp">|</span> 1      <span class="pp">|</span></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> A - D   <span class="pp">|</span> A $\rightarrow$ B $\rightarrow$ D or A $\rightarrow$ C $\rightarrow$ D       <span class="pp">|</span> 2      <span class="pp">|</span></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> B - C   <span class="pp">|</span> B $\rightarrow$ C                        <span class="pp">|</span> 1      <span class="pp">|</span></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> B - D   <span class="pp">|</span> B $\rightarrow$ D                        <span class="pp">|</span> 1      <span class="pp">|</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> C - D   <span class="pp">|</span> C $\rightarrow$ D                        <span class="pp">|</span> 1      <span class="pp">|</span></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>The **average path length** is simply the average of all these distances, which is $7 / 6 \simeq 1.16$.</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a><span class="fu">### Clustering Coefficient</span></span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>In social networks, your friends tend to know each other.</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>There are three ways to measure clustering: **local clustering**, **average local clustering**, and **global clustering**. The key difference is the focus of the measurement:</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Local clustering** focuses on the clustering of the neighbors of a specific node</span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Average local clustering** focuses on the clustering of the neighbors of a node</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Global clustering** focuses on the clustering of the entire network.</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>Let us explain each of them one by one.</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Local Clustering</span></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>**Local clustering** asks: given all your friends, how many of triangles you and your friends form, relative to the maximum possible number of triangles?</span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>The local clustering coefficient $C_i$ of a node $i$ is defined as:</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>C_i = \dfrac{\text{<span class="sc">\#</span> of triangles involving } i \text{ and its neighbors}}{\text{<span class="sc">\#</span> of edges possibly exist in the neighborhood of } i}</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>Or alternatively, using the adjacency matrix $A$ and the degree $k_i$ of node $i$,</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse="true" title="Note: Derivation of the local clustering coefficient"}</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>Numerator $A_{ij}A_{j\ell} A_{\ell i}$ is a binary indicator of whether three nodes $i$, $j$, and $\ell$ form a triangle; $A_{ij}A_{j\ell} A_{\ell i}=1$ if a cycle $i \rightarrow j \rightarrow \ell \rightarrow i$ exists, and $0$ otherwise.</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>By summing up all nodes, we have the number of triangles in the neighbors of $i$ given by $\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} / 2$.</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>Note that we divide the sum by 2 because the same triangle forms two cycles, i.g., $i \rightarrow j \rightarrow \ell \rightarrow i$ and $i \rightarrow \ell \rightarrow j \rightarrow i$.</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>The number of possible triangles in the neighborhood of $i$ is given by $\binom{k_i}{2} = k_i(k_i-1)/2$.</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>Putting them together:</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>For example, let us compute the local clustering coefficient of node A in the following network. There are two triangles in the neighborhood of A. The number of possible triangles is $5 \times 4 / 2 = 10$. Thus, the local clustering coefficient of A is $2 / 10 = 0.2$.</span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="in">```{dot}</span></span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-width: 3</span></span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-height: 2.5</span></span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-cap: "A network of friends"</span></span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a><span class="co">//| label: fig-shortest-path</span></span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-align: center</span></span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">layout</span><span class="ot">=</span><span class="va">circo</span></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="co">, </span><span class="at">fillcolor</span><span class="ot">=</span><span class="st">"#f5cbcc"</span><span class="co">, </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled,bold"</span><span class="co">, </span><span class="va">penwidth</span><span class="ot">=</span><span class="dv">2</span><span class="co">, </span><span class="va">pos</span><span class="ot">=</span><span class="st">"0,0!"</span><span class="ot">];</span></span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">B</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">C</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">D</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">E</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">F</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">B</span><span class="ot">;</span></span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">C</span><span class="ot">;</span></span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">D</span><span class="ot">;</span></span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">E</span><span class="ot">;</span></span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">F</span><span class="ot">;</span></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">B</span><span class="co"> -- </span><span class="va">F</span><span class="ot">;</span></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">C</span><span class="co"> -- </span><span class="va">E</span><span class="ot">;</span></span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Average Local Clustering</span></span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a>Local clustering focuses on the clustering of a node's neighborhood, while the global clustering focuses on the clustering of the entire network. One can adapt the local clustering for measuring the global clustering by taking the average of the local clustering coefficients of all nodes, i.e.,</span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a>\overline {C} = \frac{1}{N} \sum_{i=1}^N C_i</span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Global Clustering</span></span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a>Global clustering, also known as **transitivity**, measures the overall tendency for triangles to form throughout the entire network. It answers the question: "Across the whole network, how likely is it that two nodes connected to a common neighbor are also connected to each other?"</span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a>The global clustering coefficient $C$ is defined as:</span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}</span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a>where a **connected triplet** is a set of three nodes connected by at least two edges, forming either a closed triplet (triangle) or an open triplet (wedge) shown below.</span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{dot}</span></span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-width: 5</span></span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-height: 2.5</span></span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-cap: "Closed triplet (left) and open triplet (right)"</span></span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a><span class="co">//| fig-align: center</span></span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">layout</span><span class="ot">=</span><span class="va">neato</span><span class="ot">;</span></span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">16</span><span class="ot">;</span></span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">14</span><span class="ot">];</span></span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_0</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">label</span><span class="ot">=</span><span class="st">"Closed Triplet"</span><span class="ot">;</span></span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">16</span><span class="ot">;</span></span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">style</span><span class="ot">=</span><span class="va">filled</span><span class="ot">;</span></span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">color</span><span class="ot">=</span><span class="va">lightgrey</span><span class="ot">;</span></span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="co">, </span><span class="at">fillcolor</span><span class="ot">=</span><span class="st">"#f5cbcc"</span><span class="co">, </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled,bold"</span><span class="co">, </span><span class="va">penwidth</span><span class="ot">=</span><span class="dv">2</span><span class="ot">];</span></span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A1</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"-1.5,0!"</span><span class="co"> </span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">B1</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"-2.5,-1!"</span><span class="co"> </span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C1</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"-0.5,-1!"</span><span class="co"> </span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="ot">];</span></span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">B1</span><span class="ot">;</span></span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
+<span id="cb1-267"><a href="#cb1-267" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C1</span><span class="co"> -- </span><span class="va">A1</span><span class="ot">;</span></span>
+<span id="cb1-268"><a href="#cb1-268" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="ot">}</span></span>
+<span id="cb1-269"><a href="#cb1-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-270"><a href="#cb1-270" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_1</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb1-271"><a href="#cb1-271" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">label</span><span class="ot">=</span><span class="st">"Open Triplet"</span><span class="ot">;</span></span>
+<span id="cb1-272"><a href="#cb1-272" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">16</span><span class="ot">;</span></span>
+<span id="cb1-273"><a href="#cb1-273" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">style</span><span class="ot">=</span><span class="va">filled</span><span class="ot">;</span></span>
+<span id="cb1-274"><a href="#cb1-274" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">color</span><span class="ot">=</span><span class="va">lightgrey</span><span class="ot">;</span></span>
+<span id="cb1-275"><a href="#cb1-275" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">circle</span><span class="co">, </span><span class="at">fillcolor</span><span class="ot">=</span><span class="st">"#d0e2f3"</span><span class="co">, </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled,bold"</span><span class="co">, </span><span class="va">penwidth</span><span class="ot">=</span><span class="dv">2</span><span class="ot">];</span></span>
+<span id="cb1-276"><a href="#cb1-276" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A2</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"1.5,0!"</span><span class="co"> </span><span class="ot">];</span></span>
+<span id="cb1-277"><a href="#cb1-277" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">B2</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"0.5,-1!"</span><span class="co"> </span><span class="ot">];</span></span>
+<span id="cb1-278"><a href="#cb1-278" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C2</span><span class="co"> </span><span class="ot">[</span><span class="va">pos</span><span class="ot">=</span><span class="st">"2.5,-1!"</span><span class="co"> </span><span class="ot">];</span></span>
+<span id="cb1-279"><a href="#cb1-279" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A2</span><span class="co"> -- </span><span class="va">B2</span><span class="ot">;</span></span>
+<span id="cb1-280"><a href="#cb1-280" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">B2</span><span class="co"> -- </span><span class="va">C2</span><span class="ot">;</span></span>
+<span id="cb1-281"><a href="#cb1-281" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="ot">}</span></span>
+<span id="cb1-282"><a href="#cb1-282" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span>
+<span id="cb1-283"><a href="#cb1-283" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-284"><a href="#cb1-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-285"><a href="#cb1-285" aria-hidden="true" tabindex="-1"></a>In triplets, the order of the nodes matters. For example, $(A_1, B_1, C_1)$ and $(B_1, C_1, A_1)$ are two different triplets. A triangle pertains to three triplets, i.e., $(A_1, B_1, C_1)$, $(B_1, C_1, A_1)$, and $(C_1, A_1, B_1)$. This is why we multiple three to the number of triangles in the numerator.</span>
+<span id="cb1-286"><a href="#cb1-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-287"><a href="#cb1-287" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse="true" title="Key difference between average local and global clustering"}</span>
+<span id="cb1-288"><a href="#cb1-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-289"><a href="#cb1-289" aria-hidden="true" tabindex="-1"></a>It is confusing to have two different global clustering measures, but the distinction becomes clearer if we think in terms of micro and macro perspectives:</span>
+<span id="cb1-290"><a href="#cb1-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-291"><a href="#cb1-291" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The global clustering coefficient $C$ (based on the total number of triangles and triplets in the network) is a **micro-level** measure. It looks at the prevalence of triangles relative to all possible connected triples in the entire network, essentially aggregating over all small, local patterns (triplets) to get a sense of how likely it is for any three connected nodes to form a closed triangle.</span>
+<span id="cb1-292"><a href="#cb1-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-293"><a href="#cb1-293" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The average local clustering coefficient $\overline{C}$ is a **macro-level** measure. It first computes the clustering coefficient for each individual node (how clustered each node's neighborhood is), and then averages these values across all nodes. This gives a sense of the overall tendency for nodes in the network to have tightly knit neighborhoods.</span>
+<span id="cb1-294"><a href="#cb1-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-295"><a href="#cb1-295" aria-hidden="true" tabindex="-1"></a>So the focal scope remains the same: the average local clustering focuses on a node's neighborhood, while the global clustering focuses on the entire network.</span>
+<span id="cb1-296"><a href="#cb1-296" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-297"><a href="#cb1-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-298"><a href="#cb1-298" aria-hidden="true" tabindex="-1"></a><span class="fu">### Small-world coefficient</span></span>
+<span id="cb1-299"><a href="#cb1-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-300"><a href="#cb1-300" aria-hidden="true" tabindex="-1"></a>Now let's define a coefficient to measure the small-world property. Recall that a small-world network has both **high clustering** and **short average path length**. A naive approach is to take the ratio between the average local clustering coefficient and the average path length:</span>
+<span id="cb1-301"><a href="#cb1-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-302"><a href="#cb1-302" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-303"><a href="#cb1-303" aria-hidden="true" tabindex="-1"></a>s_{\text{naive}} = \frac{\overline{C}}{\overline{L}}</span>
+<span id="cb1-304"><a href="#cb1-304" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-305"><a href="#cb1-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-306"><a href="#cb1-306" aria-hidden="true" tabindex="-1"></a>where $\overline{C}$ is a clustering coefficient and $\overline{L}$ is the average path length. The original work by Watts and Strogatz used the average local clustering coefficient <span class="co">[</span><span class="ot">@watts1998collective</span><span class="co">]</span> but one can use the global clustering coefficient as well, which leads to different results <span class="co">[</span><span class="ot">@humphries2008network</span><span class="co">]</span>.</span>
+<span id="cb1-307"><a href="#cb1-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-308"><a href="#cb1-308" aria-hidden="true" tabindex="-1"></a>A high $s_{\text{naive}}$ value would seem to indicate a strong small-world property. However, this naive measure has a critical flaw: it can be high for trivial network structures. For example,</span>
+<span id="cb1-309"><a href="#cb1-309" aria-hidden="true" tabindex="-1"></a>a fully-connected network has $\overline{L} = 1$ (minimum possible) and $\overline{C} = 1$ (maximum possible), giving $s_{\text{naive}} = 1$.</span>
+<span id="cb1-310"><a href="#cb1-310" aria-hidden="true" tabindex="-1"></a>This leads us to normalize against **random networks** with the same basic properties <span class="co">[</span><span class="ot">@humphries2008network</span><span class="co">]</span>.</span>
+<span id="cb1-311"><a href="#cb1-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-312"><a href="#cb1-312" aria-hidden="true" tabindex="-1"></a>To address this issue, Watts and Strogatz proposed normalizing by equivalent random networks. The **small-world index** (or small-world coefficient) is defined as:</span>
+<span id="cb1-313"><a href="#cb1-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-314"><a href="#cb1-314" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-315"><a href="#cb1-315" aria-hidden="true" tabindex="-1"></a>\sigma = \frac{\overline{C}/\overline{C}_{\text{random}}}{\overline{L}/\overline{L}_{\text{random}}} = \frac{\overline{C} \cdot \overline{L}_{\text{random}}}{\overline{L} \cdot \overline{C}_{\text{random}}}</span>
+<span id="cb1-316"><a href="#cb1-316" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-317"><a href="#cb1-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-318"><a href="#cb1-318" aria-hidden="true" tabindex="-1"></a>where: $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ are the average clustering coefficient and the average path length of an equivalent random network. The "equivalent random network" typically refers to an Erdős–Rényi random graph, where edges are randomly connected with the same number of nodes and edges (or same average degree) as the original network (thus it represents a trivial random network of the same number of nodes and edges).</span>
+<span id="cb1-319"><a href="#cb1-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-320"><a href="#cb1-320" aria-hidden="true" tabindex="-1"></a>A high $\sigma$ value greater than 1 indicates a strong small-world property. If $\sigma$ is close to 1, the network is not small-world but comparable to a random network in terms of the small-world property.</span>
+<span id="cb1-321"><a href="#cb1-321" aria-hidden="true" tabindex="-1"></a>If $\sigma$ is less than 1, the network is anti-small-world, i.e., it has a large average path length and low clustering compared to a random counterpart.</span>
+<span id="cb1-322"><a href="#cb1-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-323"><a href="#cb1-323" aria-hidden="true" tabindex="-1"></a>So how do we compute the reference value of $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$?</span>
+<span id="cb1-324"><a href="#cb1-324" aria-hidden="true" tabindex="-1"></a>We can compute them numerically by generating many random networks and computing the average of the clustering coefficient and the path length. For Erdős–Rényi random graph, it has been shown that the reference value of $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ follow on average <span class="co">[</span><span class="ot">@humphries2008network</span><span class="co">] [@newman2001random]</span>:</span>
+<span id="cb1-325"><a href="#cb1-325" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-326"><a href="#cb1-326" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-327"><a href="#cb1-327" aria-hidden="true" tabindex="-1"></a>\overline{C}_{\text{random}} &amp; \approx \frac{\langle k \rangle}{n-1} <span class="sc">\\</span></span>
+<span id="cb1-328"><a href="#cb1-328" aria-hidden="true" tabindex="-1"></a>\overline{L}_{\text{random}} &amp;\approx \frac{\ln n }{\ln \langle k \rangle}</span>
+<span id="cb1-329"><a href="#cb1-329" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-330"><a href="#cb1-330" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-331"><a href="#cb1-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-332"><a href="#cb1-332" aria-hidden="true" tabindex="-1"></a>where $\langle k \rangle$ is the average degree of the network, and $n$ is the number of nodes.</span>
+<span id="cb1-333"><a href="#cb1-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-334"><a href="#cb1-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-335"><a href="#cb1-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-336"><a href="#cb1-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-337"><a href="#cb1-337" aria-hidden="true" tabindex="-1"></a><span class="fu">## Watts-Strogatz Model</span></span>
+<span id="cb1-338"><a href="#cb1-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-339"><a href="#cb1-339" aria-hidden="true" tabindex="-1"></a>::: {#fig-watts-strogatz-model}</span>
+<span id="cb1-340"><a href="#cb1-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-341"><a href="#cb1-341" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://imgur.com/pnEl4X1.png)</span></span>
+<span id="cb1-342"><a href="#cb1-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-343"><a href="#cb1-343" aria-hidden="true" tabindex="-1"></a>Watts-Strogatz model.</span>
+<span id="cb1-344"><a href="#cb1-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-345"><a href="#cb1-345" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-346"><a href="#cb1-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-347"><a href="#cb1-347" aria-hidden="true" tabindex="-1"></a>We have a way to measure the small-world property of a network, which reveals that the small-world property is surprisingly common in real-world networks.</span>
+<span id="cb1-348"><a href="#cb1-348" aria-hidden="true" tabindex="-1"></a>This leads to a question: what is the underlying mechanism? The Watts-Strogatz model provides a way to generate small-world networks, as we will see in the next section.</span>
+<span id="cb1-349"><a href="#cb1-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-350"><a href="#cb1-350" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-351"><a href="#cb1-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-352"><a href="#cb1-352" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Here is a nice blog post about the Watts-Strogatz model</span><span class="co">](https://chih-ling-hsu.github.io/2020/05/15/watts-strogatz)</span>.</span>
+<span id="cb1-353"><a href="#cb1-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-354"><a href="#cb1-354" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-355"><a href="#cb1-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-356"><a href="#cb1-356" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-357"><a href="#cb1-357" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "What I cannot create, I do not understand." - Richard Feynman</span></span>
+<span id="cb1-358"><a href="#cb1-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-359"><a href="#cb1-359" aria-hidden="true" tabindex="-1"></a>This quote captures the essence of why models like Watts-Strogatz are crucial: by building networks that exhibit small-world properties, we gain deeper insight into how these properties emerge in real systems.</span>
+<span id="cb1-360"><a href="#cb1-360" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-361"><a href="#cb1-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-362"><a href="#cb1-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-363"><a href="#cb1-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-364"><a href="#cb1-364" aria-hidden="true" tabindex="-1"></a><span class="fu">### What is the Watts-Strogatz Model?</span></span>
+<span id="cb1-365"><a href="#cb1-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-366"><a href="#cb1-366" aria-hidden="true" tabindex="-1"></a>The **Watts-Strogatz model** provides one explanation for the small-world phenomenon.</span>
+<span id="cb1-367"><a href="#cb1-367" aria-hidden="true" tabindex="-1"></a>The Watts-Strogatz model starts with a **ring lattice** and introduces randomness through edge **rewiring**:</span>
+<span id="cb1-368"><a href="#cb1-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-369"><a href="#cb1-369" aria-hidden="true" tabindex="-1"></a>**Step 1: Start with a Ring Lattice**</span>
+<span id="cb1-370"><a href="#cb1-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-371"><a href="#cb1-371" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Create a ring of $N$ nodes</span>
+<span id="cb1-372"><a href="#cb1-372" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connect each node to its $k$ nearest neighbors (k/2 on each side)</span>
+<span id="cb1-373"><a href="#cb1-373" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>This gives high clustering but long average path length</span>
+<span id="cb1-374"><a href="#cb1-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-375"><a href="#cb1-375" aria-hidden="true" tabindex="-1"></a>**Step 2: Rewire Edges with Probability p**</span>
+<span id="cb1-376"><a href="#cb1-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-377"><a href="#cb1-377" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For each edge in the lattice:</span>
+<span id="cb1-378"><a href="#cb1-378" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>With probability $p$: remove the edge and reconnect one endpoint to a randomly chosen node</span>
+<span id="cb1-379"><a href="#cb1-379" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>With probability $(1-p)$: keep the original edge</span>
+<span id="cb1-380"><a href="#cb1-380" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Avoid self-loops and duplicate edges</span>
+<span id="cb1-381"><a href="#cb1-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-382"><a href="#cb1-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-383"><a href="#cb1-383" aria-hidden="true" tabindex="-1"></a>At $p = 0$, the network is a regular ring lattice (high clustering, long paths); at $p = 1$, it becomes a random graph (low clustering, short paths). For $0 &lt; p &lt; 1$, the network combines high clustering with short path lengths---the hallmark of the small-world property.</span>
+<span id="cb1-384"><a href="#cb1-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-385"><a href="#cb1-385" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="interactive exploration"}</span>
+<span id="cb1-386"><a href="#cb1-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-387"><a href="#cb1-387" aria-hidden="true" tabindex="-1"></a>Here is the interactive visualization of the Watts-Strogatz model 😎: <span class="co">[</span><span class="al">![Open in Marimo](https://marimo.io/static/badge.svg)</span><span class="co">](https://marimo.io/notebooks/nb_2qUDsuBA6KW2NrM4dTfxCJ)</span>.</span>
+<span id="cb1-388"><a href="#cb1-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-389"><a href="#cb1-389" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-390"><a href="#cb1-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-391"><a href="#cb1-391" aria-hidden="true" tabindex="-1"></a><span class="fu">### Why does the small-world property emerge?</span></span>
+<span id="cb1-392"><a href="#cb1-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-393"><a href="#cb1-393" aria-hidden="true" tabindex="-1"></a>The Watts-Strogatz model explains that the small-world property emerges from a small number of long-range connections that connect distant parts of the network, despite the nodes being connected to their local neighbors. While we have focused on social networks, the same explanation applies to different domains, such as biological networks (e.g., neurons are primarily connected locally but have some long-range connections that enable rapid information transmission), and technological networks (e.g., the Internet topology is regional but has some long-range connections that span continents).</span>
+<span id="cb1-394"><a href="#cb1-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-395"><a href="#cb1-395" aria-hidden="true" tabindex="-1"></a><span class="fu">### Interactive Exploration</span></span>
+<span id="cb1-396"><a href="#cb1-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-397"><a href="#cb1-397" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span></span>
+<span id="cb1-398"><a href="#cb1-398" aria-hidden="true" tabindex="-1"></a><span class="ot">  src</span><span class="op">=</span><span class="st">"https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/docs/lecture-note/assets/marimo/watts_strogatz_wasm.py?embed=true</span><span class="er">&amp;</span><span class="st">show-chrome=false</span><span class="er">&amp;</span><span class="st">mode=app"</span></span>
+<span id="cb1-399"><a href="#cb1-399" aria-hidden="true" tabindex="-1"></a><span class="ot">  width</span><span class="op">=</span><span class="st">"100%"</span></span>
+<span id="cb1-400"><a href="#cb1-400" aria-hidden="true" tabindex="-1"></a><span class="ot">  height</span><span class="op">=</span><span class="st">"800"</span></span>
+<span id="cb1-401"><a href="#cb1-401" aria-hidden="true" tabindex="-1"></a><span class="ot">  frameborder</span><span class="op">=</span><span class="st">"0"</span></span>
+<span id="cb1-402"><a href="#cb1-402" aria-hidden="true" tabindex="-1"></a><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
+<span id="cb1-403"><a href="#cb1-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-404"><a href="#cb1-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-405"><a href="#cb1-405" aria-hidden="true" tabindex="-1"></a>Explore the Watts-Strogatz model interactively by adjusting the rewiring probability and observing how network properties change:</span>
+<span id="cb1-406"><a href="#cb1-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-407"><a href="#cb1-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-408"><a href="#cb1-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-409"><a href="#cb1-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-410"><a href="#cb1-410" aria-hidden="true" tabindex="-1"></a>In the next section, we will learn how to compute the shortest paths and connected components of a network using a library <span class="co">[</span><span class="ot">igraph</span><span class="co">](https://python.igraph.org/en/stable/)</span>.</span>
+<span id="cb1-411"><a href="#cb1-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-412"><a href="#cb1-412" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb1-413"><a href="#cb1-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-414"><a href="#cb1-414" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
+<span id="cb1-415"><a href="#cb1-415" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
