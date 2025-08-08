@@ -99,36 +99,57 @@ Let us approach the small-world properties from mathematical angle. Two key char
 A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.
 :::
 
-Average path length is the average number of edges in the shortest path between any two nodes. Two nodes can have multiple paths between them, and the **distance** between the two nodes is defined as the length of the shortest path. The length of a path is the number of edges in the path.
+Let's understand what **average path length** means by breaking it down step by step:
+
+**Step 1: Understanding Distance Between Nodes**
+
+When we talk about how "far apart" two nodes are in a network, we mean the shortest number of edges you need to traverse to get from one node to the other. This is called the **distance** between nodes.
 
 ```{dot}
-//| fig-cap: "Example network for calculating average path length"
+//| fig-cap: "Simple network example for understanding shortest paths"
 graph G {
-  layout=fdp
+  layout=neato
+  A [pos="0,0!"]
+  B [pos="2,0!"]
+  C [pos="1,1.5!"]
+  D [pos="3,1!"]
+  
   A -- B;
   A -- C;
   B -- C;
   B -- D;
   C -- D;
-  C -- E;
-  D -- E;
-  D -- F;
-  E -- F;
 }
 ```
 
-Let's calculate the average path length for this network:
+**Step 2: Finding Shortest Paths**
 
-- **Distance from A**: A to B (1), A to C (1), A to D (2), A to E (2), A to F (3)
-- **Distance from B**: B to A (1), B to C (1), B to D (1), B to E (2), B to F (2)  
-- **Distance from C**: C to A (1), C to B (1), C to D (1), C to E (1), C to F (2)
-- **Distance from D**: D to A (2), D to B (1), D to C (1), D to E (1), D to F (1)
-- **Distance from E**: E to A (2), E to B (2), E to C (1), E to D (1), E to F (1)
-- **Distance from F**: F to A (3), F to B (2), F to C (2), F to D (1), F to E (1)
+In this simple network, let's find the distance between nodes A and D:
+- **Path 1**: A → B → D (2 edges)
+- **Path 2**: A → C → D (2 edges) 
+- **Path 3**: A → C → B → D (3 edges)
 
-The average path length is: (1+1+2+2+3 + 1+1+1+2+2 + 1+1+1+1+2 + 2+1+1+1+1 + 2+2+1+1+1 + 3+2+2+1+1) ÷ 30 = 45 ÷ 30 = **1.5**
+Even though there are multiple paths, the **shortest path length** (distance) from A to D is **2 edges**.
 
-This means that, on average, any two nodes in this network are separated by 1.5 edges.
+**Step 3: Calculate All Pairwise Distances**
+
+Now let's find the distance between every pair of nodes:
+- A to B: 1 edge (A → B)
+- A to C: 1 edge (A → C)
+- A to D: 2 edges (A → B → D or A → C → D)
+- B to C: 1 edge (B → C)
+- B to D: 1 edge (B → D)
+- C to D: 1 edge (C → D)
+
+**Step 4: Calculate Average Path Length**
+
+The **average path length** is simply the average of all these distances:
+
+Total distances: 1 + 1 + 2 + 1 + 1 + 1 = 7
+Number of node pairs: 6
+Average path length = 7 ÷ 6 = **1.17**
+
+This tells us that, on average, any two nodes in this network are about 1.17 edges apart.
 
 
 **High clustering**
