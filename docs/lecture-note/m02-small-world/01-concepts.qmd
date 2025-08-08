@@ -99,16 +99,13 @@ Let us approach the small-world properties from mathematical angle. Two key char
 A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.
 :::
 
-Let's understand what **average path length** means by breaking it down step by step:
-
-**Step 1: Understanding Distance Between Nodes**
-
-When we talk about how "far apart" two nodes are in a network, we mean the shortest number of edges you need to traverse to get from one node to the other. This is called the **distance** between nodes.
+Let's understand what **average path length** means. When we talk about how "far apart" two nodes are in a network, we mean the shortest number of edges you need to traverse to get from one node to the other. This is called the **distance** between nodes.
 
 ```{dot}
-//| fig-cap: "Simple network example for understanding shortest paths"
 //| fig-width: 3
 //| fig-height: 2.5
+//| fig-cap: "Simple network example for understanding shortest paths"
+//| fig-align: center
 graph G {
   layout=fdp
   A -- B;
