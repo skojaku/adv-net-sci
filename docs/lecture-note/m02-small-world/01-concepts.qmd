@@ -1,13 +1,15 @@
-# Small-World Networks: Core Concepts
+---
+title: "Small-World Networks: Core Concepts"
+---
 
 ## What to learn in this module
 
 In this module, we will learn small-world experiments and conduct a small small-world experiment . We will learn:
+
 - Small-world experiment by Milgram
 - Different concepts of *distance*: path, walks, circuits, cycles, connectedness
-- How to load a large sparse network efficiently into memory
-- How to measure a *distance* between two nodes using `igraph`
-- **Keywords**: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component, compressed sparse row format.
+- How to measure a *distance* between two nodes
+- **Keywords**: small-world experiment, six degrees of separation, path, walks, circuits, cycles, connectedness, connected component, weakly connected component, strongly connected component.
 
 ## Small-world experiment
 
@@ -23,6 +25,7 @@ Milgram's small world experiment.
 
 
 The experiment went as follows:
+
 1. Milgram first sent out packets to randomly selected people in Omaha, Nebraska, and Wichita, Kansas.
 2. The recipient was asked to send the packet to the target person in Boston if they knew them. If not, they were to forward it to someone they knew on a first-name basis who might know the target.
 3. The recipient continued to forward the packet to their acquaintances until it reached the target.
@@ -30,15 +33,15 @@ The experiment went as follows:
 The results were surprising: out of the 160 letters sent, 64 successfully reached the target person by the chain of nearly six people, which was later called **six degrees of separation**.
 The results imply that, despite the fact that there were hundreds of millions of people in the United States, their social network was significantly compact, with two random people being connected to each other in only a few steps.
 
-::: {.callout-tip}
+::: {.column-margin}
 The term "Six degrees of separation" is commonly associated with Milgram's experiment, but Milgram never used it. John Guare coined the term for his 1991 play and movie ["Six Degrees of Separation."](https://en.wikipedia.org/wiki/Six_Degrees_of_Separation_(film))
 :::
 
 The results were later confirmed independently.
 
--  Yahoo research replicate the Milgram's experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7.{footcite}`goel2009social`
+-  Yahoo research replicate the Milgram's experiment by using emails. Started from more than 24,000 people, only 384 people reached the one of the 18 target person in 13 countries. Among the successful ones, the average length of the chain was about 4. When taken into account the broken chain, the average length was estimated between 5 and 7. [@goel2009social]
 
-- Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. {footcite}`backstrom2012four`
+- Researchers in Facebook and University of Milan analyzed the social network n Facebook, which consisted of 721 million active users and 69 billion friendships. The average length of the shortest chain was found to be 4.74. [@backstrom2012four]
 
 ## Wikirace: Experiencing Small-World Networks
 
@@ -49,6 +52,49 @@ Let us feel how small a large network can be by playing the [Wikirace](https://w
 </div>
 
 At the end of the module, we will measure the average path length in a social network. Before jumping on, let us arm with some coding techniques to handle the network in the next two sections.
+
+## Why is small-world networks non-trivial?
+
+When we think about social networks, it's natural to imagine that most people are friends with others who are nearby—friends of friends, classmates, colleagues, or neighbors. These are **local connections**, and they tend to form tightly-knit groups where everyone knows each other. In network terms, this means there are many **triangles**: if Alice is friends with Bob, and Bob is friends with Carol, then Alice is also likely to be friends with Carol.
+
+However, if a network only had these local, clustered connections, it would be difficult for information or influence to travel quickly across the entire network. You would have to go through many intermediaries to reach someone far away, resulting in a **large diameter** (the longest shortest path between any two nodes).
+
+What makes **small-world networks** non-trivial and surprising is that, despite having lots of local clustering (many triangles), they also have a few **long-range connections**—edges that link distant parts of the network. These "shortcuts" dramatically reduce the average distance between nodes. As a result, even in a huge network, you can reach almost anyone in just a few steps. This combination of high clustering and short path lengths is what defines the small-world property.
+
+In summary:
+
+- **Local connections** create clustering (many triangles), but by themselves would make the network "large" in terms of path length.
+- **Small-world networks** have both high clustering *and* short average path lengths, thanks to a few edges that connect distant parts of the network.
+- This structure is non-trivial because it cannot be explained by local connections alone; the presence of long-range links is essential for the "small world" phenomenon.
+
+## Local Clustering vs. Global Clustering
+
+To understand small-world networks more deeply, we need to distinguish between two fundamental concepts: **local clustering** and **global clustering**. These represent different scales of network organization and help explain why small-world networks are so remarkable.
+
+**Local Clustering:**
+
+Local clustering measures how tightly connected a node's immediate neighbors are to each other. If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.
+
+- **Mathematical definition**: For a node *i*, local clustering coefficient *C_i* is the fraction of possible triangles that actually exist among node *i* and its neighbors.
+- **Range**: Local clustering coefficients range from 0 (no triangles) to 1 (all possible triangles exist).
+- **Example**: In social networks, high local clustering reflects the fact that people in the same social circles (work, school, neighborhood) tend to know each other.
+
+**Global Clustering:**
+
+Global clustering, also known as **transitivity**, measures the overall tendency for triangles to form throughout the entire network. It answers the question: "Across the whole network, how likely is it that two nodes connected to a common neighbor are also connected to each other?"
+
+- **Mathematical definition**: Global clustering coefficient is the ratio of the number of actual triangles to the number of possible triangles in the network.
+- **Range**: Like local clustering, it ranges from 0 to 1.
+- **Network-wide perspective**: Global clustering captures the overall "clumpiness" of connections across the entire network structure.
+
+**Why This Distinction Matters for Small-World Networks:**
+
+The key insight is that small-world networks exhibit **high local clustering** (friends of friends are often friends) while maintaining **short average path lengths** (you can reach distant parts of the network quickly). This combination seems contradictory:
+
+- **High clustering** suggests a "clumpy" network where connections are mostly local, which should make distant nodes hard to reach.
+- **Short path lengths** suggest efficient global connectivity, which typically requires more random, long-range connections.
+
+Small-world networks resolve this apparent contradiction through a clever structure: they maintain dense local clusters while having just enough long-range "shortcut" connections to dramatically reduce distances. This is what makes them both highly clustered locally and globally efficient for information flow.
 
 ## Paths, Walks, and Network Connectivity
 
