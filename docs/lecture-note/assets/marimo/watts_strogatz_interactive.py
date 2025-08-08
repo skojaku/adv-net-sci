@@ -84,14 +84,14 @@ def _(mo):
 
 
 @app.cell
-def _(C_chart, L_chart, mo, network_chart, sigma_chart, sigma_naive_chart):
+def _(C_chart, L_chart, mo, network_chart, sigma_chart):
     mo.hstack(
         [
             network_chart,
             mo.vstack(
                 [
                     mo.hstack([C_chart, L_chart]),
-                    mo.hstack([sigma_chart, sigma_naive_chart]),
+                    sigma_chart,
                 ]
             ),
         ]
@@ -325,9 +325,8 @@ def _(all_metrics, closest_p):
     C = current_metrics["C"]
     L = current_metrics["L"]
     sigma = current_metrics["sigma"]
-    sigma_unnormalized = current_metrics["sigma_unnormalized"]
     edges_rewired = current_metrics["edges_rewired"]
-    return C, L, edges_rewired, sigma, sigma_unnormalized
+    return C, L, edges_rewired, sigma
 
 
 @app.cell(hide_code=True)
@@ -502,49 +501,6 @@ def _(alt, mo, p_slider, pd, progressive_data):
     return (sigma_chart,)
 
 
-@app.cell(hide_code=True)
-def _(alt, mo, p_slider, pd, progressive_data):
-    # Create unnormalized small-world coefficient plot
-    def create_sigma_naive_chart():
-        # Prepare unnormalized sigma data
-        sigma_naive_data = [
-            {"p": d["p"], "sigma_unnormalized": d["sigma_unnormalized"]}
-            for d in progressive_data
-        ]
-        sigma_naive_df = pd.DataFrame(sigma_naive_data)
-
-        # Unnormalized sigma chart
-        sigma_naive_chart = (
-            alt.Chart(sigma_naive_df)
-            .mark_line(point=True, color="purple", strokeWidth=2.5)
-            .encode(
-                x=alt.X(
-                    "p:Q",
-                    title="Rewiring Probability (p)",
-                    scale=alt.Scale(domain=[0, 1]),
-                ),
-                y=alt.Y("sigma_unnormalized:Q", title="σ_naive = C/L"),
-                tooltip=["p:Q", "sigma_unnormalized:Q"],
-            )
-            .properties(
-                width=175,
-                height=160,
-                title="Unnormalized σ_naive",
-            )
-        )
-
-        # Add vertical line at current p
-        current_p_line = (
-            alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
-            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=1)
-            .encode(x="p:Q")
-        )
-
-        return sigma_naive_chart + current_p_line
-
-
-    sigma_naive_chart = mo.ui.altair_chart(create_sigma_naive_chart())
-    return (sigma_naive_chart,)
 
 
 @app.cell(hide_code=True)
@@ -558,7 +514,6 @@ def _(
     np,
     p_slider,
     sigma,
-    sigma_unnormalized,
 ):
     # Calculate reference values for display
     C_random_display = k_slider.value / (N_slider.value - 1)
@@ -581,7 +536,6 @@ def _(
     | **Clustering (C)** | {C:.4f} | {C_random_display:.4f} | {C / max(C_random_display, 0.001):.2f} |
     | **Path Length (L)** | {L:.4f} | {L_random_display:.4f} | {L / max(L_random_display, 0.001):.2f} |
     | **Small-world σ** | {sigma:.4f} | - | {"Strong" if sigma > 1 else "Weak"} |
-    | **Unnormalized σ_naive** | {sigma_unnormalized:.4f} | - | C/L ratio |
 
     ### Key Insights:
     1. **Precomputed approach**: All network states computed once → instant visualization
@@ -606,20 +560,16 @@ def _(mo):
         """
     ## Mathematical Background
 
-    We compute both **normalized** and **unnormalized** small-world measures:
+    We compute the **normalized small-world coefficient**:
 
-    **1. Normalized Small-World Coefficient (σ):**
+    **Small-World Coefficient (σ):**
     $$σ = \\frac{C/C_{\\text{random}}}{L/L_{\\text{random}}} = \\frac{C \\cdot L_{\\text{random}}}{L \\cdot C_{\\text{random}}}$$
-
-    **2. Unnormalized Small-World Index (σ_naive):**
-    $$σ_{\\text{naive}} = \\frac{C}{L}$$
 
     **Analytical Reference Values:**
     - $C_{\\text{random}} = \\frac{k}{n-1}$ (exact for Erdős-Rényi graphs)
     - $L_{\\text{random}} = \\frac{\\ln n}{\\ln k}$ (approximation for connected random graphs)
 
-    **Why Both Measures Matter:**
-    - **σ_naive**: Simple ratio but can be misleading (doesn't account for network size/density)
+    **Why This Approach Works:**
     - **σ**: Normalized against random networks, provides meaningful comparison baseline
     - **Raw C(p), L(p)**: Show actual network properties with random reference lines for comparison
 
