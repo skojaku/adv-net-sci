@@ -36,7 +36,7 @@ def _(mo):
     # Network parameters
     N_slider = mo.ui.slider(
         start=30,
-        stop=100,
+        stop=1000,
         step=2,
         value=50,
         show_value=True,
@@ -84,11 +84,18 @@ def _(mo):
 
 
 @app.cell
-def _(CL_chart, mo, network_chart, sigma_chart, raw_chart):
-    mo.hstack([
-        network_chart, 
-        mo.vstack([CL_chart, sigma_chart, raw_chart])
-    ])
+def _(C_chart, L_chart, mo, network_chart, sigma_chart, sigma_naive_chart):
+    mo.hstack(
+        [
+            network_chart,
+            mo.vstack(
+                [
+                    mo.hstack([C_chart, L_chart]),
+                    mo.hstack([sigma_chart, sigma_naive_chart]),
+                ]
+            ),
+        ]
+    )
     return
 
 
@@ -168,7 +175,7 @@ def _(N_slider, k_slider, np, nx):
 
             # Unnormalized small-world index (naive approach)
             unnormalized_sigma = C_temp / L_temp if L_temp > 0 else 0
-            
+
             all_metrics.append(
                 {
                     "p": p_val,
@@ -292,12 +299,14 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
         )
 
         # Combine
-        network = (edges_chart + nodes_chart).properties(
-            width=400,
-            height=400,
-            title=f"Precomputed Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.2f})",
-        ).resolve_scale(
-            color='independent'
+        network = (
+            (edges_chart + nodes_chart)
+            .properties(
+                width=400,
+                height=400,
+                title=f"Precomputed Network (N={N_slider.value}, k={k_slider.value}, p={p_slider.value:.2f})",
+            )
+            .resolve_scale(color="independent")
         )
 
         return network
@@ -333,51 +342,51 @@ def _(all_metrics, p_slider):
 def _(alt, mo, p_slider, pd, progressive_data):
     # Create properties plot
     def create_properties_chart():
-        # Prepare data for line plots
-        props_data = []
+        # Prepare clustering data
+        C_data = []
         for data_point in progressive_data:
-            props_data.extend(
+            C_data.extend(
                 [
+                    {
+                        "p": data_point["p"],
+                        "value": data_point["C"],
+                        "metric": "C(p) - Raw",
+                    },
                     {
                         "p": data_point["p"],
                         "value": data_point["C_normalized"],
                         "metric": "C(p) / C(random)",
                     },
-                    {
-                        "p": data_point["p"],
-                        "value": data_point["L_normalized"],
-                        "metric": "L(p) / L(random)",
-                    },
                 ]
             )
 
-        props_df = pd.DataFrame(props_data)
+        C_df = pd.DataFrame(C_data)
 
-        # Properties chart
+        # Clustering chart
         properties_chart = (
-            alt.Chart(props_df)
+            alt.Chart(C_df)
             .mark_line(point=True, strokeWidth=2.5)
             .encode(
                 x=alt.X(
                     "p:Q",
-                    title="Fraction of Edges Rewired (p)",
+                    title="Rewiring Probability (p)",
                     scale=alt.Scale(domain=[0, 1]),
                 ),
-                y=alt.Y("value:Q", title="Normalized Values"),
+                y=alt.Y("value:Q", title="Clustering Values"),
                 color=alt.Color(
                     "metric:N",
                     scale=alt.Scale(
-                        domain=["C(p) / C(random)", "L(p) / L(random)"],
-                        range=["steelblue", "red"],
+                        domain=["C(p) - Raw", "C(p) / C(random)"],
+                        range=["steelblue", "lightblue"],
                     ),
-                    legend=alt.Legend(title="Metric"),
+                    legend=alt.Legend(title="Clustering"),
                 ),
                 tooltip=["p:Q", "value:Q", "metric:N"],
             )
             .properties(
-                width=350,
-                height=200,
-                title="Network Properties vs Edge Rewiring",
+                width=175,
+                height=160,
+                title="Clustering Coefficient",
             )
         )
 
@@ -391,8 +400,74 @@ def _(alt, mo, p_slider, pd, progressive_data):
         return properties_chart + current_p_line
 
 
-    CL_chart = mo.ui.altair_chart(create_properties_chart())
-    return (CL_chart,)
+    C_chart = mo.ui.altair_chart(create_properties_chart())
+    return (C_chart,)
+
+
+@app.cell(hide_code=True)
+def _(alt, mo, p_slider, pd, progressive_data):
+    # Create path length chart
+    def create_path_length_chart():
+        # Prepare path length data
+        L_data = []
+        for data_point in progressive_data:
+            L_data.extend(
+                [
+                    {
+                        "p": data_point["p"],
+                        "value": data_point["L"],
+                        "metric": "L(p) - Raw",
+                    },
+                    {
+                        "p": data_point["p"],
+                        "value": data_point["L_normalized"],
+                        "metric": "L(p) / L(random)",
+                    },
+                ]
+            )
+
+        L_df = pd.DataFrame(L_data)
+
+        # Path length chart
+        path_length_chart = (
+            alt.Chart(L_df)
+            .mark_line(point=True, strokeWidth=2.5)
+            .encode(
+                x=alt.X(
+                    "p:Q",
+                    title="Rewiring Probability (p)",
+                    scale=alt.Scale(domain=[0, 1]),
+                ),
+                y=alt.Y("value:Q", title="Path Length Values"),
+                color=alt.Color(
+                    "metric:N",
+                    scale=alt.Scale(
+                        domain=["L(p) - Raw", "L(p) / L(random)"],
+                        range=["red", "orange"],
+                    ),
+                    legend=alt.Legend(title="Path Length"),
+                ),
+                tooltip=["p:Q", "value:Q", "metric:N"],
+            )
+            .properties(
+                width=175,
+                height=160,
+                title="Average Path Length",
+            )
+        )
+
+        # Add vertical line at current p
+        current_p_line = (
+            alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
+            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=1)
+            .encode(x="p:Q")
+        )
+
+        return path_length_chart + current_p_line
+
+
+    L_chart = mo.ui.altair_chart(create_path_length_chart())
+    return (L_chart,)
 
 
 @app.cell(hide_code=True)
@@ -415,9 +490,9 @@ def _(alt, mo, p_slider, pd, progressive_data):
                 tooltip=["p:Q", "sigma:Q"],
             )
             .properties(
-                width=350,
-                height=200,
-                title="Small-World Coefficient vs Edge Rewiring",
+                width=175,
+                height=160,
+                title="Small-World Coefficient σ",
             )
         )
 
@@ -436,72 +511,63 @@ def _(alt, mo, p_slider, pd, progressive_data):
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, pd, progressive_data, p_slider):
-    # Create raw values and unnormalized small-world coefficient plot
-    def create_raw_chart():
-        # Prepare data for raw values
-        raw_data = []
-        for data_point in progressive_data:
-            raw_data.extend([
-                {
-                    'p': data_point['p'],
-                    'value': data_point['C'],
-                    'metric': 'C(p) - Clustering'
-                },
-                {
-                    'p': data_point['p'],
-                    'value': data_point['L'],
-                    'metric': 'L(p) - Path Length'
-                },
-                {
-                    'p': data_point['p'],
-                    'value': data_point['sigma_unnormalized'],
-                    'metric': 'σ_naive = C/L'
-                }
-            ])
-        
-        raw_df = pd.DataFrame(raw_data)
-        
-        # Raw values chart
-        raw_chart = (
-            alt.Chart(raw_df)
-            .mark_line(point=True, strokeWidth=2.5)
+def _(alt, mo, p_slider, pd, progressive_data):
+    # Create unnormalized small-world coefficient plot
+    def create_sigma_naive_chart():
+        # Prepare unnormalized sigma data
+        sigma_naive_data = [
+            {"p": d["p"], "sigma_unnormalized": d["sigma_unnormalized"]}
+            for d in progressive_data
+        ]
+        sigma_naive_df = pd.DataFrame(sigma_naive_data)
+
+        # Unnormalized sigma chart
+        sigma_naive_chart = (
+            alt.Chart(sigma_naive_df)
+            .mark_line(point=True, color="purple", strokeWidth=2.5)
             .encode(
-                x=alt.X("p:Q", title="Fraction of Edges Rewired (p)", 
-                       scale=alt.Scale(domain=[0, 1])),
-                y=alt.Y("value:Q", title="Raw Values"),
-                color=alt.Color(
-                    "metric:N",
-                    scale=alt.Scale(
-                        domain=["C(p) - Clustering", "L(p) - Path Length", "σ_naive = C/L"],
-                        range=["blue", "orange", "purple"],
-                    ),
-                    legend=alt.Legend(title="Metric"),
+                x=alt.X(
+                    "p:Q",
+                    title="Rewiring Probability (p)",
+                    scale=alt.Scale(domain=[0, 1]),
                 ),
-                tooltip=["p:Q", "value:Q", "metric:N"],
+                y=alt.Y("sigma_unnormalized:Q", title="σ_naive = C/L"),
+                tooltip=["p:Q", "sigma_unnormalized:Q"],
             )
             .properties(
-                width=350,
-                height=200,
-                title="Raw Values: C(p), L(p), and Unnormalized σ",
+                width=175,
+                height=160,
+                title="Unnormalized σ_naive",
             )
         )
 
         # Add vertical line at current p
         current_p_line = (
             alt.Chart(pd.DataFrame({"p": [p_slider.value]}))
-            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=2)
+            .mark_rule(color="gray", strokeDash=[5, 5], strokeWidth=1)
             .encode(x="p:Q")
         )
 
-        return raw_chart + current_p_line
+        return sigma_naive_chart + current_p_line
 
-    raw_chart = mo.ui.altair_chart(create_raw_chart())
-    return (raw_chart,)
+
+    sigma_naive_chart = mo.ui.altair_chart(create_sigma_naive_chart())
+    return (sigma_naive_chart,)
 
 
 @app.cell(hide_code=True)
-def _(C, L, N_slider, edges_rewired, k_slider, mo, np, p_slider, sigma, sigma_unnormalized):
+def _(
+    C,
+    L,
+    N_slider,
+    edges_rewired,
+    k_slider,
+    mo,
+    np,
+    p_slider,
+    sigma,
+    sigma_unnormalized,
+):
     # Calculate reference values for display
     C_random_display = k_slider.value / (N_slider.value - 1)
     L_random_display = np.log(N_slider.value) / np.log(k_slider.value)
