@@ -104,8 +104,8 @@ def _(
         # Create circular layout
         pos = {}
         angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
-        for i, node in enumerate(G.nodes()):
-            pos[node] = (np.cos(angles[i]), np.sin(angles[i]))
+        for idx, node in enumerate(G.nodes()):
+            pos[node] = (np.cos(angles[idx]), np.sin(angles[idx]))
         
         # Create nodes dataframe
         nodes_data = []
@@ -121,20 +121,20 @@ def _(
         # Create edges dataframe
         edges_data = []
         for edge in G.edges():
-            i, j = edge
-            x1, y1 = pos[i]
-            x2, y2 = pos[j]
+            node_i, node_j = edge
+            x1, y1 = pos[node_i]
+            x2, y2 = pos[node_j]
             
             # Determine edge type for WS network
             edge_type = "Regular"
             if network_type == "Watts-Strogatz":
-                ring_distance = min(abs(i - j), N - abs(i - j))
+                ring_distance = min(abs(node_i - node_j), N - abs(node_i - node_j))
                 if ring_distance > k // 2:
                     edge_type = "Rewired"
             
             edges_data.append({
-                'source': i,
-                'target': j,
+                'source': node_i,
+                'target': node_j,
                 'x1': x1,
                 'y1': y1,
                 'x2': x2,
@@ -254,24 +254,28 @@ def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
 
 @app.cell(hide_code=True) 
 def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_values):
-    # Create properties plot data
-    C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
-    L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
+    # Create properties plot data  
+    def _create_props_data():
+        C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
+        L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
+        
+        props_data = []
+        for idx, p_val in enumerate(p_values):
+            props_data.extend([
+                {
+                    'p': p_val,
+                    'value': clustering_ws[idx] / C_initial,
+                    'metric': 'C(p) / C(0)',
+                },
+                {
+                    'p': p_val,
+                    'value': path_length_ws[idx] / L_initial,
+                    'metric': 'L(p) / L(0)',
+                }
+            ])
+        return props_data
     
-    props_data = []
-    for i, p in enumerate(p_values):
-        props_data.extend([
-            {
-                'p': p,
-                'value': clustering_ws[i] / C_initial,
-                'metric': 'C(p) / C(0)',
-            },
-            {
-                'p': p,
-                'value': path_length_ws[i] / L_initial,
-                'metric': 'L(p) / L(0)',
-            }
-        ])
+    props_data = _create_props_data()
     
     props_df = pd.DataFrame(props_data)
     
@@ -304,12 +308,16 @@ def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_valu
 @app.cell(hide_code=True)
 def _(alt, mo, p_slider, p_values, pd, sigma_values, np):
     # Create sigma plot data
-    sigma_data = []
-    for i, p in enumerate(p_values):
-        sigma_data.append({
-            'p': p,
-            'sigma': sigma_values[i]
-        })
+    def _create_sigma_data():
+        sigma_data = []
+        for idx, p_val in enumerate(p_values):
+            sigma_data.append({
+                'p': p_val,
+                'sigma': sigma_values[idx]
+            })
+        return sigma_data
+    
+    sigma_data = _create_sigma_data()
     
     sigma_df = pd.DataFrame(sigma_data)
     
@@ -495,45 +503,45 @@ def _(N_slider, k_slider, np, nx):
         clustering_random = []
         path_length_random = []
 
-        for p in p_values:
+        for p_val in p_values:
             # Generate Watts-Strogatz network
-            G_ws = nx.watts_strogatz_graph(N, k, p, seed=seed)
+            G_ws_temp = nx.watts_strogatz_graph(N, k, p_val, seed=seed)
 
             # Generate equivalent random network
-            num_edges = G_ws.number_of_edges()
+            num_edges = G_ws_temp.number_of_edges()
             prob_random = num_edges / (N * (N - 1) / 2)
-            G_random = nx.erdos_renyi_graph(N, prob_random, seed=seed)
+            G_random_temp = nx.erdos_renyi_graph(N, prob_random, seed=seed)
 
             # Compute clustering
-            C_ws = nx.average_clustering(G_ws)
-            C_random = nx.average_clustering(G_random)
+            C_ws_temp = nx.average_clustering(G_ws_temp)
+            C_random_temp = nx.average_clustering(G_random_temp)
 
             # Compute path length
-            if nx.is_connected(G_ws):
-                L_ws = nx.average_shortest_path_length(G_ws)
+            if nx.is_connected(G_ws_temp):
+                L_ws_temp = nx.average_shortest_path_length(G_ws_temp)
             else:
-                largest_cc = max(nx.connected_components(G_ws), key=len)
-                G_sub = G_ws.subgraph(largest_cc)
-                L_ws = nx.average_shortest_path_length(G_sub)
+                largest_cc = max(nx.connected_components(G_ws_temp), key=len)
+                G_sub_temp = G_ws_temp.subgraph(largest_cc)
+                L_ws_temp = nx.average_shortest_path_length(G_sub_temp)
 
-            if nx.is_connected(G_random):
-                L_random = nx.average_shortest_path_length(G_random)
+            if nx.is_connected(G_random_temp):
+                L_random_temp = nx.average_shortest_path_length(G_random_temp)
             else:
-                largest_cc = max(nx.connected_components(G_random), key=len)
-                G_sub = G_random.subgraph(largest_cc)
-                L_random = nx.average_shortest_path_length(G_sub)
+                largest_cc = max(nx.connected_components(G_random_temp), key=len)
+                G_sub_temp = G_random_temp.subgraph(largest_cc)
+                L_random_temp = nx.average_shortest_path_length(G_sub_temp)
 
             # Compute small-world coefficient
-            if C_random > 0 and L_random > 0:
-                sigma = (C_ws / C_random) / (L_ws / L_random)
+            if C_random_temp > 0 and L_random_temp > 0:
+                sigma_temp = (C_ws_temp / C_random_temp) / (L_ws_temp / L_random_temp)
             else:
-                sigma = 0
+                sigma_temp = 0
 
-            clustering_ws.append(C_ws)
-            path_length_ws.append(L_ws)
-            clustering_random.append(C_random)
-            path_length_random.append(L_random)
-            sigma_values.append(sigma)
+            clustering_ws.append(C_ws_temp)
+            path_length_ws.append(L_ws_temp)
+            clustering_random.append(C_random_temp)
+            path_length_random.append(L_random_temp)
+            sigma_values.append(sigma_temp)
 
         return (
             clustering_ws,
