@@ -233,9 +233,9 @@ where a **connected triplet** is a set of three nodes connected by at least two 
 //| fig-height: 2
 //| fig-cap: "Connected triplets: closed (triangle) vs open (wedge)"
 //| fig-align: center
-digraph G {
+graph G {
   rankdir=LR;
-  
+
   subgraph cluster_0 {
     label="Closed Triplet (Triangle)";
     style=filled;
@@ -245,7 +245,7 @@ digraph G {
     B1 -- C1;
     C1 -- A1;
   }
-  
+
   subgraph cluster_1 {
     label="Open Triplet (Wedge)";
     style=filled;
@@ -267,9 +267,9 @@ A **closed triplet** forms a complete triangle, while an **open triplet** forms 
 graph G {
   layout=neato
   A [pos="0,1.5!", style=filled, fillcolor="#ffcccc"]
-  B [pos="-1,0!", style=filled, fillcolor="#ccffcc"] 
+  B [pos="-1,0!", style=filled, fillcolor="#ccffcc"]
   C [pos="1,0!", style=filled, fillcolor="#ccccff"]
-  
+
   A -- B [color=red, penwidth=2]
   B -- C [color=green, penwidth=2]
   C -- A [color=blue, penwidth=2]
@@ -278,7 +278,7 @@ graph G {
 
 This triangle contains **three connected triplets**:
 - Triplet 1: A-B-C (centered at B, red-green path)
-- Triplet 2: B-C-A (centered at C, green-blue path)  
+- Triplet 2: B-C-A (centered at C, green-blue path)
 - Triplet 3: C-A-B (centered at A, blue-red path)
 
 Each triplet has a different "center" node that connects to the other two.
