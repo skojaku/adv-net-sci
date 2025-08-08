@@ -84,12 +84,54 @@ In summary:
 
 <iframe width="250" height="150" src="https://www.youtube.com/embed/mgcNO58BLk4?si=9wjqYyDzlMB0z6DH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-
-
 :::
 
-To understand small-world networks more deeply, we need to distinguish between two fundamental concepts: **local clustering** and **global clustering**. These represent different scales of network organization and help explain why small-world networks are so remarkable.
 
+Let us approach the small-world properties from mathematical angle. Two key characteristics of small-world networks are:
+
+- **Short average path length**: You can reach distant parts of the network quickly.
+- **High clustering**: Friends of friends are often friends.
+
+
+**Short Average Path Length:**
+
+::: {.column-margin}
+A path is a walk without repeated nodes. The shortest paths are the paths with the smallest number of edges.
+:::
+
+Average path length is the average number of edges in the shortest path between any two nodes. Two nodes can have multiple paths between them, and the **distance** between the two nodes is defined as the length of the shortest path. The length of a path is the number of edges in the path.
+
+```{dot}
+//| fig-cap: "Example network for calculating average path length"
+graph G {
+  layout=fdp
+  A -- B;
+  A -- C;
+  B -- C;
+  B -- D;
+  C -- D;
+  C -- E;
+  D -- E;
+  D -- F;
+  E -- F;
+}
+```
+
+Let's calculate the average path length for this network:
+
+- **Distance from A**: A to B (1), A to C (1), A to D (2), A to E (2), A to F (3)
+- **Distance from B**: B to A (1), B to C (1), B to D (1), B to E (2), B to F (2)  
+- **Distance from C**: C to A (1), C to B (1), C to D (1), C to E (1), C to F (2)
+- **Distance from D**: D to A (2), D to B (1), D to C (1), D to E (1), D to F (1)
+- **Distance from E**: E to A (2), E to B (2), E to C (1), E to D (1), E to F (1)
+- **Distance from F**: F to A (3), F to B (2), F to C (2), F to D (1), F to E (1)
+
+The average path length is: (1+1+2+2+3 + 1+1+1+2+2 + 1+1+1+1+2 + 2+1+1+1+1 + 2+2+1+1+1 + 3+2+2+1+1) ÷ 30 = 45 ÷ 30 = **1.5**
+
+This means that, on average, any two nodes in this network are separated by 1.5 edges.
+
+
+**High clustering**
 **Local Clustering:**
 
 Local clustering measures how tightly connected a node's immediate neighbors are to each other. If you have a friend Alice, and Alice has friends Bob and Carol, local clustering asks: "Are Bob and Carol also friends with each other?" High local clustering means that your friends tend to know each other, creating dense local neighborhoods or cliques.
