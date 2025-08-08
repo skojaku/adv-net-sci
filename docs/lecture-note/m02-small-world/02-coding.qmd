@@ -148,11 +148,7 @@ print(list(g.connected_components(mode="weak")))
 
 ## Clustering Coefficients
 
-The clustering coefficient measures how densely connected a node's neighbors are to each other. It's a key metric in network analysis, particularly important for understanding the "small-world" property where networks have high clustering but short path lengths.
-
-::: {.column-margin}
-In social networks, clustering represents the tendency for friends of friends to be friends. In biological networks, it can indicate functional modules or pathways.
-:::
+Now let's see how to compute the clustering coefficients you learned about using igraph.
 
 Let's create a more interesting graph to demonstrate clustering:
 
@@ -173,7 +169,7 @@ igraph.plot(g_cluster, bbox=(300, 200), vertex_label=list(range(8)))
 
 ### Local Clustering Coefficient
 
-The local clustering coefficient measures the fraction of possible triangles that actually exist around each node. For a node with degree k, there are k(k-1)/2 possible edges between its neighbors. The `transitivity_local_undirected()` function computes this for each node, returning a list of float values (one per node). The formula is: (actual edges between neighbors) / (k(k-1)/2), and it returns `NaN` for nodes with degree < 2.
+The `transitivity_local_undirected()` function computes the local clustering coefficient for each node, returning a list of float values (one per node). It returns `NaN` for nodes with degree < 2.
 
 ```{python}
 # Local clustering coefficient for each node
@@ -216,7 +212,7 @@ for node in range(g_cluster.vcount()):
 
 ### Average Local Clustering
 
-The average local clustering coefficient is simply the mean of all local clustering coefficients across nodes. The `transitivity_avglocal_undirected()` function computes this directly, returning a single float value. It automatically ignores NaN values from low-degree nodes when calculating the mean.
+The `transitivity_avglocal_undirected()` function computes the average local clustering coefficient directly, returning a single float value. It automatically ignores NaN values from low-degree nodes.
 
 ```{python}
 # Average local clustering (mean of local values)
@@ -231,7 +227,7 @@ print(f"Manual calculation: {manual_avg:.3f}")
 
 ### Global Clustering Coefficient
 
-The global clustering coefficient (also called transitivity) is defined as 3 × (number of triangles) / (number of connected triples), where a "connected triple" is a path of length 2. The `transitivity_undirected()` function computes this single float value, giving more weight to high-degree nodes since they contribute more triples to the denominator.
+The `transitivity_undirected()` function computes the global clustering coefficient (transitivity), returning a single float value.
 
 ```{python}
 # Global clustering coefficient
@@ -259,7 +255,7 @@ print(f"Global clustering = 3 * {triangles_count} / {triples} = {3 * triangles_c
 
 ### Comparing Different Networks
 
-We can use igraph's built-in network generators to create different network types for comparison: `Graph.Full()` creates complete graphs, `Graph.Erdos_Renyi()` creates random graphs, and `Graph.Lattice()` creates regular lattices. This allows us to compare clustering patterns across different topologies.
+We can use igraph's built-in network generators: `Graph.Full()` creates complete graphs, `Graph.Erdos_Renyi()` creates random graphs, and `Graph.Lattice()` creates regular lattices.
 
 ```{python}
 # Create different network types for comparison
@@ -300,18 +296,10 @@ for name, graph in networks.items():
     print(f"{name:<15} {avg_local:<12.3f} {global_clust:<12.3f} {nodes:<8} {edges:<8}")
 ```
 
-::: {.callout-important title="Average Local vs Global Clustering"}
-**Average local clustering** and **global clustering** can differ significantly:
 
-- **Average local** gives equal weight to all nodes
-- **Global** gives more weight to high-degree nodes (they contribute more triples)
+### Small-World Network Example
 
-In social networks, global clustering is often higher because popular individuals (high degree) tend to connect their friends, creating many triangles.
-:::
-
-### Real-World Network Example
-
-The `Graph.Watts_Strogatz()` function creates small-world networks using the Watts-Strogatz model, which starts with a ring lattice and randomly rewires edges with probability p. We can also use `average_path_length()` to compute the mean shortest path length across all node pairs.
+The `Graph.Watts_Strogatz()` function creates small-world networks using the Watts-Strogatz model. The `average_path_length()` function computes the mean shortest path length across all node pairs.
 
 ```{python}
 # Create a small-world network (Watts-Strogatz model)
@@ -336,14 +324,6 @@ print(f"Random avg local clustering: {g_random_compare.transitivity_avglocal_und
 print(f"Random global clustering: {g_random_compare.transitivity_undirected():.3f}")
 print(f"Random average path length: {g_random_compare.average_path_length():.3f}")
 ```
-
-::: {.callout-tip title="Small-World Networks"}
-Small-world networks are characterized by:
-1. **High clustering** (like regular lattices)
-2. **Short path lengths** (like random graphs)
-
-This combination makes them efficient for information spread while maintaining local structure.
-:::
 
 ## Exercise 02 🏋️‍♀️💪🧠
 
