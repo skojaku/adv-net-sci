@@ -90,54 +90,10 @@ def _(CL_chart, mo, network_chart, sigma_chart):
 
 
 @app.cell(hide_code=True)
-def _(N_slider, k_slider, nx, p_slider):
-    def create_progressive_ws_network(N, k, p, seed=42):
-        """Create Watts-Strogatz network with progressive rewiring"""
-        # Start with regular ring lattice
-        G = nx.watts_strogatz_graph(N, k, 0, seed=seed)
-        
-        # Get all edges in the original lattice
-        original_edges = list(G.edges())
-        
-        # Calculate how many edges to rewire based on p
-        num_to_rewire = int(p * len(original_edges))
-        
-        if num_to_rewire == 0:
-            return G
-            
-        # Create a copy to modify
-        G_rewired = G.copy()
-        
-        # Rewire edges progressively
-        np.random.seed(seed)
-        edges_to_rewire = np.random.choice(len(original_edges), size=num_to_rewire, replace=False)
-        
-        for edge_idx in edges_to_rewire:
-            u, v = original_edges[edge_idx]
-            
-            # Remove the original edge
-            if G_rewired.has_edge(u, v):
-                G_rewired.remove_edge(u, v)
-                
-                # Find a new target that doesn't create self-loop or duplicate edge
-                possible_targets = [node for node in G_rewired.nodes() 
-                                  if node != u and not G_rewired.has_edge(u, node)]
-                
-                if possible_targets:
-                    new_target = np.random.choice(possible_targets)
-                    G_rewired.add_edge(u, new_target)
-                else:
-                    # If no valid target, keep the original edge
-                    G_rewired.add_edge(u, v)
-        
-        return G_rewired
-
-    # Generate the network with current parameters
-    G_ws = create_progressive_ws_network(
-        N_slider.value, k_slider.value, p_slider.value
-    )
-    
-    return G_ws,
+def _(final_graph):
+    # Use the final graph state from progressive rewiring
+    G_ws = final_graph
+    return (G_ws,)
 
 
 @app.cell(hide_code=True)
@@ -242,77 +198,75 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
 
 
 @app.cell(hide_code=True)
-def _(G_ws, N_slider, k_slider, np, nx):
-    def compute_network_metrics(G, N, k):
-        """Compute clustering, path length, and small-world coefficient"""
-        # Compute actual network metrics
-        C = nx.average_clustering(G)
-        
-        if nx.is_connected(G):
-            L = nx.average_shortest_path_length(G)
-        else:
-            # Use largest connected component
-            largest_cc = max(nx.connected_components(G), key=len)
-            G_sub = G.subgraph(largest_cc)
-            L = nx.average_shortest_path_length(G_sub)
-        
-        # Analytical reference values for random network
-        C_random = k / (N - 1)  # Average clustering for random graph
-        L_random = np.log(N) / np.log(k)  # Average path length for random graph
-        
-        # Small-world coefficient
-        if C_random > 0 and L_random > 0:
-            sigma = (C / C_random) / (L / L_random)
-        else:
-            sigma = 0
-            
-        return C, L, C_random, L_random, sigma
-
-    # Compute metrics for current network
-    C, L, C_random, L_random, sigma = compute_network_metrics(
-        G_ws, N_slider.value, k_slider.value
-    )
+def _(N_slider, k_slider, np, progressive_data):
+    # Get current metrics from the last entry in progressive data
+    if progressive_data:
+        current_metrics = progressive_data[-1]  # Last step is current state
+        C = current_metrics['C']
+        L = current_metrics['L']
+        C_random = k_slider.value / (N_slider.value - 1)
+        L_random = np.log(N_slider.value) / np.log(k_slider.value)
+        sigma = current_metrics['sigma']
+    else:
+        # Fallback values
+        C = L = C_random = L_random = sigma = 0
     
     return C, L, C_random, L_random, sigma
 
 
 @app.cell(hide_code=True)
-def _(C, C_random, L, L_random, N_slider, k_slider, np, nx, p_slider, sigma):
-    def compute_progressive_metrics(N, k, num_steps=21, seed=42):
-        """Compute metrics for progressive rewiring from p=0 to current p"""
-        p_values = np.linspace(0, p_slider.value, num_steps)
-        metrics_data = []
+def _(N_slider, k_slider, np, nx, p_slider):
+    def create_progressive_rewiring_data(N, k, target_p, num_steps=21, seed=42):
+        """Create one lattice and progressively rewire edges, computing metrics at each step"""
+        # Start with ring lattice (p=0)
+        np.random.seed(seed)
+        G = nx.watts_strogatz_graph(N, k, 0, seed=seed)
+        original_edges = list(G.edges())
+        total_edges = len(original_edges)
         
-        for p_val in p_values:
-            # Create network at this rewiring level
-            G = nx.watts_strogatz_graph(N, k, 0, seed=seed)  # Start with ring
-            
-            if p_val > 0:
-                # Progressive rewiring
-                original_edges = list(G.edges())
-                num_to_rewire = int(p_val * len(original_edges))
+        # Calculate total number of edges to rewire at target p
+        total_rewires = int(target_p * total_edges)
+        
+        # Create progressive p values from 0 to target_p
+        if target_p == 0:
+            p_values = [0]
+            rewire_steps = [0]
+        else:
+            p_values = np.linspace(0, target_p, num_steps)
+            rewire_steps = [int(p * total_edges) for p in p_values]
+        
+        metrics_data = []
+        edges_rewired_so_far = 0
+        
+        # Pre-determine which edges to rewire in order
+        if total_rewires > 0:
+            edges_to_rewire_order = np.random.choice(total_edges, size=total_rewires, replace=False)
+        else:
+            edges_to_rewire_order = []
+        
+        for step_idx, (p_val, target_rewires) in enumerate(zip(p_values, rewire_steps)):
+            # Rewire additional edges to reach target_rewires
+            while edges_rewired_so_far < target_rewires and edges_rewired_so_far < len(edges_to_rewire_order):
+                edge_idx = edges_to_rewire_order[edges_rewired_so_far]
+                u, v = original_edges[edge_idx]
                 
-                if num_to_rewire > 0:
-                    np.random.seed(seed)
-                    edges_to_rewire = np.random.choice(len(original_edges), 
-                                                     size=num_to_rewire, replace=False)
+                if G.has_edge(u, v):  # Only rewire if edge still exists
+                    G.remove_edge(u, v)
                     
-                    for edge_idx in edges_to_rewire:
-                        u, v = original_edges[edge_idx]
-                        
-                        if G.has_edge(u, v):
-                            G.remove_edge(u, v)
-                            
-                            possible_targets = [node for node in G.nodes() 
-                                              if node != u and not G.has_edge(u, node)]
-                            
-                            if possible_targets:
-                                new_target = np.random.choice(possible_targets)
-                                G.add_edge(u, new_target)
-                            else:
-                                G.add_edge(u, v)  # Keep original if no valid target
+                    # Find valid rewiring target
+                    possible_targets = [node for node in G.nodes() 
+                                      if node != u and not G.has_edge(u, node)]
+                    
+                    if possible_targets:
+                        new_target = np.random.choice(possible_targets)
+                        G.add_edge(u, new_target)
+                    else:
+                        # If no valid target, restore original edge
+                        G.add_edge(u, v)
+                
+                edges_rewired_so_far += 1
             
-            # Compute metrics
+            # Compute network metrics at this rewiring level
             C_temp = nx.average_clustering(G)
             
             if nx.is_connected(G):
@@ -334,19 +288,22 @@ def _(C, C_random, L, L_random, N_slider, k_slider, np, nx, p_slider, sigma):
             
             metrics_data.append({
                 'p': p_val,
+                'edges_rewired': edges_rewired_so_far,
                 'C': C_temp,
                 'L': L_temp,
-                'C_normalized': C_temp / (k / (N - 1)),  # Normalized by initial clustering
-                'L_normalized': L_temp / (np.log(N) / np.log(k)),  # Normalized by random path length
+                'C_normalized': C_temp / C_random_temp,
+                'L_normalized': L_temp / L_random_temp,
                 'sigma': sigma_temp
             })
         
-        return metrics_data
+        return metrics_data, G  # Return final graph state as well
 
     # Compute progressive metrics
-    progressive_data = compute_progressive_metrics(N_slider.value, k_slider.value)
+    progressive_data, final_graph = create_progressive_rewiring_data(
+        N_slider.value, k_slider.value, p_slider.value
+    )
     
-    return (progressive_data,)
+    return progressive_data, final_graph
 
 
 @app.cell(hide_code=True)
@@ -446,12 +403,18 @@ def _(alt, mo, pd, progressive_data, p_slider):
 
 
 @app.cell(hide_code=True)
-def _(C, C_random, L, L_random, mo, p_slider, sigma):
+def _(C, C_random, L, L_random, mo, N_slider, k_slider, progressive_data, p_slider, sigma):
+    # Get current rewiring info
+    current_edges_rewired = progressive_data[-1]['edges_rewired'] if progressive_data else 0
+    total_edges = N_slider.value * k_slider.value // 2  # Total edges in ring lattice
+    
     mo.md(
         f"""
     ## Understanding the Small-World Effect
 
-    **Current rewiring level: {p_slider.value:.2f}** ({int(p_slider.value * 100):.0f}% of edges rewired)
+    **Current rewiring level: {p_slider.value:.2f}** 
+    - **{current_edges_rewired} out of {total_edges} edges rewired** ({int(p_slider.value * 100):.0f}%)
+    - **{total_edges - current_edges_rewired} original ring edges remain**
 
     ### Current Network Metrics:
     | Metric | Value | Random Reference | Ratio |
@@ -461,15 +424,17 @@ def _(C, C_random, L, L_random, mo, p_slider, sigma):
     | **Small-world σ** | {sigma:.4f} | - | {"Strong" if sigma > 1 else "Weak"} |
 
     ### Key Insights:
-    1. **Progressive rewiring** shows how small-world properties emerge gradually
-    2. **Analytical references** use exact formulas: C_random = k/(n-1), L_random = ln(n)/ln(k)
-    3. **Small-world regime** occurs when σ > 1 (high clustering + short paths)
-    4. **Just a few rewired edges** (red) can dramatically reduce path lengths
+    1. **True progressive rewiring**: One lattice → rewire edges one by one → observe changes
+    2. **Analytical references**: C_random = k/(n-1), L_random = ln(n)/ln(k) (no simulation needed!)
+    3. **Small-world regime**: σ > 1 means high clustering + short paths
+    4. **Visual feedback**: Blue edges = original ring connections, Red edges = rewired shortcuts
 
     ### Understanding the Transition:
-    - **p = 0**: Regular ring lattice with high clustering but long paths
-    - **Small p** (0.01-0.2): Sweet spot where clustering stays high but paths shorten
-    - **Large p** (0.5-1.0): Approaches random graph with short paths but low clustering
+    - **p = 0**: Regular ring lattice (high clustering, long paths)
+    - **Small p** (0.01-0.2): Sweet spot where clustering stays high but paths shorten rapidly
+    - **Large p** (0.5-1.0): Approaches random graph (short paths but low clustering)
+    
+    **Notice**: Even rewiring just {int(0.1 * total_edges)} edges (10%) creates dramatic shortcuts!
     """
     )
     return
