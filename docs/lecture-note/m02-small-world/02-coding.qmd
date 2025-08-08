@@ -146,6 +146,208 @@ print(list(g.connected_components(mode="strong")))
 print(list(g.connected_components(mode="weak")))
 ```
 
+## Clustering Coefficients
+
+The clustering coefficient measures how densely connected a node's neighbors are to each other. It's a key metric in network analysis, particularly important for understanding the "small-world" property where networks have high clustering but short path lengths.
+
+::: {.column-margin}
+In social networks, clustering represents the tendency for friends of friends to be friends. In biological networks, it can indicate functional modules or pathways.
+:::
+
+### Local Clustering Coefficient
+
+The **local clustering coefficient** of a node measures the fraction of possible triangles that actually exist around that node. For a node with degree k, there are k(k-1)/2 possible edges between its neighbors.
+
+Let's create a more interesting graph to demonstrate clustering:
+
+```{python}
+# Create a graph with some triangles
+edges = [(0, 1), (0, 2), (1, 2),  # Triangle: 0-1-2
+         (0, 3), (3, 4), (3, 5),  # Node 3 with two neighbors (4,5)
+         (4, 5),                  # Triangle: 3-4-5
+         (1, 6), (6, 7)]          # Linear extension
+
+g_cluster = igraph.Graph()
+g_cluster.add_vertices(8)
+g_cluster.add_edges(edges)
+
+# Plot the graph
+igraph.plot(g_cluster, bbox=(300, 200), vertex_label=list(range(8)))
+```
+
+Now let's compute the local clustering coefficient for each node:
+
+```{python}
+# Local clustering coefficient for each node
+local_clustering = g_cluster.transitivity_local_undirected()
+print("Local clustering coefficients:")
+for i, coeff in enumerate(local_clustering):
+    print(f"Node {i}: {coeff:.3f}")
+```
+
+::: {.column-margin}
+**Understanding the values:**
+- 1.0 = All neighbors are connected (perfect local clustering)
+- 0.0 = No neighbors are connected
+- NaN = Node has degree < 2 (clustering undefined)
+:::
+
+Let's analyze what these values mean:
+
+```{python}
+# Analyze clustering for specific nodes
+for node in range(g_cluster.vcount()):
+    neighbors = g_cluster.neighbors(node)
+    degree = len(neighbors)
+    clustering = local_clustering[node]
+    
+    print(f"Node {node}: degree={degree}, neighbors={neighbors}, clustering={clustering:.3f}")
+    
+    if degree >= 2:
+        # Count actual triangles
+        possible_edges = degree * (degree - 1) // 2
+        actual_edges = 0
+        for i in range(len(neighbors)):
+            for j in range(i + 1, len(neighbors)):
+                if g_cluster.are_adjacent(neighbors[i], neighbors[j]):
+                    actual_edges += 1
+        print(f"  -> {actual_edges}/{possible_edges} neighbor pairs connected")
+    print()
+```
+
+### Average Local Clustering
+
+The **average local clustering coefficient** is simply the mean of all local clustering coefficients:
+
+```{python}
+# Average local clustering (mean of local values)
+avg_local_clustering = g_cluster.transitivity_avglocal_undirected()
+print(f"Average local clustering: {avg_local_clustering:.3f}")
+
+# Verify by manual calculation
+import numpy as np
+manual_avg = np.nanmean(local_clustering)  # nanmean ignores NaN values
+print(f"Manual calculation: {manual_avg:.3f}")
+```
+
+### Global Clustering Coefficient
+
+The **global clustering coefficient** (also called transitivity) is defined as:
+
+**Global clustering = 3 × (number of triangles) / (number of connected triples)**
+
+Where a "connected triple" is a path of length 2 (three nodes connected by two edges).
+
+```{python}
+# Global clustering coefficient
+global_clustering = g_cluster.transitivity_undirected()
+print(f"Global clustering: {global_clustering:.3f}")
+
+# Let's understand this calculation
+triangles_count = len(g_cluster.list_triangles())
+print(f"Number of triangles: {triangles_count}")
+print(f"Triangles in graph: {g_cluster.list_triangles()}")
+
+# Count connected triples (paths of length 2)
+triples = 0
+for node in range(g_cluster.vcount()):
+    degree = g_cluster.degree(node)
+    # Each node with degree d contributes d*(d-1)/2 triples
+    if degree >= 2:
+        triples += degree * (degree - 1) // 2
+
+print(f"Connected triples: {triples}")
+print(f"Global clustering = 3 * {triangles_count} / {triples} = {3 * triangles_count / triples:.3f}")
+```
+
+### Comparing Different Networks
+
+Let's compare clustering in different network structures:
+
+```{python}
+# Create different network types for comparison
+import numpy as np
+
+# 1. Complete graph (everyone connected to everyone)
+n_complete = 6
+g_complete = igraph.Graph.Full(n_complete)
+
+# 2. Random graph (Erdős–Rényi)
+n_random = 20
+p_random = 0.2
+g_random = igraph.Graph.Erdos_Renyi(n_random, p_random)
+
+# 3. Regular ring lattice (each node connected to k nearest neighbors)
+n_ring = 20
+k_ring = 4
+g_ring = igraph.Graph.Lattice(dim=[n_ring], circular=True, nei=k_ring//2)
+
+networks = {
+    "Complete": g_complete,
+    "Random": g_random, 
+    "Ring Lattice": g_ring,
+    "Our Example": g_cluster
+}
+
+print("Clustering Comparison:")
+print("-" * 60)
+print(f"{'Network':<15} {'Avg Local':<12} {'Global':<12} {'Nodes':<8} {'Edges':<8}")
+print("-" * 60)
+
+for name, graph in networks.items():
+    avg_local = graph.transitivity_avglocal_undirected()
+    global_clust = graph.transitivity_undirected()
+    nodes = graph.vcount()
+    edges = graph.ecount()
+    
+    print(f"{name:<15} {avg_local:<12.3f} {global_clust:<12.3f} {nodes:<8} {edges:<8}")
+```
+
+::: {.callout-important title="Average Local vs Global Clustering"}
+**Average local clustering** and **global clustering** can differ significantly:
+
+- **Average local** gives equal weight to all nodes
+- **Global** gives more weight to high-degree nodes (they contribute more triples)
+
+In social networks, global clustering is often higher because popular individuals (high degree) tend to connect their friends, creating many triangles.
+:::
+
+### Real-World Network Example
+
+Let's analyze clustering in a well-known network structure:
+
+```{python}
+# Create a small-world network (Watts-Strogatz model)
+# Start with ring lattice, then rewire some edges randomly
+n_ws = 30
+k_ws = 6
+p_rewire = 0.1
+
+g_smallworld = igraph.Graph.Watts_Strogatz(dim=1, size=n_ws, nei=k_ws//2, p=p_rewire)
+
+print("Small-World Network Analysis:")
+print(f"Nodes: {g_smallworld.vcount()}, Edges: {g_smallworld.ecount()}")
+print(f"Average local clustering: {g_smallworld.transitivity_avglocal_undirected():.3f}")
+print(f"Global clustering: {g_smallworld.transitivity_undirected():.3f}")
+print(f"Average path length: {g_smallworld.average_path_length():.3f}")
+
+# Compare with random graph of same size and density
+g_random_compare = igraph.Graph.Erdos_Renyi(n_ws, g_smallworld.ecount() * 2 / (n_ws * (n_ws - 1)))
+
+print("\nCompared to random graph with same density:")
+print(f"Random avg local clustering: {g_random_compare.transitivity_avglocal_undirected():.3f}")
+print(f"Random global clustering: {g_random_compare.transitivity_undirected():.3f}")
+print(f"Random average path length: {g_random_compare.average_path_length():.3f}")
+```
+
+::: {.callout-tip title="Small-World Networks"}
+Small-world networks are characterized by:
+1. **High clustering** (like regular lattices)  
+2. **Short path lengths** (like random graphs)
+
+This combination makes them efficient for information spread while maintaining local structure.
+:::
+
 ## Exercise 02 🏋️‍♀️💪🧠
 
 Let's compute the average path length of a network from pre-existing data and check if how long on average it takes to go from any node to any other node.
