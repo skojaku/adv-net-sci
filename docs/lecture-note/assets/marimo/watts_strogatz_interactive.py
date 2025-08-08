@@ -254,138 +254,82 @@ def _(all_edges, all_nodes, alt, mo, N_slider, k_slider, p_slider):
 
 @app.cell(hide_code=True) 
 def _(alt, clustering_ws, mo, p_slider, p_values, path_length_ws, pd, sigma_values):
-    # Create line plots with Altair
-    def create_line_plots():
-        # Prepare data for line plots
-        C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
-        L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
-        
-        # Create dataframe for properties vs p
-        props_data = []
-        for i, p in enumerate(p_values):
-            props_data.extend([
-                {
-                    'p': p,
-                    'value': clustering_ws[i] / C_initial,
-                    'metric': 'C(p) / C(0)',
-                    'type': 'Clustering'
-                },
-                {
-                    'p': p,
-                    'value': path_length_ws[i] / L_initial,
-                    'metric': 'L(p) / L(0)',
-                    'type': 'Path Length'
-                }
-            ])
-        
-        props_df = pd.DataFrame(props_data)
-        
-        # Create dataframe for sigma vs p
-        sigma_data = []
-        for i, p in enumerate(p_values):
-            sigma_data.append({
-                'p': p,
-                'sigma': sigma_values[i]
-            })
-        
-        sigma_df = pd.DataFrame(sigma_data)
-        
-        # Properties plot
-        properties_plot = alt.Chart(props_df).mark_line(
-            point=True,
-            strokeWidth=2.5
-        ).encode(
-            x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
-            y=alt.Y('value:Q', title='Normalized Values'),
-            color=alt.Color(
-                'metric:N',
-                scale=alt.Scale(
-                    domain=['C(p) / C(0)', 'L(p) / L(0)'],
-                    range=['steelblue', 'red']
-                ),
-                legend=alt.Legend(title="Metric")
-            ),
-            tooltip=['p:Q', 'value:Q', 'metric:N']
-        ).properties(
-            width=350,
-            height=200,
-            title="Network Properties vs Rewiring Probability"
-        )
-        
-        # Add current p line to properties plot
-        current_p_line = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
-            color='gray',
-            strokeDash=[5, 5],
-            strokeWidth=2
-        ).encode(
-            x='p:Q',
-            tooltip=alt.value(f'Current p = {p_slider.value:.3f}')
-        )
-        
-        properties_with_line = properties_plot + current_p_line
-        
-        # Sigma plot
-        sigma_plot = alt.Chart(sigma_df).mark_line(
-            point=alt.OverlayMarkDef(shape='diamond', size=60),
-            color='green',
-            strokeWidth=2.5
-        ).encode(
-            x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
-            y=alt.Y('sigma:Q', title='Small-World Coefficient (σ)'),
-            tooltip=['p:Q', 'sigma:Q']
-        ).properties(
-            width=350,
-            height=200,
-            title="Small-World Property vs Rewiring Probability"
-        )
-        
-        # Add sigma = 1 baseline
-        baseline = alt.Chart(pd.DataFrame({'y': [1]})).mark_rule(
-            color='red',
-            strokeDash=[3, 3]
-        ).encode(
-            y='y:Q',
-            tooltip=alt.value('σ = 1 (Random baseline)')
-        )
-        
-        # Add current p line to sigma plot
-        sigma_p_line = alt.Chart(pd.DataFrame({'p': [p_slider.value]})).mark_rule(
-            color='gray',
-            strokeDash=[5, 5],
-            strokeWidth=2
-        ).encode(
-            x='p:Q',
-            tooltip=alt.value(f'Current p = {p_slider.value:.3f}')
-        )
-        
-        # Highlight max sigma
-        max_sigma = max(sigma_values)
-        max_sigma_idx = np.argmax(sigma_values)
-        max_point = alt.Chart(pd.DataFrame([{
-            'p': p_values[max_sigma_idx], 
-            'sigma': max_sigma
-        }])).mark_circle(
-            size=150,
-            color='gold',
-            stroke='black',
-            strokeWidth=2
-        ).encode(
-            x='p:Q',
-            y='sigma:Q',
-            tooltip=alt.value(f'Max σ = {max_sigma:.2f} at p = {p_values[max_sigma_idx]:.2f}')
-        )
-        
-        sigma_with_annotations = sigma_plot + baseline + sigma_p_line + max_point
-        
-        return alt.vconcat(
-            properties_with_line,
-            sigma_with_annotations
-        )
+    # Create properties plot data
+    C_initial = clustering_ws[0] if clustering_ws[0] > 0 else 1
+    L_initial = path_length_ws[0] if path_length_ws[0] > 0 else 1
     
-    # Display line plots
-    line_plots = create_line_plots()
-    mo.ui.altair_chart(line_plots)
-    return (line_plots,)
+    props_data = []
+    for i, p in enumerate(p_values):
+        props_data.extend([
+            {
+                'p': p,
+                'value': clustering_ws[i] / C_initial,
+                'metric': 'C(p) / C(0)',
+            },
+            {
+                'p': p,
+                'value': path_length_ws[i] / L_initial,
+                'metric': 'L(p) / L(0)',
+            }
+        ])
+    
+    props_df = pd.DataFrame(props_data)
+    
+    # Properties plot
+    properties_chart = alt.Chart(props_df).mark_line(
+        point=True,
+        strokeWidth=2.5
+    ).encode(
+        x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
+        y=alt.Y('value:Q', title='Normalized Values'),
+        color=alt.Color(
+            'metric:N',
+            scale=alt.Scale(
+                domain=['C(p) / C(0)', 'L(p) / L(0)'],
+                range=['steelblue', 'red']
+            ),
+            legend=alt.Legend(title="Metric")
+        ),
+        tooltip=['p:Q', 'value:Q', 'metric:N']
+    ).properties(
+        width=350,
+        height=200,
+        title="Network Properties vs Rewiring Probability"
+    )
+    
+    mo.ui.altair_chart(properties_chart)
+    return (properties_chart,)
+
+
+@app.cell(hide_code=True)
+def _(alt, mo, p_slider, p_values, pd, sigma_values, np):
+    # Create sigma plot data
+    sigma_data = []
+    for i, p in enumerate(p_values):
+        sigma_data.append({
+            'p': p,
+            'sigma': sigma_values[i]
+        })
+    
+    sigma_df = pd.DataFrame(sigma_data)
+    
+    # Sigma plot  
+    sigma_chart = alt.Chart(sigma_df).mark_line(
+        point=True,
+        color='green',
+        strokeWidth=2.5
+    ).encode(
+        x=alt.X('p:Q', title='Rewiring Probability (p)', scale=alt.Scale(domain=[0, 1])),
+        y=alt.Y('sigma:Q', title='Small-World Coefficient (σ)'),
+        tooltip=['p:Q', 'sigma:Q']
+    ).properties(
+        width=350,
+        height=200,
+        title="Small-World Property vs Rewiring Probability"
+    )
+    
+    mo.ui.altair_chart(sigma_chart)
+    return (sigma_chart,)
 
 
 @app.cell(hide_code=True)
