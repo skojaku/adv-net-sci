@@ -73,16 +73,13 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(C_chart, L_chart, mo, network_chart, sigma_chart):
-    mo.hstack(
+    mo.vstack(
         [
-            network_chart,
-            mo.vstack(
-                [
-                    mo.hstack([C_chart, L_chart]),
-                    sigma_chart,
-                ]
-            ),
-        ]
+            mo.hstack([network_chart, sigma_chart]),
+            mo.hstack([C_chart, L_chart]),
+        ],
+        align="center",
+        justify="center",
     )
     return
 
@@ -207,8 +204,9 @@ def _(N_slider, k_slider, np):
                         total_paths += 1
 
             if total_paths == 0:
-                return float('inf')
+                return float("inf")
             return total_distance / total_paths
+
 
     def create_ring_lattice(N, k, seed=42):
         """Create a ring lattice with N nodes, each connected to k nearest neighbors"""
@@ -228,6 +226,7 @@ def _(N_slider, k_slider, np):
                 G.add_edge(i, neighbor)
 
         return G
+
 
     def precompute_all_network_states(N, k, num_steps=21, seed=42):
         """Precompute all network states and metrics for all p values from 0 to 1"""
@@ -308,11 +307,12 @@ def _(N_slider, k_slider, np):
 
         return network_states, all_metrics, p_values
 
+
     # Precompute all network states
     network_states, all_metrics, all_p_values = precompute_all_network_states(
         N_slider.value, k_slider.value
     )
-    return Graph, all_metrics, all_p_values, create_ring_lattice, network_states
+    return all_metrics, all_p_values, network_states
 
 
 @app.cell(hide_code=True)
@@ -320,6 +320,7 @@ def _(all_p_values, network_states, p_slider):
     def find_closest_p(target_p, p_values_list):
         """Find the closest precomputed p value to the target"""
         return min(p_values_list, key=lambda x: abs(x - target_p))
+
 
     # Get the network state closest to current p slider value
     closest_p = find_closest_p(p_slider.value, all_p_values)
@@ -369,6 +370,7 @@ def _(N_slider, current_network, k_slider, np, pd):
 
         return pd.DataFrame(nodes_data), pd.DataFrame(edges_data)
 
+
     # Create network data for current state
     all_nodes, all_edges = create_network_data(
         current_network, N_slider.value, k_slider.value
@@ -389,14 +391,7 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
                 y=alt.Y("y1:Q", scale=alt.Scale(domain=[-1.2, 1.2]), axis=None),
                 x2="x2:Q",
                 y2="y2:Q",
-                color=alt.Color(
-                    "edge_type:N",
-                    scale=alt.Scale(
-                        domain=["Regular", "Rewired"], range=["steelblue", "red"]
-                    ),
-                    legend=alt.Legend(title="Edge Type", orient="top-right"),
-                ),
-                tooltip=["source:O", "target:O", "edge_type:N"],
+                tooltip=["source:O", "target:O"],
             )
         )
 
@@ -424,6 +419,7 @@ def _(N_slider, all_edges, all_nodes, alt, k_slider, mo, p_slider):
         )
 
         return network
+
 
     network_chart = create_network_chart()
     network_chart = mo.ui.altair_chart(network_chart)
@@ -506,6 +502,7 @@ def _(N_slider, alt, k_slider, mo, p_slider, pd, progressive_data):
             title="Clustering Coefficient C(p)",
         )
 
+
     C_chart = mo.ui.altair_chart(create_clustering_chart())
     return (C_chart,)
 
@@ -566,6 +563,7 @@ def _(N_slider, alt, k_slider, mo, np, p_slider, pd, progressive_data):
             title="Average Path Length L(p)",
         )
 
+
     L_chart = mo.ui.altair_chart(create_path_length_chart())
     return (L_chart,)
 
@@ -605,22 +603,13 @@ def _(alt, mo, p_slider, pd, progressive_data):
 
         return sigma_chart + current_p_line
 
+
     sigma_chart = mo.ui.altair_chart(create_sigma_chart())
     return (sigma_chart,)
 
 
 @app.cell(hide_code=True)
-def _(
-    C,
-    L,
-    N_slider,
-    edges_rewired,
-    k_slider,
-    mo,
-    np,
-    p_slider,
-    sigma,
-):
+def _(C, L, N_slider, edges_rewired, k_slider, mo, np, p_slider, sigma):
     # Calculate reference values for display
     C_random_display = k_slider.value / (N_slider.value - 1)
     L_random_display = np.log(N_slider.value) / np.log(k_slider.value)
