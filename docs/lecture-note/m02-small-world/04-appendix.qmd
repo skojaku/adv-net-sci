@@ -3,7 +3,15 @@ title: "Appendix - Brief Introduction to igraph"
 jupyter: advnetsci
 ---
 
-## Clustering Coefficient for Erdős-Rényi Random Graphs
+## Erdős-Rényi Random Graphs
+
+The Erdős-Rényi random graph model is one of the fundamental models in network science. There are two variants:
+- $G(n,m)$: $n$ vertices with exactly $m$ randomly chosen edges
+- $G(n,p)$: $n$ vertices where each possible edge exists with probability $p$
+
+We focus on the $G(n,p)$ model for analytical tractability.
+
+### Clustering Coefficient for Erdős-Rényi Random Graphs
 
 The clustering coefficient measures the probability that two neighbors of a vertex are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically.
 
@@ -42,4 +50,34 @@ where $\langle k \rangle = p(n-1)$ is the expected degree.
 2. It equals the edge probability $p$
 3. For sparse networks ($p \ll 1$), clustering is very low
 4. Real-world networks typically have much higher clustering than random graphs with the same density
+
+## Average Path Length in Erdős-Rényi Random Graphs
+
+The average path length in Erdős-Rényi graphs can be derived using a tree-expansion argument.
+
+### Tree Expansion Analysis
+
+Given an Erdős-Rényi model with average degree $\bar{k}$, we can analyze the network structure by treating it as a tree rooted at any node:
+
+- **1st step**: From the root, we can reach $1 + \bar{k}$ nodes
+- **2nd step**: We can reach $1 + \bar{k} + \bar{k}^2$ nodes  
+- **h-th step**: We can reach $1 + \bar{k} + \bar{k}^2 + \ldots + \bar{k}^h \approx \bar{k}^h$ nodes
+
+### Diameter Calculation
+
+Since Erdős-Rényi random graphs have few triangles and local clusters, most nodes are reached only at the final step of the expansion. Therefore:
+
+$$\bar{k}^h \approx n$$
+
+Solving for $h$:
+
+$$h \approx \log_{\bar{k}}(n) = \frac{\log(n)}{\log(\bar{k})} = \frac{\log(n)}{\log(p(n-1))}$$
+
+### Result
+
+The average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size:
+
+$$\langle d \rangle \approx \frac{\log(n)}{\log(\bar{k})}$$
+
+This demonstrates the "small-world" property: even in large networks, the typical distance between nodes grows only logarithmically with network size.
 
