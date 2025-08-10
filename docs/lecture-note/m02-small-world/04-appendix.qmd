@@ -5,79 +5,31 @@ jupyter: advnetsci
 
 ## Erdős-Rényi Random Graphs
 
-The Erdős-Rényi random graph model is one of the fundamental models in network science. There are two variants:
-- $G(n,m)$: $n$ vertices with exactly $m$ randomly chosen edges
-- $G(n,p)$: $n$ vertices where each possible edge exists with probability $p$
+The Erdős-Rényi random graph model is one of the fundamental models in network science, serving as our baseline for understanding what makes small-world networks special. There are two variants of this model: $G(n,m)$ which creates $n$ vertices with exactly $m$ randomly chosen edges, and $G(n,p)$ which creates $n$ vertices where each possible edge exists with probability $p$. We focus on the $G(n,p)$ model because it provides better analytical tractability for deriving mathematical properties.
 
-We focus on the $G(n,p)$ model for analytical tractability.
+Understanding the clustering coefficient and path length properties of Erdős-Rényi graphs is crucial because these serve as our reference point when measuring the small-world index. When we calculate $\sigma = \frac{\overline{C}/\overline{C}_{\text{random}}}{\overline{L}/\overline{L}_{\text{random}}}$, the denominators $\overline{C}_{\text{random}}$ and $\overline{L}_{\text{random}}$ refer to the expected values in equivalent Erdős-Rényi random graphs.
 
-### Clustering Coefficient for Erdős-Rényi Random Graphs
+## Clustering Coefficient Derivation
 
-The clustering coefficient measures the probability that two neighbors of a vertex are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically.
+The clustering coefficient measures the probability that two neighbors of a vertex are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically by exploiting the independence of edge formation.
 
-### Local Clustering Coefficient
+Consider a vertex $i$ with degree $k_i$ in an Erdős-Rényi graph $G(n,p)$. The local clustering coefficient is defined as $C_i = \frac{2e_i}{k_i(k_i-1)}$, where $e_i$ is the number of edges between neighbors of vertex $i$. The key insight is that in the $G(n,p)$ model, each possible edge exists with probability $p$ independently of all other edges.
 
-For a vertex $i$ with degree $k_i$, the local clustering coefficient is:
+For a vertex with $k$ neighbors, there are $\binom{k}{2} = \frac{k(k-1)}{2}$ possible edges between its neighbors. Since each potential edge exists with probability $p$, the expected number of edges between neighbors is $E[e_i | k_i = k] = \frac{k(k-1)}{2} \cdot p$. Therefore, the expected local clustering coefficient for a vertex with degree $k$ becomes:
 
-$$C_i = \frac{2e_i}{k_i(k_i-1)}$$
-
-where $e_i$ is the number of edges between neighbors of vertex $i$.
-
-### Expected Clustering Coefficient
-
-In an Erdős-Rényi random graph $G(n,p)$:
-- Each possible edge exists with probability $p$
-- For a vertex with $k$ neighbors, there are $\binom{k}{2} = \frac{k(k-1)}{2}$ possible edges between its neighbors
-- Each of these potential edges exists with probability $p$
-
-Therefore, the expected number of edges between neighbors is:
-$$E[e_i | k_i = k] = \frac{k(k-1)}{2} \cdot p$$
-
-The expected local clustering coefficient for a vertex with degree $k$ is:
 $$E[C_i | k_i = k] = \frac{2 \cdot \frac{k(k-1)}{2} \cdot p}{k(k-1)} = p$$
 
-### Global Clustering Coefficient
+This remarkable result shows that the expected local clustering coefficient is simply $p$, independent of the vertex degree. Since this holds for all vertices regardless of their degree, the expected global clustering coefficient is also $E[C] = p = \frac{\langle k \rangle}{n-1}$, where $\langle k \rangle = p(n-1)$ is the expected degree.
 
-Since the expected local clustering coefficient is $p$ for all vertices (regardless of their degree), the expected global clustering coefficient is also:
+The implications are profound: the clustering coefficient of Erdős-Rényi graphs equals the edge probability $p$ and is independent of network size. For sparse networks where $p \ll 1$, clustering is very low, which explains why real-world networks typically have much higher clustering than random graphs with the same density—a key signature of the small-world property.
 
-$$E[C] = p = \frac{\langle k \rangle}{n-1}$$
+## Average Path Length Derivation
 
-where $\langle k \rangle = p(n-1)$ is the expected degree.
+The average path length in Erdős-Rényi graphs can be derived using an elegant tree-expansion argument that reveals why these networks exhibit the small-world property of short distances.
 
-### Key Insights
+Consider an Erdős-Rényi model with average degree $\bar{k} = p(n-1)$. We can analyze the network structure by imagining a breadth-first expansion from any starting node, treating the resulting structure as a tree (this approximation works well because triangles and cycles are rare in sparse random graphs). From the root node, we can reach approximately $1 + \bar{k}$ nodes in the first step. In the second step, each of these $\bar{k}$ nodes connects to roughly $\bar{k}$ new nodes (avoiding already-visited nodes), giving us $1 + \bar{k} + \bar{k}^2$ total reachable nodes. Continuing this pattern, after $h$ steps we can reach approximately $1 + \bar{k} + \bar{k}^2 + \ldots + \bar{k}^h \approx \bar{k}^h$ nodes.
 
-1. The clustering coefficient of Erdős-Rényi graphs is independent of network size
-2. It equals the edge probability $p$
-3. For sparse networks ($p \ll 1$), clustering is very low
-4. Real-world networks typically have much higher clustering than random graphs with the same density
+The critical insight is that since Erdős-Rényi random graphs have few triangles and local clusters, most nodes in the network are reached only at the final step of this expansion process. When the expansion covers the entire network, we have $\bar{k}^h \approx n$. Solving for $h$: $h \approx \log_{\bar{k}}(n) = \frac{\log(n)}{\log(\bar{k})} = \frac{\log(n)}{\log(p(n-1))}$.
 
-## Average Path Length in Erdős-Rényi Random Graphs
-
-The average path length in Erdős-Rényi graphs can be derived using a tree-expansion argument.
-
-### Tree Expansion Analysis
-
-Given an Erdős-Rényi model with average degree $\bar{k}$, we can analyze the network structure by treating it as a tree rooted at any node:
-
-- **1st step**: From the root, we can reach $1 + \bar{k}$ nodes
-- **2nd step**: We can reach $1 + \bar{k} + \bar{k}^2$ nodes  
-- **h-th step**: We can reach $1 + \bar{k} + \bar{k}^2 + \ldots + \bar{k}^h \approx \bar{k}^h$ nodes
-
-### Diameter Calculation
-
-Since Erdős-Rényi random graphs have few triangles and local clusters, most nodes are reached only at the final step of the expansion. Therefore:
-
-$$\bar{k}^h \approx n$$
-
-Solving for $h$:
-
-$$h \approx \log_{\bar{k}}(n) = \frac{\log(n)}{\log(\bar{k})} = \frac{\log(n)}{\log(p(n-1))}$$
-
-### Result
-
-The average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size:
-
-$$\langle d \rangle \approx \frac{\log(n)}{\log(\bar{k})}$$
-
-This demonstrates the "small-world" property: even in large networks, the typical distance between nodes grows only logarithmically with network size.
+This derivation reveals that the average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size: $\langle d \rangle \approx \frac{\log(n)}{\log(\bar{k})}$. This logarithmic scaling demonstrates the "small-world" property inherent even in random graphs: even in large networks, the typical distance between nodes grows only logarithmically with network size, making the world surprisingly small despite its size.
 
