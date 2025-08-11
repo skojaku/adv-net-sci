@@ -16,17 +16,25 @@ In this module, we will explore network robustness through the lens of infrastru
 
 **Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, network redundancy, random failures, targeted attacks, connectivity loss, R-index, percolation, robustness paradox
 
-## The Power Grid Design Challenge: A Historical Perspective
+
+## Power Grid Design Challenge
+
+In the aftermath of World War I, the newly formed Czechoslovakia faced massive reconstruction challenges. Cities and towns across [Moravia](https://en.wikipedia.org/wiki/Moravia) needed electricity, but the young nation had limited resources. Every resources spent on unnecessary infrastructure was a resource not available for hospitals, schools, or economic recovery. Engineers at the West Moravian Power Company faced a critical question: How do you connect every town and village to the electrical grid while using the minimum length of cable?
+
+::: {.column-margin}
+**Otakar Borůvka** (1899-1995) was a Czech mathematician who is best known for his work on the minimum spanning tree problem.
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Otakar_Boruvka_1981.jpg/500px-Otakar_Boruvka_1981.jpg)
+:::
 
 ::: {.column-margin}
 The first electric power grid was built by Thomas Edison in lower Manhattan in 1882, serving just 85 customers. The challenge of connecting multiple locations while minimizing cable costs has been central to infrastructure design ever since.
 :::
 
-Imagine you're an engineer in the early 1900s, tasked with designing an electrical grid for a growing city. You need to connect every neighborhood to the power plant, but laying electrical cables is expensive. How do you ensure everyone gets electricity while minimizing the total cost of cables?
+The problem reached mathematician Otakar Borůvka through his friend at the power company. Borůvka's 1926 solution gave us the first systematic approach to what we now call **the minimum spanning tree problem**: finding the cheapest way to connect all locations in a network.
 
-This is more than a historical curiosity - it's a fundamental question in network design that appears everywhere: laying fiber optic cables for internet infrastructure, building transportation networks, designing communication systems, and even understanding biological networks like blood vessel systems.
 
-The mathematical answer to this cost-minimization problem is the **minimum spanning tree (MST)** - a tree that connects all locations with the minimum total cable length. But as we'll discover, the most economical solution often creates the most fragile network.
+
 
 ## Minimum Spanning Trees: The Mathematics of Cost-Effective Connection
 
@@ -60,6 +68,10 @@ Two elegant algorithms solve this optimization problem:
 :::
 
 Both algorithms find the same MST when all connection costs are different. They represent two different approaches to the same optimization: Kruskal's algorithm considers all connections globally, while Prim's algorithm grows the network locally from a starting point.
+
+::: {.callout-note}
+For simplicity in this module, we will focus on Kruskal's algorithm when implementing minimum spanning tree solutions.
+:::
 
 ## The Fragility of Optimal Efficiency
 
