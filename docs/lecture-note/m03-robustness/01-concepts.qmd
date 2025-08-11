@@ -28,38 +28,38 @@ In the aftermath of World War I, the newly formed Czechoslovakia faced massive r
 :::
 
 ::: {.column-margin}
-The first electric power grid was built by Thomas Edison in lower Manhattan in 1882, serving just 85 customers. The challenge of connecting multiple locations while minimizing cable costs has been central to infrastructure design ever since.
+<iframe width="250" height="150" src="https://www.youtube.com/embed/8i2XsxU-VL4?si=UGZH5hgy09Jhsjru" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 :::
 
 The problem reached mathematician Otakar Borůvka through his friend at the power company. Borůvka's 1926 solution gave us the first systematic approach to what we now call **the minimum spanning tree problem**: finding the cheapest way to connect all locations in a network.
 
-
-
-
-## Minimum Spanning Trees: The Mathematics of Cost-Effective Connection
-
-### What is a Minimum Spanning Tree?
-
 A **minimum spanning tree (MST)** of a weighted network is a tree that:
+
 - **Spans** all nodes (connects every location in the network)
 - Is a **tree** (connected with no cycles - no redundant loops)
 - Has **minimum total weight** among all possible spanning trees
 
-In our power grid example, this means connecting every neighborhood with the minimum total length of electrical cables.
+Otakar Borůvka delivered the first algorithm to solve this problem: **Borůvka's algorithm**. But it is not the only algorithm to find the minimum spanning tree.
+In fact, there are several algorithms. We will cover two algorithms: **Kruskal's algorithm** and **Prim's algorithm**, which are easier to understand and implement.
 
-### Finding the Minimum Spanning Tree: Classical Algorithms
+## Finding the Minimum Spanning Tree: Two Complementary Approaches
 
-Two elegant algorithms solve this optimization problem:
+### Kruskal's Algorithm: The Global Greedy Approach
 
-**Kruskal's Algorithm** (1956):
-1. Sort all possible connections by cost (shortest cables first)
-2. Add the cheapest connection that doesn't create a loop
-3. Repeat until all locations are connected
+Imagine you're an engineer looking at a map showing all possible cable routes between towns, each marked with its installation cost. **Kruskal's algorithm** embodies a remarkably simple yet powerful intuition: always choose the cheapest available option, but never create wasteful loops. This global perspective treats the entire network as a collection of potential connections, systematically building the optimal solution piece by piece.
 
-**Prim's Algorithm** (1957):
-1. Start with the power plant (any single location)
-2. Repeatedly add the cheapest connection to a new unconnected location
-3. Continue until all locations are included
+The algorithm works by first sorting every possible connection from cheapest to most expensive - like arranging all the cable segments by cost. Then, it examines each connection in order, asking a crucial question: "If I add this cable, will it create a redundant loop?" If the answer is no, the cable joins the growing network. If adding it would create a cycle - meaning the two locations are already connected through some other path - the algorithm skips it as wasteful. This process continues until every location is connected, guaranteeing both minimum cost and complete coverage.
+
+What makes Kruskal's approach particularly elegant is its **global optimization perspective**. Rather than focusing on any particular starting point, it considers the entire landscape of possible connections, always making the locally optimal choice that contributes to the globally optimal solution. This "greedy" strategy - always taking the cheapest available option - provably leads to the minimum spanning tree.
+
+### Prim's Algorithm: The Local Growth Strategy
+
+**Prim's algorithm** takes a fundamentally different approach, embodying the intuition of organic growth from a single starting point. Picture an engineer beginning at the central power plant and asking: "What's the cheapest way to connect one more location to our existing grid?" This local growth strategy builds the network incrementally, always expanding from what's already been constructed.
+
+The algorithm begins by selecting any location as its starting point - often the power plant in our analogy. From this initial seed, it repeatedly identifies the cheapest connection that would bring a new, unconnected location into the growing network. Unlike Kruskal's global view, Prim's algorithm maintains a clear distinction between locations already in the network and those still waiting to be connected. At each step, it finds the minimum-cost bridge between these two groups, gradually expanding the connected region until it encompasses every location.
+
+This **local expansion strategy** mirrors how many real-world infrastructure projects actually develop. Engineers often start from existing facilities and expand outward, always seeking the most cost-effective way to serve additional areas. Prim's algorithm formalizes this natural growth process, ensuring that each expansion choice contributes optimally to the final solution.
 
 ::: {.column-margin}
 
@@ -67,7 +67,13 @@ Two elegant algorithms solve this optimization problem:
 
 :::
 
-Both algorithms find the same MST when all connection costs are different. They represent two different approaches to the same optimization: Kruskal's algorithm considers all connections globally, while Prim's algorithm grows the network locally from a starting point.
+### Algorithmic Equivalence and Key Differences
+
+Despite their dramatically different approaches - Kruskal's global optimization versus Prim's local growth - both algorithms are guaranteed to produce identical results when all connection costs are unique. This equivalence reveals a profound mathematical truth: the minimum spanning tree problem has a unique solution under typical conditions, regardless of the construction strategy employed.
+
+The algorithms differ primarily in their **computational perspectives and implementation requirements**. Kruskal's global approach requires sorting all possible connections upfront and maintaining sophisticated data structures (like union-find) to detect cycles efficiently. Prim's local growth strategy needs only to track which locations remain unconnected and find the cheapest bridge at each step, making it often simpler to implement but requiring careful management of the growing connected region.
+
+**When connection costs are not unique** - meaning some cable segments cost exactly the same - multiple valid minimum spanning trees may exist. In such cases, the two algorithms might produce different solutions, but both will have the same total cost and both will be equally optimal. The choice between them often depends on practical considerations: Kruskal's algorithm naturally handles disconnected components and parallelizes well, while Prim's algorithm provides more intuitive step-by-step progress and works efficiently when starting from a specific location is important.
 
 ::: {.callout-note}
 For simplicity in this module, we will focus on Kruskal's algorithm when implementing minimum spanning tree solutions.
