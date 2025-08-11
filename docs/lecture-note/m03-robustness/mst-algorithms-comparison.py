@@ -12,7 +12,7 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
     import pandas as pd
-    return mo, plt
+    return mo, pd, plt
 
 
 @app.cell
@@ -201,13 +201,45 @@ def _(edges, nodes):
 
 
 @app.cell
-def _(kruskal_steps, kruskal_weight, prim_weight, time_step):
+def _(kruskal_steps, kruskal_weight, mo, prim_weight, time_step):
     # Display algorithm results with current step information
     weight_match = "✅ Same" if kruskal_weight == prim_weight else "❌ Different"
 
     # Get current step information
     current_step = time_step.value
     max_steps = len([s for s in kruskal_steps if s["action"] == "added"])
+    
+    # Current step details
+    if current_step == 0:
+        step_info = "**Current State**: Initial state - no edges added yet"
+    elif current_step <= max_steps:
+        step_info = f"**Current State**: Step {current_step}/{max_steps} - Building MST progressively"
+    else:
+        step_info = f"**Current State**: Complete MST - All {max_steps} edges added"
+
+    results = mo.md(f"""
+    ## Algorithm Results
+
+    {step_info}
+
+    ### Kruskal's Algorithm (Global Approach)  
+    - **Total MST Weight**: {kruskal_weight}
+    - **Method**: Sort all edges globally, add cheapest without creating cycles
+
+    ### Prim's Algorithm (Local Growth)
+    - **Total MST Weight**: {prim_weight}  
+    - **Method**: Start from node A, grow tree by adding cheapest connections
+
+    ### Comparison
+    - **Total Weights Match**: {weight_match}
+
+    ---
+
+    **💡 Tip**: Use the time step slider above to see how each algorithm builds the MST step by step. 
+    Connected nodes are shown in **light red**, unconnected nodes in **light blue**.
+    """)
+
+    results
     return
 
 
