@@ -75,16 +75,28 @@ def _(ListedColormap, label, np, p_slider, plt):
     # Create visualization
     plt.figure(figsize=(8, 8))
 
-    # Create custom colormap: white for empty, blue for puddles
-    colors = ['white', '#4472C4']  # white for 0, blue for 1
+    # Create a display grid that shows largest component in red
+    display_grid = np.zeros_like(grid, dtype=int)
+    
+    # Find the largest component
+    if num_features > 0:
+        # Find which label corresponds to the largest component
+        largest_label = np.argmax(sizes) + 1  # +1 because labels start from 1
+        
+        # Set display values: 0=white, 1=blue (small components), 2=red (largest component)
+        display_grid[grid] = 1  # All puddles start as blue
+        display_grid[labeled_array == largest_label] = 2  # Largest component in red
+
+    # Create custom colormap: white for empty, blue for small components, red for largest
+    colors = ['white', '#4472C4', '#E74C3C']  # white, blue, red
     cmap = ListedColormap(colors)
 
     # Plot the grid
-    plt.imshow(grid, cmap=cmap, interpolation='nearest')
+    plt.imshow(display_grid, cmap=cmap, interpolation='nearest')
 
     # Styling
     plt.title(f'Percolation Grid (p = {p_slider.value:.2f})\n'
-             f'Largest Component: {largest_size} squares '
+             f'Largest Component (Red): {largest_size} squares '
              f'({largest_fraction:.1%} of grid)', 
              fontsize=14, pad=20)
     plt.xlabel('Grid Position')
@@ -95,6 +107,15 @@ def _(ListedColormap, label, np, p_slider, plt):
     plt.yticks(np.arange(-0.5, grid_size, 10), minor=True)
     plt.grid(which='minor', color='gray', linestyle='-', alpha=0.3)
     plt.tick_params(which='minor', size=0)
+    
+    # Add a legend
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='white', edgecolor='black', label='Empty'),
+        Patch(facecolor='#4472C4', label='Small Components'), 
+        Patch(facecolor='#E74C3C', label='Largest Component')
+    ]
+    plt.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.15, 1))
 
     # Return the plot
     plt.gca()
