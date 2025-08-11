@@ -1,9 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#     "scipy==1.16.1",
-# ]
-# ///
 import marimo
 
 __generated_with = "0.14.16"
@@ -13,32 +7,12 @@ app = marimo.App(
 )
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        r"""
-    # Minimum Spanning Tree Algorithms: Kruskal vs Prim
-
-    This interactive demonstration shows the key differences between **Kruskal's Algorithm** and **Prim's Algorithm** 
-    for finding minimum spanning trees using a power grid example.
-
-    Both algorithms solve the same problem but with fundamentally different approaches:
-    - **Kruskal's**: Global perspective - sorts all edges, builds forest, prevents cycles
-    - **Prim's**: Local growth - starts from one node, grows tree by adding cheapest connections
-    """
-    )
-    return
-
-
 @app.cell
 def _():
     import marimo as mo
     import matplotlib.pyplot as plt
     import pandas as pd
-    import numpy as np
-    from scipy.sparse import csr_matrix
-    from scipy.sparse.csgraph import connected_components
-    return mo, pd, plt, np, csr_matrix, connected_components
+    return mo, plt
 
 
 @app.cell
@@ -114,35 +88,7 @@ def _(unique_weights):
 
 
 @app.cell
-def _(connected_components, csr_matrix, edges, nodes, np):
-    def check_connectivity(nodes_dict, edges_subset):
-        """Check if the graph formed by edges_subset is connected using scipy"""
-        if not edges_subset:
-            return len(nodes_dict) == 1, 1  # Single node is connected
-        
-        # Create node to index mapping
-        node_list = list(nodes_dict.keys())
-        node_to_idx = {node: i for i, node in enumerate(node_list)}
-        n_nodes = len(node_list)
-        
-        # Build adjacency matrix
-        row, col = [], []
-        for u, v, _ in edges_subset:
-            i, j = node_to_idx[u], node_to_idx[v]
-            row.extend([i, j])
-            col.extend([j, i])
-        
-        if not row:  # No edges
-            return False, n_nodes
-            
-        data = [1] * len(row)
-        adj_matrix = csr_matrix((data, (row, col)), shape=(n_nodes, n_nodes))
-        
-        # Check connectivity
-        n_components, labels = connected_components(adj_matrix, directed=False)
-        is_connected = n_components == 1
-        return is_connected, n_components
-    
+def _(edges, nodes):
     def kruskal_algorithm(nodes_dict, edges_list):
         """Kruskal's algorithm implementation without networkx"""
 
@@ -152,7 +98,7 @@ def _(connected_components, csr_matrix, edges, nodes, np):
         # Initialize Union-Find data structure
         parent = {}
         rank = {}
-        
+
         # Initialize all nodes in Union-Find
         for node in nodes_dict:
             parent[node] = node
@@ -178,30 +124,18 @@ def _(connected_components, csr_matrix, edges, nodes, np):
         steps = []
 
         for u, v, weight in sorted_edges:
-            # Check connectivity before adding edge
-            is_connected_before, n_components_before = check_connectivity(nodes_dict, mst_edges)
-            
             if union(u, v):
                 mst_edges.append((u, v, weight))
-                is_connected_after, n_components_after = check_connectivity(nodes_dict, mst_edges)
                 steps.append(
                     {
                         "edge": (u, v),
                         "weight": weight,
                         "action": "added",
-                        "reason": f"Connects {u} and {v} without creating cycle (components: {n_components_before}→{n_components_after})",
-                    }
-                )
-            else:
-                steps.append(
-                    {
-                        "edge": (u, v),
-                        "weight": weight,
-                        "action": "skipped",
-                        "reason": f"Would create cycle between {u} and {v}",
+                        "reason": f"Connects {u} and {v} without creating cycle",
                     }
                 )
 
+            # Continue until we have a spanning tree OR all edges are processed
             if len(mst_edges) == len(nodes_dict) - 1:
                 break
 
@@ -244,13 +178,12 @@ def _(connected_components, csr_matrix, edges, nodes, np):
                 u, v, weight = min_edge
                 visited.add(v)
                 mst_edges.append((u, v, weight))
-                is_connected, n_components = check_connectivity(nodes_dict, mst_edges)
                 steps.append(
                     {
                         "edge": (u, v),
                         "weight": weight,
                         "action": "added",
-                        "reason": f"Cheapest connection from visited set to {v} ({n_components} components)",
+                        "reason": f"Cheapest connection from visited set to {v}",
                     }
                 )
 
@@ -264,74 +197,17 @@ def _(connected_components, csr_matrix, edges, nodes, np):
     # Calculate total weights
     kruskal_weight = sum(w for _, _, w in kruskal_mst)
     prim_weight = sum(w for _, _, w in prim_mst)
-    return (
-        kruskal_mst,
-        kruskal_steps,
-        kruskal_weight,
-        prim_mst,
-        prim_steps,
-        prim_weight,
-    )
+    return kruskal_steps, kruskal_weight, prim_steps, prim_weight
 
 
 @app.cell
-def _(
-    kruskal_mst,
-    kruskal_steps,
-    kruskal_weight,
-    mo,
-    nodes,
-    prim_mst,
-    prim_weight,
-    time_step,
-):
+def _(kruskal_steps, kruskal_weight, prim_weight, time_step):
     # Display algorithm results with current step information
     weight_match = "✅ Same" if kruskal_weight == prim_weight else "❌ Different"
 
     # Get current step information
     current_step = time_step.value
     max_steps = len([s for s in kruskal_steps if s["action"] == "added"])
-
-    # Current step details
-    if current_step == 0:
-        step_info = "**Current State**: Initial state - no edges added yet"
-    elif current_step <= max_steps:
-        step_info = f"**Current State**: Step {current_step}/{max_steps} - Building MST progressively"
-    else:
-        step_info = (
-            f"**Current State**: Complete MST - All {max_steps} edges added"
-        )
-
-    results = mo.md(f"""
-    ## Algorithm Results
-
-    {step_info}
-
-    ### Kruskal's Algorithm (Global Approach)
-    - **Total MST Weight**: {kruskal_weight}
-    - **Edges Selected**: {len(kruskal_mst)} edges connecting {len(nodes)} nodes
-    - **Method**: Sort all edges globally, add cheapest without creating cycles
-
-    ### Prim's Algorithm (Local Growth)
-    - **Total MST Weight**: {prim_weight}  
-    - **Edges Selected**: {len(prim_mst)} edges connecting {len(nodes)} nodes
-    - **Method**: Start from node A, grow tree by adding cheapest connections
-
-    ### Comparison
-    - **Total Weights Match**: {weight_match}
-    - **MST Uniqueness**: {
-        "Unique MST guaranteed when all edge weights are different"
-        if weight_match == "✅ Same"
-        else "Multiple MSTs possible when some edge weights are equal"
-    }
-
-    ---
-
-    **💡 Tip**: Use the time step slider above to see how each algorithm builds the MST step by step. 
-    Connected nodes are shown in **light red**, unconnected nodes in **light blue**.
-    """)
-
-    results
     return
 
 
@@ -446,27 +322,27 @@ def _(edges, kruskal_steps, nodes, plt, prim_steps, time_step):
                 if edges_to_show:
                     # Build Union-Find to determine connected components
                     parent = {node: node for node in nodes}
-                    
+
                     def find_root(x):
                         if parent[x] != x:
                             parent[x] = find_root(parent[x])
                         return parent[x]
-                    
+
                     def union_nodes(x, y):
                         px, py = find_root(x), find_root(y)
                         if px != py:
                             parent[py] = px
-                    
+
                     # Apply edges to build connected components
                     for u, v, _ in edges_to_show:
                         union_nodes(u, v)
-                    
+
                     # Find all nodes connected to any component that has edges
                     connected_roots = set()
                     for u, v, _ in edges_to_show:
                         connected_roots.add(find_root(u))
                         connected_roots.add(find_root(v))
-                    
+
                     for node in nodes:
                         if find_root(node) in connected_roots:
                             connected_nodes.add(node)
@@ -518,139 +394,6 @@ def _(edges, kruskal_steps, nodes, plt, prim_steps, time_step):
     # Create and display the visualization
     fig = visualize_both_algorithms()
     fig
-    return
-
-
-@app.cell
-def _(kruskal_steps, mo, pd, prim_steps):
-    # Show step-by-step construction
-    step_displays = []
-
-    # Kruskal steps
-    kruskal_df = pd.DataFrame(
-        [
-            {
-                "Step": i + 1,
-                "Edge": f"{step['edge'][0]}-{step['edge'][1]}"
-                if "edge" in step
-                else "N/A",
-                "Weight": step.get("weight", "-"),
-                "Action": step["action"].title(),
-                "Reason": step["reason"],
-            }
-            for i, step in enumerate(kruskal_steps)
-        ]
-    )
-
-    step_displays.append(
-        mo.vstack(
-            [
-                mo.md("### Kruskal's Algorithm - Step by Step"),
-                mo.md(
-                    "**Key Insight**: Kruskal considers ALL edges globally, always picking the cheapest available edge that doesn't create a cycle."
-                ),
-                mo.ui.table(kruskal_df, selection=None),
-            ]
-        )
-    )
-
-    # Prim steps
-    prim_df = pd.DataFrame(
-        [
-            {
-                "Step": i + 1,
-                "Node/Edge": (
-                    step.get("node", "N/A")
-                    if "node" in step
-                    else f"{step['edge'][0]}-{step['edge'][1]}"
-                    if "edge" in step
-                    else "N/A"
-                ),
-                "Weight": step.get("weight", "-"),
-                "Action": step["action"].title(),
-                "Reason": step["reason"],
-            }
-            for i, step in enumerate(prim_steps)
-        ]
-    )
-
-    step_displays.append(
-        mo.vstack(
-            [
-                mo.md("### Prim's Algorithm - Step by Step"),
-                mo.md(
-                    "**Key Insight**: Prim grows the tree locally, always expanding from the current connected component to the nearest unconnected node."
-                ),
-                mo.ui.table(prim_df, selection=None),
-            ]
-        )
-    )
-
-    mo.vstack(step_displays)
-    return
-
-
-@app.cell
-def _(mo, unique_weights):
-    if unique_weights.value:
-        uniqueness_explanation = mo.md("""
-        ### Edge Weight Uniqueness: All Unique ✅
-
-        With all edge weights being unique, both algorithms are **guaranteed to produce identical MSTs**. 
-        This demonstrates the mathematical principle that when edge weights are unique, 
-        the minimum spanning tree is unique regardless of the construction algorithm.
-
-        **Key Points:**
-        - Same total weight for both algorithms
-        - Same edges selected (possibly in different order)
-        - Demonstrates algorithmic equivalence
-        """)
-    else:
-        uniqueness_explanation = mo.md("""
-        ### Edge Weight Uniqueness: Some Duplicate Weights ⚠️
-
-        With some edges having identical weights, **multiple valid MSTs may exist**. 
-        Different algorithms might choose different edges of the same weight, 
-        leading to different trees with the same total cost.
-
-        **Key Points:**
-        - Both algorithms still find optimal solutions
-        - Total weights will still match
-        - Different edges might be selected when weights are tied
-        - Demonstrates that MST uniqueness depends on edge weight uniqueness
-        """)
-
-    uniqueness_explanation
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-    ## Key Algorithmic Differences
-
-    | Aspect | Kruskal's Algorithm | Prim's Algorithm |
-    |--------|-------------------|------------------|
-    | **Perspective** | Global - considers all edges | Local - grows from one point |
-    | **Initial Step** | Sort ALL edges by weight | Choose starting node (PowerPlant) |
-    | **Edge Selection** | Pick globally cheapest edge | Pick cheapest edge to unvisited node |
-    | **Data Structure** | Union-Find (for cycle detection) | Adjacency list + visited set |
-    | **Growth Pattern** | May build multiple disconnected trees initially | Always maintains single connected tree |
-    | **Cycle Prevention** | Explicit cycle checking with Union-Find | Implicit - only connects to unvisited nodes |
-    | **Implementation** | More complex (Union-Find structure) | More intuitive (local expansion) |
-
-    ## Power Grid Context
-
-    In our power grid example:
-    - **PowerPlant**: Central power generation facility
-    - **SubstationA/B**: Distribution substations  
-    - **TownA/B/C/D**: End consumers (residential/commercial areas)
-    - **Edge weights**: Cable installation costs (in thousands of dollars)
-
-    Both algorithms find the minimum cost to connect all locations while ensuring every town receives power.
-    """
-    )
     return
 
 
