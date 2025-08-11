@@ -37,7 +37,7 @@ $$
 
 ![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
 
-The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed - random removal creates one pattern, while strategic targeting creates dramatically different patterns. To compare networks with a single metric, we use the **R-index** - the area under this curve:
+The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed. To compare networks with a single metric, we use the **R-index** - the area under this curve:
 
 ![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
 
@@ -49,7 +49,7 @@ $$
 The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
 :::
 
-Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first - like targeting the busiest airports to disrupt air travel. Smart adversaries might use more sophisticated targeting based on **betweenness centrality** (nodes on many shortest paths), **closeness centrality** (nodes close to all others), or **strategic positioning**.
+Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first, like targeting the busiest airports to disrupt air travel.
 
 ## Percolation Theory and the Robustness Paradox
 
@@ -57,7 +57,19 @@ Even if a network survives random failures beautifully, it might crumble under *
 Percolation theory originated in physics to understand how liquids flow through porous materials. The same mathematics explains how networks fragment under node removal - a beautiful example of how physics concepts illuminate network behavior.
 :::
 
-Network robustness connects to **percolation theory**, which studies phase transitions in connectivity. Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$.
+
+
+::: {#fig-percolation}
+
+![](https://jamesmccaffrey.wordpress.com/wp-content/uploads/2021/07/percolation.jpg?w=584&h=389)
+
+A grid of puddles that are connected if they share a side. Percolation theory explains how a giant puddle forms when the probability of a puddle is large enough.
+
+:::
+
+To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes (or "puddles") to a grid with probability $p$, when does a giant connected component emerge? Network robustness asks the opposite question: as we remove nodes, when does the giant component disappear?
+
+Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter - only the fraction of nodes present or removed determines connectivity, not when they were added or removed.
 
 For networks with arbitrary degree distributions, the **Molloy-Reed criterion** predicts when a giant component exists:
 
