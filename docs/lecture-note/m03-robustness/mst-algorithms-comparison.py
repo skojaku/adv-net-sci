@@ -417,7 +417,7 @@ def _(kruskal_steps, mo, pd, prim_steps):
     kruskal_df = pd.DataFrame([
         {
             'Step': i+1,
-            'Edge': f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step else "Start",
+            'Edge': f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step else "N/A",
             'Weight': step.get('weight', '-'),
             'Action': step['action'].title(),
             'Reason': step['reason']
@@ -437,7 +437,9 @@ def _(kruskal_steps, mo, pd, prim_steps):
     prim_df = pd.DataFrame([
         {
             'Step': i+1,
-            'Node/Edge': step.get('node', f"{step['edge'][0]}-{step['edge'][1]}") if 'node' in step else f"{step['edge'][0]}-{step['edge'][1]}",
+            'Node/Edge': (step.get('node', 'N/A') if 'node' in step 
+                         else f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step 
+                         else 'N/A'),
             'Weight': step.get('weight', '-'),
             'Action': step['action'].title(),
             'Reason': step['reason']
