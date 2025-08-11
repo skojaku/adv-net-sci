@@ -16,19 +16,18 @@ In this module, we will explore network robustness and learn how networks mainta
 
 ## What is Network Robustness?
 
-Imagine you're designing a power grid for a city. Sometimes power stations fail randomly due to technical problems, and sometimes they're deliberately attacked by adversaries. How do you build a network that keeps the lights on in both scenarios? This is the essence of **network robustness** - the ability of a network to maintain its essential functions when parts of it fail or are removed.
+Imagine you're designing a power grid for a city. Sometimes power stations fail randomly due to technical problems, and sometimes they're deliberately attacked by adversaries. How do you build a network that keeps the lights on in both scenarios? This is the essence of **network robustness**, the ability of a network to maintain its essential functions when parts of it fail or are removed.
 
 ::: {.column-margin}
 Network robustness is crucial in many domains: power grids must survive equipment failures, the internet must route around damaged connections, and social networks must continue functioning even when key individuals are removed.
 :::
 
-The fascinating discovery is that networks can be surprisingly vulnerable to targeted attacks even when they're highly resistant to random failures. This asymmetry reveals deep principles about network structure and has profound implications for how we design resilient systems.
+The fascinating discovery is that many networks can be surprisingly vulnerable to targeted attacks even when they're highly resistant to random failures. This asymmetry reveals deep principles about network structure and has profound implications for how we design resilient systems.
 
 ## Random Failures vs Targeted Attacks
 
-Random failures are like earthquakes or equipment malfunctions - they strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly. Not all nodes are created equal: removing some barely affects the network, while removing others can be catastrophic.
+Random failures are like earthquakes or equipment malfunctions. They strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly. Not all nodes are created equal: removing some barely affects the network, while removing others can be catastrophic.
 
-![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
 
 We quantify network damage through **connectivity** - the fraction of nodes remaining in the largest connected component after removal:
 
@@ -36,7 +35,9 @@ $$
 \text{Connectivity} = \frac{\text{Size of largest component after removal}}{\text{Original network size}}
 $$
 
-The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. To compare networks with a single metric, we use the **R-index** - the area under this curve:
+![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
+
+The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed - random removal creates one pattern, while strategic targeting creates dramatically different patterns. To compare networks with a single metric, we use the **R-index** - the area under this curve:
 
 ![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
 
