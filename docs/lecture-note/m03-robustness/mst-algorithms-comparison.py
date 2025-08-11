@@ -29,33 +29,25 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
     import pandas as pd
-    from matplotlib.patches import FancyBboxPatch
-    return FancyBboxPatch, mo, pd, plt
+    return mo, pd, plt
 
 
 @app.cell
 def _(mo):
     # Control for edge weight uniqueness
     unique_weights = mo.ui.checkbox(
-        label="Use unique edge weights (when unchecked, some edges have same weight)", 
-        value=True
-    )
-    
-    # Time step slider - fixed to accommodate MST (max 6 edges for 7 nodes)
-    time_step = mo.ui.slider(
-        start=0, 
-        stop=6,  # Fixed max for power grid (7 nodes = 6 MST edges)
-        step=1, 
-        value=6,  # Start at final state
-        label="Algorithm Time Step (0=start, 6=complete MST)"
+        label="Use unique edge weights (when unchecked, some edges have same weight)",
+        value=True,
     )
 
-    mo.vstack([
-        mo.md("## Controls"),
-        unique_weights,
-        time_step,
-        mo.md("**Instructions**: Move the slider to see how each algorithm builds the MST step by step.")
-    ])
+    # Time step slider - fixed to accommodate MST (max 6 edges for 7 nodes)
+    time_step = mo.ui.slider(
+        start=0,
+        stop=6,  # Fixed max for power grid (7 nodes = 6 MST edges)
+        step=1,
+        value=6,  # Start at final state
+        label="Algorithm Time Step (0=start, 6=complete MST)",
+    )
     return time_step, unique_weights
 
 
@@ -66,45 +58,46 @@ def _(unique_weights):
 
         # Define nodes with positions
         nodes = {
-            'PowerPlant': (0, 1),
-            'SubstationA': (1, 2), 
-            'SubstationB': (1, 0),
-            'TownA': (2, 2.5), 
-            'TownB': (2, 1.5),
-            'TownC': (2, 0.5), 
-            'TownD': (2, -0.5)
+            "PowerPlant": (0, 1),
+            "SubstationA": (1, 2),
+            "SubstationB": (1, 0),
+            "TownA": (2, 2.5),
+            "TownB": (2, 1.5),
+            "TownC": (2, 0.5),
+            "TownD": (2, -0.5),
         }
 
         if use_unique_weights:
             # All weights are unique
             edges = [
-                ('PowerPlant', 'SubstationA', 12),
-                ('PowerPlant', 'SubstationB', 8),
-                ('SubstationA', 'TownA', 5),
-                ('SubstationA', 'TownB', 7),
-                ('SubstationB', 'TownC', 6),
-                ('SubstationB', 'TownD', 4),
-                ('TownA', 'TownB', 3),
-                ('TownB', 'TownC', 9),
-                ('TownC', 'TownD', 2),
-                ('TownA', 'SubstationB', 11)
+                ("PowerPlant", "SubstationA", 12),
+                ("PowerPlant", "SubstationB", 8),
+                ("SubstationA", "TownA", 5),
+                ("SubstationA", "TownB", 7),
+                ("SubstationB", "TownC", 6),
+                ("SubstationB", "TownD", 4),
+                ("TownA", "TownB", 3),
+                ("TownB", "TownC", 9),
+                ("TownC", "TownD", 2),
+                ("TownA", "SubstationB", 11),
             ]
         else:
             # Some weights are the same - multiple MSTs possible
             edges = [
-                ('PowerPlant', 'SubstationA', 12),
-                ('PowerPlant', 'SubstationB', 8),
-                ('SubstationA', 'TownA', 5),
-                ('SubstationA', 'TownB', 7),
-                ('SubstationB', 'TownC', 5),  # Same as SubstationA-TownA
-                ('SubstationB', 'TownD', 4),
-                ('TownA', 'TownB', 3),
-                ('TownB', 'TownC', 9),
-                ('TownC', 'TownD', 2),
-                ('TownA', 'SubstationB', 7)  # Same as SubstationA-TownB
+                ("PowerPlant", "SubstationA", 12),
+                ("PowerPlant", "SubstationB", 8),
+                ("SubstationA", "TownA", 5),
+                ("SubstationA", "TownB", 7),
+                ("SubstationB", "TownC", 5),  # Same as SubstationA-TownA
+                ("SubstationB", "TownD", 4),
+                ("TownA", "TownB", 3),
+                ("TownB", "TownC", 9),
+                ("TownC", "TownD", 2),
+                ("TownA", "SubstationB", 7),  # Same as SubstationA-TownB
             ]
 
         return nodes, edges
+
 
     # Create the graph based on current setting
     nodes, edges = create_power_grid_graph(unique_weights.value)
@@ -148,26 +141,31 @@ def _(edges, nodes):
         for u, v, weight in sorted_edges:
             if union(u, v):
                 mst_edges.append((u, v, weight))
-                steps.append({
-                    'edge': (u, v),
-                    'weight': weight,
-                    'action': 'added',
-                    'reason': f'Connects {u} and {v} without creating cycle'
-                })
+                steps.append(
+                    {
+                        "edge": (u, v),
+                        "weight": weight,
+                        "action": "added",
+                        "reason": f"Connects {u} and {v} without creating cycle",
+                    }
+                )
             else:
-                steps.append({
-                    'edge': (u, v),
-                    'weight': weight,
-                    'action': 'skipped',
-                    'reason': f'Would create cycle between {u} and {v}'
-                })
+                steps.append(
+                    {
+                        "edge": (u, v),
+                        "weight": weight,
+                        "action": "skipped",
+                        "reason": f"Would create cycle between {u} and {v}",
+                    }
+                )
 
             if len(mst_edges) == len(nodes_dict) - 1:
                 break
 
         return mst_edges, steps
 
-    def prim_algorithm(nodes_dict, edges_list, start_node='PowerPlant'):
+
+    def prim_algorithm(nodes_dict, edges_list, start_node="PowerPlant"):
         """Prim's algorithm implementation without networkx"""
 
         # Create adjacency list
@@ -180,14 +178,16 @@ def _(edges, nodes):
         mst_edges = []
         steps = []
 
-        steps.append({
-            'node': start_node,
-            'action': 'start',
-            'reason': f'Starting from {start_node}'
-        })
+        steps.append(
+            {
+                "node": start_node,
+                "action": "start",
+                "reason": f"Starting from {start_node}",
+            }
+        )
 
         while len(visited) < len(nodes_dict):
-            min_weight = float('inf')
+            min_weight = float("inf")
             min_edge = None
 
             # Find cheapest edge from visited to unvisited nodes
@@ -201,14 +201,17 @@ def _(edges, nodes):
                 u, v, weight = min_edge
                 visited.add(v)
                 mst_edges.append((u, v, weight))
-                steps.append({
-                    'edge': (u, v),
-                    'weight': weight,
-                    'action': 'added',
-                    'reason': f'Cheapest connection from visited set to {v}'
-                })
+                steps.append(
+                    {
+                        "edge": (u, v),
+                        "weight": weight,
+                        "action": "added",
+                        "reason": f"Cheapest connection from visited set to {v}",
+                    }
+                )
 
         return mst_edges, steps
+
 
     # Run both algorithms
     kruskal_mst, kruskal_steps = kruskal_algorithm(nodes, edges)
@@ -217,7 +220,6 @@ def _(edges, nodes):
     # Calculate total weights
     kruskal_weight = sum(w for _, _, w in kruskal_mst)
     prim_weight = sum(w for _, _, w in prim_mst)
-
     return (
         kruskal_mst,
         kruskal_steps,
@@ -244,7 +246,7 @@ def _(
 
     # Get current step information
     current_step = time_step.value
-    max_steps = len([s for s in kruskal_steps if s['action'] == 'added'])
+    max_steps = len([s for s in kruskal_steps if s["action"] == "added"])
 
     # Current step details
     if current_step == 0:
@@ -252,7 +254,9 @@ def _(
     elif current_step <= max_steps:
         step_info = f"**Current State**: Step {current_step}/{max_steps} - Building MST progressively"
     else:
-        step_info = f"**Current State**: Complete MST - All {max_steps} edges added"
+        step_info = (
+            f"**Current State**: Complete MST - All {max_steps} edges added"
+        )
 
     results = mo.md(f"""
     ## Algorithm Results
@@ -272,14 +276,15 @@ def _(
     ### Comparison
     - **Total Weights Match**: {weight_match}
     - **MST Uniqueness**: {
-        "Unique MST guaranteed when all edge weights are different" if weight_match == "✅ Same" 
+        "Unique MST guaranteed when all edge weights are different"
+        if weight_match == "✅ Same"
         else "Multiple MSTs possible when some edge weights are equal"
     }
 
     ---
 
     **💡 Tip**: Use the time step slider above to see how each algorithm builds the MST step by step. 
-    Connected nodes are shown in **green**, unconnected nodes in **blue**.
+    Connected nodes are shown in **light red**, unconnected nodes in **light blue**.
     """)
 
     results
@@ -287,7 +292,19 @@ def _(
 
 
 @app.cell
-def _(FancyBboxPatch, edges, kruskal_steps, nodes, plt, prim_steps, time_step):
+def _(mo, time_step, unique_weights):
+
+    mo.vstack([
+        mo.md("## Controls"),
+        unique_weights,
+        time_step,
+        mo.md("**Instructions**: Move the slider to see how each algorithm builds the MST step by step.")
+    ])
+    return
+
+
+@app.cell
+def _(edges, kruskal_steps, nodes, plt, prim_steps, time_step):
     def visualize_both_algorithms():
         """Create side-by-side visualization of both algorithms with time step control"""
 
@@ -301,51 +318,62 @@ def _(FancyBboxPatch, edges, kruskal_steps, nodes, plt, prim_steps, time_step):
         for i, step in enumerate(kruskal_steps):
             if i >= current_step:
                 break
-            if step['action'] == 'added':
-                u, v = step['edge']
-                weight = step['weight']
+            if step["action"] == "added":
+                u, v = step["edge"]
+                weight = step["weight"]
                 kruskal_edges_to_show.append((u, v, weight))
 
-        # For Prim: edges added in order they appear in steps  
+        # For Prim: edges added in order they appear in steps
         prim_edges_to_show = []
         for i, step in enumerate(prim_steps[1:], 1):  # Skip the 'start' step
             if i > current_step:
                 break
-            if step['action'] == 'added':
-                u, v = step['edge']
-                weight = step['weight']
+            if step["action"] == "added":
+                u, v = step["edge"]
+                weight = step["weight"]
                 prim_edges_to_show.append((u, v, weight))
 
         algorithms = [
             (ax1, "Kruskal's Algorithm (Global Approach)", kruskal_edges_to_show),
-            (ax2, "Prim's Algorithm (Local Growth)", prim_edges_to_show)
+            (ax2, "Prim's Algorithm (Local Growth)", prim_edges_to_show),
         ]
 
         for ax, title, edges_to_show in algorithms:
             ax.clear()
+            ax.set_facecolor('white')
 
-            # Draw all possible edges in light gray
+            # Draw all possible edges - dashed for unconnected
+            mst_edge_set = set((u, v) for u, v, _ in edges_to_show) | set((v, u) for u, v, _ in edges_to_show)
+            
             for u, v, weight in edges:
                 x1, y1 = nodes[u]
                 x2, y2 = nodes[v]
-                ax.plot([x1, x2], [y1, y2], 'lightgray', linewidth=1, alpha=0.3)
+                
+                if (u, v) in mst_edge_set or (v, u) in mst_edge_set:
+                    # MST edge - solid black line
+                    ax.plot([x1, x2], [y1, y2], "black", linewidth=3, solid_capstyle='round')
+                else:
+                    # Non-MST edge - dashed grey line
+                    ax.plot([x1, x2], [y1, y2], "grey", linewidth=2, linestyle='--', alpha=0.7)
 
-                # Add edge weight labels
+                # Add edge weight labels with larger font
                 mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
-                ax.text(mid_x, mid_y, str(weight), fontsize=8, 
-                       bbox=dict(boxstyle="round,pad=0.1", facecolor='white', alpha=0.8))
+                ax.text(
+                    mid_x,
+                    mid_y,
+                    str(weight),
+                    fontsize=12,
+                    bbox=dict(
+                        boxstyle="round,pad=0.2", facecolor="white", alpha=0.9
+                    ),
+                    ha='center', va='center', fontweight='bold'
+                )
 
-            # Draw MST edges built so far in red
-            for u, v, weight in edges_to_show:
-                x1, y1 = nodes[u]
-                x2, y2 = nodes[v]
-                ax.plot([x1, x2], [y1, y2], 'red', linewidth=3, alpha=0.8)
-
-            # Draw nodes - color differently based on connection status
+            # Draw nodes - color based on connection status
             connected_nodes = set()
-            if 'Prim' in title:
+            if "Prim" in title:
                 # For Prim, start with PowerPlant always connected
-                connected_nodes.add('PowerPlant')
+                connected_nodes.add("PowerPlant")
                 for u, v, _ in edges_to_show:
                     connected_nodes.add(u)
                     connected_nodes.add(v)
@@ -356,18 +384,29 @@ def _(FancyBboxPatch, edges, kruskal_steps, nodes, plt, prim_steps, time_step):
                     connected_nodes.add(v)
 
             for node, (x, y) in nodes.items():
-                color = 'lightgreen' if node in connected_nodes else 'lightblue'
-                circle = plt.Circle((x, y), 0.1, color=color, alpha=0.9, zorder=5)
+                color = "#f5cbcc" if node in connected_nodes else "#d0e2f3"  # light red : light blue
+                # Draw larger circle with black border
+                circle = plt.Circle((x, y), 0.15, color=color, zorder=5)
                 ax.add_patch(circle)
-                ax.text(x, y, node.replace('Substation', 'Sub').replace('PowerPlant', 'Plant'), 
-                       ha='center', va='center', fontsize=8, fontweight='bold', zorder=6)
+                # Add black border
+                border_circle = plt.Circle((x, y), 0.15, fill=False, edgecolor='black', linewidth=2, zorder=6)
+                ax.add_patch(border_circle)
+                # Larger text
+                ax.text(
+                    x,
+                    y,
+                    node.replace("Substation", "Sub").replace("PowerPlant", "Plant"),
+                    ha="center",
+                    va="center",
+                    fontsize=10,
+                    fontweight="bold",
+                    zorder=7,
+                )
 
-            # Update title with current step info
-            total_steps = len([s for s in (kruskal_steps if 'Kruskal' in title else prim_steps) if s['action'] == 'added'])
-            step_info = f" (Step {current_step}/{total_steps})"
-            ax.set_title(title + step_info, fontsize=14, fontweight='bold', pad=20)
-            ax.set_aspect('equal')
-            ax.axis('off')
+            # Clean title
+            ax.set_title(title, fontsize=14, fontweight="bold", pad=20)
+            ax.set_aspect("equal")
+            ax.axis("off")
 
             # Set axis limits with padding
             x_coords = [x for x, y in nodes.values()]
@@ -375,32 +414,9 @@ def _(FancyBboxPatch, edges, kruskal_steps, nodes, plt, prim_steps, time_step):
             ax.set_xlim(min(x_coords) - 0.3, max(x_coords) + 0.3)
             ax.set_ylim(min(y_coords) - 0.3, max(y_coords) + 0.3)
 
-            # Add algorithm description box with current action
-            if 'Kruskal' in title:
-                description = "1. Sort all edges by weight\n2. Add cheapest edge if no cycle\n3. Repeat until tree complete"
-                if current_step > 0 and current_step <= len(kruskal_steps):
-                    current_action = kruskal_steps[current_step-1]
-                    if current_action['action'] == 'added':
-                        description += f"\n\nCurrent: Adding {current_action['edge'][0]}-{current_action['edge'][1]} (weight {current_action['weight']})"
-                    elif current_action['action'] == 'skipped':
-                        description += f"\n\nCurrent: Skipping {current_action['edge'][0]}-{current_action['edge'][1]} (creates cycle)"
-            else:
-                description = "1. Start from PowerPlant\n2. Add cheapest edge to new node\n3. Grow tree incrementally"
-                if current_step > 0 and current_step < len(prim_steps):
-                    current_action = prim_steps[current_step]
-                    if current_action['action'] == 'added':
-                        description += f"\n\nCurrent: Adding {current_action['edge'][0]}-{current_action['edge'][1]} (weight {current_action['weight']})"
-
-            bbox = FancyBboxPatch((0.02, 0.02), 0.25, 0.2, 
-                                boxstyle="round,pad=0.01", 
-                                transform=ax.transAxes,
-                                facecolor='wheat', alpha=0.8, edgecolor='black')
-            ax.add_patch(bbox)
-            ax.text(0.03, 0.03, description, transform=ax.transAxes, 
-                   fontsize=8, verticalalignment='bottom')
-
         plt.tight_layout()
         return fig
+
 
     # Create and display the visualization
     fig = visualize_both_algorithms()
@@ -414,45 +430,63 @@ def _(kruskal_steps, mo, pd, prim_steps):
     step_displays = []
 
     # Kruskal steps
-    kruskal_df = pd.DataFrame([
-        {
-            'Step': i+1,
-            'Edge': f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step else "N/A",
-            'Weight': step.get('weight', '-'),
-            'Action': step['action'].title(),
-            'Reason': step['reason']
-        }
-        for i, step in enumerate(kruskal_steps)
-    ])
-
-    step_displays.append(
-        mo.vstack([
-            mo.md("### Kruskal's Algorithm - Step by Step"),
-            mo.md("**Key Insight**: Kruskal considers ALL edges globally, always picking the cheapest available edge that doesn't create a cycle."),
-            mo.ui.table(kruskal_df, selection=None)
-        ])
+    kruskal_df = pd.DataFrame(
+        [
+            {
+                "Step": i + 1,
+                "Edge": f"{step['edge'][0]}-{step['edge'][1]}"
+                if "edge" in step
+                else "N/A",
+                "Weight": step.get("weight", "-"),
+                "Action": step["action"].title(),
+                "Reason": step["reason"],
+            }
+            for i, step in enumerate(kruskal_steps)
+        ]
     )
 
-    # Prim steps  
-    prim_df = pd.DataFrame([
-        {
-            'Step': i+1,
-            'Node/Edge': (step.get('node', 'N/A') if 'node' in step 
-                         else f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step 
-                         else 'N/A'),
-            'Weight': step.get('weight', '-'),
-            'Action': step['action'].title(),
-            'Reason': step['reason']
-        }
-        for i, step in enumerate(prim_steps)
-    ])
+    step_displays.append(
+        mo.vstack(
+            [
+                mo.md("### Kruskal's Algorithm - Step by Step"),
+                mo.md(
+                    "**Key Insight**: Kruskal considers ALL edges globally, always picking the cheapest available edge that doesn't create a cycle."
+                ),
+                mo.ui.table(kruskal_df, selection=None),
+            ]
+        )
+    )
+
+    # Prim steps
+    prim_df = pd.DataFrame(
+        [
+            {
+                "Step": i + 1,
+                "Node/Edge": (
+                    step.get("node", "N/A")
+                    if "node" in step
+                    else f"{step['edge'][0]}-{step['edge'][1]}"
+                    if "edge" in step
+                    else "N/A"
+                ),
+                "Weight": step.get("weight", "-"),
+                "Action": step["action"].title(),
+                "Reason": step["reason"],
+            }
+            for i, step in enumerate(prim_steps)
+        ]
+    )
 
     step_displays.append(
-        mo.vstack([
-            mo.md("### Prim's Algorithm - Step by Step"),
-            mo.md("**Key Insight**: Prim grows the tree locally, always expanding from the current connected component to the nearest unconnected node."),
-            mo.ui.table(prim_df, selection=None)
-        ])
+        mo.vstack(
+            [
+                mo.md("### Prim's Algorithm - Step by Step"),
+                mo.md(
+                    "**Key Insight**: Prim grows the tree locally, always expanding from the current connected component to the nearest unconnected node."
+                ),
+                mo.ui.table(prim_df, selection=None),
+            ]
+        )
     )
 
     mo.vstack(step_displays)
