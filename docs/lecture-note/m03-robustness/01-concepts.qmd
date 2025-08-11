@@ -53,6 +53,11 @@ Even if a network survives random failures beautifully, it might crumble under *
 
 ## Percolation Theory and the Robustness Paradox
 
+
+
+
+To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes (or "puddles") to a grid with probability $p$, when does a giant connected component emerge? Network robustness asks the opposite question: as we remove nodes, when does the giant component disappear?
+
 ::: {.column-margin}
 Percolation theory originated in physics to understand how liquids flow through porous materials. The same mathematics explains how networks fragment under node removal - a beautiful example of how physics concepts illuminate network behavior.
 :::
@@ -67,9 +72,16 @@ A grid of puddles that are connected if they share a side. Percolation theory ex
 
 :::
 
-To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes (or "puddles") to a grid with probability $p$, when does a giant connected component emerge? Network robustness asks the opposite question: as we remove nodes, when does the giant component disappear?
+::: {.callout-tip title="interactive exploration"}
 
-Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter - only the fraction of nodes present or removed determines connectivity, not when they were added or removed.
+Experience percolation phase transitions firsthand with this interactive visualization 🎮: [**Interactive Percolation Demo**](percolation-visualization.py)
+
+Use the slider to control the puddle probability and watch how the giant component emerges at the critical point!
+
+:::
+
+
+Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens, i.e., a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter; only the fraction of nodes present or removed determines connectivity, not when they were added or removed.
 
 For networks with arbitrary degree distributions, the **Molloy-Reed criterion** predicts when a giant component exists:
 
@@ -77,7 +89,7 @@ $$
 \kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2
 $$
 
-where $\langle k \rangle$ is the average degree and $\langle k^2 \rangle$ is the average of squared degrees. The ratio $\kappa$ measures **degree heterogeneity** - networks with hubs have high $\kappa$, while homogeneous networks have low $\kappa$.
+where $\langle k \rangle$ is the average degree and $\langle k^2 \rangle$ is the average of squared degrees. The ratio $\kappa$ measures **degree heterogeneity**, i.e., networks with hubs have high $\kappa$, while degree homogeneous networks have low $\kappa$.
 
 The critical fraction of nodes that must be removed to break the network is:
 
