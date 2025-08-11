@@ -6,30 +6,107 @@ filters:
 
 ## What to learn in this module
 
-In this module, we will explore network robustness and learn how networks maintain connectivity under failures and attacks. We will learn:
+In this module, we will explore network robustness through the lens of infrastructure design. Starting from the historical challenge of building cost-effective power grids, we will learn:
 
+- How minimum spanning trees provide optimal cost-efficiency for network connectivity
+- Why real-world networks have redundancies beyond minimum connectivity requirements
 - How networks respond to random failures versus targeted attacks
-- Quantitative measures of network robustness including connectivity loss and the R-index
-- The role of degree heterogeneity in network resilience
-- Percolation theory and phase transitions in network connectivity
-- Applications in infrastructure design and critical network analysis
+- Quantitative measures of network robustness and percolation theory
+- Design principles for balancing cost efficiency with resilience
 
-**Keywords**: network robustness, random failures, targeted attacks, connectivity loss, R-index, percolation, phase transition, degree heterogeneity, minimum spanning tree
+**Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, network redundancy, random failures, targeted attacks, connectivity loss, R-index, percolation, robustness paradox
 
-## What is Network Robustness?
-
-Imagine you're designing a power grid for a city. Sometimes power stations fail randomly due to technical problems, and sometimes they're deliberately attacked by adversaries. How do you build a network that keeps the lights on in both scenarios? This is the essence of **network robustness**, the ability of a network to maintain its essential functions when parts of it fail or are removed.
+## The Power Grid Design Challenge: A Historical Perspective
 
 ::: {.column-margin}
-Network robustness is crucial in many domains: power grids must survive equipment failures, the internet must route around damaged connections, and social networks must continue functioning even when key individuals are removed.
+The first electric power grid was built by Thomas Edison in lower Manhattan in 1882, serving just 85 customers. The challenge of connecting multiple locations while minimizing cable costs has been central to infrastructure design ever since.
 :::
 
-The fascinating discovery is that many networks can be surprisingly vulnerable to targeted attacks even when they're highly resistant to random failures. This asymmetry reveals deep principles about network structure and has profound implications for how we design resilient systems.
+Imagine you're an engineer in the early 1900s, tasked with designing an electrical grid for a growing city. You need to connect every neighborhood to the power plant, but laying electrical cables is expensive. How do you ensure everyone gets electricity while minimizing the total cost of cables?
 
-## Random Failures vs Targeted Attacks
+This is more than a historical curiosity - it's a fundamental question in network design that appears everywhere: laying fiber optic cables for internet infrastructure, building transportation networks, designing communication systems, and even understanding biological networks like blood vessel systems.
 
-Random failures are like earthquakes or equipment malfunctions. They strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly. Not all nodes are created equal: removing some barely affects the network, while removing others can be catastrophic.
+The mathematical answer to this cost-minimization problem is the **minimum spanning tree (MST)** - a tree that connects all locations with the minimum total cable length. But as we'll discover, the most economical solution often creates the most fragile network.
 
+## Minimum Spanning Trees: The Mathematics of Cost-Effective Connection
+
+### What is a Minimum Spanning Tree?
+
+A **minimum spanning tree (MST)** of a weighted network is a tree that:
+- **Spans** all nodes (connects every location in the network)
+- Is a **tree** (connected with no cycles - no redundant loops)
+- Has **minimum total weight** among all possible spanning trees
+
+In our power grid example, this means connecting every neighborhood with the minimum total length of electrical cables.
+
+### Finding the Minimum Spanning Tree: Classical Algorithms
+
+Two elegant algorithms solve this optimization problem:
+
+**Kruskal's Algorithm** (1956):
+1. Sort all possible connections by cost (shortest cables first)
+2. Add the cheapest connection that doesn't create a loop
+3. Repeat until all locations are connected
+
+**Prim's Algorithm** (1957):
+1. Start with the power plant (any single location)
+2. Repeatedly add the cheapest connection to a new unconnected location
+3. Continue until all locations are included
+
+::: {.column-margin}
+
+<iframe width="250" height="150" src="https://www.youtube.com/embed/8i2XsxU-VL4?si=CpHuQc4CPcjdE29o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
+
+Both algorithms find the same MST when all connection costs are different. They represent two different approaches to the same optimization: Kruskal's algorithm considers all connections globally, while Prim's algorithm grows the network locally from a starting point.
+
+## The Fragility of Optimal Efficiency
+
+Here's where our historical engineer would discover a troubling reality: the most cost-effective network design is also the most vulnerable to failures.
+
+### Why MSTs Are Fragile
+
+The minimum spanning tree creates inherent vulnerabilities:
+- **Single points of failure**: Cutting any single cable disconnects part of the grid
+- **No redundant pathways**: Only one route exists between any two locations
+- **Cascade failures**: One broken connection can isolate entire neighborhoods
+
+### The Cost-Robustness Dilemma
+
+This creates a fundamental tension in network design:
+- **Economic pressure** drives toward minimal connectivity (MST)
+- **Reliability needs** require redundant connections and backup pathways
+- **Real-world networks** must balance these competing demands
+
+This is why actual power grids, transportation networks, and communication systems always have more connections than the theoretical minimum - they trade some cost efficiency for resilience.
+
+## Why Real Networks Have Redundancies
+
+Looking at real infrastructure networks - power grids, the internet, transportation systems - we see they're never organized as minimum spanning trees. Instead, they have **strategic redundancies**. Why?
+
+### Learning from Failures
+
+Historical power grid failures reveal why redundancy matters:
+- The 2003 Northeast blackout affected 50 million people when a few key transmission lines failed
+- Hurricane Sandy (2012) showed how local failures can cascade through interconnected systems
+- The 2021 Texas winter storm demonstrated the vulnerability of isolated grid segments
+
+### Strategic Network Design
+
+Real networks use several strategies beyond MST:
+
+**Hierarchical Structure**: Combine local efficiency with regional redundancy - like local power distribution feeding into regional transmission grids
+
+**Hub-and-Spoke with Loops**: Create efficient distribution through hubs, but add backup connections between major hubs
+
+**Ring Topologies**: Critical connections often form loops so that if one path fails, traffic can flow in the opposite direction
+
+## From Network Structure to Robustness Analysis
+
+Now we can ask the fundamental question: Given that real networks have moved beyond minimum spanning trees, how do we analyze their robustness systematically?
+
+### Measuring Network Damage
 
 We quantify network damage through **connectivity** - the fraction of nodes remaining in the largest connected component after removal:
 
@@ -37,124 +114,51 @@ $$
 \text{Connectivity} = \frac{\text{Size of largest component after removal}}{\text{Original network size}}
 $$
 
+Not all failures are equal. Removing some nodes barely affects the network, while removing others can be catastrophic:
+
 ![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
 
-The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed. To compare networks with a single metric, we use the **R-index** - the area under this curve:
+### Robustness Profiles: Visualizing Network Breakdown
+
+The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed - random removal creates one pattern, while strategic targeting creates dramatically different patterns.
 
 ![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
+
+To compare networks with a single metric, we use the **R-index** - the area under this curve:
 
 $$
 R = \frac{1}{N} \sum_{k=1}^{N-1} y_k
 $$
 
+## Random Failures vs Targeted Attacks: The Asymmetry Problem
+
 ::: {.column-margin}
 The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
 :::
 
-Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first, like targeting the busiest airports to disrupt air travel.
+### Random Failures: Equipment Malfunctions and Natural Disasters
 
-## Percolation Theory and the Robustness Paradox
+Random failures are like earthquakes or equipment malfunctions - they strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly. These failures test the network's **inherent redundancy**.
 
+### Targeted Attacks: Strategic Disruption
 
+Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first - like targeting the busiest airports to disrupt air travel.
 
+Smart adversaries might use more sophisticated targeting based on **betweenness centrality** (nodes on many shortest paths), **closeness centrality** (nodes close to all others), or **strategic positioning**.
 
-To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes (or "puddles") to a grid with probability $p$, when does a giant connected component emerge? Network robustness asks the opposite question: as we remove nodes, when does the giant component disappear?
+## Percolation Theory: The Mathematics Behind Network Breakdown
+
+To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes to a grid, when does a giant connected component emerge? Network robustness asks the opposite: as we remove nodes, when does the giant component disappear?
 
 ::: {.column-margin}
 Percolation theory originated in physics to understand how liquids flow through porous materials. The same mathematics explains how networks fragment under node removal - a beautiful example of how physics concepts illuminate network behavior.
 :::
 
-```python {.marimo}
-import marimo as mo
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from scipy.ndimage import label
-```
+### The Phase Transition
 
-```python {.marimo}
-# Create a slider to control the puddle probability
-p_slider = mo.ui.slider(
-    start=0.0,
-    stop=1.0,
-    step=0.01,
-    value=0.5,
-    label="Puddle Probability (p)"
-)
-```
+Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter; only the fraction of nodes present or removed determines connectivity.
 
-
-```python {.marimo}
-p_slider
-```
-
-```python {.marimo}
-# Grid parameters
-grid_size = 50
-
-# Generate the percolation grid based on slider value
-np.random.seed(42)  # For reproducible results during demo
-grid = np.random.random((grid_size, grid_size)) < p_slider.value
-
-# Find connected components (puddles that touch each other)
-labeled_array, num_features = label(grid)
-
-# Find the largest connected component
-if num_features > 0:
-    sizes = [(labeled_array == i).sum() for i in range(1, num_features + 1)]
-    largest_size = max(sizes)
-    largest_fraction = largest_size / (grid_size * grid_size)
-else:
-    largest_size = 0
-    largest_fraction = 0.0
-
-# Create visualization
-plt.figure(figsize=(4, 4))
-
-# Create a display grid that shows largest component in red
-display_grid = np.zeros_like(grid, dtype=int)
-
-# Find the largest component
-if num_features > 0:
-    # Find which label corresponds to the largest component
-    largest_label = np.argmax(sizes) + 1  # +1 because labels start from 1
-
-    # Set display values: 0=white, 1=blue (small components), 2=red (largest component)
-    display_grid[grid] = 1  # All puddles start as blue
-    display_grid[labeled_array == largest_label] = 2  # Largest component in red
-
-# Create custom colormap: white for empty, blue for small components, red for largest
-colors = ['white', '#4472C4', '#E74C3C']  # white, blue, red
-cmap = ListedColormap(colors)
-
-# Plot the grid
-plt.imshow(display_grid, cmap=cmap, interpolation='nearest')
-
-# Styling
-plt.xlabel('Grid Position')
-plt.ylabel('Grid Position')
-
-# Add grid lines for clarity
-plt.xticks(np.arange(-0.5, grid_size, 10), minor=True)
-plt.yticks(np.arange(-0.5, grid_size, 10), minor=True)
-plt.grid(which='minor', color='gray', linestyle='-', alpha=0.3)
-plt.tick_params(which='minor', size=0)
-
-# Add a legend
-from matplotlib.patches import Patch
-legend_elements = [
-    Patch(facecolor='white', edgecolor='black', label='Empty'),
-    Patch(facecolor='#4472C4', label='Small Components'),
-    Patch(facecolor='#E74C3C', label='Largest Component')
-]
-plt.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1), frameon=False)
-
-# Return the plot
-plt.gca()
-```
-
-
-Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens, i.e., a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter; only the fraction of nodes present or removed determines connectivity, not when they were added or removed.
+### The Molloy-Reed Criterion: Predicting Network Connectivity
 
 For networks with arbitrary degree distributions, the **Molloy-Reed criterion** determines whether a **giant component** exists - that is, whether the network contains a single large connected component that includes most of the nodes:
 
@@ -170,117 +174,32 @@ $$
 f_c = 1 - \frac{1}{\kappa - 1}
 $$
 
-This means the critical fraction of nodes that must be **removed** to break the network is $1 - f_c = \frac{1}{\kappa - 1}$. (Interested readers can find the derivation of this criterion in the Appendix of the module.)
+This means the critical fraction of nodes that must be **removed** to break the network is $1 - f_c = \frac{1}{\kappa - 1}$.
 
-This reveals the **robustness paradox**: heterogeneous networks with hubs are extremely robust to random failures ($f_c \approx 1$, meaning almost all nodes must be removed) but vulnerable to targeted hub attacks. Homogeneous networks show similar vulnerability to both random and targeted attacks. There's no single network structure optimal against all threats.
+## The Robustness Paradox: Why No Network Design Is Perfect
 
+This mathematical analysis reveals a fundamental **robustness paradox**: heterogeneous networks with hubs are extremely robust to random failures ($f_c \approx 1$, meaning almost all nodes must be removed) but vulnerable to targeted hub attacks. Homogeneous networks show similar vulnerability to both random and targeted attacks.
 
-```python {.marimo}
-p_slider
-```
+There's no single network structure optimal against all threats. This explains why:
+- **Power grids** balance efficiency (hub-based transmission) with security (local redundancy)
+- **The internet** combines hierarchical routing with mesh-like redundancy
+- **Transportation networks** use hub airports but maintain point-to-point alternatives
+- **Biological networks** are robust to random molecular failures but vulnerable when key proteins are damaged
 
-```python {.marimo}
-# Generate data for the phase transition plot
-prob_values = np.linspace(0, 1, 100)
-component_fractions = []
-
-grid_size_phase = 50  # Use smaller grid for faster computation
-
-# Calculate largest component size for different probabilities
-np.random.seed(42)  # Fixed seed for consistent results
-for prob in prob_values:
-    # Generate random grid
-    phase_grid = np.random.random((grid_size_phase, grid_size_phase)) < prob
-
-    # Find connected components
-    labeled_phase, num_phase = label(phase_grid)
-
-    if num_phase > 0:
-        phase_sizes = [(labeled_phase == i).sum() for i in range(1, num_phase + 1)]
-        largest_phase = max(phase_sizes) / (grid_size_phase * grid_size_phase)
-    else:
-        largest_phase = 0.0
-
-    component_fractions.append(largest_phase)
-```
-
-```python {.marimo}
-
-# Create the phase transition plot
-plt.figure(figsize=(6, 4))
-
-# Plot the phase transition curve
-plt.plot(prob_values, component_fractions, 'b-', linewidth=2,
-         label='Largest Component Size')
-
-# Highlight current probability
-current_idx = int(p_slider.value * 99)  # Convert to index
-plt.plot(p_slider.value, component_fractions[current_idx],
-         'ro', markersize=10, label=f'Current p = {p_slider.value:.2f}')
-
-# Mark approximate critical point (for 2D lattice, pc ≈ 0.593)
-critical_p = 0.593
-plt.axvline(x=critical_p, color='gray', linestyle='--', alpha=0.7,
-            label=f'Critical point (p_c ≈ {critical_p})')
-
-# Styling
-plt.xlabel('Probability (p)', fontsize=12)
-plt.ylabel('Fraction of Grid in Largest Component', fontsize=12)
-plt.title('Percolation Phase Transition', fontsize=14)
-#plt.grid(True, alpha=0.3)
-plt.legend(frameon=False)
-plt.xlim(0, 1)
-plt.ylim(0, 1)
-
-# Add phase labels
-plt.text(0.2, 0.3, 'Disconnected\nPhase', fontsize=15, ha='center',
-         bbox=dict(boxstyle='round', facecolor='#d0e2f3', alpha=0.7))
-plt.text(0.8, 0.3, 'Connected\nPhase', fontsize=15, ha='center',
-         bbox=dict(boxstyle='round', facecolor='#f5cbcc', alpha=0.7))
-
-plt.gca()
-```
-
-
-## Applications and Design Principles
-
-This robustness paradox appears everywhere: power grids balance efficiency (hub-based) with security (redundancy), protein networks are robust to random molecular failures but vulnerable when key proteins are damaged, and social movements can rapidly spread information through influential hubs but collapse when key individuals are removed.
+## Design Principles for Robust Networks
 
 How do we design networks that resist both random failures and targeted attacks? Key principles include:
 
 1. **Balanced Degree Distribution**: Avoid both extreme homogeneity and extreme hub concentration
 2. **Multiple Redundant Pathways**: Ensure removing any single node doesn't isolate large portions
 3. **Strategic Hub Protection**: In hub-based networks, invest heavily in protecting critical nodes
-4. **Adaptive Responses**: Design systems that can reconfigure when attacks are detected
+4. **Hierarchical Design**: Combine local clusters with hub connections and redundant backbones
+5. **Adaptive Responses**: Design systems that can reconfigure when attacks are detected
 
-## Cost-Effective Robust Design: Beyond Minimum Spanning Trees
+These strategies reflect lessons learned from our historical power grid challenge: moving beyond the minimum spanning tree to create networks that balance efficiency with resilience.
 
-::: {.column-margin}
-Many real networks face cost constraints - laying cables for power grids, building roads, or establishing communication links all require significant investment. The challenge is balancing cost with robustness.
-:::
+## Pen-and-Paper Exercise: From MST to Robust Grid Design
 
-When building infrastructure networks, we face the challenge of connecting all locations while minimizing costs. A **minimum spanning tree (MST)** provides the most cost-effective basic connectivity - a tree that spans all nodes with minimum total weight. Classic algorithms like **Kruskal's** (sort edges globally, add smallest that doesn't create cycles) and **Prim's** (start with one node, repeatedly add smallest connecting edge) find optimal solutions.
+- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Starting with a minimum spanning tree for cost efficiency, design a power grid network that maintains connectivity even when key components fail.
 
-::: {.column-margin}
-
-<iframe width="250" height="150" src="https://www.youtube.com/embed/8i2XsxU-VL4?si=CpHuQc4CPcjdE29o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-:::
-
-However, MSTs create a fundamental tension: the most economical structure is also the most fragile. MSTs have single points of failure, no redundant pathways, and vulnerability to targeted attacks.
-
-How can we balance cost efficiency with resilience? Effective strategies include:
-
-**Bimodal Degree Distributions**: Most nodes have degree 1 (minimal cost) while a few act as highly connected hubs. This provides random failure robustness through degree heterogeneity, targeted attack resilience through multiple hubs, and cost efficiency.
-
-**Strategic Redundancy**: Rather than minimal connectivity, add backup connections for critical edges and focus redundancy on high-traffic pathways.
-
-**Hierarchical Design**: Combine local clusters (dense neighborhoods) with hub connections and redundant backbones, mirroring both biological networks (local brain connectivity with long-range links) and transportation systems (local streets feeding into highways).
-
-## Pen-and-Paper Exercise: Power Grid Design
-
-Understanding robustness concepts is crucial for real-world applications like power grid design. Consider the challenge of building a cost-effective electrical grid that maintains service even when components fail.
-
-- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Design a cost-effective power grid network using minimum spanning tree concepts, balancing cost minimization with robustness requirements.
-
-This exercise bridges theoretical concepts with practical engineering decisions, demonstrating how robustness analysis guides infrastructure planning.
+This exercise bridges the historical infrastructure challenge with modern network robustness principles, demonstrating the evolution from pure cost optimization to resilient system design.

@@ -1,0 +1,364 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "<a target=\"_blank\" href=\"https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb\">\n",
+        "  <img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/>\n",
+        "</a>"
+      ],
+      "id": "127cd3d0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# If you are using Google Colab, uncomment the following line to install igraph\n",
+        "# !sudo apt install libcairo2-dev pkg-config python3-dev\n",
+        "# !pip install pycairo cairocffi\n",
+        "# !pip install igraph"
+      ],
+      "id": "275e488d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Hands-on: Robustness (Random attack)\n",
+        "\n",
+        "We consider a small social network of 34 members in a university karate club, called Zachary's karate club network."
+      ],
+      "id": "53f626ca"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import igraph\n",
+        "g = igraph.Graph.Famous(\"Zachary\")\n",
+        "igraph.plot(g, vertex_size=20)"
+      ],
+      "id": "82235df0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Let's break the network 😈!\n",
+        "We will remove nodes one by one and see how the connectivity of the network changes at each step.\n",
+        "It is useful to create a copy of the network to keep the original network unchanged."
+      ],
+      "id": "283e776a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "g_original = g.copy()"
+      ],
+      "id": "a4635877",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Robustness against random failures\n",
+        "\n",
+        "Let us remove a single node from the network. To this end, we need to first identify which nodes are in the network. With `igraph`, the IDs of the nodes in a graph are accessible through `Graph.vs.indices` as follows:"
+      ],
+      "id": "378f025b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(g.vs.indices)"
+      ],
+      "id": "752a9561",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We randomly choose a node and remove it from the network by using `Graph.delete_vertices`."
+      ],
+      "id": "a7c45922"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "node_idx = np.random.choice(g.vs.indices)\n",
+        "g.delete_vertices(node_idx)\n",
+        "print(\"Node removed:\", node_idx)\n",
+        "print(\"Nodes remaining:\", g.vs.indices)"
+      ],
+      "id": "d17798dc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "::: {.callout-note}\n",
+        "`np.random.choice(array)` takes an array `array` and returns a single element from the array.\n",
+        "For example, `np.random.choice(np.array([1, 2, 3]))` returns either 1, 2, or 3 with equal probability.\n",
+        "See [the documentation](https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html) for more details.\n",
+        ":::\n",
+        "\n",
+        "The connectivity of the network is the fraction of nodes in the largest connected component of the network after node removal.\n",
+        "We can get the connected components of the network by using `Graph.connected_components`."
+      ],
+      "id": "b29cf103"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "components = g.connected_components()"
+      ],
+      "id": "e4c82bc7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The sizes of the connected components are accessible via `Graph.connected_components.sizes`."
+      ],
+      "id": "3ad9f58e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "components.sizes()"
+      ],
+      "id": "8b30ae76",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Thus, the connectivity of the network can be computed by"
+      ],
+      "id": "7b246439"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "components = g.connected_components()\n",
+        "connectivity = np.max(components.sizes()) / g_original.vcount()\n",
+        "connectivity"
+      ],
+      "id": "bf00446e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Putting together the above code, let us compute the robustness profile of the network."
+      ],
+      "id": "8c1b1379"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "g = g_original.copy() # restore the network\n",
+        "n_nodes = g.vcount()  # Number of nodes\n",
+        "\n",
+        "results = []\n",
+        "for i in range(n_nodes -1):  # Loop if the network has at least one node\n",
+        "\n",
+        "    # Remove a randomly selected node\n",
+        "    node_idx = np.random.choice(g.vs.indices)\n",
+        "    g.delete_vertices(node_idx)\n",
+        "\n",
+        "    # Evaluate the connectivity\n",
+        "    components = g.connected_components()\n",
+        "    connectivity = np.max(components.sizes()) / g_original.vcount()\n",
+        "\n",
+        "    # Save the results\n",
+        "    results.append(\n",
+        "        {\n",
+        "            \"connectivity\": connectivity,\n",
+        "            \"frac_nodes_removed\": (i + 1) / n_nodes,\n",
+        "        }\n",
+        "    )\n",
+        "\n",
+        "df_robustness_profile = pd.DataFrame(results)"
+      ],
+      "id": "841d17c9",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Let us plot the robustness profile."
+      ],
+      "id": "8fe69740"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "\n",
+        "sns.set(style='white', font_scale=1.2)\n",
+        "sns.set_style('ticks')\n",
+        "\n",
+        "ax = df_robustness_profile.plot(\n",
+        "    x=\"frac_nodes_removed\",\n",
+        "    y=\"connectivity\",\n",
+        "    kind=\"line\",\n",
+        "    figsize=(5, 5),\n",
+        "    label=\"Random attack\",\n",
+        ")\n",
+        "plt.xlabel(\"Proportion of nodes removed\")\n",
+        "plt.ylabel(\"Connectivity\")\n",
+        "plt.legend().remove()\n",
+        "plt.show()"
+      ],
+      "id": "9feecc20",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Targeted attack\n",
+        "\n",
+        "In a targeted attack, nodes are removed based on specific criteria rather than randomly.\n",
+        "One common strategy is to remove nodes from the largest node degree to the smallest, based on the idea that removing nodes with many edges is more likely to disrupt the network connectivity.\n",
+        "\n",
+        "The degree of the nodes is accessible via `Graph.degree`."
+      ],
+      "id": "41112de0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(g_original.degree())"
+      ],
+      "id": "4517c5f6",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We compute the robustness profile by removing nodes with the largest degree and measuring the connectivity of the network after each removal."
+      ],
+      "id": "1933b4d5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "g = g_original.copy() # restore the network\n",
+        "n_nodes = g.vcount()  # Number of nodes\n",
+        "\n",
+        "results = []\n",
+        "for i in range(n_nodes -1):  # Loop if the network has at least one node\n",
+        "\n",
+        "    # Remove the nodes with thelargest degree\n",
+        "    node_idx = g.vs.indices[np.argmax(g.degree())]\n",
+        "    g.delete_vertices(node_idx)\n",
+        "\n",
+        "    # Evaluate the connectivity\n",
+        "    components = g.connected_components()\n",
+        "    connectivity = np.max(components.sizes()) / g_original.vcount()\n",
+        "\n",
+        "    # Save the results\n",
+        "    results.append(\n",
+        "        {\n",
+        "            \"connectivity\": connectivity,\n",
+        "            \"frac_nodes_removed\": (i + 1) / n_nodes,\n",
+        "        }\n",
+        "    )\n",
+        "\n",
+        "df_robustness_profile_targeted = pd.DataFrame(results)"
+      ],
+      "id": "975bfca1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "sns.set(style='white', font_scale=1.2)\n",
+        "sns.set_style('ticks')\n",
+        "\n",
+        "sns.set(style=\"white\", font_scale=1.2)\n",
+        "sns.set_style(\"ticks\")\n",
+        "\n",
+        "ax = df_robustness_profile.plot(\n",
+        "    x=\"frac_nodes_removed\",\n",
+        "    y=\"connectivity\",\n",
+        "    kind=\"line\",\n",
+        "    figsize=(5, 5),\n",
+        "    label=\"Random attack\",\n",
+        ")\n",
+        "ax = df_robustness_profile_targeted.plot(\n",
+        "    x=\"frac_nodes_removed\",\n",
+        "    y=\"connectivity\",\n",
+        "    kind=\"line\",\n",
+        "    label=\"Targeted attack\",\n",
+        "    ax=ax,\n",
+        ")\n",
+        "ax.set_xlabel(\"Proportion of nodes removed\")\n",
+        "ax.set_ylabel(\"Connectivity\")\n",
+        "ax.legend(frameon=False)\n",
+        "plt.show()"
+      ],
+      "id": "8c5f191d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "While the network is robust against the random attacks, it is vulnerable to the degree-based targeted attack."
+      ],
+      "id": "0663ff28"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "advnetsci",
+      "language": "python",
+      "display_name": "Python (advnetsci)",
+      "path": "/Users/skojaku-admin/Library/Jupyter/kernels/advnetsci"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
