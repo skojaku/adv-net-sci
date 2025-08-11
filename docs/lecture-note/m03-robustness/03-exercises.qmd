@@ -36,28 +36,14 @@ $\frac{\langle k^2 \rangle}{\langle k \rangle} = 1 + \langle k \rangle$
 $\langle k \rangle >1$. In other words, if a node has on average more than one neighbor, the random network is likely to have a giant component.
 :::
 
-## Robust Network Design
+## Network Design Challenges
 
-Design strategies for networks that must withstand both random failures and targeted attacks present unique challenges. Consider the trade-offs between different network topologies and their resilience properties.
+Apply robustness concepts to practical design problems:
 
-**Challenge**: What design strategy makes a network robust against targeted attacks? Design a network that is robust against both random failures and targeted attacks.
+**Challenge 1**: Design a network that is robust against both random failures and targeted attacks using bimodal degree distributions.
 
 {{ '[🚀 Interactive Demo]( BASE_URL/vis/network-robustness.html)'.replace('BASE_URL', base_url) }}
 
-::: {.callout collapse="true"}
-## Design Strategy
-
-A bimodal degree distribution can enhance network robustness against both random failures and targeted attacks. In this setup, $(1-r)$ portion of nodes have a degree of 1, while $r$ portion of nodes have a high degree, $k_{\text{max}}$.
-
-This structure ensures that the network remains connected even if a hub is removed, as other hubs maintain the connectivity. It also withstands random failures due to its heterogeneous degree distribution.
-:::
-
-## Power Grid Network Design
-
-Real-world infrastructure design requires balancing multiple objectives: cost efficiency, reliability, and robustness. Power grids exemplify this challenge perfectly.
-
-**Challenge**: Design a cost-effective power grid network using minimum spanning tree concepts. Consider the trade-offs between cost minimization and network robustness.
+**Challenge 2**: Design a cost-effective power grid network balancing minimum spanning tree efficiency with robustness requirements.
 
 - ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf)
-
-This exercise bridges theoretical network concepts with practical engineering constraints, demonstrating how robustness analysis guides infrastructure investment decisions.
