@@ -1,13 +1,3 @@
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "marimo",
-#     "matplotlib==3.10.5",
-#     "networkx==3.4.2",
-#     "numpy==2.2.6",
-#     "pandas==2.3.1",
-# ]
-# ///
 import marimo
 
 __generated_with = "0.9.14"
@@ -23,13 +13,12 @@ def __(mo):
         r"""
         # Minimum Spanning Tree Algorithms: Kruskal vs Prim
 
-        This interactive demonstration shows the key differences between **Kruskal's Algorithm** and **Prim's Algorithm** for finding minimum spanning trees.
+        This interactive demonstration shows the key differences between **Kruskal's Algorithm** and **Prim's Algorithm** 
+        for finding minimum spanning trees using a power grid example.
 
         Both algorithms solve the same problem but with fundamentally different approaches:
         - **Kruskal's**: Global perspective - sorts all edges, builds forest, prevents cycles
         - **Prim's**: Local growth - starts from one node, grows tree by adding cheapest connections
-
-        Use the controls below to explore different graphs and see how each algorithm constructs the MST step by step.
         """
     )
     return
@@ -38,130 +27,105 @@ def __(mo):
 @app.cell
 def __():
     import marimo as mo
-    import networkx as nx
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
     from matplotlib.patches import FancyBboxPatch
-    import random
-    return FancyBboxPatch, mo, np, nx, pd, plt, random
+    return FancyBboxPatch, mo, np, pd, plt
 
 
 @app.cell
 def __(mo):
-    # Create controls for the interactive demo
-    graph_selector = mo.ui.dropdown(
-        options=["Simple 5-node", "Grid 3x3", "Random 8-node", "Power Grid Example"],
-        value="Simple 5-node",
-        label="Choose Graph Type"
-    )
-    
-    show_step_by_step = mo.ui.checkbox(
-        label="Show Step-by-Step Construction", 
+    # Control for edge weight uniqueness
+    unique_weights = mo.ui.checkbox(
+        label="Use unique edge weights (when unchecked, some edges have same weight)", 
         value=True
     )
     
-    algorithm_choice = mo.ui.radio(
-        options=["Both", "Kruskal Only", "Prim Only"],
-        value="Both",
-        label="Algorithm Display"
+    mo.vstack([
+        mo.md("## Controls"),
+        unique_weights
+    ])
+    return unique_weights,
+
+
+@app.cell  
+def __(max_steps, mo):
+    # Time step slider - dynamically updated based on number of MST edges
+    time_step = mo.ui.slider(
+        start=0, 
+        stop=max_steps,  # Updated based on actual number of edges in MST
+        step=1, 
+        value=max_steps,  # Start at final state
+        label=f"Algorithm Time Step (0=start, {max_steps}=complete MST)"
     )
     
     mo.vstack([
-        mo.md("## Interactive Controls"),
-        mo.hstack([graph_selector, show_step_by_step]),
-        algorithm_choice
+        time_step,
+        mo.md(f"**Instructions**: Move the slider to see how each algorithm builds the MST step by step (0 to {max_steps} steps).")
     ])
-    return algorithm_choice, graph_selector, show_step_by_step
+    return time_step,
 
 
 @app.cell
-def __(graph_selector, np, nx, random):
-    def create_graph(graph_type):
-        """Create different types of graphs for demonstration"""
-        random.seed(42)  # For reproducible results
-        np.random.seed(42)
+def __(unique_weights):
+    def create_power_grid_graph(use_unique_weights=True):
+        """Create power grid graph with nodes and edges"""
         
-        if graph_type == "simple":
-            # Simple 5-node graph - good for understanding basics
-            G = nx.Graph()
+        # Define nodes with positions
+        nodes = {
+            'PowerPlant': (0, 1),
+            'SubstationA': (1, 2), 
+            'SubstationB': (1, 0),
+            'TownA': (2, 2.5), 
+            'TownB': (2, 1.5),
+            'TownC': (2, 0.5), 
+            'TownD': (2, -0.5)
+        }
+        
+        if use_unique_weights:
+            # All weights are unique
             edges = [
-                ('A', 'B', 4), ('A', 'C', 2), ('A', 'D', 7),
-                ('B', 'C', 1), ('B', 'E', 5),
-                ('C', 'D', 3), ('C', 'E', 6),
-                ('D', 'E', 8)
+                ('PowerPlant', 'SubstationA', 12),
+                ('PowerPlant', 'SubstationB', 8),
+                ('SubstationA', 'TownA', 5),
+                ('SubstationA', 'TownB', 7),
+                ('SubstationB', 'TownC', 6),
+                ('SubstationB', 'TownD', 4),
+                ('TownA', 'TownB', 3),
+                ('TownB', 'TownC', 9),
+                ('TownC', 'TownD', 2),
+                ('TownA', 'SubstationB', 11)
             ]
-            G.add_weighted_edges_from(edges)
-            pos = {'A': (0, 1), 'B': (1, 2), 'C': (1, 0), 'D': (2, 0), 'E': (2, 2)}
-            
-        elif graph_type == "grid":
-            # 3x3 grid with random weights
-            G = nx.grid_2d_graph(3, 3)
-            pos = {node: node for node in G.nodes()}
-            # Add random weights
-            for edge in G.edges():
-                G[edge[0]][edge[1]]['weight'] = random.randint(1, 10)
-                
-        elif graph_type == "random":
-            # Random connected graph
-            G = nx.erdos_renyi_graph(8, 0.4, seed=42)
-            # Ensure connectivity
-            if not nx.is_connected(G):
-                components = list(nx.connected_components(G))
-                for i in range(len(components) - 1):
-                    node1 = list(components[i])[0]
-                    node2 = list(components[i+1])[0]
-                    G.add_edge(node1, node2)
-            
-            # Add random weights
-            for edge in G.edges():
-                G[edge[0]][edge[1]]['weight'] = random.randint(1, 15)
-            pos = nx.spring_layout(G, seed=42)
-            
-        elif graph_type == "power_grid":
-            # Example inspired by power grid connections
-            G = nx.Graph()
+        else:
+            # Some weights are the same - multiple MSTs possible
             edges = [
-                ('PowerPlant', 'SubstationA', 12), ('PowerPlant', 'SubstationB', 8),
-                ('SubstationA', 'TownA', 5), ('SubstationA', 'TownB', 7),
-                ('SubstationB', 'TownC', 6), ('SubstationB', 'TownD', 4),
-                ('TownA', 'TownB', 3), ('TownB', 'TownC', 9),
-                ('TownC', 'TownD', 2), ('TownA', 'SubstationB', 11)
+                ('PowerPlant', 'SubstationA', 12),
+                ('PowerPlant', 'SubstationB', 8),
+                ('SubstationA', 'TownA', 5),
+                ('SubstationA', 'TownB', 7),
+                ('SubstationB', 'TownC', 5),  # Same as SubstationA-TownA
+                ('SubstationB', 'TownD', 4),
+                ('TownA', 'TownB', 3),
+                ('TownB', 'TownC', 9),
+                ('TownC', 'TownD', 2),
+                ('TownA', 'SubstationB', 7)  # Same as SubstationA-TownB
             ]
-            G.add_weighted_edges_from(edges)
-            pos = {
-                'PowerPlant': (0, 1),
-                'SubstationA': (1, 2), 'SubstationB': (1, 0),
-                'TownA': (2, 2.5), 'TownB': (2, 1.5),
-                'TownC': (2, 0.5), 'TownD': (2, -0.5)
-            }
             
-        return G, pos
+        return nodes, edges
 
-    # Create the selected graph - map display names to internal values
-    graph_type_map = {
-        "Simple 5-node": "simple",
-        "Grid 3x3": "grid", 
-        "Random 8-node": "random",
-        "Power Grid Example": "power_grid"
-    }
-    graph, pos = create_graph(graph_type_map[graph_selector.value])
-    return create_graph, graph, pos
+    # Create the graph based on current setting
+    nodes, edges = create_power_grid_graph(unique_weights.value)
+    return create_power_grid_graph, edges, nodes
 
 
 @app.cell
-def __(graph, nx):
-    def kruskal_algorithm(G):
-        """
-        Kruskal's algorithm implementation with step tracking
-        Returns: MST edges and step-by-step construction
-        """
-        edges = []
-        for u, v, data in G.edges(data=True):
-            edges.append((data['weight'], u, v))
+def __(edges, nodes):
+    def kruskal_algorithm(nodes_dict, edges_list):
+        """Kruskal's algorithm implementation without networkx"""
         
         # Step 1: Sort edges by weight (global perspective)
-        edges.sort()
+        sorted_edges = sorted(edges_list, key=lambda x: x[2])
         
         # Initialize Union-Find data structure
         parent = {}
@@ -189,7 +153,7 @@ def __(graph, nx):
         mst_edges = []
         steps = []
         
-        for weight, u, v in edges:
+        for u, v, weight in sorted_edges:
             if union(u, v):
                 mst_edges.append((u, v, weight))
                 steps.append({
@@ -206,19 +170,20 @@ def __(graph, nx):
                     'reason': f'Would create cycle between {u} and {v}'
                 })
                 
-            if len(mst_edges) == len(G.nodes()) - 1:
+            if len(mst_edges) == len(nodes_dict) - 1:
                 break
                 
         return mst_edges, steps
 
-    def prim_algorithm(G, start_node=None):
-        """
-        Prim's algorithm implementation with step tracking
-        Returns: MST edges and step-by-step construction
-        """
-        if start_node is None:
-            start_node = list(G.nodes())[0]
-            
+    def prim_algorithm(nodes_dict, edges_list, start_node='PowerPlant'):
+        """Prim's algorithm implementation without networkx"""
+        
+        # Create adjacency list
+        adj = {node: [] for node in nodes_dict}
+        for u, v, weight in edges_list:
+            adj[u].append((v, weight))
+            adj[v].append((u, weight))
+        
         visited = {start_node}
         mst_edges = []
         steps = []
@@ -226,21 +191,19 @@ def __(graph, nx):
         steps.append({
             'node': start_node,
             'action': 'start',
-            'reason': f'Starting from node {start_node}'
+            'reason': f'Starting from {start_node}'
         })
         
-        while len(visited) < len(G.nodes()):
+        while len(visited) < len(nodes_dict):
             min_weight = float('inf')
             min_edge = None
             
             # Find cheapest edge from visited to unvisited nodes
             for node in visited:
-                for neighbor in G.neighbors(node):
-                    if neighbor not in visited:
-                        weight = G[node][neighbor]['weight']
-                        if weight < min_weight:
-                            min_weight = weight
-                            min_edge = (node, neighbor, weight)
+                for neighbor, weight in adj[node]:
+                    if neighbor not in visited and weight < min_weight:
+                        min_weight = weight
+                        min_edge = (node, neighbor, weight)
             
             if min_edge:
                 u, v, weight = min_edge
@@ -256,10 +219,10 @@ def __(graph, nx):
         return mst_edges, steps
 
     # Run both algorithms
-    kruskal_mst, kruskal_steps = kruskal_algorithm(graph)
-    prim_mst, prim_steps = prim_algorithm(graph)
+    kruskal_mst, kruskal_steps = kruskal_algorithm(nodes, edges)
+    prim_mst, prim_steps = prim_algorithm(nodes, edges)
     
-    # Verify they produce the same total weight
+    # Calculate total weights
     kruskal_weight = sum(w for _, _, w in kruskal_mst)
     prim_weight = sum(w for _, _, w in prim_mst)
     
@@ -271,191 +234,276 @@ def __(graph, nx):
 
 @app.cell
 def __(
-    algorithm_choice,
-    graph,
     kruskal_mst,
     kruskal_steps,
     kruskal_weight,
     mo,
-    pos,
+    nodes,
     prim_mst,
     prim_steps,
     prim_weight,
+    time_step
 ):
-    # Display algorithm results
-    results_display = []
+    # Display algorithm results with current step information
+    weight_match = "✅ Same" if kruskal_weight == prim_weight else "❌ Different"
     
-    if algorithm_choice.value in ["Both", "Kruskal Only"]:
-        results_display.append(
-            mo.md(f"""
-            ### Kruskal's Algorithm Results
-            - **Total MST Weight**: {kruskal_weight}
-            - **Approach**: Global edge sorting, cycle prevention
-            - **Edges in MST**: {len(kruskal_mst)} edges connecting {len(graph.nodes())} nodes
-            """)
-        )
+    # Get current step information
+    current_step = time_step.value
+    max_steps = len([s for s in kruskal_steps if s['action'] == 'added'])
     
-    if algorithm_choice.value in ["Both", "Prim Only"]:
-        results_display.append(
-            mo.md(f"""
-            ### Prim's Algorithm Results  
-            - **Total MST Weight**: {prim_weight}
-            - **Approach**: Local growth from starting node
-            - **Edges in MST**: {len(prim_mst)} edges connecting {len(graph.nodes())} nodes
-            """)
-        )
+    # Current step details
+    if current_step == 0:
+        step_info = "**Current State**: Initial state - no edges added yet"
+    elif current_step <= max_steps:
+        step_info = f"**Current State**: Step {current_step}/{max_steps} - Building MST progressively"
+    else:
+        step_info = f"**Current State**: Complete MST - All {max_steps} edges added"
     
-    if algorithm_choice.value == "Both":
-        weight_match = "✅ Same" if kruskal_weight == prim_weight else "❌ Different"
-        results_display.append(
-            mo.md(f"""
-            ### Comparison
-            - **Total Weights Match**: {weight_match}
-            - **Both algorithms find optimal MST**: When edge weights are unique, both algorithms produce identical results
-            """)
-        )
+    results = mo.md(f"""
+    ## Algorithm Results
     
-    mo.vstack(results_display)
-    return results_display, weight_match
+    {step_info}
+    
+    ### Kruskal's Algorithm (Global Approach)
+    - **Total MST Weight**: {kruskal_weight}
+    - **Edges Selected**: {len(kruskal_mst)} edges connecting {len(nodes)} nodes
+    - **Method**: Sort all edges globally, add cheapest without creating cycles
+    
+    ### Prim's Algorithm (Local Growth)
+    - **Total MST Weight**: {prim_weight}  
+    - **Edges Selected**: {len(prim_mst)} edges connecting {len(nodes)} nodes
+    - **Method**: Start from PowerPlant, grow tree by adding cheapest connections
+    
+    ### Comparison
+    - **Total Weights Match**: {weight_match}
+    - **MST Uniqueness**: {
+        "Unique MST guaranteed when all edge weights are different" if weight_match == "✅ Same" 
+        else "Multiple MSTs possible when some edge weights are equal"
+    }
+    
+    ---
+    
+    **💡 Tip**: Use the time step slider above to see how each algorithm builds the MST step by step. 
+    Connected nodes are shown in **green**, unconnected nodes in **blue**.
+    """)
+    
+    results
+    return max_steps, results, weight_match
 
 
 @app.cell
 def __(
-    FancyBboxPatch,
-    algorithm_choice,
-    graph,
-    kruskal_mst,
-    mo,
-    nx,
-    plt,
-    pos,
-    prim_mst,
+    FancyBboxPatch, 
+    edges, 
+    kruskal_mst, 
+    kruskal_steps,
+    nodes, 
+    plt, 
+    prim_mst, 
+    prim_steps,
+    time_step
 ):
-    def visualize_algorithms():
-        """Create visualization comparing both algorithms"""
+    def visualize_both_algorithms():
+        """Create side-by-side visualization of both algorithms with time step control"""
         
-        if algorithm_choice.value == "Both":
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
-            axes = [ax1, ax2]
-            titles = ["Kruskal's Algorithm (Global Approach)", "Prim's Algorithm (Local Growth)"]
-            msts = [kruskal_mst, prim_mst]
-        else:
-            fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-            axes = [ax]
-            if algorithm_choice.value == "Kruskal Only":
-                titles = ["Kruskal's Algorithm (Global Approach)"]
-                msts = [kruskal_mst]
-            else:
-                titles = ["Prim's Algorithm (Local Growth)"] 
-                msts = [prim_mst]
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
         
-        for idx, (ax, title, mst) in enumerate(zip(axes, titles, msts)):
+        # Get edges to show up to current time step for each algorithm
+        current_step = time_step.value
+        
+        # For Kruskal: edges added in order they appear in steps
+        kruskal_edges_to_show = []
+        for i, step in enumerate(kruskal_steps):
+            if i >= current_step:
+                break
+            if step['action'] == 'added':
+                u, v = step['edge']
+                weight = step['weight']
+                kruskal_edges_to_show.append((u, v, weight))
+        
+        # For Prim: edges added in order they appear in steps  
+        prim_edges_to_show = []
+        for i, step in enumerate(prim_steps[1:], 1):  # Skip the 'start' step
+            if i > current_step:
+                break
+            if step['action'] == 'added':
+                u, v = step['edge']
+                weight = step['weight']
+                prim_edges_to_show.append((u, v, weight))
+        
+        algorithms = [
+            (ax1, "Kruskal's Algorithm (Global Approach)", kruskal_edges_to_show),
+            (ax2, "Prim's Algorithm (Local Growth)", prim_edges_to_show)
+        ]
+        
+        for ax, title, edges_to_show in algorithms:
             ax.clear()
             
-            # Draw all edges in light gray
-            nx.draw_networkx_edges(graph, pos, ax=ax, edge_color='lightgray', width=1, alpha=0.3)
+            # Draw all possible edges in light gray
+            for u, v, weight in edges:
+                x1, y1 = nodes[u]
+                x2, y2 = nodes[v]
+                ax.plot([x1, x2], [y1, y2], 'lightgray', linewidth=1, alpha=0.3)
+                
+                # Add edge weight labels
+                mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
+                ax.text(mid_x, mid_y, str(weight), fontsize=8, 
+                       bbox=dict(boxstyle="round,pad=0.1", facecolor='white', alpha=0.8))
             
-            # Draw MST edges in red
-            mst_edges = [(u, v) for u, v, w in mst]
-            nx.draw_networkx_edges(graph, pos, edgelist=mst_edges, ax=ax, 
-                                 edge_color='red', width=3, alpha=0.8)
+            # Draw MST edges built so far in red
+            for u, v, weight in edges_to_show:
+                x1, y1 = nodes[u]
+                x2, y2 = nodes[v]
+                ax.plot([x1, x2], [y1, y2], 'red', linewidth=3, alpha=0.8)
             
-            # Draw nodes
-            nx.draw_networkx_nodes(graph, pos, ax=ax, node_color='lightblue', 
-                                 node_size=1000, alpha=0.9)
+            # Draw nodes - color differently based on connection status
+            connected_nodes = set()
+            if 'Prim' in title:
+                # For Prim, start with PowerPlant always connected
+                connected_nodes.add('PowerPlant')
+                for u, v, _ in edges_to_show:
+                    connected_nodes.add(u)
+                    connected_nodes.add(v)
+            else:
+                # For Kruskal, find connected components
+                for u, v, _ in edges_to_show:
+                    connected_nodes.add(u)
+                    connected_nodes.add(v)
             
-            # Draw labels
-            nx.draw_networkx_labels(graph, pos, ax=ax, font_size=10, font_weight='bold')
+            for node, (x, y) in nodes.items():
+                color = 'lightgreen' if node in connected_nodes else 'lightblue'
+                circle = plt.Circle((x, y), 0.1, color=color, alpha=0.9, zorder=5)
+                ax.add_patch(circle)
+                ax.text(x, y, node.replace('Substation', 'Sub').replace('PowerPlant', 'Plant'), 
+                       ha='center', va='center', fontsize=8, fontweight='bold', zorder=6)
             
-            # Draw edge weights
-            edge_labels = nx.get_edge_attributes(graph, 'weight')
-            nx.draw_networkx_edge_labels(graph, pos, edge_labels, ax=ax, font_size=8)
-            
-            ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+            # Update title with current step info
+            total_steps = len([s for s in (kruskal_steps if 'Kruskal' in title else prim_steps) if s['action'] == 'added'])
+            step_info = f" (Step {current_step}/{total_steps})"
+            ax.set_title(title + step_info, fontsize=14, fontweight='bold', pad=20)
+            ax.set_aspect('equal')
             ax.axis('off')
             
-            # Add algorithm description box
-            if idx == 0 and algorithm_choice.value in ["Both", "Kruskal Only"]:
-                description = "1. Sort all edges by weight\n2. Add cheapest edge if no cycle\n3. Repeat until tree complete"
-            elif (idx == 1 and algorithm_choice.value == "Both") or (idx == 0 and algorithm_choice.value == "Prim Only"):
-                description = "1. Start from any node\n2. Add cheapest edge to new node\n3. Grow tree incrementally"
+            # Set axis limits with padding
+            x_coords = [x for x, y in nodes.values()]
+            y_coords = [y for x, y in nodes.values()]
+            ax.set_xlim(min(x_coords) - 0.3, max(x_coords) + 0.3)
+            ax.set_ylim(min(y_coords) - 0.3, max(y_coords) + 0.3)
             
-            bbox = FancyBboxPatch((0.02, 0.02), 0.25, 0.15, 
+            # Add algorithm description box with current action
+            if 'Kruskal' in title:
+                description = "1. Sort all edges by weight\n2. Add cheapest edge if no cycle\n3. Repeat until tree complete"
+                if current_step > 0 and current_step <= len(kruskal_steps):
+                    current_action = kruskal_steps[current_step-1]
+                    if current_action['action'] == 'added':
+                        description += f"\n\nCurrent: Adding {current_action['edge'][0]}-{current_action['edge'][1]} (weight {current_action['weight']})"
+                    elif current_action['action'] == 'skipped':
+                        description += f"\n\nCurrent: Skipping {current_action['edge'][0]}-{current_action['edge'][1]} (creates cycle)"
+            else:
+                description = "1. Start from PowerPlant\n2. Add cheapest edge to new node\n3. Grow tree incrementally"
+                if current_step > 0 and current_step < len(prim_steps):
+                    current_action = prim_steps[current_step]
+                    if current_action['action'] == 'added':
+                        description += f"\n\nCurrent: Adding {current_action['edge'][0]}-{current_action['edge'][1]} (weight {current_action['weight']})"
+            
+            bbox = FancyBboxPatch((0.02, 0.02), 0.25, 0.2, 
                                 boxstyle="round,pad=0.01", 
                                 transform=ax.transAxes,
                                 facecolor='wheat', alpha=0.8, edgecolor='black')
             ax.add_patch(bbox)
             ax.text(0.03, 0.03, description, transform=ax.transAxes, 
-                   fontsize=9, verticalalignment='bottom')
+                   fontsize=8, verticalalignment='bottom')
         
         plt.tight_layout()
         return fig
 
     # Create and display the visualization
-    fig = visualize_algorithms()
+    fig = visualize_both_algorithms()
     fig
-    return fig, visualize_algorithms
+    return fig, visualize_both_algorithms
 
 
 @app.cell
-def __(
-    algorithm_choice,
-    kruskal_steps,
-    mo,
-    pd,
-    prim_steps,
-    show_step_by_step,
-):
-    # Show step-by-step construction if requested
-    if show_step_by_step.value:
-        step_displays = []
-        
-        if algorithm_choice.value in ["Both", "Kruskal Only"]:
-            # Kruskal steps
-            kruskal_df = pd.DataFrame([
-                {
-                    'Step': i+1,
-                    'Edge': f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step else "Start",
-                    'Weight': step.get('weight', '-'),
-                    'Action': step['action'].title(),
-                    'Reason': step['reason']
-                }
-                for i, step in enumerate(kruskal_steps)
-            ])
-            
-            step_displays.append(
-                mo.vstack([
-                    mo.md("### Kruskal's Algorithm - Step by Step"),
-                    mo.md("**Key Insight**: Kruskal considers ALL edges globally, always picking the cheapest available edge that doesn't create a cycle."),
-                    mo.ui.table(kruskal_df, selection=None)
-                ])
-            )
-        
-        if algorithm_choice.value in ["Both", "Prim Only"]:
-            # Prim steps  
-            prim_df = pd.DataFrame([
-                {
-                    'Step': i+1,
-                    'Node/Edge': step.get('node', f"{step['edge'][0]}-{step['edge'][1]}") if 'node' in step else f"{step['edge'][0]}-{step['edge'][1]}",
-                    'Weight': step.get('weight', '-'),
-                    'Action': step['action'].title(),
-                    'Reason': step['reason']
-                }
-                for i, step in enumerate(prim_steps)
-            ])
-            
-            step_displays.append(
-                mo.vstack([
-                    mo.md("### Prim's Algorithm - Step by Step"),
-                    mo.md("**Key Insight**: Prim grows the tree locally, always expanding from the current connected component to the nearest unconnected node."),
-                    mo.ui.table(prim_df, selection=None)
-                ])
-            )
-        
-        mo.vstack(step_displays)
-    else:
-        mo.md("*Enable 'Show Step-by-Step Construction' to see detailed algorithm execution.*")
+def __(kruskal_steps, mo, pd, prim_steps):
+    # Show step-by-step construction
+    step_displays = []
+    
+    # Kruskal steps
+    kruskal_df = pd.DataFrame([
+        {
+            'Step': i+1,
+            'Edge': f"{step['edge'][0]}-{step['edge'][1]}" if 'edge' in step else "Start",
+            'Weight': step.get('weight', '-'),
+            'Action': step['action'].title(),
+            'Reason': step['reason']
+        }
+        for i, step in enumerate(kruskal_steps)
+    ])
+    
+    step_displays.append(
+        mo.vstack([
+            mo.md("### Kruskal's Algorithm - Step by Step"),
+            mo.md("**Key Insight**: Kruskal considers ALL edges globally, always picking the cheapest available edge that doesn't create a cycle."),
+            mo.ui.table(kruskal_df, selection=None)
+        ])
+    )
+    
+    # Prim steps  
+    prim_df = pd.DataFrame([
+        {
+            'Step': i+1,
+            'Node/Edge': step.get('node', f"{step['edge'][0]}-{step['edge'][1]}") if 'node' in step else f"{step['edge'][0]}-{step['edge'][1]}",
+            'Weight': step.get('weight', '-'),
+            'Action': step['action'].title(),
+            'Reason': step['reason']
+        }
+        for i, step in enumerate(prim_steps)
+    ])
+    
+    step_displays.append(
+        mo.vstack([
+            mo.md("### Prim's Algorithm - Step by Step"),
+            mo.md("**Key Insight**: Prim grows the tree locally, always expanding from the current connected component to the nearest unconnected node."),
+            mo.ui.table(prim_df, selection=None)
+        ])
+    )
+    
+    mo.vstack(step_displays)
     return kruskal_df, prim_df, step_displays
+
+
+@app.cell
+def __(mo, unique_weights):
+    if unique_weights.value:
+        uniqueness_explanation = mo.md("""
+        ### Edge Weight Uniqueness: All Unique ✅
+        
+        With all edge weights being unique, both algorithms are **guaranteed to produce identical MSTs**. 
+        This demonstrates the mathematical principle that when edge weights are unique, 
+        the minimum spanning tree is unique regardless of the construction algorithm.
+        
+        **Key Points:**
+        - Same total weight for both algorithms
+        - Same edges selected (possibly in different order)
+        - Demonstrates algorithmic equivalence
+        """)
+    else:
+        uniqueness_explanation = mo.md("""
+        ### Edge Weight Uniqueness: Some Duplicate Weights ⚠️
+        
+        With some edges having identical weights, **multiple valid MSTs may exist**. 
+        Different algorithms might choose different edges of the same weight, 
+        leading to different trees with the same total cost.
+        
+        **Key Points:**
+        - Both algorithms still find optimal solutions
+        - Total weights will still match
+        - Different edges might be selected when weights are tied
+        - Demonstrates that MST uniqueness depends on edge weight uniqueness
+        """)
+    
+    uniqueness_explanation
+    return uniqueness_explanation,
 
 
 @app.cell
@@ -467,50 +515,22 @@ def __(mo):
         | Aspect | Kruskal's Algorithm | Prim's Algorithm |
         |--------|-------------------|------------------|
         | **Perspective** | Global - considers all edges | Local - grows from one point |
-        | **Initial Step** | Sort ALL edges by weight | Choose starting node |
+        | **Initial Step** | Sort ALL edges by weight | Choose starting node (PowerPlant) |
         | **Edge Selection** | Pick globally cheapest edge | Pick cheapest edge to unvisited node |
-        | **Data Structure** | Union-Find (for cycle detection) | Priority queue + visited set |
+        | **Data Structure** | Union-Find (for cycle detection) | Adjacency list + visited set |
         | **Growth Pattern** | May build multiple disconnected trees initially | Always maintains single connected tree |
         | **Cycle Prevention** | Explicit cycle checking with Union-Find | Implicit - only connects to unvisited nodes |
         | **Implementation** | More complex (Union-Find structure) | More intuitive (local expansion) |
-        | **Parallelization** | Better suited for parallel processing | Sequential by nature |
 
-        ## When to Use Which Algorithm?
+        ## Power Grid Context
 
-        - **Kruskal's Algorithm**: 
-          - When you can sort edges efficiently
-          - For sparse graphs (few edges)
-          - When parallel processing is possible
-          - When dealing with disconnected components
+        In our power grid example:
+        - **PowerPlant**: Central power generation facility
+        - **SubstationA/B**: Distribution substations  
+        - **TownA/B/C/D**: End consumers (residential/commercial areas)
+        - **Edge weights**: Cable installation costs (in thousands of dollars)
 
-        - **Prim's Algorithm**:
-          - When you have a natural starting point
-          - For dense graphs (many edges) 
-          - When step-by-step visualization is important
-          - When memory usage needs to be minimized
-
-        ## Mathematical Guarantee
-
-        Both algorithms are **guaranteed to produce the same result** when all edge weights are unique. This demonstrates the mathematical principle that the minimum spanning tree is unique under these conditions, regardless of the construction method used.
-        """
-    )
-    return
-
-
-@app.cell
-def __(mo):
-    mo.md(
-        r"""
-        ## Try Different Graphs!
-
-        Use the dropdown above to explore different graph types:
-
-        - **Simple 5-node**: Perfect for understanding the basic concepts
-        - **Grid 3x3**: See how algorithms handle regular structures  
-        - **Random 8-node**: Test performance on irregular networks
-        - **Power Grid Example**: Real-world inspired infrastructure network
-
-        Each graph type reveals different aspects of how these algorithms work and why both approaches lead to the same optimal solution.
+        Both algorithms find the minimum cost to connect all locations while ensuring every town receives power.
         """
     )
     return
