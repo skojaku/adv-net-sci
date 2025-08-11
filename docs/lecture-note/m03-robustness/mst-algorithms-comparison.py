@@ -1,3 +1,13 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "marimo",
+#     "matplotlib==3.10.5",
+#     "networkx==3.4.2",
+#     "numpy==2.2.6",
+#     "pandas==2.3.1",
+# ]
+# ///
 import marimo
 
 __generated_with = "0.9.14"
@@ -41,12 +51,7 @@ def __():
 def __(mo):
     # Create controls for the interactive demo
     graph_selector = mo.ui.dropdown(
-        options={
-            "Simple 5-node": "simple",
-            "Grid 3x3": "grid",
-            "Random 8-node": "random",
-            "Power Grid Example": "power_grid"
-        },
+        options=["Simple 5-node", "Grid 3x3", "Random 8-node", "Power Grid Example"],
         value="Simple 5-node",
         label="Choose Graph Type"
     )
