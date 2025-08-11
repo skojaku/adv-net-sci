@@ -69,87 +69,31 @@ Two algorithms find the same minimum spanning tree when all connection costs are
 
 :::
 
-Despite their dramatically different approaches - Kruskal's global optimization versus Prim's local growth - both algorithms are guaranteed to produce identical results when all connection costs are unique. This equivalence reveals a profound mathematical truth: the minimum spanning tree problem has a unique solution under typical conditions, regardless of the construction strategy employed.
 
-The algorithms differ primarily in their **computational perspectives and implementation requirements**. Kruskal's global approach requires sorting all possible connections upfront and maintaining sophisticated data structures (like union-find) to detect cycles efficiently. Prim's local growth strategy needs only to track which locations remain unconnected and find the cheapest bridge at each step, making it often simpler to implement but requiring careful management of the growing connected region.
+## Why Minimum Spanning Tree is Not Enough
 
-**When connection costs are not unique** - meaning some cable segments cost exactly the same - multiple valid minimum spanning trees may exist. In such cases, the two algorithms might produce different solutions, but both will have the same total cost and both will be equally optimal. The choice between them often depends on practical considerations: Kruskal's algorithm naturally handles disconnected components and parallelizes well, while Prim's algorithm provides more intuitive step-by-step progress and works efficiently when starting from a specific location is important.
+Minimum spanning tree is an efficient way to connect all locations in a network with the minimum total cost. However, such a network is vulnerable to failures, e.g., the network can be disconnected when a single node fails, in particular those close to the center of the network. This is why our power grid has a lot of redundancies beyond the minimum spanning tree, for the sake of resilience against failures.
 
-::: {.callout-note}
-For simplicity in this module, we will focus on Kruskal's algorithm when implementing minimum spanning tree solutions.
+
+::: {#fig-us-powe-grid}
+
+![](https://www.geni.org/globalenergy/library/national_energy_grid/united-states-of-america/graphics/UnitedStatesPowerGrid.jpg){width=50%}
+
+This is the power grid of the United States.
+
 :::
-
-::: {.callout-tip}
-## Interactive Algorithm Comparison
-
-Want to see both algorithms in action side-by-side? Check out our [**interactive Marimo notebook**](./mst-algorithms-comparison.py) that demonstrates:
-
-- Step-by-step execution of both Kruskal's and Prim's algorithms
-- Visual comparison on different graph types (simple, grid, random, power grid)
-- Interactive controls to explore how each algorithm constructs the MST
-- Detailed step-by-step tables showing algorithmic decisions
-
-Run it locally with: `marimo edit mst-algorithms-comparison.py`
-:::
-
-## The Fragility of Optimal Efficiency
-
-Here's where our historical engineer would discover a troubling reality: the most cost-effective network design is also the most vulnerable to failures.
-
-### Why MSTs Are Fragile
-
-The minimum spanning tree creates inherent vulnerabilities:
-- **Single points of failure**: Cutting any single cable disconnects part of the grid
-- **No redundant pathways**: Only one route exists between any two locations
-- **Cascade failures**: One broken connection can isolate entire neighborhoods
-
-### The Cost-Robustness Dilemma
-
-This creates a fundamental tension in network design:
-- **Economic pressure** drives toward minimal connectivity (MST)
-- **Reliability needs** require redundant connections and backup pathways
-- **Real-world networks** must balance these competing demands
-
-This is why actual power grids, transportation networks, and communication systems always have more connections than the theoretical minimum - they trade some cost efficiency for resilience.
-
-## Why Real Networks Have Redundancies
-
-Looking at real infrastructure networks - power grids, the internet, transportation systems - we see they're never organized as minimum spanning trees. Instead, they have **strategic redundancies**. Why?
-
-### Learning from Failures
-
-Historical power grid failures reveal why redundancy matters:
-- The 2003 Northeast blackout affected 50 million people when a few key transmission lines failed
-- Hurricane Sandy (2012) showed how local failures can cascade through interconnected systems
-- The 2021 Texas winter storm demonstrated the vulnerability of isolated grid segments
-
-### Strategic Network Design
-
-Real networks use several strategies beyond MST:
-
-**Hierarchical Structure**: Combine local efficiency with regional redundancy - like local power distribution feeding into regional transmission grids
-
-**Hub-and-Spoke with Loops**: Create efficient distribution through hubs, but add backup connections between major hubs
-
-**Ring Topologies**: Critical connections often form loops so that if one path fails, traffic can flow in the opposite direction
-
-## From Network Structure to Robustness Analysis
-
-Now we can ask the fundamental question: Given that real networks have moved beyond minimum spanning trees, how do we analyze their robustness systematically?
 
 ### Measuring Network Damage
 
-We quantify network damage through **connectivity** - the fraction of nodes remaining in the largest connected component after removal:
+Not every failure is equal. Some failures are more damaging than others. For example, removing somee nodes in a grid network can be catastrophic, while removing other nodes can be more tolerable.
+
+While there can be many metrics to quantify network damage, we will focus on a purely topological metric: the fraction of nodes remaining in the largest connected component after removal.
 
 $$
 \text{Connectivity} = \frac{\text{Size of largest component after removal}}{\text{Original network size}}
 $$
 
-Not all failures are equal. Removing some nodes barely affects the network, while removing others can be catastrophic:
-
 ![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
-
-### Robustness Profiles: Visualizing Network Breakdown
 
 The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed - random removal creates one pattern, while strategic targeting creates dramatically different patterns.
 
@@ -161,21 +105,17 @@ $$
 R = \frac{1}{N} \sum_{k=1}^{N-1} y_k
 $$
 
-## Random Failures vs Targeted Attacks: The Asymmetry Problem
+The robustness index is a measure of how robust a network is to under a sequential failure of nodes. The higher the R-index, the more robust the network is.
+
+Networks can exhibit different robustness profiles under different attack strategies. One form of an attack is a **random failure**, where nodes are removed randomly. Another form of an attack is a **targeted attack**, where nodes are removed strategically.
+
+Random failures are like earthquakes or equipment malfunctions; they strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly.
+
+Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first, i.e., like targeting the busiest airports to disrupt air travel.
 
 ::: {.column-margin}
 The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
 :::
-
-### Random Failures: Equipment Malfunctions and Natural Disasters
-
-Random failures are like earthquakes or equipment malfunctions - they strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly. These failures test the network's **inherent redundancy**.
-
-### Targeted Attacks: Strategic Disruption
-
-Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first - like targeting the busiest airports to disrupt air travel.
-
-Smart adversaries might use more sophisticated targeting based on **betweenness centrality** (nodes on many shortest paths), **closeness centrality** (nodes close to all others), or **strategic positioning**.
 
 ## Percolation Theory: The Mathematics Behind Network Breakdown
 
