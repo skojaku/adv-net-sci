@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "scipy==1.16.1",
+# ]
+# ///
 import marimo
 
 __generated_with = "0.14.16"
@@ -29,7 +35,10 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
     import pandas as pd
-    return mo, pd, plt
+    import numpy as np
+    from scipy.sparse import csr_matrix
+    from scipy.sparse.csgraph import connected_components
+    return mo, pd, plt, np, csr_matrix, connected_components
 
 
 @app.cell
@@ -58,42 +67,42 @@ def _(unique_weights):
 
         # Define nodes with positions
         nodes = {
-            "PowerPlant": (0, 1),
-            "SubstationA": (1, 2),
-            "SubstationB": (1, 0),
-            "TownA": (2, 2.5),
-            "TownB": (2, 1.5),
-            "TownC": (2, 0.5),
-            "TownD": (2, -0.5),
+            "A": (0, 1),
+            "B": (1, 2),
+            "C": (1, 0),
+            "D": (2, 2.5),
+            "E": (2, 1.5),
+            "F": (2, 0.5),
+            "G": (2, -0.5),
         }
 
         if use_unique_weights:
             # All weights are unique
             edges = [
-                ("PowerPlant", "SubstationA", 12),
-                ("PowerPlant", "SubstationB", 8),
-                ("SubstationA", "TownA", 5),
-                ("SubstationA", "TownB", 7),
-                ("SubstationB", "TownC", 6),
-                ("SubstationB", "TownD", 4),
-                ("TownA", "TownB", 3),
-                ("TownB", "TownC", 9),
-                ("TownC", "TownD", 2),
-                ("TownA", "SubstationB", 11),
+                ("A", "B", 8),
+                ("A", "C", 12),
+                ("B", "D", 5),
+                ("B", "E", 7),
+                ("C", "F", 6),
+                ("C", "G", 4),
+                ("D", "E", 3),
+                ("E", "F", 9),
+                ("F", "G", 2),
+                ("D", "C", 11),
             ]
         else:
             # Some weights are the same - multiple MSTs possible
             edges = [
-                ("PowerPlant", "SubstationA", 12),
-                ("PowerPlant", "SubstationB", 8),
-                ("SubstationA", "TownA", 5),
-                ("SubstationA", "TownB", 7),
-                ("SubstationB", "TownC", 5),  # Same as SubstationA-TownA
-                ("SubstationB", "TownD", 4),
-                ("TownA", "TownB", 3),
-                ("TownB", "TownC", 9),
-                ("TownC", "TownD", 2),
-                ("TownA", "SubstationB", 7),  # Same as SubstationA-TownB
+                ("A", "B", 8),
+                ("A", "C", 12),
+                ("B", "D", 5),
+                ("B", "E", 7),
+                ("C", "F", 5),  # Same as B-D
+                ("C", "G", 4),
+                ("D", "E", 3),
+                ("E", "F", 9),
+                ("F", "G", 2),
+                ("D", "C", 7),  # Same as B-E
             ]
 
         return nodes, edges
@@ -105,7 +114,35 @@ def _(unique_weights):
 
 
 @app.cell
-def _(edges, nodes):
+def _(connected_components, csr_matrix, edges, nodes, np):
+    def check_connectivity(nodes_dict, edges_subset):
+        """Check if the graph formed by edges_subset is connected using scipy"""
+        if not edges_subset:
+            return len(nodes_dict) == 1, 1  # Single node is connected
+        
+        # Create node to index mapping
+        node_list = list(nodes_dict.keys())
+        node_to_idx = {node: i for i, node in enumerate(node_list)}
+        n_nodes = len(node_list)
+        
+        # Build adjacency matrix
+        row, col = [], []
+        for u, v, _ in edges_subset:
+            i, j = node_to_idx[u], node_to_idx[v]
+            row.extend([i, j])
+            col.extend([j, i])
+        
+        if not row:  # No edges
+            return False, n_nodes
+            
+        data = [1] * len(row)
+        adj_matrix = csr_matrix((data, (row, col)), shape=(n_nodes, n_nodes))
+        
+        # Check connectivity
+        n_components, labels = connected_components(adj_matrix, directed=False)
+        is_connected = n_components == 1
+        return is_connected, n_components
+    
     def kruskal_algorithm(nodes_dict, edges_list):
         """Kruskal's algorithm implementation without networkx"""
 
@@ -115,11 +152,13 @@ def _(edges, nodes):
         # Initialize Union-Find data structure
         parent = {}
         rank = {}
+        
+        # Initialize all nodes in Union-Find
+        for node in nodes_dict:
+            parent[node] = node
+            rank[node] = 0
 
         def find(x):
-            if x not in parent:
-                parent[x] = x
-                rank[x] = 0
             if parent[x] != x:
                 parent[x] = find(parent[x])
             return parent[x]
@@ -139,14 +178,18 @@ def _(edges, nodes):
         steps = []
 
         for u, v, weight in sorted_edges:
+            # Check connectivity before adding edge
+            is_connected_before, n_components_before = check_connectivity(nodes_dict, mst_edges)
+            
             if union(u, v):
                 mst_edges.append((u, v, weight))
+                is_connected_after, n_components_after = check_connectivity(nodes_dict, mst_edges)
                 steps.append(
                     {
                         "edge": (u, v),
                         "weight": weight,
                         "action": "added",
-                        "reason": f"Connects {u} and {v} without creating cycle",
+                        "reason": f"Connects {u} and {v} without creating cycle (components: {n_components_before}→{n_components_after})",
                     }
                 )
             else:
@@ -165,7 +208,7 @@ def _(edges, nodes):
         return mst_edges, steps
 
 
-    def prim_algorithm(nodes_dict, edges_list, start_node="PowerPlant"):
+    def prim_algorithm(nodes_dict, edges_list, start_node="A"):
         """Prim's algorithm implementation without networkx"""
 
         # Create adjacency list
@@ -201,12 +244,13 @@ def _(edges, nodes):
                 u, v, weight = min_edge
                 visited.add(v)
                 mst_edges.append((u, v, weight))
+                is_connected, n_components = check_connectivity(nodes_dict, mst_edges)
                 steps.append(
                     {
                         "edge": (u, v),
                         "weight": weight,
                         "action": "added",
-                        "reason": f"Cheapest connection from visited set to {v}",
+                        "reason": f"Cheapest connection from visited set to {v} ({n_components} components)",
                     }
                 )
 
@@ -271,7 +315,7 @@ def _(
     ### Prim's Algorithm (Local Growth)
     - **Total MST Weight**: {prim_weight}  
     - **Edges Selected**: {len(prim_mst)} edges connecting {len(nodes)} nodes
-    - **Method**: Start from PowerPlant, grow tree by adding cheapest connections
+    - **Method**: Start from node A, grow tree by adding cheapest connections
 
     ### Comparison
     - **Total Weights Match**: {weight_match}
@@ -293,13 +337,16 @@ def _(
 
 @app.cell
 def _(mo, time_step, unique_weights):
-
-    mo.vstack([
-        mo.md("## Controls"),
-        unique_weights,
-        time_step,
-        mo.md("**Instructions**: Move the slider to see how each algorithm builds the MST step by step.")
-    ])
+    mo.vstack(
+        [
+            mo.md("## Controls"),
+            unique_weights,
+            time_step,
+            mo.md(
+                "**Instructions**: Move the slider to see how each algorithm builds the MST step by step."
+            ),
+        ]
+    )
     return
 
 
@@ -334,27 +381,42 @@ def _(edges, kruskal_steps, nodes, plt, prim_steps, time_step):
                 prim_edges_to_show.append((u, v, weight))
 
         algorithms = [
-            (ax1, "Kruskal's Algorithm (Global Approach)", kruskal_edges_to_show),
-            (ax2, "Prim's Algorithm (Local Growth)", prim_edges_to_show),
+            (ax1, "Kruskal's Algorithm", kruskal_edges_to_show),
+            (ax2, "Prim's Algorithm", prim_edges_to_show),
         ]
 
         for ax, title, edges_to_show in algorithms:
             ax.clear()
-            ax.set_facecolor('white')
+            ax.set_facecolor("white")
 
             # Draw all possible edges - dashed for unconnected
-            mst_edge_set = set((u, v) for u, v, _ in edges_to_show) | set((v, u) for u, v, _ in edges_to_show)
-            
+            mst_edge_set = set((u, v) for u, v, _ in edges_to_show) | set(
+                (v, u) for u, v, _ in edges_to_show
+            )
+
             for u, v, weight in edges:
                 x1, y1 = nodes[u]
                 x2, y2 = nodes[v]
-                
+
                 if (u, v) in mst_edge_set or (v, u) in mst_edge_set:
                     # MST edge - solid black line
-                    ax.plot([x1, x2], [y1, y2], "black", linewidth=3, solid_capstyle='round')
+                    ax.plot(
+                        [x1, x2],
+                        [y1, y2],
+                        "black",
+                        linewidth=3,
+                        solid_capstyle="round",
+                    )
                 else:
                     # Non-MST edge - dashed grey line
-                    ax.plot([x1, x2], [y1, y2], "grey", linewidth=2, linestyle='--', alpha=0.7)
+                    ax.plot(
+                        [x1, x2],
+                        [y1, y2],
+                        "grey",
+                        linewidth=2,
+                        linestyle="--",
+                        alpha=0.7,
+                    )
 
                 # Add edge weight labels with larger font
                 mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
@@ -362,49 +424,84 @@ def _(edges, kruskal_steps, nodes, plt, prim_steps, time_step):
                     mid_x,
                     mid_y,
                     str(weight),
-                    fontsize=12,
+                    fontsize=15,
                     bbox=dict(
                         boxstyle="round,pad=0.2", facecolor="white", alpha=0.9
                     ),
-                    ha='center', va='center', fontweight='bold'
+                    ha="center",
+                    va="center",
+                    fontweight="bold",
                 )
 
             # Draw nodes - color based on connection status
             connected_nodes = set()
             if "Prim" in title:
-                # For Prim, start with PowerPlant always connected
-                connected_nodes.add("PowerPlant")
+                # For Prim, start with node A always connected
+                connected_nodes.add("A")
                 for u, v, _ in edges_to_show:
                     connected_nodes.add(u)
                     connected_nodes.add(v)
             else:
-                # For Kruskal, find connected components
-                for u, v, _ in edges_to_show:
-                    connected_nodes.add(u)
-                    connected_nodes.add(v)
+                # For Kruskal, find all nodes in connected components
+                if edges_to_show:
+                    # Build Union-Find to determine connected components
+                    parent = {node: node for node in nodes}
+                    
+                    def find_root(x):
+                        if parent[x] != x:
+                            parent[x] = find_root(parent[x])
+                        return parent[x]
+                    
+                    def union_nodes(x, y):
+                        px, py = find_root(x), find_root(y)
+                        if px != py:
+                            parent[py] = px
+                    
+                    # Apply edges to build connected components
+                    for u, v, _ in edges_to_show:
+                        union_nodes(u, v)
+                    
+                    # Find all nodes connected to any component that has edges
+                    connected_roots = set()
+                    for u, v, _ in edges_to_show:
+                        connected_roots.add(find_root(u))
+                        connected_roots.add(find_root(v))
+                    
+                    for node in nodes:
+                        if find_root(node) in connected_roots:
+                            connected_nodes.add(node)
 
             for node, (x, y) in nodes.items():
-                color = "#f5cbcc" if node in connected_nodes else "#d0e2f3"  # light red : light blue
+                color = (
+                    "#f5cbcc" if node in connected_nodes else "#d0e2f3"
+                )  # light red : light blue
                 # Draw larger circle with black border
                 circle = plt.Circle((x, y), 0.15, color=color, zorder=5)
                 ax.add_patch(circle)
                 # Add black border
-                border_circle = plt.Circle((x, y), 0.15, fill=False, edgecolor='black', linewidth=2, zorder=6)
+                border_circle = plt.Circle(
+                    (x, y),
+                    0.15,
+                    fill=False,
+                    edgecolor="black",
+                    linewidth=2,
+                    zorder=6,
+                )
                 ax.add_patch(border_circle)
                 # Larger text
                 ax.text(
                     x,
                     y,
-                    node.replace("Substation", "Sub").replace("PowerPlant", "Plant"),
+                    node,
                     ha="center",
                     va="center",
-                    fontsize=10,
+                    fontsize=15,
                     fontweight="bold",
                     zorder=7,
                 )
 
             # Clean title
-            ax.set_title(title, fontsize=14, fontweight="bold", pad=20)
+            ax.set_title(title, fontsize=18, fontweight="bold", pad=20)
             ax.set_aspect("equal")
             ax.axis("off")
 
