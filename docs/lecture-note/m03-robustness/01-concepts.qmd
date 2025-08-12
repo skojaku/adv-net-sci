@@ -16,6 +16,9 @@ In this module, we will explore network robustness through the lens of infrastru
 
 **Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, network redundancy, random failures, targeted attacks, connectivity loss, R-index, percolation, robustness paradox
 
+## Pen-and-Paper Exercise: From MST to Robust Grid Design
+
+- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Starting with a minimum spanning tree for cost efficiency, design a power grid network that maintains connectivity even when key components fail.
 
 ## Power Grid Design Challenge
 
@@ -63,11 +66,31 @@ The algorithm begins by selecting any location as its starting point, often the 
 
 This local expansion strategy mirrors how many real-world infrastructure projects actually develop. Engineers often start from existing facilities and expand outward, always seeking the most cost-effective way to serve additional areas. Prim's algorithm formalizes this natural growth process.
 
+```python {.marimo}
+mo.vstack(
+    [
+        unique_weights,
+        time_step,
+        mo.md(
+            "**Instructions**: Move the slider to see how each algorithm builds the MST step by step."
+        ),
+    ]
+)
+```
+
+```python {.marimo}
+fig
+```
+
+
+
+
 ::: {.callout-note}
 
 Two algorithms find the same minimum spanning tree when all connection costs are different. If there are connections with the same cost, there are multiple minimum spanning trees of the same cost, and which tree to find depends on the algorithm. In particular, Prim's algorithm finds different trees when starting from different locations.
 
 :::
+
 
 
 ## Why Minimum Spanning Tree is Not Enough
@@ -117,7 +140,7 @@ Even if a network survives random failures beautifully, it might crumble under *
 The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
 :::
 
-## Percolation Theory: The Mathematics Behind Network Breakdown
+## Theoretical Framework for Network Robustness
 
 To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes to a grid, when does a giant connected component emerge? Network robustness asks the opposite: as we remove nodes, when does the giant component disappear?
 
@@ -125,11 +148,38 @@ To understand these patterns mathematically, we can view network attacks as the 
 Percolation theory originated in physics to understand how liquids flow through porous materials. The same mathematics explains how networks fragment under node removal - a beautiful example of how physics concepts illuminate network behavior.
 :::
 
+```python {.marimo}
+p_slider
+```
+
+```python {.marimo}
+percolation_visualization()
+```
+
+::: {.column-margin}
+**Percolation vs. Robustness: Two Sides of the Same Coin**
+
+Percolation theory asks: *"Starting from isolation, how many nodes must we connect to form a giant component?"* - increasing connectivity from $p = 0$ to $p = 1$.
+
+Robustness analysis asks: *"Starting from full connectivity, how many nodes must we remove to fragment the network?"* - decreasing connectivity from $p = 1$ to $p = 0$.
+
+These are mathematically equivalent processes, just viewed in opposite directions along the same connectivity parameter.
+:::
+
 ### The Phase Transition
 
 Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter; only the fraction of nodes present or removed determines connectivity.
 
-### The Molloy-Reed Criterion: Predicting Network Connectivity
+```python {.marimo}
+p_slider
+```
+
+```python {.marimo}
+phase_transition_plot()
+```
+
+
+### The Molloy-Reed Criterion
 
 For networks with arbitrary degree distributions, the **Molloy-Reed criterion** determines whether a **giant component** exists - that is, whether the network contains a single large connected component that includes most of the nodes:
 
@@ -137,25 +187,76 @@ $$
 \kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2
 $$
 
-where $\langle k \rangle$ is the average degree and $\langle k^2 \rangle$ is the average of squared degrees. The ratio $\kappa$ measures **degree heterogeneity** - networks with hubs have high $\kappa$, while degree homogeneous networks have low $\kappa$. When $\kappa > 2$, a giant component forms that dominates the network connectivity.
+where $\langle k \rangle$ is the average degree and $\langle k^2 \rangle$ is the average of squared degrees. The ratio $\kappa$ measures **degree heterogeneity** - networks with hubs have high $\kappa$, while degree homogeneous networks have low $\kappa$. When $\kappa > 2$, a giant component forms that dominates the network connectivity. See the Appendix for the proof of the Molloy-Reed criterion.
 
-The second key equation tells us the **probability that a node must remain** for the giant component to survive:
+The Molloy-Reed criterion is a powerful tool to predict the existence of a giant component in a network and allows us to find the critical fraction of nodes that must be **removed** to break the network. This critial fraction depends on the strategy of the attack, along with the degree distribution. For simplicity, let us restrict ourselves into the random failures. For the random failure case, the critical fraction is given by:
 
 $$
 f_c = 1 - \frac{1}{\kappa - 1}
 $$
 
-This means the critical fraction of nodes that must be **removed** to break the network is $1 - f_c = \frac{1}{\kappa - 1}$.
+The value of $\kappa$ depends on the degree distribution, and below, we showcase two examples of degree distributions.
 
-## The Robustness Paradox: Why No Network Design Is Perfect
+#### Degree homogeneous network
 
-This mathematical analysis reveals a fundamental **robustness paradox**: heterogeneous networks with hubs are extremely robust to random failures ($f_c \approx 1$, meaning almost all nodes must be removed) but vulnerable to targeted hub attacks. Homogeneous networks show similar vulnerability to both random and targeted attacks.
+In case of a degree homogeneous network like a random network considered in the exercise above, the critical fraction is given by:
 
-There's no single network structure optimal against all threats. This explains why:
-- **Power grids** balance efficiency (hub-based transmission) with security (local redundancy)
-- **The internet** combines hierarchical routing with mesh-like redundancy
-- **Transportation networks** use hub airports but maintain point-to-point alternatives
-- **Biological networks** are robust to random molecular failures but vulnerable when key proteins are damaged
+$$
+f_c = 1 - \frac{1}{\langle k \rangle}
+$$
+
+given that $\langle k^2 \rangle = \langle k \rangle^2$ and thus $\kappa = \langle k \rangle$. This suggests that the threshold is determined by the average degree $\langle k \rangle$. A large $\langle k \rangle$ results in a larger $f_c$, meaning that the network is more robust against random failures.
+
+
+#### Degree heterogeneous network
+
+Most real-world networks are degree heterogeneous, i.e., the degree distribution $P(k) \sim k^{-\gamma}$ follows a power law (called *scale-free* network).
+The power-law degree distribution has infinite second moment, i.e., $\langle k^2 \rangle = \infty$ and thus $f_c = 1.0$, which means that all nodes must be removed to break the network into disconnected components.
+This is the case where the number of nodes is infinite (i.e., so that a node has a very large degree for the degree distribution to be a valid power law). When restricting the maximum degree to be finite, the critical fraction is given by:
+
+$$
+f_c =
+\begin{cases}
+1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\text{min}} ^{\gamma-2} k_{\text{max}}^{3-\gamma} -1} & \text{if } 2 < \gamma < 3 \\
+1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\text{min}} - 1} & \text{if } \gamma > 3 \\
+\end{cases}
+$$
+
+where $k_{\text{min}}$ and $k_{\text{max}}$ are the minimum and maximum degree, respectively.
+The variable $\gamma$ is the exponent of the power law degree distribution, controlling the degree heterogeneity, where a lower $\gamma$ results in a more degree heterogeneous network.
+
+- For regime $2 < \gamma < 3$, the critical threshold $f_c$ is determined by the extreme values of the degree distribution, $k_{\text{min}}$ and $k_{\text{max}}$.
+And $f_c \rightarrow 1$ when the maximum degree $k_{\text{max}} \in [k_{\text{min}}, N-1]$ increases.
+Notably, in this regime, the maximum degree $k_{\text{max}}$ increases as the network size $N$ increases, and this makes $f_c \rightarrow 1$.
+
+- For regime $\gamma > 3$, the critical threshold $f_c$ is influenced by the minimum degree $k_{\text{min}}$. In contrast to $k_{\text{max}}$, $k_{\text{min}}$ remains constant as the network size $N$ grows. Consequently, the network disintegrates when a finite fraction of its nodes are removed.
+
+```python {.marimo}
+chart_fc
+```
+
+
+### Robustness Under Attack
+
+While scale-free networks show remarkable robustness against random failures, they exhibit a fundamental vulnerability to targeted attacks that deliberately target high-degree nodes (hubs). This asymmetry reveals the "Achilles' heel" property of complex networks, where the same structural features that provide robustness against random failures create critical vulnerabilities to strategic attacks.
+
+Rather than removing nodes randomly, an adversary with knowledge of the network structure can systematically remove the highest-degree nodes first, followed by the next highest-degree nodes, and so on. Under this targeted hub removal strategy, scale-free networks fragment rapidly and dramatically. The critical threshold for attacks, $f_c^{\text{attack}}$, is dramatically lower than for random failures. While random failures require $f_c^{\text{random}} \approx 1$ (nearly all nodes must be removed), targeted attacks need only $f_c^{\text{attack}} \ll 1$ (a small fraction of hubs) to fragment the network.
+
+To understand how networks fragment under targeted attacks, we must consider two key effects that occur when the highest-degree nodes are systematically removed. First, the removal of hub nodes changes the maximum degree of the remaining network from $k_{\max}$ to a new lower value $k'_{\max}$. Second, since these removed hubs had many connections, their elimination also removes many links from the network, effectively changing the degree distribution of the surviving nodes.
+
+The mathematical analysis of this process relies on mapping the attack problem back to the random failure framework through careful accounting of these structural changes. When we remove an $f$ fraction of the highest-degree nodes in a scale-free network, the new maximum degree becomes $k'_{\max} = k_{\min} f^{1/(1-\gamma)}$, where the power-law exponent $\gamma$ determines how rapidly the degree sequence declines.
+
+For scale-free networks with degree exponent $\gamma$, the critical attack threshold $f_c$ satisfies:
+
+$$
+f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)
+$$
+
+The fractional exponents $(2-\gamma)/(1-\gamma)$ and $(3-\gamma)/(1-\gamma)$ arise from the power-law degree distribution and determine how quickly the network fragments as hubs are removed. For networks with $\gamma < 3$ (highly heterogeneous degree distributions), these exponents are negative, leading to extremely small values of $f_c$, i.e., meaning just a tiny fraction of hub removal can destroy network connectivity.
+
+This vulnerability has profound real-world implications across multiple domains. Power grids invest heavily in protecting major substations and transmission hubs because their failure could cascade throughout the system. Internet infrastructure includes hub redundancy and protection protocols to maintain connectivity when major routing nodes are compromised. Transportation networks maintain backup routes and alternative pathways when major airports or train stations fail. Even biological systems have evolved protective mechanisms for critical proteins that serve as hubs in cellular networks.
+
+The robustness paradox demonstrates that no single network structure can be optimal against all types of failures. There's always a fundamental trade-off between efficiency, which naturally favors hub-based architectures for optimal resource distribution, and security, which requires redundancy and distributed connectivity to prevent catastrophic failures from targeted attacks.
 
 ## Design Principles for Robust Networks
 
@@ -169,8 +270,648 @@ How do we design networks that resist both random failures and targeted attacks?
 
 These strategies reflect lessons learned from our historical power grid challenge: moving beyond the minimum spanning tree to create networks that balance efficiency with resilience.
 
-## Pen-and-Paper Exercise: From MST to Robust Grid Design
 
-- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Starting with a minimum spanning tree for cost efficiency, design a power grid network that maintains connectivity even when key components fail.
+<!--
+========================================
+Code for the interactive visualizations
+========================================
+-->
 
-This exercise bridges the historical infrastructure challenge with modern network robustness principles, demonstrating the evolution from pure cost optimization to resilient system design.
+
+```python {.marimo}
+import marimo as mo
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from scipy.ndimage import label
+from matplotlib.colors import ListedColormap
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import connected_components
+
+```
+
+```python {.marimo}
+# Control for edge weight uniqueness
+unique_weights = mo.ui.checkbox(
+    label="Use unique edge weights (when unchecked, some edges have same weight)",
+    value=True,
+)
+
+# Time step slider - fixed to accommodate MST (max 6 edges for 7 nodes)
+time_step = mo.ui.slider(
+    start=0,
+    stop=6,  # Fixed max for power grid (7 nodes = 6 MST edges)
+    step=1,
+    value=6,  # Start at final state
+    label="Algorithm Time Step (0=start, 6=complete MST)",
+)
+```
+
+```python {.marimo}
+def create_power_grid_graph(use_unique_weights=True):
+    """Create power grid graph with nodes and edges"""
+
+    # Define nodes with positions
+    nodes = {
+        "A": (0, 1),
+        "B": (1, 2),
+        "C": (1, 0),
+        "D": (2, 2.5),
+        "E": (2, 1.5),
+        "F": (2, 0.5),
+        "G": (2, -0.5),
+    }
+
+    if use_unique_weights:
+        # All weights are unique
+        edges = [
+            ("A", "B", 8),
+            ("A", "C", 12),
+            ("B", "D", 5),
+            ("B", "E", 7),
+            ("C", "F", 6),
+            ("C", "G", 4),
+            ("D", "E", 3),
+            ("E", "F", 9),
+            ("F", "G", 2),
+            ("D", "C", 11),
+        ]
+    else:
+        # Some weights are the same - multiple MSTs possible
+        edges = [
+            ("A", "B", 8),
+            ("A", "C", 12),
+            ("B", "D", 5),
+            ("B", "E", 7),
+            ("C", "F", 6),
+            ("C", "G", 4),
+            ("D", "E", 3),
+            ("E", "F", 11),
+            ("F", "G", 2),
+            ("D", "C", 11),
+        ]
+
+    return nodes, edges
+
+
+# Create the graph based on current setting
+nodes, edges = create_power_grid_graph(unique_weights.value)
+
+def kruskal_algorithm(nodes_dict, edges_list):
+    """Kruskal's algorithm implementation without networkx"""
+
+    # Step 1: Sort edges by weight (global perspective)
+    sorted_edges = sorted(edges_list, key=lambda x: x[2])
+
+    # Initialize Union-Find data structure
+    parent = {}
+    rank = {}
+
+    # Initialize all nodes in Union-Find
+    for node in nodes_dict:
+        parent[node] = node
+        rank[node] = 0
+
+    def find(x):
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x, y):
+        px, py = find(x), find(y)
+        if px == py:
+            return False
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+        return True
+
+    mst_edges = []
+    steps = []
+
+    for u, v, weight in sorted_edges:
+        if union(u, v):
+            mst_edges.append((u, v, weight))
+            steps.append(
+                {
+                    "edge": (u, v),
+                    "weight": weight,
+                    "action": "added",
+                    "reason": f"Connects {u} and {v} without creating cycle",
+                }
+            )
+
+        # Continue until we have a spanning tree OR all edges are processed
+        if len(mst_edges) == len(nodes_dict) - 1:
+            break
+
+    return mst_edges, steps
+
+
+def prim_algorithm(nodes_dict, edges_list, start_node="A"):
+    """Prim's algorithm implementation without networkx"""
+
+    # Create adjacency list
+    adj = {node: [] for node in nodes_dict}
+    for u, v, weight in edges_list:
+        adj[u].append((v, weight))
+        adj[v].append((u, weight))
+
+    visited = {start_node}
+    mst_edges = []
+    steps = []
+
+    steps.append(
+        {
+            "node": start_node,
+            "action": "start",
+            "reason": f"Starting from {start_node}",
+        }
+    )
+
+    while len(visited) < len(nodes_dict):
+        min_weight = float("inf")
+        min_edge = None
+
+        # Find cheapest edge from visited to unvisited nodes
+        for node in visited:
+            for neighbor, weight in adj[node]:
+                if neighbor not in visited and weight < min_weight:
+                    min_weight = weight
+                    min_edge = (node, neighbor, weight)
+
+        if min_edge:
+            u, v, weight = min_edge
+            visited.add(v)
+            mst_edges.append((u, v, weight))
+            steps.append(
+                {
+                    "edge": (u, v),
+                    "weight": weight,
+                    "action": "added",
+                    "reason": f"Cheapest connection from visited set to {v}",
+                }
+            )
+
+    return mst_edges, steps
+
+
+# Run both algorithms
+kruskal_mst, kruskal_steps = kruskal_algorithm(nodes, edges)
+prim_mst, prim_steps = prim_algorithm(nodes, edges)
+
+# Calculate total weights
+kruskal_weight = sum(w for _, _, w in kruskal_mst)
+prim_weight = sum(w for _, _, w in prim_mst)
+
+# Display algorithm results with current step information
+weight_match = "✅ Same" if kruskal_weight == prim_weight else "❌ Different"
+
+# Get current step information
+current_step = time_step.value
+max_steps = len([s for s in kruskal_steps if s["action"] == "added"])
+```
+
+```python {.marimo}
+def visualize_both_algorithms():
+    """Create side-by-side visualization of both algorithms with time step control"""
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
+
+    # Get edges to show up to current time step for each algorithm
+    current_step = time_step.value
+
+    # For Kruskal: edges added in order they appear in steps
+    kruskal_edges_to_show = []
+    for i, step in enumerate(kruskal_steps):
+        if i >= current_step:
+            break
+        if step["action"] == "added":
+            u, v = step["edge"]
+            weight = step["weight"]
+            kruskal_edges_to_show.append((u, v, weight))
+
+    # For Prim: edges added in order they appear in steps
+    prim_edges_to_show = []
+    for i, step in enumerate(prim_steps[1:], 1):  # Skip the 'start' step
+        if i > current_step:
+            break
+        if step["action"] == "added":
+            u, v = step["edge"]
+            weight = step["weight"]
+            prim_edges_to_show.append((u, v, weight))
+
+    algorithms = [
+        (ax1, "Kruskal's Algorithm", kruskal_edges_to_show),
+        (ax2, "Prim's Algorithm", prim_edges_to_show),
+    ]
+
+    for ax, title, edges_to_show in algorithms:
+        ax.clear()
+        ax.set_facecolor("white")
+
+        # Draw all possible edges - dashed for unconnected
+        mst_edge_set = set((u, v) for u, v, _ in edges_to_show) | set(
+            (v, u) for u, v, _ in edges_to_show
+        )
+
+        for u, v, weight in edges:
+            x1, y1 = nodes[u]
+            x2, y2 = nodes[v]
+
+            if (u, v) in mst_edge_set or (v, u) in mst_edge_set:
+                # MST edge - solid black line
+                ax.plot(
+                    [x1, x2],
+                    [y1, y2],
+                    "black",
+                    linewidth=3,
+                    solid_capstyle="round",
+                )
+            else:
+                # Non-MST edge - dashed grey line
+                ax.plot(
+                    [x1, x2],
+                    [y1, y2],
+                    "grey",
+                    linewidth=2,
+                    linestyle="--",
+                    alpha=0.7,
+                )
+
+            # Add edge weight labels with larger font
+            mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
+            ax.text(
+                mid_x,
+                mid_y,
+                str(weight),
+                fontsize=20,
+                bbox=dict(
+                    boxstyle="round,pad=0.2", facecolor="white", alpha=0.9
+                ),
+                ha="center",
+                va="center",
+                fontweight="bold",
+            )
+
+        # Draw nodes - color based on connection status
+        connected_nodes = set()
+        if "Prim" in title:
+            # For Prim, start with node A always connected
+            connected_nodes.add("A")
+            for u, v, _ in edges_to_show:
+                connected_nodes.add(u)
+                connected_nodes.add(v)
+        else:
+            # For Kruskal, find all nodes in connected components
+            if edges_to_show:
+                # Build Union-Find to determine connected components
+                parent = {node: node for node in nodes}
+
+                def find_root(x):
+                    if parent[x] != x:
+                        parent[x] = find_root(parent[x])
+                    return parent[x]
+
+                def union_nodes(x, y):
+                    px, py = find_root(x), find_root(y)
+                    if px != py:
+                        parent[py] = px
+
+                # Apply edges to build connected components
+                for u, v, _ in edges_to_show:
+                    union_nodes(u, v)
+
+                # Find all nodes connected to any component that has edges
+                connected_roots = set()
+                for u, v, _ in edges_to_show:
+                    connected_roots.add(find_root(u))
+                    connected_roots.add(find_root(v))
+
+                for node in nodes:
+                    if find_root(node) in connected_roots:
+                        connected_nodes.add(node)
+
+        for node, (x, y) in nodes.items():
+            color = (
+                "#f5cbcc" if node in connected_nodes else "#d0e2f3"
+            )  # light red : light blue
+            # Draw larger circle with black border
+            circle = plt.Circle((x, y), 0.15, color=color, zorder=5)
+            ax.add_patch(circle)
+            # Add black border
+            border_circle = plt.Circle(
+                (x, y),
+                0.15,
+                fill=False,
+                edgecolor="black",
+                linewidth=2,
+                zorder=6,
+            )
+            ax.add_patch(border_circle)
+            # Larger text
+            ax.text(
+                x,
+                y,
+                node,
+                ha="center",
+                va="center",
+                fontsize=20,
+                fontweight="bold",
+                zorder=7,
+            )
+
+        # Clean title
+        ax.set_title(title, fontsize=22, fontweight="bold", pad=20)
+        ax.set_aspect("equal")
+        ax.axis("off")
+
+        # Set axis limits with padding
+        x_coords = [x for x, y in nodes.values()]
+        y_coords = [y for x, y in nodes.values()]
+        ax.set_xlim(min(x_coords) - 0.3, max(x_coords) + 0.3)
+        ax.set_ylim(min(y_coords) - 0.3, max(y_coords) + 0.3)
+
+    plt.tight_layout()
+    return fig
+
+
+# Create and display the visualization
+fig = visualize_both_algorithms()
+```
+
+
+
+<!---
+Code for the percolation visualization
+--->
+
+
+```python {.marimo}
+# Create a slider to control the puddle probability
+p_slider = mo.ui.slider(
+    start=0.0,
+    stop=1.0,
+    step=0.01,
+    value=0.5,
+    label="Puddle Probability (p)"
+)
+```
+
+
+```python {.marimo}
+np.random.seed(42)  # For reproducible results during demo
+# Grid parameters
+grid_size = 50
+S = np.random.random((grid_size, grid_size))
+
+def percolation_visualization():
+
+    # Generate the percolation grid based on slider value
+    np.random.seed(42)  # For reproducible results during demo
+    grid = S < p_slider.value
+
+    # Find connected components (puddles that touch each other)
+    labeled_array, num_features = label(grid)
+
+    # Find the largest connected component
+    if num_features > 0:
+        sizes = [(labeled_array == i).sum() for i in range(1, num_features + 1)]
+        largest_size = max(sizes)
+        largest_fraction = largest_size / (grid_size * grid_size)
+    else:
+        largest_size = 0
+        largest_fraction = 0.0
+
+    # Create visualization
+    plt.figure(figsize=(8, 8))
+
+    # Create a display grid that shows largest component in red
+    display_grid = np.zeros_like(grid, dtype=int)
+
+    # Find the largest component
+    if num_features > 0:
+        # Find which label corresponds to the largest component
+        largest_label = np.argmax(sizes) + 1  # +1 because labels start from 1
+
+        # Set display values: 0=white, 1=blue (small components), 2=red (largest component)
+        display_grid[grid] = 1  # All puddles start as blue
+        display_grid[labeled_array == largest_label] = 2  # Largest component in red
+
+    # Create custom colormap: white for empty, blue for small components, red for largest
+    colors = ['white', '#4472C4', '#E74C3C']  # white, blue, red
+    cmap = ListedColormap(colors)
+
+    # Plot the grid
+    ax = plt.imshow(display_grid, cmap=cmap, interpolation='nearest')
+
+    # Styling
+    plt.title(f'Percolation Grid (p = {p_slider.value:.2f})\n'
+              f'Largest Component (Red): {largest_size} squares '
+              f'({largest_fraction:.1%} of grid)',
+              fontsize=14, pad=20)
+    plt.xlabel('Grid Position')
+    plt.ylabel('Grid Position')
+
+    # Add grid lines for clarity
+    plt.xticks(np.arange(-0.5, grid_size, 10), minor=True)
+    plt.yticks(np.arange(-0.5, grid_size, 10), minor=True)
+    plt.grid(which='minor', color='gray', linestyle='-', alpha=0.3)
+    plt.tick_params(which='minor', size=0)
+
+    # Add a legend
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='white', edgecolor='black', label='Empty'),
+        Patch(facecolor='#4472C4', label='Small Components'),
+        Patch(facecolor='#E74C3C', label='Largest Component')
+    ]
+    plt.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.15, 1))
+
+    # Return the plot
+    return ax
+```
+
+```python {.marimo}
+# Generate data for the phase transition plot
+prob_values = np.linspace(0, 1, 100)
+component_fractions = []
+
+#grid_size_phase = 50  # Use smaller grid for faster computation
+
+# Calculate largest component size for different probabilities
+np.random.seed(42)  # Fixed seed for consistent results
+#S = np.random.random((grid_size_phase, grid_size_phase))
+for prob in prob_values:
+    # Generate random grid
+    phase_grid = S < prob
+
+    # Find connected components
+    labeled_phase, num_phase = label(phase_grid)
+
+    if num_phase > 0:
+        phase_sizes = [(labeled_phase == i).sum() for i in range(1, num_phase + 1)]
+        largest_phase = max(phase_sizes) / (grid_size * grid_size)
+    else:
+        largest_phase = 0.0
+
+    component_fractions.append(largest_phase)
+```
+
+```python {.marimo}
+def phase_transition_plot():
+    # Create the phase transition plot
+    plt.figure(figsize=(8, 6))
+
+    # Plot the phase transition curve
+    plt.plot(prob_values, component_fractions, 'b-', linewidth=2,
+             label='Largest Component Size')
+
+    # Highlight current probability
+    current_idx = int(p_slider.value * 99)  # Convert to index
+    plt.plot(p_slider.value, component_fractions[current_idx],
+             'ro', markersize=10, label=f'Current p = {p_slider.value:.2f}')
+
+    # Mark approximate critical point (for 2D lattice, pc ≈ 0.593)
+    critical_p = 0.593
+    plt.axvline(x=critical_p, color='gray', linestyle='--', alpha=0.7,
+                label=f'Critical point (p_c ≈ {critical_p})')
+
+    # Styling
+    plt.xlabel('Probability (p)', fontsize=12)
+    plt.ylabel('Fraction of Grid in Largest Component', fontsize=12)
+    plt.title('Percolation Phase Transition', fontsize=14)
+    plt.grid(True, alpha=0.3)
+    plt.legend(frameon=False)
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    # Add phase labels
+    plt.text(0.2, 0.2, 'Disconnected\nPhase', fontsize=15, ha='center',
+             bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.7))
+    plt.text(0.8, 0.2, 'Connected\nPhase', fontsize=15, ha='center',
+             bbox=dict(boxstyle='round', facecolor='#f5cbcc', alpha=0.7))
+
+    return plt.gca()
+```
+
+
+<!--
+Code for the f_c plot
+-->
+
+```python {.marimo}
+def compute_fc_powerlaw(gamma, k_min, k_max):
+    """
+    Compute the critical fraction f_c for a power-law degree distribution.
+
+    Parameters
+    ----------
+    gamma : float
+        Exponent of the power-law degree distribution.
+    k_min : float
+        Minimum degree in the network.
+    k_max : float
+        Maximum degree in the network.
+
+    Returns
+    -------
+    f_c : float
+        Critical fraction of nodes that must be removed to break the network.
+    """
+    if gamma > 3:
+        denom = (gamma - 2) / (gamma - 3) * k_min - 1
+        if denom == 0:
+            return 1.0
+        f_c = 1 - 1 / denom
+    elif 2 < gamma < 3:
+        denom = (gamma - 2) / (3-gamma) * (k_min ** (gamma - 2)) * (k_max ** (3 - gamma)) - 1
+        if denom == 0:
+            return 1.0
+        f_c = 1 - 1 / denom
+    else:
+        raise ValueError("gamma must be > 2 for a giant component to exist.")
+    return f_c
+```
+
+
+```python {.marimo}
+import altair as alt
+
+kmax_values = np.arange(50, 1000, 20)
+gammas = [2.1, 2.5, 2.9]
+gamma_labels = {2.1: "gamma = 2.1", 2.5: "gamma = 2.5", 2.9: "gamma = 2.9"}
+colors = {2.1: "red", 2.5: "blue", 2.9: "orange"}
+linestyles = {2.1: "solid", 2.5: "dashed", 2.9: "dashed"}
+
+# Prepare data for Altair
+data = []
+for gamma in gammas:
+    for kmax in kmax_values:
+        fc = compute_fc_powerlaw(gamma, 1, kmax)
+        data.append({
+            "Maximum degree": kmax,
+            "Critical fraction": fc,
+            "gamma": gamma_labels[gamma],
+            "color": colors[gamma],
+            "linestyle": linestyles[gamma]
+        })
+
+df = pd.DataFrame(data)
+
+# Altair plot
+
+# Find the minimum y value (critical fraction) in the data
+min_fc = df["Critical fraction"].min()
+
+chart_fc = alt.Chart(df).mark_line().encode(
+    x=alt.X(
+        "Maximum degree:Q",
+        title="Maximum degree",
+        axis=alt.Axis(titleFontSize=18, labelFontSize=14)
+    ),
+    y=alt.Y(
+        "Critical fraction:Q",
+        title="$f_c$",
+        scale=alt.Scale(domain=[min_fc, 1.0]),
+        axis=alt.Axis(titleFontSize=18, labelFontSize=14)
+    ),
+    color=alt.Color(
+        "gamma:N",
+        scale=alt.Scale(domain=list(gamma_labels.values()), range=[colors[g] for g in gammas]),
+        legend=alt.Legend(title="gamma", titleFontSize=16, labelFontSize=14)
+    ),
+    strokeDash=alt.StrokeDash(
+        "gamma:N",
+        scale=alt.Scale(domain=list(gamma_labels.values()), range=[[], [5,5], [5,5]]),
+        legend=None
+    )
+).properties(
+    width=300,
+    height=300,
+    title=alt.TitleParams(
+        text="Critical Fraction (k_min = 1)",
+        fontSize=20
+    )
+)
+```
+
+## References
+
+1. **Borůvka, O.** (1926). O jistém problému minimálním [About a certain minimal problem]. *Práce Moravské Přírodovědecké Společnosti*, 3, 37-58. [Original work on minimum spanning trees]
+
+2. **Molloy, M., & Reed, B.** (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180. [Molloy-Reed criterion]
+
+3. **Albert, R., Jeong, H., & Barabási, A. L.** (2000). Error and attack tolerance of complex networks. *Nature*, 406(6794), 378-382. [Seminal paper on network robustness and the "Achilles' heel" property]
+
+4. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629. [Mathematical framework for random failures]
+
+5. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2001). Breakdown of the Internet under intentional attack. *Physical Review Letters*, 86(16), 3682-3685. [Mathematical analysis of targeted attacks]
+
+6. **Callaway, D. S., Newman, M. E., Strogatz, S. H., & Watts, D. J.** (2000). Network robustness and fragility: Percolation on random graphs. *Physical Review Letters*, 85(25), 5468-5471. [Percolation theory approach to network robustness]
+
+7. **Cohen, R., & Havlin, S.** (2010). *Complex Networks: Structure, Robustness and Function*. Cambridge University Press. [Comprehensive treatment of network robustness theory]
+
+8. **Newman, M. E. J.** (2018). *Networks*. Oxford University Press. [Modern textbook covering network robustness and percolation]
