@@ -1,8 +1,13 @@
+---
+title: "Analyzing Degree Distributions and the Friendship Paradox"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
+
 <a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m04-friendship-paradox.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
-
-# Coding: Degree Distribution Analysis
 
 ![](https://barabasi.com/img/6/159.png)
 
@@ -230,5 +235,79 @@ ax.legend(frameon = False)
 
 The slope of the CCDF of a friend is flatter than that of a node, indicating that the degree distribution of a friend is biased towards higher degrees.
 
-```{footbibliography}
+## Exercise 01 🏋️‍♀️💪🧠
+
+Let's implement a complete friendship paradox analysis from scratch:
+
+1. Create different types of networks (Erdős–Rényi, Barabási-Albert, Watts-Strogatz) with the same number of nodes.
+2. For each network, compute both the degree distribution of nodes and their friends.
+3. Calculate the average degree for nodes vs. friends to verify the friendship paradox.
+4. Create comparative CCDF plots to visualize the difference.
+
+```{python}
+# Your implementation here
 ```
+
+## Exercise 02 🏋️‍♀️💪🧠 
+
+Apply the friendship paradox to real data:
+
+1. Select a network dataset from [Netzschleuder](https://networks.skewed.de/) (choose one with < 5000 nodes for efficiency).
+2. Load the data and create the network.
+3. Implement the friendship paradox analysis.
+4. Determine how much stronger the effect is in real networks compared to random graphs.
+
+**Hint:** Use `pandas` to load the CSV data and extract source/target columns for the edge list.
+
+```{python}
+# Your implementation here
+```
+
+## Comparative Network Analysis
+
+Let's compare how the friendship paradox manifests across different network types:
+
+```{python}
+import igraph
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create different network types
+n_nodes = 1000
+
+networks = {
+    "Erdős–Rényi": igraph.Graph.Erdos_Renyi(n_nodes, 0.01),
+    "Barabási-Albert": igraph.Graph.Barabasi(n_nodes, m=5),
+    "Watts-Strogatz": igraph.Graph.Watts_Strogatz(dim=1, size=n_nodes, nei=10, p=0.1),
+}
+
+print("Friendship Paradox Analysis:")
+print("-" * 60)
+print(f"{'Network':<15} {'Avg Node Deg':<12} {'Avg Friend Deg':<15} {'Paradox Ratio':<12}")
+print("-" * 60)
+
+for name, g in networks.items():
+    # Node degrees
+    degrees = np.array(g.degree())
+    avg_node_deg = np.mean(degrees)
+    
+    # Friend degrees (edge-based sampling)
+    A = g.get_adjacency()
+    from scipy import sparse
+    src, trg, _ = sparse.find(A)
+    friend_degrees = degrees[src]
+    avg_friend_deg = np.mean(friend_degrees)
+    
+    ratio = avg_friend_deg / avg_node_deg
+    
+    print(f"{name:<15} {avg_node_deg:<12.2f} {avg_friend_deg:<15.2f} {ratio:<12.2f}")
+```
+
+::: {.column-margin}
+**Understanding the results:**
+- Ratio > 1 confirms the friendship paradox
+- Higher ratios indicate stronger paradox effects
+- Different network structures show varying paradox strengths
+:::
+
+This analysis reveals how network structure influences the strength of the friendship paradox, with scale-free networks (Barabási-Albert) typically showing the strongest effect due to their highly skewed degree distributions.
