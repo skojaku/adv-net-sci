@@ -81,9 +81,7 @@ $$
 \text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
 $$
 
-- CCDF is a monotonically decreasing function of $k$.
-- CCDF encompasses the full information of $p(k)$, i.e., taking the derivative of CCDF gives $p(k)$.
-- CCDF can be plotted as a smooth curve on a log-log scale without binning.
+The CCDF offers several computational advantages: it's a monotonically decreasing function of $k$ that provides smooth visualization, encompasses the full information of $p(k)$ (since taking the derivative of CCDF gives $p(k)$), and can be plotted as a smooth curve on a log-log scale without requiring binning decisions.
 
 ```{python}
 ccdf_deg = 1 - np.cumsum(p_deg)[:-1] # 1 - CDF (cumulative distribution function).
@@ -116,9 +114,7 @@ CCDF (complementary cumulative distribution function) is used instead of CDF (cu
 ```
 :::
 
-**Interpreting the CCDF slope:**
-- **Steep slope**: more homogeneous degree distribution (similar degrees)
-- **Flat slope**: more heterogeneous degree distribution (wide range of degrees)
+**Interpreting the CCDF slope:** A **steep slope** indicates a more homogeneous degree distribution where nodes have similar degrees, while a **flat slope** indicates a more heterogeneous degree distribution with a wide range of degrees.
 
 The CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope providing a measure of the heterogeneity.
 
@@ -199,10 +195,7 @@ We first get the edges in the network, from which we sample a friend.
 from scipy import sparse
 src, trg, _ = sparse.find(A)
 ```
-- `sparse.find(A)` returns the source node, target node, and edge weight of the edge.
-- `src` is the source node of the edge
-- `trg` is the target node of the edge
-- `_` is used to ignore the edge weight values, as we only need the source and target nodes for this analysis.
+The `sparse.find(A)` function returns the source node, target node, and edge weight of each edge. Here, `src` contains the source nodes, `trg` contains the target nodes, and we use `_` to ignore the edge weight values since we only need the source and target nodes for our friendship paradox analysis.
 
 Now, let us get the degree of each friend
 
@@ -304,10 +297,7 @@ for name, g in networks.items():
 ```
 
 ::: {.column-margin}
-**Understanding the results:**
-- Ratio > 1 confirms the friendship paradox
-- Higher ratios indicate stronger paradox effects
-- Different network structures show varying paradox strengths
+**Understanding the results:** A ratio greater than 1 confirms the friendship paradox is present. Higher ratios indicate stronger paradox effects, and different network structures show varying paradox strengths due to their degree distribution properties.
 :::
 
 This analysis reveals how network structure influences the strength of the friendship paradox, with scale-free networks (Barabási-Albert) typically showing the strongest effect due to their highly skewed degree distributions.

@@ -4,12 +4,9 @@ title: "The Friendship Paradox: Core Concepts"
 
 ## What to learn in this module
 
-In this module, we will learn about the friendship paradox. We will learn:
+In this module, we will explore the friendship paradox, one of the most counterintuitive yet mathematically certain phenomena in social networks. We will understand what the friendship paradox is and why it occurs, examine its important consequences for network analysis, and learn the mathematical proof behind this fascinating property. The module covers essential visualization fundamentals including degree distributions, logarithmic plots, and complementary cumulative distribution functions (CCDF), while exploring practical applications in epidemiology and network analysis. 
 
-- Friendship paradox: what is it, why it's important, and what are the consequences?
-- Mathematical proof and visualization fundamentals
-- Practical applications in epidemiology and network analysis
-- **Keywords**: friendship paradox, degree bias, sampling bias, CCDF, logarithmic plots
+**Keywords**: friendship paradox, degree bias, sampling bias, CCDF, logarithmic plots
 
 ## Friendship paradox experiment
 
@@ -86,19 +83,11 @@ The friendship paradox has important implications for public health strategies. 
 
 ## Why Vaccination Strategy Works
 
-When we vaccinate people chosen through the friendship paradox principle:
-1. We're more likely to vaccinate highly connected individuals
-2. Highly connected people are more likely to spread diseases
-3. Vaccinating them creates a disproportionate impact on disease spread
-4. This strategy is more effective than random vaccination
+The vaccination strategy based on the friendship paradox works because it naturally targets the most influential spreaders in a network. When we vaccinate people chosen through friendship connections, we're more likely to vaccinate highly connected individuals who serve as hubs in the social network. Since these highly connected people are more likely to encounter and spread diseases, vaccinating them creates a disproportionately large impact on disease spread compared to random vaccination. This targeted approach effectively breaks the most important transmission pathways in the network.
 
 ## Mathematical Foundation
 
-The friendship paradox can be understood through the concept of degree bias:
-
-- **Node sampling**: Selecting people randomly gives equal weight to everyone
-- **Edge sampling**: Selecting people through their connections gives higher weight to popular people
-- **Result**: Edge sampling systematically overrepresents high-degree nodes
+The friendship paradox emerges from a fundamental difference in sampling methods. **Node sampling** involves selecting people randomly, giving equal weight to everyone regardless of their social connectivity. In contrast, **edge sampling** selects people through their social connections, naturally giving higher weight to popular individuals. This edge-based sampling systematically overrepresents high-degree nodes, creating the mathematical foundation for the friendship paradox.
 
 ### Mathematical Proof of the Friendship Paradox
 
@@ -134,38 +123,17 @@ This mathematical proof confirms: **your friends have more friends than you, on 
 
 ### Understanding Histograms: Area vs. Height
 
-When plotting degree distributions, it's crucial to understand that in a proper histogram representing probability density:
+When plotting degree distributions, it's crucial to understand that in a proper histogram representing probability density, the **area represents probability**, not height. Each bar's area equals width times height, which gives the probability for that interval, and the total area under all bars sums to 1 for proper probability distributions. The height represents density, calculated as probability divided by bin width.
 
-- **Area represents probability**, not height
-- Each bar's area = width × height = probability for that interval
-- Total area under all bars = 1 (for probability distributions)
-- Height = density = probability/bin_width
-
-For discrete distributions like degree distributions:
-- Bar width typically = 1 (for integer degrees)
-- Height = probability mass = p(k)
-- Area = height × width = p(k) × 1 = p(k)
+For discrete distributions like degree distributions, the bar width typically equals 1 (for integer degrees), so the height equals the probability mass p(k), making the area simply p(k) since area equals height times width.
 
 ### Logarithmic Scale Fundamentals
 
-Logarithmic scales are essential for analyzing heavy-tailed distributions:
+Logarithmic scales are essential for analyzing heavy-tailed distributions because they compress large ranges, allowing us to display data spanning several orders of magnitude on a single plot. They also reveal underlying patterns by making power-law relationships appear as straight lines, and they highlight the tail behavior that makes rare, high-degree nodes visible.
 
-**Why use log scales?**
-- **Compress large ranges**: Display data spanning several orders of magnitude
-- **Reveal patterns**: Power-law relationships appear as straight lines
-- **Highlight tails**: Makes rare, high-degree nodes visible
+**Log-log plots** use logarithmic scales on both axes, transforming power-law relationships $y = ax^b$ into straight lines with the form $\log y = \log a + b \log x$, where the slope directly gives us the power-law exponent. **Semi-log plots** use a logarithmic scale on only one axis, making exponential decay relationships appear as straight lines.
 
-**Log-log plots**: Both axes use logarithmic scales
-- Power-law: $y = ax^b$ becomes $\log y = \log a + b \log x$ (straight line)
-- Slope = power-law exponent
-
-**Semi-log plots**: Only one axis uses logarithmic scale
-- Exponential decay appears as straight line
-
-**Key considerations**:
-- Cannot plot zero values (log(0) is undefined)
-- Small values become very negative
-- Relative differences become absolute differences
+However, logarithmic scales have important limitations: we cannot plot zero values since log(0) is undefined, small values become very negative on the log scale, and relative differences in the original data become absolute differences on the log scale.
 
 ### Complementary Cumulative Distribution Function (CCDF)
 
@@ -175,11 +143,7 @@ $$
 \text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
 $$
 
-**Advantages over PDF**:
-- Monotonically decreasing (smoother visualization)
-- No binning required
-- Contains full information of the distribution
-- Better visualization of tails in log-log plots
+The CCDF offers several advantages over the probability density function (PDF) for network analysis. It provides monotonically decreasing values that create smoother visualizations, eliminates the need for binning decisions that can affect interpretation, contains the full information of the distribution (since taking the derivative of CCDF recovers the PDF), and provides superior visualization of tail behavior in log-log plots.
 
 ## Trivia: Benford's Law Connection
 
@@ -199,31 +163,15 @@ $$
 
 where $d$ is the leading digit (1, 2, ..., 9).
 
-**Expected frequencies**:
-- 1: 30.1%, 2: 17.6%, 3: 12.5%, 4: 9.7%, 5: 7.9%
-- 6: 6.7%, 7: 5.8%, 8: 5.1%, 9: 4.6%
+According to Benford's Law, the digit "1" appears as the first digit about 30.1% of the time, "2" appears 17.6% of the time, "3" appears 12.5%, and the frequency continues to decrease: "4" (9.7%), "5" (7.9%), "6" (6.7%), "7" (5.8%), "8" (5.1%), and "9" (4.6%).
 
 ### Connection to Network Phenomena
 
-Both Benford's Law and the friendship paradox involve **sampling bias**:
+Both Benford's Law and the friendship paradox involve fundamental **sampling bias** effects, though they manifest in different domains. Benford's Law emerges when scale-invariant distributions naturally produce this counterintuitive digit pattern, while the friendship paradox occurs because edge-based sampling overrepresents high-degree nodes. The common thread connecting these phenomena is that when data spans multiple orders of magnitude (like network degrees), the method of sampling or measurement matters tremendously.
 
-- **Benford's Law**: Scale-invariant distributions naturally produce this digit pattern
-- **Friendship Paradox**: Edge-based sampling overrepresents high-degree nodes
+Benford's Law appears across diverse domains including network degree sequences (sometimes), financial data and population sizes, scientific measurements, and social media metrics. Just as the friendship paradox reveals hidden structure in social networks, Benford's Law reveals hidden mathematical patterns in naturally occurring data!
 
-**Common thread**: When data spans multiple orders of magnitude (like network degrees), sampling methods matter tremendously.
-
-Benford's Law appears in:
-- Network degree sequences (sometimes)
-- Financial data, population sizes
-- Scientific measurements, social media metrics
-
-Just as the friendship paradox reveals hidden structure in social networks, Benford's Law reveals hidden patterns in naturally occurring data!
-
-This mathematical insight has applications beyond friendships, including:
-- Social network analysis
-- Epidemiology and disease control
-- Marketing and influence strategies
-- Network robustness and vulnerability assessment
+These mathematical insights extend far beyond their original domains, finding applications in social network analysis, epidemiology and disease control strategies, marketing and influence analysis, and network robustness and vulnerability assessment.
 
 In the next section, we will learn how to implement these concepts in code, computing degree distributions and visualizing the friendship paradox using practical examples.
 
