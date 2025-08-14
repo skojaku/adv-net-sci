@@ -2,11 +2,11 @@
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-# Degree distribution
+# Coding: Degree Distribution Analysis
 
 ![](https://barabasi.com/img/6/159.png)
 
-Understanding degree distribution is the first key step to understand networks! And often, we want to see how the degree distribution looks like by plotting it like using histogram. But, it is not as easy as it may seem...
+Understanding degree distribution is the first key step to understand networks! In this coding session, we'll learn how to compute, analyze, and visualize degree distributions effectively using practical examples.
 
 ## Visualization basics
 
@@ -18,19 +18,11 @@ To learn the basics of data visualization, please take a [pen and paper exercise
 
 
 
-### Plotting degree distribution
+### Computing degree distribution
 
 (The following content includes the answer to the exercise. So please do the exercise first before reading the following content.)
 
-We will first introduce a formal definition of the degree distribution. Then, we will learn how to plot the degree distribution of a network.
-
-The degree of a node $i$, denoted by $d_i$, is the number of edges connected to it. With the adjacency matrix $A$, the degree of node $i$ is given by:
-
-$$
-k_i = \sum_{j=1}^N A_{ij}.
-$$
-
-Let us compute the degree distribution of a network. We will create a Barabási-Albert network with $N=10,000$ nodes and $m=1$ edge per node.
+Let's compute the degree distribution of a network using practical implementation. We'll create a Barabási-Albert network with $N=10,000$ nodes and $m=1$ edge per node to demonstrate the techniques.
 
 ```{python}
 import igraph
@@ -119,64 +111,11 @@ CCDF (complementary cumulative distribution function) is used instead of CDF (cu
 ```
 :::
 
-The slope of the CCDF tells us the heterogeneity of the degree distribution.
-- Steep slope: more **homogeneous** degree distribution (similar degrees)
-- Flat slope: more **heterogeneous** degree distribution (wide range of degrees)
+**Interpreting the CCDF slope:**
+- **Steep slope**: more homogeneous degree distribution (similar degrees)
+- **Flat slope**: more heterogeneous degree distribution (wide range of degrees)
 
-
-The slope of the CCDF is related to the power-law exponent of the degree distribution.
-A power-law degree distribution is described by *a continuous distribution* with the *density function* (not the probability mass) $p(d)$ given by {footcite}`clauset2009power`:
-
-$$
-p(k) = \frac{\gamma-1}{k_{\min}} \left( \frac{k}{k_{\min}} \right)^{-\gamma}
-$$
-
-where:
-- $p(k)$ is the probability *density* of a node having degree $k$
-- $\gamma$ is the power-law exponent
-- $k_{\min}$ is the minimum degree
-
-
-::: {.callout-note}
-The degree distribution is *discrete* but often approximated by a *continuous* distribution for mathematical convenience. While generally accurate, caution is needed as the reliability varies depending on the range of the degrees. See {footcite}`clauset2009power` for more details.
-:::
-
-::: {.callout-note}
-The power-law distribution is ill-defined for $d=0$, which is why there must be a minimum degree $d_{\min}$ to avoid this issue.
-:::
-
-::: {.callout-note}
-There has been a long-standing debate in network science as to whether the power-law well represents the real-world networks. Power-law is just one of many possible distributions with a heavy tail (i.e., a long tail on the right side of the distribution), and other distributions may also fit the data well such as log-normal distribution.
-This discussion is critical as many theories in network science are built on the assumption of the form of the degree distribution. See {footcite}`artico2020rare,holme2019rare,voitalov2019scale,barabasi2003scale` for the debate.
-:::
-
-The CCDF for the power-law distribution is given by:
-
-$$
-\begin{aligned}
-\text{CCDF}(k) &= 1 - \int_{k_{\min}}^k p(x) {\rm d}x \\
-  &= 1 - \frac{\gamma -1}{k_{\min}}\cdot \frac{1}{1 - \gamma} \left[
-\left(\frac{k^{-\gamma + 1}}{k_{\min}^{-\gamma}}\right) - \left(\frac{k_{\min} ^{-\gamma + 1}}{k_{\min} ^{-
-\gamma}}\right)\right] \\
-&= \left( \frac{k}{k_{\min}}\right)^{-\gamma + 1}
-\end{aligned}
-$$
-
-Taking the logarithm:
-
-$$
-\log \left[ \text{CCDF}(k) \right] = (-\gamma + 1) \cdot \log k + \text{const.}
-$$
-
-Thus, the slope of the CCDF in a log-log plot is related to the power-law exponent $\gamma$.
-Specifically, a steeper negative slope (i.e., a more negative value of $-\gamma + 1$) corresponds to a larger $\gamma$.
-A larger $\gamma$ indicates a more homogeneous degree distribution, where the probability of finding nodes with very high degrees decreases more rapidly.
-Conversely, a flatter slope (i.e., a value of $-\gamma + 1$ being closer to zero) corresponds to a smaller $\gamma$.
-A smaller $\gamma$ indicates a more heterogeneous degree distribution, where there's a high probability of finding nodes with high degrees compared to that with a large $\gamma$ value.
-
-For students interested in real-world examples of the CCDF plot, refer to Figure 4 in {footcite}`newman2005power`, or [the arxiv version](https://arxiv.org/pdf/cond-mat/0412004)
-
-In sum, the CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope of the CCDF providing a measure of the heterogeneity of the degree distribution.
+The CCDF in a log-log plot provides a convenient visual summary of the degree distribution, with the slope providing a measure of the heterogeneity.
 
 
 ## Degree distribution of a friend
