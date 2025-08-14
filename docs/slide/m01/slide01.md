@@ -208,6 +208,18 @@ Tesla Supercharger Network
 
 ---
 
+# Meet Minidora - Your AI Tutor 🤖
+
+- 🎓 **Personal AI tutor** available 24/7 through Discord
+- 💬 **Ask questions**: `/ask What is an Euler tour? m01`
+- 🗣️ **Chat naturally**: `/chat I'm confused about networks`
+- 📝 **Take quizzes**: `/quiz m01 multiple-choice`
+- 📊 **Track progress**: `/status summary`
+
+**Get help mastering network science concepts anytime!**
+
+---
+
 # Policy
 
 - 📚 3-credit course: 6.5+ hours of work/week outside class
@@ -243,9 +255,9 @@ https://www.youtube.com/watch?v=u6XAPnuFjJc
 
 ![bg right:50% width:90% Königsberg Bridges](https://99percentinvisible.org/app/uploads/2022/02/bridges-with-water.png)
 
-- 18th century puzzle in Königsberg, Germany 🇩🇪
+- 18th century puzzle in Königsberg, Prussia (now Kaliningrad, Russia) 🇩🇪
 - City had 7 bridges connecting 2 islands and mainland 🏙️
-- **Challenge**: Find a route that crosses each bridge exactly once 🚶‍♂️
+- **Challenge**: Find a route that crosses each bridge exactly once and returns to start 🚶‍♂️
 
 ---
 
@@ -257,45 +269,68 @@ How would you approach this problem?
 
 ---
 
-# Euler's Brilliant Solution 🧠
+# Euler's Revolutionary Abstraction 🧠
 
-<img src="https://lh3.googleusercontent.com/-CYxppcJBwe4/W2ndkci9bVI/AAAAAAABX-U/K6SNM8gAhg0oNsnWNgQbH3uKNd5Ba10wwCHMYCw/euler-graph-bridges2?imgmax=1600" style="width: 100%; max-width: none; margin-bottom: 20px;">
+<img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
-
-- 🏙️ Simplified city to network of landmasses and bridges
-- 🔗 Focused on connections, not layout
-
-
+- 🏙️ **Radical simplification**: Only connections matter, not physical details
+- 🔗 **Network abstraction**: Landmasses → nodes, bridges → edges  
+- 🎯 **Birth of graph theory**: Focus on relationships, not objects
 
 ---
-
 
 # Pen and Paper Exercise 📝
 
 - Let's work on a pen-and-paper [exercise](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) 📄
 - Let's form a group of 3-4 people and discuss the solution together.
 
+**Try to discover Euler's insights yourself first!**
+
 ---
 
-# Euler's Solution 🧠
-
-- 🧮 Euler considered: even vs odd edge nodes
-- 💡 Key insights: Even - enter/leave k times, Odd - one edge left
-- 🏆 **Euler's Theorem**: Path exists if all even degree or two odd degree
-- 🌉 Königsberg: All odd degree, no Euler path
+# Euler's Degree-Based Reasoning 🧮
 
 ![bg right:40% width:90%](../../lecture-note/figs/labeled-koningsberg.jpg)
+
+- **Even degree nodes (2k edges)**: Enter/leave k times perfectly
+- **Odd degree nodes (2k+1 edges)**: One "leftover" edge
+- **Key insight**: Leftover edges can only be at start/end points
+
+---
+
+# Euler's Path Theorem 🏆
+
+**An Euler path/circuit exists if and only if:**
+
+1. **Graph is connected** (can reach any node from any other), **AND**
+2. **Either:**
+   - All nodes have even degree (**Euler circuit**)
+   - Exactly two nodes have odd degree (**Euler path**)
+
+**Königsberg verdict**: 4 nodes with odd degree → **impossible!**
+
+---
+
+# Network Terminology 📚
+
+- **Walk**: Any sequence of connected nodes (can repeat)
+- **Trail**: Walk without repeating edges (Euler trail)  
+- **Path**: Walk without repeating nodes
+- **Circuit**: Closed trail (starts/ends at same node)
+- **Cycle**: Closed path
+
+**Königsberg sought an Euler circuit!**
 
 ---
 
 # Aftermath: The Bridges' Fate 🏙️💣
 
-- 🇷🇺 During World War II, Soviet Union bombarded Königsberg
+- 🇷🇺 During WWII, Allied forces bombarded Königsberg
 - 💥 Two of the seven bridges were destroyed
 - ✅ Ironically, this destruction made an Euler path possible!
+- 🏙️ City renamed Kaliningrad, now Russian territory
 
 ![bg right:50% width:80%](../../lecture-note/figs/seven-bridge-bombared.png)
-
 
 ---
 
@@ -309,9 +344,11 @@ How would you approach this problem?
 
 # Key Takeaways
 
-- Networks are powerful tools for modeling complex systems
-- Euler's path problem: a foundation of graph theory and network science
-- Python for network analysis
+- **Mathematical abstraction**: Focus on structure, not physical details
+- **Euler's theorem**: Degree constraints determine network traversability
+- **Network terminology**: Walks, trails, paths, circuits, and cycles
+- **Historical impact**: From recreational puzzle to foundation of network science
+- **Modern relevance**: GPS navigation, internet routing, social networks
 
 ---
 
