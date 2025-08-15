@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2025-08-08">
+
+<title>Advanced Topics in Network Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "|"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../assets/custom.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.jpg" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Intro</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">Why Networks?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../intro/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Foundations</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
+ <span class="dropdown-text">Advanced</span></a>
+  </li>  
+        <li class="dropdown-header">─── M02: Small World ───</li>
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M03: Robustness ───</li>
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Core Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
+        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M05: Clustering ───</li>
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M06: Centrality ───</li>
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Advanced Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
+        <li class="dropdown-header">─── M07: Random Walks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M08: Embedding ───</li>
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Advanced Topics in Network Science</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Coding Networks in Python</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">M02: Small World</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">M03: Robustness</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preparation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Robustness: Core Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">M04: Friendship Paradox</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">M05: Clustering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">M07: Random Walks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 8, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<script>
+  window.location.href = "https://marimo.app/#code/EQhQHUFMCMEEGd6QLbQDYE8C0BhA9sgA4CGALgJbqQAE4Zp8WAyqQE54DmZAXtU8sTRos4PKzQATagDlIpAO5iA1tQCiAD0JoxkVqFAAVABbl41ALLFW5ZHmoA7PKRh48KwuwBu5CZDPF7anJ7Z1ZiAGMKTxpITW0wijxAvAAzalIjGjpSBmY2Th5qW180UABXeGCOaiTMWlgmcyxwghIKKmo0SjDrP2oACkcZOUVWJQANal9CSHtfe3CMAEoAOn1YMoyxAC5hhWU+cPJZ8Jp8MtYkUBBgfRtCMVIiqxs8fQB9d45Z3TJICXe8nIGWoAF5qMAAAwrACMABZYQBmW7EQiEMHPay2FawNH9IESDKg4DIf7kMrIYBLfSgAACqMIK1OQn6Jl87xavlBBlYZUg1N8aXe-VsS22oGokqKeBWyAk-VYNwAxNQAJIhX6RcjRWj0RgsdhcUi8cx4Eo3alS6isOQXew0+lopmQFlsyAcs2Qbm8-mgQXUYWi8VWlWyfZjagkMKk0LwCVS6TveBdXysDHYsrkFbJny6frxq2S+CkKykUGIyEAGgLheLeEIoJhkKrNatxcgDYATNXC1LPII+aCAKwt3tFox4eTvftoQc8vk9sdoYjQF3E6QU1dp1IyT1mfrSJbARe9lJlISAnxE+eQE-Uak1pRJlO6dMyzPZl+sfNj6jF0ugt2rZSnWXajmO7YNjCd5WjOg5wjBIETlOcFejeiGSsuq5oOunrUAAIpAHA2jQ-RKEeGHUGeF4EtePp3g+IbUAASpAQLWPY1QtCE7BoNQWAOJO1odjaSAhGYKRhFqSQ1Gk-zfGYNrsf8NaEM+uZpuCGZZjmqY-hBJasGW0Lgb2oGNispm1s4DYmUOlGoaC0LQcB46TtOA5ofRrmdCua7AAAYlJiTJGkqgSApLFseQNpSP0hAUT51FoJehJGN6C41oxUoqvhphaMQGDUNx+RoHGVrYp4-7hEo+m9gA2j5FUynK-TAAAVO1sASAAVhUTwZDQUbEDGuhmKQdixFoOiRjaLREJs-wOCMyjwNsnVUpRVqJrpuhbVKT67aw+2SmpR2UQAullNY2qQdoyOpqaVtQh1fs9Z1fg6DLOq6uYelyN4CpAQoingYo1tirXKqGK0RgAaqYZSCOQ3BkOQMn9AACnNrSLVILB-PAR4gJaUq3XaX1OsyaCsn9nJeXyQMgzgHJGKWz0ADKs+z0rPfYsNPuEbNGc9lQcAI3NGeDzUrFVJY1XVhaNb+MtGNVtX1fz4aC8LpCi+Q4vEJLpAXUsJ3SisavyxrLNCzzXN20ZpuXZRyMcPYxKnBqiqUX1xbkCkGCe7MoTHtdVrk6w9r6I6jLU7T7L0xlvr+sKO1vS9j17Q4CXBlK4TLog1AAOJhIQRh572NwcwbRgKJAtdPMRqJGEERBoCgIdozJKRiPUjTFa0aPQOQXSkBgNz6L+qfvMEwKfP0SBoCk0sq0WLopCsxC9e8XTFhiADeAC+TUgRvKzvI4vhmOCSCkP02W9v628AlfkCLxvfOeqva83N1UjEEEr4dIdhBrUGbuXSea9JQByATQRwTxgh-nPtvHqu9TCkErtA9ey8t47z3qQTWnoLoYjvg-U+Zlz6Xz3Hg+Ub9H6FmfhIAE8l35LxSM9Moz1PA-xVn-Zh1AAjUFYdQVc9dZhwLMGUQRcxqCeCgdA9htDqG+H6GUUma8lEvxUe-HhFDkG4NQeg4s9UygXVof0PR2CtH4IwfVTw5iX5qIYVaf0NpbDRHeKwj+y9OHcN4b+G4rEPExAijQMR8hIASLflImRUh5FgGwbA6RSCbFoIIXEuRQRAhpOMYQsxWDrEoNsSYsxKx3F4GiJYjR2CDGbyMQQ+x5iKlVPUVPMc-o2bwC8WEnxHDqBcLkQEscNwcCZBqkEOSYThHqAwWYCJUTAgxIGZkhJtxsGR0CCknJxT0kYNWdkupeC9mlKuj5f0MS+nDKriAVid0o6dH2TuGJCi16bMecWPpF8YkuKlP6Vh8ArmFJGbc20DyMk7gBYI8aZQtB+FeSrKF4J6pXWwb3NM2yjk6LWvoq06KsmpN2Xk0xF1gW1MmSsgAPHI3Y1AVSwE8HgHwUxYVdHCITXF0CAVbzRLMeUaj-E1N-O8gF7Sn7A0HoQDAQL9GjJtH8QRUwonohaFK2S6RMjgLLkYBFv5+ZTgga3cEpcW7kLRX3N+hylHYrJSrfVXxtXKLfoMb++j8WDM8Fa8+AKH62r1WxB1LdlHeI9UKsc7z7WGrFYwiVvhiJRL6V-Xw1zCw3GLnIJV8aaA7kAW-XV4awWBA7vYL5DSMErG+PfN+os5APyWL8yU-oC79V0FUD0wMUjkCOCHGV2DRmCHCOeBVHBtDQEEMVWc7YOJcTwB2rtxwQgDDYAESoURgTLHzb2Ng5AAgjr6OCSE+jt1woYBiQ9bqLV4UJbgm1nLJT81rtAMQN8Pn31yY0t+ps72ZpIhiYtgwG4cCME+y4DaVawLjb+6lnY-XQJKsEPk0bsEqnOIu49HdT1e1CEtMgGrTBwO-Q8RAlAO7vHQ3IF9kGonUHagMKjNABIwiWNQAA9Cx6gnZv3kdPQAanBERyoVAyPWBPXGb9KG8BlDQ9YXdHd9wFzwEgKQ3GibFRDroHDA0TBmDft+t+wmd2cTk2e79+LyCHLCJxd+-6H1AZA0TFN5q0w9Qs7u9+5mePUGgp0WYAHH3PvrbB8lsClFdJ6d8Pzdnn31XIBdPmgHgPRZ6qbIL5KpT6e3bJvofGvNIegZloz2XwQZZk4VsTyGS6jvHc2qdVRB5zu7Yu8EiIaPpFK3usw7GVP6NgSpsEB7UsR0LdQEy+j3n9ERJZVrBWOvMa6yJjD5WOkSvgBOIyfhSDvDaEYXeswOAZEBew0WknWCnEc1KG4AAhAKTAQFUWCFIVbjwNuRjIK3Yt+21ZUXYMgP8J3Th3cEHxJwmQ0wvMSdAiQGCAinBfQfeA-3IC7EhCfbBABHPkfIMT1QRxcU4ZzsHyBMB3agGPIB8kG-nC4Nomuk8x5AFYDxCD9EhGGteg7WA0821D-e4IeclgWH4eqHOucE7S-i2ziW0zXvqSUwhIuQ6ku-VaWBkuQOCUQYEfnMO-CU7XtrwX8BNYJZAyQ8ECuQjvH59QTzMJldjjJ3yHlMw5iRal2Bob9ytfQ8N3lxtEriDRDCN8JMa3nDFi2293bnEMi9ugf2tAg7lzOEEUH4g3w-xh5e9tnzMfW79GIIgCkfRuL80iEtQ1xN1n5acIIK3PuAcHqPbXlK22X3nuwTEvJf6MFfOxWzwsgRwQ2b3Hkj3UozOuas4Mc7T8G-7qOU99bEftvR8+4CrvjTYsD9-PilzSDLMRY815vms-wNpE33Y5LhyDew71yrCaJYUq35oDll-RvL8mOS6itLv5H917bxt3BDtx6zSH-1bzexvgG2-XeRSG0DIDamCBSCpDG2G3APr3-EF1YxASf0jwOxpFcQlXCHlWcHeGnV3noC7XfmkGeiUBrX+FBDhE7BTTlUgAVUAWnV8hyCoOoCBBBGkEkWejYKFkHnsDL2cGUzsBUH5isBezV2fU3RznKQCAkAIGzCiXlCQH+AH2LgxBNXLnIR8npQESB0kSSj7nMwPzcwPDP2LidU9H6HIDAwkzEMgEiGEQiFbktQmhehY07GWn80uBqECGENbkqF8B8jZmXneBUHBBUDYw43MOlynwi0PFSz3xSPfm8yiJSBiJty8zPyYnwFcPcJ8PkKCJkjAWsCA1ID0xNz7nBEcPyJ6mYwAFIZBv07DtFvFyB4tAiwN3li4CC-kJUPA3DcZSCgdL4BYkwSxw8DxaC+YKRZiOx4BAJvMtCJBGDmDbUbhsZxiFoU9TCtZRgVB-xw9MkYxrBwgJI+5TD0RUIJIfsRs7sYRFCVQCYjJeDgRW5ODk8KAAd4onIB97BGRLNVDkB1D-gP5tCfJdDzcSD3RyD-iqCFiXp6CJAB8xADZgg68kUS4VgfUB90D8T-1sSOBcSUoAVnDqAcBETBEhBIw5FPIniCAXifC7dfw1JHiMRQSVguh7B4ASBTgWdnpvN7BljIIiY-c6U+AJobQGS+ITiDhzi+gVCig5BrjyoxxlSxhZjCZD5Ucxwpiriu0X0UUZSVR9isBfBQhkBggaB5oT0aAlIYo6sxBUwfIAUyM8AyDoobR3gPTXxiswSVC1ChYmURTm9cCAV9ZuAvQSSwl4BnobQCpThQQApBArhfwB9vTXTYokxfSUgrATMkjIwPI+IkFuSWTUtDJK0-TlIX1gh75qy+JaNEyFJx9JQVRWJlJBFmFgR0Z7Bx0oUfD5URC6y5AGyYo-B9EidR5QkFJpyCyEd3hiy0xqVJzNt8zddv1WFZ4JB1AMRvSJplz3QgzWB6o8z-T-hCy1yrAf9yUPUMRyTKTwshd9yfB1Axdgs0g7CwsQ1-FaUVQAB5ewOoHcilERf2Rk2IOZe3SUOwlpd0QCoZGUirAKB7ZklMYSdiOrLchCyMRTQTUjLc80wiq0XTX-XfS9YBJBOwy5HfNLVXPCAAQnBGkXVIQQJIAt6UGXoUIp-OotgQExI3dDIvv39SnC3N5NDLmHDInFRNEqEzIqYvJS6OYXfIFWWmkqsErTUsRTKiRwopyjVAvzsBnGZS3JTI2xmlfOHL4lYRMsQuDT4v8XQrHGvOUgBFXPXKANy30Q+PlPgQFj-DmNIl8A7ElSKh8LGKQFYB1FCLCr+AMt1MOnCqN1bLNwJNVWlS7NlPwEOJCu1g1O3RuP0RZmcCID0KZEnVCDbRaAawXXvgMq5iqvRGNS3jTxDyX3D021Xw+1j3yvpQcowABPHRtBSA0ywMeIqrILDOQDIxQA6pemwIPH4gKP0S5nBIICWuqpDP5M4BsOwL5O0A4DImGr4AECECwFGEkHqxSE7Ua1qKSTSBZh2sWvauoAAD4Xj1TtqFq9r0RfrIR78xYJYvrGjKrlrsD3rAb2q5sBg2qYb2MAb5LPrlqDKXQkAwaDYIaYam99ETTNSzTnc+VFZsED5CLgBCBgBdhWzzZAkvKZyJA6bhEkyzyfKiyrBGaRkcA2boaiBeaq4OY2bkahbqaWZHBWBrqUZ-gBagbYb5r0agbhbU0uZpbZb4zWbdhxb0RUblaITVbqbwbiA2bTbjbf8jS14Bjhs0r9Tw9npiayrkzyzZro0rScYirFTloSrVTtT70Zj-anaLxTSbiQ7W8Ky+QX0xinTFp3gpj7b-aKaEws5WBZZPJaC06M7ZxIBw4yZhtnatSI6tso6-B4ttYHbZyY5vp443R-oGYU4JVhQpjWzo6K7Tiq7XaPoNJeF-RO05gORtAkAV9+gtytt3oy7ukCEWCQBMLZEwEFMR6nhY6JiloHjPI7swEtzFD3l7SS026-A8laDIAg5lxUAJBAF1BdgVxAUjyBJx6EoHwawVR00tNirTjkqU8l6XsfCLcV6-wvxsLEMrQf6V8MQB6AQwH+r4ps7UIS7D7pTQHqcQ5piSrisg6Mrhdh6NsttHzhIvcJ1FNcHCBnp-60HTjKY44XQaZ66k5AY-Rm6Dw06yGUHLc0qs7zoc53pMSsEm1ESKHlArcyBiB+hi5noaCXpZ7gA6S2CU80qpgRGqI+5YA0ASwYo5FEZkZUYQp3jaT6SjhTsh00xlwMBJMXqxwiNDSfIssX1TrgghSIh34qwONWs+TCBeiZAhC5gHhmyMyszfQaLpdDyk0aAkFZhi8Eh34GK9w61UsiMiFfBsrBg45FMC8ysYtDznYlDKgS1bHMnvz61LT9G5H4E9xFGSxJIRo869VR9L6Sxsd8G8VaKwnAgYnr5fV9F1Bnoip+NFNEnIAmmdS6mRGybXcD5gA81dhq0IR1A2bumIQJ5dgMAj4aTZGFUoV6niAqnSQvSOatnGmyyRF6LCSkzOnO9PRZ5Qn3gXNwQnLsF1BvMMAYQMQEn9NYsunuxqAMB-C+mP9LnksPLuyCI5BdB96wmpkM98N7Lx0FQiJjHmM+4dyJBArqAQLqjKT2bIpZDRERhFkAiosgiD86sUTTgxs20X90xggC9oAN9LnzMBJ9MWiJGNrb6XV2QGW4EbminsF9zx4ZgMRgBWIOBjHgAKVyDKXKU4jWN2N-DsaaAhWbzWagWsWj6tmxn5Rv0qbqKLtcdTtIA2b3m1arRgAd7pmAXjWLtHn5mXIdXJRgBnm2bnnLX7X1BOx5mgI7XFn3XlnPW7XgA+WMAZg2bA2Zg1braVZbbCHCAJAVh8IRGgpqn2W1WRGzZIxY342SxE3SR+hvStnn6ij6SFGDn8V-6v6ampRE69wS78TiDSnBG9StmU7JRyGOGHojoc6FxM4O3UJ87JR3kpjYzFTsUqGfpaG6ZPRk4mYAxmGuHB2kyS6YkQ69Zu2M5bBJ6jpeEUMi3QrvB4AkYugdGhzviQRVH1G9BCC0g62-gG2dZSxzmxwVRwoFI9mlzHYnhGiia1GVgxl7353Oz9FZQrAnxeQO5F58glBIBwArx0oYQVh7IahhT10nIVgAB2AywkhYBw79dQUEQQUgFYcYNqR57YAARWPD-HZQ7jw+-aYCo-fghOIGCFBHqiwDg6+fY+yeIFmTWOkCSH5DVqDnw5WAAE02pnmyOKP4B6OaOCO6PBAGOCAmOPZWP2OxSVhOwuOePQQ+P+YzYcPOxiQ3XJPBPDOHWYNyO1aJo8A1HyAGx6pgA9XThtgQKKPTW9K5AXPgA4t9EB8aS+Pr4fIu932MRm3CxhPf2jIC8LwflAOBA9TDGC42E5bGxmxRYIOvRgB0AIglApOMvoO0pGwMOThsPf9cPhOiPgBr7LPKOFPZOVh5OwPGPmPVONP1PNO03uPTAdP+P9Pf8hPv2xOHWTPavqPhPGvFOBAWu2O2uvMNOtPuvdOBPTNR4cJhPUI2ougaj0A+RNouNXBbP7PJnPQvOfPsE-PinCqR5+YgvQrP3sFc2OaQvPNgvdYMOPB6xdAKA-AwvfxaJ0pOw0vv1MhG5AIgff8KBSBqPkD9i46JC9hP6DxQQD504NJO3IAj5aDkfXo0fUJMfIxkee7Ux0ftgNOUhVmw5zvAPRIbPPFpOFP+gWh4hiQHsOw+UQ4UCcyZSI0BZhjA7K6QuET637b32zV0sZjBeLYPx8OmPWBjYAMBe3ubphsFfO733Kxn7Y4x2E53R6GfRp2W7Q6Sbw6iHl6tst3qB56pAy2w7WTftV6iqpAtmaxyHbfeTYh75ft8VfskEi6zSKVkAHPaazdzccGV8GEcAMRXfjejcZHvOawOYo+2HNtbeHPRb8HTak-OdUHU-HO8azb8HmbYos+ud3hc+i-5b8H3kcBOYhCObkX9ZDZR266J2AZ9fGGQY-eTeifdALe36KnAFYU7sy2N7c7lG0wPv41iMdQecCoMAXfk+ttXm4HPJVJDRRJKhPEDnkUve+4ffAgu+zBYFA+abvPqApXipF-CAq+VfJ+N-tR3QtmNfm+aGdeG6p2O+Z3UenoGSV2cef-125ZLhjG3ejr8-Am-R-qmywTbtSmE6FtJwUaqPV50IcYqLrBrD8N62NWeqpxHl4ppPaHYHFlgNbScQB+AwWoEVDCDyBgGfgAfCzG37UALSQTAfltiZSLoqyYA6fpAJLCpY6BozBkOTS1bU1aauwLZiwObJB9vOLrCEPzREEiMxBIQBzvzTO5pYI2XPHyHQLSD8YM2CbaMO-F4Elg1mA6IdCnkmrTUAcvbX8HDXRoYh-+ugdHmtW-52DUIG1JjJdzqrECZ0TVFAQKQra9giByJB0qFy-YEdIu98DQRh3i5PgfB8UVgWWHQhhV2AkHArkSE7DwcyGNnMQMSHbAugduBrYrlh1UQ4d6uRHIQSZ0IqQ9qOirPCiQOxh4Ax0I8MeEVHiiJQvW9PMbrR3o79BmuKnFxjCGdjfo+uaWAbgRyG44ARuFQzLjgHcGcF8AXgxdDgGaF7cIeB3CgEd0IAjcZGknZQTbR8g0lmIC1YSFNRpwA41sKMJIE-keQ3dhUwMMwe6B8FBDsEEXXWPFG0FZtdB-QCZlYIhJs16oXwggBdFWYRDgOZBc8O-CZ6ZDgAsUPLokMgDxtVsLHREM9ERBxYEhbgKDjB0Aj5D6Yv3McEHBkaG0CA4wlYXZ3q4bdkCfw37OCAPgUjSecIcnpz2gQXcjC1Af+HIi+5dpx09w3DCPx8jkM1I9w+7tAieH3sY2cbHQUmwmbCCGBPfdOqhABE8toEQHPUqBzBEZDWAxIZuBPHS4wi4R6UeqAhyHAojiwMI5IbByxEOFcONNSTkyOuGENGe0wttPcM8ymDjhdwwIZ5j5HoI9OjOdgDMCMjHBAUc5DETCFQ72R9EIPGoo2AABsVkP-MCEqFTD4BdWWYUgOeq0lFhlEAtlKFti6w3wKwaXmo1l7y9r2pBfwQ1WeEKj+2KvHMezE1611X+dDSdgw1TizsM4+HThmuzwB8xSGQAjOCANmicB7+W-KAS-RKYKoc8g1VuO+3QFEEBGA1PbBkFwG2p8BUYIaG9lzyfZSB-QcgdaGIBUDHiA+LmPQMYFjh8Uog3xmwMCB39wBD-YRtwK2p3jiAGrHEb2G1b+spR542IRIO2HUVgAotWQSWHkGEI-xkg79KoLHBgYjxmg9NmKLeFJsjxqbS7kYOTwukbhro6gT5DRoQlZKh1c6o4NlGeREap1I6rYIIm50aSmMdcZOMuG+DCw84vPF6JoCCi14woqLlBKBF6lohF4uIfRFRFJCMRqQhDuCPVGQj5a5owoWV2KEvi+E6wyzuUPjGZdeybpGoewHqGjx10AwBKJTztZtCvQ43Tod0JY69D+hv+QYeSmGGic2oHMcYQpOJAMpfgGeSiSCA5gLjW4HMRYWZNqTWdDuLHK0TVz-FbDzYNox9ixAOEuiTgNAU4dwHOGciHSPkcKYLkYkPChR37UIS8NgnEBs278CZlhIIA-DcpyAeURxJA6gjGeao4kLkOhFojdRCIpEUaPy4CTxJ78b9HiIKlEibOqw0kZ5H6DIECph8NqSsDpFHwGROwtQb+GMLxJ2RVHGiYIieA8jfwnogUQMGCE-tnhoozNplPeGSifhMo9HkVLi7AiVRZU5nsAE1FVTIONU-Uc9ENHai0RpooroBxK6qJLRskkaYWCjb3R4oUeScUlOdFoSIpv0y-tn0tz8iHSqwD7n6O+6BjCcwY0MebAjF1xoxsYscBMLsndUaATktya5OoDuStJmYvnjjONh5iCx57YsXOO+muTcBNScbA7F1jP8a6VMBsa30boG9ouK7QATKJ4agDBxN44cQYOgFjiU88Aa6sIDurW9Z0qY5qpGG0AWN-cV7ARhbVF4poLax47aSIO-HPQ8+hsNmhIAc6m1vOR8cflMEOTXjOBj4oZkWHz5W5oJ608UTmxVmISfIis3McxJVisS30VsiQCvAOmcSHSMQvxvEOEkaiSI9gc6eiMK6CSmp0kq0OV2-YlCvWfk7STq1RmBRgox7HcM+z6BKTi+GYwirpPq4TcuhSnFrsZM8nndBO9XIbqbRslQ9Mu-AIHCIDED3UUxT1KWf0EADDwEeDLk14OpJIoPhsOrnkcfxXPbBD6M+7+ifu36f7o2DhnA8EsZYGEDGKs62TgA9cm6qIHEBSAW5yAxdO3KTmRtdhxTVkUHnGp8QuRc05PpGF5FX8kprs38O7PSkbSspHw0-rsHqi7S5RgIn2SVLA5BzTpYQLUXxNhGF49RBo+qSaMamPSCh78F6daMPnxThszs0sPkUWlxTo0SCr4lpHfBZgZeMUMmfWwwUtVqZKvQhfTIZnUNfoicJse3xbG8J7gjwTEK8GhTSgaw9Cr4hKSIBFRC8OcVhUQAYUkA5g3C7hTG14UPAviuCtMEIrUaiKGF8gKwPYCqBLZJQciqOIopWCdo1GugFRQos4iApgABsaWnkJrDCdRBy6QUuilJCXBMOK4MDsABuLyJiFhDdsbzG4bpsaQsCT4MOVJCfB+sEIT4FN3sCfA6axip0LyBLTUggAA?mode=read&include-code=false";
+</script>
+
+
+<!-- -->
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">script</span><span class="dt">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">window</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span> <span class="op">=</span> <span class="st">"https://marimo.app/#code/EQhQHUFMCMEEGd6QLbQDYE8C0BhA9sgA4CGALgJbqQAE4Zp8WAyqQE54DmZAXtU8sTRos4PKzQATagDlIpAO5iA1tQCiAD0JoxkVqFAAVABbl41ALLFW5ZHmoA7PKRh48KwuwBu5CZDPF7anJ7Z1ZiAGMKTxpITW0wijxAvAAzalIjGjpSBmY2Th5qW180UABXeGCOaiTMWlgmcyxwghIKKmo0SjDrP2oACkcZOUVWJQANal9CSHtfe3CMAEoAOn1YMoyxAC5hhWU+cPJZ8Jp8MtYkUBBgfRtCMVIiqxs8fQB9d45Z3TJICXe8nIGWoAF5qMAAAwrACMABZYQBmW7EQiEMHPay2FawNH9IESDKg4DIf7kMrIYBLfSgAACqMIK1OQn6Jl87xavlBBlYZUg1N8aXe-VsS22oGokqKeBWyAk-VYNwAxNQAJIhX6RcjRWj0RgsdhcUi8cx4Eo3alS6isOQXew0+lopmQFlsyAcs2Qbm8-mgQXUYWi8VWlWyfZjagkMKk0LwCVS6TveBdXysDHYsrkFbJny6frxq2S+CkKykUGIyEAGgLheLeEIoJhkKrNatxcgDYATNXC1LPII+aCAKwt3tFox4eTvftoQc8vk9sdoYjQF3E6QU1dp1IyT1mfrSJbARe9lJlISAnxE+eQE-Uak1pRJlO6dMyzPZl+sfNj6jF0ugt2rZSnWXajmO7YNjCd5WjOg5wjBIETlOcFejeiGSsuq5oOunrUAAIpAHA2jQ-RKEeGHUGeF4EtePp3g+IbUAASpAQLWPY1QtCE7BoNQWAOJO1odjaSAhGYKRhFqSQ1Gk-zfGYNrsf8NaEM+uZpuCGZZjmqY-hBJasGW0Lgb2oGNispm1s4DYmUOlGoaC0LQcB46TtOA5ofRrmdCua7AAAYlJiTJGkqgSApLFseQNpSP0hAUT51FoJehJGN6C41oxUoqvhphaMQGDUNx+RoHGVrYp4-7hEo+m9gA2j5FUynK-TAAAVO1sASAAVhUTwZDQUbEDGuhmKQdixFoOiRjaLREJs-wOCMyjwNsnVUpRVqJrpuhbVKT67aw+2SmpR2UQAullNY2qQdoyOpqaVtQh1fs9Z1fg6DLOq6uYelyN4CpAQoingYo1tirXKqGK0RgAaqYZSCOQ3BkOQMn9AACnNrSLVILB-PAR4gJaUq3XaX1OsyaCsn9nJeXyQMgzgHJGKWz0ADKs+z0rPfYsNPuEbNGc9lQcAI3NGeDzUrFVJY1XVhaNb+MtGNVtX1fz4aC8LpCi+Q4vEJLpAXUsJ3SisavyxrLNCzzXN20ZpuXZRyMcPYxKnBqiqUX1xbkCkGCe7MoTHtdVrk6w9r6I6jLU7T7L0xlvr+sKO1vS9j17Q4CXBlK4TLog1AAOJhIQRh572NwcwbRgKJAtdPMRqJGEERBoCgIdozJKRiPUjTFa0aPQOQXSkBgNz6L+qfvMEwKfP0SBoCk0sq0WLopCsxC9e8XTFhiADeAC+TUgRvKzvI4vhmOCSCkP02W9v628AlfkCLxvfOeqva83N1UjEEEr4dIdhBrUGbuXSea9JQByATQRwTxgh-nPtvHqu9TCkErtA9ey8t47z3qQTWnoLoYjvg-U+Zlz6Xz3Hg+Ub9H6FmfhIAE8l35LxSM9Moz1PA-xVn-Zh1AAjUFYdQVc9dZhwLMGUQRcxqCeCgdA9htDqG+H6GUUma8lEvxUe-HhFDkG4NQeg4s9UygXVof0PR2CtH4IwfVTw5iX5qIYVaf0NpbDRHeKwj+y9OHcN4b+G4rEPExAijQMR8hIASLflImRUh5FgGwbA6RSCbFoIIXEuRQRAhpOMYQsxWDrEoNsSYsxKx3F4GiJYjR2CDGbyMQQ+x5iKlVPUVPMc-o2bwC8WEnxHDqBcLkQEscNwcCZBqkEOSYThHqAwWYCJUTAgxIGZkhJtxsGR0CCknJxT0kYNWdkupeC9mlKuj5f0MS+nDKriAVid0o6dH2TuGJCi16bMecWPpF8YkuKlP6Vh8ArmFJGbc20DyMk7gBYI8aZQtB+FeSrKF4J6pXWwb3NM2yjk6LWvoq06KsmpN2Xk0xF1gW1MmSsgAPHI3Y1AVSwE8HgHwUxYVdHCITXF0CAVbzRLMeUaj-E1N-O8gF7Sn7A0HoQDAQL9GjJtH8QRUwonohaFK2S6RMjgLLkYBFv5+ZTgga3cEpcW7kLRX3N+hylHYrJSrfVXxtXKLfoMb++j8WDM8Fa8+AKH62r1WxB1LdlHeI9UKsc7z7WGrFYwiVvhiJRL6V-Xw1zCw3GLnIJV8aaA7kAW-XV4awWBA7vYL5DSMErG+PfN+os5APyWL8yU-oC79V0FUD0wMUjkCOCHGV2DRmCHCOeBVHBtDQEEMVWc7YOJcTwB2rtxwQgDDYAESoURgTLHzb2Ng5AAgjr6OCSE+jt1woYBiQ9bqLV4UJbgm1nLJT81rtAMQN8Pn31yY0t+ps72ZpIhiYtgwG4cCME+y4DaVawLjb+6lnY-XQJKsEPk0bsEqnOIu49HdT1e1CEtMgGrTBwO-Q8RAlAO7vHQ3IF9kGonUHagMKjNABIwiWNQAA9Cx6gnZv3kdPQAanBERyoVAyPWBPXGb9KG8BlDQ9YXdHd9wFzwEgKQ3GibFRDroHDA0TBmDft+t+wmd2cTk2e79+LyCHLCJxd+-6H1AZA0TFN5q0w9Qs7u9+5mePUGgp0WYAHH3PvrbB8lsClFdJ6d8Pzdnn31XIBdPmgHgPRZ6qbIL5KpT6e3bJvofGvNIegZloz2XwQZZk4VsTyGS6jvHc2qdVRB5zu7Yu8EiIaPpFK3usw7GVP6NgSpsEB7UsR0LdQEy+j3n9ERJZVrBWOvMa6yJjD5WOkSvgBOIyfhSDvDaEYXeswOAZEBew0WknWCnEc1KG4AAhAKTAQFUWCFIVbjwNuRjIK3Yt+21ZUXYMgP8J3Th3cEHxJwmQ0wvMSdAiQGCAinBfQfeA-3IC7EhCfbBABHPkfIMT1QRxcU4ZzsHyBMB3agGPIB8kG-nC4Nomuk8x5AFYDxCD9EhGGteg7WA0821D-e4IeclgWH4eqHOucE7S-i2ziW0zXvqSUwhIuQ6ku-VaWBkuQOCUQYEfnMO-CU7XtrwX8BNYJZAyQ8ECuQjvH59QTzMJldjjJ3yHlMw5iRal2Bob9ytfQ8N3lxtEriDRDCN8JMa3nDFi2293bnEMi9ugf2tAg7lzOEEUH4g3w-xh5e9tnzMfW79GIIgCkfRuL80iEtQ1xN1n5acIIK3PuAcHqPbXlK22X3nuwTEvJf6MFfOxWzwsgRwQ2b3Hkj3UozOuas4Mc7T8G-7qOU99bEftvR8+4CrvjTYsD9-PilzSDLMRY815vms-wNpE33Y5LhyDew71yrCaJYUq35oDll-RvL8mOS6itLv5H917bxt3BDtx6zSH-1bzexvgG2-XeRSG0DIDamCBSCpDG2G3APr3-EF1YxASf0jwOxpFcQlXCHlWcHeGnV3noC7XfmkGeiUBrX+FBDhE7BTTlUgAVUAWnV8hyCoOoCBBBGkEkWejYKFkHnsDL2cGUzsBUH5isBezV2fU3RznKQCAkAIGzCiXlCQH+AH2LgxBNXLnIR8npQESB0kSSj7nMwPzcwPDP2LidU9H6HIDAwkzEMgEiGEQiFbktQmhehY07GWn80uBqECGENbkqF8B8jZmXneBUHBBUDYw43MOlynwi0PFSz3xSPfm8yiJSBiJty8zPyYnwFcPcJ8PkKCJkjAWsCA1ID0xNz7nBEcPyJ6mYwAFIZBv07DtFvFyB4tAiwN3li4CC-kJUPA3DcZSCgdL4BYkwSxw8DxaC+YKRZiOx4BAJvMtCJBGDmDbUbhsZxiFoU9TCtZRgVB-xw9MkYxrBwgJI+5TD0RUIJIfsRs7sYRFCVQCYjJeDgRW5ODk8KAAd4onIB97BGRLNVDkB1D-gP5tCfJdDzcSD3RyD-iqCFiXp6CJAB8xADZgg68kUS4VgfUB90D8T-1sSOBcSUoAVnDqAcBETBEhBIw5FPIniCAXifC7dfw1JHiMRQSVguh7B4ASBTgWdnpvN7BljIIiY-c6U+AJobQGS+ITiDhzi+gVCig5BrjyoxxlSxhZjCZD5Ucxwpiriu0X0UUZSVR9isBfBQhkBggaB5oT0aAlIYo6sxBUwfIAUyM8AyDoobR3gPTXxiswSVC1ChYmURTm9cCAV9ZuAvQSSwl4BnobQCpThQQApBArhfwB9vTXTYokxfSUgrATMkjIwPI+IkFuSWTUtDJK0-TlIX1gh75qy+JaNEyFJx9JQVRWJlJBFmFgR0Z7Bx0oUfD5URC6y5AGyYo-B9EidR5QkFJpyCyEd3hiy0xqVJzNt8zddv1WFZ4JB1AMRvSJplz3QgzWB6o8z-T-hCy1yrAf9yUPUMRyTKTwshd9yfB1Axdgs0g7CwsQ1-FaUVQAB5ewOoHcilERf2Rk2IOZe3SUOwlpd0QCoZGUirAKB7ZklMYSdiOrLchCyMRTQTUjLc80wiq0XTX-XfS9YBJBOwy5HfNLVXPCAAQnBGkXVIQQJIAt6UGXoUIp-OotgQExI3dDIvv39SnC3N5NDLmHDInFRNEqEzIqYvJS6OYXfIFWWmkqsErTUsRTKiRwopyjVAvzsBnGZS3JTI2xmlfOHL4lYRMsQuDT4v8XQrHGvOUgBFXPXKANy30Q+PlPgQFj-DmNIl8A7ElSKh8LGKQFYB1FCLCr+AMt1MOnCqN1bLNwJNVWlS7NlPwEOJCu1g1O3RuP0RZmcCID0KZEnVCDbRaAawXXvgMq5iqvRGNS3jTxDyX3D021Xw+1j3yvpQcowABPHRtBSA0ywMeIqrILDOQDIxQA6pemwIPH4gKP0S5nBIICWuqpDP5M4BsOwL5O0A4DImGr4AECECwFGEkHqxSE7Ua1qKSTSBZh2sWvauoAAD4Xj1TtqFq9r0RfrIR78xYJYvrGjKrlrsD3rAb2q5sBg2qYb2MAb5LPrlqDKXQkAwaDYIaYam99ETTNSzTnc+VFZsED5CLgBCBgBdhWzzZAkvKZyJA6bhEkyzyfKiyrBGaRkcA2boaiBeaq4OY2bkahbqaWZHBWBrqUZ-gBagbYb5r0agbhbU0uZpbZb4zWbdhxb0RUblaITVbqbwbiA2bTbjbf8jS14Bjhs0r9Tw9npiayrkzyzZro0rScYirFTloSrVTtT70Zj-anaLxTSbiQ7W8Ky+QX0xinTFp3gpj7b-aKaEws5WBZZPJaC06M7ZxIBw4yZhtnatSI6tso6-B4ttYHbZyY5vp443R-oGYU4JVhQpjWzo6K7Tiq7XaPoNJeF-RO05gORtAkAV9+gtytt3oy7ukCEWCQBMLZEwEFMR6nhY6JiloHjPI7swEtzFD3l7SS026-A8laDIAg5lxUAJBAF1BdgVxAUjyBJx6EoHwawVR00tNirTjkqU8l6XsfCLcV6-wvxsLEMrQf6V8MQB6AQwH+r4ps7UIS7D7pTQHqcQ5piSrisg6Mrhdh6NsttHzhIvcJ1FNcHCBnp-60HTjKY44XQaZ66k5AY-Rm6Dw06yGUHLc0qs7zoc53pMSsEm1ESKHlArcyBiB+hi5noaCXpZ7gA6S2CU80qpgRGqI+5YA0ASwYo5FEZkZUYQp3jaT6SjhTsh00xlwMBJMXqxwiNDSfIssX1TrgghSIh34qwONWs+TCBeiZAhC5gHhmyMyszfQaLpdDyk0aAkFZhi8Eh34GK9w61UsiMiFfBsrBg45FMC8ysYtDznYlDKgS1bHMnvz61LT9G5H4E9xFGSxJIRo869VR9L6Sxsd8G8VaKwnAgYnr5fV9F1Bnoip+NFNEnIAmmdS6mRGybXcD5gA81dhq0IR1A2bumIQJ5dgMAj4aTZGFUoV6niAqnSQvSOatnGmyyRF6LCSkzOnO9PRZ5Qn3gXNwQnLsF1BvMMAYQMQEn9NYsunuxqAMB-C+mP9LnksPLuyCI5BdB96wmpkM98N7Lx0FQiJjHmM+4dyJBArqAQLqjKT2bIpZDRERhFkAiosgiD86sUTTgxs20X90xggC9oAN9LnzMBJ9MWiJGNrb6XV2QGW4EbminsF9zx4ZgMRgBWIOBjHgAKVyDKXKU4jWN2N-DsaaAhWbzWagWsWj6tmxn5Rv0qbqKLtcdTtIA2b3m1arRgAd7pmAXjWLtHn5mXIdXJRgBnm2bnnLX7X1BOx5mgI7XFn3XlnPW7XgA+WMAZg2bA2Zg1braVZbbCHCAJAVh8IRGgpqn2W1WRGzZIxY342SxE3SR+hvStnn6ij6SFGDn8V-6v6ampRE69wS78TiDSnBG9StmU7JRyGOGHojoc6FxM4O3UJ87JR3kpjYzFTsUqGfpaG6ZPRk4mYAxmGuHB2kyS6YkQ69Zu2M5bBJ6jpeEUMi3QrvB4AkYugdGhzviQRVH1G9BCC0g62-gG2dZSxzmxwVRwoFI9mlzHYnhGiia1GVgxl7353Oz9FZQrAnxeQO5F58glBIBwArx0oYQVh7IahhT10nIVgAB2AywkhYBw79dQUEQQUgFYcYNqR57YAARWPD-HZQ7jw+-aYCo-fghOIGCFBHqiwDg6+fY+yeIFmTWOkCSH5DVqDnw5WAAE02pnmyOKP4B6OaOCO6PBAGOCAmOPZWP2OxSVhOwuOePQQ+P+YzYcPOxiQ3XJPBPDOHWYNyO1aJo8A1HyAGx6pgA9XThtgQKKPTW9K5AXPgA4t9EB8aS+Pr4fIu932MRm3CxhPf2jIC8LwflAOBA9TDGC42E5bGxmxRYIOvRgB0AIglApOMvoO0pGwMOThsPf9cPhOiPgBr7LPKOFPZOVh5OwPGPmPVONP1PNO03uPTAdP+P9Pf8hPv2xOHWTPavqPhPGvFOBAWu2O2uvMNOtPuvdOBPTNR4cJhPUI2ougaj0A+RNouNXBbP7PJnPQvOfPsE-PinCqR5+YgvQrP3sFc2OaQvPNgvdYMOPB6xdAKA-AwvfxaJ0pOw0vv1MhG5AIgff8KBSBqPkD9i46JC9hP6DxQQD504NJO3IAj5aDkfXo0fUJMfIxkee7Ux0ftgNOUhVmw5zvAPRIbPPFpOFP+gWh4hiQHsOw+UQ4UCcyZSI0BZhjA7K6QuET637b32zV0sZjBeLYPx8OmPWBjYAMBe3ubphsFfO733Kxn7Y4x2E53R6GfRp2W7Q6Sbw6iHl6tst3qB56pAy2w7WTftV6iqpAtmaxyHbfeTYh75ft8VfskEi6zSKVkAHPaazdzccGV8GEcAMRXfjejcZHvOawOYo+2HNtbeHPRb8HTak-OdUHU-HO8azb8HmbYos+ud3hc+i-5b8H3kcBOYhCObkX9ZDZR266J2AZ9fGGQY-eTeifdALe36KnAFYU7sy2N7c7lG0wPv41iMdQecCoMAXfk+ttXm4HPJVJDRRJKhPEDnkUve+4ffAgu+zBYFA+abvPqApXipF-CAq+VfJ+N-tR3QtmNfm+aGdeG6p2O+Z3UenoGSV2cef-125ZLhjG3ejr8-Am-R-qmywTbtSmE6FtJwUaqPV50IcYqLrBrD8N62NWeqpxHl4ppPaHYHFlgNbScQB+AwWoEVDCDyBgGfgAfCzG37UALSQTAfltiZSLoqyYA6fpAJLCpY6BozBkOTS1bU1aauwLZiwObJB9vOLrCEPzREEiMxBIQBzvzTO5pYI2XPHyHQLSD8YM2CbaMO-F4Elg1mA6IdCnkmrTUAcvbX8HDXRoYh-+ugdHmtW-52DUIG1JjJdzqrECZ0TVFAQKQra9giByJB0qFy-YEdIu98DQRh3i5PgfB8UVgWWHQhhV2AkHArkSE7DwcyGNnMQMSHbAugduBrYrlh1UQ4d6uRHIQSZ0IqQ9qOirPCiQOxh4Ax0I8MeEVHiiJQvW9PMbrR3o79BmuKnFxjCGdjfo+uaWAbgRyG44ARuFQzLjgHcGcF8AXgxdDgGaF7cIeB3CgEd0IAjcZGknZQTbR8g0lmIC1YSFNRpwA41sKMJIE-keQ3dhUwMMwe6B8FBDsEEXXWPFG0FZtdB-QCZlYIhJs16oXwggBdFWYRDgOZBc8O-CZ6ZDgAsUPLokMgDxtVsLHREM9ERBxYEhbgKDjB0Aj5D6Yv3McEHBkaG0CA4wlYXZ3q4bdkCfw37OCAPgUjSecIcnpz2gQXcjC1Af+HIi+5dpx09w3DCPx8jkM1I9w+7tAieH3sY2cbHQUmwmbCCGBPfdOqhABE8toEQHPUqBzBEZDWAxIZuBPHS4wi4R6UeqAhyHAojiwMI5IbByxEOFcONNSTkyOuGENGe0wttPcM8ymDjhdwwIZ5j5HoI9OjOdgDMCMjHBAUc5DETCFQ72R9EIPGoo2AABsVkP-MCEqFTD4BdWWYUgOeq0lFhlEAtlKFti6w3wKwaXmo1l7y9r2pBfwQ1WeEKj+2KvHMezE1611X+dDSdgw1TizsM4+HThmuzwB8xSGQAjOCANmicB7+W-KAS-RKYKoc8g1VuO+3QFEEBGA1PbBkFwG2p8BUYIaG9lzyfZSB-QcgdaGIBUDHiA+LmPQMYFjh8Uog3xmwMCB39wBD-YRtwK2p3jiAGrHEb2G1b+spR542IRIO2HUVgAotWQSWHkGEI-xkg79KoLHBgYjxmg9NmKLeFJsjxqbS7kYOTwukbhro6gT5DRoQlZKh1c6o4NlGeREap1I6rYIIm50aSmMdcZOMuG+DCw84vPF6JoCCi14woqLlBKBF6lohF4uIfRFRFJCMRqQhDuCPVGQj5a5owoWV2KEvi+E6wyzuUPjGZdeybpGoewHqGjx10AwBKJTztZtCvQ43Tod0JY69D+hv+QYeSmGGic2oHMcYQpOJAMpfgGeSiSCA5gLjW4HMRYWZNqTWdDuLHK0TVz-FbDzYNox9ixAOEuiTgNAU4dwHOGciHSPkcKYLkYkPChR37UIS8NgnEBs278CZlhIIA-DcpyAeURxJA6gjGeao4kLkOhFojdRCIpEUaPy4CTxJ78b9HiIKlEibOqw0kZ5H6DIECph8NqSsDpFHwGROwtQb+GMLxJ2RVHGiYIieA8jfwnogUQMGCE-tnhoozNplPeGSifhMo9HkVLi7AiVRZU5nsAE1FVTIONU-Uc9ENHai0RpooroBxK6qJLRskkaYWCjb3R4oUeScUlOdFoSIpv0y-tn0tz8iHSqwD7n6O+6BjCcwY0MebAjF1xoxsYscBMLsndUaATktya5OoDuStJmYvnjjONh5iCx57YsXOO+muTcBNScbA7F1jP8a6VMBsa30boG9ouK7QATKJ4agDBxN44cQYOgFjiU88Aa6sIDurW9Z0qY5qpGG0AWN-cV7ARhbVF4poLax47aSIO-HPQ8+hsNmhIAc6m1vOR8cflMEOTXjOBj4oZkWHz5W5oJ608UTmxVmISfIis3McxJVisS30VsiQCvAOmcSHSMQvxvEOEkaiSI9gc6eiMK6CSmp0kq0OV2-YlCvWfk7STq1RmBRgox7HcM+z6BKTi+GYwirpPq4TcuhSnFrsZM8nndBO9XIbqbRslQ9Mu-AIHCIDED3UUxT1KWf0EADDwEeDLk14OpJIoPhsOrnkcfxXPbBD6M+7+ifu36f7o2DhnA8EsZYGEDGKs62TgA9cm6qIHEBSAW5yAxdO3KTmRtdhxTVkUHnGp8QuRc05PpGF5FX8kprs38O7PSkbSspHw0-rsHqi7S5RgIn2SVLA5BzTpYQLUXxNhGF49RBo+qSaMamPSCh78F6daMPnxThszs0sPkUWlxTo0SCr4lpHfBZgZeMUMmfWwwUtVqZKvQhfTIZnUNfoicJse3xbG8J7gjwTEK8GhTSgaw9Cr4hKSIBFRC8OcVhUQAYUkA5g3C7hTG14UPAviuCtMEIrUaiKGF8gKwPYCqBLZJQciqOIopWCdo1GugFRQos4iApgABsaWnkJrDCdRBy6QUuilJCXBMOK4MDsABuLyJiFhDdsbzG4bpsaQsCT4MOVJCfB+sEIT4FN3sCfA6axip0LyBLTUggAA?mode=read&amp;include-code=false"</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">script</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2024, Sadamori Kojaku</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/viz-watts-strogatz.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/skojaku/adv-net-sci">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2025-07-27">
 
-<title>25&nbsp; Hands-on: Clustering – Advanced Topics in Network Science</title>
+<title>Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,23 +75,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-42d6d7f73c49f266427812bee1da63d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -149,18 +148,267 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.jpg" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Intro</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">Why Networks?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../intro/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Foundations</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
+ <span class="dropdown-text">Advanced</span></a>
+  </li>  
+        <li class="dropdown-header">─── M02: Small World ───</li>
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M03: Robustness ───</li>
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Core Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
+        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M05: Clustering ───</li>
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M06: Centrality ───</li>
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Advanced Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
+        <li class="dropdown-header">─── M07: Random Walks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M08: Embedding ───</li>
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/00-preparation.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/03-exercises.html"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/00-preparation.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -170,17 +418,9 @@ window.Quarto = {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
-      </a>
-    <div class="sidebar-title mb-0 py-0">
-      <a href="../">Advanced Topics in Network Science</a> 
-    </div>
-      </div>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -188,224 +428,218 @@ window.Quarto = {
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome to SSIE 641 Advanced Topics on Network Science</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Intro</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></span></a>
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></span></a>
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">M01: Euler Tour</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span></a>
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Euler Tour Concepts</span></span></a>
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Compute with networks</span></span></a>
+ <span class="menu-text">Coding Networks in Python</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">M02: Small World</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Distance and Path Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Small-World Networks: Core Concepts</span></span></a>
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Efficient Network Representation and Computing Paths</span></span></a>
+ <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Appendix: Tools and Advanced Topics</span></span></a>
+ <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">M03: Robustness</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Preparation: Network Failure Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Preparation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Module 3: Robustness - Concepts</span></span></a>
+ <span class="menu-text">Network Robustness: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Coding: Minimum Spanning Trees and Network Robustness</span></span></a>
+ <span class="menu-text">Coding - Network Robustness Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Robustness Analysis - Exercises</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
  <span class="menu-text">M04: Friendship Paradox</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Preparation: Statistical Sampling and Probability Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">M04 Concepts: The Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Degree distribution</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">M04 Exercises: Friendship Paradox</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">M05: Clustering</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Preparation: Linear Algebra and Optimization Prerequisites</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Module 5: Clustering Concepts</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clustering Algorithms and Implementation</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -413,7 +647,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
- <span class="menu-text">M06: Centrality</span></a>
+ <span class="menu-text">M05: Clustering</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -421,143 +655,178 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Preparation: Advanced Linear Algebra for Network Analysis</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Module 6: Centrality Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Computing centrality with Python</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
  <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Random Walks: Exercises and Practice</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
  <span class="menu-text">M08: Embedding</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Preparation: Dimensionality Reduction and Optimization Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
  <span class="menu-text">M09: Graph Neural Networks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Preparation: Neural Networks and Deep Learning Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Coding: Graph Neural Networks Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exercises: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -567,29 +836,32 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul class="collapse">
-  <li><a href="#modularity-maximization" id="toc-modularity-maximization" class="nav-link active" data-scroll-target="#modularity-maximization"><span class="header-section-number">25.1</span> Modularity maximization</a></li>
-  <li><a href="#stochstic-block-model" id="toc-stochstic-block-model" class="nav-link" data-scroll-target="#stochstic-block-model"><span class="header-section-number">25.2</span> Stochstic Block Model</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/00-preparation.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/03-exercises.html"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/00-preparation.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 27, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -600,32 +872,25 @@ window.Quarto = {
 
 
 <p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m05-clustering.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="1bdd5f71" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<section id="hands-on-clustering" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Hands-on: Clustering</h1>
+<div id="9fb97e1a" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install pycairo cairocffi</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install igraph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<section id="modularity-maximization" class="level2" data-number="25.1">
-<h2 data-number="25.1" class="anchored" data-anchor-id="modularity-maximization"><span class="header-section-number">25.1</span> Modularity maximization</h2>
+<section id="modularity-maximization" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="modularity-maximization"><span class="header-section-number">1.1</span> Modularity maximization</h2>
 <p>Let us showcase how to use <code>igraph</code> to detect communities with modularity. We will use the Karate Club Network as an example.</p>
-<div id="4aeacd0c" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="aa77b66c" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph.Famous(<span class="st">"Zachary"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>When it comes to maximizing modularity, there are a variety of algorithms to choose from. Two of the most popular ones are the <code>Louvain</code> and <code>Leiden</code> algorithms, both of which are implemented in <code>igraph</code>. The Louvain algorithm has been around for quite some time and is a classic choice, while the Leiden algorithm is a newer bee that often yields better accuracy. For our example, we’ll be using the <code>Leiden</code> algorithm, and I think you’ll find it really effective!</p>
-<div id="99049e37" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="ce9fc6e9" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>communities <span class="op">=</span> g.community_leiden(resolution<span class="op">=</span><span class="dv">1</span>, objective_function<span class="op">=</span> <span class="st">"modularity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>What is <code>resolution</code>? It is a parameter that helps us tackle the resolution limit of the modularity maximization algorithm {footcite}<code>fortunato2007resolution</code>! In simple terms, when we use the resolution parameter <span class="math inline">\rho</span>, the modularity formula can be rewritten as follow:</p>
 <p><span class="math display">
@@ -633,29 +898,23 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </span></p>
 <p>Here, the parameter <span class="math inline">\rho</span> plays a crucial role in balancing the positive and negative parts of the equation. The resolution limit comes into play because of the diminishing effect of the negative term as the number of edges <span class="math inline">m</span> increases. The parameter <span class="math inline">\rho</span> can adjust this balance and allow us to circumvent the resolution limit.</p>
 <p>What is <code>communities</code>? This is a list of communities, where each community is represented by a list of nodes by their indices.</p>
-<div id="d23b83e6" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="2d8d0e48" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(communities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Let us visualize the communities by coloring the nodes in the graph.</p>
-<div id="91b793d6" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="3ff50102" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> communities.membership</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> sns.color_palette().as_hex()</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_color<span class="op">=</span>[palette[i] <span class="cf">for</span> i <span class="kw">in</span> community_membership])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ul>
 <li><code>community_membership</code>: This is a list of community membership for each node.</li>
 <li><code>palette</code>: This is a list of colors to use for the communities.</li>
 <li><code>igraph.plot(g, vertex_color=[palette[i] for i in community_membership])</code>: This plots the graph ‘g’ with nodes colored by their community.</li>
 </ul>
-<section id="exercise-01" class="level3" data-number="25.1.1">
-<h3 data-number="25.1.1" class="anchored" data-anchor-id="exercise-01"><span class="header-section-number">25.1.1</span> Exercise 01 🏋️‍♀️💪🧠</h3>
+<section id="exercise-01" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-01">Exercise 01 🏋️‍♀️💪🧠</h3>
 <ol type="1">
 <li>Select a network of your choice from <a href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</li>
 <li>Download the csv version of the data by clicking something like “3KiB” under <code>csv</code> column.</li>
@@ -666,20 +925,15 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <li>Find communities by maximizing the modularity and visualize them.</li>
 <li>Try at least three different values of the resolution parameter and observe how the community structure changes.</li>
 </ol>
-<div id="7e0c96b7" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="3733a4d3" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 </section>
-<section id="stochstic-block-model" class="level2" data-number="25.2">
-<h2 data-number="25.2" class="anchored" data-anchor-id="stochstic-block-model"><span class="header-section-number">25.2</span> Stochstic Block Model</h2>
+<section id="stochstic-block-model" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="stochstic-block-model"><span class="header-section-number">1.2</span> Stochstic Block Model</h2>
 <p>Let us turn the SBM as our community detection tool using <a href="https://graph-tool.skewed.de/">graph-tool</a>. This is a powerful library for network analysis, with a focus on the stochastic block model.</p>
-<div id="9747b228" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="92e052e7" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment the following code if you are using Google Colab</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
@@ -692,12 +946,9 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#!apt install libcairo2-dev pkg-config python3-dev</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install --force-reinstall pycairo</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install zstandard</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>We will identify the communities using the stochastic block model as follows. First, we will convert the graph object in igraph to that in graph-tool.</p>
-<div id="8a684685" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="471439d5" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graph_tool.<span class="bu">all</span>  <span class="im">as</span> gt</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -713,19 +964,15 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>r, c <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>edges)</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>g_gt <span class="op">=</span> gt.Graph(directed<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>g_gt.add_edge_list(np.vstack([r, c]).T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Then, we will fit the stochastic block model to the graph.</p>
-<div id="a926de1d" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="f3732626" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the stochastic block model</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> gt.minimize_blockmodel_dl(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>     g_gt,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     state_args<span class="op">=</span>{<span class="st">"deg_corr"</span>: <span class="va">False</span>, <span class="st">"B_min"</span>:<span class="dv">2</span>, <span class="st">"B_max"</span>:<span class="dv">10</span>},</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> state.get_blocks()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ul>
 <li><code>B_min</code> and <code>B_max</code> are the minimum and maximum number of communities to consider.</li>
@@ -734,9 +981,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <pre class="{note}"><code>Here's a fun fact: the likelihood maximization on its own can't figure out how many communities there should be. But `graph-tool` has a clever trick to circumvent this limitation.
 `graph-tool` actually fits multiple SBMs, each with a different number of communities. Then, it picks the most plausible one based on a model selection criterion.</code></pre>
 <p>Let’s visualize the communities to see what we got.</p>
-<div id="e65a51c9" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="ecd3b003" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the block assignments to a list</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> b.get_array()</span>
@@ -745,11 +990,8 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># So we reassign the community labels to be 0, 1, 2, ...</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> np.unique(community_membership, return_inverse<span class="op">=</span><span class="va">True</span>)[<span class="dv">1</span>]</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>community_membership</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="d1296e13" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="593c8eb8" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a color palette</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -764,7 +1006,6 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'off'</span>)</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>What we’re seeing here isn’t a failure at all. In fact, it’s the best partition according to our stochastic block model. The model has discovered something called a <strong>core-periphery structure</strong> {footcite}<code>borgatti2000models</code>. Let me break that down:</p>
 <ul>
@@ -775,9 +1016,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </ul>
 <p>That’s exactly what our model found in this network.</p>
 <p>If we look at the adjacency matrix, we would see something that looks like an upside-down “L”. This shape is like a signature for core-periphery structures.</p>
-<div id="3c96435c" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="9f1dfb9b" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert igraph Graph to adjacency matrix</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(g.get_adjacency().data)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -794,10 +1033,9 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<section id="exercise-02" class="level3" data-number="25.2.1">
-<h3 data-number="25.2.1" class="anchored" data-anchor-id="exercise-02"><span class="header-section-number">25.2.1</span> Exercise 02 🏋️‍♀️💪🧠</h3>
+<section id="exercise-02" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-02">Exercise 02 🏋️‍♀️💪🧠</h3>
 <ol type="1">
 <li>Select a network of your choice from <a href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</li>
 <li>Download the csv version of the data by clicking something like “3KiB” under <code>csv</code> column.</li>
@@ -813,6 +1051,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 
 <!-- -->
 
+</section>
 </section>
 </section>
 
@@ -940,7 +1179,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1269,13 +1508,13 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m05-clustering/02-coding.html" class="pagination-link" aria-label="Clustering Algorithms and Implementation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clustering Algorithms and Implementation</span></span>
+      <a href="../m05-clustering/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m06-centrality/00-preparation.html" class="pagination-link" aria-label="Preparation: Advanced Linear Algebra for Network Analysis">
-        <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Preparation: Advanced Linear Algebra for Network Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m06-centrality/00-preparation.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -1499,7 +1738,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m05-clustering/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

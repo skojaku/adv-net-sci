@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2025-07-28">
 
-<title>30&nbsp; Preparation: Markov Chain Theory Prerequisites – Advanced Topics in Network Science</title>
+<title>Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,23 +75,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-42d6d7f73c49f266427812bee1da63d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -149,18 +148,267 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.jpg" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Intro</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">Why Networks?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../intro/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Foundations</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
+ <span class="dropdown-text">Advanced</span></a>
+  </li>  
+        <li class="dropdown-header">─── M02: Small World ───</li>
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M03: Robustness ───</li>
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Core Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
+        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M05: Clustering ───</li>
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M06: Centrality ───</li>
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Advanced Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
+        <li class="dropdown-header">─── M07: Random Walks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M08: Embedding ───</li>
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">Advanced Topics in Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -170,17 +418,9 @@ window.Quarto = {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
-      </a>
-    <div class="sidebar-title mb-0 py-0">
-      <a href="../">Advanced Topics in Network Science</a> 
-    </div>
-      </div>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -188,294 +428,288 @@ window.Quarto = {
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome to SSIE 641 Advanced Topics on Network Science</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Intro</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></span></a>
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></span></a>
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">M01: Euler Tour</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span></a>
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Euler Tour Concepts</span></span></a>
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Compute with networks</span></span></a>
+ <span class="menu-text">Coding Networks in Python</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">M02: Small World</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Distance and Path Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Small-World Networks: Core Concepts</span></span></a>
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Efficient Network Representation and Computing Paths</span></span></a>
+ <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Appendix: Tools and Advanced Topics</span></span></a>
+ <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">M03: Robustness</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Preparation: Network Failure Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Preparation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Module 3: Robustness - Concepts</span></span></a>
+ <span class="menu-text">Network Robustness: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Coding: Minimum Spanning Trees and Network Robustness</span></span></a>
+ <span class="menu-text">Coding - Network Robustness Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Robustness Analysis - Exercises</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
  <span class="menu-text">M04: Friendship Paradox</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Preparation: Statistical Sampling and Probability Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">M04 Concepts: The Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Degree distribution</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">M04 Exercises: Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
  <span class="menu-text">M05: Clustering</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Preparation: Linear Algebra and Optimization Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Module 5: Clustering Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clustering Algorithms and Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
  <span class="menu-text">M06: Centrality</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Preparation: Advanced Linear Algebra for Network Analysis</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Module 6: Centrality Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Computing centrality with Python</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Random Walks: Exercises and Practice</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -483,7 +717,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
- <span class="menu-text">M08: Embedding</span></a>
+ <span class="menu-text">M07: Random Walks</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -491,73 +725,108 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Preparation: Dimensionality Reduction and Optimization Prerequisites</span></span></a>
+  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span></a>
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></span></a>
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">M09: Graph Neural Networks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Preparation: Neural Networks and Deep Learning Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Coding: Graph Neural Networks Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exercises: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -567,33 +836,32 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul class="collapse">
-  <li><a href="#required-knowledge-from-previous-modules" id="toc-required-knowledge-from-previous-modules" class="nav-link active" data-scroll-target="#required-knowledge-from-previous-modules"><span class="header-section-number">30.1</span> Required Knowledge from Previous Modules</a></li>
-  <li><a href="#probability-theory-for-stochastic-processes" id="toc-probability-theory-for-stochastic-processes" class="nav-link" data-scroll-target="#probability-theory-for-stochastic-processes"><span class="header-section-number">30.2</span> Probability Theory for Stochastic Processes</a></li>
-  <li><a href="#markov-chain-fundamentals" id="toc-markov-chain-fundamentals" class="nav-link" data-scroll-target="#markov-chain-fundamentals"><span class="header-section-number">30.3</span> Markov Chain Fundamentals</a></li>
-  <li><a href="#limit-behavior-and-convergence" id="toc-limit-behavior-and-convergence" class="nav-link" data-scroll-target="#limit-behavior-and-convergence"><span class="header-section-number">30.4</span> Limit Behavior and Convergence</a></li>
-  <li><a href="#linear-algebra-for-markov-chains" id="toc-linear-algebra-for-markov-chains" class="nav-link" data-scroll-target="#linear-algebra-for-markov-chains"><span class="header-section-number">30.5</span> Linear Algebra for Markov Chains</a></li>
-  <li><a href="#applications-context" id="toc-applications-context" class="nav-link" data-scroll-target="#applications-context"><span class="header-section-number">30.6</span> Applications Context</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">Advanced Topics in Network Science</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 28, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -603,73 +871,76 @@ window.Quarto = {
 </header>
 
 
-<section id="required-knowledge-from-previous-modules" class="level2" data-number="30.1">
-<h2 data-number="30.1" class="anchored" data-anchor-id="required-knowledge-from-previous-modules"><span class="header-section-number">30.1</span> Required Knowledge from Previous Modules</h2>
+<section id="preparation-markov-chain-theory-prerequisites" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Preparation: Markov Chain Theory Prerequisites</h1>
+<section id="required-knowledge-from-previous-modules" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="required-knowledge-from-previous-modules"><span class="header-section-number">1.1</span> Required Knowledge from Previous Modules</h2>
 <p>Before studying random walks, ensure you understand: - <strong>From M01-M06</strong>: Network representations, eigenvalue theory, matrix operations - <strong>From M06</strong>: Advanced concepts like matrix series convergence and spectral properties</p>
 </section>
-<section id="probability-theory-for-stochastic-processes" class="level2" data-number="30.2">
-<h2 data-number="30.2" class="anchored" data-anchor-id="probability-theory-for-stochastic-processes"><span class="header-section-number">30.2</span> Probability Theory for Stochastic Processes</h2>
-<section id="discrete-probability-basics" class="level3" data-number="30.2.1">
-<h3 data-number="30.2.1" class="anchored" data-anchor-id="discrete-probability-basics"><span class="header-section-number">30.2.1</span> Discrete Probability Basics</h3>
+<section id="probability-theory-for-stochastic-processes" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="probability-theory-for-stochastic-processes"><span class="header-section-number">1.2</span> Probability Theory for Stochastic Processes</h2>
+<section id="discrete-probability-basics" class="level3">
+<h3 class="anchored" data-anchor-id="discrete-probability-basics">Discrete Probability Basics</h3>
 <p>Foundation for understanding random processes: - <strong>Probability distributions</strong>: Discrete probability mass functions - <strong>Conditional probability</strong>: <span class="math inline">P(A|B) = \frac{P(A \cap B)}{P(B)}</span> - <strong>Independence</strong>: When events don’t influence each other - <strong>Law of total probability</strong>: <span class="math inline">P(A) = \sum_i P(A|B_i)P(B_i)</span></p>
 </section>
-<section id="stochastic-processes" class="level3" data-number="30.2.2">
-<h3 data-number="30.2.2" class="anchored" data-anchor-id="stochastic-processes"><span class="header-section-number">30.2.2</span> Stochastic Processes</h3>
+<section id="stochastic-processes" class="level3">
+<h3 class="anchored" data-anchor-id="stochastic-processes">Stochastic Processes</h3>
 <p>Understanding time-dependent random systems: - <strong>Random variable sequences</strong>: <span class="math inline">X_0, X_1, X_2, \ldots</span> - <strong>State space</strong>: Set of possible values for each <span class="math inline">X_t</span> - <strong>Transition probabilities</strong>: <span class="math inline">P(X_{t+1} = j | X_t = i)</span></p>
 </section>
 </section>
-<section id="markov-chain-fundamentals" class="level2" data-number="30.3">
-<h2 data-number="30.3" class="anchored" data-anchor-id="markov-chain-fundamentals"><span class="header-section-number">30.3</span> Markov Chain Fundamentals</h2>
-<section id="markov-property" class="level3" data-number="30.3.1">
-<h3 data-number="30.3.1" class="anchored" data-anchor-id="markov-property"><span class="header-section-number">30.3.1</span> Markov Property</h3>
+<section id="markov-chain-fundamentals" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="markov-chain-fundamentals"><span class="header-section-number">1.3</span> Markov Chain Fundamentals</h2>
+<section id="markov-property" class="level3">
+<h3 class="anchored" data-anchor-id="markov-property">Markov Property</h3>
 <p>The defining characteristic of Markov chains: <span class="math display">P(X_{t+1} = j | X_t = i, X_{t-1} = i_{t-1}, \ldots, X_0 = i_0) = P(X_{t+1} = j | X_t = i)</span></p>
 <p><strong>Interpretation</strong>: Future state depends only on present state, not on history.</p>
 </section>
-<section id="transition-matrix-theory" class="level3" data-number="30.3.2">
-<h3 data-number="30.3.2" class="anchored" data-anchor-id="transition-matrix-theory"><span class="header-section-number">30.3.2</span> Transition Matrix Theory</h3>
+<section id="transition-matrix-theory" class="level3">
+<h3 class="anchored" data-anchor-id="transition-matrix-theory">Transition Matrix Theory</h3>
 <p>Matrix representation of state transitions: - <strong>Stochastic matrix</strong>: Rows sum to 1, all entries non-negative - <strong>Chapman-Kolmogorov equation</strong>: <span class="math inline">P^{(n+m)} = P^{(n)} \cdot P^{(m)}</span> - <strong>n-step transition probabilities</strong>: <span class="math inline">(P^n)_{ij} = P(X_n = j | X_0 = i)</span></p>
 </section>
-<section id="classification-of-states" class="level3" data-number="30.3.3">
-<h3 data-number="30.3.3" class="anchored" data-anchor-id="classification-of-states"><span class="header-section-number">30.3.3</span> Classification of States</h3>
+<section id="classification-of-states" class="level3">
+<h3 class="anchored" data-anchor-id="classification-of-states">Classification of States</h3>
 <p>Understanding different types of states: - <strong>Accessible</strong>: State <span class="math inline">j</span> is accessible from state <span class="math inline">i</span> if <span class="math inline">P^{(n)}_{ij} &gt; 0</span> for some <span class="math inline">n</span> - <strong>Communicating</strong>: States <span class="math inline">i</span> and <span class="math inline">j</span> communicate if each is accessible from the other - <strong>Irreducible</strong>: All states communicate with each other - <strong>Periodic</strong>: State <span class="math inline">i</span> has period <span class="math inline">d</span> if returns are only possible at multiples of <span class="math inline">d</span> steps</p>
 </section>
 </section>
-<section id="limit-behavior-and-convergence" class="level2" data-number="30.4">
-<h2 data-number="30.4" class="anchored" data-anchor-id="limit-behavior-and-convergence"><span class="header-section-number">30.4</span> Limit Behavior and Convergence</h2>
-<section id="stationary-distributions" class="level3" data-number="30.4.1">
-<h3 data-number="30.4.1" class="anchored" data-anchor-id="stationary-distributions"><span class="header-section-number">30.4.1</span> Stationary Distributions</h3>
+<section id="limit-behavior-and-convergence" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="limit-behavior-and-convergence"><span class="header-section-number">1.4</span> Limit Behavior and Convergence</h2>
+<section id="stationary-distributions" class="level3">
+<h3 class="anchored" data-anchor-id="stationary-distributions">Stationary Distributions</h3>
 <p>Probability distributions that don’t change over time: - <strong>Definition</strong>: <span class="math inline">\pi P = \pi</span> where <span class="math inline">\pi</span> is a row vector - <strong>Existence</strong>: Guaranteed for finite, irreducible chains - <strong>Uniqueness</strong>: Unique for irreducible chains</p>
 </section>
-<section id="convergence-theorems" class="level3" data-number="30.4.2">
-<h3 data-number="30.4.2" class="anchored" data-anchor-id="convergence-theorems"><span class="header-section-number">30.4.2</span> Convergence Theorems</h3>
+<section id="convergence-theorems" class="level3">
+<h3 class="anchored" data-anchor-id="convergence-theorems">Convergence Theorems</h3>
 <p>When and how chains reach equilibrium: - <strong>Ergodic theorem</strong>: For irreducible, aperiodic chains: <span class="math inline">\lim_{n \to \infty} P^{(n)}_{ij} = \pi_j</span> - <strong>Rate of convergence</strong>: How quickly the chain approaches stationary distribution - <strong>Mixing time</strong>: Time needed to get close to stationary distribution</p>
 </section>
 </section>
-<section id="linear-algebra-for-markov-chains" class="level2" data-number="30.5">
-<h2 data-number="30.5" class="anchored" data-anchor-id="linear-algebra-for-markov-chains"><span class="header-section-number">30.5</span> Linear Algebra for Markov Chains</h2>
-<section id="eigenvalue-structure" class="level3" data-number="30.5.1">
-<h3 data-number="30.5.1" class="anchored" data-anchor-id="eigenvalue-structure"><span class="header-section-number">30.5.1</span> Eigenvalue Structure</h3>
+<section id="linear-algebra-for-markov-chains" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="linear-algebra-for-markov-chains"><span class="header-section-number">1.5</span> Linear Algebra for Markov Chains</h2>
+<section id="eigenvalue-structure" class="level3">
+<h3 class="anchored" data-anchor-id="eigenvalue-structure">Eigenvalue Structure</h3>
 <p>Connection between eigenvalues and chain behavior: - <strong>Dominant eigenvalue</strong>: Always equals 1 for stochastic matrices - <strong>Subdominant eigenvalue</strong>: Controls convergence rate - <strong>Spectral gap</strong>: Difference between largest and second-largest eigenvalues</p>
 </section>
-<section id="perron-frobenius-for-stochastic-matrices" class="level3" data-number="30.5.2">
-<h3 data-number="30.5.2" class="anchored" data-anchor-id="perron-frobenius-for-stochastic-matrices"><span class="header-section-number">30.5.2</span> Perron-Frobenius for Stochastic Matrices</h3>
+<section id="perron-frobenius-for-stochastic-matrices" class="level3">
+<h3 class="anchored" data-anchor-id="perron-frobenius-for-stochastic-matrices">Perron-Frobenius for Stochastic Matrices</h3>
 <p>Special properties of transition matrices: - <strong>Principal eigenvalue</strong>: Always 1 - <strong>Principal eigenvector</strong>: Corresponds to stationary distribution - <strong>Non-negative entries</strong>: All eigenvector entries are non-negative</p>
 </section>
 </section>
-<section id="applications-context" class="level2" data-number="30.6">
-<h2 data-number="30.6" class="anchored" data-anchor-id="applications-context"><span class="header-section-number">30.6</span> Applications Context</h2>
-<section id="random-walks-on-graphs" class="level3" data-number="30.6.1">
-<h3 data-number="30.6.1" class="anchored" data-anchor-id="random-walks-on-graphs"><span class="header-section-number">30.6.1</span> Random Walks on Graphs</h3>
+<section id="applications-context" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="applications-context"><span class="header-section-number">1.6</span> Applications Context</h2>
+<section id="random-walks-on-graphs" class="level3">
+<h3 class="anchored" data-anchor-id="random-walks-on-graphs">Random Walks on Graphs</h3>
 <p>Specific application of Markov chains to networks: - <strong>State space</strong>: Nodes of the graph - <strong>Transition probabilities</strong>: Based on edge structure - <strong>Uniformity</strong>: Equal probability to each neighbor</p>
 </section>
-<section id="information-propagation" class="level3" data-number="30.6.2">
-<h3 data-number="30.6.2" class="anchored" data-anchor-id="information-propagation"><span class="header-section-number">30.6.2</span> Information Propagation</h3>
+<section id="information-propagation" class="level3">
+<h3 class="anchored" data-anchor-id="information-propagation">Information Propagation</h3>
 <p>Understanding how information spreads: - <strong>Diffusion processes</strong>: How properties spread through networks - <strong>Equilibrium</strong>: Long-term distribution of walkers or information</p>
 <p>These probability and linear algebra foundations are essential for understanding how random walks reveal network structure through their stationary distributions and convergence properties.</p>
 
 
 <!-- -->
 
+</section>
 </section>
 </section>
 
@@ -797,7 +1068,7 @@ window.Quarto = {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1126,13 +1397,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Assignment">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Assignment</span></span>
+      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="Random Walks: Core Concepts">
-        <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -1231,7 +1502,7 @@ window.Quarto = {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/00-preparation.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

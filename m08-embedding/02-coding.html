@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2025-07-27">
 
-<title>36&nbsp; Embedding Methods: Implementation and Practice – Advanced Topics in Network Science</title>
+<title>Embedding Methods: Implementation and Practice</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,23 +75,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-42d6d7f73c49f266427812bee1da63d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -149,18 +148,267 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.jpg" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Intro</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">Why Networks?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../intro/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Foundations</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
+ <span class="dropdown-text">Advanced</span></a>
+  </li>  
+        <li class="dropdown-header">─── M02: Small World ───</li>
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M03: Robustness ───</li>
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Core Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
+        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M05: Clustering ───</li>
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M06: Centrality ───</li>
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Advanced Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
+        <li class="dropdown-header">─── M07: Random Walks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M08: Embedding ───</li>
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Advanced Topics in Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -170,17 +418,9 @@ window.Quarto = {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
-      </a>
-    <div class="sidebar-title mb-0 py-0">
-      <a href="../">Advanced Topics in Network Science</a> 
-    </div>
-      </div>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -188,335 +428,323 @@ window.Quarto = {
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome to SSIE 641 Advanced Topics on Network Science</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Intro</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></span></a>
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></span></a>
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">M01: Euler Tour</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span></a>
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Euler Tour Concepts</span></span></a>
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Compute with networks</span></span></a>
+ <span class="menu-text">Coding Networks in Python</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">M02: Small World</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Distance and Path Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Small-World Networks: Core Concepts</span></span></a>
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Efficient Network Representation and Computing Paths</span></span></a>
+ <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Appendix: Tools and Advanced Topics</span></span></a>
+ <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">M03: Robustness</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Preparation: Network Failure Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Preparation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Module 3: Robustness - Concepts</span></span></a>
+ <span class="menu-text">Network Robustness: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Coding: Minimum Spanning Trees and Network Robustness</span></span></a>
+ <span class="menu-text">Coding - Network Robustness Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Robustness Analysis - Exercises</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
  <span class="menu-text">M04: Friendship Paradox</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Preparation: Statistical Sampling and Probability Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">M04 Concepts: The Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Degree distribution</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">M04 Exercises: Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
  <span class="menu-text">M05: Clustering</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Preparation: Linear Algebra and Optimization Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Module 5: Clustering Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clustering Algorithms and Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
  <span class="menu-text">M06: Centrality</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Preparation: Advanced Linear Algebra for Network Analysis</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Module 6: Centrality Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Computing centrality with Python</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
  <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Random Walks: Exercises and Practice</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
- <span class="menu-text">M08: Embedding</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Preparation: Dimensionality Reduction and Optimization Prerequisites</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -524,7 +752,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">M09: Graph Neural Networks</span></a>
+ <span class="menu-text">M08: Embedding</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -532,32 +760,73 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Preparation: Neural Networks and Deep Learning Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Coding: Graph Neural Networks Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exercises: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -567,30 +836,32 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul class="collapse">
-  <li><a href="#spectral-embedding" id="toc-spectral-embedding" class="nav-link active" data-scroll-target="#spectral-embedding"><span class="header-section-number">36.1</span> Spectral Embedding</a></li>
-  <li><a href="#neural-embedding-with-word2vec" id="toc-neural-embedding-with-word2vec" class="nav-link" data-scroll-target="#neural-embedding-with-word2vec"><span class="header-section-number">36.2</span> Neural Embedding with word2vec</a></li>
-  <li><a href="#graph-embedding-with-word2vec" id="toc-graph-embedding-with-word2vec" class="nav-link" data-scroll-target="#graph-embedding-with-word2vec"><span class="header-section-number">36.3</span> Graph Embedding with word2vec</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/00-preparation.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Advanced Topics in Network Science</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Embedding Methods: Implementation and Practice</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 27, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -600,10 +871,10 @@ window.Quarto = {
 </header>
 
 
-<section id="spectral-embedding" class="level2" data-number="36.1">
-<h2 data-number="36.1" class="anchored" data-anchor-id="spectral-embedding"><span class="header-section-number">36.1</span> Spectral Embedding</h2>
-<section id="network-compression-approach" class="level3" data-number="36.1.1">
-<h3 data-number="36.1.1" class="anchored" data-anchor-id="network-compression-approach"><span class="header-section-number">36.1.1</span> Network Compression Approach</h3>
+<section id="spectral-embedding" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="spectral-embedding"><span class="header-section-number">1</span> Spectral Embedding</h2>
+<section id="network-compression-approach" class="level3">
+<h3 class="anchored" data-anchor-id="network-compression-approach">Network Compression Approach</h3>
 <p>Networks are a high-dimensional discrete data that can be difficult to analyze with traditional machine learning methods that assume continuous and smooth data. Spectral embedding is a technique to embed networks into low-dimensional spaces.</p>
 <p>Let us approach the spectral embedding from the perspective of network compression. Suppose we have an adjacency matrix <span class="math inline">\mathbf{A}</span> of a network. The adjacency matrix is a high-dimensional data, i.e., a matrix has size <span class="math inline">N \times N</span> for a network of <span class="math inline">N</span> nodes. We want to compress it into a lower-dimensional matrix <span class="math inline">\mathbf{U}</span> of size <span class="math inline">N \times d</span> for a user-defined small integer <span class="math inline">d &lt; N</span>. A good <span class="math inline">\mathbf{U}</span> should preserve the network structure and thus can reconstruct the original data <span class="math inline">\mathbf{A}</span> as closely as possible. This leads to the following optimization problem:</p>
 <p><span class="math display">
@@ -617,8 +888,8 @@ window.Quarto = {
 </ol>
 <p>By minimizing the Frobenius norm with respect to <span class="math inline">\mathbf{U}</span>, we obtain the best low-dimensional embedding of the network.</p>
 </section>
-<section id="an-intuitive-solution" class="level3" data-number="36.1.2">
-<h3 data-number="36.1.2" class="anchored" data-anchor-id="an-intuitive-solution"><span class="header-section-number">36.1.2</span> An Intuitive Solution</h3>
+<section id="an-intuitive-solution" class="level3">
+<h3 class="anchored" data-anchor-id="an-intuitive-solution">An Intuitive Solution</h3>
 <p>Let us first understand the solution intuitively. Consider the spectral decomposition of <span class="math inline">\mathbf{A}</span>:</p>
 <p><span class="math display">
 \mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top
@@ -628,12 +899,10 @@ window.Quarto = {
 <p><img src="../figs/spectral-decomposition.jpg" class="img-fluid"></p>
 <p>For a formal proof, please refer to the <a href="../m08-embedding/04-appendix.html">Appendix section</a>.</p>
 </section>
-<section id="example-spectral-embedding" class="level3" data-number="36.1.3">
-<h3 data-number="36.1.3" class="anchored" data-anchor-id="example-spectral-embedding"><span class="header-section-number">36.1.3</span> Example: Spectral Embedding</h3>
+<section id="example-spectral-embedding" class="level3">
+<h3 class="anchored" data-anchor-id="example-spectral-embedding">Example: Spectral Embedding</h3>
 <p>Let us demonstrate the results with a simple example as follows.</p>
-<div id="67eb0fdc" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="a098c669" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -647,11 +916,8 @@ window.Quarto = {
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> np.unique([d[<span class="dv">1</span>][<span class="st">'club'</span>] <span class="cf">for</span> d <span class="kw">in</span> G.nodes(data<span class="op">=</span><span class="va">True</span>)], return_inverse<span class="op">=</span><span class="va">True</span>)[<span class="dv">1</span>]</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette()</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nx.draw(G, with_labels<span class="op">=</span><span class="va">False</span>, node_color<span class="op">=</span>[cmap[i] <span class="cf">for</span> i <span class="kw">in</span> labels])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="be454919" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="e82fdaae" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the spectral decomposition</span></span>
@@ -671,21 +937,18 @@ window.Quarto = {
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Eigenvector 1'</span>)</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Eigenvector 2'</span>)</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Interestingly, the first eigenvector corresponds to the eigen centrality of the network, representing the centrality of the nodes. The second eigenvector captures the community structure of the network, clearly separating the two communities in the network.</p>
 </section>
-<section id="modularity-embedding" class="level3" data-number="36.1.4">
-<h3 data-number="36.1.4" class="anchored" data-anchor-id="modularity-embedding"><span class="header-section-number">36.1.4</span> Modularity Embedding</h3>
+<section id="modularity-embedding" class="level3">
+<h3 class="anchored" data-anchor-id="modularity-embedding">Modularity Embedding</h3>
 <p>In a similar vein, we can use the modularity matrix to generate a low-dimensional embedding of the network. Namely, let us define the modularity matrix <span class="math inline">\mathbf{Q}</span> as follows:</p>
 <p><span class="math display">
 Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </span></p>
 <p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
 <p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix.</p>
-<div id="6b22523a" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="52463ac9" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
@@ -706,12 +969,11 @@ Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Eigenvector 1'</span>)</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Eigenvector 2'</span>)</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="{note}"><code>The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes with the same sign of the second eigenvector {footcite}`newman2006modularity`.</code></pre>
 </section>
-<section id="laplacian-eigenmap" class="level3" data-number="36.1.5">
-<h3 data-number="36.1.5" class="anchored" data-anchor-id="laplacian-eigenmap"><span class="header-section-number">36.1.5</span> Laplacian Eigenmap</h3>
+<section id="laplacian-eigenmap" class="level3">
+<h3 class="anchored" data-anchor-id="laplacian-eigenmap">Laplacian Eigenmap</h3>
 <p>Laplacian Eigenmap {footcite}<code>belkin2003laplacian</code> is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:</p>
 <p><span class="math display">
 \min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
@@ -756,12 +1018,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <p>The solution is the <span class="math inline">d</span> eigenvectors associated with the <span class="math inline">d</span> smallest eigenvalues of <span class="math inline">\mathbf{L}</span>.</p>
 <p>It is important to note that the eigenvector corresponding to the smallest eigenvalue (which is always zero for connected graphs) is trivial - it’s the all-one vector. Therefore, in practice, we typically compute the <span class="math inline">d+1</span> smallest eigenvectors and discard the one corresponding to the zero eigenvalue.</p>
 </section>
-<section id="example-laplacian-eigenmap" class="level3" data-number="36.1.6">
-<h3 data-number="36.1.6" class="anchored" data-anchor-id="example-laplacian-eigenmap"><span class="header-section-number">36.1.6</span> Example: Laplacian Eigenmap</h3>
+<section id="example-laplacian-eigenmap" class="level3">
+<h3 class="anchored" data-anchor-id="example-laplacian-eigenmap">Example: Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="e15bf0e9" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="f769e669" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> np.diag(np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>))</span>
@@ -773,12 +1033,9 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>sorted_indices <span class="op">=</span> np.argsort(eigvals)[<span class="dv">1</span>:d<span class="op">+</span><span class="dv">1</span>]  <span class="co"># Exclude the first eigenvector</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>eigvals <span class="op">=</span> eigvals[sorted_indices]</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>eigvecs <span class="op">=</span> eigvecs[:, sorted_indices]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>The eigenvectors corresponding to the <span class="math inline">d</span> smallest eigenvalues are:</p>
-<div id="18ad8c3c" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="b25d869f" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
@@ -787,18 +1044,17 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Eigenvector 2'</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Eigenvector 3'</span>)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 </section>
-<section id="neural-embedding-with-word2vec" class="level2" data-number="36.2">
-<h2 data-number="36.2" class="anchored" data-anchor-id="neural-embedding-with-word2vec"><span class="header-section-number">36.2</span> Neural Embedding with word2vec</h2>
-<section id="introduction-to-word2vec" class="level3" data-number="36.2.1">
-<h3 data-number="36.2.1" class="anchored" data-anchor-id="introduction-to-word2vec"><span class="header-section-number">36.2.1</span> Introduction to word2vec</h3>
+<section id="neural-embedding-with-word2vec" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="neural-embedding-with-word2vec"><span class="header-section-number">2</span> Neural Embedding with word2vec</h2>
+<section id="introduction-to-word2vec" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-to-word2vec">Introduction to word2vec</h3>
 <p>In this section, we will introduce <em>word2vec</em>, a powerful technique for learning word embeddings. word2vec is a neural network model that learns words embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 {footcite}<code>mikolov2013distributed</code>.</p>
 </section>
-<section id="how-it-works" class="level3" data-number="36.2.2">
-<h3 data-number="36.2.2" class="anchored" data-anchor-id="how-it-works"><span class="header-section-number">36.2.2</span> How it works</h3>
+<section id="how-it-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-it-works">How it works</h3>
 <p>“You shall know a word by the company it keeps” {footcite}<code>church1988word</code> is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context. word2vec operates on the same principle. word2vec identifies a word’s context by examining the words within a fixed window around it. For example, in the sentence:</p>
 <blockquote class="blockquote">
 <p>The quick brown fox jumps over a lazy dog</p>
@@ -816,42 +1072,34 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ul>
 <p>We can consider word2vec as a <em>dimensionality reduction</em> technique that reduces the dimensionality of the input layer to the hidden layer based on the co-occurrence of words within a short distance. The distance is named the <em>window size</em>, which is a user-defined hyperparameter.</p>
 </section>
-<section id="whats-special-about-word2vec" class="level3" data-number="36.2.3">
-<h3 data-number="36.2.3" class="anchored" data-anchor-id="whats-special-about-word2vec"><span class="header-section-number">36.2.3</span> What’s special about word2vec?</h3>
+<section id="whats-special-about-word2vec" class="level3">
+<h3 class="anchored" data-anchor-id="whats-special-about-word2vec">What’s special about word2vec?</h3>
 <p>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</p>
 <p><img src="https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg" class="img-fluid"></p>
 <p>To showcase the effectiveness of word2vec, let’s walk through an example using the <code>gensim</code> library.</p>
-<div id="9c5ff5f1" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="74f70bc7" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim.downloader</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load pre-trained word2vec model from Google News</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> gensim.downloader.load(<span class="st">'word2vec-google-news-300'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Our first example is to find the words most similar to <em>king</em>.</p>
-<div id="7e5ae767" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="6ac4da0b" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>word <span class="op">=</span> <span class="st">"king"</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>similar_words <span class="op">=</span> model.most_similar(word)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Words most similar to '</span><span class="sc">{</span>word<span class="sc">}</span><span class="ss">':"</span>)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> similar_word, similarity <span class="kw">in</span> similar_words:</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>similar_word<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>similarity<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>A cool (yet controversial) application of word embeddings is analogy solving. Let us consider the following puzzle:</p>
 <blockquote class="blockquote">
 <p><em>man</em> is to <em>woman</em> as <em>king</em> is to ___ ?</p>
 </blockquote>
 <p>We can use word embeddings to solve this puzzle.</p>
-<div id="fabd7f23" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="0aaec50a" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We solve the puzzle by</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  vec(king) - vec(man) + vec(woman)</span></span>
@@ -859,12 +1107,9 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># To solve this, we use the model.most_similar function, with positive words being "king" and "woman" (additive), and negative words being "man" (subtractive).</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>model.most_similar(positive<span class="op">=</span>[<span class="st">'woman'</span>, <span class="st">"king"</span>], negative<span class="op">=</span>[<span class="st">'man'</span>], topn<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>The last example is to visualize the word embeddings.</p>
-<div id="65ac752f" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="57318993" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -912,16 +1157,15 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Principal Component 2'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
 <span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plt.gca()</span>
 <span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>We can see that word2vec places the words representing countries close to each other and so do the words representing their capitals. The country-capital relationship is also roughly preserved, e.g., <em>Germany</em>-<em>Berlin</em> vector is roughly parallel to <em>France</em>-<em>Paris</em> vector.</p>
 </section>
 </section>
-<section id="graph-embedding-with-word2vec" class="level2" data-number="36.3">
-<h2 data-number="36.3" class="anchored" data-anchor-id="graph-embedding-with-word2vec"><span class="header-section-number">36.3</span> Graph Embedding with word2vec</h2>
+<section id="graph-embedding-with-word2vec" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="graph-embedding-with-word2vec"><span class="header-section-number">3</span> Graph Embedding with word2vec</h2>
 <p>How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequence of words as input, while graph data are discrete and unordered. A solution to fill this gap is <em>random walk</em>, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.</p>
-<section id="deepwalk" class="level3" data-number="36.3.1">
-<h3 data-number="36.3.1" class="anchored" data-anchor-id="deepwalk"><span class="header-section-number">36.3.1</span> DeepWalk</h3>
+<section id="deepwalk" class="level3">
+<h3 class="anchored" data-anchor-id="deepwalk">DeepWalk</h3>
 <p><img src="https://dt5vp8kor0orz.cloudfront.net/7c56c256b9fbf06693da47737ac57fae803a5a4f/1-Figure1-1.png" class="img-fluid"></p>
 <p>DeepWalk is one of the pioneering works to apply word2vec to graph data {footcite}<code>perozzi2014deepwalk</code>. It views the nodes as words and the nodes random walks on the graph as sentences, and applies word2vec to learn the node embeddings.</p>
 <p>More specifically, the method contains the following steps:</p>
@@ -931,16 +1175,14 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ol>
 <p>There are some technical details that we need to be aware of, which we will learn by implementing DeepWalk in the following exercise.</p>
 </section>
-<section id="exercise-01-implement-deepwalk" class="level3" data-number="36.3.2">
-<h3 data-number="36.3.2" class="anchored" data-anchor-id="exercise-01-implement-deepwalk"><span class="header-section-number">36.3.2</span> Exercise 01: Implement DeepWalk</h3>
+<section id="exercise-01-implement-deepwalk" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-01-implement-deepwalk">Exercise 01: Implement DeepWalk</h3>
 <p>In this exercise, we implement DeepWalk step by step.</p>
-<section id="step-1-data-preparation" class="level5" data-number="36.3.2.0.1">
-<h5 data-number="36.3.2.0.1" class="anchored" data-anchor-id="step-1-data-preparation"><span class="header-section-number">36.3.2.0.1</span> Step 1: Data preparation</h5>
+<section id="step-1-data-preparation" class="level5">
+<h5 class="anchored" data-anchor-id="step-1-data-preparation">Step 1: Data preparation</h5>
 <p>We will use the karate club network as an example.</p>
 <p><strong>Load the data</strong></p>
-<div id="26a4609d" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="f6997845" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -956,15 +1198,12 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> sns.color_palette().as_hex()</span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_color<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> g.vs[<span class="st">"label"</span>]], bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">300</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="step-2-generate-random-walks" class="level5" data-number="36.3.2.0.2">
-<h5 data-number="36.3.2.0.2" class="anchored" data-anchor-id="step-2-generate-random-walks"><span class="header-section-number">36.3.2.0.2</span> Step 2: Generate random walks</h5>
+<section id="step-2-generate-random-walks" class="level5">
+<h5 class="anchored" data-anchor-id="step-2-generate-random-walks">Step 2: Generate random walks</h5>
 <p>Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network. Let us first implement a function to sample random walks from a given network.</p>
-<div id="9925465f" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="11bf78f6" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(net, start_node, walk_length):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize the walk with the starting node</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    walk <span class="op">=</span> [start_node]</span>
@@ -986,12 +1225,9 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the generated walk</span></span>
 <span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> walk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Generate 10 random walks of length 50 starting from each node.</p>
-<div id="81625f4a" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="543c6659" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>n_walkers_per_node <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>walk_length <span class="op">=</span> <span class="dv">50</span></span>
@@ -999,19 +1235,15 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_walkers_per_node):</span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        walks.append(random_walk(A, i, walk_length))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="step-3-train-the-word2vec-model" class="level5" data-number="36.3.2.0.3">
-<h5 data-number="36.3.2.0.3" class="anchored" data-anchor-id="step-3-train-the-word2vec-model"><span class="header-section-number">36.3.2.0.3</span> Step 3: Train the word2vec model</h5>
+<section id="step-3-train-the-word2vec-model" class="level5">
+<h5 class="anchored" data-anchor-id="step-3-train-the-word2vec-model">Step 3: Train the word2vec model</h5>
 <p>Then, we feed the random walks to the word2vec model.</p>
-<div id="0d734082" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="110f291c" class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Word2Vec(walks, vector_size<span class="op">=</span><span class="dv">32</span>, window<span class="op">=</span><span class="dv">3</span>, min_count<span class="op">=</span><span class="dv">1</span>, sg<span class="op">=</span><span class="dv">1</span>, hs <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Here,</p>
 <ul>
@@ -1032,29 +1264,21 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </ul>
 <p>By using the skip-gram model with hierarchical softmax, we can efficiently learn high-quality word embeddings even when dealing with large vocabularies.</p>
 <p>Now, we extract the node embeddings from the word2vec model. In the word2vec model, the embeddings are stored in the <code>wv</code> attribute. The embedding of node <span class="math inline">i</span> is given by <code>model.wv[i]</code>.</p>
-<div id="99fa56fd" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="84da7359" class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    embedding.append(model.wv[i])</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> np.array(embedding)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><code>embedding</code> is the matrix of node embeddings. It has the same number of rows as the number of nodes in the network, and the number of columns is the embedding dimension.</p>
 <p><strong>Print the first 3 nodes</strong></p>
-<div id="41300176" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="5890dc2e" class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>embedding[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Let’s visualize the node embeddings using UMAP.</p>
-<div id="2baa9f01" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="6e5d67f6" class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> umap</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.plotting <span class="im">import</span> figure, show</span>
@@ -1082,15 +1306,12 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>p.scatter(<span class="st">'x'</span>, <span class="st">'y'</span>, size<span class="op">=</span><span class="st">'size'</span>, source<span class="op">=</span>source, line_color<span class="op">=</span><span class="st">"black"</span>, color<span class="op">=</span><span class="st">"community"</span>)</span>
 <span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="step-4-clustering" class="level5" data-number="36.3.2.0.4">
-<h5 data-number="36.3.2.0.4" class="anchored" data-anchor-id="step-4-clustering"><span class="header-section-number">36.3.2.0.4</span> Step 4: Clustering</h5>
+<section id="step-4-clustering" class="level5">
+<h5 class="anchored" data-anchor-id="step-4-clustering">Step 4: Clustering</h5>
 <p>One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as <span class="math inline">K</span>-means and Gaussian mixture model. Let’s see what we can get from the node embeddings.</p>
-<div id="340e935f" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="183c19d1" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1123,21 +1344,17 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the labels (cluster assignments) for each data point</span></span>
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.labels_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="55710a10" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="b8fb0d5d" class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> Kmeans_with_silhouette(embedding)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette().as_hex()</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_color<span class="op">=</span>[cmap[label] <span class="cf">for</span> label <span class="kw">in</span> labels], bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 </section>
-<section id="node2vec" class="level3" data-number="36.3.3">
-<h3 data-number="36.3.3" class="anchored" data-anchor-id="node2vec"><span class="header-section-number">36.3.3</span> node2vec</h3>
+<section id="node2vec" class="level3">
+<h3 class="anchored" data-anchor-id="node2vec">node2vec</h3>
 <p>node2vec is a sibling of DeepWalk proposed by {footcite}<code>grover2016node2vec</code>. Both use word2vec trained on random walks on networks. So, it appears that they are very similar. However, the following two components make them very different.</p>
 <ul>
 <li><p><strong>Biased random walk</strong>: node2vec uses biased random walks that can move in different directions. The bias walk is parameterized by two parameters, <span class="math inline">p</span> and <span class="math inline">q</span>:</p>
@@ -1161,12 +1378,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <li><p><strong>Negative sampling</strong>: node2vec uses negative sampling, instead of hierarchical softmax. This difference appears to be minor, but it has significant consequences on the characteristics of the embeddings. This is beyond the scope of this lecture, but you can refer to {footcite}<code>kojaku2021neurips</code> and {footcite}<code>dyer2014notes</code> for more details.</p></li>
 </ul>
 </section>
-<section id="exercise-02-implement-node2vec" class="level3" data-number="36.3.4">
-<h3 data-number="36.3.4" class="anchored" data-anchor-id="exercise-02-implement-node2vec"><span class="header-section-number">36.3.4</span> Exercise 02: Implement node2vec</h3>
+<section id="exercise-02-implement-node2vec" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-02-implement-node2vec">Exercise 02: Implement node2vec</h3>
 <p>Let’s implement the biased random walk for node2vec</p>
-<div id="b6b57899" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="262ef718" class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Sample a random walk starting from start_node.</span></span>
@@ -1234,12 +1449,9 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-66"><a href="#cb21-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the chosen next node</span></span>
 <span id="cb21-67"><a href="#cb21-67" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> next_node</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Now, let’s set up the word2vec model for node2vec.</p>
-<div id="c75bd342" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="07e7b938" class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>walks <span class="op">=</span> []</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.1</span></span>
@@ -1247,23 +1459,17 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_walkers_per_node):</span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        walks.append(node2vec_random_walk(A, i, walk_length, p, q))</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Word2Vec(walks, vector_size<span class="op">=</span><span class="dv">32</span>, window<span class="op">=</span><span class="dv">3</span>, min_count<span class="op">=</span><span class="dv">1</span>, sg<span class="op">=</span><span class="dv">1</span>, hs <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>where <code>hs=0</code> indicates that we are using negative sampling. Notice that we set <code>sg=1</code> and <code>hs=1</code> instead of <code>sg=1</code> and <code>hs=0</code> in DeepWalk. This is because node2vec uses the skip-gram model with negative sampling.</p>
 <p>Now, we extract the node embeddings from the word2vec model.</p>
-<div id="867ad4ae" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="0efd8181" class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> []</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    embedding.append(model.wv[i])</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> np.array(embedding)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Let’s visualize the node embeddings from node2vec.</p>
-<div id="73b1fd98" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="dd886a50" class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>reducer <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, n_neighbors<span class="op">=</span><span class="dv">15</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span>
@@ -1294,12 +1500,9 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>p.add_tools(hover)</span>
 <span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>The results for clustering are as follows:</p>
-<div id="4a021c33" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="453912ce" class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> Kmeans_with_silhouette(embedding)</span>
@@ -1307,11 +1510,10 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette().as_hex()</span>
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_color<span class="op">=</span>[cmap[label] <span class="cf">for</span> label <span class="kw">in</span> labels], bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>), vertex_label<span class="op">=</span>[<span class="st">"</span><span class="sc">%d</span><span class="st">"</span> <span class="op">%</span>  d <span class="cf">for</span> d <span class="kw">in</span>  np.arange(n_nodes)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="line" class="level3" data-number="36.3.5">
-<h3 data-number="36.3.5" class="anchored" data-anchor-id="line"><span class="header-section-number">36.3.5</span> LINE</h3>
+<section id="line" class="level3">
+<h3 class="anchored" data-anchor-id="line">LINE</h3>
 <p>LINE {footcite}<code>tang2015line</code> is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with <span class="math inline">p=1</span>, <span class="math inline">q=1</span>, and window size 1.</p>
 <pre class="{footbibliography}"><code></code></pre>
 
@@ -1445,7 +1647,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1774,13 +1976,13 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m08-embedding/01-concepts.html" class="pagination-link" aria-label="Network Embedding Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span>
+      <a href="../m08-embedding/01-concepts.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m08-embedding/03-exercises.html" class="pagination-link" aria-label="Exercises">
-        <span class="nav-page-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m08-embedding/03-exercises.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -2541,7 +2743,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m08-embedding/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

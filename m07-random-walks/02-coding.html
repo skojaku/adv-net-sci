@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2025-07-27">
 
-<title>32&nbsp; Random Walks: Implementation and Applications – Advanced Topics in Network Science</title>
+<title>Random Walks: Implementation and Applications</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,23 +75,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-42d6d7f73c49f266427812bee1da63d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
+    "|"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -149,18 +148,267 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.jpg" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
+<span class="menu-text">Course</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Intro</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">Why Networks?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../intro/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
+<span class="menu-text">Dojo 🥋</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Foundations</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
+        <li class="dropdown-header">─── M01: Euler Path ───</li>
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
+ <span class="dropdown-text">Advanced</span></a>
+  </li>  
+        <li class="dropdown-header">─── M02: Small World ───</li>
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M03: Robustness ───</li>
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Core Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
+        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M05: Clustering ───</li>
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M06: Centrality ───</li>
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Advanced Topics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
+        <li class="dropdown-header">─── M07: Random Walks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li class="dropdown-header">─── M08: Embedding ───</li>
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/00-preparation.html">
+ <span class="dropdown-text">Preparation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Concepts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
+ <span class="dropdown-text">Coding</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
+ <span class="dropdown-text">Exercises</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
+ <span class="dropdown-text">Appendix</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Advanced Topics in Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -170,17 +418,9 @@ window.Quarto = {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      <img src="../logo.jpg" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
-      </a>
-    <div class="sidebar-title mb-0 py-0">
-      <a href="../">Advanced Topics in Network Science</a> 
-    </div>
-      </div>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -188,294 +428,288 @@ window.Quarto = {
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome to SSIE 641 Advanced Topics on Network Science</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Intro</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Networks</span></span></a>
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/zoo-of-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Zoo of networks</span></span></a>
+  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Setup</span></span></a>
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Dojo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">M01: Euler Tour</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Path</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparation: Python and Graph Basics</span></span></a>
+ <span class="menu-text">From Visual to Computational Thinking</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Euler Tour Concepts</span></span></a>
+ <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Compute with networks</span></span></a>
+ <span class="menu-text">Coding Networks in Python</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+ <span class="menu-text">Exercises</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">M02: Small World</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Preparation: Distance and Path Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Small-World Networks: Core Concepts</span></span></a>
+ <span class="menu-text">Small-World Networks: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Efficient Network Representation and Computing Paths</span></span></a>
+ <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises and Assignments</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Appendix: Tools and Advanced Topics</span></span></a>
+ <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">M03: Robustness</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Preparation: Network Failure Analysis Prerequisites</span></span></a>
+ <span class="menu-text">Preparation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Module 3: Robustness - Concepts</span></span></a>
+ <span class="menu-text">Network Robustness: Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Coding: Minimum Spanning Trees and Network Robustness</span></span></a>
+ <span class="menu-text">Coding - Network Robustness Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Robustness Analysis - Exercises</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
  <span class="menu-text">M04: Friendship Paradox</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Preparation: Statistical Sampling and Probability Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">M04 Concepts: The Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Degree distribution</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">M04 Exercises: Friendship Paradox</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
  <span class="menu-text">M05: Clustering</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Preparation: Linear Algebra and Optimization Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Module 5: Clustering Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clustering Algorithms and Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Hands-on: Clustering</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
  <span class="menu-text">M06: Centrality</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Preparation: Advanced Linear Algebra for Network Analysis</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Module 6: Centrality Concepts</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Computing centrality with Python</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Assignment</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Preparation: Markov Chain Theory Prerequisites</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Random Walks: Exercises and Practice</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -483,7 +717,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
- <span class="menu-text">M08: Embedding</span></a>
+ <span class="menu-text">M07: Random Walks</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -491,73 +725,108 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Preparation: Dimensionality Reduction and Optimization Prerequisites</span></span></a>
+  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Network Embedding Concepts</span></span></a>
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Embedding Methods: Implementation and Practice</span></span></a>
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">M09: Graph Neural Networks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Preparation: Neural Networks and Deep Learning Prerequisites</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Concepts: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Coding: Graph Neural Networks Implementation</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exercises: Graph Neural Networks</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Appendix</span></span></a>
+ <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
       </ul>
@@ -567,37 +836,32 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul class="collapse">
-  <li><a href="#introduction-random-walks-everywhere" id="toc-introduction-random-walks-everywhere" class="nav-link active" data-scroll-target="#introduction-random-walks-everywhere"><span class="header-section-number">32.1</span> Introduction: Random Walks Everywhere</a></li>
-  <li><a href="#random-walks-in-a-network" id="toc-random-walks-in-a-network" class="nav-link" data-scroll-target="#random-walks-in-a-network"><span class="header-section-number">32.2</span> Random walks in a network</a></li>
-  <li><a href="#implementing-random-walks-in-python" id="toc-implementing-random-walks-in-python" class="nav-link" data-scroll-target="#implementing-random-walks-in-python"><span class="header-section-number">32.3</span> Implementing Random Walks in Python</a></li>
-  <li><a href="#expected-behavior-of-random-walks" id="toc-expected-behavior-of-random-walks" class="nav-link" data-scroll-target="#expected-behavior-of-random-walks"><span class="header-section-number">32.4</span> Expected behavior of random walks</a></li>
-  <li><a href="#mathematical-foundation-stationary-state" id="toc-mathematical-foundation-stationary-state" class="nav-link" data-scroll-target="#mathematical-foundation-stationary-state"><span class="header-section-number">32.5</span> Mathematical Foundation: Stationary State</a></li>
-  <li><a href="#practical-demonstration" id="toc-practical-demonstration" class="nav-link" data-scroll-target="#practical-demonstration"><span class="header-section-number">32.6</span> Practical Demonstration</a></li>
-  <li><a href="#community-structure" id="toc-community-structure" class="nav-link" data-scroll-target="#community-structure"><span class="header-section-number">32.7</span> Community structure</a></li>
-  <li><a href="#advanced-topics-mixing-time-and-spectral-analysis" id="toc-advanced-topics-mixing-time-and-spectral-analysis" class="nav-link" data-scroll-target="#advanced-topics-mixing-time-and-spectral-analysis"><span class="header-section-number">32.8</span> Advanced Topics: Mixing Time and Spectral Analysis</a></li>
-  <li><a href="#unifying-centrality-and-communities" id="toc-unifying-centrality-and-communities" class="nav-link" data-scroll-target="#unifying-centrality-and-communities"><span class="header-section-number">32.9</span> Unifying Centrality and Communities</a></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">32.10</span> Summary</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/00-preparation.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Advanced Topics in Network Science</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Random Walks: Implementation and Applications</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Random Walks: Implementation and Applications</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 27, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -607,14 +871,14 @@ window.Quarto = {
 </header>
 
 
-<section id="introduction-random-walks-everywhere" class="level2" data-number="32.1">
-<h2 data-number="32.1" class="anchored" data-anchor-id="introduction-random-walks-everywhere"><span class="header-section-number">32.1</span> Introduction: Random Walks Everywhere</h2>
+<section id="introduction-random-walks-everywhere" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction-random-walks-everywhere"><span class="header-section-number">1</span> Introduction: Random Walks Everywhere</h2>
 <p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
 <p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network. It is surprising that this seemingly random, brainless behavior can tell us something deep about the structure of the city.</p>
 <p><img src="../figs/random-walk.png" alt="Random walk on a network" width="50%" style="display: block; margin-left: auto; margin-right: auto;"></p>
 </section>
-<section id="random-walks-in-a-network" class="level2" data-number="32.2">
-<h2 data-number="32.2" class="anchored" data-anchor-id="random-walks-in-a-network"><span class="header-section-number">32.2</span> Random walks in a network</h2>
+<section id="random-walks-in-a-network" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="random-walks-in-a-network"><span class="header-section-number">2</span> Random walks in a network</h2>
 <p>A random walk in undirected networks is the following process: 1. Start at a node <span class="math inline">i</span> 2. Randomly choose an edge to traverse to a neighbor node <span class="math inline">j</span> 3. Repeat step 2 until you have taken <span class="math inline">T</span> steps.</p>
 <pre class="{note}"><code>In case of directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</code></pre>
 <p>How does this simple process tell us something about the network structure? To get some insights, let us play with a simple interactive visualization.</p>
@@ -639,14 +903,12 @@ Random Walk Simulation
 </div>
 </div>
 </section>
-<section id="implementing-random-walks-in-python" class="level2" data-number="32.3">
-<h2 data-number="32.3" class="anchored" data-anchor-id="implementing-random-walks-in-python"><span class="header-section-number">32.3</span> Implementing Random Walks in Python</h2>
-<section id="simulating-random-walks" class="level3" data-number="32.3.1">
-<h3 data-number="32.3.1" class="anchored" data-anchor-id="simulating-random-walks"><span class="header-section-number">32.3.1</span> Simulating Random Walks</h3>
+<section id="implementing-random-walks-in-python" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="implementing-random-walks-in-python"><span class="header-section-number">3</span> Implementing Random Walks in Python</h2>
+<section id="simulating-random-walks" class="level3">
+<h3 class="anchored" data-anchor-id="simulating-random-walks">Simulating Random Walks</h3>
 <p>We will simulate random walks on a simple graph of five nodes as follows.</p>
-<div id="355d8f5b" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="34002d05" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -655,16 +917,13 @@ Random Walk Simulation
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>g.add_vertices([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>])</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>g.add_edges([(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">4</span>)])</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>g.vs[<span class="st">"name"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>A random walk is characterized by the transition probabilities between nodes.</p>
 <p><span class="math display">
 P_{ij} = \frac{A_{ij}}{k_i}
 </span></p>
 <p>Let us first compute the transition probabilities and store them in a matrix, <span class="math inline">\mathbf{P}</span>.</p>
-<div id="139bbcd4" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="093fdb1f" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -683,64 +942,46 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># or even more efficiently</span></span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="2d92e494" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="0be4c49d" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="4f262870" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="8b42bde7" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>)</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Each row and column of <span class="math inline">\mathbf{P}</span> corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</p>
 <p>Now, let us simulate a random walk on this graph. We represent a position of the walker by a vector, <span class="math inline">\mathbf{x}</span>, with five elements, each of which represents a node. We mark the node that the walker is currently at by <code>1</code> and others as <code>0</code>.</p>
-<div id="735f0a53" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="b04f67c9" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial position of the walker:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>This vector representation is convenient to get the probabilities of transitions to other nodes from the current node:</p>
 <p><span class="math display">
 \mathbf{x} \mathbf{P}
 </span></p>
 <p>which is translated into the following code:</p>
-<div id="f5b57fb2" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="73a3616e" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Position of the walker after one step:</span><span class="ch">\n</span><span class="st">"</span>, probs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>We can then draw the next node based on the probabilities</p>
-<div id="a1b422a7" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="4719a73c" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>x[:] <span class="op">=</span> <span class="dv">0</span> <span class="co"># zero out the vector</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>x[next_node] <span class="op">=</span> <span class="dv">1</span> <span class="co"># set the next node to 1</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Position of the walker after one step:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>By repeating this process, we can simulate the random walk.</p>
 </section>
-<section id="exercise-01" class="level3" data-number="32.3.2">
-<h3 data-number="32.3.2" class="anchored" data-anchor-id="exercise-01"><span class="header-section-number">32.3.2</span> Exercise 01</h3>
+<section id="exercise-01" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-01">Exercise 01</h3>
 <p>Write the following function to simulate the random walk for a given number of steps and return the <span class="math inline">x</span> for each step.</p>
-<div id="7d10a8fd" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="b757888c" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
@@ -755,47 +996,38 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 </section>
-<section id="expected-behavior-of-random-walks" class="level2" data-number="32.4">
-<h2 data-number="32.4" class="anchored" data-anchor-id="expected-behavior-of-random-walks"><span class="header-section-number">32.4</span> Expected behavior of random walks</h2>
+<section id="expected-behavior-of-random-walks" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="expected-behavior-of-random-walks"><span class="header-section-number">4</span> Expected behavior of random walks</h2>
 <p>What is the expected position of the walker after multiple steps? It is easy to compute the expected position of the walker after one step from initial position <span class="math inline">x(0)</span>:</p>
 <p><span class="math display">
 \mathbb{E}[x(1)] = x(0) P
 </span></p>
 <p>where <span class="math inline">x(t)</span> is the probability distribution of the walker at time <span class="math inline">t</span>. In Python, the expected position of the walker at time <span class="math inline">t=1</span> is given by</p>
-<div id="e8983efc" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="e4455860" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>x_1 <span class="op">=</span> x_0 <span class="op">@</span> P</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position of the walker after one step:</span><span class="ch">\n</span><span class="st">"</span>, x_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>For the second step, the expected position of the walker is given by</p>
 <p><span class="math display">
 \mathbb{E}[x(2)] = \mathbb{E}[x(1) P] = \mathbb{E}[x(0) P] P = x(0) P^2
 </span></p>
 <p>In other words,</p>
-<div id="5d4292f7" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="cf0f0200" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position of the walker after two steps:</span><span class="ch">\n</span><span class="st">"</span>, x_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Following the same argument, the expected position of the walker at time <span class="math inline">t</span> is given by</p>
 <p><span class="math display">
 \mathbb{E}[x(t)] = x(0) P^t
 </span></p>
-<section id="exercise-02" class="level3" data-number="32.4.1">
-<h3 data-number="32.4.1" class="anchored" data-anchor-id="exercise-02"><span class="header-section-number">32.4.1</span> Exercise 02</h3>
+<section id="exercise-02" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-02">Exercise 02</h3>
 <p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span> using the above formula:</p>
-<div id="3b69875f" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="dc6fc29a" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
@@ -807,17 +1039,16 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="exercise-03" class="level3" data-number="32.4.2">
-<h3 data-number="32.4.2" class="anchored" data-anchor-id="exercise-03"><span class="header-section-number">32.4.2</span> Exercise 03</h3>
+<section id="exercise-03" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-03">Exercise 03</h3>
 <p>Plot each element of <span class="math inline">x(t)</span> as a function of <span class="math inline">t</span> for <span class="math inline">t=0,1,2,\ldots, 1000</span>. Try different initial positions and compare the results!</p>
 <p>Steps: 1. Define the initial position of the walker. 2. Compute the expected position of the walker at time <span class="math inline">t</span> using the function you wrote above. 3. Draw a line for each element of <span class="math inline">x(t)</span>, totalling 5 lines. 4. Create multiple such plots for different initial positions and compare them.</p>
 </section>
 </section>
-<section id="mathematical-foundation-stationary-state" class="level2" data-number="32.5">
-<h2 data-number="32.5" class="anchored" data-anchor-id="mathematical-foundation-stationary-state"><span class="header-section-number">32.5</span> Mathematical Foundation: Stationary State</h2>
+<section id="mathematical-foundation-stationary-state" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="mathematical-foundation-stationary-state"><span class="header-section-number">5</span> Mathematical Foundation: Stationary State</h2>
 <p>Let’s dive into the math behind random walks in a way that’s easy to understand.</p>
 <p>Imagine you’re at node <span class="math inline">i</span> at time <span class="math inline">t</span>. You randomly move to a neighboring node <span class="math inline">j</span>. The probability of this move, called the transition probability <span class="math inline">p_{ij}</span>, is:</p>
 <p><span class="math display">
@@ -879,12 +1110,10 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </span></p>
 <p>This means the probability of being at node <span class="math inline">j</span> in the long run is proportional to the degree of node <span class="math inline">j</span>. The normalization ensures that the sum of all probabilities is 1, i.e., <span class="math inline">\sum_{j=1}^N \pi_j = 1</span>.</p>
 </section>
-<section id="practical-demonstration" class="level2" data-number="32.6">
-<h2 data-number="32.6" class="anchored" data-anchor-id="practical-demonstration"><span class="header-section-number">32.6</span> Practical Demonstration</h2>
+<section id="practical-demonstration" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="practical-demonstration"><span class="header-section-number">6</span> Practical Demonstration</h2>
 <p>Let us demonstrate the above math by using a small network using Python. Let us consider a small network of 5 nodes, which looks like this:</p>
-<div id="042509b4" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="1453cd1f" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> []</span>
@@ -896,12 +1125,9 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> ig.Graph(edge_list)</span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>ig.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>np.arange(g.vcount()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>The transition probability matrix <span class="math inline">P</span> is given by:</p>
-<div id="12985c72" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="cc9fc8c6" class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
@@ -909,12 +1135,9 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>Dinv <span class="op">=</span> sparse.diags(<span class="dv">1</span><span class="op">/</span>deg)</span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> Dinv <span class="op">@</span> A</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>P.toarray()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Let us compute the stationary distribution by using the power method.</p>
-<div id="35d73a38" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="55d905ed" class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -938,13 +1161,10 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="dv">1</span>), loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>We see that the distributions of the walker converges, and there are three characteristic features in the convergence: 1. The distribution of the walker oscillates with a decaying amplitude and eventually converges. 2. Nodes of the same degree converge to the same stationary probability. 3. Nodes with higher degree converge to the higher stationary probability.</p>
 <p>To validate the last two observation, let us compare the stationary distribution of a random walker with the expected stationary distribution, which is proportional to the degree of the nodes.</p>
-<div id="64f6d252" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="722680e8" class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>n_edges <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
@@ -954,15 +1174,12 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Expected stationary distribution"</span>: expected_stationary_dist,</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Stationary distribution of a random walk"</span>: xt[<span class="op">-</span><span class="dv">1</span>].flatten()</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>}).style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>).set_caption(<span class="st">"Comparison of Expected and Observed Stationary Distributions"</span>).background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="community-structure" class="level2" data-number="32.7">
-<h2 data-number="32.7" class="anchored" data-anchor-id="community-structure"><span class="header-section-number">32.7</span> Community structure</h2>
+<section id="community-structure" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="community-structure"><span class="header-section-number">7</span> Community structure</h2>
 <p>Random walks can capture community structure of a network. To see this, let us consider a network of a ring of cliques.</p>
-<div id="8e0ea9bf" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="d22a8e96" class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -978,13 +1195,10 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>color_map <span class="op">=</span> [sns.color_palette()[i] <span class="cf">for</span> i <span class="kw">in</span> membership]</span>
 <span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>color_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Let us compute the expected position of the walker after 1 to 10 steps.</p>
 <p><strong>Compute the transition matrix</strong>:</p>
-<div id="860f840c" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="8ba0c151" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -995,12 +1209,9 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an efficient way to compute the transition matrix</span></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># using scipy.sparse</span></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> sparse.diags(<span class="dv">1</span> <span class="op">/</span> k) <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><strong>Compute the expected position of the walker after 1 to 300 steps</strong>:</p>
-<div id="266de651" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="8cc37b43" class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>x_t <span class="op">=</span> np.zeros(g.vcount())</span>
@@ -1010,12 +1221,9 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> x_t <span class="op">@</span> P</span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    x_list.append(x_t)</span>
 <span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> np.array(x_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><strong>Plot the expected position of the walker at each step</strong>:</p>
-<div id="dd00d0c9" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="495cba66" class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette(<span class="st">"viridis"</span>, as_cmap<span class="op">=</span><span class="va">True</span>)</span>
@@ -1030,22 +1238,21 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(t_list):</span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>[cmap(x_list[t][j] <span class="op">/</span> np.<span class="bu">max</span>(x_list[t])) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(g.vcount())], target <span class="op">=</span> axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>])</span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>].set_title(<span class="ss">f"$t$ = </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span>, fontsize <span class="op">=</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>where the color of each node represents the probability of the walker being at that node.</p>
 <p>An important observation is that the walker spends more time in the clique that it started from and then diffuse to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.</p>
-<section id="exercise-04" class="level3" data-number="32.7.1">
-<h3 data-number="32.7.1" class="anchored" data-anchor-id="exercise-04"><span class="header-section-number">32.7.1</span> Exercise 04</h3>
+<section id="exercise-04" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-04">Exercise 04</h3>
 <ol type="1">
 <li><p>Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability <span class="math inline">0.05</span> and intra-community edge probability <span class="math inline">0.2</span>. Then, compute the expected position of the walker starting from node zero after <span class="math inline">x</span> steps. Plot the results for <span class="math inline">x = 0, 5, 10, 1000</span>.</p></li>
 <li><p>Increase the inter-community edge probability to <span class="math inline">0.15</span> and repeat the simulation. Compare the results with the previous simulation.</p></li>
 </ol>
 </section>
 </section>
-<section id="advanced-topics-mixing-time-and-spectral-analysis" class="level2" data-number="32.8">
-<h2 data-number="32.8" class="anchored" data-anchor-id="advanced-topics-mixing-time-and-spectral-analysis"><span class="header-section-number">32.8</span> Advanced Topics: Mixing Time and Spectral Analysis</h2>
-<section id="time-to-reach-the-stationary-state" class="level3" data-number="32.8.1">
-<h3 data-number="32.8.1" class="anchored" data-anchor-id="time-to-reach-the-stationary-state"><span class="header-section-number">32.8.1</span> Time to reach the stationary state</h3>
+<section id="advanced-topics-mixing-time-and-spectral-analysis" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="advanced-topics-mixing-time-and-spectral-analysis"><span class="header-section-number">8</span> Advanced Topics: Mixing Time and Spectral Analysis</h2>
+<section id="time-to-reach-the-stationary-state" class="level3">
+<h3 class="anchored" data-anchor-id="time-to-reach-the-stationary-state">Time to reach the stationary state</h3>
 <p>Let’s explore how quickly a random walker reaches its stationary state. The convergence speed is influenced by two main factors: edge density and community structure. In sparse networks, the walker needs more steps to explore the entire network. Additionally, the walker tends to remain within its starting community for some time.</p>
 <p>The mixing time, denoted as <span class="math inline">t_{\text{mix}}</span>, is defined as the minimum number of steps required for a random walk to get close to the stationary distribution, regardless of the starting point, with the maximum error less than <span class="math inline">\epsilon</span>:</p>
 <p><span class="math display">t_{\text{mix}} = \min\{t : \max_{{\bf x}(0)} \|{\bf x}(t) - {\bf \pi}\|_{1} \leq \epsilon\}</span></p>
@@ -1136,73 +1343,53 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 </span></p>
 <p>where <span class="math inline">\mu = 1-\lambda_2</span>.</p>
 </section>
-<section id="compute-the-mixing-time" class="level3" data-number="32.8.2">
-<h3 data-number="32.8.2" class="anchored" data-anchor-id="compute-the-mixing-time"><span class="header-section-number">32.8.2</span> Compute the mixing time</h3>
+<section id="compute-the-mixing-time" class="level3">
+<h3 class="anchored" data-anchor-id="compute-the-mixing-time">Compute the mixing time</h3>
 <p>Let us demonstrate the above math by using the network of two cliques.</p>
 </section>
-<section id="normalized-adjacency-matrix" class="level3" data-number="32.8.3">
-<h3 data-number="32.8.3" class="anchored" data-anchor-id="normalized-adjacency-matrix"><span class="header-section-number">32.8.3</span> Normalized Adjacency Matrix</h3>
+<section id="normalized-adjacency-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="normalized-adjacency-matrix">Normalized Adjacency Matrix</h3>
 <p>First, let us construct the normalized adjacency matrix <span class="math inline">\overline{\bf A}</span> of the network.</p>
-<div id="172239cf" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="ca6e4470" class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> Dinv_sqrt <span class="op">@</span> A <span class="op">@</span> Dinv_sqrt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Next, let us compute the eigenvalues and eigenvectors of the normalized adjacency matrix.</p>
-<div id="d17d18da" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="ee2272ea" class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="{note}"><code>`evals` and `evecs` are sorted in descending order of the eigenvalues. `evecs[:, 0]` is the eigenvector corresponding to the largest eigenvalue, which is always 1.</code></pre>
 <pre class="{warning}"><code>There is a similar function called `np.linalg.eig` which returns the eigenvalues and eigenvectors. It can be used for any matrices, while `np.linalg.eigh` is specifically for symmetric matrices. `np.linalg.eigh` is faster and more stable and therefore preferred if your matrix is symmetric. `np.linalg.eig` is more susceptible to numerical errors and therefore less stable.</code></pre>
 <p>The eigenvalues and eigenvectors are shown below.</p>
-<div id="cc9d23a6" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="61ed9d0c" class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvalue"</span>: evals</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>}).T.style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="dv">1</span>).set_caption(<span class="st">"Eigenvalues of the normalized adjacency matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="13ea47e6" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="9c2eb3c8" class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvector </span><span class="sc">%i</span><span class="st">"</span> <span class="op">%</span> i: evecs[:, i]</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>)</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>}).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Eigenvectors of the normalized adjacency matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Notice that the largest eigenvalue is 1, which is always true for a normalized adjacency matrix. The largest eigenvector (the leftmost one) is associated with the stationary distribution of the random walk.</p>
 <pre class="{note}"><code>The sign of the eigenvector is indeterminate, which means we can choose the sign of the eigenvector arbitrarily. In fact, `np.linalg.eigh` returns the eigenvector whose sign can vary for a different run.</code></pre>
 <p>We decompose <span class="math inline">\overline{\bf A}</span> as</p>
 <p><span class="math display">\overline {\bf A} = {\bf Q}{\bf \Lambda}{\bf Q}^\top</span></p>
 <p>where <span class="math inline">{\bf Q}</span> corresponds to <code>eigvecs</code> and <span class="math inline">{\bf \Lambda}</span> corresponds to <code>np.diag(evals)</code> (since <span class="math inline">{\bf \Lambda}</span> is a diagonal matrix). Let’s see if this is correct:</p>
-<div id="0f10c80e" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="fbed4585" class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(A_norm.toarray()).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Normalized Adjacency Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div id="947cbfab" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="88e34991" class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>A_norm_reconstructed <span class="op">=</span> evecs <span class="op">@</span> np.diag(evals) <span class="op">@</span> evecs.T</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(A_norm_reconstructed).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Reconstruction of the Normalized Adjacency Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Notice that the reconstruction is not perfect due to the numerical error, although overall the structure is correct.</p>
 </section>
-<section id="multi-step-transition-probability" class="level3" data-number="32.8.4">
-<h3 data-number="32.8.4" class="anchored" data-anchor-id="multi-step-transition-probability"><span class="header-section-number">32.8.4</span> Multi-step Transition Probability</h3>
+<section id="multi-step-transition-probability" class="level3">
+<h3 class="anchored" data-anchor-id="multi-step-transition-probability">Multi-step Transition Probability</h3>
 <p>Let us first conform whether we can compute the transition probability after <span class="math inline">t</span> steps by using the eigenvalues and eigenvectors.</p>
-<div id="63a653a3" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="584b5a44" class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.zeros(g.vcount())</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>x_0[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
@@ -1221,27 +1408,23 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvector"</span>: x_t.flatten(),</span>
 <span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Power iteration"</span>: x_t_power.flatten()</span>
 <span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>}).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Comparison of Eigenvector and Power Iteration"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
-<section id="relaxation-time-and-mixing-time" class="level3" data-number="32.8.5">
-<h3 data-number="32.8.5" class="anchored" data-anchor-id="relaxation-time-and-mixing-time"><span class="header-section-number">32.8.5</span> Relaxation Time and Mixing Time</h3>
+<section id="relaxation-time-and-mixing-time" class="level3">
+<h3 class="anchored" data-anchor-id="relaxation-time-and-mixing-time">Relaxation Time and Mixing Time</h3>
 <p>Let us measure the relaxation time of the random walk.</p>
-<div id="76cdad90" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
+<div id="db9128b7" class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>lambda_2 <span class="op">=</span> <span class="op">-</span>np.sort(<span class="op">-</span>evals)[<span class="dv">1</span>]</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> lambda_2</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The relaxation time of the random walk is </span><span class="sc">{</span>tau<span class="sc">:.4f}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 </section>
-<section id="unifying-centrality-and-communities" class="level2" data-number="32.9">
-<h2 data-number="32.9" class="anchored" data-anchor-id="unifying-centrality-and-communities"><span class="header-section-number">32.9</span> Unifying Centrality and Communities</h2>
-<section id="modularity-random-walk-perspective" class="level3" data-number="32.9.1">
-<h3 data-number="32.9.1" class="anchored" data-anchor-id="modularity-random-walk-perspective"><span class="header-section-number">32.9.1</span> Modularity: Random Walk Perspective</h3>
+<section id="unifying-centrality-and-communities" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="unifying-centrality-and-communities"><span class="header-section-number">9</span> Unifying Centrality and Communities</h2>
+<section id="modularity-random-walk-perspective" class="level3">
+<h3 class="anchored" data-anchor-id="modularity-random-walk-perspective">Modularity: Random Walk Perspective</h3>
 <p>Modularity can be interpreted from a random walk perspective. Modularity is given by</p>
 <p><span class="math display">
 Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{d_i d_j}{2m} \right) \delta(c_i, c_j)
@@ -1288,8 +1471,8 @@ Q &amp;= \sum_{ij} \left(\frac{A_{ij}}{2m}  - \frac{d_i}{2m} \frac{d_j}{2m} \rig
 <p>In summary, modularity compares short-term and long-term random walk probabilities. High modularity indicates that a random walker is more likely to stay within the same community after one step than after many steps.</p>
 <pre class="{note}"><code>Building on this perspective from random walks, Delvenne et al. {footcite}`delvenne2010stability` extends the modularity by comparing multi-step and long-step transition probabilities of a random walk. This approach, known as "Markov stability", shows that the number of steps acts as a "resolution parameter" that determines the scale of detectable communities.</code></pre>
 </section>
-<section id="pagerank-random-walk-perspective" class="level3" data-number="32.9.2">
-<h3 data-number="32.9.2" class="anchored" data-anchor-id="pagerank-random-walk-perspective"><span class="header-section-number">32.9.2</span> PageRank: Random Walk Perspective</h3>
+<section id="pagerank-random-walk-perspective" class="level3">
+<h3 class="anchored" data-anchor-id="pagerank-random-walk-perspective">PageRank: Random Walk Perspective</h3>
 <p>PageRank can be interpreted from a random walk perspective:</p>
 <p><span class="math display">
 c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
@@ -1300,8 +1483,8 @@ c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
 <pre class="{note}"><code>This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.</code></pre>
 </section>
 </section>
-<section id="summary" class="level2" data-number="32.10">
-<h2 data-number="32.10" class="anchored" data-anchor-id="summary"><span class="header-section-number">32.10</span> Summary</h2>
+<section id="summary" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="summary"><span class="header-section-number">10</span> Summary</h2>
 <p>Random walks provide a powerful unified framework for understanding both centrality measures and community structure in networks. Through our exploration, we’ve seen how:</p>
 <ol type="1">
 <li><strong>Implementation</strong>: Random walks can be efficiently simulated and analyzed using matrix operations</li>
@@ -1441,7 +1624,7 @@ c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1770,13 +1953,13 @@ c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="Random Walks: Core Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Random Walks: Core Concepts</span></span>
+      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m07-random-walks/03-exercises.html" class="pagination-link" aria-label="Random Walks: Exercises and Practice">
-        <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Random Walks: Exercises and Practice</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m07-random-walks/03-exercises.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
+        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -2573,7 +2756,7 @@ c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
