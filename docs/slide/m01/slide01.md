@@ -1,4 +1,4 @@
-##
+---
 title: "M01: Introduction & Seven Bridges of Königsberg"
 author: "Sadamori Kojaku"
 format:
@@ -9,7 +9,7 @@ format:
     preview-links: auto
     theme: simple
     css: css/style.css
-##
+---
 
 # Check list
 
@@ -107,25 +107,25 @@ What networks do you interact with daily?
 
 ## Here are some you might have missed:
 
-<img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/a108d4489f34112ee70fef7ca6f1554f2e57d915/a108d4489f34112ee70fef7ca6f1554f2e57d915.svg" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
 **Question:** How is this a network? What are the connections?
 
 ## Your brain right now!
 
-<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 100%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/6a788908a035eb1698d3687e22ba1d7ba1f09473/6a788908a035eb1698d3687e22ba1d7ba1f09473.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
 **As you're listening to me, billions of neurons are connecting...**
 
 ## Social networks (obviously!)
 
-<img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/75f54874400531f4c141183cee9db4c3f565b7e8/75f54874400531f4c141183cee9db4c3f565b7e8.svg" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
 **Question:** How do ideas spread through social networks? Same as diseases?
 
 ## How did you get to class today?
 
-<img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/28526e308c66f1bd530d20eb6e1c8fe995d4fada/28526e308c66f1bd530d20eb6e1c8fe995d4fada.svg" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
 **Transportation networks shape our daily choices!**
 
@@ -140,7 +140,7 @@ What networks do you interact with daily?
 
 ## Traditional Graph Theory
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Hexagonal_tiling.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/d9f4eadf2f331510ed85e73fc38e092c54e7c85f/d9f4eadf2f331510ed85e73fc38e092c54e7c85f.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
 **What do you notice about this pattern?**
 
@@ -148,7 +148,7 @@ What networks do you interact with daily?
 
 ## Real-world networks look like this:
 
-<img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/78b7681da140ca96461631cf5a72d03a36c3d906/78b7681da140ca96461631cf5a72d03a36c3d906.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
 **Question:** What's different here? Why does this matter?
 
@@ -168,7 +168,7 @@ You understand every single neuron in the human brain perfectly.
 
 ## The reductionist approach
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg" style="width: 80%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/stick-figure/stick-figure.svg" style="width: 60%; max-width: none; margin-bottom: 20px;">
 
 *Break it down → Understand parts → Reassemble*
 
@@ -176,7 +176,7 @@ You understand every single neuron in the human brain perfectly.
 
 ## But sometimes...
 
-<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/6a788908a035eb1698d3687e22ba1d7ba1f09473/6a788908a035eb1698d3687e22ba1d7ba1f09473.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
 *The whole > sum of parts*
 
@@ -384,7 +384,7 @@ https://www.youtube.com/watch?v=u6XAPnuFjJc
 
 **Question:** What if we ignore all the physical details?
 
-<img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
+<img src="../lecture-note/m01-euler_tour/tikz-tex/c39860e7fa7562ba1d021b22b78e66cba5a9f51d/c39860e7fa7562ba1d021b22b78e66cba5a9f51d.svg" style="width: 90%; max-width: none; margin-bottom: 20px;">
 
 **What do you see here? What did Euler focus on?**
 
