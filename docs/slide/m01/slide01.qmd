@@ -131,7 +131,6 @@ What networks do you interact with daily?
 
 **Plant-Pollinator Networks** 🌼
 
-![](../lecture-note/m01-euler_tour/tikz-tex/a108d4489f34112ee70fef7ca6f1554f2e57d915/a108d4489f34112ee70fef7ca6f1554f2e57d915.svg){width=100% fig-align="center"}
 
 **Question:** How is this a network? What are the connections?
 
@@ -141,7 +140,6 @@ What networks do you interact with daily?
 
 **Your Brain Right Now!** 🧠
 
-![](../lecture-note/m01-euler_tour/tikz-tex/6a788908a035eb1698d3687e22ba1d7ba1f09473/6a788908a035eb1698d3687e22ba1d7ba1f09473.svg){width=100% fig-align="center"}
 
 *As you're listening, billions of neurons are connecting...*
 
@@ -155,7 +153,6 @@ What networks do you interact with daily?
 
 ::: {.column width="50%"}
 
-![](../lecture-note/m01-euler_tour/tikz-tex/75f54874400531f4c141183cee9db4c3f565b7e8/75f54874400531f4c141183cee9db4c3f565b7e8.svg){width=100% fig-align="center"}
 
 :::
 
@@ -175,7 +172,6 @@ Same as diseases? Different?
 
 ## How Did You Get to Class Today? 🚗
 
-![](../lecture-note/m01-euler_tour/tikz-tex/28526e308c66f1bd530d20eb6e1c8fe995d4fada/28526e308c66f1bd530d20eb6e1c8fe995d4fada.svg){width=80% fig-align="center"}
 
 **Transportation networks shape our daily choices!**
 
@@ -193,7 +189,6 @@ Same as diseases? Different?
 
 ::: {.column width="50%"}
 
-![](../lecture-note/m01-euler_tour/tikz-tex/d9f4eadf2f331510ed85e73fc38e092c54e7c85f/d9f4eadf2f331510ed85e73fc38e092c54e7c85f.svg){width=100% fig-align="center"}
 
 :::
 
@@ -215,7 +210,6 @@ Same as diseases? Different?
 
 ::: {.column width="60%"}
 
-![](../lecture-note/m01-euler_tour/tikz-tex/78b7681da140ca96461631cf5a72d03a36c3d906/78b7681da140ca96461631cf5a72d03a36c3d906.svg){width=100% fig-align="center"}
 
 :::
 
@@ -277,7 +271,6 @@ You understand every single neuron in the human brain perfectly.
 
 ::: {.column width="60%"}
 
-![](../lecture-note/m01-euler_tour/tikz-tex/stick-figure/stick-figure.svg){width=80% fig-align="center"}
 
 :::
 
@@ -303,7 +296,6 @@ You understand every single neuron in the human brain perfectly.
 
 ::: {.column width="50%"}
 
-![](../lecture-note/m01-euler_tour/tikz-tex/6a788908a035eb1698d3687e22ba1d7ba1f09473/6a788908a035eb1698d3687e22ba1d7ba1f09473.svg){width=100% fig-align="center"}
 
 :::
 
@@ -799,7 +791,7 @@ graph Konigsberg {
 ## Euler's Path Theorem 🏆
 
 ::: {.callout-tip title = "Answer:"}
-An Euler path/circuit exists if and only if:
+An Euler path exists if and only if:
 
 1. Graph is connected, AND
 
@@ -829,83 +821,369 @@ The story takes a sobering turn during World War II. In 1944, Königsberg was he
 
 ::::
 
-## Network Terminology 📚
+
+---
+
+::: {.callout-note title = "Question:"}
+
+In the previous question, we learned the condition for the possibility to cross each bridge exactly once.
+
+Now, let's also add a new condition: *[Return to the starting point]{.red-text}.*
+
+How does this change the condition for the possibility?
+
+:::
+
+*Turn to your neighbor - give specific answers for 30 seconds*
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-cap: "Königsberg Bridge Problem - Seven bridges connecting four land areas"
+//| fig-align: center
+graph Konigsberg {
+  layout=neato
+  overlap=false
+  sep=2.0
+
+  // Land areas
+  A [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  B [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  C [shape=circle, fillcolor="#cbf5cc", style="filled"];
+  D [shape=circle, fillcolor="#cbf5cc", style="filled"];
+
+  // Bridges (edges)
+  A -- C;
+  A -- C;
+  A -- D;
+  B -- C;
+  B -- C;
+  B -- D;
+  C -- D;
+}
+```
+
+---
+
+
+::: {.callout-tip title = "Answer:"}
+
+1. Graph is connected, AND
+
+2. Either:
+   - All nodes have even degree
+   - ~~Exactly two nodes have odd degree~~
+
+This is called an [Euler circuit]{.red-text}.
+
+:::
+
+*Why we cannot have odd-degree nodes?*
+
+---
 
 :::: {.columns}
 
-::: {.column width="60%"}
+::: {.column width="50%"}
 
-**Context:** You just solved Königsberg! But wait... what exactly were the townspeople asking for?
+- **Walk**
+  - Any sequence of connected nodes
+  - Can repeat nodes and edges
 
-::: {.callout-note title = "Question:"}
-**Imagine you're giving directions to a lost tourist:**
+- **Path**
 
-"I want to visit every bridge exactly once and return home"
+  - Sequence of connected nodes
+  - No repeated nodes
+  - Can end anywhere
 
-**Is this the same as visiting every location exactly once?**
+- **Circuit**
+
+  - Sequence of connected nodes
+  - Returns to starting point
+  - Can repeat nodes
+
 :::
 
-*Turn to your neighbor - discuss the difference for 30 seconds*
+::: {.column width="50%"}
 
-:::
 
-::: {.column width="40%"}
+```{dot}
+//| fig-width: 4
+//| fig-height: 6
+//| fig-align: center
+graph Campus {
+  layout=neato
+  overlap=false
+  sep =0.5
+  // Campus locations
+  Dorm [shape=circle, fillcolor="#e1f5fe", style="filled", label="Dorm"];
+  Cafe [shape=circle, fillcolor="#fff3e0", style="filled", label="Cafeteria"];
+  Lib [shape=circle, fillcolor="#f3e5f5", style="filled", label="Library"];
+  Gym [shape=circle, fillcolor="#e8f5e8", style="filled", label="Gym"];
 
-![](../lecture-note/m01-euler_tour/tikz-tex/c39860e7fa7562ba1d021b22b78e66cba5a9f51d/c39860e7fa7562ba1d021b22b78e66cba5a9f51d.svg){width=100% fig-align="center"}
+  // Walkways
+  Dorm -- Cafe;
+  Cafe -- Lib;
+  Lib -- Gym;
+  Gym -- Dorm;
+  Cafe -- Gym;
+}
+```
+
 
 :::
 
 ::::
 
-## Let's Build Understanding Step by Step 🏗️
+<!--
 
-::: {.callout-note title = "Interactive Exercise:"}
-**I'll give you scenarios - you tell me the terminology!**
+## Example: Path 🎯
 
-*Raise your hands for each one...*
+::: {.callout-tip title = "Path Example"}
+**Route:** Dorm → Cafeteria → Library → Gym
+
+- ✅ Visits each location exactly once
+- ✅ No repeated nodes or edges
+- ❌ Does NOT return to start (ends at Gym)
+- **Result:** This is a **path**
+
+:::
+
+## Example: Circuit ⭕
+
+::: {.callout-tip title = "Circuit Example"}
+
+**Route:** Dorm → Cafeteria → Gym → Library → Cafeteria → Dorm
+
+- ✅ Returns to starting location (Dorm)
+- ✅ Uses each edge exactly once
+- ✅ Can revisit intermediate nodes (Cafeteria visited twice)
+- **Result:** This is a **circuit** (specifically an Euler circuit)
+
+:::
+
+## Key Insight: The Difference 💡
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+### Path 🎯
+- **Goal:** Visit each location once
+- **Restriction:** No repeated nodes
+- **End condition:** Can end anywhere
+- **Example use:** Efficient campus tour
+
+:::
+
+::: {.column width="50%"}
+
+### Circuit ⭕
+- **Goal:** Use each connection once
+- **Restriction:** No repeated edges
+- **End condition:** Must return to start
+- **Example use:** Königsberg bridges!
+
+:::
+
+::::
+
+::: {.callout-note title = "Think About It:"}
+**In the campus example above:**
+- Which type would a mail delivery route be? (visit every building)
+- Which type would a maintenance route be? (check every pathway)
+:::
+
+
+
+
+
+## Precise Classification Exercise 📋
+
+::: {.callout-note title = "Task:"}
+**For each scenario below, identify:**
+1. **What repeats?** (nodes, edges, or both?)
+2. **Does it return to start?** (yes/no)
+3. **What term applies?** (walk, trail, path, circuit, cycle)
 :::
 
 ::: {.incremental}
-- **Scenario A**: Walk from your dorm → cafeteria → library → dorm → cafeteria
-- **Scenario B**: Walk from your dorm → cafeteria → library → gym (no returns)
-- **Scenario C**: Use every hallway exactly once, end up back at start
-- **Scenario D**: Visit every room exactly once, return to start
+- **Scenario A**: Dorm → Cafeteria → Library → Dorm → Cafeteria
+  - *What repeats? Returns to start?*
+- **Scenario B**: Dorm → Cafeteria → Library → Gym (stops there)
+  - *What repeats? Returns to start?*
+- **Scenario C**: Cross each hallway exactly once, end back at starting room
+  - *What repeats? Returns to start?*
+- **Scenario D**: Visit each room exactly once, return to starting room
+  - *What repeats? Returns to start?*
 :::
 
-## Discussion: What Did You Notice? 🤔
+## Check Your Classifications ✅
 
-**Let's hear your classifications!**
+**Raise your hand if you got:**
+- **Scenario A**: Walk (repeats nodes AND edges)
+- **Scenario B**: Path (no repeats, doesn't return)
+- **Scenario C**: Circuit (repeats nodes, not edges, returns)
+- **Scenario D**: Cycle (no repeats, returns)
 
-*What patterns emerged from our scenarios?*
+## Concept 1: Walk 🚶‍♂️
 
-## The Mathematical Definitions 📖
+:::: {.columns}
 
-::: {.incremental}
-- **Walk**: Any sequence of connected nodes *(can repeat anything)*
-  - *Like your daily routine - cafeteria multiple times!*
-- **Trail**: Walk without repeating **edges** *(Euler trail)*
-  - *Use every hallway once - this is key for Königsberg!*
-- **Path**: Walk without repeating **nodes** 
-  - *Visit every room once - no backtracking*
-- **Circuit**: Closed trail *(starts/ends at same node)*
-- **Cycle**: Closed path
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Walk = Most Permissive"}
+**Definition:** Any sequence of connected nodes
+
+**What can repeat?** Everything! Nodes AND edges
 :::
+
+**Example:** Dorm → Cafeteria → Library → Dorm → Cafeteria
+
+- ✅ Repeats node "Dorm"
+- ✅ Repeats edge "Dorm↔Cafeteria"
+- ✅ This is totally fine for a walk
+
+:::
+
+::: {.column width="40%"}
+
+
+:::
+
+::::
+
+## Concept 2: Trail 🛤️
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Trail = No Edge Repeats"}
+**Definition:** Walk without repeating edges
+
+**What can repeat?** Nodes yes, edges NO
+:::
+
+**Example:** Cross each hallway exactly once, can revisit rooms
+
+- ✅ Can revisit nodes (rooms)
+- ❌ Cannot reuse edges (hallways)
+- **Key insight:** This is what Königsberg wanted!
+
+:::
+
+::: {.column width="40%"}
+
+:::
+
+::::
+
+## Concept 3: Path 🎯
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Path = No Node Repeats"}
+**Definition:** Walk without repeating nodes
+
+**What can repeat?** Nothing! No nodes, no edges
+:::
+
+**Example:** Visit each room exactly once, no backtracking
+
+- ❌ Cannot revisit nodes (rooms)
+- ❌ Cannot reuse edges (automatic consequence)
+- **Difference from trail:** More restrictive - can't even revisit nodes
+
+:::
+
+::: {.column width="40%"}
+
+:::
+
+::::
+
+## Concept 4: Circuit ⭕
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Circuit = Closed Trail"}
+**Definition:** Trail that starts and ends at same node
+
+**What can repeat?** Starting node (by definition), other nodes yes, edges NO
+:::
+
+**Example:** Use every bridge once, return home
+
+- ✅ Returns to starting point
+- ✅ Can revisit intermediate nodes
+- ❌ Cannot reuse bridges
+- **Difference from trail:** Must form a loop
+
+:::
+
+::: {.column width="40%"}
+
+
+:::
+
+::::
+
+## Concept 5: Cycle 🔄
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Cycle = Closed Path"}
+**Definition:** Path that starts and ends at same node
+
+**What can repeat?** Only the starting node, nothing else
+:::
+
+**Example:** Visit each location once, return home
+
+- ✅ Returns to starting point
+- ❌ Cannot revisit any other nodes
+- ❌ Cannot reuse any edges
+- **Difference from circuit:** Most restrictive - no intermediate repeats
+
+:::
+
+::: {.column width="40%"}
+
+
+:::
+
+::::
+
+## Summary: What Makes Each Different? 📊
+
+| Type | Repeat Nodes? | Repeat Edges? | Must Close? |
+|------|---------------|---------------|-------------|
+| **Walk** | ✅ Yes | ✅ Yes | ❌ No |
+| **Trail** | ✅ Yes | ❌ No | ❌ No |
+| **Path** | ❌ No | ❌ No | ❌ No |
+| **Circuit** | ✅ Yes | ❌ No | ✅ Yes |
+| **Cycle** | ❌ No* | ❌ No | ✅ Yes |
+
+*Except starting=ending node
 
 ## Reflection: Back to Königsberg 🌉
 
 ::: {.callout-tip title = "Answer:"}
 **Königsberg sought an Euler circuit!**
 
-A closed trail that uses every **bridge** (edge) exactly once.
-
-*Not every location - every bridge!*
+- **Circuit:** Closed trail (returns to start)
+- **Trail:** Uses every edge (bridge) exactly once
+- **Not a cycle:** That would require visiting each landmass only once
 :::
 
-::: {.callout-note title = "Think About It:"}
-**Why does this distinction matter for real-world problems?**
-
-*Give me an example where edge-traversal vs. node-visiting makes a difference...*
-:::
+**Now you understand:** They wanted to cross every bridge once and return home, but they could revisit landmasses!
 
 ##
 
@@ -931,3 +1209,5 @@ We'll learn how computers store and analyze networks
 ##
 
 # Any questions?
+
+-->
