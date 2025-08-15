@@ -131,6 +131,7 @@ What networks do you interact with daily?
 
 **Plant-Pollinator Networks** 🌼
 
+![](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png){width=90% fig-align="center"}
 
 **Question:** How is this a network? What are the connections?
 
@@ -140,6 +141,7 @@ What networks do you interact with daily?
 
 **Your Brain Right Now!** 🧠
 
+![](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp){width=90% fig-align="center"}
 
 *As you're listening, billions of neurons are connecting...*
 
@@ -153,6 +155,7 @@ What networks do you interact with daily?
 
 ::: {.column width="50%"}
 
+![](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png){width=100% fig-align="center"}
 
 :::
 
@@ -172,37 +175,29 @@ Same as diseases? Different?
 
 ## How Did You Get to Class Today? 🚗
 
+![](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png){width=80% fig-align="center"}
 
 **Transportation networks shape our daily choices!**
 
 ## Wait - Isn't This Just Graph Theory? 🤔
 
-::: {.callout-note title = "Question:"}
-**Who has taken a math course with graphs before?**
-
-*Raise your hands... what did you study?*
-:::
-
-## Traditional Graph Theory 📐
 
 :::: {.columns}
 
 ::: {.column width="50%"}
 
+**What do you notice about this pattern?**
 
 :::
 
 ::: {.column width="50%"}
 
-::: {.callout-note title = "Question:"}
-**What do you notice about this pattern?**
-
-*Perfect, regular, predictable...*
-:::
+![](https://mathworld.wolfram.com/images/eps-svg/DistanceRegularCubic_800.svg)
 
 :::
 
 ::::
+
 
 ## Real-World Networks Look Like This:
 
@@ -210,6 +205,7 @@ Same as diseases? Different?
 
 ::: {.column width="60%"}
 
+![](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png){width=100% fig-align="center"}
 
 :::
 
@@ -271,6 +267,9 @@ You understand every single neuron in the human brain perfectly.
 
 ::: {.column width="60%"}
 
+![](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg){width=80% fig-align="center"}
+
+*Vaucanson's 18th century Digesting Duck - the reductionist dream!*
 
 :::
 
@@ -424,8 +423,6 @@ Every class begins with a weekly quiz to review the previous week's topics.
 - You can resubmit the quiz (one time)
 - (Enginet students will submit via Brightspace)
 
-::::
-
 ## Trap \#4
 
 :::: {.columns}
@@ -458,7 +455,7 @@ We'll cover assignment submission in class. Find the detailed instruction on the
 
 ## Trap \#5
 
-::: {.columns}
+:::: {.columns}
 
 ::: {.column width="40%"}
 
@@ -886,21 +883,15 @@ This is called an [Euler circuit]{.red-text}.
 
 ::: {.column width="50%"}
 
-- **Walk**
-  - Any sequence of connected nodes
-  - Can repeat nodes and edges
+- **Walk**: Any sequence of connected nodes
 
-- **Path**
+- **Path**: Walks without repeated nodes
 
-  - Sequence of connected nodes
-  - No repeated nodes
-  - Can end anywhere
+- **Circuit**: Paths that return to the starting point
 
-- **Circuit**
+- **Trail**: Paths without repeated edges
 
-  - Sequence of connected nodes
-  - Returns to starting point
-  - Can repeat nodes
+- **Cycle**: Trails that return to the starting point
 
 :::
 
@@ -912,9 +903,9 @@ This is called an [Euler circuit]{.red-text}.
 //| fig-height: 6
 //| fig-align: center
 graph Campus {
-  layout=neato
+  layout=circo
   overlap=false
-  sep =0.5
+  sep =0.3
   // Campus locations
   Dorm [shape=circle, fillcolor="#e1f5fe", style="filled", label="Dorm"];
   Cafe [shape=circle, fillcolor="#fff3e0", style="filled", label="Cafeteria"];
@@ -930,284 +921,194 @@ graph Campus {
 }
 ```
 
+:::
+
+::::
+
+*Question: Are trails always paths? Are paths always trails?*
+
+
+## Examples
+
+::: {.callout-note title = "Question:"}
+
+What are the real-world examples of the paths and trails?
+
+:::
+
+
+::: {.incremental}
+
+- **Path**: A travel itinerary that visits each city exactly once
+- **Trail**: A mail carrier's route that visits each street exactly once
+
+:::
+
+## Network Connectivity 🔗
+
+**Context:** We've learned about Euler's theorem, but there's a hidden assumption...
+
+::: {.callout-note title = "Question:"}
+**Look at Euler's conditions again:**
+
+1. The graph is **connected**, AND
+2. Either all nodes have even degree OR exactly two have odd degree
+
+**What if the network is NOT connected?**
+:::
+
+
+## What Does "Connected" Really Mean? 🤔
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Connected Network"}
+**Definition:** A network is **connected** if there is a path between every pair of nodes.
+:::
+
+**Think about it:** Your campus network
+
+- Can you walk from any building to any other building? (Yes)
+- What if construction blocks some walkways? (Maybe)
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 4
+//| fig-align: center
+graph Connected {
+  layout=neato
+  overlap=false
+  sep=0.8
+
+  A [pos="0,2!", shape=circle, fillcolor="#e1f5fe", style="filled"];
+  B [pos="2,2!", shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [pos="1,0!", shape=circle, fillcolor="#f3e5f5", style="filled"];
+  D [pos="3,0!", shape=circle, fillcolor="#e8f5e8", style="filled"];
+
+  A -- B;
+  B -- C;
+  C -- D;
+  A -- C;
+}
+```
 
 :::
 
 ::::
 
-<!--
+*Connected: Can reach any node from any other*
 
-## Example: Path 🎯
+## Connected Component
 
-::: {.callout-tip title = "Path Example"}
-**Route:** Dorm → Cafeteria → Library → Gym
+::: {.callout-tip title = "Connected Component"}
 
-- ✅ Visits each location exactly once
-- ✅ No repeated nodes or edges
-- ❌ Does NOT return to start (ends at Gym)
-- **Result:** This is a **path**
+**Definition:** A connected component is a maximal set of nodes where every node can reach every other node within that set.
 
 :::
 
-## Example: Circuit ⭕
+![](./connected-component.jpg){width=100% fig-align="center"}
 
-::: {.callout-tip title = "Circuit Example"}
 
-**Route:** Dorm → Cafeteria → Gym → Library → Cafeteria → Dorm
+*Question: Is a single node a connected component?*
 
-- ✅ Returns to starting location (Dorm)
-- ✅ Uses each edge exactly once
-- ✅ Can revisit intermediate nodes (Cafeteria visited twice)
-- **Result:** This is a **circuit** (specifically an Euler circuit)
+## The Giant Component
 
+::: {.callout-note title = "Question:"}
+**In large real-world networks, what would you expect?**
+
+- Many tiny components of 2-3 nodes?
+- One huge component containing most nodes?
+- All components roughly equal size?
 :::
 
-## Key Insight: The Difference 💡
+::: {.incremental}
+- **Giant component:** The largest connected component
+- **Contains:** A significant fraction of all nodes in the network
+- **Real examples:**
+  - The "main" internet (billions of connected devices)
+  - The largest friendship network on Facebook
+  - The core scientific collaboration network
+:::
+
+## Directed Networks: Two Types of Connectivity 🔄
+
+**Context:** What if edges have direction? (Think Twitter follows, webpage links)
 
 :::: {.columns}
 
 ::: {.column width="50%"}
 
-### Path 🎯
-- **Goal:** Visit each location once
-- **Restriction:** No repeated nodes
-- **End condition:** Can end anywhere
-- **Example use:** Efficient campus tour
+### Strong Connectivity 💪
+::: {.callout-tip title = "Strong"}
+**Every node can reach every other node following edge directions**
+:::
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Strong {
+  layout=circo
+
+  A [shape=circle, fillcolor="#e1f5fe", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#f3e5f5", style="filled"];
+
+  A -> B -> C -> A;
+}
+```
 
 :::
 
 ::: {.column width="50%"}
 
-### Circuit ⭕
-- **Goal:** Use each connection once
-- **Restriction:** No repeated edges
-- **End condition:** Must return to start
-- **Example use:** Königsberg bridges!
+### Weak Connectivity 🤝
+::: {.callout-tip title = "Weak"}
+**Connected if we ignore edge directions**
+:::
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Weak {
+  layout=circo
+
+  A [shape=circle, fillcolor="#ffcdd2", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#c8e6c9", style="filled"];
+
+  A -> B -> C;
+}
+```
 
 :::
 
 ::::
 
-::: {.callout-note title = "Think About It:"}
-**In the campus example above:**
-- Which type would a mail delivery route be? (visit every building)
-- Which type would a maintenance route be? (check every pathway)
-:::
+**Question:** Is every strongly connected component also weakly connected?
 
+## Why Connectivity Matters for Euler 🌉
 
-
-
-
-## Precise Classification Exercise 📋
-
-::: {.callout-note title = "Task:"}
-**For each scenario below, identify:**
-1. **What repeats?** (nodes, edges, or both?)
-2. **Does it return to start?** (yes/no)
-3. **What term applies?** (walk, trail, path, circuit, cycle)
+::: {.callout-note title = "Back to Königsberg:"}
+**Why did Euler require the graph to be connected?**
 :::
 
 ::: {.incremental}
-- **Scenario A**: Dorm → Cafeteria → Library → Dorm → Cafeteria
-  - *What repeats? Returns to start?*
-- **Scenario B**: Dorm → Cafeteria → Library → Gym (stops there)
-  - *What repeats? Returns to start?*
-- **Scenario C**: Cross each hallway exactly once, end back at starting room
-  - *What repeats? Returns to start?*
-- **Scenario D**: Visit each room exactly once, return to starting room
-  - *What repeats? Returns to start?*
+- **If disconnected:** You can't reach all bridges from a single starting point
+- **Euler path impossible:** Can't cross bridges you can't reach
+- **Component-wise analysis:** Could have Euler paths within each component
+- **Real insight:** Connectivity is a prerequisite for global network properties
 :::
 
-## Check Your Classifications ✅
+**This applies everywhere:**
+- Internet routing needs connectivity
+- Disease spread requires contact networks
+- Information flow needs communication paths
 
-**Raise your hand if you got:**
-- **Scenario A**: Walk (repeats nodes AND edges)
-- **Scenario B**: Path (no repeats, doesn't return)
-- **Scenario C**: Circuit (repeats nodes, not edges, returns)
-- **Scenario D**: Cycle (no repeats, returns)
-
-## Concept 1: Walk 🚶‍♂️
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-::: {.callout-tip title = "Walk = Most Permissive"}
-**Definition:** Any sequence of connected nodes
-
-**What can repeat?** Everything! Nodes AND edges
-:::
-
-**Example:** Dorm → Cafeteria → Library → Dorm → Cafeteria
-
-- ✅ Repeats node "Dorm"
-- ✅ Repeats edge "Dorm↔Cafeteria"
-- ✅ This is totally fine for a walk
-
-:::
-
-::: {.column width="40%"}
-
-
-:::
-
-::::
-
-## Concept 2: Trail 🛤️
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-::: {.callout-tip title = "Trail = No Edge Repeats"}
-**Definition:** Walk without repeating edges
-
-**What can repeat?** Nodes yes, edges NO
-:::
-
-**Example:** Cross each hallway exactly once, can revisit rooms
-
-- ✅ Can revisit nodes (rooms)
-- ❌ Cannot reuse edges (hallways)
-- **Key insight:** This is what Königsberg wanted!
-
-:::
-
-::: {.column width="40%"}
-
-:::
-
-::::
-
-## Concept 3: Path 🎯
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-::: {.callout-tip title = "Path = No Node Repeats"}
-**Definition:** Walk without repeating nodes
-
-**What can repeat?** Nothing! No nodes, no edges
-:::
-
-**Example:** Visit each room exactly once, no backtracking
-
-- ❌ Cannot revisit nodes (rooms)
-- ❌ Cannot reuse edges (automatic consequence)
-- **Difference from trail:** More restrictive - can't even revisit nodes
-
-:::
-
-::: {.column width="40%"}
-
-:::
-
-::::
-
-## Concept 4: Circuit ⭕
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-::: {.callout-tip title = "Circuit = Closed Trail"}
-**Definition:** Trail that starts and ends at same node
-
-**What can repeat?** Starting node (by definition), other nodes yes, edges NO
-:::
-
-**Example:** Use every bridge once, return home
-
-- ✅ Returns to starting point
-- ✅ Can revisit intermediate nodes
-- ❌ Cannot reuse bridges
-- **Difference from trail:** Must form a loop
-
-:::
-
-::: {.column width="40%"}
-
-
-:::
-
-::::
-
-## Concept 5: Cycle 🔄
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-::: {.callout-tip title = "Cycle = Closed Path"}
-**Definition:** Path that starts and ends at same node
-
-**What can repeat?** Only the starting node, nothing else
-:::
-
-**Example:** Visit each location once, return home
-
-- ✅ Returns to starting point
-- ❌ Cannot revisit any other nodes
-- ❌ Cannot reuse any edges
-- **Difference from circuit:** Most restrictive - no intermediate repeats
-
-:::
-
-::: {.column width="40%"}
-
-
-:::
-
-::::
-
-## Summary: What Makes Each Different? 📊
-
-| Type | Repeat Nodes? | Repeat Edges? | Must Close? |
-|------|---------------|---------------|-------------|
-| **Walk** | ✅ Yes | ✅ Yes | ❌ No |
-| **Trail** | ✅ Yes | ❌ No | ❌ No |
-| **Path** | ❌ No | ❌ No | ❌ No |
-| **Circuit** | ✅ Yes | ❌ No | ✅ Yes |
-| **Cycle** | ❌ No* | ❌ No | ✅ Yes |
-
-*Except starting=ending node
-
-## Reflection: Back to Königsberg 🌉
-
-::: {.callout-tip title = "Answer:"}
-**Königsberg sought an Euler circuit!**
-
-- **Circuit:** Closed trail (returns to start)
-- **Trail:** Uses every edge (bridge) exactly once
-- **Not a cycle:** That would require visiting each landmass only once
-:::
-
-**Now you understand:** They wanted to cross every bridge once and return home, but they could revisit landmasses!
-
-##
-
-
-## 💻 Coding Time: Networks in Code! 🌐
-
-::: {.callout-note title = "Next Steps:"}
-[Let's represent networks with Python!](https://skojaku.github.io/adv-net-sci/m01-euler_tour/how-to-code-network.html) 🐍
-
-We'll learn how computers store and analyze networks
-:::
-
-## Key Takeaways 🎯
-
-::: {.incremental}
-- **Mathematical abstraction**: Focus on structure, not physical details
-- **Euler's theorem**: Degree constraints determine network traversability
-- **Network terminology**: Walks, trails, paths, circuits, and cycles
-- **Historical impact**: From recreational puzzle to foundation of network science
-- **Modern relevance**: GPS navigation, internet routing, social networks
-:::
-
-##
-
-# Any questions?
-
--->
