@@ -60,60 +60,129 @@ skojaku@binghamton.edu
 - **Course Website:** [https://skojaku.github.io/adv-net-sci](https://skojaku.github.io/adv-net-sci)
 
 
-## Networks are everywhere and they matter
+## Let's start with a story... 🦠
 
-**Network structure determines how things spread**
+2009: H1N1 pandemic spreads globally
+
+**Question for you:** If a disease starts in Mexico, which countries do you think would be infected first?
+
+*Think about it... discuss with your neighbor for 30 seconds*
+
+## What would you expect?
+
+**Your predictions:**
+- Geographic distance matters?
+- Nearby countries first?
+- Then spreading outward in circles?
+
+*Let's hear some thoughts...*
+
+## Here's what actually happened...
+
+<img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+**Question:** What do you notice? Does this match your prediction?
+
+## The real pattern was this:
 
 <img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
+**Key insight:** Network structure (air travel) determined spread, not geography!
+
 ##
 
-## Networks are everywhere!
+## Quick exercise: Spot the networks! 👀
+
+**Look around you right now...**
+
+What networks do you interact with daily?
+
+*Take 1 minute - list 3 networks you used today*
+
+## Let's share!
+
+**What did you come up with?**
+
+*I'll collect a few examples from the class...*
+
+## Here are some you might have missed:
 
 <img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
-##
+**Question:** How is this a network? What are the connections?
+
+## Your brain right now!
 
 <img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
-##
+**As you're listening to me, billions of neurons are connecting...**
+
+## Social networks (obviously!)
 
 <img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
-##
+**Question:** How do ideas spread through social networks? Same as diseases?
+
+## How did you get to class today?
 
 <img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
+**Transportation networks shape our daily choices!**
+
 ##
 
 
-## Graph Theory vs Network Science
+## Wait - isn't this just graph theory? 🤔
 
-**Graph Theory** 📐
+**Question for the class:** Who has taken a math course with graphs before?
+
+*Raise your hands... what did you study?*
+
+## Traditional Graph Theory
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Hexagonal_tiling.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
-##
+**What do you notice about this pattern?**
 
-**Network Science** 🌐
+*Perfect, regular, predictable...*
+
+## Real-world networks look like this:
 
 <img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
+**Question:** What's different here? Why does this matter?
+
+*Discuss with your neighbor - what makes real networks "messy"?*
+
 ##
 
-# Why do we need Network Science?
+## Thought experiment 🤔
 
-**Reductionism** 🧩
-*Break it down → Understand parts → Reassemble*
+**Imagine you're a Martian scientist studying humans...**
+
+You understand every single neuron in the human brain perfectly.
+
+**Question:** Can you predict what a human will say next? What they'll dream about?
+
+*What do you think? Turn to your neighbor and discuss...*
+
+## The reductionist approach
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
-##
+*Break it down → Understand parts → Reassemble*
 
-**Emergence** 🌐
-*The whole > sum of parts*
+**Question:** When does this work well? Give me an example...
+
+## But sometimes...
 
 <img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%; max-width: none; margin-bottom: 20px;">
+
+*The whole > sum of parts*
+
+**Question:** Why can't we predict consciousness from individual neurons?
+
+*What's missing in the reductionist approach?*
 
 ##
 
@@ -288,21 +357,49 @@ https://www.youtube.com/watch?v=u6XAPnuFjJc
 
 ##
 
-# Find a route that crosses each bridge exactly once 🚶‍♂️
+## Your turn! 🧩
 
-How would you approach this problem?
+**Challenge:** Find a route that crosses each bridge exactly once and returns to start
 
 ![bg right:60% width:90%](https://physics.weber.edu/carroll/honors_images/bridges_of_konigsberg.jpg)
 
+**Before we dive in:** How would YOU approach this?
+
+*Take 30 seconds - what's your strategy?*
+
+## Let's hear your approaches!
+
+**What strategies did you come up with?**
+
+*I want to hear 2-3 different approaches...*
+
+- Trial and error?
+- Start from a specific place?
+- Look for patterns?
+- Something else?
+
 ##
 
-# Euler's Revolutionary Abstraction 🧠
+## Here's what Euler did differently...
+
+**Question:** What if we ignore all the physical details?
 
 <img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
-- 🏙️ **Radical simplification**: Only connections matter, not physical details
-- 🔗 **Network abstraction**: Landmasses → nodes, bridges → edges
-- 🎯 **Birth of graph theory**: Focus on relationships, not objects
+**What do you see here? What did Euler focus on?**
+
+*Turn to your neighbor - what's the key insight?*
+
+## The breakthrough insight
+
+**Euler realized:** Only connections matter, not physical details!
+
+- Landmasses → **dots** (nodes)
+- Bridges → **lines** (edges)
+
+**Question:** Why is this abstraction so powerful?
+
+*This was the birth of graph theory and network science!*
 
 ##
 
