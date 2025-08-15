@@ -1,91 +1,121 @@
 ---
-marp: true
-theme: default
-paginate: true
+title: "M01: Introduction & Seven Bridges of Königsberg"
+author: "Sadamori Kojaku"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: false
+    preview-links: auto
+    theme: simple
+    css: css/style.css
 ---
 
-Check list
+# Check list
+
 - [ ] Microphone turned on
 - [ ] Zoom room open
 - [ ] MyBinder launched
 - [ ] Sound Volume on
 
----
+# Introduction & Seven Bridges of Königsberg
+:::: {.columns}
 
-# Advanced Topics in Network Science
+::: {.column width="50%"}
+Advanced Topics in Network Science
 
-Lecture 01: Introduction & Seven Bridges of Königsberg
 Sadamori Kojaku
 
----
+skojaku@binghamton.edu
 
-![bg right:100% width:70%](../enginet-intro-slide/enginet-01.png)
+:::
 
----
+::: {.column width="50%"}
 
-![bg right:100% width:70%](../enginet-intro-slide/enginet-02.png)
+![](https://newmedialab.cuny.edu/wp-content/uploads/2014/01/Internet.gif)
 
----
+:::
 
-![bg right:100% width:70%](../enginet-intro-slide/enginet-03.png)
-
----
-
-![bg right:100% width:70%](../enginet-intro-slide/enginet-04v2.png)
+::::
 
 
----
 
-# Course Overview
+## Enginet
+
+![](../enginet-intro-slide/enginet-01.png)
+
+## Enginet
+
+![](../enginet-intro-slide/enginet-02.png)
+
+## Enginet
+
+![](../enginet-intro-slide/enginet-03.png)
+
+## Course Overview
 
 - **Instructor:** Sadamori Kojaku (幸若完壮)
 - **Email:** skojaku@binghamton.edu
-- **Office Hours:** Tue & Thu 14:30-16:30
-- **Course Website:** https://skojaku.github.io/adv-net-sci
+- **Office Hours:** Monday 10:00-14:00
+- **Course Website:** [https://skojaku.github.io/adv-net-sci](https://skojaku.github.io/adv-net-sci)
 
+
+## Networks are everywhere and they matter
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Disease spread follows **mobility networks**, not geographic distance
+- Air travel connections determined H1N1 pandemic spread
+- **Network structure determines how things spread**
+- From brain connections to social movements to the internet
+
+:::
+
+::: {.column width="50%"}
+
+![H1N1 pandemic spread](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
+
+:::
+
+::::
+
+
+## Networks are everywhere!
+
+Plant-pollinator networks • Food webs • Brain networks • Medicine interactions • Protein networks • Social networks • Financial networks • Airport networks • Power grids • River networks • Internet • Knowledge graphs
 
 ---
 
-# What is Network Science?
-- What is ***Network***?
-- Why do should we care about ***Network***?
-- What is ***Network Science***?
 
-
-![bg right:50% width:80%](https://github.com/skojaku/adv-net-sci/blob/gh-pages/_images/connected-component.jpg?raw=true)
-
----
-
-# Find networks around you!
-
-🦁🐘🐒 [My zoo of networks](https://skojaku.github.io/adv-net-sci/intro/zoo-of-networks.html) 🐼🦒🦓
-
-
----
-
-# Is it just a branch of graph theory?
+## Is it just a branch of graph theory?
 
 • 📐 Graph Theory:
+
   - Focuses on structured graphs (trees, grids, regular graphs)
   - Emphasizes mathematical properties
 
 • 🌐 Network Science:
+
   - Studies complex networks in real-world systems
   - "Complex" ≠ "Complicated"
   - Seeks simple laws to explain seemingly intricate structures
 
 ---
 
-# How is it different from data science?
+# Why do we need Network Science?
 
-• 📊 **Data Science: 1 + 1 = 2**
-  - Often assumes independence between data points (i.i.d.)
-  - Focuses on extracting insights from structured data
+• 🧩 **Traditional Reductionism: Break it down**
+  - Understand each component individually
+  - Reassemble to understand the whole
+  - Works well for mechanical systems
 
-• 🌐 **Network Science: 1 + 1 > 2**
-  - Embraces dependencies between entities
-  - Recognizes that real-world systems are often interconnected
-  - Analyzes how these connections influence system behavior
+• 🌐 **Network Science: The whole > sum of parts**
+  - Important properties emerge from *interactions*
+  - You can understand every neuron but not consciousness
+  - Small changes can have massive consequences
+  - Scale overwhelms intuition
 
 ---
 
@@ -164,11 +194,10 @@ Tesla Supercharger Network
 
 ![bg right:50% width:90%](super-charger.png)
 
----
 
-# Exam
+## Exam
 
-- 📚 Final exam on all topics (weight: 30%)
+- 📚 **(Final exam on all topics (weight: 30%)**
 - 📅 During exam week (Dec 9-13)
 - 📝 Theory + practical problems
 - 🌍 Apply concepts to real scenarios
@@ -274,7 +303,7 @@ How would you approach this problem?
 <img src="https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
 - 🏙️ **Radical simplification**: Only connections matter, not physical details
-- 🔗 **Network abstraction**: Landmasses → nodes, bridges → edges  
+- 🔗 **Network abstraction**: Landmasses → nodes, bridges → edges
 - 🎯 **Birth of graph theory**: Focus on relationships, not objects
 
 ---
@@ -314,7 +343,7 @@ How would you approach this problem?
 # Network Terminology 📚
 
 - **Walk**: Any sequence of connected nodes (can repeat)
-- **Trail**: Walk without repeating edges (Euler trail)  
+- **Trail**: Walk without repeating edges (Euler trail)
 - **Path**: Walk without repeating nodes
 - **Circuit**: Closed trail (starts/ends at same node)
 - **Cycle**: Closed path
