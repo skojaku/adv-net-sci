@@ -1,4 +1,4 @@
----
+##
 title: "M01: Introduction & Seven Bridges of Königsberg"
 author: "Sadamori Kojaku"
 format:
@@ -9,7 +9,7 @@ format:
     preview-links: auto
     theme: simple
     css: css/style.css
----
+##
 
 # Check list
 
@@ -62,62 +62,60 @@ skojaku@binghamton.edu
 
 ## Networks are everywhere and they matter
 
-:::: {.columns}
+**Network structure determines how things spread**
 
-::: {.column width="50%"}
+<img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
-- Disease spread follows **mobility networks**, not geographic distance
-- Air travel connections determined H1N1 pandemic spread
-- **Network structure determines how things spread**
-- From brain connections to social movements to the internet
-
-:::
-
-::: {.column width="50%"}
-
-![H1N1 pandemic spread](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
-
-:::
-
-::::
-
+##
 
 ## Networks are everywhere!
 
-Plant-pollinator networks • Food webs • Brain networks • Medicine interactions • Protein networks • Social networks • Financial networks • Airport networks • Power grids • River networks • Internet • Knowledge graphs
+<img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
 
----
+##
+
+<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+##
+
+<img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+##
+
+<img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+##
 
 
-## Is it just a branch of graph theory?
+## Graph Theory vs Network Science
 
-• 📐 Graph Theory:
+**Graph Theory** 📐
 
-  - Focuses on structured graphs (trees, grids, regular graphs)
-  - Emphasizes mathematical properties
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Hexagonal_tiling.svg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
-• 🌐 Network Science:
+##
 
-  - Studies complex networks in real-world systems
-  - "Complex" ≠ "Complicated"
-  - Seeks simple laws to explain seemingly intricate structures
+**Network Science** 🌐
 
----
+<img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" style="width: 80%; max-width: none; margin-bottom: 20px;">
+
+##
 
 # Why do we need Network Science?
 
-• 🧩 **Traditional Reductionism: Break it down**
-  - Understand each component individually
-  - Reassemble to understand the whole
-  - Works well for mechanical systems
+**Reductionism** 🧩
+*Break it down → Understand parts → Reassemble*
 
-• 🌐 **Network Science: The whole > sum of parts**
-  - Important properties emerge from *interactions*
-  - You can understand every neuron but not consciousness
-  - Small changes can have massive consequences
-  - Scale overwhelms intuition
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg" style="width: 80%; max-width: none; margin-bottom: 20px;">
 
----
+##
+
+**Emergence** 🌐
+*The whole > sum of parts*
+
+<img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" style="width: 80%; max-width: none; margin-bottom: 20px;">
+
+##
 
 # Course Objectives
 
@@ -133,18 +131,18 @@ After this course, you'll be able to:
 - 🔗 Connect Systems Science and networks
 
 
----
+##
 
 # Philosophy of Learning in this course
 
 [![bg right:50% width:90% Drive: The surprising truth about what motivates us](https://img.youtube.com/vi/RQaW2bFieo8/0.jpg)](https://www.youtube.com/watch?v=RQaW2bFieo8 "Drive: The surprising truth about what motivates us")
 https://www.youtube.com/watch?v=RQaW2bFieo8
 
----
+##
 
 ![bg width:80% right:100%](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_NZxWrYf1VvFyG5we1DtkTZOkbsVkbUFtAg&s)
 
----
+##
 
 # Course Structure
 
@@ -160,7 +158,7 @@ https://www.youtube.com/watch?v=RQaW2bFieo8
 ![bg right:50% width:80%](https://media1.tenor.com/m/-LDi5jsgk_8AAAAd/bruce-lee-dont-think.gif)
 
 
----
+##
 
 # Final Project 🎓
 
@@ -174,19 +172,19 @@ https://www.youtube.com/watch?v=RQaW2bFieo8
   - Show course integration 🧠
   - Clear presentation 🗣️
 
----
+##
 
 # Example Project 01
 
 ![](sci-topic-net.png)
 
----
+##
 
 # Example Project 02
 
 ![width:100%](ecog.png)
 
----
+##
 
 # Example Project 03
 
@@ -204,7 +202,7 @@ Tesla Supercharger Network
 - 📚 Review sessions before exam
 
 
----
+##
 
 # Weekly Quiz on Brightspace
 
@@ -213,7 +211,7 @@ Tesla Supercharger Network
 - 🏁 Deadline: before final exam
 - 🔄 Unlimited attempts until correct
 
----
+##
 
 # Assignment
 
@@ -223,7 +221,7 @@ Tesla Supercharger Network
 - 🏁 Deadline: before final exam
 - 🔄 Unlimited attempts until correct
 
----
+##
 
 # Lecture note
 
@@ -235,7 +233,7 @@ Tesla Supercharger Network
   - 📦 Install packages from `environment.yml` for local use
   - See [The course GitHub repo](https://github.com/skojaku/adv-net-sci/) for details
 
----
+##
 
 # Meet Minidora - Your AI Tutor 🤖
 
@@ -247,7 +245,7 @@ Tesla Supercharger Network
 
 **Get help mastering network science concepts anytime!**
 
----
+##
 
 # Policy
 
@@ -258,11 +256,11 @@ Tesla Supercharger Network
 - 🚫 Zero tolerance for academic dishonesty
 
 
----
+##
 
 # Questions?
 
----
+##
 
 # Before we start
 What motivates you to take this course (if you want to)?
@@ -272,13 +270,13 @@ https://www.youtube.com/watch?v=u6XAPnuFjJc
 
 ~8:23
 
----
+##
 
 # M01: Seven Bridges of Königsberg
 
 ![bg right:50% width:90% Königsberg Bridges](https://99percentinvisible.org/app/uploads/2022/02/bridges-with-water.png)
 
----
+##
 
 # The Königsberg Bridge Puzzle 🌉
 
@@ -288,7 +286,7 @@ https://www.youtube.com/watch?v=u6XAPnuFjJc
 - City had 7 bridges connecting 2 islands and mainland 🏙️
 - **Challenge**: Find a route that crosses each bridge exactly once and returns to start 🚶‍♂️
 
----
+##
 
 # Find a route that crosses each bridge exactly once 🚶‍♂️
 
@@ -296,7 +294,7 @@ How would you approach this problem?
 
 ![bg right:60% width:90%](https://physics.weber.edu/carroll/honors_images/bridges_of_konigsberg.jpg)
 
----
+##
 
 # Euler's Revolutionary Abstraction 🧠
 
@@ -306,7 +304,7 @@ How would you approach this problem?
 - 🔗 **Network abstraction**: Landmasses → nodes, bridges → edges
 - 🎯 **Birth of graph theory**: Focus on relationships, not objects
 
----
+##
 
 # Pen and Paper Exercise 📝
 
@@ -315,7 +313,7 @@ How would you approach this problem?
 
 **Try to discover Euler's insights yourself first!**
 
----
+##
 
 # Euler's Degree-Based Reasoning 🧮
 
@@ -325,7 +323,7 @@ How would you approach this problem?
 - **Odd degree nodes (2k+1 edges)**: One "leftover" edge
 - **Key insight**: Leftover edges can only be at start/end points
 
----
+##
 
 # Euler's Path Theorem 🏆
 
@@ -338,7 +336,7 @@ How would you approach this problem?
 
 **Königsberg verdict**: 4 nodes with odd degree → **impossible!**
 
----
+##
 
 # Network Terminology 📚
 
@@ -350,7 +348,7 @@ How would you approach this problem?
 
 **Königsberg sought an Euler circuit!**
 
----
+##
 
 # Aftermath: The Bridges' Fate 🏙️💣
 
@@ -361,14 +359,14 @@ How would you approach this problem?
 
 ![bg right:50% width:80%](../../lecture-note/figs/seven-bridge-bombared.png)
 
----
+##
 
 # 💻 Coding Time: Networks in Code! 🌐
 
 [Let's represent networks with Python!](https://skojaku.github.io/adv-net-sci/m01-euler_tour/how-to-code-network.html) 🐍
 
 
----
+##
 
 
 # Key Takeaways
@@ -379,6 +377,6 @@ How would you approach this problem?
 - **Historical impact**: From recreational puzzle to foundation of network science
 - **Modern relevance**: GPS navigation, internet routing, social networks
 
----
+##
 
 # Any questions?
