@@ -308,11 +308,10 @@ His bold answer: **"Everything is made of water"**
 
 **René Descartes** (1596-1650): *"Divide each problem into as many parts as possible"*
 
-- **Method of analysis**: break complex problems into simple parts
-- Mind-body dualism: separate thinking substance from physical substance
-- **Mechanical philosophy**: universe operates like a giant machine
+- Seek fundamental set of principles that one can know as true without any doubt.
 
-**Key insight:** *Systematic decomposition* leads to understanding
+- Methodological skepticism: Rejects any ideas that can be doubted and then re-establishes them.
+
 
 :::
 
@@ -324,87 +323,8 @@ His bold answer: **"Everything is made of water"**
 
 ::::
 
+**Key insight:** *Systematic decomposition* leads to understanding
 
-## Newton: Mathematical Precision ⚖️
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Isaac Newton** (1643-1727): *"Nature is pleased with simplicity"*
-
-- **Universal laws**: same principles explain falling apples and planetary motion
-- Mathematical equations capture all physical phenomena
-- **Clockwork universe**: perfect, predictable, mechanical system
-
-**Key insight:** Find the *universal mathematical laws* governing everything
-
-:::
-
-::: {.column width="50%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Portrait_of_Sir_Isaac_Newton%2C_1689.jpg/640px-Portrait_of_Sir_Isaac_Newton%2C_1689.jpg){width=80% fig-align="center"}
-
-:::
-
-::::
-
-## The Missing Piece 🧩
-
-::: {.callout-note title = "Question:"}
-**Five different approaches to understanding reality:**
-
-**Ancient wisdom:**
-- **Thales**: Everything is *substance* (water)
-- **Pythagoras**: Everything is *relationships* (numbers)
-- **Democritos**: Everything is *components* (atoms)
-
-**Modern science:**
-- **Descartes**: Everything is *systematic analysis* (divide and conquer)
-- **Newton**: Everything is *universal laws* (mathematical precision)
-
-**Which approach wins? What would you choose today?**
-:::
-
-*Turn to your neighbor - discuss for 30 seconds*
-
-## Network Science: Relationships + Structure 🌐
-
-::: {.callout-tip title = "The Modern Answer:"}
-**Network Science combines all three insights:**
-
-- **Nodes** (Democritos's atoms) + **Edges** (Pythagoras's relationships)
-- **Emergent properties** that can't be reduced to parts alone
-- **Structure matters** more than individual components
-:::
-
-**Key insight:** The magic happens in the **connections** between things, not just the things themselves!
-
-## Thought Experiment 🤔
-
-:::: {.columns}
-
-::: {.column width="70%"}
-
-::: {.callout-note title = "Question:"}
-**Imagine you're an Alien scientist (like von Neumann!) studying humans...**
-
-You understand every single neuron in the human brain perfectly.
-
-**Can you predict what a human will say next? What they'll dream about?**
-:::
-
-*Can we understand the whole by understanding the parts?*
-
-:::
-
-::: {.column width="30%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/5/5e/JohnvonNeumann-LosAlamos.gif){width=50% fig-align="center"}
-
-:::
-
-::::
 
 ## The Reductionist Approach 🧩
 
@@ -412,13 +332,11 @@ You understand every single neuron in the human brain perfectly.
 
 ::: {.column width="40%"}
 
-::: {.callout-note title = "Method:"}
 *Break it down → Understand parts → Reassemble*
-:::
 
 **When does this work well?**
 
-*Give me an example...*
+*This works well. Does it?*
 
 :::
 
@@ -432,31 +350,41 @@ You understand every single neuron in the human brain perfectly.
 
 ::::
 
-## But Sometimes... 🌐
+## Thought Experiment 🤔
 
 :::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="70%"}
 
-::: {.callout-tip title = "Network Science:"}
-*The whole > sum of parts*
-:::
+Imagine you're an Alien scientist (like von Neumann!) studying humans...
 
-::: {.callout-note title = "Question:"}
-**Why can't we predict consciousness from individual neurons?**
+You understand every single neuron in the human brain perfectly.
 
-*What's missing in the reductionist approach?*
-:::
+*Can we say we understand human consciousness? Why?*
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="30%"}
 
+![](https://upload.wikimedia.org/wikipedia/commons/5/5e/JohnvonNeumann-LosAlamos.gif){width=50% fig-align="center"}
 
 :::
 
 ::::
 
+## The Missing Piece 🧩
+
+**The whole > sum of its parts**
+
+
+- You can know every neuron
+  - *but not predict consciousness*
+- You can study every person
+  - *but not understand social movements*
+- You can analyze every computer
+  - *but not explain the internet*
+
+...because [parts do not operate in isolation but work together in tandem]{.red-text}
 
 
 ## Course Objectives
@@ -1199,12 +1127,10 @@ graph Connected {
 
 :::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="45%" .column-divider}
 
-### Strong Connectivity 💪
-::: {.callout-tip title = "Strong"}
-**Every node can reach every other node following edge directions**
-:::
+### Strongly connected 💪
+Every node can reach every other node following edge directions
 
 ```{dot}
 //| fig-width: 4
@@ -1223,12 +1149,11 @@ digraph Strong {
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 
-### Weak Connectivity 🤝
-::: {.callout-tip title = "Weak"}
-**Connected if we ignore edge directions**
-:::
+### Weakly connected 🤝
+
+Connected if we ignore edge directions
 
 ```{dot}
 //| fig-width: 4
@@ -1257,15 +1182,259 @@ digraph Weak {
 **Why did Euler require the graph to be connected?**
 :::
 
-::: {.incremental}
 - **If disconnected:** You can't reach all bridges from a single starting point
 - **Euler path impossible:** Can't cross bridges you can't reach
 - **Component-wise analysis:** Could have Euler paths within each component
-- **Real insight:** Connectivity is a prerequisite for global network properties
+- **Real insight:** Connectivity is a prerequisite for Network Science
+
+
+---
+
+# Coding Networks in Python 💻
+
+## From Theory to Implementation 🔧
+
+::: {.callout-note title = "Challenge:"}
+**Given any network, can we write a function to detect if it has an Euler path?**
 :::
 
-**This applies everywhere:**
-- Internet routing needs connectivity
-- Disease spread requires contact networks
-- Information flow needs communication paths
+*Let's implement Euler's theorem!*
 
+```python
+def has_euler_path(A):
+    """
+    Check if a graph has an Euler path based on node degrees.
+    A: network (adjacency matrix)
+    return: True if Euler path exists, False otherwise
+    """
+    # Your turn to complete this!
+```
+
+## Network Representations 📊
+
+**How do we store networks in a computer?**
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-note title = "Question:"}
+**Three ways to represent the same network:**
+
+1. **Edge Table** - List of connections
+2. **Adjacency List** - Each node's neighbors  
+3. **Adjacency Matrix** - Grid of 1s and 0s
+
+**Which would be fastest for finding a node's degree?**
+:::
+
+:::
+
+::: {.column width="40%"}
+
+![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg){width=200px fig-align="center"}
+
+*5 nodes, 6 edges*
+
+:::
+
+::::
+
+## Edge Table: The Direct Approach 📋
+
+**Simply list every connection:**
+
+```python
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+```
+
+::: {.callout-note title = "Question:"}
+**How would you count the degree of node 1 from this list?**
+:::
+
+*Turn to your neighbor - 30 seconds*
+
+## Adjacency List: Neighborhood Map 🗺️
+
+**Each node knows its neighbors:**
+
+```python
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1,2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0,2,3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0,1,4
+    3: [1, 4],     # Node 3 connects to nodes 1,4
+    4: [2, 3]      # Node 4 connects to nodes 2,3
+}
+```
+
+**Degree of node 1 = ?**
+
+::: {.incremental}
+- `len(neighbors[1])` = **3** ✅
+:::
+
+## Adjacency Matrix: The Math Way 📐
+
+**Grid where entry (i,j) = 1 if connected:**
+
+```python
+import numpy as np
+
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0: connects to 1,2
+    [1, 0, 1, 1, 0],  # Node 1: connects to 0,2,3
+    [1, 1, 0, 0, 1],  # Node 2: connects to 0,1,4
+    [0, 1, 0, 0, 1],  # Node 3: connects to 1,4
+    [0, 0, 1, 1, 0]   # Node 4: connects to 2,3
+])
+```
+
+**Degree of node 1 = ?**
+
+::: {.incremental}
+- Sum of row 1: `matrix[1].sum()` = **3** ✅
+:::
+
+## Computing Degrees: Speed Comparison ⚡
+
+::: {.callout-note title = "Performance Challenge:"}
+**Which method is fastest for computing ALL node degrees?**
+:::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Adjacency Matrix** 🏆
+```python
+degrees = matrix.sum(axis=1)
+```
+*One line, vectorized operation*
+
+:::
+
+::: {.column width="50%"}
+
+**Edge Table** 🐌
+```python
+degrees = [0] * n
+for node1, node2 in edges:
+    degrees[node1] += 1
+    degrees[node2] += 1
+```
+*Loops through all edges*
+
+:::
+
+::::
+
+**Winner:** Matrix operations leverage optimized linear algebra!
+
+## Implementing Euler's Theorem 🧮
+
+**Step 1:** Count odd-degree nodes
+
+```python
+def has_euler_path(adjacency_matrix):
+    # Calculate degrees
+    degrees = adjacency_matrix.sum(axis=1)
+    
+    # Count odd degrees
+    odd_count = sum(1 for d in degrees if d % 2 == 1)
+    
+    # Euler's condition
+    return odd_count == 0 or odd_count == 2
+```
+
+::: {.callout-note title = "Question:"}
+**What's missing from this implementation?**
+:::
+
+## The Missing Piece: Connectivity ⚖️
+
+::: {.callout-note title = "Euler's Complete Theorem:"}
+**An Euler path exists if and only if:**
+
+1. **The graph is connected** ← We forgot this!
+2. **Exactly 0 or 2 nodes have odd degree**
+:::
+
+**Problem:** How do we check if a network is connected?
+
+*Think about it... what algorithm could help?*
+
+## Connected Components with DFS 🔍
+
+**Algorithm:** Start from any node, explore as far as possible
+
+```python
+def connected_components(adjacency_matrix):
+    n = adjacency_matrix.shape[0]
+    visited = [False] * n
+    components = []
+    
+    def dfs(node, component):
+        visited[node] = True
+        component.append(node)
+        
+        # Visit all unvisited neighbors
+        for neighbor in range(n):
+            if adjacency_matrix[node, neighbor] and not visited[neighbor]:
+                dfs(neighbor, component)
+    
+    # Find all components
+    for node in range(n):
+        if not visited[node]:
+            component = []
+            dfs(node, component)
+            components.append(component)
+    
+    return components
+```
+
+## Testing Our Implementation 🧪
+
+```python
+# Test with Königsberg bridges
+konigsberg = np.array([
+    [0, 1, 1, 1],  # All nodes have degree 3
+    [1, 0, 1, 1],
+    [1, 1, 0, 1], 
+    [1, 1, 1, 0]
+])
+
+print("Königsberg has Euler path:", has_euler_path_complete(konigsberg))
+```
+
+::: {.callout-note title = "Question:"}
+**What should this print? Why?**
+:::
+
+::: {.incremental}
+- **Answer:** `False` - Four nodes with odd degree!
+:::
+
+## Summary: From Bridges to Code 🌉→💻
+
+**What we learned:**
+
+::: {.incremental}
+1. **Multiple representations** → Choose based on your task
+2. **Vectorized operations** → NumPy beats loops
+3. **Complete algorithms** → Don't forget connectivity!
+4. **270+ years later** → Euler's insight still guides our code
+:::
+
+**Next:** Let's explore more network properties!
+
+---
+
+### Question?
