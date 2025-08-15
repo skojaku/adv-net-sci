@@ -744,7 +744,7 @@ What do you see in this transformation?
 :::
 
 ::: {.column width="40%"}
-![](../../lecture-note/figs/labeled-koningsberg.jpg){width=100% fig-align="center"}
+![](../lecture-note/figs/labeled-koningsberg.jpg){width=100% fig-align="center"}
 :::
 
 ::::
