@@ -9,6 +9,7 @@ format:
     preview-links: auto
     theme: simple
     css: css/style.css
+highlight-style: github
 ---
 
 # Check list
@@ -386,6 +387,9 @@ You understand every single neuron in the human brain perfectly.
 
 ...because [parts do not operate in isolation but work together in tandem]{.red-text}
 
+---
+
+### About this course
 
 ## Course Objectives
 
@@ -1115,13 +1119,9 @@ graph Connected {
 ::: {.incremental}
 - **Giant component:** The largest connected component
 - **Contains:** A significant fraction of all nodes in the network
-- **Real examples:**
-  - The "main" internet (billions of connected devices)
-  - The largest friendship network on Facebook
-  - The core scientific collaboration network
 :::
 
-## Directed Networks: Two Types of Connectivity 🔄
+---
 
 **Context:** What if edges have direction? (Think Twitter follows, webpage links)
 
@@ -1176,27 +1176,11 @@ digraph Weak {
 
 **Question:** Is every strongly connected component also weakly connected?
 
-## Why Connectivity Matters for Euler 🌉
-
-::: {.callout-note title = "Back to Königsberg:"}
-**Why did Euler require the graph to be connected?**
-:::
-
-- **If disconnected:** You can't reach all bridges from a single starting point
-- **Euler path impossible:** Can't cross bridges you can't reach
-- **Component-wise analysis:** Could have Euler paths within each component
-- **Real insight:** Connectivity is a prerequisite for Network Science
-
-
----
-
 # Coding Networks in Python 💻
 
 ## From Theory to Implementation 🔧
 
-::: {.callout-note title = "Challenge:"}
-**Given any network, can we write a function to detect if it has an Euler path?**
-:::
+Given any network, how can we write a function to detect if it has an Euler path?
 
 *Let's implement Euler's theorem!*
 
@@ -1212,20 +1196,23 @@ def has_euler_path(A):
 
 ## Network Representations 📊
 
-**How do we store networks in a computer?**
+::: {.callout-note title = "Question:"}
+
+How do we store networks in a computer?
+
+:::
 
 :::: {.columns}
 
 ::: {.column width="60%"}
 
-::: {.callout-note title = "Question:"}
-**Three ways to represent the same network:**
 
+Three ways to represent the same network:
+
+::: {.incremental}
 1. **Edge Table** - List of connections
-2. **Adjacency List** - Each node's neighbors  
+2. **Adjacency List** - Each node's neighbors
 3. **Adjacency Matrix** - Grid of 1s and 0s
-
-**Which would be fastest for finding a node's degree?**
 :::
 
 :::
@@ -1242,7 +1229,7 @@ def has_euler_path(A):
 
 ## Edge Table: The Direct Approach 📋
 
-**Simply list every connection:**
+Simply list every connection:
 
 ```python
 edges = [
@@ -1255,15 +1242,12 @@ edges = [
 ]
 ```
 
-::: {.callout-note title = "Question:"}
-**How would you count the degree of node 1 from this list?**
-:::
-
-*Turn to your neighbor - 30 seconds*
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
 
 ## Adjacency List: Neighborhood Map 🗺️
 
-**Each node knows its neighbors:**
+Each node knows its neighbors:
 
 ```python
 neighbors = {
@@ -1275,15 +1259,12 @@ neighbors = {
 }
 ```
 
-**Degree of node 1 = ?**
-
-::: {.incremental}
-- `len(neighbors[1])` = **3** ✅
-:::
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
 
 ## Adjacency Matrix: The Math Way 📐
 
-**Grid where entry (i,j) = 1 if connected:**
+Grid where entry $(i,j) = 1$ if connected:
 
 ```python
 import numpy as np
@@ -1297,144 +1278,268 @@ matrix = np.array([
 ])
 ```
 
-**Degree of node 1 = ?**
+- *How would you count the degree of node 1 from this matrix?*
+- *How would you find the neighbors of node 1?*
 
-::: {.incremental}
-- Sum of row 1: `matrix[1].sum()` = **3** ✅
+## Implementing Euler's Theorem 🧮
+
+```python
+def has_euler_path(adjacency_matrix):
+    # Calculate degrees
+    degrees = adjacency_matrix.sum(axis=1)
+
+    # Count odd degrees
+    odd_count = sum(1 for d in degrees if d % 2 == 1)
+
+    # Euler's condition
+    return odd_count == 0 or odd_count == 2
+```
+
+*Do you agree with this?*
+
+## The Missing Piece: Connectivity ⚖️
+
+::: {.callout-tip title = "Revisit"}
+An Euler path exists if and only if:
+
+1. **The graph is connected** ← We forgot this!
+2. **Exactly 0 or 2 nodes have odd degree**
+
 :::
 
-## Computing Degrees: Speed Comparison ⚡
+*Think about it... what algorithm could help?*
 
-::: {.callout-note title = "Performance Challenge:"}
-**Which method is fastest for computing ALL node degrees?**
+---
+
+# Module 01 Review 🎯
+
+## What We Discovered Today 🔍
+
+::: {.callout-note title = "From Sunday Stroll to Network Science:"}
+**The journey from Königsberg bridges to modern network analysis**
 :::
 
 :::: {.columns}
 
 ::: {.column width="50%"}
 
-**Adjacency Matrix** 🏆
-```python
-degrees = matrix.sum(axis=1)
-```
-*One line, vectorized operation*
+**Historical Evolution:**
+- Ancient philosophy → Modern reductionism
+- **The breakthrough:** The whole > sum of its parts
+- Connections matter more than components
 
 :::
 
 ::: {.column width="50%"}
 
-**Edge Table** 🐌
-```python
-degrees = [0] * n
-for node1, node2 in edges:
-    degrees[node1] += 1
-    degrees[node2] += 1
-```
-*Loops through all edges*
+**Euler's Legacy:**
+- Mathematical abstraction over physical details
+- Degree-based reasoning
+- Birth of graph theory (1736)
 
 :::
 
 ::::
 
-**Winner:** Matrix operations leverage optimized linear algebra!
+## Core Concepts: Paths, Walks, and Trails 🚶‍♂️
 
-## Implementing Euler's Theorem 🧮
-
-**Step 1:** Count odd-degree nodes
-
-```python
-def has_euler_path(adjacency_matrix):
-    # Calculate degrees
-    degrees = adjacency_matrix.sum(axis=1)
-    
-    # Count odd degrees
-    odd_count = sum(1 for d in degrees if d % 2 == 1)
-    
-    # Euler's condition
-    return odd_count == 0 or odd_count == 2
-```
-
-::: {.callout-note title = "Question:"}
-**What's missing from this implementation?**
+::: {.callout-note title = "Quick Check:"}
+**Can you define these without looking at your notes?**
 :::
 
-## The Missing Piece: Connectivity ⚖️
+:::: {.columns}
 
-::: {.callout-note title = "Euler's Complete Theorem:"}
+::: {.column width="33%"}
+
+**Walk**
+- Any sequence of connected nodes
+- Can repeat nodes and edges
+- Most permissive
+
+:::
+
+::: {.column width="33%"}
+
+**Trail** 
+- Walk without repeated edges
+- Can repeat nodes
+- Like mail carrier route
+
+:::
+
+::: {.column width="33%"}
+
+**Path**
+- Walk without repeated nodes
+- Most restrictive
+- Travel itinerary
+
+:::
+
+::::
+
+**Circuit/Cycle:** Closed versions that return to start
+
+## Euler's Theorem: The Complete Story ⚖️
+
+::: {.callout-tip title = "Euler Path Theorem"}
 **An Euler path exists if and only if:**
 
-1. **The graph is connected** ← We forgot this!
-2. **Exactly 0 or 2 nodes have odd degree**
+1. **The graph is connected** (can reach any node from any other)
+2. **Either:**
+   - All nodes have even degree (Euler circuit), OR
+   - Exactly two nodes have odd degree (Euler path)
 :::
-
-**Problem:** How do we check if a network is connected?
-
-*Think about it... what algorithm could help?*
-
-## Connected Components with DFS 🔍
-
-**Algorithm:** Start from any node, explore as far as possible
-
-```python
-def connected_components(adjacency_matrix):
-    n = adjacency_matrix.shape[0]
-    visited = [False] * n
-    components = []
-    
-    def dfs(node, component):
-        visited[node] = True
-        component.append(node)
-        
-        # Visit all unvisited neighbors
-        for neighbor in range(n):
-            if adjacency_matrix[node, neighbor] and not visited[neighbor]:
-                dfs(neighbor, component)
-    
-    # Find all components
-    for node in range(n):
-        if not visited[node]:
-            component = []
-            dfs(node, component)
-            components.append(component)
-    
-    return components
-```
-
-## Testing Our Implementation 🧪
-
-```python
-# Test with Königsberg bridges
-konigsberg = np.array([
-    [0, 1, 1, 1],  # All nodes have degree 3
-    [1, 0, 1, 1],
-    [1, 1, 0, 1], 
-    [1, 1, 1, 0]
-])
-
-print("Königsberg has Euler path:", has_euler_path_complete(konigsberg))
-```
 
 ::: {.callout-note title = "Question:"}
-**What should this print? Why?**
+**Why did Königsberg fail this test?**
 :::
 
 ::: {.incremental}
-- **Answer:** `False` - Four nodes with odd degree!
+- **Answer:** Four nodes with odd degree (3 bridges each)
+- **Required:** Maximum of two odd-degree nodes
 :::
 
-## Summary: From Bridges to Code 🌉→💻
+## Network Connectivity: More Than Just Connected 🔗
 
-**What we learned:**
+**Undirected Networks:**
+- **Connected:** Path exists between every pair of nodes
+- **Connected component:** Maximal set of mutually reachable nodes
+- **Giant component:** Largest component containing significant fraction of nodes
+
+**Directed Networks:**
+- **Strongly connected:** Can reach any node from any other following directions
+- **Weakly connected:** Connected if we ignore edge directions
+
+::: {.callout-note title = "Think:"}
+**Is every strongly connected component also weakly connected?**
+:::
+
+## Computational Skills: Three Representations 💻
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+**Edge Table**
+```python
+edges = [
+    (0, 1),
+    (1, 2),
+    (2, 3)
+]
+```
+*Best for:* Storage, I/O
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency List**
+```python
+neighbors = {
+    0: [1],
+    1: [0, 2],
+    2: [1, 3]
+}
+```
+*Best for:* Algorithms
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency Matrix**
+```python
+matrix = np.array([
+    [0, 1, 0],
+    [1, 0, 1],
+    [0, 1, 0]
+])
+```
+*Best for:* Math operations
+
+:::
+
+::::
+
+**Key insight:** Choose representation based on your computational needs!
+
+## Algorithm Toolbox 🛠️
+
+**What you can now implement:**
 
 ::: {.incremental}
-1. **Multiple representations** → Choose based on your task
-2. **Vectorized operations** → NumPy beats loops
-3. **Complete algorithms** → Don't forget connectivity!
-4. **270+ years later** → Euler's insight still guides our code
+1. **Calculate node degrees** efficiently using NumPy
+2. **Verify walks, trails, and paths** with robust edge checking
+3. **Find connected components** using depth-first search
+4. **Check for Euler paths** with complete connectivity + degree analysis
+5. **Analyze network structure** systematically
 :::
 
-**Next:** Let's explore more network properties!
+**Performance lesson:** Vectorized operations >> loops!
+
+## The Big Picture: Why This Matters 🌍
+
+**From Königsberg to Today:**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**1736: Euler's insight**
+- Abstraction over physical details
+- Focus on relationships
+- Mathematical proof over trial-and-error
+
+:::
+
+::: {.column width="50%"}
+
+**2024: Modern applications**
+- GPS navigation algorithms
+- Social media analysis
+- Brain connectivity mapping
+- Internet routing protocols
+
+:::
+
+::::
+
+**Same principles, infinite applications!**
+
+## Next Week Preview 🔮
+
+**Coming up in Module 02:**
+
+::: {.incremental}
+- **More network properties:** Clustering, centrality, small worlds
+- **Real-world networks:** Why do they look so different from random?
+- **The friendship paradox:** Your friends are more popular than you!
+- **Interactive visualization:** Can you spot network patterns?
+:::
+
+**Preparation:** Review today's coding exercises and practice with NetworkX!
+
+## Final Challenge 🏆
+
+::: {.callout-note title = "Before You Leave:"}
+**Can you now explain to a friend:**
+
+1. Why the Königsberg bridge problem was impossible?
+2. What makes network science different from reductionism?
+3. How to represent any network in Python three different ways?
+4. When an Euler path exists in any given network?
+:::
+
+**If yes → You've mastered Module 01! 🎉**
+
+**If no → Review the concepts that feel unclear**
 
 ---
 
-### Question?
+## Questions? 🤔
+
+**Next class:** Weekly quiz + Module 02 kickoff!
+
+**Remember:** Bring pen and paper for hands-on exercises!
