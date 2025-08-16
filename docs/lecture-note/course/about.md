@@ -1,5 +1,5 @@
 ---
-title: "Advanced Topics in Network Science"
+title: "About us"
 ---
 
 Networks are everywhere—from the Internet connecting billions of devices to the social connections that shape our daily lives. This course explores network data analysis from the ground up, combining hands-on coding with theoretical foundations to unlock the secrets of complex systems.
@@ -65,7 +65,7 @@ Teaching Assistant is not yet assigned.
 
 - **Quiz**: Each lecture begins with a short paper‑based quiz reviewing the previous week’s material, graded immediately when possible, followed by a discussion of common mistakes at the end of the lecture.
 - **Pen‑and‑Paper Exercise**: Before the lecture, students complete a brief exercise to practice key concepts, then discuss solutions in class while the instructor synthesizes the answers.
-- **Lecture**: A recorded lecture covering core network‑science fundamentals is delivered and posted on the course website.
+- **Lecture**: In class lectures are delivered by the instructor.
 - **Network of the Week**: Weekly, a student or group presents a 10‑minute paper on a network‑related topic of their choice.
 - **Coding**: Each module includes a Python coding exercise (using Marimo notebooks) to apply the concepts to real data.
 
