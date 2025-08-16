@@ -175,10 +175,33 @@ window.Quarto = {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -188,16 +211,8 @@ window.Quarto = {
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -439,14 +454,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -464,24 +497,6 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Networks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
@@ -874,7 +889,7 @@ window.Quarto = {
 <p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m05-clustering.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
 <section id="hands-on-clustering" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Hands-on: Clustering</h1>
-<div id="9fb97e1a" class="cell">
+<div id="3f83f56a" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install pycairo cairocffi</span></span>
@@ -883,13 +898,13 @@ window.Quarto = {
 <section id="modularity-maximization" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="modularity-maximization"><span class="header-section-number">1.1</span> Modularity maximization</h2>
 <p>Let us showcase how to use <code>igraph</code> to detect communities with modularity. We will use the Karate Club Network as an example.</p>
-<div id="aa77b66c" class="cell">
+<div id="c834f03b" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph.Famous(<span class="st">"Zachary"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When it comes to maximizing modularity, there are a variety of algorithms to choose from. Two of the most popular ones are the <code>Louvain</code> and <code>Leiden</code> algorithms, both of which are implemented in <code>igraph</code>. The Louvain algorithm has been around for quite some time and is a classic choice, while the Leiden algorithm is a newer bee that often yields better accuracy. For our example, we’ll be using the <code>Leiden</code> algorithm, and I think you’ll find it really effective!</p>
-<div id="ce9fc6e9" class="cell">
+<div id="4ad2e58f" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>communities <span class="op">=</span> g.community_leiden(resolution<span class="op">=</span><span class="dv">1</span>, objective_function<span class="op">=</span> <span class="st">"modularity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>What is <code>resolution</code>? It is a parameter that helps us tackle the resolution limit of the modularity maximization algorithm {footcite}<code>fortunato2007resolution</code>! In simple terms, when we use the resolution parameter <span class="math inline">\rho</span>, the modularity formula can be rewritten as follow:</p>
@@ -898,11 +913,11 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </span></p>
 <p>Here, the parameter <span class="math inline">\rho</span> plays a crucial role in balancing the positive and negative parts of the equation. The resolution limit comes into play because of the diminishing effect of the negative term as the number of edges <span class="math inline">m</span> increases. The parameter <span class="math inline">\rho</span> can adjust this balance and allow us to circumvent the resolution limit.</p>
 <p>What is <code>communities</code>? This is a list of communities, where each community is represented by a list of nodes by their indices.</p>
-<div id="2d8d0e48" class="cell">
+<div id="6e4e25f5" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(communities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let us visualize the communities by coloring the nodes in the graph.</p>
-<div id="3ff50102" class="cell">
+<div id="0e938c4d" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> communities.membership</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> sns.color_palette().as_hex()</span>
@@ -925,7 +940,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <li>Find communities by maximizing the modularity and visualize them.</li>
 <li>Try at least three different values of the resolution parameter and observe how the community structure changes.</li>
 </ol>
-<div id="3733a4d3" class="cell">
+<div id="2f1b1be2" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -933,7 +948,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <section id="stochstic-block-model" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="stochstic-block-model"><span class="header-section-number">1.2</span> Stochstic Block Model</h2>
 <p>Let us turn the SBM as our community detection tool using <a href="https://graph-tool.skewed.de/">graph-tool</a>. This is a powerful library for network analysis, with a focus on the stochastic block model.</p>
-<div id="92e052e7" class="cell">
+<div id="f6eded89" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment the following code if you are using Google Colab</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
@@ -948,7 +963,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install zstandard</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We will identify the communities using the stochastic block model as follows. First, we will convert the graph object in igraph to that in graph-tool.</p>
-<div id="471439d5" class="cell">
+<div id="eb85dc73" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graph_tool.<span class="bu">all</span>  <span class="im">as</span> gt</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
@@ -966,7 +981,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>g_gt.add_edge_list(np.vstack([r, c]).T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then, we will fit the stochastic block model to the graph.</p>
-<div id="f3732626" class="cell">
+<div id="d2221ce2" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the stochastic block model</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> gt.minimize_blockmodel_dl(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>     g_gt,</span>
@@ -981,7 +996,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <pre class="{note}"><code>Here's a fun fact: the likelihood maximization on its own can't figure out how many communities there should be. But `graph-tool` has a clever trick to circumvent this limitation.
 `graph-tool` actually fits multiple SBMs, each with a different number of communities. Then, it picks the most plausible one based on a model selection criterion.</code></pre>
 <p>Let’s visualize the communities to see what we got.</p>
-<div id="ecd3b003" class="cell">
+<div id="6109c416" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the block assignments to a list</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> b.get_array()</span>
@@ -991,7 +1006,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>community_membership <span class="op">=</span> np.unique(community_membership, return_inverse<span class="op">=</span><span class="va">True</span>)[<span class="dv">1</span>]</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>community_membership</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="593c8eb8" class="cell">
+<div id="64e3a818" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a color palette</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -1016,7 +1031,7 @@ Q(M) = \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left(A_{ij} - \rho \frac{k_i k_j}
 </ul>
 <p>That’s exactly what our model found in this network.</p>
 <p>If we look at the adjacency matrix, we would see something that looks like an upside-down “L”. This shape is like a signature for core-periphery structures.</p>
-<div id="9f1dfb9b" class="cell">
+<div id="648b86b5" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert igraph Graph to adjacency matrix</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(g.get_adjacency().data)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>

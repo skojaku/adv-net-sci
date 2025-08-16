@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-14">
+<meta name="dcterms.date" content="2025-08-16">
 
 <title>From Visual to Computational Thinking – Advanced Topics in Network Science</title>
 <style>
@@ -68,7 +68,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../m01-euler_tour/01-concepts.html" rel="next">
-<link href="../dojo/quiz-creator.html" rel="prev">
+<link href="../intro/why-networks.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -132,10 +132,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -145,16 +168,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -396,14 +411,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -421,24 +454,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Networks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
@@ -793,10 +808,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-    </div>
+    
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">M01: Euler Path</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/00-preparation.html">From Visual to Computational Thinking</a></li></ol></nav>
 <div class="quarto-title">
@@ -817,7 +831,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 14, 2025</p>
+      <p class="date">August 16, 2025</p>
     </div>
   </div>
   
@@ -829,41 +843,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="the-bridge-between-mathematics-and-computation" class="level2 page-columns page-full" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="the-bridge-between-mathematics-and-computation"><span class="header-section-number">1</span> The Bridge Between Mathematics and Computation</h2>
-<p>In 1736, the residents of Königsberg (now Kaliningrad) faced a peculiar puzzle: could one walk through their city, crossing each of its seven bridges exactly once and return to the starting point? This seemingly simple question would launch an entirely new branch of mathematics.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Königsberg was the capital of Prussia and home to the famous philosopher Immanuel Kant. The city was built around the Pregel River and its two large islands.</p>
-</div></div><p>Leonhard Euler, the Swiss mathematician, proved this walk was impossible by abstracting the physical bridges into mathematical objects. He reduced the complex geography to its essential structure: <strong><em>nodes</em></strong> (landmasses) connected by <strong><em>edges</em></strong> (bridges). This abstraction—ignoring irrelevant details like bridge length or island size—became the foundation of graph theory.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Euler was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.</p>
-</div></div><p>Today, we face the same challenge Euler did: how do we translate visual, intuitive understanding into computational analysis? The difference is that where Euler worked with seven bridges, we now work with networks containing millions or billions of connections.</p>
-</section>
-<section id="from-visual-to-computational-thinking" class="level2 page-columns page-full" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="from-visual-to-computational-thinking"><span class="header-section-number">2</span> From Visual to Computational Thinking</h2>
-<p>The key insight Euler discovered was that for the Königsberg bridge problem, the physical details didn’t matter. What mattered was the abstract structure: which landmasses connected to which other landmasses.</p>
-<p>This same principle guides how we represent networks computationally today:</p>
-<ol type="1">
-<li><strong>Abstract the essence</strong>: Focus on connectivity, not physical details</li>
-<li><strong>Use appropriate representations</strong>: Choose data structures that enable efficient computation</li>
-<li><strong>Preserve mathematical properties</strong>: Ensure our representations capture the structural insights we need</li>
-</ol>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>This is not just history—Euler’s approach of abstracting complex systems into nodes and edges is the same method we use today to analyze internet routing, brain connectivity, and viral spread patterns.</p>
-</div></div><p>Consider a simple network with 5 nodes and 6 edges. While we can visualize it as dots and lines, we need computational representations to analyze large networks efficiently. The art lies in choosing representations that both capture the network’s essential structure and enable efficient algorithms.</p>
-</section>
-<section id="whats-next" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="whats-next"><span class="header-section-number">3</span> What’s Next?</h2>
-<p>Now that you understand the conceptual foundation, we’ll explore:</p>
+<section id="preparation" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="preparation"><span class="header-section-number">1</span> Preparation</h2>
 <ul>
-<li><strong>Concepts</strong>: The mathematical principles behind Euler’s solution and how they apply to modern networks</li>
-<li><strong>Coding</strong>: How to implement these ideas computationally using Python</li>
-<li><strong>Exercises</strong>: Hands-on practice with real network analysis</li>
+<li>Take Intro module to set up the environment!</li>
 </ul>
-<p>Each builds on Euler’s fundamental insight: that abstract mathematical thinking can solve concrete problems by focusing on essential structure rather than irrelevant details.</p>
 
 
 <!-- -->
@@ -1323,8 +1307,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../dojo/quiz-creator.html" class="pagination-link" aria-label="Quiz Keiko">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Quiz Keiko</span>
+      <a href="../intro/why-networks.html" class="pagination-link" aria-label="Networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Networks</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1345,47 +1329,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> python3</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Bridge Between Mathematics and Computation</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preparation</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>In 1736, the residents of Königsberg (now Kaliningrad) faced a peculiar puzzle: could one walk through their city, crossing each of its seven bridges exactly once and return to the starting point? This seemingly simple question would launch an entirely new branch of mathematics.</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>Königsberg was the capital of Prussia and home to the famous philosopher Immanuel Kant. The city was built around the Pregel River and its two large islands.</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Leonhard Euler, the Swiss mathematician, proved this walk was impossible by abstracting the physical bridges into mathematical objects. He reduced the complex geography to its essential structure: ***nodes*** (landmasses) connected by ***edges*** (bridges). This abstraction—ignoring irrelevant details like bridge length or island size—became the foundation of graph theory.</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Euler was one of the most prolific mathematicians in history, contributing to nearly every area of mathematics. He lost sight in his right eye in 1738 but continued his work, producing almost half of his total output after becoming completely blind in 1766.</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>Today, we face the same challenge Euler did: how do we translate visual, intuitive understanding into computational analysis? The difference is that where Euler worked with seven bridges, we now work with networks containing millions or billions of connections.</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## From Visual to Computational Thinking</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>The key insight Euler discovered was that for the Königsberg bridge problem, the physical details didn't matter. What mattered was the abstract structure: which landmasses connected to which other landmasses.</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>This same principle guides how we represent networks computationally today:</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Abstract the essence**: Focus on connectivity, not physical details</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Use appropriate representations**: Choose data structures that enable efficient computation</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Preserve mathematical properties**: Ensure our representations capture the structural insights we need</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>This is not just history—Euler's approach of abstracting complex systems into nodes and edges is the same method we use today to analyze internet routing, brain connectivity, and viral spread patterns.</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Consider a simple network with 5 nodes and 6 edges. While we can visualize it as dots and lines, we need computational representations to analyze large networks efficiently. The art lies in choosing representations that both capture the network's essential structure and enable efficient algorithms.</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Next?</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>Now that you understand the conceptual foundation, we'll explore:</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Concepts**: The mathematical principles behind Euler's solution and how they apply to modern networks</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Coding**: How to implement these ideas computationally using Python</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Exercises**: Hands-on practice with real network analysis</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>Each builds on Euler's fundamental insight: that abstract mathematical thinking can solve concrete problems by focusing on essential structure rather than irrelevant details.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Take Intro module to set up the environment!</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

@@ -66,8 +66,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m01-euler_tour/00-preparation.html" rel="next">
-<link href="../dojo/quiz-dojo.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -138,10 +136,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -151,16 +172,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -371,7 +384,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../dojo/quiz-creator.html">Quiz Keiko</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Quiz Keiko</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -402,8 +415,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -412,39 +437,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Using Minidora</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">Introduction</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Networks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
@@ -803,7 +816,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../dojo/quiz-creator.html">Quiz Keiko</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <div class="quarto-title-block"><div><h1 class="title">Quiz Keiko</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
@@ -949,13 +962,13 @@ Troubleshooting: Connection Issues
 </div>
 <marimo-island data-app-id="main" data-cell-id="Hbol" data-reactive="true">
     <marimo-cell-output>
-    <marimo-ui-element object-id="Hbol-0" random-id="04aafb52-8037-35ce-924b-16471a890d52"><marimo-dropdown data-initial-value="[&quot;m01-euler_tour&quot;]" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Select module for context</span></span>&quot;" data-options="[&quot;intro&quot;, &quot;m01-euler_tour&quot;, &quot;m02-small-world&quot;, &quot;m03-robustness&quot;, &quot;m04-friendship-paradox&quot;, &quot;m05-clustering&quot;, &quot;m06-centrality&quot;, &quot;m07-random-walks&quot;, &quot;m08-embedding&quot;, &quot;m09-graph-neural-networks&quot;]" data-allow-select-none="false" data-searchable="false" data-full-width="false"></marimo-dropdown></marimo-ui-element>
+    <marimo-ui-element object-id="Hbol-0" random-id="8456ab8e-d5df-936c-c6c1-d30add658ab3"><marimo-dropdown data-initial-value="[&quot;m01-euler_tour&quot;]" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Select module for context</span></span>&quot;" data-options="[&quot;intro&quot;, &quot;m01-euler_tour&quot;, &quot;m02-small-world&quot;, &quot;m03-robustness&quot;, &quot;m04-friendship-paradox&quot;, &quot;m05-clustering&quot;, &quot;m06-centrality&quot;, &quot;m07-random-walks&quot;, &quot;m08-embedding&quot;, &quot;m09-graph-neural-networks&quot;]" data-allow-select-none="false" data-searchable="false" data-full-width="false"></marimo-dropdown></marimo-ui-element>
     </marimo-cell-output>
     <marimo-cell-code hidden="">import%20marimo%20as%20mo%0Aimport%20urllib.request%0Aimport%20urllib.parse%0Aimport%20json%0Aimport%20os%0Afrom%20typing%20import%20List%2C%20Dict%2C%20Any%0A%0A%23%20Note%3A%20Using%20manual%20TOML%20parsing%20for%20better%20cross-environment%20compatibility%0A%0A%0A%23%20Embedded%20API%20key%0AAPI_KEY%20%3D%20%22sk-7b747530179c4cc992159b7aaec18155%22%0A%0A%23%20Module%20selector%20(same%20as%20quiz-dojo)%0Amodule_options%20%3D%20%7B%0A%20%20%20%20%22intro%22%3A%20%22Introduction%22%2C%0A%20%20%20%20%22m01-euler_tour%22%3A%20%22Module%201%3A%20Euler%20Path%22%2C%0A%20%20%20%20%22m02-small-world%22%3A%20%22Module%202%3A%20Small%20World%22%2C%0A%20%20%20%20%22m03-robustness%22%3A%20%22Module%203%3A%20Robustness%22%2C%0A%20%20%20%20%22m04-friendship-paradox%22%3A%20%22Module%204%3A%20Friendship%20Paradox%22%2C%0A%20%20%20%20%22m05-clustering%22%3A%20%22Module%205%3A%20Clustering%22%2C%0A%20%20%20%20%22m06-centrality%22%3A%20%22Module%206%3A%20Centrality%22%2C%0A%20%20%20%20%22m07-random-walks%22%3A%20%22Module%207%3A%20Random%20Walks%22%2C%0A%20%20%20%20%22m08-embedding%22%3A%20%22Module%208%3A%20Embedding%22%2C%0A%20%20%20%20%22m09-graph-neural-networks%22%3A%20%22Module%209%3A%20Graph%20Neural%20Networks%22%0A%7D%0A%0Amodule_selector%20%3D%20mo.ui.dropdown(%0A%20%20%20%20options%3Dmodule_options%2C%0A%20%20%20%20value%3D%22m01-euler_tour%22%2C%0A%20%20%20%20label%3D%22Select%20module%20for%20context%22%0A)%0A%0Amodule_selector</marimo-cell-code>
 </marimo-island>
 <marimo-island data-app-id="main" data-cell-id="MJUe" data-reactive="true">
     <marimo-cell-output>
-    <div style="max-width:50%"><div style="display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem"><marimo-ui-element object-id="MJUe-0" random-id="43a134b5-91fd-115f-2c79-9ff9007616a1"><marimo-text-area data-initial-value="&quot;# Question 1:\n[[questions]]\nquestion = \&quot;According to Euler's Path Theorem, what are the necessary and sufficient conditions for a graph to have an Euler path (a walk that crosses every edge exactly once)?\&quot;\nanswer = \&quot;A graph has an Euler path if and only if: (1) All nodes have even degree, OR (2) Exactly two nodes have odd degree. If all nodes have even degree, the path forms a cycle. If exactly two nodes have odd degree, the path must start at one odd-degree node and end at the other.\&quot;\n    &quot;" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Enter your question and correct answer</span></span>&quot;" data-placeholder="&quot;Example formats supported:\n\nSimple format:\nQuestion: What is an Euler path?\nAnswer: A path that visits every edge exactly once.\n\nTOML format:\n[[questions]]\nquestion = \&quot;What is an Euler path?\&quot;\nanswer = \&quot;A path that visits every edge exactly once.\&quot;\n\nMultiple questions in TOML:\n[[questions]]\nquestion = \&quot;What is an Euler path?\&quot;\nanswer = \&quot;A path that visits every edge exactly once.\&quot;\n\n[[questions]]\nquestion = \&quot;What are the conditions for Euler circuits?\&quot;\nanswer = \&quot;All nodes must have even degree.&quot;" data-disabled="false" data-debounce="true" data-full-width="true" data-rows="12"></marimo-text-area></marimo-ui-element><marimo-ui-element object-id="MJUe-1" random-id="d76c1cb4-4aa2-6ccf-9d02-429261a47046"><marimo-button data-initial-value="0" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Test Questions</span></span>&quot;" data-kind="&quot;success&quot;" data-disabled="false" data-full-width="false"></marimo-button></marimo-ui-element></div></div>
+    <div style="max-width:50%"><div style="display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem"><marimo-ui-element object-id="MJUe-0" random-id="2d28c27a-5b93-d136-7e1a-a01fef39395f"><marimo-text-area data-initial-value="&quot;# Question 1:\n[[questions]]\nquestion = \&quot;According to Euler's Path Theorem, what are the necessary and sufficient conditions for a graph to have an Euler path (a walk that crosses every edge exactly once)?\&quot;\nanswer = \&quot;A graph has an Euler path if and only if: (1) All nodes have even degree, OR (2) Exactly two nodes have odd degree. If all nodes have even degree, the path forms a cycle. If exactly two nodes have odd degree, the path must start at one odd-degree node and end at the other.\&quot;\n    &quot;" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Enter your question and correct answer</span></span>&quot;" data-placeholder="&quot;Example formats supported:\n\nSimple format:\nQuestion: What is an Euler path?\nAnswer: A path that visits every edge exactly once.\n\nTOML format:\n[[questions]]\nquestion = \&quot;What is an Euler path?\&quot;\nanswer = \&quot;A path that visits every edge exactly once.\&quot;\n\nMultiple questions in TOML:\n[[questions]]\nquestion = \&quot;What is an Euler path?\&quot;\nanswer = \&quot;A path that visits every edge exactly once.\&quot;\n\n[[questions]]\nquestion = \&quot;What are the conditions for Euler circuits?\&quot;\nanswer = \&quot;All nodes must have even degree.&quot;" data-disabled="false" data-debounce="true" data-full-width="true" data-rows="12"></marimo-text-area></marimo-ui-element><marimo-ui-element object-id="MJUe-1" random-id="f77b6e93-2e62-ca36-1514-ad30d6dcdf47"><marimo-button data-initial-value="0" data-label="&quot;<span class=\&quot;markdown prose dark:prose-invert\&quot;><span class=\&quot;paragraph\&quot;>Test Questions</span></span>&quot;" data-kind="&quot;success&quot;" data-disabled="false" data-full-width="false"></marimo-button></marimo-ui-element></div></div>
     </marimo-cell-output>
     <marimo-cell-code hidden="">%23%20Question%20and%20answer%20input%0Aquestion_input%20%3D%20mo.ui.text_area(%0A%20%20%20%20label%3D%22Enter%20your%20question%20and%20correct%20answer%22%2C%0A%20%20%20%20placeholder%3D%22%22%22Example%20formats%20supported%3A%0A%0ASimple%20format%3A%0AQuestion%3A%20What%20is%20an%20Euler%20path%3F%0AAnswer%3A%20A%20path%20that%20visits%20every%20edge%20exactly%20once.%0A%0ATOML%20format%3A%0A%5B%5Bquestions%5D%5D%0Aquestion%20%3D%20%22What%20is%20an%20Euler%20path%3F%22%0Aanswer%20%3D%20%22A%20path%20that%20visits%20every%20edge%20exactly%20once.%22%0A%0AMultiple%20questions%20in%20TOML%3A%0A%5B%5Bquestions%5D%5D%0Aquestion%20%3D%20%22What%20is%20an%20Euler%20path%3F%22%0Aanswer%20%3D%20%22A%20path%20that%20visits%20every%20edge%20exactly%20once.%22%0A%0A%5B%5Bquestions%5D%5D%0Aquestion%20%3D%20%22What%20are%20the%20conditions%20for%20Euler%20circuits%3F%22%0Aanswer%20%3D%20%22All%20nodes%20must%20have%20even%20degree.%22%22%22%2C%0A%20%20%20%20value%3D%22%22%22%23%20Question%201%3A%0A%5B%5Bquestions%5D%5D%0Aquestion%20%3D%20%22According%20to%20Euler's%20Path%20Theorem%2C%20what%20are%20the%20necessary%20and%20sufficient%20conditions%20for%20a%20graph%20to%20have%20an%20Euler%20path%20(a%20walk%20that%20crosses%20every%20edge%20exactly%20once)%3F%22%0Aanswer%20%3D%20%22A%20graph%20has%20an%20Euler%20path%20if%20and%20only%20if%3A%20(1)%20All%20nodes%20have%20even%20degree%2C%20OR%20(2)%20Exactly%20two%20nodes%20have%20odd%20degree.%20If%20all%20nodes%20have%20even%20degree%2C%20the%20path%20forms%20a%20cycle.%20If%20exactly%20two%20nodes%20have%20odd%20degree%2C%20the%20path%20must%20start%20at%20one%20odd-degree%20node%20and%20end%20at%20the%20other.%22%0A%20%20%20%20%22%22%22%2C%0A%20%20%20%20full_width%20%3D%20True%2C%0A%20%20%20%20rows%3D12%0A)%0A%0A%23%20Run%20button%20to%20trigger%20processing%0Arun_button%20%3D%20mo.ui.button(%0A%20%20%20%20label%3D%22Test%20Questions%22%2C%0A%20%20%20%20kind%3D%22success%22%2C%0A%20%20%20%20value%20%3D%201%2C%0A%20%20%20%20on_click%3Dlambda%20value%3A%20value%20%2B%201%2C%0A)%0A%0Amo.vstack(%5Bquestion_input%2C%20run_button%5D).style(%7B%22max-width%22%3A%20%2250%25%22%7D)</marimo-cell-code>
 </marimo-island>
@@ -1438,19 +1451,7 @@ Troubleshooting: Connection Issues
       }
     }
   });
-  </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../dojo/quiz-dojo.html" class="pagination-link" aria-label="Quiz Dojo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Quiz Dojo</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../m01-euler_tour/00-preparation.html" class="pagination-link" aria-label="From Visual to Computational Thinking">
-        <span class="nav-page-text">From Visual to Computational Thinking</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Quiz Keiko</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="an">filters:</span></span>
