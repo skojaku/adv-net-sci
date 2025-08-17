@@ -1,10 +1,9 @@
-<a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m04-friendship-paradox.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
-
-# Visualizing Degree Distributions in Python
-
-Now that we understand the theoretical foundations of degree distributions and the friendship paradox, let's dive into the practical aspects of computing and visualizing these distributions in Python. This notebook focuses on the technical implementation details and best practices for degree distribution analysis.
+---
+title: "Visualizing Degree Distributions in Python"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
 
 ## Computing degree distributions from network data
 
@@ -124,9 +123,9 @@ ccdf_deg_friend = 1 - np.cumsum(p_deg_friend)[:-1]
 
 # Create comparison plot
 fig, ax = plt.subplots(figsize=(10, 6))
-ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg, 
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg,
                   label='Regular nodes', linewidth=2, color='blue')
-ax = sns.lineplot(x=np.arange(len(ccdf_deg_friend)), y=ccdf_deg_friend, 
+ax = sns.lineplot(x=np.arange(len(ccdf_deg_friend)), y=ccdf_deg_friend,
                   label='Friends (degree-biased)', linewidth=2, color='red', ax=ax)
 
 ax.set_xscale('log')
