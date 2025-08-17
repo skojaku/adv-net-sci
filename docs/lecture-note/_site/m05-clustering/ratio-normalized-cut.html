@@ -173,10 +173,33 @@ window.Quarto = {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -186,16 +209,8 @@ window.Quarto = {
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -437,14 +452,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -462,24 +495,6 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Networks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
@@ -880,7 +895,7 @@ window.Quarto = {
 <li><span class="math inline">|V_1|</span> (or |V_2|) is the number of nodes in the community <span class="math inline">V_1</span> (or <span class="math inline">V_2</span>).</li>
 </ul>
 <p>The normalization factor <span class="math inline">1/(|V_1| |V_2|)</span> balances the community sizes. It’s smallest when communities are equal (<span class="math inline">|V_1| = |V_2|</span>) and largest when one community has only one node (<span class="math inline">|V_1| = 1</span> or <span class="math inline">|V_2| = 1</span>).</p>
-<div id="658770bb" class="cell">
+<div id="47a0f519" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [<span class="st">"hide-input"</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -947,7 +962,7 @@ We can now calculate:
 
 :::
 
-::: {#236f23c7 .cell}
+::: {#bae7d7ee .cell}
 ``` {.python .cell-code}
 :tags: ["hide-input", "remove-output"]
 

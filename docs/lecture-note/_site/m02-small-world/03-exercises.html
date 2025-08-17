@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-14">
+<meta name="dcterms.date" content="2025-08-17">
 
-<title>Advanced Topics in Network Science</title>
+<title>Exercises and Assignments – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -132,10 +132,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -145,16 +168,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -162,7 +177,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
         <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
-    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.qmd">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -183,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
-    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.qmd">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -204,7 +219,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
-    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.md">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -232,19 +247,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
         <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.md">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.qmd">
  <span class="dropdown-text">Coding</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.md">
  <span class="dropdown-text">Exercises</span></a>
   </li>  
         <li class="dropdown-header">─── M05: Clustering ───</li>
@@ -365,7 +380,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -396,14 +411,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -423,24 +456,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Networks</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -454,14 +469,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">From Visual to Computational Thinking</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -495,14 +504,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Small-World Networks: Core Concepts</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -514,7 +517,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,14 +539,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Robustness: Core Concepts</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -555,13 +552,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
       </ul>
@@ -576,26 +573,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div>
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
+ <span class="menu-text">m04-node-degree/01-concepts.md</span>
+  </li>
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
+  <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
@@ -610,12 +598,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -647,12 +629,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -682,12 +658,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -715,12 +685,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -758,12 +722,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -797,9 +755,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/00-preparation.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Exercises and Assignments</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -816,7 +774,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 14, 2025</p>
+      <p class="date">August 17, 2025</p>
     </div>
   </div>
   
@@ -828,37 +786,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="exercises-and-assignments" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Exercises and Assignments</h1>
-<section id="pen-and-paper-exercise-why-is-our-social-network-small-world" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="pen-and-paper-exercise-why-is-our-social-network-small-world"><span class="header-section-number">1.1</span> Pen-and-Paper Exercise: Why is our social network small world?</h2>
+<section id="pen-and-paper-exercise-why-is-our-social-network-small-world" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="pen-and-paper-exercise-why-is-our-social-network-small-world"><span class="header-section-number">1</span> Pen-and-Paper Exercise: Why is our social network small world?</h2>
 <ul>
 <li>✍️ <a href="http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf">It’s a small world!! 6 degrees of separation</a> {footcite}<code>esteban-moro-worksheet</code></li>
 </ul>
 </section>
-<section id="assignment" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="assignment"><span class="header-section-number">1.2</span> Assignment</h2>
-<p>We will compute the average path length of a network of scientists. The network is constructed from {footcite:p}<code>sinatra2016quantifying</code>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</p>
+<section id="assignment" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="assignment"><span class="header-section-number">2</span> Assignment</h2>
 <ul>
-<li><strong>For students enrolled in SSIE 641</strong>
-<ul>
-<li>You will receive a dedicated link to the assignment repository from the instructor.</li>
-</ul></li>
-<li><em>For those who are not enrolled in SSIE 641</em>
-<ul>
-<li>You can access the assignment repository at <a href="https://github.com/sk-classroom/adv-net-sci-small-world">Github</a>.</li>
-<li>This repository does not offer auto-grading. But you can grade the assignment by yourself by
-<ul>
-<li><code>bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb</code></li>
-<li><code>bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb</code></li>
-</ul></li>
-</ul></li>
+<li>For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.</li>
+<li>For those who are not enrolled, fork <a href="https://github.com/sk-classroom/advnetsci-small-world">this assignment repository</a> at Github.</li>
 </ul>
 
 
 <!-- -->
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -985,7 +928,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1324,23 +1267,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exercises and Assignments</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen-and-Paper Exercise: Why is our social network small world?</span></span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Exercises and Assignments"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>✍️ <span class="co">[</span><span class="ot">It's a small world!! 6 degrees of separation</span><span class="co">](http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf)</span> {footcite}<span class="in">`esteban-moro-worksheet`</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen-and-Paper Exercise: Why is our social network small world?</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assignment</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>✍️ <span class="co">[</span><span class="ot">It's a small world!! 6 degrees of separation</span><span class="co">](http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf)</span> {footcite}<span class="in">`esteban-moro-worksheet`</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>We will compute the average path length of a network of scientists. The network is constructed from {footcite:p}<span class="in">`sinatra2016quantifying`</span>, where each node represents a scientist and two scientists are connected if they have co-authored a paper in Physical Review Journals from American Physical Society.</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assignment</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**For students enrolled in SSIE 641**</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You will receive a dedicated link to the assignment repository from the instructor.</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>*For those who are not enrolled in SSIE 641*</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You can access the assignment repository at <span class="co">[</span><span class="ot">Github</span><span class="co">](https://github.com/sk-classroom/adv-net-sci-small-world)</span>.</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>This repository does not offer auto-grading. But you can grade the assignment by yourself by</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For those who are not enrolled, fork <span class="co">[</span><span class="ot">this assignment repository</span><span class="co">](https://github.com/sk-classroom/advnetsci-small-world)</span> at Github.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

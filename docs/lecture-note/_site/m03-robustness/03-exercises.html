@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-14">
+<meta name="dcterms.date" content="2025-08-17">
 
-<title>Advanced Topics in Network Science</title>
+<title>Exercises and Assignments – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -104,49 +104,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
@@ -175,10 +132,33 @@ window.Quarto = {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -188,16 +168,8 @@ window.Quarto = {
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -205,7 +177,7 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
         <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
-    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.html">
+    <a class="dropdown-item" href="../m01-euler_tour/00-preparation.qmd">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -226,7 +198,7 @@ window.Quarto = {
   </li>  
         <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
-    <a class="dropdown-item" href="../m02-small-world/00-preparation.html">
+    <a class="dropdown-item" href="../m02-small-world/00-preparation.qmd">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -247,7 +219,7 @@ window.Quarto = {
   </li>  
         <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
-    <a class="dropdown-item" href="../m03-robustness/00-preparation.html">
+    <a class="dropdown-item" href="../m03-robustness/00-preparation.md">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
@@ -275,19 +247,19 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
         <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/00-preparation.md">
  <span class="dropdown-text">Preparation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/02-coding.qmd">
  <span class="dropdown-text">Coding</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.html">
+    <a class="dropdown-item" href="../m04-friendship-paradox/03-exercises.md">
  <span class="dropdown-text">Exercises</span></a>
   </li>  
         <li class="dropdown-header">─── M05: Clustering ───</li>
@@ -408,7 +380,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/00-preparation.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -439,14 +411,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -466,24 +456,6 @@ window.Quarto = {
  <span class="menu-text">Networks</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -497,14 +469,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">From Visual to Computational Thinking</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Euler Path Concepts - The Birth of Network Science</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -538,14 +504,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Small-World Networks: Core Concepts</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -557,7 +517,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -579,14 +539,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Robustness: Core Concepts</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -598,13 +552,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
       </ul>
@@ -619,26 +573,17 @@ window.Quarto = {
       </div>
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
+ <span class="menu-text">m04-node-degree/01-concepts.md</span>
+  </li>
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/00-preparation.html" class="sidebar-item-text sidebar-link">
+  <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m04-friendship-paradox/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
 </li>
@@ -653,12 +598,6 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -690,12 +629,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -725,12 +658,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -758,12 +685,6 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -801,12 +722,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Advanced Topics in Network Science</span></a>
   </div>
@@ -840,9 +755,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/00-preparation.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Exercises and Assignments</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -859,7 +774,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 14, 2025</p>
+      <p class="date">August 17, 2025</p>
     </div>
   </div>
   
@@ -871,59 +786,26 @@ window.Quarto = {
 </header>
 
 
-<section id="robustness-analysis---exercises" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Robustness Analysis - Exercises</h1>
-<section id="percolation-theory-and-network-connectivity" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="percolation-theory-and-network-connectivity"><span class="header-section-number">1.1</span> Percolation Theory and Network Connectivity</h2>
-<p>Consider a random network of <span class="math inline">N</span> nodes, where every pair of nodes are connected by an edge with a certain probability. The degree <span class="math inline">k</span> of a node follows a binomial distribution, which we approximate by a Poisson random variable with mean <span class="math inline">\langle k \rangle</span> and variance <span class="math inline">\langle k \rangle</span>.</p>
-<ol type="1">
-<li>Derive <span class="math inline">\langle k^2 \rangle</span> using <span class="math inline">\langle k \rangle</span>.
-<ul>
-<li>Hint: Variance is defined as <span class="math inline">\text{Var}(k) = \langle (k-\langle k \rangle)^2 \rangle</span>.</li>
-</ul></li>
-<li>Compute the ratio <span class="math inline">\frac{\langle k^2 \rangle}{\langle k \rangle}</span>.</li>
-<li>Check when the network satisfies the Molloy-Reed criterion.</li>
-</ol>
-<div class="callout callout-style-simple callout-none no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Solution
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><strong>Solution for Q1</strong>: To derive <span class="math inline">\langle k^2 \rangle</span>, we start with the definition of variance</p>
-<p><span class="math display">\text{Var}(k) = \langle (k - \langle k \rangle)^2 \rangle</span></p>
-<p>Expanding the square, we get</p>
-<p><span class="math display">\text{Var}(k) = \langle k^2 \rangle - 2\langle k \rangle \langle k \rangle + \langle k \rangle^2</span></p>
-<p>Since <span class="math inline">\text{Var}(k) = \langle k \rangle</span> for a Poisson distribution, we can substitute and rearrange</p>
-<p><span class="math display">\langle k \rangle = \langle k^2 \rangle - \langle k \rangle^2</span></p>
-<p>Solving for <span class="math inline">\langle k^2 \rangle</span>, we obtain</p>
-<p><span class="math display">\langle k^2 \rangle = \langle k \rangle + \langle k \rangle^2</span></p>
-<p><strong>Solution for Q2</strong>: <span class="math inline">\frac{\langle k^2 \rangle}{\langle k \rangle} = 1 + \langle k \rangle</span></p>
-<p><strong>Solution for Q3</strong>: <span class="math inline">\langle k \rangle &gt;1</span>. In other words, if a node has on average more than one neighbor, the random network is likely to have a giant component.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="network-design-challenges" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="network-design-challenges"><span class="header-section-number">1.2</span> Network Design Challenges</h2>
-<p>Apply robustness concepts to practical design problems:</p>
-<p><strong>Challenge 1</strong>: Design a network that is robust against both random failures and targeted attacks using bimodal degree distributions.</p>
-<p>{{ ‘<a href="BASE_URL/vis/network-robustness.html">🚀 Interactive Demo</a>’.replace(‘BASE_URL’, base_url) }}</p>
-<p><strong>Challenge 2</strong>: Design a cost-effective power grid network balancing minimum spanning tree efficiency with robustness requirements.</p>
+<section id="pen-and-paper-exercise-from-mst-to-robust-grid-design" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="pen-and-paper-exercise-from-mst-to-robust-grid-design"><span class="header-section-number">1</span> Pen-and-Paper Exercise: From MST to Robust Grid Design</h2>
 <ul>
 <li>✍️ <a href="./pen-and-paper/exercise.pdf">Pen and Paper Exercise</a></li>
+</ul>
+</section>
+<section id="network-design-challenges" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="network-design-challenges"><span class="header-section-number">2</span> Network Design Challenges</h2>
+<p><a href="https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html">🚀 Interactive Demo</a></p>
+</section>
+<section id="assignment" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="assignment"><span class="header-section-number">3</span> Assignment</h2>
+<ul>
+<li>For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.</li>
+<li>For those who are not enrolled, fork <a href="https://github.com/sk-classroom/advnetsci-robustness">this assignment repository</a> at Github.</li>
 </ul>
 
 
 <!-- -->
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1050,7 +932,7 @@ Solution
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1384,60 +1266,27 @@ Solution
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m03-robustness/04-appendix.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m03-robustness/04-appendix.html" class="pagination-link" aria-label="Exercises and Assignments">
+        <span class="nav-page-text">Exercises and Assignments</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Robustness Analysis - Exercises</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Percolation Theory and Network Connectivity</span></span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Exercises and Assignments"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Consider a random network of $N$ nodes, where every pair of nodes are connected by an edge with a certain probability. The degree $k$ of a node follows a binomial distribution, which we approximate by a Poisson random variable with mean $\langle k \rangle$ and variance $\langle k \rangle$.</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen-and-Paper Exercise: From MST to Robust Grid Design</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Derive $\langle k^2 \rangle$ using $\langle k \rangle$.</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Hint: Variance is defined as $\text{Var}(k) = \langle (k-\langle k \rangle)^2 \rangle$.</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compute the ratio $\frac{\langle k^2 \rangle}{\langle k \rangle}$.</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Check when the network satisfies the Molloy-Reed criterion.</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>::: {.callout collapse="true"}</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Solution</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>✍️ <span class="co">[</span><span class="ot">Pen and Paper Exercise</span><span class="co">](./pen-and-paper/exercise.pdf)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network Design Challenges</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">🚀 Interactive Demo</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assignment</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>**Solution for Q1**:</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>To derive $\langle k^2 \rangle$, we start with the definition of variance</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>$$\text{Var}(k) = \langle (k - \langle k \rangle)^2 \rangle$$</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Expanding the square, we get</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>$$\text{Var}(k) = \langle k^2 \rangle - 2\langle k \rangle \langle k \rangle + \langle k \rangle^2$$</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Since $\text{Var}(k) = \langle k \rangle$ for a Poisson distribution, we can substitute and rearrange</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>$$\langle k \rangle = \langle k^2 \rangle - \langle k \rangle^2$$</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>Solving for $\langle k^2 \rangle$, we obtain</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>$$\langle k^2 \rangle = \langle k \rangle + \langle k \rangle^2$$</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>**Solution for Q2**:</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>$\frac{\langle k^2 \rangle}{\langle k \rangle} = 1 + \langle k \rangle$</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>**Solution for Q3**:</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>$\langle k \rangle &gt;1$. In other words, if a node has on average more than one neighbor, the random network is likely to have a giant component.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network Design Challenges</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>Apply robustness concepts to practical design problems:</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>**Challenge 1**: Design a network that is robust against both random failures and targeted attacks using bimodal degree distributions.</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>{{ '<span class="co">[</span><span class="ot">🚀 Interactive Demo</span><span class="co">]( BASE_URL/vis/network-robustness.html)</span>'.replace('BASE_URL', base_url) }}</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>**Challenge 2**: Design a cost-effective power grid network balancing minimum spanning tree efficiency with robustness requirements.</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>✍️ <span class="co">[</span><span class="ot">Pen and Paper Exercise</span><span class="co">](./pen-and-paper/exercise.pdf)</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For those who are not enrolled, fork <span class="co">[</span><span class="ot">this assignment repository</span><span class="co">](https://github.com/sk-classroom/advnetsci-robustness)</span> at Github.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

@@ -173,10 +173,33 @@ window.Quarto = {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../course/about.html" aria-current="page"> 
-<span class="menu-text">Course</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/minidora-usage.html">
+ <span class="dropdown-text">Minidora</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Intro</span>
@@ -186,16 +209,8 @@ window.Quarto = {
     <a class="dropdown-item" href="../intro/why-networks.html">
  <span class="dropdown-text">Why Networks?</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../intro/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="../dojo/quiz-dojo.html"> 
-<span class="menu-text">Dojo 🥋</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Foundations</span>
@@ -437,14 +452,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Using Minidora</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
   </div>
 </li>
       </ul>
@@ -462,24 +495,6 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Networks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../intro/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-dojo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Dojo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../dojo/quiz-creator.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quiz Keiko</span></a>
   </div>
 </li>
       </ul>
@@ -1048,13 +1063,13 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <section id="an-example-for-the-fourier-transform" class="level3">
 <h3 class="anchored" data-anchor-id="an-example-for-the-fourier-transform">An example for the Fourier transform</h3>
 <p>Now, let’s perform the convolution using the Fourier transform using an example.</p>
-<div id="7e3335d4" class="cell">
+<div id="7bcab6db" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">80</span>, <span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">10</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let us first perform the convolution directly.</p>
-<div id="a9be67b5" class="cell">
+<div id="4c04887e" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad X with zeros on both sides to handle boundary</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n_conv <span class="op">=</span> <span class="bu">len</span>(X) <span class="op">-</span> <span class="bu">len</span>(K) <span class="op">+</span> <span class="dv">1</span>  <span class="co"># Now we get full length output</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>XKconv <span class="op">=</span> np.zeros(n_conv)</span>
@@ -1064,7 +1079,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>XKconv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let us now perform the convolution using the Fourier transform. We compute the Fourier transform of <span class="math inline">X</span> and <span class="math inline">K</span>.</p>
-<div id="49009fc6" class="cell">
+<div id="9e8da2f0" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Transform X and K to frequency domain</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>FX <span class="op">=</span> np.fft.fft(X)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad K with zeros to match the length of X before FFT</span></span>
@@ -1077,11 +1092,11 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <li><code>FX</code> is the Fourier transform of <span class="math inline">X</span>, which is a complex number. Each entry <span class="math inline">FX[k]</span> represents the weight of the cosine wave in its real part and the weight of the sine wave in its imaginary part, with phase <span class="math inline">2\pi k / N</span>. Similarly for <code>FK</code>.</li>
 </ul>
 <p>Next, we multiply the transformed signals.</p>
-<div id="64fb6c8b" class="cell">
+<div id="7323e5a8" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>FXKconv <span class="op">=</span> FX <span class="op">*</span> FK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This is the convolution in the frequency domain. Finally, we transform back to get the convolution.</p>
-<div id="1256a6f2" class="cell">
+<div id="ae8276f2" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> np.real(np.fft.ifft(FXKconv))</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1096,7 +1111,7 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 </ul>
 The Fourier transform method gives us all these positions (-2, -1, 0, …), but we only want the full overlaps starting from position 0, which is why we truncate the first two elements.</li>
 </ul>
-<div id="99ec40ef" class="cell">
+<div id="ad3c633c" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> XKconv_ft[<span class="dv">2</span>:]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1114,7 +1129,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </span></p>
 <p>Comparing with the 1D case, we see that the 2D Fourier transform is <em>functionally</em> the same as the 1D Fourier transform, except that we now have two indices <span class="math inline">h</span> and <span class="math inline">w</span> to represent the frequency in both dimensions. The basis waves are 2D waves as shown below.</p>
 <p><strong>Cosine waves</strong></p>
-<div id="edd26321" class="cell">
+<div id="e77be672" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1155,7 +1170,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>  ax.imshow(img,cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Sine waves</strong></p>
-<div id="90f4d230" class="cell">
+<div id="bd07e4d0" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># imaginary part</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>_, axs <span class="op">=</span> plt.subplots(size, size, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">7</span>))</span>
@@ -1168,7 +1183,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <section id="an-example-of-fourier-transform" class="level3">
 <h3 class="anchored" data-anchor-id="an-example-of-fourier-transform">An example of Fourier transform</h3>
 <p>Let us apply the Fourier transform to an image.</p>
-<div id="72f4918e" class="cell">
+<div id="b3e7543b" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
@@ -1201,11 +1216,11 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_gray, cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Take the Fourier transform of the image.</p>
-<div id="c79cb36b" class="cell">
+<div id="7e2198a2" class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ft_img_gray <span class="op">=</span> np.fft.fft2(img_gray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This decomposes the image into a sum of basis waves. Let’s see the weights of the basis waves.</p>
-<div id="97a11f6c" class="cell">
+<div id="fc79a95b" class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1219,7 +1234,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>cbar.set_label(<span class="st">'Fourier transform magnitude'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The corresponding basis waves look like this:</p>
-<div id="d61324c8" class="cell">
+<div id="fdecf386" class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>size <span class="op">=</span> <span class="dv">16</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>bf_arr_real <span class="op">=</span> np.zeros((size<span class="op">*</span>size,size,size))</span>
@@ -1252,7 +1267,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Imaginary Part of Basis Functions'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, let’s see the convolution of the image with a Prewitt operator.</p>
-<div id="997cc873" class="cell">
+<div id="7b02ff60" class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]]) <span class="co"># Prewitt operator</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>K_padd <span class="op">=</span> np.zeros((img_gray.shape[<span class="dv">0</span>], img_gray.shape[<span class="dv">1</span>]))</span>
@@ -1262,13 +1277,13 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>FK <span class="op">=</span> np.fft.fft2(K_padd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The Fourier transform of the Prewitt operator looks like this:</p>
-<div id="7559dc4e" class="cell">
+<div id="78d9b7f8" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(np.<span class="bu">abs</span>(FK), cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> plt.colorbar()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can think of the frequency domain of the kernel as a <strong>filter</strong> that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel <code>FK</code> has a low value around the center of the image. The product <span class="math inline">FX \cdot FK</span> then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.</p>
 <p>Let’s see the convolution result.</p>
-<div id="70dcad6e" class="cell">
+<div id="30a04d9e" class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>FX <span class="op">=</span> np.fft.fft2(img_gray)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>conv_img_gray <span class="op">=</span> np.real(np.fft.ifft2(FX <span class="op">*</span> FK))</span>

@@ -74,10 +74,10 @@ def network_connectivity(graph, original_size=None):
     """Calculate network connectivity as fraction of nodes in largest component"""
     if original_size is None:
         original_size = graph.vcount()
-    
+
     if graph.vcount() == 0:
         return 0.0
-    
+
     components = graph.connected_components()
     return max(components.sizes()) / original_size
 
@@ -113,21 +113,21 @@ def simulate_random_attack(graph):
     g_test = graph.copy()
     original_size = g_test.vcount()
     results = []
-    
+
     for i in range(original_size - 1):  # Remove all but one node
         # Randomly select and remove a node
         node_idx = np.random.choice(g_test.vs.indices)
         g_test.delete_vertices(node_idx)
-        
+
         # Measure connectivity
         connectivity = network_connectivity(g_test, original_size)
-        
+
         # Store results
         results.append({
             "connectivity": connectivity,
             "frac_nodes_removed": (i + 1) / original_size,
         })
-    
+
     return pd.DataFrame(results)
 
 # Run the simulation
@@ -144,8 +144,8 @@ sns.set(style='white', font_scale=1.2)
 sns.set_style('ticks')
 
 fig, ax = plt.subplots(figsize=(6, 5))
-ax.plot(df_random["frac_nodes_removed"], 
-        df_random["connectivity"], 
+ax.plot(df_random["frac_nodes_removed"],
+        df_random["connectivity"],
         'o-', linewidth=2, markersize=4, label="Random attack")
 ax.set_xlabel("Proportion of nodes removed")
 ax.set_ylabel("Connectivity")
@@ -166,24 +166,24 @@ def simulate_targeted_attack(graph, criterion="degree"):
     g_test = graph.copy()
     original_size = g_test.vcount()
     results = []
-    
+
     for i in range(original_size - 1):
         # Remove node with highest degree
         if criterion == "degree":
             degrees = g_test.degree()
             node_idx = g_test.vs.indices[np.argmax(degrees)]
-        
+
         g_test.delete_vertices(node_idx)
-        
+
         # Measure connectivity
         connectivity = network_connectivity(g_test, original_size)
-        
+
         # Store results
         results.append({
             "connectivity": connectivity,
             "frac_nodes_removed": (i + 1) / original_size,
         })
-    
+
     return pd.DataFrame(results)
 
 # Run targeted attack simulation
@@ -195,12 +195,12 @@ Now let's compare both attack strategies:
 ```{python}
 fig, ax = plt.subplots(figsize=(7, 5))
 
-ax.plot(df_random["frac_nodes_removed"], 
-        df_random["connectivity"], 
+ax.plot(df_random["frac_nodes_removed"],
+        df_random["connectivity"],
         'o-', linewidth=2, markersize=4, label="Random attack", alpha=0.8)
 
-ax.plot(df_targeted["frac_nodes_removed"], 
-        df_targeted["connectivity"], 
+ax.plot(df_targeted["frac_nodes_removed"],
+        df_targeted["connectivity"],
         's-', linewidth=2, markersize=4, label="Targeted attack", alpha=0.8)
 
 ax.set_xlabel("Proportion of nodes removed")
@@ -239,8 +239,8 @@ g_weighted = g.copy()
 g_weighted.es["weight"] = [random.randint(1, 10) for _ in g_weighted.es]
 
 # Visualize weighted network
-igraph.plot(g_weighted, bbox=(300, 200), 
-           edge_width=[w/3 for w in g_weighted.es["weight"]], 
+igraph.plot(g_weighted, bbox=(300, 200),
+           edge_width=[w/3 for w in g_weighted.es["weight"]],
            vertex_label=list(range(g_weighted.vcount())))
 ```
 
@@ -253,8 +253,8 @@ The minimum spanning tree represents the most efficient way to connect all nodes
 mst = g_weighted.spanning_tree(weights=g_weighted.es["weight"])
 
 # Visualize the MST
-igraph.plot(mst, bbox=(300, 200), 
-           edge_width=[w/3 for w in mst.es["weight"]], 
+igraph.plot(mst, bbox=(300, 200),
+           edge_width=[w/3 for w in mst.es["weight"]],
            vertex_label=list(range(mst.vcount())))
 ```
 
@@ -269,25 +269,25 @@ def percolation_simulation(lattice_size=100, p_values=None):
     """Simulate percolation on a 2D lattice"""
     if p_values is None:
         p_values = np.linspace(0, 1, 20)
-    
+
     # Create 2D lattice
-    g_lattice = igraph.Graph.Lattice([lattice_size, lattice_size], 
-                                    nei=1, directed=False, 
+    g_lattice = igraph.Graph.Lattice([lattice_size, lattice_size],
+                                    nei=1, directed=False,
                                     mutual=False, circular=False)
-    
+
     results = []
     for p in p_values:
         # Randomly keep nodes with probability p
         keep_nodes = np.where(np.random.rand(g_lattice.vcount()) < p)[0]
-        
+
         if len(keep_nodes) > 0:
             g_sub = g_lattice.subgraph(keep_nodes)
             largest_size = network_connectivity(g_sub, g_lattice.vcount())
         else:
             largest_size = 0
-        
+
         results.append({"p": p, "largest_component_fraction": largest_size})
-    
+
     return pd.DataFrame(results)
 
 # Run percolation simulation
@@ -297,13 +297,13 @@ df_percolation = percolation_simulation(lattice_size=50)
 ```{python}
 fig, ax = plt.subplots(figsize=(6, 5))
 
-ax.plot(df_percolation["p"], 
-        df_percolation["largest_component_fraction"], 
+ax.plot(df_percolation["p"],
+        df_percolation["largest_component_fraction"],
         'o-', linewidth=2, markersize=4)
 
 # Mark theoretical critical point for 2D lattice
 critical_p = 0.593  # Theoretical value for 2D square lattice
-ax.axvline(x=critical_p, color='red', linestyle='--', alpha=0.7, 
+ax.axvline(x=critical_p, color='red', linestyle='--', alpha=0.7,
            label=f'Critical point (p_c ≈ {critical_p})')
 
 ax.set_xlabel("Probability (p)")
@@ -400,12 +400,12 @@ df_airport_robustness = simulate_random_attack(g_airports)
 df_airport_sample = df_airport_robustness.iloc[sample_indices]
 
 fig, ax = plt.subplots(figsize=(6, 5))
-ax.plot(df_airport_sample["frac_nodes_removed"], 
-        df_airport_sample["connectivity"], 
+ax.plot(df_airport_sample["frac_nodes_removed"],
+        df_airport_sample["connectivity"],
         'o-', linewidth=2, markersize=3, alpha=0.8)
 
 # Add theoretical prediction
-ax.axvline(x=f_c, color='red', linestyle='--', alpha=0.7, 
+ax.axvline(x=f_c, color='red', linestyle='--', alpha=0.7,
            label=f'Theoretical f_c = {f_c:.3f}')
 
 # Add diagonal reference line
