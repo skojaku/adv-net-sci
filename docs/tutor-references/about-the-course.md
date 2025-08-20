@@ -3,7 +3,7 @@
 - **Email:** skojaku@binghamton.edu
 - **Office:** J19 Engineering Building
 - **Office Hours:** Friday 10:00-14:00 (in-person at J19 or Zoom: https://binghamton.zoom.us/my/skojaku.zoom)
-- **Class Time:** Wednesday 16:40-19:40 
+- **Class Time:** Tuesday 9:45 - 11:15 and Thursday 9:45 - 11:15
 - **Location:** G22 Engineering Building
 - **Credits:** 3
 
