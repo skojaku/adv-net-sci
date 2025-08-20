@@ -1,106 +1,39 @@
-# About Advanced Network Science Course
+Here's a condensed version that preserves essential details while reducing length:
 
-## Course Overview
+**Advanced Topics in Network Science - Fall 2025**
+**Instructor:** Sadamori Kojaku (skojaku@binghamton.edu) | **Time:** W 16:40-19:40 | **Location:** G22 Engineering
 
-**Advanced Topics in Network Science** is a 3-credit graduate course that explores network data analysis from the ground up, combining hands-on coding with theoretical foundations. The course teaches students to analyze, model, and interpret network data using Python and modern data science tools.
+**Course Overview:**
+Network data analysis from theory to practice, covering storage, manipulation, computation, and applications across social, biological, and technological systems.
 
-## Instructor & Support
+**Learning Outcomes:**
+- Interpret modern network science literature and methodologies
+- Conduct advanced network modeling, analysis, and simulation
+- Design original research using network science tools
+- Integrate systems engineering with network analysis
 
-**Instructor:** Sadamori Kojaku
-- Computer scientist turned Network Science researcher
-- Focus on practical applications across domains (internet, social media, biology, power grid)
-- Office Hours: 10:00-14:00 Friday (J19 Engineering Bldg or Zoom)
+**Prerequisites:** SSIE-523, Python fluency, basic math/statistics
 
-**AI Tutor:** Minidora
-- 22nd century AI tutor robot providing dialogic explanations, quiz questions, and coding guidance
-- Available on course Discord for student support
+**Grading:** Quiz (10%), Presentation (10%), Assignments (20%), Exam (30%), Project (30%)
+**Bonus:** Up to 30% for best project/presentation/Q&A assignments
 
-## Learning Objectives
+**Key Topics by Month:**
+- **Aug-Sep:** Small-world networks, network robustness, friendship paradox
+- **Oct:** Community detection, centrality, random walks, random graphs  
+- **Nov:** Graph spectra, embeddings, graph neural networks
+- **Dec:** Project presentations
 
-After completing this course, students will:
-- Interpret and evaluate modern network science literature, concepts, methodologies, and tools
-- Conduct advanced network modeling, analysis and simulation using mathematical/computational methods
-- Design and conduct original research using network science methods
-- Integrate Systems Science/Industrial Engineering knowledge with network analysis skills
+**Important Dates:**
+- Project Proposal: 09/30
+- Final Paper & Presentation: 12/05
+- Final Exam: 12/08-12/12
 
-## Course Structure & Philosophy
+**Course Structure:**
+Weekly quizzes, biweekly coding assignments (Github), theoretical lectures. Philosophy: "feel" concepts through hands-on practice before theory.
 
-**"Don't think! Feeeeeel"** (Bruce Lee) - The guiding philosophy emphasizing experiential learning through:
-- **Practical-first approach**: Skills first, then theoretical foundations
-- **Hands-on coding**: Real network data manipulation using Python
-- **Interactive learning**: Pen-and-paper exercises, discussions, collaborative activities
+**Communication:** Discord for informal Q&A, Brightspace for announcements
+**Office Hours:** Fri 10:00-14:00 (in-person J19 or Zoom)
 
-## Learning Activities
+**Key Policies:** Attendance required, AI tools permitted with citation, data backup responsibility, accommodations available through SSD.
 
-### In-Class Activities
-- **Weekly Quiz**: Paper-based review of previous week's material with immediate feedback
-- **Pen-and-Paper Exercise**: Pre-lecture concept practice with in-class discussion
-- **Interactive Lectures**: Instructor-led with student engagement
-- **Network of the Week**: Student-led 10-minute presentations on network topics
-- **Coding Sessions**: Python exercises using Marimo notebooks with real data
-
-### Homework & Assessments
-- **Coding Assignments**: Distributed via GitHub Classroom with automatic grading
-- **LLM Quiz Challenge**: Create questions that stump an LLM learning course content
-- **Project Components**: Proposal, final paper, and presentation
-- **Final Exam**: Take-home exam during exam period
-
-## Course Modules (9 Total)
-
-1. **Euler Tour**: Königsberg bridge problem, graph theory fundamentals
-2. **Small-World Networks**: Milgram's experiment, clustering, Watts-Strogatz model
-3. **Network Robustness**: MST algorithms, attack strategies, system resilience
-4. **Friendship Paradox**: Degree bias, sampling effects, social network phenomena
-5. **Community Detection**: Modularity optimization, clustering algorithms
-6. **Centrality**: Various centrality measures, key player identification
-7. **Random Walks**: Markov processes, PageRank, stationary distributions
-8. **Graph Embeddings**: Spectral methods, neural embeddings, dimensionality reduction
-9. **Graph Neural Networks**: GCNs, message passing, modern deep learning approaches
-
-## Technical Requirements
-
-**Prerequisites:** SSIE-523, Python fluency, basic math/statistics understanding
-
-**Key Python Libraries:**
-- `igraph`: Core network analysis
-- `numpy`, `scipy`: Numerical computing
-- `networkx`: Additional graph algorithms
-- `PyTorch Geometric`: Graph neural networks
-
-**Tools & Platforms:**
-- GitHub Classroom for assignments
-- Discord for communication and AI tutor access
-- Marimo notebooks for interactive coding
-- Brightspace for course management
-
-## Assessment Structure
-
-**Grading Breakdown:**
-- Quiz: 10%
-- In-class Presentation: 10% 
-- Assignments: 20%
-- Exam: 30%
-- Project: 30%
-
-**Bonus Opportunities (30% total):**
-- Best project: 10%
-- Best Network of the Week: 10%
-- Best quiz questions: 10% (2% per assignment, unlimited recipients)
-
-## Key Resources
-
-**Primary Textbooks:**
-- Mark Newman: *Networks (Second Edition)*, Oxford University Press, 2018
-- Filippo Menczer et al.: *A First Course in Network Science*, Cambridge, 2020
-- James Bagrow & Yong-Yeol Ahn: *Working with Network Data*, Cambridge, 2024
-
-**Course Infrastructure:**
-- Website: https://skojaku.github.io/adv-net-sci
-- GitHub: http://github.com/skojaku/adv-net-sci
-- Discord server for Q&A and community interaction
-
-## Course Philosophy
-
-Networks are ubiquitous - from Internet infrastructure to social connections, biological systems to transportation networks. When abstracted as "dots connected by lines," seemingly different systems reveal universal patterns and principles. This course provides the toolkit to study these systems across domains, finding common mathematical foundations beneath diverse real-world applications.
-
-The course emphasizes **feeling** concepts through direct interaction with data and tools, building intuitive understanding before formal theory. Students learn to think like network scientists, seeing connection patterns in complex systems and applying rigorous analytical methods to unlock their secrets.
+This reduces ~2000 words to ~250 while maintaining all critical information for LLM context.
