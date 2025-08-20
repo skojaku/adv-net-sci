@@ -1,7 +1,11 @@
-You're right. Here's a more comprehensive condensed version:
-
 **Advanced Topics in Network Science - Fall 2025**
-**Instructor:** Sadamori Kojaku (skojaku@binghamton.edu) | **Office:** J19 Engineering | **Time:** W 16:40-19:40 | **Location:** G22 Engineering | **Credits:** 3
+**Instructor:** Sadamori Kojaku 
+- **Email:** skojaku@binghamton.edu
+- **Office:** J19 Engineering Building
+- **Office Hours:** Friday 10:00-14:00 (in-person at J19 or Zoom: https://binghamton.zoom.us/my/skojaku.zoom)
+- **Class Time:** Wednesday 16:40-19:40 
+- **Location:** G22 Engineering Building
+- **Credits:** 3
 
 **Resources:**
 - Website: https://skojaku.github.io/adv-net-sci
@@ -37,10 +41,6 @@ Network analysis from bottom-up through data interaction, covering storage, mani
 
 **Communications:** Discord for informal Q&A/discussions (invitation via Brightspace), Brightspace for announcements. Missing Discord = missing course information.
 
-**Office Hours:** 
-- Kojaku: Fri 10:00-14:00 (J19 Engineering or Zoom: https://binghamton.zoom.us/my/skojaku.zoom)
-- Also: Tue/Thu 14:30-16:30
-
 **Important Dates:**
 - Project Proposal: 09/30
 - Project Final Paper: 12/05  
@@ -57,5 +57,3 @@ Network analysis from bottom-up through data interaction, covering storage, mani
 - **Academic Integrity:** Full compliance required; see Student Academic Honesty Code
 
 **Resources:** SSD (607-777-2686), Counseling (607-777-2772), Title IX support, bias incident reporting available.
-
-This preserves the essential structure and details while condensing from ~2000 to ~600 words.
