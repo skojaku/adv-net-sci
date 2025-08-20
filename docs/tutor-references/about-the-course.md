@@ -9,7 +9,7 @@
 **Instructor:** Sadamori Kojaku
 - Computer scientist turned Network Science researcher
 - Focus on practical applications across domains (internet, social media, biology, power grid)
-- Office Hours: 14:30-16:30 Tue & Thu (J19 Engineering Bldg or Zoom)
+- Office Hours: 10:00-14:00 Friday (J19 Engineering Bldg or Zoom)
 
 **AI Tutor:** Minidora
 - 22nd century AI tutor robot providing dialogic explanations, quiz questions, and coding guidance
