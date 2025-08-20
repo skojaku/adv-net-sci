@@ -1,127 +1,55 @@
-# Node Degree and the Friendship Paradox Assignment
+# Assignment Tasks
 
-## Overview
 
-This assignment focuses on understanding and implementing fundamental concepts related to node degrees in networks and the fascinating friendship paradox phenomenon. You'll implement functions to compute degree distributions, calculate friendship paradox statistics, and visualize heavy-tailed distributions.
+This assignment requires you to complete two main tasks and submit your work to GitHub. You will need to implement Python functions marked with special comments and create a quiz file with challenging questions that test your understanding of course concepts.
 
-## Learning Objectives
+## Task 1: Function Implementation
 
-By completing this assignment, you will:
 
-1. **Understand degree distributions**: Learn how to compute and interpret the distribution of node degrees in networks
-2. **Implement the friendship paradox**: Understand why "your friends have more friends than you do" through computational implementation
-3. **Master visualization techniques**: Learn proper methods for visualizing heavy-tailed distributions using CCDF plots
-4. **Apply degree-biased sampling**: Implement sampling mechanisms that demonstrate how network structure affects observation
+<p align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgDC8T-6_7wMK9PWpXbRm7FUU2iMMhvAE0YFYX9RcA4PXLGNDJJFW6anUa4tBtIj42AFVQFwI0BN7i4gWNu9ZGcgE-tdx6dbKzvrORIVB9AEyjjdTDkKG4StslIvz8wkHiTiEKORptbXB54/s1600/computer_screen_programming.png" alt="Quiz Dojo" width="30%"/>
+</p>
 
-## Assignment Tasks
+Your first task involves working with the `assignment.py` file using the marimo notebook interface. Throughout this file, you will find functions that are marked with `#TASK` comments in their docstrings. These functions contain placeholder implementations that you need to replace with working code. Each function includes a detailed docstring that specifies the expected input parameters and return values.
 
-### Task 1: Degree Distribution (25 points)
-Implement `compute_degree_distribution(g)` to calculate the probability mass function of node degrees.
+## Task 2: Quiz Creation
 
-**Key concepts:**
-- Degree sequence extraction
-- Probability normalization
-- Handling networks with isolated nodes
 
-### Task 2: Friendship Paradox Statistics (25 points)
-Implement `compute_friendship_paradox_stats(g)` to compute average degrees for nodes vs. friends.
+<p align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjlHKrBdBIO7hyuXygw_c4F1vwztHkr9cu9Rssl8c6SDEMBAJzYxsJe2IJsDqgLKU6Qx7GJRBlYqI0zvpbD_LdDbCbux_L3GSjQGX6PhHSYv8nf7-QdO4yjVMTQZr25TfnAwRnOt7NG9l4/s180-c/samurai_kettou.png" alt="Quiz Dojo" width="30%"/>
+</p>
 
-**Key concepts:**
-- Edge-based sampling creates degree bias
-- Mathematical proof of the friendship paradox
-- Practical implications for network analysis
+Your second task is to create a `quiz.toml` file with exactly two challenging questions about the course material. Here’s the twist: your quiz will be taken by a large language model, not just a human grader. If you can write a question that the LLM gets wrong, you’ll pass this part of the assignment!
 
-### Task 3: CCDF Calculation (25 points)
-Implement `compute_degree_ccdf(degree_dist)` to calculate the complementary cumulative distribution function.
+To succeed, craft questions that are subtle, require deep understanding, or test tricky edge cases—something that might trip up even a smart AI. Each question should be clearly written in TOML format (see below), and must include a complete, correct answer. Aim for questions that go beyond surface-level facts and require careful reasoning or attention to detail.
 
-**Key concepts:**
-- CCDF vs. PDF for heavy-tailed distributions
-- Monotonicity properties
-- Log-log visualization benefits
+**Required format for quiz.toml:**
+```toml
+[[questions]]
+question = "Your first challenging question?"
+answer = "Complete and accurate answer."
 
-### Task 4: Degree-Biased Sampling (25 points)
-Implement `sample_degree_biased_nodes(g, num_samples)` to perform sampling proportional to node degree.
-
-**Key concepts:**
-- Edge-based sampling mechanism
-- Relationship to friendship paradox
-- Statistical bias in network sampling
-
-## Interactive Visualization
-
-The assignment includes an interactive dashboard that lets you:
-- Test your implementations on different network types
-- Compare degree distributions across network models
-- Visualize the friendship paradox effect
-- Explore sampling bias through degree-heterogeneous networks
-
-## Files Structure
-
-```
-assignment/
-├── assignment.py          # Main marimo notebook with tasks and visualization
-└── README.md             # This file
-
-tests/
-├── test_01.py            # Tests for degree distribution
-├── test_02.py            # Tests for friendship paradox stats
-├── test_03.py            # Tests for CCDF calculation
-└── test_04.py            # Tests for degree-biased sampling
+[[questions]]
+question = "Your second challenging question?"
+answer = "Complete and accurate answer."
 ```
 
-## Running the Assignment
+**Donts:**
+- Do not include heavy mathematical derivations or off-topic content in your quiz questions.
+- Do not explicitly instruct the LLM to answer incorrectly.
 
-1. **Open the notebook**: Run `marimo edit assignment.py` in the assignment directory
-2. **Implement functions**: Complete the four `@app.function` implementations
-3. **Test interactively**: Use the dashboard to test your implementations
-4. **Verify with tests**: Run the test files to ensure correctness
+## Submission Process
 
-## Testing Your Implementation
+Once you have completed both tasks, you need to upload your work to your GitHub repository. Use the standard git command or alternatively web interface. See [how to upload your assingment](https://docs.google.com/presentation/d/19Zvrp5kha6ohF4KvTX9W2jodKkfmsOrJfEZtO_Wg0go)
 
-Each task has comprehensive tests that check:
-- Correctness on known examples (star graphs, complete graphs)
-- Mathematical properties (probability sums, monotonicity)
-- Boundary conditions and edge cases
-- Statistical properties and correlations
+GitHub Classroom will automatically detect your submission and begin the grading process.
 
-Run tests individually:
-```bash
-python tests/test_01.py  # Task 1 tests
-python tests/test_02.py  # Task 2 tests
-python tests/test_03.py  # Task 3 tests
-python tests/test_04.py  # Task 4 tests
-```
 
-## Common Pitfalls
+**Tips:**: It is tiresome to go back and forth between the file and the report in GitHub Actions. To save your time, prepare two web browsers side by side, one for the file and one for the GitHub Actions Report. If you are using VSCode, [GitHubAction extension is a good choice](https://open-vsx.org/extension/GitHub/vscode-github-actions).
 
-1. **Array indexing**: Remember that degree k corresponds to index k in arrays
-2. **Probability normalization**: Ensure distributions sum to 1.0
-3. **CCDF calculation**: Exclude the last CDF element to avoid log(0) in visualizations
-4. **Edge sampling**: Sample edges uniformly, then take endpoints for degree bias
 
-## Network Types in Dashboard
+## Grading and Requirements
 
-The interactive dashboard tests your implementations on:
-- **Scale-free networks**: Show strong friendship paradox and power-law distributions
-- **Random networks**: Demonstrate Poisson-like degree distributions
-- **Small-world networks**: Combine high clustering with short paths
-- **Regular networks**: Show minimal degree heterogeneity
+Your submission will be automatically graded using GitHub Actions. The grading system will test your function implementations for correctness and validate your quiz questions for relevance to the course material. All functions marked with `#TASK` must be implemented correctly to pass the function portion of the assignment. Your quiz must contain exactly two questions in the proper TOML format, and the questions should be challenging but directly related to course concepts.
 
-## Grading Criteria
-
-- **Correctness (70%)**: Functions produce correct outputs on test cases
-- **Implementation quality (20%)**: Clean, efficient code following best practices
-- **Understanding (10%)**: Proper handling of edge cases and boundary conditions
-
-## Academic Integrity
-
-- Write your own implementations
-- You may discuss concepts but not share code
-- Cite any external resources used
-- AI assistance must be acknowledged in comments
-
-## Resources
-
-- Course lecture notes on node degree and friendship paradox
-- Interactive games for exploring concepts
-- Network science literature on degree distributions and sampling bias
+**Important Note on Final Grading:** The final grade shown in GitHub Actions will be taken as your final grade for this assignment. The quiz evaluation process can be stochastic, meaning that different evaluation runs may lead to slightly different results due to the AI's variability. However, if you create a well-crafted question with a correct answer, the impact of this variability is negligible. Your goal should be to create questions that are so cleverly designed that the LLM consistently gets them wrong, regardless of minor variations in the evaluation process.

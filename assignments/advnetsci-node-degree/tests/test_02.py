@@ -3,106 +3,76 @@
 # dependencies = [
 #     "marimo",
 #     "numpy==2.2.6",
-#     "python-igraph==0.11.9", 
+#     "python-igraph==0.11.9",
 #     "scipy",
+#     "pandas",
 # ]
 # ///
 
 # %% Import
-import numpy as np
 import sys
 import os
-import igraph
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from assignment.assignment import estimate_platform_distribution
+from simulator import run_multiple_simulations, estimate_naive_platform_distribution
+import numpy as np
 
-from assignment.assignment import compute_friendship_paradox_stats
+np.random.seed(42)
+estimation_result_tables, error_table = run_multiple_simulations(
+    estimate_naive_platform_distribution, estimate_platform_distribution, n_simulations=10
+)
+
+
 
 # %% Test ------------
 print("=" * 50)
-print("Testing Task 2: compute_friendship_paradox_stats")
+print("Testing Task 2: degree_based_vaccination_strategy")
 print("=" * 50)
 
 # ------------------------------------------------------------
-# Test 1: Star graph - classic friendship paradox example
+# Test 1: Star graph - should select center node first
 # ------------------------------------------------------------
-print("\n[Test 1] Star graph friendship paradox")
-g_star = igraph.Graph.Star(5, mode="undirected")
+error_naive = error_table.query("estimator == 'naive'").sort_values("sample_id")["MSE"].values
+error_corrected = error_table.query("estimator == 'corrected'").sort_values("sample_id")["MSE"].values
 
-avg_node_deg, avg_friend_deg = compute_friendship_paradox_stats(g_star)
+success_rate = np.mean(error_naive > error_corrected)
 
-# Star: 1 center (degree 4), 4 leaves (degree 1)
-# Average node degree = (4 + 1 + 1 + 1 + 1) / 5 = 1.6
-expected_node_avg = 1.6
+if success_rate > 0.7:
+    print(f"✓ Test PASSED: Corrected estimator outperformed naive estimator in {success_rate*100:.1f}% of simulations.")
+    print("Great job! Your degree-corrected estimator is more accurate than the naive estimator in the majority of simulation runs.")
+    print("This means your implementation is successfully reducing the bias introduced by the network sampling process.")
+    print("For full credit, try to achieve >70% success rate. If you are below this, consider revisiting your weighting logic.")
+    print()
+    mean_naive = np.mean(error_naive)
+    mean_corrected = np.mean(error_corrected)
+    improvement_factor = mean_naive / mean_corrected if mean_corrected > 0 else float('inf')
+    print(f"Mean MSE (Naive):     {mean_naive:.4e}")
+    print(f"Mean MSE (Corrected): {mean_corrected:.4e}")
+    print(f"Improvement factor (Naive/Corrected): {improvement_factor:.2f}x")
+    print()
+    print("Sample of MSEs for first 5 simulations:")
+    print("Sim\tNaive MSE\tCorrected MSE\tImprovement factor")
+    for i in range(min(5, len(error_naive))):
+        factor = error_naive[i] / error_corrected[i] if error_corrected[i] > 0 else float('inf')
+        print(f"{i}\t{error_naive[i]:.4e}\t{error_corrected[i]:.4e}\t{factor:.2f}x")
+else:
+    print(f"✗ Test FAILED: Corrected estimator only outperformed naive estimator in {success_rate*100:.1f}% of simulations. Aim for >80%.")
+    print("Your corrected estimator did not consistently outperform the naive estimator.")
+    print("This suggests your degree-based correction may not be implemented correctly, or is not sufficiently reducing the bias.")
+    print("Check that you are weighting each participant's response by the inverse of their degree, and that your normalization is correct.")
+    print("Review the simulation setup and your estimator logic, then try again.")
+    print()
+    mean_naive = np.mean(error_naive)
+    mean_corrected = np.mean(error_corrected)
+    improvement_factor = mean_naive / mean_corrected if mean_corrected > 0 else float('inf')
+    print(f"Mean MSE (Naive):     {mean_naive:.4e}")
+    print(f"Mean MSE (Corrected): {mean_corrected:.4e}")
+    print(f"Improvement factor (Naive/Corrected): {improvement_factor:.2f}x")
+    print()
+    print("Sample of MSEs for first 5 simulations:")
+    print("Sim\tNaive MSE\tCorrected MSE\tImprovement factor")
+    for i in range(min(5, len(error_naive))):
+        factor = error_naive[i] / error_corrected[i] if error_corrected[i] > 0 else float('inf')
+        print(f"{i}\t{error_naive[i]:.4e}\t{error_corrected[i]:.4e}\t{factor:.2f}x")
 
-# All edges connect leaves to center, so all "friends" have degree 4
-expected_friend_avg = 4.0
-
-print(f"Average node degree: {avg_node_deg:.3f} (expected: {expected_node_avg})")
-print(f"Average friend degree: {avg_friend_deg:.3f} (expected: {expected_friend_avg})")
-
-assert np.isclose(avg_node_deg, expected_node_avg), f"Node average mismatch: {avg_node_deg} vs {expected_node_avg}"
-assert np.isclose(avg_friend_deg, expected_friend_avg), f"Friend average mismatch: {avg_friend_deg} vs {expected_friend_avg}"
-print("✓ Star graph test passed")
-
-# ------------------------------------------------------------
-# Test 2: Complete graph - no friendship paradox
-# ------------------------------------------------------------
-print("\n[Test 2] Complete graph (no paradox)")
-g_complete = igraph.Graph.Full(4)
-
-avg_node_deg, avg_friend_deg = compute_friendship_paradox_stats(g_complete)
-
-# In complete graph, all nodes have same degree, so no paradox
-# All nodes have degree 3
-expected_both = 3.0
-
-print(f"Average node degree: {avg_node_deg:.3f} (expected: {expected_both})")
-print(f"Average friend degree: {avg_friend_deg:.3f} (expected: {expected_both})")
-
-assert np.isclose(avg_node_deg, expected_both), f"Node average mismatch: {avg_node_deg} vs {expected_both}"
-assert np.isclose(avg_friend_deg, expected_both), f"Friend average mismatch: {avg_friend_deg} vs {expected_both}"
-print("✓ Complete graph test passed")
-
-# ------------------------------------------------------------
-# Test 3: Friendship paradox property
-# ------------------------------------------------------------
-print("\n[Test 3] Friendship paradox inequality")
-# Test on a scale-free network which should show strong paradox
-np.random.seed(42)
-g_ba = igraph.Graph.Barabasi(n=1000, m=2)
-
-avg_node_deg, avg_friend_deg = compute_friendship_paradox_stats(g_ba)
-
-print(f"Average node degree: {avg_node_deg:.3f}")
-print(f"Average friend degree: {avg_friend_deg:.3f}")
-print(f"Paradox ratio: {avg_friend_deg/avg_node_deg:.3f}")
-
-# Friends should have higher average degree (friendship paradox)
-assert avg_friend_deg > avg_node_deg, f"Friendship paradox violated: {avg_friend_deg} <= {avg_node_deg}"
-
-# The ratio should be substantial for scale-free networks
-paradox_ratio = avg_friend_deg / avg_node_deg
-assert paradox_ratio > 1.2, f"Paradox ratio too small for scale-free network: {paradox_ratio}"
-print("✓ Friendship paradox inequality test passed")
-
-# ------------------------------------------------------------
-# Test 4: Edge consistency check
-# ------------------------------------------------------------
-print("\n[Test 4] Edge count consistency")
-g_test = igraph.Graph.Erdos_Renyi(n=50, p=0.1)
-
-avg_node_deg, avg_friend_deg = compute_friendship_paradox_stats(g_test)
-
-# Average node degree should equal 2 * edges / nodes
-expected_node_avg = 2.0 * g_test.ecount() / g_test.vcount()
-
-print(f"Computed node average: {avg_node_deg:.6f}")
-print(f"Expected from edge count: {expected_node_avg:.6f}")
-
-assert np.isclose(avg_node_deg, expected_node_avg), f"Node degree inconsistent with edge count: {avg_node_deg} vs {expected_node_avg}"
-print("✓ Edge consistency test passed")
-
-print("\n" + "=" * 50)
-print("All Task 2 tests passed! ✓")
-print("=" * 50)
+    raise AssertionError("Test failed")

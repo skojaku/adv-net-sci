@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "marimo",
-#     "numpy==2.2.6", 
+#     "numpy==2.2.6",
 #     "python-igraph==0.11.9",
 #     "scipy",
 # ]
@@ -14,78 +14,106 @@ import sys
 import os
 import igraph
 import random
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from assignment.assignment import compute_ccdf
 
-from assignment.assignment import compute_degree_distribution
+
+np.random.seed(42)
+n_nodes = 500
+g = igraph.Graph.Barabasi(n=n_nodes, m=2)
+degree = np.array(g.degree())
+
+CCDF = compute_ccdf(degree)
+
+# Sort CCDF by x values
+sorted_ccdf = sorted(CCDF, key=lambda point: point[0])
+x_vals, ccdf_vals = zip(*sorted_ccdf)
 
 # %% Test ------------
-# Test with known degree sequences
-print("=" * 50)
-print("Testing Task 1: compute_degree_distribution")
-print("=" * 50)
+print("="*60)
+# ------------------------------------------------------------
+# Test 1: Check the monotonicity of the CCDF
+# ------------------------------------------------------------
+ccdf_diffs = np.diff(ccdf_vals)
+non_decreasing_indices = np.where(ccdf_diffs >= 0)[0]
+
+assert np.all(ccdf_diffs < 0), (
+    f"CCDF must be monotonically decreasing (each value should be smaller than the previous). "
+    f"Found {len(non_decreasing_indices)} violations at positions: {non_decreasing_indices}. "
+    f"Problematic differences: {ccdf_diffs[non_decreasing_indices]}. "
+    f"This usually indicates an error in the CCDF computation logic."
+)
+print("✓ Subtest 1 PASSED: CCDF is monotonically decreasing")
 
 # ------------------------------------------------------------
-# Test 1: Simple star graph
+# Test 2: Check the CCDF values
 # ------------------------------------------------------------
-print("\n[Test 1] Star graph with 5 nodes")
-g_star = igraph.Graph.Star(5, mode="undirected")
-deg_dist = compute_degree_distribution(g_star)
+x_test = [0, n_nodes + 1]
+y_expected = [1, 0]
 
-# Expected: 1 center node (degree 4), 4 leaf nodes (degree 1)
-# Distribution should be [0, 4/5, 0, 0, 1/5] for degrees [0,1,2,3,4]
-expected_star = np.array([0.0, 0.8, 0.0, 0.0, 0.2])
+degree_sorted = np.sort(degree)
+for q in [0.1, 0.3, 0.5, 0.7, 0.9]:
+    dth = degree_sorted[int(q * (n_nodes - 1))]
+    x_test.append(dth)
+    y_expected.append(np.mean(degree > dth))
 
-print(f"Computed: {deg_dist}")
-print(f"Expected: {expected_star}")
-assert len(deg_dist) == len(expected_star), f"Wrong length: {len(deg_dist)} vs {len(expected_star)}"
-assert np.allclose(deg_dist, expected_star), f"Star distribution mismatch: {deg_dist} vs {expected_star}"
-print("✓ Star graph test passed")
+y_actual = np.interp(x_test, x_vals, ccdf_vals)
 
-# ------------------------------------------------------------  
-# Test 2: Complete graph
-# ------------------------------------------------------------
-print("\n[Test 2] Complete graph with 4 nodes")
-g_complete = igraph.Graph.Full(4)
-deg_dist = compute_degree_distribution(g_complete)
-
-# All nodes have degree 3
-expected_complete = np.array([0.0, 0.0, 0.0, 1.0])
-
-print(f"Computed: {deg_dist}")
-print(f"Expected: {expected_complete}")
-assert np.allclose(deg_dist, expected_complete), f"Complete graph distribution mismatch: {deg_dist} vs {expected_complete}"
-print("✓ Complete graph test passed")
+errors = []
+for i in range(len(x_test)):
+    error = abs(y_actual[i] - y_expected[i])
+    errors.append(error)
+    assert np.allclose(y_actual[i], y_expected[i], atol=1e-6), (
+        f"CCDF value mismatch at degree {x_test[i]}: "
+        f"Got {y_actual[i]:.6f}, expected {y_expected[i]:.6f} "
+        f"(error: {error:.6f}). "
+        f"This suggests the CCDF computation is incorrect. "
+        f"Remember: CCDF(x) = P(degree > x) = fraction of nodes with degree strictly greater than x."
+    )
+max_error = max(errors)
+print(f"✓ Subtest 2 PASSED: CCDF values correct at {len(x_test)} test points (max error: {max_error:.2e})")
 
 # ------------------------------------------------------------
-# Test 3: Graph with isolated nodes
+# Test 3: Check that CCDF is defined as P(X>theta), not P(X>=theta)
 # ------------------------------------------------------------
-print("\n[Test 3] Graph with isolated nodes")
-g_isolated = igraph.Graph(6)  # 6 nodes, no edges
-g_isolated.add_edges([(0, 1), (2, 3)])  # Add 2 edges
+# Find a degree value that appears multiple times in the data
+unique_degrees, counts = np.unique(degree, return_counts=True)
+repeated_degrees = unique_degrees[counts > 1]
 
-deg_dist = compute_degree_distribution(g_isolated)
+if len(repeated_degrees) > 0:
+    # Pick a degree that appears multiple times
+    test_degree = repeated_degrees[0]
 
-# 2 isolated nodes (degree 0), 4 connected nodes (degree 1)
-expected_isolated = np.array([2.0/6.0, 4.0/6.0])
+    # Get CCDF value at this degree
+    ccdf_at_degree = np.interp(test_degree, x_vals, ccdf_vals)
 
-print(f"Computed: {deg_dist}")
-print(f"Expected: {expected_isolated}")
-assert np.allclose(deg_dist, expected_isolated), f"Isolated nodes distribution mismatch: {deg_dist} vs {expected_isolated}"
-print("✓ Isolated nodes test passed")
+    # Correct definition: P(X > theta) - should exclude ties
+    expected_correct = np.mean(degree > test_degree)
 
-# ------------------------------------------------------------
-# Test 4: Sum to 1 property
-# ------------------------------------------------------------
-print("\n[Test 4] Distribution sums to 1")
-g_random = igraph.Graph.Erdos_Renyi(n=100, p=0.05)
-deg_dist = compute_degree_distribution(g_random)
+    # Incorrect definition: P(X >= theta) - would include ties
+    expected_incorrect = np.mean(degree >= test_degree)
 
-total_prob = np.sum(deg_dist)
-print(f"Sum of probabilities: {total_prob}")
-assert np.isclose(total_prob, 1.0), f"Distribution should sum to 1: {total_prob}"
-print("✓ Probability sum test passed")
+    # The two should be different if there are ties
+    if expected_correct != expected_incorrect:
+        # CCDF should match the correct definition (excludes ties)
+        error = abs(ccdf_at_degree - expected_correct)
+        assert np.allclose(ccdf_at_degree, expected_correct, atol=1e-6), (
+            f"CCDF definition error detected! "
+            f"\n• Test degree: {test_degree} (appears {counts[unique_degrees == test_degree][0]} times in dataset)"
+            f"\n• Your CCDF value: {ccdf_at_degree:.6f}"
+            f"\n• Expected (P(X > {test_degree})): {expected_correct:.6f}"
+            f"\n• Wrong definition (P(X >= {test_degree})): {expected_incorrect:.6f}"
+            f"\n• Error: {error:.6f}"
+            f"\n\nYour CCDF appears to be using P(X >= theta) instead of P(X > theta). "
+            f"The correct definition excludes ties (nodes with exactly degree {test_degree})."
+        )
+else:
+    print("⚠ Test 3 SKIPPED: No repeated degrees found in the dataset")
 
-print("\n" + "=" * 50)
-print("All Task 1 tests passed! ✓")
-print("=" * 50)
+if len(repeated_degrees) > 0:
+    print("✓ Subtest 3 PASSED: CCDF correctly uses P(X > theta) definition")
+
+print("="*60)
+print("🎉 All subtests passed! Your CCDF implementation is correct.")
+
+
