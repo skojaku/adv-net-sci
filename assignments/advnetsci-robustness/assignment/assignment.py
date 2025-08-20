@@ -13,8 +13,14 @@
 
 import marimo
 
-__generated_with = "0.14.16"
+__generated_with = "0.14.17"
 app = marimo.App(width="full")
+
+with app.setup(hide_code=True):
+    # Initialization code that runs before all other cells
+    import numpy as np
+    import igraph
+    import pandas as pd
 
 
 @app.cell(hide_code=True)
@@ -88,7 +94,7 @@ def _(mo):
             ),
             "📚 Allowed Libraries": mo.md(
                 r"""
-            You **cannot** import any other libraries that result in the grading script failing or a zero score. Only use: `numpy`, `igraph`, `altair`, `pandas`.
+            You **cannot** import any other libraries that result in the grading script failing or a zero score. Only use: `numpy`, `igraph`, `pandas`, `scipy`.
             """
             ),
         }
