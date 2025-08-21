@@ -377,10 +377,10 @@ def connected_components(adjacency_matrix):
         # Mark the current node as visited and add it to current component
         visited[node] = True
         component.append(node)
-        
+
         # Find all neighbors of the current node using vectorized operation
         neighbors = np.where(adjacency_matrix[node] > 0)[0]
-        
+
         # Recursively visit unvisited neighbors
         for neighbor in neighbors:
             if not visited[neighbor]:
@@ -392,7 +392,7 @@ def connected_components(adjacency_matrix):
             component = []
             dfs(v, component)  # Explore entire component
             components.append(component)
-    
+
     return components
 
 # Test with our original connected graph
@@ -404,10 +404,10 @@ print(f"Number of components: {len(components)}")
 # Create a disconnected graph to demonstrate multiple components
 disconnected_matrix = np.array([
     [0, 1, 0, 0, 0],  # Component 1: nodes 0,1,2
-    [1, 0, 1, 0, 0],  
-    [0, 1, 0, 0, 0],  
+    [1, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0],
     [0, 0, 0, 0, 1],  # Component 2: nodes 3,4
-    [0, 0, 0, 1, 0]   
+    [0, 0, 0, 1, 0]
 ])
 
 print("\nTesting with disconnected graph:")
@@ -428,38 +428,38 @@ Now we can enhance our Euler path function to include the connectivity requireme
 def has_euler_path_complete(adjacency_matrix):
     """
     Complete Euler path checker with connectivity verification.
-    
+
     Args:
         adjacency_matrix: 2D numpy array representing the graph
-    
+
     Returns:
         bool: True if graph has an Euler path, False otherwise
     """
     # Check if graph is connected (ignoring isolated nodes)
     components = connected_components(adjacency_matrix)
-    
+
     # Find nodes with at least one edge (degree > 0)
     degrees = adjacency_matrix.sum(axis=1)
     non_isolated_nodes = np.where(degrees > 0)[0]
-    
+
     if len(non_isolated_nodes) == 0:
         return True  # Empty graph has Euler path trivially
-    
+
     # Check if all non-isolated nodes are in the same component
     component_with_edges = None
     for component in components:
         if non_isolated_nodes[0] in component:
             component_with_edges = set(component)
             break
-    
+
     # All nodes with edges must be in the same component
     if not all(node in component_with_edges for node in non_isolated_nodes):
         return False  # Graph is disconnected
-    
+
     # Count nodes with odd degrees (among non-isolated nodes)
     non_isolated_degrees = degrees[non_isolated_nodes]
     odd_degree_count = np.sum(non_isolated_degrees % 2)
-    
+
     # Euler's theorem: exactly 0 or 2 nodes with odd degrees
     return odd_degree_count == 0 or odd_degree_count == 2
 
@@ -482,62 +482,6 @@ print("Königsberg bridges have Euler path:", has_euler_path_complete(konigsberg
 ::: {.callout-important title="Why Connectivity Matters"}
 Even if a graph has exactly 2 odd-degree nodes, an Euler path cannot exist if those nodes are in different connected components. You cannot traverse from one component to another without existing edges, making a single continuous path impossible.
 :::
-
-### Visualizing Component Structure
-
-Understanding component structure helps debug complex networks:
-
-```{python}
-def analyze_graph_structure(adjacency_matrix):
-    """Comprehensive analysis of graph structure for Euler path feasibility."""
-    n = adjacency_matrix.shape[0]
-    degrees = adjacency_matrix.sum(axis=1)
-    components = connected_components(adjacency_matrix)
-    
-    print(f"Graph Analysis:")
-    print(f"- Total nodes: {n}")
-    print(f"- Total edges: {adjacency_matrix.sum() // 2}")  # Divide by 2 for undirected
-    print(f"- Connected components: {len(components)}")
-    
-    # Analyze each component
-    for i, component in enumerate(components):
-        component_degrees = degrees[component]
-        odd_count = np.sum(component_degrees % 2)
-        
-        print(f"\nComponent {i}: nodes {component}")
-        print(f"  - Size: {len(component)} nodes")
-        print(f"  - Node degrees: {dict(zip(component, component_degrees))}")
-        print(f"  - Odd degree nodes: {odd_count}")
-        print(f"  - Has Euler path: {odd_count == 0 or odd_count == 2}")
-    
-    # Overall Euler path conclusion
-    non_isolated = np.where(degrees > 0)[0]
-    if len(non_isolated) > 0:
-        # Check if all non-isolated nodes are in same component
-        main_component = None
-        for comp in components:
-            if non_isolated[0] in comp:
-                main_component = set(comp)
-                break
-        
-        connected = all(node in main_component for node in non_isolated)
-        odd_total = np.sum(degrees[non_isolated] % 2)
-        
-        print(f"\nOverall Euler Path Analysis:")
-        print(f"- All edges connected: {connected}")
-        print(f"- Total odd degree nodes: {odd_total}")
-        print(f"- Has Euler path: {connected and (odd_total == 0 or odd_total == 2)}")
-
-# Analyze our example graphs
-print("=== Original Connected Graph ===")
-analyze_graph_structure(matrix)
-
-print("\n=== Disconnected Graph ===")
-analyze_graph_structure(disconnected_matrix)
-
-print("\n=== Königsberg Bridges ===")
-analyze_graph_structure(konigsberg)
-```
 
 ## Summary
 
