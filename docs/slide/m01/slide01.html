@@ -9,8 +9,7 @@
 <link href="slide01_files/libs/quarto-html/quarto-syntax-highlighting-234273d1456647dabc34a594ac50e507.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="author" content="Sadamori Kojaku">
-  <title>M01: Introduction &amp; Seven Bridges of Königsberg</title>
+  <title>slide01</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -195,31 +194,10 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">M01: Introduction &amp; Seven Bridges of Königsberg</h1>
-
-<div class="quarto-title-authors">
-<div class="quarto-title-author">
-<div class="quarto-title-author-name">
-Sadamori Kojaku 
-</div>
-</div>
-</div>
-
-</section>
-<section id="check-list" class="title-slide slide level1 center">
-<h1>Check list</h1>
-<ul class="task-list">
-<li><label><input type="checkbox">Microphone turned on</label></li>
-<li><label><input type="checkbox">Zoom room open</label></li>
-<li><label><input type="checkbox">MyBinder launched</label></li>
-<li><label><input type="checkbox">Sound Volume on</label></li>
-</ul>
-</section>
 
 <section>
-<section id="introduction" class="title-slide slide level1 center">
-<h1>Introduction</h1>
+<section id="module-01-königsberg-bridge-puzzle" class="title-slide slide level1 center">
+<h1>Module 01: Königsberg Bridge Puzzle</h1>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p>Advanced Topics in Network Science</p>
@@ -227,585 +205,6 @@ Sadamori Kojaku
 <p>skojaku@binghamton.edu</p>
 </div><div class="column" style="width:50%;">
 <p><img data-src="https://newmedialab.cuny.edu/wp-content/uploads/2014/01/Internet.gif"></p>
-</div></div>
-</section>
-<section id="enginet" class="slide level2">
-<h2>Enginet</h2>
-
-<img data-src="../enginet-intro-slide/enginet-01.png" class="r-stretch"></section>
-<section id="enginet-1" class="slide level2">
-<h2>Enginet</h2>
-
-<img data-src="../enginet-intro-slide/enginet-02.png" class="r-stretch"></section>
-<section id="enginet-2" class="slide level2">
-<h2>Enginet</h2>
-
-<img data-src="../enginet-intro-slide/enginet-03.png" class="r-stretch"></section>
-<section id="course-overview" class="slide level2">
-<h2>Course Overview</h2>
-<ul>
-<li><strong>Instructor:</strong> Sadamori Kojaku (幸若完壮)</li>
-<li><strong>Email:</strong> skojaku@binghamton.edu</li>
-<li><strong>Office Hours:</strong> Monday 10:00-14:00</li>
-<li><strong>Course Website:</strong> <a href="https://skojaku.github.io/adv-net-sci">https://skojaku.github.io/adv-net-sci</a></li>
-</ul>
-</section>
-<section id="lets-start-with-a-story" class="slide level2">
-<h2>Let’s start with a story… 🦠</h2>
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
-<p>2009: H1N1 pandemic spreads globally</p>
-<p>Do you remember which countries were infected first and second?</p>
-</div>
-</div>
-</div>
-</div>
-<p>Think about it… discuss with your neighbor for 30 seconds</p>
-<ul>
-<li class="fragment"><p><strong>Your predictions:</strong></p>
-<ul>
-<li class="fragment">Geographic distance matters?</li>
-<li class="fragment">Nearby countries first?</li>
-<li class="fragment">Then spreading outward in circles?</li>
-</ul></li>
-<li class="fragment"><p><em>Let’s hear some thoughts…</em></p></li>
-</ul>
-</section>
-<section id="answer" class="slide level2">
-<h2>Answer</h2>
-<div title="Answer:">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Answer:</strong></p>
-</div>
-<div class="callout-content">
-<ul>
-<li><p>First: United States</p></li>
-<li><p>Second: <strong>Spain</strong></p></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="heres-what-actually-happened" class="slide level2">
-<h2>Here’s what actually happened…</h2>
-
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;" class="r-stretch"><p><strong>Question:</strong> What do you notice? Does this match your prediction?</p>
-</section>
-<section class="slide level2">
-
-<p><strong>Key insight:</strong> Network structure (air travel) determined spread, not geography!</p>
-
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;" class="r-stretch"></section>
-<section id="quick-exercise-spot-the-networks" class="slide level2">
-<h2>Quick Exercise: Spot the Networks! 👀</h2>
-<div title="Challenge:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Challenge:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Look around you right now…</strong></p>
-<p>What networks do you interact with daily?</p>
-<p><em>Take 1 minute - list as many networks as you can</em></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="lets-share" class="slide level2">
-<h2>Let’s Share! 🗣️</h2>
-<p><strong>What did you come up with?</strong></p>
-<p><em>I’ll collect a few examples from the class…</em></p>
-</section>
-<section id="here-are-some-you-might-have-missed" class="slide level2">
-<h2>Here Are Some You Might Have Missed:</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Plant-Pollinator Networks</strong> 🌼</p>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
-</figure>
-</div>
-<p><strong>Question:</strong> How is this a network? What are the connections?</p>
-</div><div class="column" style="width:50%;">
-<p><strong>Your Brain Right Now!</strong> 🧠</p>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
-</figure>
-</div>
-<p><em>As you’re listening, billions of neurons are connecting…</em></p>
-</div></div>
-</section>
-<section id="social-networks-obviously" class="slide level2">
-<h2>Social Networks (Obviously!) 📱</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
-</div>
-</div><div class="column" style="width:50%;">
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>How do ideas spread through social networks?</strong></p>
-<p>Same as diseases? Different?</p>
-</div>
-</div>
-</div>
-</div>
-<p><em>Turn to your neighbor - what do you think?</em></p>
-</div></div>
-</section>
-<section id="how-did-you-get-to-class-today" class="slide level2">
-<h2>How Did You Get to Class Today? 🚗</h2>
-
-<img data-src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"><p><strong>Transportation networks shape our daily choices!</strong></p>
-</section>
-<section id="wait---isnt-this-just-graph-theory" class="slide level2">
-<h2>Wait - Isn’t This Just Graph Theory? 🤔</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>What do you notice about this pattern?</strong></p>
-</div><div class="column" style="width:50%;">
-<p><img data-src="https://mathworld.wolfram.com/images/eps-svg/DistanceRegularCubic_800.svg"></p>
-</div></div>
-</section>
-<section id="real-world-networks-look-like-this" class="slide level2">
-<h2>Real-World Networks Look Like This:</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
-</div>
-</div><div class="column" style="width:40%;">
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>What’s different here?</strong></p>
-<p>Why does this “messiness” matter?</p>
-</div>
-</div>
-</div>
-</div>
-<p><em>Question - what makes real networks “messy”?</em></p>
-</div></div>
-</section>
-<section class="slide level2">
-
-<h3 id="the-dawn-of-network-science">The Dawn of Network Science</h3>
-</section>
-<section id="thales-everything-is-water" class="slide level2">
-<h2>Thales: Everything is Water 💧</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Thales of Miletus</strong> (624-546 BCE) asked: <em>What is the fundamental substance of everything?</em></p>
-<p>His bold answer: <strong>“Everything is made of water”</strong></p>
-<ul>
-<li>Water is essential for life</li>
-<li>Can change forms (liquid, solid, vapor)</li>
-<li>Found everywhere in nature</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<p><img data-src="https://classicalliberalarts.com/wp-content/uploads/thales-edited.jpg"></p>
-</div></div>
-<p><strong>Key insight:</strong> Look for the <em>fundamental substance</em> that explains everything</p>
-</section>
-<section id="pythagoras-all-is-number" class="slide level2">
-<h2>Pythagoras: All is Number 🔢</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Pythagoras</strong> (570-495 BCE) revolutionized thinking: <em>“All is number”</em></p>
-<ul>
-<li>Musical harmony comes from simple numerical ratios</li>
-<li>Mathematical <strong>relationships</strong> are the key to reality</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Kapitolinischer_Pythagoras_adjusted.jpg/640px-Kapitolinischer_Pythagoras_adjusted.jpg" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="democritos-everything-is-atoms" class="slide level2">
-<h2>Democritos: Everything is Atoms ⚛️</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Democritos</strong> (460-370 BCE) proposed: <em>“Everything is made of atoms”</em></p>
-<ul>
-<li>All matter consists of tiny, indivisible particles</li>
-<li>Atoms combine in different ways to create everything</li>
-<li><strong>Reductionist</strong> philosophy: understand the whole by understanding the parts</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Unknown_greek_pushkin.jpg/640px-Unknown_greek_pushkin.jpg" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-</div></div>
-<p><em>Break complex systems down to their </em>fundamental components*</p>
-</section>
-<section id="descartes-divide-and-conquer" class="slide level2">
-<h2>Descartes: Divide and Conquer 🧠</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>René Descartes</strong> (1596-1650): <em>“Divide each problem into as many parts as possible”</em></p>
-<ul>
-<li><p>Seek fundamental set of principles that one can know as true without any doubt.</p></li>
-<li><p>Methodological skepticism: Rejects any ideas that can be doubted and then re-establishes them.</p></li>
-</ul>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Frans_Hals_-_Portret_van_René_Descartes.jpg/640px-Frans_Hals_-_Portret_van_René_Descartes.jpg" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-</div></div>
-<p><strong>Key insight:</strong> <em>Systematic decomposition</em> leads to understanding</p>
-</section>
-<section id="the-reductionist-approach" class="slide level2">
-<h2>The Reductionist Approach 🧩</h2>
-<div class="columns">
-<div class="column" style="width:40%;">
-<p><em>Break it down → Understand parts → Reassemble</em></p>
-<p><strong>When does this work well?</strong></p>
-<p><em>This works well. Does it?</em></p>
-</div><div class="column" style="width:60%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-<p><em>Vaucanson’s 18th century Digesting Duck - the reductionist dream!</em></p>
-</div></div>
-</section>
-<section id="thought-experiment" class="slide level2">
-<h2>Thought Experiment 🤔</h2>
-<div class="columns">
-<div class="column" style="width:70%;">
-<p>Imagine you’re an Alien scientist (like von Neumann!) studying humans…</p>
-<p>You understand every single neuron in the human brain perfectly.</p>
-<p><em>Can we say we understand human consciousness? Why?</em></p>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://upload.wikimedia.org/wikipedia/commons/5/5e/JohnvonNeumann-LosAlamos.gif" class="quarto-figure quarto-figure-center" style="width:50.0%"></p>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="the-missing-piece" class="slide level2">
-<h2>The Missing Piece 🧩</h2>
-<p><strong>The whole &gt; sum of its parts</strong></p>
-<ul>
-<li>You can know every neuron
-<ul>
-<li><em>but not predict consciousness</em></li>
-</ul></li>
-<li>You can study every person
-<ul>
-<li><em>but not understand social movements</em></li>
-</ul></li>
-<li>You can analyze every computer
-<ul>
-<li><em>but not explain the internet</em></li>
-</ul></li>
-</ul>
-<p>…because <span class="red-text">parts do not operate in isolation but work together in tandem</span></p>
-</section>
-<section id="course-objectives" class="slide level2">
-<h2>Course Objectives</h2>
-<div class="columns">
-<div class="column" style="width:40%;">
-<p>We will:</p>
-<ul>
-<li>🔍 Analyze networks</li>
-<li>🧠 Learn key concepts</li>
-<li>🤖 Apply AI to networks</li>
-</ul>
-</div><div class="column" style="width:60%;">
-<p>After this course, you’ll be able to:</p>
-<ul>
-<li>📖 Understand network science papers</li>
-<li>🛠️ Do advanced network analysis</li>
-<li>📝 Design network research</li>
-<li>🔗 Connect Systems Science and networks</li>
-</ul>
-</div></div>
-</section>
-<section class="slide level2">
-
-<div class="columns">
-<div class="column" style="width:50%;">
-<h3 id="core-learning-philosophy">Core Learning Philosophy</h3>
-<ul>
-<li><p>Learning by doing</p></li>
-<li><p><em>Doing it wrong, and learning from it!</em></p></li>
-<li><p>There are many traps to make you fail! (not in the sense of failing the course)</p></li>
-</ul>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://media1.tenor.com/m/-LDi5jsgk_8AAAAd/bruce-lee-dont-think.gif" class="quarto-figure quarto-figure-center" style="display:block; margin-left:auto; margin-right:auto;;width:70.0%"></p>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_NZxWrYf1VvFyG5we1DtkTZOkbsVkbUFtAg&amp;s.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="trap-1" class="slide level2">
-<h2>Trap #1</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<p><strong>Pen &amp; Paper Exercise</strong></p>
-<p>All modules start with an in-class pen &amp; paper exercise.</p>
-<ul>
-<li>Bring your pen to class</li>
-<li>You solve it by yourself</li>
-<li>Then, discuss with your mates</li>
-</ul>
-</div><div class="column" style="width:40%;">
-<p><img data-src="https://static1.xdaimages.com/wordpress/wp-content/uploads/wm/2024/09/why-i-use-pen-and-paper-with-note-taking-apps.jpg"></p>
-</div></div>
-</section>
-<section id="trap-2" class="slide level2">
-<h2>Trap #2</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<p><strong>Interactive Visualization</strong></p>
-<p>Most modules have an interactive game to play</p>
-<ul>
-<li>Wining the game requires Network Science knowledge</li>
-<li>You don’t have the knowledge initially but play the game</li>
-<li>You will learn Network Science by learning how to win the game</li>
-</ul>
-</div><div class="column" style="width:40%;">
-<p>Link: <a href="https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html">Vaccination Game</a></p>
-<iframe src="https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html" width="100%" height="500" frameborder="0">
-</iframe>
-</div></div>
-</section>
-<section id="trap-3" class="slide level2">
-<h2>Trap #3</h2>
-<p><strong>Weekly Quiz</strong></p>
-<p>Every class begins with a weekly quiz to review the previous week’s topics.</p>
-<ul>
-<li>Written quiz</li>
-<li>Only few questions</li>
-<li>Graded and reviewed during the class</li>
-<li>You can resubmit the quiz (one time)</li>
-<li>(Enginet students will submit via Brightspace)</li>
-</ul>
-</section>
-<section id="trap-4" class="slide level2">
-<h2>Trap #4</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<p><strong>Assignment</strong></p>
-<ul>
-<li><p>Most modules have coding assignments</p></li>
-<li><p>Distributed via GitHub Classroom</p></li>
-<li><p>Unlimited attempts until deadline</p></li>
-<li><p>Autograded</p></li>
-</ul>
-</div><div class="column" style="width:40%;">
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTDkP2xHhQHiAYDwy6k1KJ2HuQ6JoanN91Atdp9Wbfq8_1zvX2VKOx07xvLru4HvekNEzYC_WoUINRy/pubembed?start=false&amp;loop=false&amp;delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true">
-</iframe>
-<p>We’ll cover assignment submission in class. Find the detailed instruction on the lecture note.</p>
-</div></div>
-</section>
-<section id="trap-5" class="slide level2">
-<h2>Trap #5</h2>
-<div class="columns">
-<div class="column" style="width:40%;">
-<p><strong>LLM Dojo</strong></p>
-<ul>
-<li><p>You’ll create challenging questions for LLMs.</p></li>
-<li><p>You’ll win if you can create one that stumps LLMs.</p></li>
-<li><p>Every module has a LLM Dojo exercise</p></li>
-<li><p>Collected &amp; Graded on GitHub</p></li>
-</ul>
-</div><div class="column" style="width:60%;">
-<p>You’ll create a quiz &amp; answer for LLMs.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource toml number-lines code-with-copy"><code class="sourceCode toml"><span id="cb1-1"><a href=""></a><span class="kw">[[questions]]</span></span>
-<span id="cb1-2"><a href=""></a><span class="dt">question</span> <span class="op">=</span> <span class="st">"""</span></span>
-<span id="cb1-3"><a href=""></a><span class="st">    When is the global clustering not a</span></span>
-<span id="cb1-4"><a href=""></a><span class="st">    good representation of the network?</span></span>
-<span id="cb1-5"><a href=""></a><span class="st">    """</span></span>
-<span id="cb1-6"><a href=""></a><span class="dt">answer</span> <span class="op">=</span> <span class="st">"""</span></span>
-<span id="cb1-7"><a href=""></a><span class="st">    When the network is degree</span></span>
-<span id="cb1-8"><a href=""></a><span class="st">    heterogeneous. This is because</span></span>
-<span id="cb1-9"><a href=""></a><span class="st">    a single hub can create</span></span>
-<span id="cb1-10"><a href=""></a><span class="st">    substantially many triangles</span></span>
-<span id="cb1-11"><a href=""></a><span class="st">    in the network, not</span></span>
-<span id="cb1-12"><a href=""></a><span class="st">    representing the number of</span></span>
-<span id="cb1-13"><a href=""></a><span class="st">    triangles typical nodes</span></span>
-<span id="cb1-14"><a href=""></a><span class="st">    in the network form.</span></span>
-<span id="cb1-15"><a href=""></a><span class="st">    """</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div></div>
-</section>
-<section id="trap-6" class="slide level2">
-<h2>Trap #6</h2>
-<p><strong>Network of the Week</strong></p>
-<ul>
-<li><p>You’ll pick a paper on network science of your interest</p></li>
-<li><p>You’ll present the paper in the class</p>
-<ul>
-<li>roughly 10 minutes</li>
-<li>5 mins for Q&amp;A</li>
-</ul></li>
-<li><p>The instructor can help you find a paper</p></li>
-</ul>
-</section>
-<section id="grading-items" class="slide level2">
-<h2>Grading items</h2>
-<ul>
-<li>Quiz (10%)</li>
-<li>Network of the Week Presentation (10%)</li>
-<li>Assignments (20%)</li>
-<li>Exam (30%)</li>
-<li>Project (30%)</li>
-</ul>
-<ul>
-<li class="fragment">✨ Bonus (30%)
-<ul>
-<li class="fragment">10% bonus for the best project (one team)</li>
-<li class="fragment">10% for the excellent Network of the Week Presentation</li>
-<li class="fragment">10% bonus for excellent question-answer assignment</li>
-</ul></li>
-</ul>
-</section>
-<section id="exam" class="slide level2">
-<h2>Exam</h2>
-<ul>
-<li><strong>Final exam on all topics</strong></li>
-<li>During exam week (Dec 8-12)</li>
-<li>All multiple choice questions</li>
-<li>Take home exam</li>
-<li>Brightspace will be used for submission</li>
-</ul>
-</section>
-<section id="final-project" class="slide level2">
-<h2>Final Project 🎓</h2>
-<ul>
-<li>Individual project (30% of grade) 📊</li>
-<li>Timeline 📅
-<ul>
-<li>Proposal: Sept 30; Paper: Dec 5; Presentations: Dec 9</li>
-</ul></li>
-<li>Requirements 📋
-<ul>
-<li>About Network Science</li>
-<li>Develop a new method, new visualization, literature review, case study, etc.</li>
-</ul></li>
-</ul>
-</section>
-<section id="example-project-01" class="slide level2">
-<h2>Example Project 01</h2>
-<p>Analysing the network of scientific topics</p>
-
-<img data-src="sci-topic-net.png" class="r-stretch"></section>
-<section id="example-project-02" class="slide level2">
-<h2>Example Project 02</h2>
-<p>Correlation between the neural activities of the brain</p>
-
-<img data-src="ecog.png" class="r-stretch"></section>
-<section id="example-project-03" class="slide level2">
-<h2>Example Project 03</h2>
-<p>Tesla Supercharger Network</p>
-
-<img data-src="super-charger.png" class="r-stretch"></section></section>
-<section>
-<section id="lecture-note" class="title-slide slide level1 center">
-<h1>Lecture note</h1>
-<ul>
-<li>📚 <a href="https://skojaku.github.io/adv-net-sci">Online Lecture Note</a></li>
-<li>See <a href="https://github.com/skojaku/adv-net-sci/">The course GitHub repo</a> for details</li>
-</ul>
-</section>
-<section id="ai-tutor" class="slide level2">
-<h2>AI Tutor 🤖</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="minidora.png"></p>
-<p><strong>Minidora</strong>, an AI tutor for this course available 24/7 through Discord</p>
-</div><div class="column" style="width:50%;">
-<ul>
-<li>You can chat, ask questions, and take quizzes with Minidora.</li>
-<li>Sign up for the course on Discord to get access</li>
-<li>Demo: <code>/ask What is an Euler tour?</code></li>
-</ul>
-</div></div>
-</section>
-<section id="policy" class="slide level2">
-<h2>Policy</h2>
-<ul>
-<li>📚 3-credit course: 6.5+ hours of work/week outside class</li>
-<li>🤖 AI tools allowed for learning, but cite if used in assignments</li>
-<li>💾 Back up all data and code (loss not an excuse for late work)</li>
-<li>♿ Accommodations available for students with disabilities</li>
-<li>🚫 Zero tolerance for academic dishonesty</li>
-</ul>
-</section></section>
-<section>
-<section id="questions" class="title-slide slide level1 center">
-<h1>Questions?</h1>
-
-</section>
-<section id="module-01-königsberg-bridge-puzzle" class="slide level2">
-<h2>Module 01: Königsberg Bridge Puzzle</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Advanced Topics in Network Science</strong></p>
-<p>Sadamori Kojaku</p>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
-</div>
 </div></div>
 </section>
 <section id="the-königsberg-bridge-puzzle" class="slide level2">
@@ -827,25 +226,10 @@ Sadamori Kojaku
 </section>
 <section id="your-turn" class="slide level2">
 <h2>Your turn! 🧩</h2>
-<div title="Challenge:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Challenge:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Find a route that crosses each bridge exactly once</strong></p>
-</div>
-</div>
-</div>
-</div>
-<p><em>Take 10 mins - Think about your strategy through the pen &amp; paper exercise</em></p>
+<p>Find a route that crosses each bridge exactly once</p>
+<p>Take 10 mins - Think about your strategy through the pen &amp; paper exercise</p>
 <p><a href="http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">pen-and-paper worksheet</a></p>
-
-<img data-src="https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+</section>
 <section class="slide level2">
 
 <h3 id="eulers-revolutionary-approach">Euler’s Revolutionary Approach 🧠</h3>
@@ -865,15 +249,14 @@ Sadamori Kojaku
 </section>
 <section id="eulers-reasoning" class="slide level2">
 <h2>Euler’s Reasoning 🧮</h2>
-<p><strong>If you walk through a node, what happens?</strong></p>
-<p>You enter on one edge, leave on another…</p>
+<p>If you walk through a node, what happens?</p>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
-<li class="fragment"><strong>Even number of edges</strong>: Enter/leave perfectly ✅</li>
-<li class="fragment"><strong>Odd number</strong>: One edge “left over” ❌</li>
-<li class="fragment"><strong>Question:</strong> Where can those “leftover” edges be?</li>
-<li class="fragment"><em>Only at start/end points!</em></li>
+<li class="fragment">Even number of edges: Enter/leave perfectly ✅</li>
+<li class="fragment">Odd number: One edge “left over” ❌</li>
+<li class="fragment">Question: Where can those “leftover” edges be?</li>
+<li class="fragment">Only at start/end points!</li>
 </ul>
 </div><div class="column" style="width:60%;">
 <div class="cell" data-fig-width="6" data-fig-height="3" data-layout-align="center">
@@ -961,12 +344,10 @@ Sadamori Kojaku
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
-<li><strong>0 odd nodes</strong> → Euler circuit possible ✅</li>
-<li><strong>2 odd nodes</strong> → Euler path possible ✅</li>
-<li><strong>More than 2</strong> → ?</li>
+<li class="fragment">0 odd nodes → We can start and end at the same node while passing through all edges exactly once ✅</li>
+<li class="fragment">2 odd nodes → We can start and end at different nodes while passing through all edges exactly once ✅</li>
+<li class="fragment">More than 2 → Not possible to pass through all edges exactly once ❌</li>
 </ul>
-<p><strong>What does this mean for Königsberg?</strong></p>
-<p><em>What’s your verdict?</em></p>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-fig-width="4" data-fig-height="3" data-layout-align="center">
 <div class="cell-output-display">
@@ -1043,34 +424,35 @@ Sadamori Kojaku
 </div>
 </div>
 </div>
+<p><em>What’s your verdict?</em></p>
 </div></div>
 </section>
-<section id="eulers-path-theorem" class="slide level2">
-<h2>Euler’s Path Theorem 🏆</h2>
-<div title="Answer:">
+<section class="slide level2">
+
+<div title="Euler Path Theorem">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Answer:</strong></p>
+<p><strong>Euler Path Theorem</strong></p>
 </div>
 <div class="callout-content">
-<p>An Euler path exists if and only if:</p>
+<p><strong>An Euler path exists if and only if:</strong></p>
 <ol type="1">
-<li><p>Graph is connected, AND</p></li>
-<li><p>Either:</p>
+<li><strong>The graph is connected</strong> (can reach any node from any other)</li>
+<li><strong>Either:</strong>
 <ul>
-<li>All nodes have even degree</li>
-<li>Exactly two nodes have odd degree</li>
+<li>All nodes have even degree (Euler circuit), OR</li>
+<li>Exactly two nodes have odd degree (Euler path)</li>
 </ul></li>
 </ol>
-<p>Königsberg verdict: 4 odd-degree nodes → <strong>IMPOSSIBLE!</strong></p>
 </div>
 </div>
 </div>
 </div>
+<p><strong>Königsberg verdict:</strong> 4 odd-degree nodes → <strong>IMPOSSIBLE!</strong></p>
 </section>
 <section id="aftermath" class="slide level2">
 <h2>Aftermath</h2>
@@ -1104,7 +486,6 @@ Sadamori Kojaku
 </div>
 </div>
 </div>
-<p><em>Turn to your neighbor - give specific answers for 30 seconds</em></p>
 <div class="cell" data-fig-width="4" data-fig-height="3" data-layout-align="center">
 <div class="cell-output-display">
 <div>
@@ -1312,52 +693,19 @@ Sadamori Kojaku
 </section>
 <section id="network-connectivity" class="slide level2">
 <h2>Network Connectivity 🔗</h2>
-<p><strong>Context:</strong> We’ve learned about Euler’s theorem, but there’s a hidden assumption…</p>
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
 <p><strong>Look at Euler’s conditions again:</strong></p>
 <ol type="1">
-<li>The graph is <strong>connected</strong>, AND</li>
-<li>Either all nodes have even degree OR exactly two have odd degree</li>
+<li>Either all nodes have even degree OR exactly two have odd degree, and</li>
+<li>The graph is <span class="red-text">connected</span></li>
 </ol>
-<p><strong>What if the network is NOT connected?</strong></p>
-</div>
-</div>
-</div>
-</div>
+<p>What does “connected” mean?</p>
 </section>
 <section id="what-does-connected-really-mean" class="slide level2">
 <h2>What Does “Connected” Really Mean? 🤔</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
-<div title="Connected Network">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Connected Network</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Definition:</strong> A network is <strong>connected</strong> if there is a path between every pair of nodes.</p>
-</div>
-</div>
-</div>
-</div>
-<p><strong>Think about it:</strong> Your campus network</p>
-<ul>
-<li>Can you walk from any building to any other building? (Yes)</li>
-<li>What if construction blocks some walkways? (Maybe)</li>
-</ul>
+<p><strong>Definition:</strong> <span class="red-text">A network is <strong>connected</strong></span> if there is a path between every pair of nodes.</p>
+<p>Example: You can walk from any building to any other building if connected. A building is not connected if there is no route to it along the walkways.</p>
 </div><div class="column" style="width:40%;">
 <div class="cell" data-fig-width="4" data-fig-height="4" data-layout-align="center">
 <div class="cell-output-display">
@@ -1420,63 +768,28 @@ Sadamori Kojaku
 </div>
 </div>
 </div></div>
-<p><em>Connected: Can reach any node from any other</em></p>
 </section>
 <section id="connected-component" class="slide level2">
 <h2>Connected Component</h2>
-<div title="Connected Component">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Connected Component</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Definition:</strong> A connected component is a maximal set of nodes where every node can reach every other node within that set.</p>
-</div>
-</div>
-</div>
-</div>
+<p><strong>Definition:</strong> <span class="red-text">A connected component</span> is a maximal set of nodes where every node can reach every other node within that set.</p>
 
 <img data-src="./connected-component.jpg" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><p><em>Question: Is a single node a connected component?</em></p>
 </section>
-<section id="the-giant-component" class="slide level2">
-<h2>The Giant Component</h2>
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>In large real-world networks, what would you expect?</strong></p>
+<section class="slide level2">
+
+<p>In large real-world networks, what would you expect 🤔?</p>
 <ul>
 <li>Many tiny components of 2-3 nodes?</li>
 <li>One huge component containing most nodes?</li>
 <li>All components roughly equal size?</li>
 </ul>
-</div>
-</div>
-</div>
-</div>
 <ul>
-<li class="fragment"><strong>Giant component:</strong> The largest connected component</li>
-<li class="fragment"><strong>Contains:</strong> A significant fraction of all nodes in the network</li>
-<li class="fragment"><strong>Real examples:</strong>
-<ul>
-<li class="fragment">The “main” internet (billions of connected devices)</li>
-<li class="fragment">The largest friendship network on Facebook</li>
-<li class="fragment">The core scientific collaboration network</li>
-</ul></li>
+<li class="fragment">Many networks contain <span class="red-text">a giant component</span> that contains a significant fraction of all nodes in the network</li>
+<li class="fragment"><strong>Definition:</strong> <span class="red-text">A giant component</span> is a connected component where almost every node in the network is reachable from any other node in the component.</li>
 </ul>
 </section>
-<section id="directed-networks-two-types-of-connectivity" class="slide level2">
-<h2>Directed Networks: Two Types of Connectivity 🔄</h2>
+<section class="slide level2">
+
 <p><strong>Context:</strong> What if edges have direction? (Think Twitter follows, webpage links)</p>
 <div class="columns">
 <div class="column column-divider" style="width:45%;">
@@ -1586,76 +899,17 @@ Sadamori Kojaku
 </div></div>
 <p><strong>Question:</strong> Is every strongly connected component also weakly connected?</p>
 </section>
-<section id="why-connectivity-matters-for-euler" class="slide level2">
-<h2>Why Connectivity Matters for Euler 🌉</h2>
-<div title="Back to Königsberg:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Back to Königsberg:</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Why did Euler require the graph to be connected?</strong></p>
-</div>
-</div>
-</div>
-</div>
-<ul>
-<li><strong>If disconnected:</strong> You can’t reach all bridges from a single starting point</li>
-<li><strong>Euler path impossible:</strong> Can’t cross bridges you can’t reach</li>
-<li><strong>Component-wise analysis:</strong> Could have Euler paths within each component</li>
-<li><strong>Real insight:</strong> Connectivity is a prerequisite for Network Science</li>
-</ul>
-</section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="coding-networks-in-python" class="title-slide slide level1 center">
-<h1>Coding Networks in Python 💻</h1>
-
-</section>
-<section id="from-theory-to-implementation" class="slide level2">
-<h2>From Theory to Implementation 🔧</h2>
-<p>Given any network, how can we write a function to detect if it has an Euler path?</p>
-<p><em>Let’s implement Euler’s theorem!</em></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">def</span> has_euler_path(A):</span>
-<span id="cb2-2"><a href=""></a>    <span class="co">"""</span></span>
-<span id="cb2-3"><a href=""></a><span class="co">    Check if a graph has an Euler path based on node degrees.</span></span>
-<span id="cb2-4"><a href=""></a><span class="co">    A: network (adjacency matrix)</span></span>
-<span id="cb2-5"><a href=""></a><span class="co">    return: True if Euler path exists, False otherwise</span></span>
-<span id="cb2-6"><a href=""></a><span class="co">    """</span></span>
-<span id="cb2-7"><a href=""></a>    <span class="co"># Your turn to complete this!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="network-representations" class="slide level2">
-<h2>Network Representations 📊</h2>
-<p>How do we store networks in a computer?</p>
+<section id="coding-networks-in-python" class="slide level2">
+<h2>Coding Networks in Python 💻</h2>
+<p>Given any network, how would you represent it in a computer?</p>
 <div class="columns">
 <div class="column" style="width:60%;">
-<div title="Question:">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Question:</strong></p>
-</div>
-<div class="callout-content">
 <p>Three ways to represent the same network:</p>
 <ol type="1">
 <li><strong>Edge Table</strong> - List of connections</li>
 <li><strong>Adjacency List</strong> - Each node’s neighbors</li>
 <li><strong>Adjacency Matrix</strong> - Grid of 1s and 0s</li>
 </ol>
-<p>Which would be fastest for finding a node’s degree?</p>
-</div>
-</div>
-</div>
-</div>
 </div><div class="column" style="width:40%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1668,53 +922,62 @@ Sadamori Kojaku
 <section id="edge-table-the-direct-approach" class="slide level2">
 <h2>Edge Table: The Direct Approach 📋</h2>
 <p>Simply list every connection:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a>edges <span class="op">=</span> [</span>
-<span id="cb3-2"><a href=""></a>    (<span class="dv">0</span>, <span class="dv">1</span>),  <span class="co"># Node 0 connects to Node 1</span></span>
-<span id="cb3-3"><a href=""></a>    (<span class="dv">0</span>, <span class="dv">2</span>),  <span class="co"># Node 0 connects to Node 2</span></span>
-<span id="cb3-4"><a href=""></a>    (<span class="dv">1</span>, <span class="dv">2</span>),  <span class="co"># Node 1 connects to Node 2</span></span>
-<span id="cb3-5"><a href=""></a>    (<span class="dv">1</span>, <span class="dv">3</span>),  <span class="co"># Node 1 connects to Node 3</span></span>
-<span id="cb3-6"><a href=""></a>    (<span class="dv">2</span>, <span class="dv">4</span>),  <span class="co"># Node 2 connects to Node 4</span></span>
-<span id="cb3-7"><a href=""></a>    (<span class="dv">3</span>, <span class="dv">4</span>)   <span class="co"># Node 3 connects to Node 4</span></span>
-<span id="cb3-8"><a href=""></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><em>How would you count the degree of node 1 from this list?</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>edges <span class="op">=</span> [</span>
+<span id="cb1-2"><a href=""></a>    (<span class="dv">0</span>, <span class="dv">1</span>),  <span class="co"># Node 0 connects to Node 1</span></span>
+<span id="cb1-3"><a href=""></a>    (<span class="dv">0</span>, <span class="dv">2</span>),  <span class="co"># Node 0 connects to Node 2</span></span>
+<span id="cb1-4"><a href=""></a>    (<span class="dv">1</span>, <span class="dv">2</span>),  <span class="co"># Node 1 connects to Node 2</span></span>
+<span id="cb1-5"><a href=""></a>    (<span class="dv">1</span>, <span class="dv">3</span>),  <span class="co"># Node 1 connects to Node 3</span></span>
+<span id="cb1-6"><a href=""></a>    (<span class="dv">2</span>, <span class="dv">4</span>),  <span class="co"># Node 2 connects to Node 4</span></span>
+<span id="cb1-7"><a href=""></a>    (<span class="dv">3</span>, <span class="dv">4</span>)   <span class="co"># Node 3 connects to Node 4</span></span>
+<span id="cb1-8"><a href=""></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><em>How would you count the degree of node 1 from this list?</em></li>
+<li><em>How would you find the neighbors of node 1?</em></li>
+</ul>
 </section>
 <section id="adjacency-list-neighborhood-map" class="slide level2">
 <h2>Adjacency List: Neighborhood Map 🗺️</h2>
 <p>Each node knows its neighbors:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a>neighbors <span class="op">=</span> {</span>
-<span id="cb4-2"><a href=""></a>    <span class="dv">0</span>: [<span class="dv">1</span>, <span class="dv">2</span>],     <span class="co"># Node 0 connects to nodes 1,2</span></span>
-<span id="cb4-3"><a href=""></a>    <span class="dv">1</span>: [<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">3</span>],  <span class="co"># Node 1 connects to nodes 0,2,3</span></span>
-<span id="cb4-4"><a href=""></a>    <span class="dv">2</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>],  <span class="co"># Node 2 connects to nodes 0,1,4</span></span>
-<span id="cb4-5"><a href=""></a>    <span class="dv">3</span>: [<span class="dv">1</span>, <span class="dv">4</span>],     <span class="co"># Node 3 connects to nodes 1,4</span></span>
-<span id="cb4-6"><a href=""></a>    <span class="dv">4</span>: [<span class="dv">2</span>, <span class="dv">3</span>]      <span class="co"># Node 4 connects to nodes 2,3</span></span>
-<span id="cb4-7"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><em>How would you count the degree of node 1 from this list?</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a>neighbors <span class="op">=</span> {</span>
+<span id="cb2-2"><a href=""></a>    <span class="dv">0</span>: [<span class="dv">1</span>, <span class="dv">2</span>],     <span class="co"># Node 0 connects to nodes 1,2</span></span>
+<span id="cb2-3"><a href=""></a>    <span class="dv">1</span>: [<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">3</span>],  <span class="co"># Node 1 connects to nodes 0,2,3</span></span>
+<span id="cb2-4"><a href=""></a>    <span class="dv">2</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>],  <span class="co"># Node 2 connects to nodes 0,1,4</span></span>
+<span id="cb2-5"><a href=""></a>    <span class="dv">3</span>: [<span class="dv">1</span>, <span class="dv">4</span>],     <span class="co"># Node 3 connects to nodes 1,4</span></span>
+<span id="cb2-6"><a href=""></a>    <span class="dv">4</span>: [<span class="dv">2</span>, <span class="dv">3</span>]      <span class="co"># Node 4 connects to nodes 2,3</span></span>
+<span id="cb2-7"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><em>How would you count the degree of node 1 from this list?</em></li>
+<li><em>How would you find the neighbors of node 1?</em></li>
+</ul>
 </section>
 <section id="adjacency-matrix-the-math-way" class="slide level2">
 <h2>Adjacency Matrix: The Math Way 📐</h2>
 <p>Grid where entry <span class="math inline">\((i,j) = 1\)</span> if connected:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-2"><a href=""></a></span>
-<span id="cb5-3"><a href=""></a>matrix <span class="op">=</span> np.array([</span>
-<span id="cb5-4"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],  <span class="co"># Node 0: connects to 1,2</span></span>
-<span id="cb5-5"><a href=""></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>],  <span class="co"># Node 1: connects to 0,2,3</span></span>
-<span id="cb5-6"><a href=""></a>    [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>],  <span class="co"># Node 2: connects to 0,1,4</span></span>
-<span id="cb5-7"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>],  <span class="co"># Node 3: connects to 1,4</span></span>
-<span id="cb5-8"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]   <span class="co"># Node 4: connects to 2,3</span></span>
-<span id="cb5-9"><a href=""></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><em>How would you count the degree of node 1 from this list?</em></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href=""></a></span>
+<span id="cb3-3"><a href=""></a>matrix <span class="op">=</span> np.array([</span>
+<span id="cb3-4"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],  <span class="co"># Node 0: connects to 1,2</span></span>
+<span id="cb3-5"><a href=""></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>],  <span class="co"># Node 1: connects to 0,2,3</span></span>
+<span id="cb3-6"><a href=""></a>    [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>],  <span class="co"># Node 2: connects to 0,1,4</span></span>
+<span id="cb3-7"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>],  <span class="co"># Node 3: connects to 1,4</span></span>
+<span id="cb3-8"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]   <span class="co"># Node 4: connects to 2,3</span></span>
+<span id="cb3-9"><a href=""></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><em>How would you count the degree of node 1 from this matrix?</em></li>
+<li><em>How would you find the neighbors of node 1?</em></li>
+</ul>
 </section>
 <section id="implementing-eulers-theorem" class="slide level2">
 <h2>Implementing Euler’s Theorem 🧮</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="kw">def</span> has_euler_path(adjacency_matrix):</span>
-<span id="cb6-2"><a href=""></a>    <span class="co"># Calculate degrees</span></span>
-<span id="cb6-3"><a href=""></a>    degrees <span class="op">=</span> adjacency_matrix.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb6-4"><a href=""></a></span>
-<span id="cb6-5"><a href=""></a>    <span class="co"># Count odd degrees</span></span>
-<span id="cb6-6"><a href=""></a>    odd_count <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> d <span class="kw">in</span> degrees <span class="cf">if</span> d <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span>)</span>
-<span id="cb6-7"><a href=""></a></span>
-<span id="cb6-8"><a href=""></a>    <span class="co"># Euler's condition</span></span>
-<span id="cb6-9"><a href=""></a>    <span class="cf">return</span> odd_count <span class="op">==</span> <span class="dv">0</span> <span class="kw">or</span> odd_count <span class="op">==</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">def</span> has_euler_path(adjacency_matrix):</span>
+<span id="cb4-2"><a href=""></a>    <span class="co"># Calculate degrees</span></span>
+<span id="cb4-3"><a href=""></a>    degrees <span class="op">=</span> adjacency_matrix.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a>    <span class="co"># Count odd degrees</span></span>
+<span id="cb4-6"><a href=""></a>    odd_count <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> d <span class="kw">in</span> degrees <span class="cf">if</span> d <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb4-7"><a href=""></a></span>
+<span id="cb4-8"><a href=""></a>    <span class="co"># Euler's condition</span></span>
+<span id="cb4-9"><a href=""></a>    <span class="cf">return</span> odd_count <span class="op">==</span> <span class="dv">0</span> <span class="kw">or</span> odd_count <span class="op">==</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Do you agree with this?</em></p>
 </section>
 <section id="the-missing-piece-connectivity" class="slide level2">
@@ -1738,30 +1001,142 @@ Sadamori Kojaku
 </div>
 </div>
 </div>
-<p><strong>Problem:</strong> How do we check if a network is connected?</p>
-<p><em>Think about it… what algorithm could help?</em></p>
+</section></section>
+<section>
+<section id="module-01-review" class="title-slide slide level1 center">
+<h1>Module 01 Review 🎯</h1>
+
 </section>
 <section class="slide level2">
 
-<div class="columns">
-<div class="column" style="width:40%;">
-<p><strong>Depth-First Search (DFS) algorithm</strong></p>
-<p><img data-src="https://www3.cs.stonybrook.edu/~skiena/combinatorica/animations/anim/dfs.gif"></p>
-</div><div class="column" style="width:60%;">
-<ol type="1">
-<li>Start from any node.</li>
-<li>For each neighbor of the current node:
 <ul>
-<li>If the neighbor hasn’t been visited, visit it (mark as visited) and recursively explore its neighbors.</li>
+<li class="fragment"><strong>Euler’s legacy</strong> (1736)
+<ul>
+<li class="fragment">Abstraction over physical details</li>
+<li class="fragment">Focus on relationships <span class="math inline">\(\rightarrow\)</span> Birth of graph theory</li>
 </ul></li>
-<li>After exploring all neighbors, backtrack to the previous node.</li>
-<li>The process ends when all reachable nodes have been visited.</li>
-</ol>
-</div></div>
+<li class="fragment"><strong>Euler’s theorem</strong>
+<ul>
+<li class="fragment"><span class="red-text">Euler path</span> exists if and only if the graph is <span class="red-text">connected</span> and exactly 0 or 2 nodes have odd <span class="red-text">degree</span></li>
+</ul></li>
+<li class="fragment"><strong>Key concepts</strong>:
+<ul>
+<li class="fragment">Path, walk, trail, circuit, cycle</li>
+<li class="fragment">Connected component, giant component, degree</li>
+</ul></li>
+<li class="fragment"><strong>Computational Representation</strong>
+<ul>
+<li class="fragment">Edge table, adjacency list, adjacency matrix</li>
+</ul></li>
+</ul>
 </section>
 <section class="slide level2">
 
-<h3 id="question">Question?</h3>
+<ul>
+<li class="fragment"><strong>Walk</strong>
+<ul>
+<li class="fragment">Any sequence of connected nodes</li>
+</ul></li>
+<li class="fragment"><strong>Trail</strong>
+<ul>
+<li class="fragment">Walk without repeated edges</li>
+</ul></li>
+<li class="fragment"><strong>Path</strong>
+<ul>
+<li class="fragment">Walk without repeated nodes</li>
+</ul></li>
+<li class="fragment"><strong>Circuit/Cycle:</strong>
+<ul>
+<li class="fragment">Closed versions that return to start</li>
+</ul></li>
+<li class="fragment"><span class="blue-text">Is a path always a trail 🤔?</span>
+<ul>
+<li class="fragment"><span class="blue-text">Yes. Path does not repeat edges.</span></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li class="fragment"><strong>Connected</strong>
+<ul>
+<li class="fragment">A network where there is a path between every pair of nodes</li>
+</ul></li>
+<li class="fragment"><strong>Connected component</strong>
+<ul>
+<li class="fragment">A maximal set of nodes where every node can reach every other node within that set</li>
+</ul></li>
+<li class="fragment"><strong>Giant component</strong>
+<ul>
+<li class="fragment">A connected component where almost every node in the network is reachable from any other node in the component</li>
+</ul></li>
+<li class="fragment"><strong>Strongly connected</strong>
+<ul>
+<li class="fragment">A network where every node can reach every other node following edge directions</li>
+</ul></li>
+<li class="fragment"><strong>Weakly connected</strong>
+<ul>
+<li class="fragment">A network where there is a path between every pair of nodes ignoring edge directions</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li class="fragment"><strong>Euler path</strong>
+<ul>
+<li class="fragment">A path that visits each edge exactly once</li>
+</ul></li>
+<li class="fragment"><strong>Euler circuit</strong>
+<ul>
+<li class="fragment">An Euler path that starts and ends at the same node</li>
+</ul></li>
+<li class="fragment"><span class="blue-text">What is the condition for the existence of an Euler circuit?</span>
+<ul>
+<li class="fragment"><span class="blue-text">Graph is connected and all nodes have even degree.</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="representation-of-networks" class="slide level2">
+<h2>Representation of Networks</h2>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><strong>Edge Table</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a>edges <span class="op">=</span> [</span>
+<span id="cb5-2"><a href=""></a>    (<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb5-3"><a href=""></a>    (<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb5-4"><a href=""></a>    (<span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb5-5"><a href=""></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Best for:</em> Storage, I/O</p>
+</div><div class="column" style="width:33%;">
+<p><strong>Adjacency List</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a>neighbors <span class="op">=</span> {</span>
+<span id="cb6-2"><a href=""></a>    <span class="dv">0</span>: [<span class="dv">1</span>],</span>
+<span id="cb6-3"><a href=""></a>    <span class="dv">1</span>: [<span class="dv">0</span>, <span class="dv">2</span>],</span>
+<span id="cb6-4"><a href=""></a>    <span class="dv">2</span>: [<span class="dv">1</span>, <span class="dv">3</span>]</span>
+<span id="cb6-5"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Best for:</em> Neighbor search</p>
+</div><div class="column" style="width:33%;">
+<p><strong>Adjacency Matrix</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a>matrix <span class="op">=</span> np.array([</span>
+<span id="cb7-2"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb7-3"><a href=""></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb7-4"><a href=""></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb7-5"><a href=""></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Best for:</em> Math operations</p>
+</div></div>
+<p><strong>My recommendation:</strong></p>
+<p>Use edge table for saving the network data. Use (sparse) adjacency matrices for analysis.</p>
+</section>
+<section id="coming-up-in-module-02" class="slide level2">
+<h2>Coming up in Module 02:</h2>
+<p><strong>Small world networks</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="https://arc-anglerfish-arc2-prod-bostonglobe.s3.amazonaws.com/public/KAFMHCBENYI6HMSJRGIHNL55SU.jpg"></p>
+</div><div class="column" style="width:50%;">
+<p>Almost all 8 billion people on the planet are your friends of friends of friends of friends of friends of friends.</p>
+</div></div>
 
 </section></section>
     </div>

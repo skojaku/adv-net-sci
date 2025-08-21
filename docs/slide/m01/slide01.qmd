@@ -1,6 +1,4 @@
 ---
-title: "M01: Introduction & Seven Bridges of Königsberg"
-author: "Sadamori Kojaku"
 format:
   revealjs:
     slide-number: true
@@ -12,14 +10,8 @@ format:
 highlight-style: github
 ---
 
-# Check list
+# Module 01: Königsberg Bridge Puzzle
 
-- [ ] Microphone turned on
-- [ ] Zoom room open
-- [ ] MyBinder launched
-- [ ] Sound Volume on
-
-# Introduction
 :::: {.columns}
 
 ::: {.column width="50%"}
@@ -38,677 +30,6 @@ skojaku@binghamton.edu
 :::
 
 ::::
-
-
-
-## Enginet
-
-![](../enginet-intro-slide/enginet-01.png)
-
-## Enginet
-
-![](../enginet-intro-slide/enginet-02.png)
-
-## Enginet
-
-![](../enginet-intro-slide/enginet-03.png)
-
-## Course Overview
-
-- **Instructor:** Sadamori Kojaku (幸若完壮)
-- **Email:** skojaku@binghamton.edu
-- **Office Hours:** Monday 10:00-14:00
-- **Course Website:** [https://skojaku.github.io/adv-net-sci](https://skojaku.github.io/adv-net-sci)
-
-
-## Let's start with a story... 🦠
-
-::: {.callout-note title = "Question:"}
-
-2009: H1N1 pandemic spreads globally
-
-Do you remember which countries were infected first and second?
-
-:::
-
-Think about it... discuss with your neighbor for 30 seconds
-
-::: {.incremental}
-
-- **Your predictions:**
-
-  - Geographic distance matters?
-  - Nearby countries first?
-  - Then spreading outward in circles?
-
-- *Let's hear some thoughts...*
-
-:::
-
-## Answer
-
-::: {.callout-tip title = "Answer:"}
-
-- First: United States
-
-- Second: **Spain**
-
-:::
-
-## Here's what actually happened...
-
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
-
-**Question:** What do you notice? Does this match your prediction?
-
----
-
-**Key insight:** Network structure (air travel) determined spread, not geography!
-
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
-
-
-## Quick Exercise: Spot the Networks! 👀
-
-::: {.callout-note title = "Challenge:"}
-**Look around you right now...**
-
-What networks do you interact with daily?
-
-*Take 1 minute - list as many networks as you can*
-:::
-
-## Let's Share! 🗣️
-
-**What did you come up with?**
-
-*I'll collect a few examples from the class...*
-
-## Here Are Some You Might Have Missed:
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Plant-Pollinator Networks** 🌼
-
-![](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png){width=90% fig-align="center"}
-
-**Question:** How is this a network? What are the connections?
-
-:::
-
-::: {.column width="50%"}
-
-**Your Brain Right Now!** 🧠
-
-![](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp){width=90% fig-align="center"}
-
-*As you're listening, billions of neurons are connecting...*
-
-:::
-
-::::
-
-## Social Networks (Obviously!) 📱
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-![](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png){width=100% fig-align="center"}
-
-:::
-
-::: {.column width="50%"}
-
-::: {.callout-note title = "Question:"}
-**How do ideas spread through social networks?**
-
-Same as diseases? Different?
-:::
-
-*Turn to your neighbor - what do you think?*
-
-:::
-
-::::
-
-## How Did You Get to Class Today? 🚗
-
-![](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png){width=80% fig-align="center"}
-
-**Transportation networks shape our daily choices!**
-
-## Wait - Isn't This Just Graph Theory? 🤔
-
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**What do you notice about this pattern?**
-
-:::
-
-::: {.column width="50%"}
-
-![](https://mathworld.wolfram.com/images/eps-svg/DistanceRegularCubic_800.svg)
-
-:::
-
-::::
-
-
-## Real-World Networks Look Like This:
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-![](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png){width=100% fig-align="center"}
-
-:::
-
-::: {.column width="40%"}
-
-::: {.callout-note title = "Question:"}
-**What's different here?**
-
-Why does this "messiness" matter?
-:::
-
-*Question - what makes real networks "messy"?*
-
-:::
-
-::::
-
----
-
-### The Dawn of Network Science
-
-## Thales: Everything is Water 💧
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Thales of Miletus** (624-546 BCE) asked: *What is the fundamental substance of everything?*
-
-His bold answer: **"Everything is made of water"**
-
-- Water is essential for life
-- Can change forms (liquid, solid, vapor)
-- Found everywhere in nature
-
-
-:::
-
-::: {.column width="50%"}
-
-![](https://classicalliberalarts.com/wp-content/uploads/thales-edited.jpg)
-
-:::
-
-::::
-
-**Key insight:** Look for the *fundamental substance* that explains everything
-
-## Pythagoras: All is Number 🔢
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Pythagoras** (570-495 BCE) revolutionized thinking: *"All is number"*
-
-- Musical harmony comes from simple numerical ratios
-- Mathematical **relationships** are the key to reality
-
-:::
-
-::: {.column width="50%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Kapitolinischer_Pythagoras_adjusted.jpg/640px-Kapitolinischer_Pythagoras_adjusted.jpg){width=80% fig-align="center"}
-
-:::
-
-::::
-
-## Democritos: Everything is Atoms ⚛️
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Democritos** (460-370 BCE) proposed: *"Everything is made of atoms"*
-
-- All matter consists of tiny, indivisible particles
-- Atoms combine in different ways to create everything
-- **Reductionist** philosophy: understand the whole by understanding the parts
-
-
-:::
-
-::: {.column width="50%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Unknown_greek_pushkin.jpg/640px-Unknown_greek_pushkin.jpg){width=80% fig-align="center"}
-
-:::
-
-::::
-
-*Break complex systems down to their *fundamental components*
-
-## Descartes: Divide and Conquer 🧠
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**René Descartes** (1596-1650): *"Divide each problem into as many parts as possible"*
-
-- Seek fundamental set of principles that one can know as true without any doubt.
-
-- Methodological skepticism: Rejects any ideas that can be doubted and then re-establishes them.
-
-
-:::
-
-::: {.column width="50%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Frans_Hals_-_Portret_van_René_Descartes.jpg/640px-Frans_Hals_-_Portret_van_René_Descartes.jpg){width=80% fig-align="center"}
-
-:::
-
-::::
-
-**Key insight:** *Systematic decomposition* leads to understanding
-
-
-## The Reductionist Approach 🧩
-
-:::: {.columns}
-
-::: {.column width="40%"}
-
-*Break it down → Understand parts → Reassemble*
-
-**When does this work well?**
-
-*This works well. Does it?*
-
-:::
-
-::: {.column width="60%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg){width=80% fig-align="center"}
-
-*Vaucanson's 18th century Digesting Duck - the reductionist dream!*
-
-:::
-
-::::
-
-## Thought Experiment 🤔
-
-:::: {.columns}
-
-::: {.column width="70%"}
-
-Imagine you're an Alien scientist (like von Neumann!) studying humans...
-
-You understand every single neuron in the human brain perfectly.
-
-*Can we say we understand human consciousness? Why?*
-
-:::
-
-::: {.column width="30%"}
-
-![](https://upload.wikimedia.org/wikipedia/commons/5/5e/JohnvonNeumann-LosAlamos.gif){width=50% fig-align="center"}
-
-:::
-
-::::
-
-## The Missing Piece 🧩
-
-**The whole > sum of its parts**
-
-
-- You can know every neuron
-  - *but not predict consciousness*
-- You can study every person
-  - *but not understand social movements*
-- You can analyze every computer
-  - *but not explain the internet*
-
-...because [parts do not operate in isolation but work together in tandem]{.red-text}
-
----
-
-### About this course
-
-## Course Objectives
-
-:::: {.columns}
-
-::: {.column width="40%"}
-
-We will:
-
-- 🔍 Analyze networks
-- 🧠 Learn key concepts
-- 🤖 Apply AI to networks
-
-:::
-
-
-::: {.column width="60%"}
-
-After this course, you'll be able to:
-
-- 📖 Understand network science papers
-- 🛠️ Do advanced network analysis
-- 📝 Design network research
-- 🔗 Connect Systems Science and networks
-
-:::
-
-::::
-
----
-
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-### Core Learning Philosophy
-
-- Learning by doing
-
-
-- *Doing it wrong, and learning from it!*
-
-- There are many traps to make you fail!
-(not in the sense of failing the course)
-
-
-:::
-
-::: {.column width="50%"}
-
-![](https://media1.tenor.com/m/-LDi5jsgk_8AAAAd/bruce-lee-dont-think.gif){width=70% fig-align="center" style="display:block; margin-left:auto; margin-right:auto;"}
-
-![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_NZxWrYf1VvFyG5we1DtkTZOkbsVkbUFtAg&s){width=80% fig-align="center"}
-
-:::
-
-::::
-
-
-## Trap \#1
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-**Pen & Paper Exercise**
-
-All modules start with an in-class pen & paper exercise.
-
-- Bring your pen to class
-- You solve it by yourself
-- Then, discuss with your mates
-
-:::
-
-::: {.column width="40%"}
-
-![](https://static1.xdaimages.com/wordpress/wp-content/uploads/wm/2024/09/why-i-use-pen-and-paper-with-note-taking-apps.jpg)
-
-:::
-
-::::
-
-## Trap \#2
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-**Interactive Visualization**
-
-Most modules have an interactive game to play
-
-- Wining the game requires Network Science knowledge
-- You don't have the knowledge initially but play the game
-- You will learn Network Science by learning how to win the game
-
-:::
-
-::: {.column width="40%"}
-
-Link: [Vaccination Game](https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html)
-
-<iframe src="https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html" width="100%" height="500" frameborder="0"></iframe>
-
-:::
-
-::::
-
-## Trap \#3
-
-**Weekly Quiz**
-
-Every class begins with a weekly quiz to review the previous week's topics.
-
-- Written quiz
-- Only few questions
-- Graded and reviewed during the class
-- You can resubmit the quiz (one time)
-- (Enginet students will submit via Brightspace)
-
-## Trap \#4
-
-:::: {.columns}
-
-::: {.column width="60%"}
-
-**Assignment**
-
-- Most modules have coding assignments
-
-- Distributed via GitHub Classroom
-
-- Unlimited attempts until deadline
-
-- Autograded
-
-
-:::
-
-::: {.column width="40%"}
-
-
-
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTDkP2xHhQHiAYDwy6k1KJ2HuQ6JoanN91Atdp9Wbfq8_1zvX2VKOx07xvLru4HvekNEzYC_WoUINRy/pubembed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-
-We'll cover assignment submission in class. Find the detailed instruction on the lecture note.
-:::
-
-::::
-
-## Trap \#5
-
-:::: {.columns}
-
-::: {.column width="40%"}
-
-**LLM Dojo**
-
-
-- You'll create challenging questions for LLMs.
-
-- You'll win if you can create one that stumps LLMs.
-
-- Every module has a LLM Dojo exercise
-
-- Collected & Graded on GitHub
-
-:::
-
-::: {.column width="60%"}
-
-You'll create a quiz & answer for LLMs.
-
-```toml
-[[questions]]
-question = """
-    When is the global clustering not a
-    good representation of the network?
-    """
-answer = """
-    When the network is degree
-    heterogeneous. This is because
-    a single hub can create
-    substantially many triangles
-    in the network, not
-    representing the number of
-    triangles typical nodes
-    in the network form.
-    """
-```
-
-:::
-
-::::
-
-## Trap \#6
-
-**Network of the Week**
-
-- You'll pick a paper on network science of your interest
-
-- You'll present the paper in the class
-  - roughly 10 minutes
-  - 5 mins for Q&A
-
-- The instructor can help you find a paper
-
-## Grading items
-
-- Quiz (10%)
-- Network of the Week Presentation (10%)
-- Assignments (20%)
-- Exam (30%)
-- Project (30%)
-
-::: {.incremental}
-- ✨ Bonus (30%)
-  - 10% bonus for the best project (one team)
-  - 10% for the excellent Network of the Week Presentation
-  - 10% bonus for excellent question-answer assignment
-:::
-
-## Exam
-
-- **Final exam on all topics**
-- During exam week (Dec 8-12)
-- All multiple choice questions
-- Take home exam
-- Brightspace will be used for submission
-
-## Final Project 🎓
-
-- Individual project (30% of grade) 📊
-- Timeline 📅
-  - Proposal: Sept 30; Paper: Dec 5; Presentations: Dec 9
-
-- Requirements 📋
-  - About Network Science
-  - Develop a new method, new visualization, literature review, case study, etc.
-
-## Example Project 01
-
-Analysing the network of scientific topics
-
-![](sci-topic-net.png)
-
-
-## Example Project 02
-
-Correlation between the neural activities of the brain
-
-![](ecog.png)
-
-## Example Project 03
-
-Tesla Supercharger Network
-
-![](super-charger.png)
-
-# Lecture note
-
-- 📚 [Online Lecture Note](https://skojaku.github.io/adv-net-sci)
-- See [The course GitHub repo](https://github.com/skojaku/adv-net-sci/) for details
-
-## AI Tutor 🤖
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-
-![](minidora.png)
-
-**Minidora**, an AI tutor for this course available 24/7 through Discord
-
-
-:::
-
-::: {.column width="50%"}
-
-- You can chat, ask questions, and take quizzes with Minidora.
-- Sign up for the course on Discord to get access
-- Demo: `/ask What is an Euler tour?`
-
-:::
-
-::::
-
-## Policy
-
-- 📚 3-credit course: 6.5+ hours of work/week outside class
-- 🤖 AI tools allowed for learning, but cite if used in assignments
-- 💾 Back up all data and code (loss not an excuse for late work)
-- ♿ Accommodations available for students with disabilities
-- 🚫 Zero tolerance for academic dishonesty
-
-# Questions?
-
-## Module 01: Königsberg Bridge Puzzle
-
-:::: {.columns}
-
-::: {.column width="50%"}
-**Advanced Topics in Network Science**
-
-Sadamori Kojaku
-
-:::
-
-::: {.column width="50%"}
-
-![](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){width=100% fig-align="center"}
-
-:::
-
-::::
-
 
 ## The Königsberg Bridge Puzzle 🌉
 
@@ -731,15 +52,11 @@ Sadamori Kojaku
 
 ## Your turn! 🧩
 
-::: {.callout-note title = "Challenge:"}
-**Find a route that crosses each bridge exactly once**
-:::
+Find a route that crosses each bridge exactly once
 
-*Take 10 mins - Think about your strategy through the pen & paper exercise*
+Take 10 mins - Think about your strategy through the pen & paper exercise
 
 [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)
-
-![](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){width=100% fig-align="center"}
 
 ---
 
@@ -766,19 +83,17 @@ What do you see in this transformation?
 
 ## Euler's Reasoning 🧮
 
-**If you walk through a node, what happens?**
-
-You enter on one edge, leave on another...
+If you walk through a node, what happens?
 
 :::: {.columns}
 
 ::: {.column width="40%"}
 
 ::: {.incremental}
-- **Even number of edges**: Enter/leave perfectly ✅
-- **Odd number**: One edge "left over" ❌
-- **Question:** Where can those "leftover" edges be?
-- *Only at start/end points!*
+- Even number of edges: Enter/leave perfectly ✅
+- Odd number: One edge "left over" ❌
+- Question: Where can those "leftover" edges be?
+- Only at start/end points!
 :::
 
 :::
@@ -829,14 +144,12 @@ Euler's theorem says:
 ::: {.column width="50%"}
 
 
+::: {.incremental}
+- 0 odd nodes → We can start and end at the same node while passing through all edges exactly once ✅
+- 2 odd nodes → We can start and end at different nodes while passing through all edges exactly once ✅
+- More than 2 → Not possible to pass through all edges exactly once ❌
+:::
 
-- **0 odd nodes** → Euler circuit possible ✅
-- **2 odd nodes** → Euler path possible ✅
-- **More than 2** → ?
-
-**What does this mean for Königsberg?**
-
-*What's your verdict?*
 
 :::
 
@@ -869,24 +182,24 @@ graph Konigsberg {
 }
 ```
 
+*What's your verdict?*
 :::
 
 ::::
 
+---
 
-## Euler's Path Theorem 🏆
+::: {.callout-tip title = "Euler Path Theorem"}
+**An Euler path exists if and only if:**
 
-::: {.callout-tip title = "Answer:"}
-An Euler path exists if and only if:
+1. **The graph is connected** (can reach any node from any other)
+2. **Either:**
+   - All nodes have even degree (Euler circuit), OR
+   - Exactly two nodes have odd degree (Euler path)
 
-1. Graph is connected, AND
-
-2. Either:
-   - All nodes have even degree
-   - Exactly two nodes have odd degree
-
-Königsberg verdict: 4 odd-degree nodes → **IMPOSSIBLE!**
 :::
+
+**Königsberg verdict:** 4 odd-degree nodes → **IMPOSSIBLE!**
 
 ## Aftermath
 
@@ -919,8 +232,6 @@ Now, let's also add a new condition: *[Return to the starting point]{.red-text}.
 How does this change the condition for the possibility?
 
 :::
-
-*Turn to your neighbor - give specific answers for 30 seconds*
 
 ```{dot}
 //| fig-width: 4
@@ -1035,17 +346,12 @@ What are the real-world examples of the paths and trails?
 
 ## Network Connectivity 🔗
 
-**Context:** We've learned about Euler's theorem, but there's a hidden assumption...
-
-::: {.callout-note title = "Question:"}
 **Look at Euler's conditions again:**
 
-1. The graph is **connected**, AND
-2. Either all nodes have even degree OR exactly two have odd degree
+1. Either all nodes have even degree OR exactly two have odd degree, and
+2. The graph is [connected]{.red-text}
 
-**What if the network is NOT connected?**
-:::
-
+What does "connected" mean?
 
 ## What Does "Connected" Really Mean? 🤔
 
@@ -1053,14 +359,10 @@ What are the real-world examples of the paths and trails?
 
 ::: {.column width="60%"}
 
-::: {.callout-tip title = "Connected Network"}
-**Definition:** A network is **connected** if there is a path between every pair of nodes.
-:::
+**Definition:** [A network is **connected**]{.red-text} if there is a path between every pair of nodes.
 
-**Think about it:** Your campus network
-
-- Can you walk from any building to any other building? (Yes)
-- What if construction blocks some walkways? (Maybe)
+Example:
+You can walk from any building to any other building if connected. A building is not connected if there is no route to it along the walkways.
 
 :::
 
@@ -1091,35 +393,31 @@ graph Connected {
 
 ::::
 
-*Connected: Can reach any node from any other*
-
 ## Connected Component
 
-::: {.callout-tip title = "Connected Component"}
 
-**Definition:** A connected component is a maximal set of nodes where every node can reach every other node within that set.
+**Definition:** [A connected component]{.red-text} is a maximal set of nodes where every node can reach every other node within that set.
 
-:::
 
 ![](./connected-component.jpg){width=100% fig-align="center"}
 
 
 *Question: Is a single node a connected component?*
 
-## The Giant Component
+---
 
-::: {.callout-note title = "Question:"}
-**In large real-world networks, what would you expect?**
+In large real-world networks, what would you expect 🤔?
 
 - Many tiny components of 2-3 nodes?
 - One huge component containing most nodes?
 - All components roughly equal size?
-:::
+
 
 ::: {.incremental}
-- **Giant component:** The largest connected component
-- **Contains:** A significant fraction of all nodes in the network
+- Many networks contain [a giant component]{.red-text} that contains a significant fraction of all nodes in the network
+- **Definition:** [A giant component]{.red-text} is a connected component where almost every node in the network is reachable from any other node in the component.
 :::
+
 
 ---
 
@@ -1176,31 +474,9 @@ digraph Weak {
 
 **Question:** Is every strongly connected component also weakly connected?
 
-# Coding Networks in Python 💻
+## Coding Networks in Python 💻
 
-## From Theory to Implementation 🔧
-
-Given any network, how can we write a function to detect if it has an Euler path?
-
-*Let's implement Euler's theorem!*
-
-```python
-def has_euler_path(A):
-    """
-    Check if a graph has an Euler path based on node degrees.
-    A: network (adjacency matrix)
-    return: True if Euler path exists, False otherwise
-    """
-    # Your turn to complete this!
-```
-
-## Network Representations 📊
-
-::: {.callout-note title = "Question:"}
-
-How do we store networks in a computer?
-
-:::
+Given any network, how would you represent it in a computer?
 
 :::: {.columns}
 
@@ -1209,11 +485,9 @@ How do we store networks in a computer?
 
 Three ways to represent the same network:
 
-::: {.incremental}
 1. **Edge Table** - List of connections
 2. **Adjacency List** - Each node's neighbors
 3. **Adjacency Matrix** - Grid of 1s and 0s
-:::
 
 :::
 
@@ -1307,115 +581,68 @@ An Euler path exists if and only if:
 
 :::
 
-*Think about it... what algorithm could help?*
+# Module 01 Review 🎯
+
 
 ---
 
-# Module 01 Review 🎯
-
-## What We Discovered Today 🔍
-
-::: {.callout-note title = "From Sunday Stroll to Network Science:"}
-**The journey from Königsberg bridges to modern network analysis**
+::: {.incremental}
+- **Euler's legacy** (1736)
+  - Abstraction over physical details
+  - Focus on relationships $\rightarrow$ Birth of graph theory
+- **Euler's theorem**
+  - [Euler path]{.red-text} exists if and only if the graph is [connected]{.red-text} and exactly 0 or 2 nodes have odd [degree]{.red-text}
+- **Key concepts**:
+  - Path, walk, trail, circuit, cycle
+  - Connected component, giant component, degree
+- **Computational Representation**
+  - Edge table, adjacency list, adjacency matrix
 :::
 
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Historical Evolution:**
-- Ancient philosophy → Modern reductionism
-- **The breakthrough:** The whole > sum of its parts
-- Connections matter more than components
-
-:::
-
-::: {.column width="50%"}
-
-**Euler's Legacy:**
-- Mathematical abstraction over physical details
-- Degree-based reasoning
-- Birth of graph theory (1736)
-
-:::
-
-::::
-
-## Core Concepts: Paths, Walks, and Trails 🚶‍♂️
-
-::: {.callout-note title = "Quick Check:"}
-**Can you define these without looking at your notes?**
-:::
-
-:::: {.columns}
-
-::: {.column width="33%"}
-
-**Walk**
-- Any sequence of connected nodes
-- Can repeat nodes and edges
-- Most permissive
-
-:::
-
-::: {.column width="33%"}
-
-**Trail**
-- Walk without repeated edges
-- Can repeat nodes
-- Like mail carrier route
-
-:::
-
-::: {.column width="33%"}
-
-**Path**
-- Walk without repeated nodes
-- Most restrictive
-- Travel itinerary
-
-:::
-
-::::
-
-**Circuit/Cycle:** Closed versions that return to start
-
-## Euler's Theorem: The Complete Story ⚖️
-
-::: {.callout-tip title = "Euler Path Theorem"}
-**An Euler path exists if and only if:**
-
-1. **The graph is connected** (can reach any node from any other)
-2. **Either:**
-   - All nodes have even degree (Euler circuit), OR
-   - Exactly two nodes have odd degree (Euler path)
-:::
-
-::: {.callout-note title = "Question:"}
-**Why did Königsberg fail this test?**
-:::
+---
 
 ::: {.incremental}
-- **Answer:** Four nodes with odd degree (3 bridges each)
-- **Required:** Maximum of two odd-degree nodes
+- **Walk**
+  - Any sequence of connected nodes
+- **Trail**
+  - Walk without repeated edges
+- **Path**
+  - Walk without repeated nodes
+- **Circuit/Cycle:**
+  - Closed versions that return to start
+- [Is a path always a trail 🤔?]{.blue-text}
+  - [Yes. Path does not repeat edges.]{.blue-text}
 :::
 
-## Network Connectivity: More Than Just Connected 🔗
+---
 
-**Undirected Networks:**
-- **Connected:** Path exists between every pair of nodes
-- **Connected component:** Maximal set of mutually reachable nodes
-- **Giant component:** Largest component containing significant fraction of nodes
-
-**Directed Networks:**
-- **Strongly connected:** Can reach any node from any other following directions
-- **Weakly connected:** Connected if we ignore edge directions
-
-::: {.callout-note title = "Think:"}
-**Is every strongly connected component also weakly connected?**
+::: {.incremental}
+- **Connected**
+  - A network where there is a path between every pair of nodes
+- **Connected component**
+  - A maximal set of nodes where every node can reach every other node within that set
+- **Giant component**
+  - A connected component where almost every node in the network is reachable from any other node in the component
+- **Strongly connected**
+  - A network where every node can reach every other node following edge directions
+- **Weakly connected**
+  - A network where there is a path between every pair of nodes ignoring edge directions
 :::
 
-## Computational Skills: Three Representations 💻
+---
+
+::: {.incremental}
+- **Euler path**
+  - A path that visits each edge exactly once
+- **Euler circuit**
+  - An Euler path that starts and ends at the same node
+- [What is the condition for the existence of an Euler circuit?]{.blue-text}
+  - [Graph is connected and all nodes have even degree.]{.blue-text}
+:::
+
+---
+
+## Representation of Networks
 
 :::: {.columns}
 
@@ -1443,7 +670,7 @@ neighbors = {
     2: [1, 3]
 }
 ```
-*Best for:* Algorithms
+*Best for:* Neighbor search
 
 :::
 
@@ -1463,83 +690,27 @@ matrix = np.array([
 
 ::::
 
-**Key insight:** Choose representation based on your computational needs!
+**My recommendation:**
 
-## Algorithm Toolbox 🛠️
+Use edge table for saving the network data. Use (sparse) adjacency matrices for analysis.
 
-**What you can now implement:**
+## Coming up in Module 02:
 
-::: {.incremental}
-1. **Calculate node degrees** efficiently using NumPy
-2. **Verify walks, trails, and paths** with robust edge checking
-3. **Find connected components** using depth-first search
-4. **Check for Euler paths** with complete connectivity + degree analysis
-5. **Analyze network structure** systematically
-:::
+**Small world networks**
 
-**Performance lesson:** Vectorized operations >> loops!
-
-## The Big Picture: Why This Matters 🌍
-
-**From Königsberg to Today:**
-
-:::: {.columns}
+::: {.columns}
 
 ::: {.column width="50%"}
 
-**1736: Euler's insight**
-- Abstraction over physical details
-- Focus on relationships
-- Mathematical proof over trial-and-error
+![](https://arc-anglerfish-arc2-prod-bostonglobe.s3.amazonaws.com/public/KAFMHCBENYI6HMSJRGIHNL55SU.jpg)
 
 :::
+
 
 ::: {.column width="50%"}
 
-**2024: Modern applications**
-- GPS navigation algorithms
-- Social media analysis
-- Brain connectivity mapping
-- Internet routing protocols
+Almost all 8 billion people on the planet are your friends of friends of friends of friends of friends of friends.
 
 :::
 
-::::
-
-**Same principles, infinite applications!**
-
-## Next Week Preview 🔮
-
-**Coming up in Module 02:**
-
-::: {.incremental}
-- **More network properties:** Clustering, centrality, small worlds
-- **Real-world networks:** Why do they look so different from random?
-- **The friendship paradox:** Your friends are more popular than you!
-- **Interactive visualization:** Can you spot network patterns?
 :::
-
-**Preparation:** Review today's coding exercises and practice with NetworkX!
-
-## Final Challenge 🏆
-
-::: {.callout-note title = "Before You Leave:"}
-**Can you now explain to a friend:**
-
-1. Why the Königsberg bridge problem was impossible?
-2. What makes network science different from reductionism?
-3. How to represent any network in Python three different ways?
-4. When an Euler path exists in any given network?
-:::
-
-**If yes → You've mastered Module 01! 🎉**
-
-**If no → Review the concepts that feel unclear**
-
----
-
-## Questions? 🤔
-
-**Next class:** Weekly quiz + Module 02 kickoff!
-
-**Remember:** Bring pen and paper for hands-on exercises!
