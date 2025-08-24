@@ -1,8 +1,11 @@
-# Module 5: Clustering Concepts
+---
+title: "Core Concepts"
+---
 
 ## What to learn in this module
 
 In this module, we will learn community detection, one of the most widely-used yet controversial techniques in network analysis. We will learn:
+
 - What is community structure in networks?
 - How to operationalize community structure?
 - How to find communities in networks?
@@ -26,7 +29,7 @@ Communities reflect underlying mechanisms of network formation and underpin the 
 3. Hierarchical structure: Smaller communities existing within larger ones.
 4. Information flow: The patterns of information, influence, or disease propagation through the network.
 
-This is why network scientists are sooo obsessed with community structure in networks. See {footcite}`fortunato2010community,fortunato2016community,peixoto2019bayesian` for comprehensive reviews on network communities.
+This is why network scientists are sooo obsessed with community structure in networks. See [@fortunato2010community], [@fortunato2016community], [@peixoto2019bayesian] for comprehensive reviews on network communities.
 
 ## Pattern matching approach
 
@@ -43,19 +46,278 @@ Cliques of different sizes. Taken from [https://pythonhosted.org/trustedanalytic
 
 Perhaps, the strictest definition of a community is a *clique*: a group of nodes all connected to each other. Examples include triangles (3-node cliques) and fully-connected squares (4-node cliques). However, cliques are often too rigid for real-world networks. In social networks, for instance, large groups of friends rarely have every member connected to every other, yet we want to accept such "in-perfect" social circles as communities. This leads to the idea of relaxed versions of cliques, called **pseudo-cliques**.
 
-Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness:
+Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness, i.e., degree, density, and distance. We will walk through each of them in details as follows.
 
-1. Degree: Not all nodes need to connect to every other node.
-   - **$k$-plex**: each node connects to all but $k$ others in the group {footcite}`seidman1978graph`.
-   - **$k$-core**: each node connects to $k$ others in the group {footcite}`seidman1983network`.
-2. Density: The overall connection density can be lower.
-   - **$\rho$-dense subgraphs**, with a minimum edge density of $\rho$ {footcite}`goldberg1984finding`.
-3. Distance: Nodes can be further apart.
-   - **$n$-clique**, where all nodes are within n steps of each other {footcite}`luce1950connectivity`.
-4. Combination of the above:
-   - **n-clan** and **n-club** {footcite}`mokken1979cliques`
-   - **$k$-truss**, a maximal subgraph where all edges participate in at least $k-2$ triangles {footcite}`saito2008extracting,cohen2009graph,wang2010triangulation`.
-   - **$\rho$-dense core**, a subgraph with minimum conductance $\rho$ {footcite}`koujaku2016dense`.
+### Degree relaxation
+Degree relaxation acknowledges that real-world groups rarely have perfect connectivity among all members. The *k-plex* [@seidman1978graph] is a classic example: it allows each node in a group to miss connections to up to $k$ other members, making it possible to model social circles where not everyone knows everyone else. Similarly, the **k-core** [@seidman1983network] requires each node to have at least $k$ connections within the group, capturing the idea of a "core" of well-connected individuals. These approaches reflect the reality that cohesive groups can exist even when some connections are missing, and they help distinguish between core and peripheral members in a network.
+
+::: {#fig-degree-relaxation}
+```{dot}
+//| fig-width: 8
+//| fig-height: 4
+//| fig-align: center
+
+graph G {
+    layout=neato;
+    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    edge [len=1.5];
+
+    // k-plex: qualifies (2-plex allows each node to miss 1 connection)
+    subgraph cluster_kplex {
+        label="✅ k-plex (k=2)\nEach node misses ≤1 connection";
+        style=filled;
+        fillcolor="#e8f5e8";
+
+        a [pos="0.5,2.5!", fillcolor="#4ecdc4"];
+        b [pos="1.5,3!", fillcolor="#4ecdc4"];
+        c [pos="2,2!", fillcolor="#4ecdc4"];
+        d [pos="1.5,1!", fillcolor="#4ecdc4"];
+        e [pos="0.5,1.5!", fillcolor="#4ecdc4"];
+        f [pos="1,2!", fillcolor="#4ecdc4"];
+
+        a -- b; a -- e; a -- f;
+        b -- c; b -- f;
+        c -- d; c -- f;
+        d -- e; d -- f;
+        e -- f;
+        // Each node connected to 4 out of 5 others (misses exactly 1)
+    }
+
+    // Almost k-plex: does not qualify (some nodes miss >1 connections)
+    subgraph cluster_not_kplex {
+        label="❌ NOT k-plex (k=2)\nSome nodes miss >1 connection";
+        style=filled;
+        fillcolor="#ffe8e8";
+
+        g [pos="5.5,2.5!", fillcolor="#ff9999"];
+        h [pos="6.5,3!", fillcolor="#ff9999"];
+        i [pos="7,2!", fillcolor="#ff9999"];
+        j [pos="6.5,1!", fillcolor="#ff9999"];
+        k [pos="5.5,1.5!", fillcolor="#ff9999"];
+        l [pos="6,2!", fillcolor="#ff9999"];
+
+        g -- h; g -- k;
+        h -- i; h -- l;
+        i -- j;
+        j -- k; j -- l;
+        k -- l;
+        // Node g misses 3 connections (to i, j, l), violating k=2 constraint
+    }
+}
+```
+
+Comparison of k-plex: The left group qualifies as a 2-plex since each node misses at most 1 connection. The right group fails because some nodes miss more than 1 connection.
+:::
+
+### Density relaxation
+Density relaxation shifts the focus from individual connections to the overall cohesiveness of the group. Instead of requiring every possible connection, a **$\rho$-dense subgraph** [@goldberg1984finding] enforces that the group contains at least a fraction $\rho$ of all possible internal edges. This approach is useful for identifying communities that are highly, but not perfectly, interconnected—such as a friend group where most, but not all, pairs know each other.
+
+::: {#fig-density-relaxation}
+```{dot}
+//| fig-width: 8
+//| fig-height: 4
+//| fig-align: center
+
+graph G {
+    layout=neato;
+    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    edge [len=1.5];
+
+    // ρ-dense: qualifies (has 12/15 = 80% > 75% threshold)
+    subgraph cluster_dense {
+        label="✅ ρ-dense (ρ=0.75)\n12/15 edges = 80% density";
+        style=filled;
+        fillcolor="#e8f5e8";
+
+        a [pos="0.5,2.5!", fillcolor="#45b7d1"];
+        b [pos="1.5,3!", fillcolor="#45b7d1"];
+        c [pos="2,2!", fillcolor="#45b7d1"];
+        d [pos="1.5,1!", fillcolor="#45b7d1"];
+        e [pos="0.5,1.5!", fillcolor="#45b7d1"];
+        f [pos="1,2!", fillcolor="#45b7d1"];
+
+        a -- b; a -- e; a -- f;
+        b -- c; b -- f;
+        c -- d; c -- f;
+        d -- e; d -- f;
+        e -- f;
+        b -- d; b -- e;
+        // Missing: a -- c, a -- d, c -- e (has 12 out of 15 possible edges = 80%)
+    }
+
+    // Not ρ-dense: fails (has 6/15 = 40% < 75% threshold)
+    subgraph cluster_not_dense {
+        label="❌ NOT ρ-dense (ρ=0.75)\n6/15 edges = 40% density";
+        style=filled;
+        fillcolor="#ffe8e8";
+
+        g [pos="5.5,2.5!", fillcolor="#ff9999"];
+        h [pos="6.5,3!", fillcolor="#ff9999"];
+        i [pos="7,2!", fillcolor="#ff9999"];
+        j [pos="6.5,1!", fillcolor="#ff9999"];
+        k [pos="5.5,1.5!", fillcolor="#ff9999"];
+        l [pos="6,2!", fillcolor="#ff9999"];
+
+        g -- h; g -- k;
+        h -- i;
+        i -- j;
+        j -- k;
+        k -- l;
+        // Missing 9 edges: has only 6 out of 15 possible edges = 40%
+    }
+}
+```
+
+Comparison of ρ-dense subgraphs: The left group qualifies as a 0.75-dense subgraph with 80% edge density. The right group fails with only 40% density.
+:::
+
+### Distance relaxation
+Distance relaxation allows for the inclusion of nodes that are not directly connected but are still close in terms of network steps. The **$n$-clique** [@luce1950connectivity] is a group where every pair of nodes is within $n$ steps of each other, so members can be connected through mutual friends. However, this can sometimes include connections that pass through nodes outside the group, which led to refinements such as the **$n$-clan** and **$n$-club** [@mokken1979cliques], where all paths between members must remain within the group itself. These definitions help capture the idea of communities that are tightly knit not just by direct ties, but also by short, internal paths.
+
+::: {#fig-distance-relaxation}
+```{dot}
+//| fig-width: 8
+//| fig-height: 4
+//| fig-align: center
+
+graph G {
+    layout=neato;
+    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    edge [len=1.5, color="#666666"];
+
+    // n-clique: qualifies (all nodes within distance 2)
+    subgraph cluster_nclique {
+        label="✅ 2-clique\nAll nodes within distance 2";
+        style=filled;
+        fillcolor="#e8f5e8";
+
+        a [pos="0.5,2.5!", fillcolor="#96ceb4"];
+        b [pos="1.5,3!", fillcolor="#96ceb4"];
+        c [pos="2,2!", fillcolor="#96ceb4"];
+        d [pos="1.5,1!", fillcolor="#96ceb4"];
+        e [pos="0.5,1.5!", fillcolor="#96ceb4"];
+        f [pos="1,2!", fillcolor="#96ceb4"];
+
+        a -- b; a -- f;
+        b -- c; b -- f;
+        c -- d;
+        d -- e; d -- f;
+        e -- f;
+        // All pairs are within distance 2 (some via intermediate nodes)
+    }
+
+    // Not n-clique: fails (some nodes >2 steps apart)
+    subgraph cluster_not_nclique {
+        label="❌ NOT 2-clique\nSome nodes >2 steps apart";
+        style=filled;
+        fillcolor="#ffe8e8";
+
+        g [pos="5.5,2.5!", fillcolor="#ff9999"];
+        h [pos="6.5,3!", fillcolor="#ff9999"];
+        i [pos="7,2!", fillcolor="#ff9999"];
+        j [pos="6.5,1!", fillcolor="#ff9999"];
+        k [pos="5.5,1.5!", fillcolor="#ff9999"];
+        l [pos="6,2!", fillcolor="#ff9999"];
+
+        g -- h;
+        i -- j;
+        k -- l;
+        // Note: g and i are distance 3+ apart (no path ≤2 steps)
+    }
+
+    // Add dashed lines to show distance-2 paths in the valid case
+    a -- c [style=dashed, color="#4CAF50"];
+    a -- d [style=dashed, color="#4CAF50"];
+    a -- e [style=dashed, color="#4CAF50"];
+    c -- f [style=dashed, color="#4CAF50"];
+    c -- e [style=dashed, color="#4CAF50"];
+    b -- d [style=dashed, color="#4CAF50"];
+    b -- e [style=dashed, color="#4CAF50"];
+}
+```
+
+Comparison of n-cliques: The left group qualifies as a 2-clique since all pairs are within 2 steps (dashed green lines show distance-2 connections). The right group fails because some nodes are >2 steps apart.
+:::
+
+### Hybrid approaches
+Hybrid approaches combine these dimensions to capture even more nuanced community structures. The **$k$-truss** [@saito2008extracting; @cohen2009graph; @wang2010triangulation] requires that every edge in the group participates in at least $k-2$ triangles, emphasizing the importance of triadic relationships for group stability. The **$\rho$-dense core** [@koujaku2016dense] balances high internal density with sparse external connections, identifying groups that are not only cohesive inside but also well-separated from the rest of the network. These hybrid definitions reflect the complex and overlapping nature of real-world communities, where both internal cohesion and clear boundaries matter.
+
+::: {#fig-hybrid-approaches}
+```{dot}
+//| fig-width: 8
+//| fig-height: 4
+//| fig-align: center
+
+graph G {
+    layout=neato;
+    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    edge [len=1.5];
+
+    // k-truss: qualifies (each edge in ≥k-2=2 triangles)
+    subgraph cluster_truss {
+        label="✅ 4-truss\nEach edge in ≥2 triangles";
+        style=filled;
+        fillcolor="#e8f5e8";
+
+        a [pos="0.5,2.5!", fillcolor="#e056fd"];
+        b [pos="1.5,3!", fillcolor="#e056fd"];
+        c [pos="2,2!", fillcolor="#e056fd"];
+        d [pos="1.5,1!", fillcolor="#e056fd"];
+        e [pos="0.5,1.5!", fillcolor="#e056fd"];
+        f [pos="1,2!", fillcolor="#e056fd"];
+
+        a -- b; a -- e; a -- f;
+        b -- c; b -- f;
+        c -- d; c -- f;
+        d -- e; d -- f;
+        e -- f;
+        a -- c; b -- d; b -- e;
+        // Every edge participates in at least 2 triangles
+    }
+
+    // Not k-truss: fails (some edges in <k-2 triangles)
+    subgraph cluster_not_truss {
+        label="❌ NOT 4-truss\nSome edges in <2 triangles";
+        style=filled;
+        fillcolor="#ffe8e8";
+
+        g [pos="5.5,2.5!", fillcolor="#ff9999"];
+        h [pos="6.5,3!", fillcolor="#ff9999"];
+        i [pos="7,2!", fillcolor="#ff9999"];
+        j [pos="6.5,1!", fillcolor="#ff9999"];
+        k [pos="5.5,1.5!", fillcolor="#ff9999"];
+        l [pos="6,2!", fillcolor="#ff9999"];
+
+        g -- h; g -- k;
+        h -- i; h -- l;
+        i -- j;
+        j -- k;
+        k -- l; l -- g;
+        // Some edges (like h-l) participate in <2 triangles
+    }
+}
+```
+
+Comparison of k-truss: The left group qualifies as a 4-truss since every edge participates in at least 2 triangles. The right group fails because some edges participate in fewer than 2 triangles.
+:::
+
+
+#### Choosing Your Tool: A Practical Guide
+
+When to use each approach:
+
+| Your Question | Best Pseudo-Clique |
+|---------------|-------------------|
+| "Who are the core members?" | k-core |
+| "Which groups are tightly knit?" | k-truss |
+| "How far can influence spread?" | n-clique |
+| "What if some people don't know each other?" | k-plex |
+| "How cohesive is this group overall?" | ρ-dense subgraph |
+| "Does this group have clear boundaries?" | ρ-dense core |
+
+::: {.callout-note title="Try It Yourself"}
+Take a small network you know well (your workplace, school department, or social media connections) and try identifying groups using different pseudo-clique definitions. How do the results differ? Which definition best captures your intuitive sense of "who belongs together"?
+:::
 
 ::: {#fig-clique-pattern}
 
