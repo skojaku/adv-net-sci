@@ -53,13 +53,13 @@ Degree relaxation acknowledges that real-world groups rarely have perfect connec
 
 ::: {#fig-degree-relaxation}
 ```{dot}
-//| fig-width: 8
-//| fig-height: 4
+//| fig-width: 6
+//| fig-height: 3
 //| fig-align: center
 
 graph G {
-    layout=neato;
-    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    layout=fdp;
+    node [shape=circle, style=filled, fontsize=12, width=0.6];
     edge [len=1.5];
 
     // k-plex: qualifies (2-plex allows each node to miss 1 connection)
@@ -73,14 +73,12 @@ graph G {
         c [pos="2,2!", fillcolor="#4ecdc4"];
         d [pos="1.5,1!", fillcolor="#4ecdc4"];
         e [pos="0.5,1.5!", fillcolor="#4ecdc4"];
-        f [pos="1,2!", fillcolor="#4ecdc4"];
 
-        a -- b; a -- e; a -- f;
-        b -- c; b -- f;
-        c -- d; c -- f;
-        d -- e; d -- f;
-        e -- f;
-        // Each node connected to 4 out of 5 others (misses exactly 1)
+        a -- b; a -- d; a -- e;
+        b -- c; b -- e;
+        c -- d;
+        d -- e;
+        // Each node connected to 3 out of 4 others (misses exactly 1)
     }
 
     // Almost k-plex: does not qualify (some nodes miss >1 connections)
@@ -89,19 +87,17 @@ graph G {
         style=filled;
         fillcolor="#ffe8e8";
 
-        g [pos="5.5,2.5!", fillcolor="#ff9999"];
-        h [pos="6.5,3!", fillcolor="#ff9999"];
-        i [pos="7,2!", fillcolor="#ff9999"];
-        j [pos="6.5,1!", fillcolor="#ff9999"];
-        k [pos="5.5,1.5!", fillcolor="#ff9999"];
-        l [pos="6,2!", fillcolor="#ff9999"];
+        f [pos="5.5,2.5!", fillcolor="#ff9999"];
+        g [pos="6.5,3!", fillcolor="#ff9999"];
+        h [pos="7,2!", fillcolor="#ff9999"];
+        i [pos="6.5,1!", fillcolor="#ff9999"];
+        j [pos="5.5,1.5!", fillcolor="#ff9999"];
 
-        g -- h; g -- k;
-        h -- i; h -- l;
+        f -- g; f -- j;
+        g -- h;
+        h -- i;
         i -- j;
-        j -- k; j -- l;
-        k -- l;
-        // Node g misses 3 connections (to i, j, l), violating k=2 constraint
+        // Node f misses 2 connections (to h, i), violating k=2 constraint
     }
 }
 ```
@@ -114,18 +110,18 @@ Density relaxation shifts the focus from individual connections to the overall c
 
 ::: {#fig-density-relaxation}
 ```{dot}
-//| fig-width: 8
-//| fig-height: 4
+//| fig-width: 6
+//| fig-height: 3
 //| fig-align: center
 
 graph G {
-    layout=neato;
-    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    layout=fdp;
+    node [shape=circle, style=filled, fontsize=12, width=0.6];
     edge [len=1.5];
 
-    // ρ-dense: qualifies (has 12/15 = 80% > 75% threshold)
+    // ρ-dense: qualifies (has 8/10 = 80% > 75% threshold)
     subgraph cluster_dense {
-        label="✅ ρ-dense (ρ=0.75)\n12/15 edges = 80% density";
+        label="✅ ρ-dense (ρ=0.75)\n8/10 edges = 80% density";
         style=filled;
         fillcolor="#e8f5e8";
 
@@ -134,36 +130,31 @@ graph G {
         c [pos="2,2!", fillcolor="#45b7d1"];
         d [pos="1.5,1!", fillcolor="#45b7d1"];
         e [pos="0.5,1.5!", fillcolor="#45b7d1"];
-        f [pos="1,2!", fillcolor="#45b7d1"];
 
-        a -- b; a -- e; a -- f;
-        b -- c; b -- f;
-        c -- d; c -- f;
-        d -- e; d -- f;
-        e -- f;
-        b -- d; b -- e;
-        // Missing: a -- c, a -- d, c -- e (has 12 out of 15 possible edges = 80%)
+        a -- b; a -- d; a -- e;
+        b -- c; b -- e;
+        c -- d; c -- e;
+        d -- e;
+        // Missing: a -- c, b -- d (has 8 out of 10 possible edges = 80%)
     }
 
-    // Not ρ-dense: fails (has 6/15 = 40% < 75% threshold)
+    // Not ρ-dense: fails (has 4/10 = 40% < 75% threshold)
     subgraph cluster_not_dense {
-        label="❌ NOT ρ-dense (ρ=0.75)\n6/15 edges = 40% density";
+        label="❌ NOT ρ-dense (ρ=0.75)\n4/10 edges = 40% density";
         style=filled;
         fillcolor="#ffe8e8";
 
-        g [pos="5.5,2.5!", fillcolor="#ff9999"];
-        h [pos="6.5,3!", fillcolor="#ff9999"];
-        i [pos="7,2!", fillcolor="#ff9999"];
-        j [pos="6.5,1!", fillcolor="#ff9999"];
-        k [pos="5.5,1.5!", fillcolor="#ff9999"];
-        l [pos="6,2!", fillcolor="#ff9999"];
+        f [pos="5.5,2.5!", fillcolor="#ff9999"];
+        g [pos="6.5,3!", fillcolor="#ff9999"];
+        h [pos="7,2!", fillcolor="#ff9999"];
+        i [pos="6.5,1!", fillcolor="#ff9999"];
+        j [pos="5.5,1.5!", fillcolor="#ff9999"];
 
-        g -- h; g -- k;
-        h -- i;
+        f -- g;
+        g -- h;
         i -- j;
-        j -- k;
-        k -- l;
-        // Missing 9 edges: has only 6 out of 15 possible edges = 40%
+        j -- f;
+        // Missing 6 edges: has only 4 out of 10 possible edges = 40%
     }
 }
 ```
@@ -176,13 +167,13 @@ Distance relaxation allows for the inclusion of nodes that are not directly conn
 
 ::: {#fig-distance-relaxation}
 ```{dot}
-//| fig-width: 8
-//| fig-height: 4
+//| fig-width: 6
+//| fig-height: 3
 //| fig-align: center
 
 graph G {
-    layout=neato;
-    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    layout=fdp;
+    node [shape=circle, style=filled, fontsize=12, width=0.6];
     edge [len=1.5, color="#666666"];
 
     // n-clique: qualifies (all nodes within distance 2)
@@ -196,13 +187,11 @@ graph G {
         c [pos="2,2!", fillcolor="#96ceb4"];
         d [pos="1.5,1!", fillcolor="#96ceb4"];
         e [pos="0.5,1.5!", fillcolor="#96ceb4"];
-        f [pos="1,2!", fillcolor="#96ceb4"];
 
-        a -- b; a -- f;
-        b -- c; b -- f;
+        a -- b; a -- e;
+        b -- c;
         c -- d;
-        d -- e; d -- f;
-        e -- f;
+        d -- e;
         // All pairs are within distance 2 (some via intermediate nodes)
     }
 
@@ -212,27 +201,24 @@ graph G {
         style=filled;
         fillcolor="#ffe8e8";
 
-        g [pos="5.5,2.5!", fillcolor="#ff9999"];
-        h [pos="6.5,3!", fillcolor="#ff9999"];
-        i [pos="7,2!", fillcolor="#ff9999"];
-        j [pos="6.5,1!", fillcolor="#ff9999"];
-        k [pos="5.5,1.5!", fillcolor="#ff9999"];
-        l [pos="6,2!", fillcolor="#ff9999"];
+        f [pos="5.5,2.5!", fillcolor="#ff9999"];
+        g [pos="6.5,3!", fillcolor="#ff9999"];
+        h [pos="7,2!", fillcolor="#ff9999"];
+        i [pos="6.5,1!", fillcolor="#ff9999"];
+        j [pos="5.5,1.5!", fillcolor="#ff9999"];
 
-        g -- h;
-        i -- j;
-        k -- l;
-        // Note: g and i are distance 3+ apart (no path ≤2 steps)
+        f -- g;
+        h -- i;
+        j -- f;
+        // Note: g and h are distance 3+ apart (no path ≤2 steps)
     }
 
     // Add dashed lines to show distance-2 paths in the valid case
     a -- c [style=dashed, color="#4CAF50"];
     a -- d [style=dashed, color="#4CAF50"];
-    a -- e [style=dashed, color="#4CAF50"];
-    c -- f [style=dashed, color="#4CAF50"];
-    c -- e [style=dashed, color="#4CAF50"];
     b -- d [style=dashed, color="#4CAF50"];
     b -- e [style=dashed, color="#4CAF50"];
+    c -- e [style=dashed, color="#4CAF50"];
 }
 ```
 
@@ -244,13 +230,13 @@ Hybrid approaches combine these dimensions to capture even more nuanced communit
 
 ::: {#fig-hybrid-approaches}
 ```{dot}
-//| fig-width: 8
-//| fig-height: 4
+//| fig-width: 6
+//| fig-height: 3
 //| fig-align: center
 
 graph G {
-    layout=neato;
-    node [shape=circle, style=filled, fontsize=14, width=0.9];
+    layout=fdp;
+    node [shape=circle, style=filled, fontsize=12, width=0.6];
     edge [len=1.5];
 
     // k-truss: qualifies (each edge in ≥k-2=2 triangles)
@@ -264,14 +250,11 @@ graph G {
         c [pos="2,2!", fillcolor="#e056fd"];
         d [pos="1.5,1!", fillcolor="#e056fd"];
         e [pos="0.5,1.5!", fillcolor="#e056fd"];
-        f [pos="1,2!", fillcolor="#e056fd"];
 
-        a -- b; a -- e; a -- f;
-        b -- c; b -- f;
-        c -- d; c -- f;
-        d -- e; d -- f;
-        e -- f;
-        a -- c; b -- d; b -- e;
+        a -- b; a -- d; a -- e;
+        b -- c; b -- d;
+        c -- d; c -- e;
+        d -- e;
         // Every edge participates in at least 2 triangles
     }
 
@@ -281,19 +264,17 @@ graph G {
         style=filled;
         fillcolor="#ffe8e8";
 
-        g [pos="5.5,2.5!", fillcolor="#ff9999"];
-        h [pos="6.5,3!", fillcolor="#ff9999"];
-        i [pos="7,2!", fillcolor="#ff9999"];
-        j [pos="6.5,1!", fillcolor="#ff9999"];
-        k [pos="5.5,1.5!", fillcolor="#ff9999"];
-        l [pos="6,2!", fillcolor="#ff9999"];
+        f [pos="5.5,2.5!", fillcolor="#ff9999"];
+        g [pos="6.5,3!", fillcolor="#ff9999"];
+        h [pos="7,2!", fillcolor="#ff9999"];
+        i [pos="6.5,1!", fillcolor="#ff9999"];
+        j [pos="5.5,1.5!", fillcolor="#ff9999"];
 
-        g -- h; g -- k;
-        h -- i; h -- l;
+        f -- g; f -- j;
+        g -- h;
+        h -- i;
         i -- j;
-        j -- k;
-        k -- l; l -- g;
-        // Some edges (like h-l) participate in <2 triangles
+        // Some edges (like g-h) participate in <2 triangles
     }
 }
 ```
