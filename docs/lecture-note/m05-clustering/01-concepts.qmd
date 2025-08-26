@@ -49,7 +49,10 @@ Perhaps, the strictest definition of a community is a *clique*: a group of nodes
 Pseudo-cliques are defined by relaxing at least one of the following three dimensions of strictness, i.e., degree, density, and distance. We will walk through each of them in details as follows.
 
 ### Degree relaxation
-Degree relaxation acknowledges that real-world groups rarely have perfect connectivity among all members. The *k-plex* [@seidman1978graph] is a classic example: it allows each node in a group to miss connections to up to $k$ other members, making it possible to model social circles where not everyone knows everyone else. Similarly, the **k-core** [@seidman1983network] requires each node to have at least $k$ connections within the group, capturing the idea of a "core" of well-connected individuals. These approaches reflect the reality that cohesive groups can exist even when some connections are missing, and they help distinguish between core and peripheral members in a network.
+
+Degree relaxation acknowledges that real-world groups rarely have perfect connectivity among all members. The *k-plex* [@seidman1978graph] is a classic example: it allows each node in a group to miss connections to up to $k$ other members, making it possible to model social circles where not everyone knows everyone else.
+
+A similar relaxation is the **k-core** [@seidman1983network], which requires each node to have at least $k$ connections within the group, capturing the idea of a "core" of well-connected individuals. These approaches reflect the reality that cohesive groups can exist even when some connections are missing, and they help distinguish between core and peripheral members in a network.
 
 ::: {#fig-degree-relaxation}
 ```{dot}
@@ -59,7 +62,7 @@ Degree relaxation acknowledges that real-world groups rarely have perfect connec
 
 graph G {
     layout=fdp;
-    node [shape=circle, style=filled, fontsize=12, width=0.6];
+    node [shape=circle, style=filled, fontsize=15, width=0.6];
     edge [len=1.5];
 
     // k-plex: qualifies (2-plex allows each node to miss 1 connection)
@@ -116,7 +119,7 @@ Density relaxation shifts the focus from individual connections to the overall c
 
 graph G {
     layout=fdp;
-    node [shape=circle, style=filled, fontsize=12, width=0.6];
+    node [shape=circle, style=filled, fontsize=15, width=0.6];
     edge [len=1.5];
 
     // ρ-dense: qualifies (has 8/10 = 80% > 75% threshold)
@@ -173,7 +176,7 @@ Distance relaxation allows for the inclusion of nodes that are not directly conn
 
 graph G {
     layout=fdp;
-    node [shape=circle, style=filled, fontsize=12, width=0.6];
+    node [shape=circle, style=filled, fontsize=15, width=0.6];
     edge [len=1.5, color="#666666"];
 
     // n-clique: qualifies (all nodes within distance 2)
@@ -236,7 +239,7 @@ Hybrid approaches combine these dimensions to capture even more nuanced communit
 
 graph G {
     layout=fdp;
-    node [shape=circle, style=filled, fontsize=12, width=0.6];
+    node [shape=circle, style=filled, fontsize=15, width=0.6];
     edge [len=1.5];
 
     // k-truss: qualifies (each edge in ≥k-2=2 triangles)
