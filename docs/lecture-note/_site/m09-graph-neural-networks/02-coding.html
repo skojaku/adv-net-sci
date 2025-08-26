@@ -582,7 +582,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Node Degree: The Building Block of Network Analysis</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -611,13 +611,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Core Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Clustering Algorithms and Implementation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -976,7 +976,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <li>Emphasizes differences between neighbors</li>
 </ul></li>
 </ol>
-<div id="8520c92f" class="cell">
+<div id="16175f04" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1005,7 +1005,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <section id="example" class="level3">
 <h3 class="anchored" data-anchor-id="example">Example</h3>
 <p>Let us showcase the idea of spectral filtering with a simple example with the karate club network.</p>
-<div id="092f8b2c" class="cell">
+<div id="48b42500" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [remove<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1016,7 +1016,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> G.get_adjacency_sparse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We will first compute the laplacian matrix and its eigendecomposition.</p>
-<div id="b8688076" class="cell">
+<div id="c8ec20f8" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Laplacian matrix</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).reshape(<span class="op">-</span><span class="dv">1</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> sparse.diags(deg)</span>
@@ -1031,7 +1031,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>evecs <span class="op">=</span> evecs[:, order]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, let’s create a low-pass and high-pass filter.</p>
-<div id="deed1813" class="cell">
+<div id="bd86ec25" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="dv">2</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>L_low <span class="op">=</span> evecs <span class="op">@</span> np.diag(<span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> alpha <span class="op">*</span> evals)) <span class="op">@</span> evecs.T</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>L_high <span class="op">=</span> evecs <span class="op">@</span> np.diag(alpha <span class="op">*</span> evals <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> alpha <span class="op">*</span> evals)) <span class="op">@</span> evecs.T</span>
@@ -1045,7 +1045,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </span></p>
 <p>where <span class="math inline">{\bf L}_{\text{low}}</span> and <span class="math inline">{\bf L}_{\text{high}}</span> are the low-pass and high-pass filters, respectively, and <span class="math inline">{\bf x}'</span> is the convolved feature vector.</p>
 <p>Now, let’s see how these filters work. Our first example is a random feature vector.</p>
-<div id="abc7097d" class="cell">
+<div id="73b699a7" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Random feature vector</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.randn(A.shape[<span class="dv">0</span>], <span class="dv">1</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1056,7 +1056,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>x_high <span class="op">=</span> L_high <span class="op">@</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let us visualize the results.</p>
-<div id="232ec627" class="cell">
+<div id="fc0eb40d" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">5</span>))</span>
@@ -1086,7 +1086,7 @@ J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u
 </div>
 <p>We observe that the low-pass filter results in smoother <span class="math inline">{\bf x}</span> between connected nodes (i.e., neighboring nodes have similar <span class="math inline">{\bf x}</span>). The original <span class="math inline">{\bf x}</span> and <span class="math inline">{\bf x}'_{\text{low}}</span> are very similar because random variables are high-frequency components. In contrast, when we apply the high-pass filter, <span class="math inline">{\bf x}'_{\text{high}}</span> is similar to <span class="math inline">{\bf x}</span> because the high-frequency components are not filtered.</p>
 <p>Let’s now use an eigenvector as our feature vector <span class="math inline">{\bf x}</span>.</p>
-<div id="a2899617" class="cell">
+<div id="0d69c3d2" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>eigen_centrality <span class="op">=</span> np.array(G.eigenvector_centrality()).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>low_pass_eigen <span class="op">=</span> L_low <span class="op">@</span> eigen_centrality</span>
@@ -1292,7 +1292,7 @@ e_{ij} = \text{LeakyReLU}(\mathbf{a}^T[\mathbf{\tilde h}_i, \mathbf{\tilde h}_j]
 <li>Repeat the process for a fixed number of iterations or until convergence.</li>
 </ol>
 <p>Here is the implementation of the WL test in Python:</p>
-<div id="ac24de5f" class="cell">
+<div id="7bc5ca38" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
