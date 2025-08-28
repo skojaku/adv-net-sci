@@ -64,13 +64,6 @@ def _(mo):
     )
     return N_slider, k_slider, p_slider
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""## Network Visualization (Precomputed States)""")
-    return
-
-
 @app.cell(hide_code=True)
 def _(C_chart, L_chart, mo, network_chart, sigma_chart):
     mo.vstack(
