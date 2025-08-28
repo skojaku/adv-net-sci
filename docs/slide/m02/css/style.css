@@ -1,0 +1,269 @@
+/* Minimalist White Theme for Quarto Presentations */
+
+/* Base styling */
+.reveal {
+  font-family: "Baskerville", "Libre Baskerville", "Times New Roman", serif;
+  font-size: 36px;
+  font-weight: normal;
+  color: #333;
+  background-color: #fff;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  height: 100%;
+}
+
+/* Headers */
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: 0 0 20px 0;
+  color: #222;
+  font-family: "Baskerville", "Libre Baskerville", "Times New Roman", serif;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  word-wrap: break-word;
+}
+
+.reveal h1 {
+  font-size: 2em;
+  margin-bottom: 30px;
+}
+
+.reveal h2 {
+  font-size: 1.6em;
+  margin-bottom: 25px;
+}
+
+.reveal h3 {
+  font-size: 1.3em;
+  margin-bottom: 20px;
+}
+
+/* Paragraphs and text */
+.reveal p {
+  margin: 20px 0;
+  line-height: 1.3;
+}
+
+.reveal ul,
+.reveal ol {
+  display: inline-block;
+  text-align: left;
+  margin: 0 0 0 1em;
+}
+
+.reveal ul li,
+.reveal ol li {
+  margin-bottom: 0.5em;
+}
+
+
+/* Tables */
+.reveal table {
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.reveal table th {
+  font-weight: 400;
+  background: #f8f8f8;
+}
+
+.reveal table th,
+.reveal table td {
+  text-align: left;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Blockquotes */
+.reveal blockquote {
+  display: block;
+  position: relative;
+  width: 70%;
+  margin: 20px auto;
+  padding: 5px;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #ccc;
+  box-shadow: none;
+}
+
+/* Links */
+.reveal a {
+  color: #2a76dd;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+  color: #1e5bb8;
+  text-shadow: none;
+  border: none;
+}
+
+/* Images */
+.reveal img {
+  margin: 15px 0px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Title slide */
+.reveal .title {
+  font-size: 2em;
+  font-weight: 400;
+  margin-bottom: 0.5em;
+}
+
+.reveal .subtitle {
+  font-size: 1.2em;
+  color: #666;
+  margin-bottom: 1em;
+}
+
+.reveal .author {
+  font-size: 1.1em;
+  color: #666;
+}
+
+.reveal .date {
+  font-size: 0.9em;
+  color: #999;
+}
+
+/* Progress bar */
+.reveal .progress {
+  color: #2a76dd;
+}
+
+/* Slide number */
+.reveal .slide-number {
+  color: #999;
+  background-color: transparent;
+  font-size: 12px;
+}
+
+/* Navigation controls */
+.reveal .controls {
+  color: #ccc;
+}
+
+.reveal .controls .navigate-left,
+.reveal .controls .navigate-left.enabled {
+  border-right-color: #ccc;
+}
+
+.reveal .controls .navigate-right,
+.reveal .controls .navigate-right.enabled {
+  border-left-color: #ccc;
+}
+
+.reveal .controls .navigate-up,
+.reveal .controls .navigate-up.enabled {
+  border-bottom-color: #ccc;
+}
+
+.reveal .controls .navigate-down,
+.reveal .controls .navigate-down.enabled {
+  border-top-color: #ccc;
+}
+
+/* Remove default margins for cleaner look */
+.reveal .slides > section {
+  padding: 0;
+}
+
+/* Center content vertically */
+.reveal .slides section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Fragment animations */
+.reveal .fragment {
+  opacity: 0.6;
+}
+
+.reveal .fragment.visible {
+  opacity: 1;
+}
+
+/* Custom color classes */
+.blue-text {
+  color: #2a76dd;
+}
+
+.red-text {
+  color: #dc3545;
+}
+
+.blue-bg {
+  background-color: #e3f2fd;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.red-bg {
+  background-color: #ffebee;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Quarto callouts font size fix */
+.callout {
+  font-size: 32px !important;
+}
+
+.callout-body {
+  font-size: 32px !important;
+}
+
+.callout-title {
+  font-size: 32px !important;
+  font-weight: 400;
+}
+
+.callout-title p {
+  font-size: 32px !important;
+}
+
+.callout-content {
+  font-size: 32px !important;
+}
+
+.callout-content p {
+  font-size: 32px !important;
+}
+
+.callout .callout-body {
+  font-size: 32px !important;
+}
+
+.callout .callout-body p {
+  font-size: 32px !important;
+}
+
+.reveal pre code {
+  font-size: 0.5em; /* Smaller font */
+}
+
+.column-divider {
+  border-right: 2px solid #ccc;
+  padding-right: 15px;
+  margin-left: 15px;
+}
