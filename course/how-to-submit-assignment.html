@@ -762,8 +762,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="how-to-submit-assignment" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> How to submit assignment</h1>
 <p>In this course, we will use GitHub Classroom to submit &amp; grade assignments. Please follow the instructions below to submit your assignment.</p>
-<section id="a-simple-workflow" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="a-simple-workflow"><span class="header-section-number">1.1</span> A simple workflow</h2>
+<section id="option-1-a-simple-workflow-full-local" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="option-1-a-simple-workflow-full-local"><span class="header-section-number">1.1</span> Option 1: A simple workflow (Full local)</h2>
 <p>See the <a href="https://docs.google.com/presentation/d/19Zvrp5kha6ohF4KvTX9W2jodKkfmsOrJfEZtO_Wg0go/edit?usp=sharing">presentation</a> for the detailed instructions.</p>
 <ol type="1">
 <li>Clone the repository from GitHub.</li>
@@ -772,17 +772,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Check the grading on the GitHub Classroom.</li>
 </ol>
 </section>
-<section id="a-recommended-assignment-workflow-turns-out-to-be-harder-than-i-thought" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="a-recommended-assignment-workflow-turns-out-to-be-harder-than-i-thought"><span class="header-section-number">1.2</span> A <del>recommended</del> assignment workflow (turns out to be harder than I thought)</h2>
+<section id="option-2-github-codespaces-full-cloud" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="option-2-github-codespaces-full-cloud"><span class="header-section-number">1.2</span> Option 2: Github Codespaces (Full cloud)</h2>
+<p>See the <a href="https://docs.google.com/presentation/d/1fVzpsgaMDFTAwNibMSIUrOOfpq6z4LJICoG8i0HvNWc/edit?usp=sharing">presentation</a> for the detailed instructions.</p>
+<ol type="1">
+<li>Go to your assignment repository on GitHub</li>
+<li>Click the green “Code” button</li>
+<li>Click the “Open with Codespaces” button</li>
+<li>Wait for the Codespaces to be ready.</li>
+<li>Type ‘marimo edit assignment/assignment.py’. If you cannot find marimo, type “uv run marimo edit assignment/assignment.py” which should work.</li>
+<li>You will be redirected to a webpage and prompted to enter the access token. The access token can be found on the terminal window in the Codespaces.</li>
+<li>Take the access token in the url “the alphabets after”?access_token=” and enter the token in the webpage.</li>
+</ol>
+</section>
+<section id="preparations-local-but-with-docker-machine" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="preparations-local-but-with-docker-machine"><span class="header-section-number">1.3</span> Preparations (Local but with Docker Machine)</h2>
 <p>See the <a href="https://docs.google.com/presentation/d/1fi5x85pW8m37eh5xIJbFrZXihM9K5BxXwmdI85h45AU/edit?usp=sharing">presentation</a> for the detailed instructions.</p>
-<section id="preparations" class="level3">
-<h3 class="anchored" data-anchor-id="preparations">Preparations</h3>
 <ul>
 <li>Install <a href="https://docs.docker.com/desktop/">Docker Desktop</a></li>
 <li>Install <a href="https://desktop.github.com/download/">GitHub Desktop</a></li>
 <li>Install <a href="https://code.visualstudio.com/download">VS Code</a></li>
 </ul>
-</section>
 <section id="steps" class="level3">
 <h3 class="anchored" data-anchor-id="steps">Steps</h3>
 <ol type="1">
@@ -1273,7 +1283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>In this course, we will use GitHub Classroom to submit &amp; grade assignments. Please follow the instructions below to submit your assignment.</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## A simple workflow</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Option 1: A simple workflow (Full local)</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>See the <span class="co">[</span><span class="ot">presentation</span><span class="co">](https://docs.google.com/presentation/d/19Zvrp5kha6ohF4KvTX9W2jodKkfmsOrJfEZtO_Wg0go/edit?usp=sharing)</span> for the detailed instructions.</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
@@ -1282,28 +1292,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Submit the assignment.py via git. (You can use GitHub Desktop, or command line)</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Check the grading on the GitHub Classroom.</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## A ~~recommended~~ assignment workflow (turns out to be harder than I thought)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## Option 2: Github Codespaces (Full cloud)</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>See the <span class="co">[</span><span class="ot">presentation</span><span class="co">](https://docs.google.com/presentation/d/1fi5x85pW8m37eh5xIJbFrZXihM9K5BxXwmdI85h45AU/edit?usp=sharing)</span> for the detailed instructions.</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>See the <span class="co">[</span><span class="ot">presentation</span><span class="co">](https://docs.google.com/presentation/d/1fVzpsgaMDFTAwNibMSIUrOOfpq6z4LJICoG8i0HvNWc/edit?usp=sharing)</span> for the detailed instructions.</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### Preparations</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">Docker Desktop</span><span class="co">](https://docs.docker.com/desktop/)</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">GitHub Desktop</span><span class="co">](https://desktop.github.com/download/)</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">VS Code</span><span class="co">](https://code.visualstudio.com/download)</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">### Steps</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Go to your assignment repository on GitHub</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Click the green "Code" button</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Click the "Open with Codespaces" button</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Wait for the Codespaces to be ready.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Type 'marimo edit assignment/assignment.py'. If you cannot find marimo, type "uv run marimo edit assignment/assignment.py" which should work.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>You will be redirected to a webpage and prompted to enter the access token. The access token can be found on the terminal window in the Codespaces.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Take the access token in the url "the alphabets after "?access_token=" and enter the token in the webpage.</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Clone the repository from GitHub.</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Open with the VS Code, and click "Reopen in Container"</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Open the assignment.py with marimo editor.</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Submit the assignment.py to the repository.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preparations (Local but with Docker Machine)</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>See the <span class="co">[</span><span class="ot">presentation</span><span class="co">](https://docs.google.com/presentation/d/1fi5x85pW8m37eh5xIJbFrZXihM9K5BxXwmdI85h45AU/edit?usp=sharing)</span> for the detailed instructions.</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">Docker Desktop</span><span class="co">](https://docs.docker.com/desktop/)</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">GitHub Desktop</span><span class="co">](https://desktop.github.com/download/)</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Install <span class="co">[</span><span class="ot">VS Code</span><span class="co">](https://code.visualstudio.com/download)</span></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### Steps</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Clone the repository from GitHub.</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Open with the VS Code, and click "Reopen in Container"</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Open the assignment.py with marimo editor.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Submit the assignment.py to the repository.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
