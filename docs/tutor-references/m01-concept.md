@@ -62,4 +62,4 @@ The historical significance extends beyond the puzzle - Euler's abstraction crea
 
 ### Giant Component
 
-Giant component is a connected component that includes MOST nodes in the network. 
+A giant component is a connected component that contains a significant fraction of the entire graph's nodes.
