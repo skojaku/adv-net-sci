@@ -1,8 +1,8 @@
 # Module 01: Euler Tour - Core Concepts
 
-## The Königsberg Bridge Problem
+## The KÃ¶nigsberg Bridge Problem
 
-The module begins with Euler's famous solution to the Königsberg bridge problem from the 18th century. The citizens wanted to know if they could walk through the city crossing each of the seven bridges exactly once and return to the starting point.
+The module begins with Euler's famous solution to the KÃ¶nigsberg bridge problem from the 18th century. The citizens wanted to know if they could walk through the city crossing each of the seven bridges exactly once and return to the starting point.
 
 ### Euler's Key Insights
 
@@ -22,7 +22,7 @@ An **Eulerian Path** (crossing every edge exactly once) exists if and only if:
    - **Zero nodes have odd degree** (Eulerian Circuit - closed loop)
    - **Exactly two nodes have odd degree** (path starts at one odd node, ends at the other)
 
-In Königsberg, all four landmasses had odd degree, making the walk impossible.
+In KÃ¶nigsberg, all four landmasses had odd degree, making the walk impossible.
 
 ## Network Terminology
 
@@ -59,3 +59,7 @@ The degree of a node is the number of edges connected to it. This simple concept
 Euler's theorem requires the graph to be connected. Even with correct degree conditions, disconnected components prevent a single continuous path.
 
 The historical significance extends beyond the puzzle - Euler's abstraction created **graph theory**, now essential for understanding social networks, transportation systems, brain connectivity, and internet topology.
+
+### Giant Component
+
+Giant component is a connected component that includes most nodes in the network. No necessarily all nodes. 
