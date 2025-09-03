@@ -5,9 +5,12 @@ format:
     chalkboard:
       buttons: true
     preview-links: auto
-    theme: simple
     css: css/style.css
-highlight-style: github
+highlight-style: oblivion
+jupyter: advnetsci
+execute:
+    enabled: true
+    echo: false
 ---
 
 # Module 02: Small World Networks
@@ -688,7 +691,7 @@ Throughout this course, we'll primarily use `igraph`, a mature and robust librar
 
 **Marimo:**
 
-[https://github.com/skojaku/adv-net-sci/notebooks/starter.py](https://github.com/skojaku/adv-net-sci/notebooks/starter.py)
+[https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.py](https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.py)
 
 Open the terminal and run:
 ```bash
@@ -701,75 +704,146 @@ uvx marimo edit starter.py
 
 **Jupyter Notebook:**
 
-[https://github.com/skojaku/adv-net-sci/notebooks/starter.ipynb](https://github.com/skojaku/adv-net-sci/notebooks/starter.ipynb)
+[https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.ipynb](https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.ipynb)
 
 
 ---
 
-Let's create a graph and plot it.
+## Toy network
 
-```python
+```{.python}
+import igraph
+
 edge_list = [(0, 1), (1, 2), (0, 2), (0, 3)]
 
 g = igraph.Graph() # Create an empty graph
 g.add_vertices(4) # Add 4 vertices
 g.add_edges(edge_list) # Add edges to the graph
-
-# Plot the graph
-fig, ax = plt.subplots(figsize=(5, 5))
-igraph.plot(g, bbox=(150, 150), vertex_label=list(range(4)), target = ax)
 ```
 
----
+Plot the graph.
+```{.python}
+import matplotlib.pyplot as plt
 
-Let’s compute the paths between nodes 2 and 3.
+fig, ax = plt.subplots(figsize=(5, 5))
 
-```python
+# Draw the graph on the matplotlib axes using igraph
+igraph.plot(
+    g,
+    bbox=(50, 50),
+    vertex_label=list(range(4)),
+    target=ax,
+)
+```
+
+## Path
+
+Simple paths:
+```{.python}
 g.get_all_simple_paths(2, to=3)
 ```
 
-Shortest path(s):
-
-```python
+Shortest path:
+```{.python}
+# Shortest path
 g.get_shortest_paths(2, to=3)
 ```
 
-Distance between nodes 2 and 3:
-```python
+Distance:
+```{.python}
+# Distance
 g.distances(2, 3)
 ```
 
----
+## Connected Components
 
-Let's find the connected components.
-```python
+Find connected components:
+```{.python}
 components = g.connected_components()
 ```
 
 Membership:
-```python
+```{.python}
 components.membership
 ```
 
 Size:
-```python
+```{.python}
 components.size
 ```
 
 The largest connected component:
-```python
+```{.python}
 components.giant()
 ```
 
----
+## Clustering coefficient
 
-## Questions & Discussion
 
-- How does the small-world property affect information spread?
-- What are the implications for social media and online networks?
-- How can we identify small-world properties in real networks?
-- What are the limitations of the Watts-Strogatz model?
+Local clustering coefficient:
 
-**Contact:** skojaku@binghamton.edu
+```{.python}
+g_cluster.transitivity_local_undirected()
+```
+
+Average clustering coefficient:
+```{.python}
+g_cluster.transitivity_avglocal_undirected()
+```
+
+Global clustering coefficient:
+```{.python}
+g_cluster.transitivity_undirected()
+```
+
+
+## Watts-Strogatz Model
+
+```{.python}
+n_ws = 30 # Number of nodes
+k_ws = 6 # Number of nearest neighbors in the ring lattice
+p_rewire = 0.1 # Probability of rewiring each edge
+
+g_smallworld = igraph.Graph.Watts_Strogatz(
+    dim=1,
+    size=n_ws,
+    nei=k_ws // 2,
+    p=p_rewire,
+)
+```
+
+Compute the small-worldness $\sigma$ using the formula below:
+
+$$
+\sigma = \dfrac{\sigma_{\text{naive}}}{\sigma_{\text{random}}}, \; \text{where}\;
+\sigma_{\text{naive}} = \dfrac{\text{average clustering coefficient}}{\text{average path length}}
+$$
+
+$$
+\sigma_{\text{random}} = \dfrac{\overline{C}_{\text{random}}}{\overline{L}_{\text{random}}},\; \overline{C}_{\text{random}} \approx \dfrac{\langle k \rangle}{N-1},\;
+\overline{L}_{\text{random}} \approx \dfrac{\ln N}{\ln \langle k \rangle}
+$$
+
+
+## What's Next?
+
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+Module 03: Network Robustness
+
+Does a network remain connected when one or more nodes fail?
+
+:::
+
+::: {.column width="50%"}
+
+![](https://www.energyconnects.com/media/nska0lrh/bloomburgmedia_sgnch4dwrgg000_15-07-2024_06-13-24_638565984000000000.jpg?width=1200&height=800){fig-align="center"}
+
+:::
+:::
 
 
