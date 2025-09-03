@@ -35,3 +35,7 @@ This exercise covers:
 - Common pitfalls in network visualization
 - Best practices for degree distribution plots
 
+## Assignment
+
+- For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.
+- For those who are not enrolled, fork [this assignment repository](https://github.com/sk-classroom/advnetsci-node-degree) at Github.
