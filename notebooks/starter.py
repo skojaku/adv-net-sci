@@ -1,10 +1,11 @@
 # /// script
 # dependencies = [
+#     "marimo",
 #     "matplotlib==3.10.6",
-#     "numpy==2.3.2",
+#     "numpy==2.2.6",
 #     "pandas==2.3.2",
 #     "python-igraph==0.11.9",
-#     "scipy==1.16.1",
+#     "scipy==1.15.3",
 #     "seaborn==0.13.2",
 # ]
 # [tool.marimo.display]
@@ -15,7 +16,7 @@
 
 import marimo
 
-__generated_with = "0.14.17"
+__generated_with = "0.15.2"
 app = marimo.App()
 
 
@@ -27,15 +28,14 @@ def _():
 
 
 @app.cell
-def _():
-
-
+def _(ig):
+    ig
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""# Libraries""")
+    mo.md("""# Libraries# Libraries""")
     return
 
 
@@ -47,13 +47,13 @@ def _():
 
 @app.cell
 def _():
-    import igraph as ig
+    import igraph
     import pandas as pd
     import numpy as np
     import scipy
     import matplotlib.pyplot as plt
     import seaborn as sns
-    return
+    return (ig,)
 
 
 if __name__ == "__main__":

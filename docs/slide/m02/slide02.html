@@ -27,6 +27,72 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #24292e;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #24292e; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #d73a49; } /* Attribute */
+    code span.bn { color: #005cc5; } /* BaseN */
+    code span.bu { color: #d73a49; } /* BuiltIn */
+    code span.cf { color: #d73a49; } /* ControlFlow */
+    code span.ch { color: #032f62; } /* Char */
+    code span.cn { color: #005cc5; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #d73a49; } /* DataType */
+    code span.dv { color: #005cc5; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #d73a49; font-weight: bold; } /* Extension */
+    code span.fl { color: #005cc5; } /* Float */
+    code span.fu { color: #6f42c1; } /* Function */
+    code span.im { color: #032f62; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #d73a49; } /* Keyword */
+    code span.op { color: #24292e; } /* Operator */
+    code span.ot { color: #6f42c1; } /* Other */
+    code span.pp { color: #d73a49; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #005cc5; } /* SpecialChar */
+    code span.ss { color: #032f62; } /* SpecialString */
+    code span.st { color: #032f62; } /* String */
+    code span.va { color: #e36209; } /* Variable */
+    code span.vs { color: #032f62; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
   </style>
   <link rel="stylesheet" href="slide02_files/libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
   <link rel="stylesheet" href="css/style.css">
@@ -979,6 +1045,37 @@ L &amp;= \frac{1}{6} \left( \underbrace{1}_{A-B} + \underbrace{1}_{A-C} + \under
 <li><strong>Long-range connections</strong> are key to the small-world phenomenon</li>
 </ol>
 <p><strong>Next:</strong> We’ll learn to compute shortest paths and connected components using igraph</p>
+</section>
+<section id="convenient-libraries-for-network-analysis" class="slide level2">
+<h2>Convenient libraries for network analysis</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><a href="https://networkx.org/">networkx</a> - a beginner-friendly library for network analysis</li>
+<li><a href="https://igraph.org/python/">igraph</a> - a mature library with a wide range of algorithms</li>
+<li><a href="https://graph-tool.skewed.de/">graph-tool</a> - specialized for stochastic block models</li>
+<li><a href="https://scipy.org/">scipy</a> - efficient tools for analyzing large networks</li>
+</ul>
+</div><div class="column" style="width:45%;">
+<p><img data-src="./figs/scipy.jpg"></p>
+</div></div>
+<p>Throughout this course, we’ll primarily use <code>igraph</code>, a mature and robust library originally developed for R and later ported to Python.</p>
+</section></section>
+<section>
+<section id="lets-code" class="title-slide slide level1 center">
+<h1>Let’s code! 🚀</h1>
+
+</section>
+<section id="first-step-choose-a-notebook-to-work-on" class="slide level2">
+<h2>First Step: Choose a notebook to work on</h2>
+<p><strong>Marimo:</strong></p>
+<p><a href="https://github.com/skojaku/adv-net-sci/notebooks/starter.py">https://github.com/skojaku/adv-net-sci/notebooks/starter.py</a></p>
+<p>Open the terminal and run:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">marimo</span> edit starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>or via <code>uv</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">uvx</span> run python <span class="at">-m</span> marimo edit starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Jupyter Notebook:</strong></p>
+<p><a href="https://github.com/skojaku/adv-net-sci/notebooks/starter.ipynb">https://github.com/skojaku/adv-net-sci/notebooks/starter.ipynb</a></p>
 </section>
 <section id="questions-discussion" class="slide level2">
 <h2>Questions &amp; Discussion</h2>

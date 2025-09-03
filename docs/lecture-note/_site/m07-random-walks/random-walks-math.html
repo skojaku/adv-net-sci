@@ -444,6 +444,12 @@ window.Quarto = {
  <span class="menu-text">Setup</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to submit assignment</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -860,7 +866,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <section id="experiment" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="experiment"><span class="header-section-number">2</span> Experiment</h2>
 <p>Let us demonstrate the above math by using a small network using Python. Let us consider a small network of 5 nodes, which looks like this:</p>
-<div id="6ffd5ba3" class="cell">
+<div id="26592aba" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> []</span>
@@ -874,7 +880,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>ig.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>np.arange(g.vcount()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The transition probability matrix <span class="math inline">P</span> is given by:</p>
-<div id="362eeead" class="cell">
+<div id="0c2f66da" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
@@ -884,7 +890,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>P.toarray()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let us compute the stationary distribution by using the power method.</p>
-<div id="1f73cde9" class="cell">
+<div id="8ef16875" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -911,7 +917,7 @@ In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ give
 </div>
 <p>We see that the distributions of the walker converges, and there are three characteristic features in the convergence: 1. The distribution of the walker occilates with a decying amplitude and eventually converges. 2. Nodes of the same degree converge to the same stationary probability. 3. Nodes with higher degree converge to the higher stationary probability.</p>
 <p>To validate the last two observation, let us compare the stationary distribution of a random walker with the expected stationary distribution, which is proportional to the degree of the nodes.</p>
-<div id="eff1f875" class="cell">
+<div id="2f1373eb" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>n_edges <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
@@ -1021,23 +1027,23 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="normalized-adjacency-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="normalized-adjacency-matrix">Normalized Adjacency Matrix</h3>
 <p>First, let us construct the normalized adjacency matrix <span class="math inline">\overline{\bf A}</span> of the network.</p>
-<div id="5bf2ff64" class="cell">
+<div id="520fae89" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> Dinv_sqrt <span class="op">@</span> A <span class="op">@</span> Dinv_sqrt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, let us compute the eigenvalues and eigenvectors of the normalized adjacency matrix.</p>
-<div id="aa8b7b6f" class="cell">
+<div id="4707f6c3" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <pre class="{note}"><code>`evals` and `evecs` are sorted in descending order of the eigenvalues. `evecs[:, 0]` is the eigenvector corresponding to the largest eigenvalue, which is always 1.</code></pre>
 <pre class="{warning}"><code>There is a similar function called `np.linalg.eig` which returns the eigenvalues and eigenvectors. It can be used for any matrices, while `np.linalg.eigh` is specifically for symmetric matrices. `np.linalg.eigh` is faster and more stable and therefore preferred if your matrix is symmetric. `np.linalg.eig` is more susceptible to numerical errors and therefore less stable.</code></pre>
 <p>The eigenvalues and eigenvectors are shown below.</p>
-<div id="88ada06a" class="cell">
+<div id="fd5a6cb9" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvalue"</span>: evals</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>}).T.style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="dv">1</span>).set_caption(<span class="st">"Eigenvalues of the normalized adjacency matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="ca623c5d" class="cell">
+<div id="b7aa452f" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvector </span><span class="sc">%i</span><span class="st">"</span> <span class="op">%</span> i: evecs[:, i]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>)</span>
@@ -1048,10 +1054,10 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <p>We decompose <span class="math inline">\overline{\bf A}</span> as</p>
 <p><span class="math display">\overline {\bf A} = {\bf Q}{\bf \Lambda}{\bf Q}^\top</span></p>
 <p>where <span class="math inline">{\bf Q}</span> corresponds to <code>eigvecs</code> and <span class="math inline">{\bf \Lambda}</span> corresponds to <code>np.diag(evals)</code> (since <span class="math inline">{\bf \Lambda}</span> is a diagonal matrix). Let’s see if this is correct:</p>
-<div id="c65c77ae" class="cell">
+<div id="261577a6" class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(A_norm.toarray()).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Normalized Adjacency Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cdb0029a" class="cell">
+<div id="9ccc9432" class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A_norm_reconstructed <span class="op">=</span> evecs <span class="op">@</span> np.diag(evals) <span class="op">@</span> evecs.T</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(A_norm_reconstructed).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Reconstruction of the Normalized Adjacency Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1060,7 +1066,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="multi-step-transition-probability" class="level3">
 <h3 class="anchored" data-anchor-id="multi-step-transition-probability">Multi-step Transition Probability</h3>
 <p>Let us first conform whether we can compute the transition probability after <span class="math inline">t</span> steps by using the eigenvalues and eigenvectors.</p>
-<div id="bc95142c" class="cell">
+<div id="c414d17b" class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.zeros(g.vcount())</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>x_0[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
@@ -1084,7 +1090,7 @@ t_{\text{mix}} \leq \frac{1}{\mu}
 <section id="relaxation-time-and-mixing-time" class="level3">
 <h3 class="anchored" data-anchor-id="relaxation-time-and-mixing-time">Relaxation Time and Mixing Time</h3>
 <p>Let us measure the relaxation time of the random walk.</p>
-<div id="f84a6fea" class="cell">
+<div id="6f630bd7" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>lambda_2 <span class="op">=</span> <span class="op">-</span>np.sort(<span class="op">-</span>evals)[<span class="dv">1</span>]</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> lambda_2</span>
