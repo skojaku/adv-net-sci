@@ -706,11 +706,60 @@ uvx marimo edit starter.py
 
 ---
 
+Let's create a graph and plot it.
+
 ```python
 edge_list = [(0, 1), (1, 2), (0, 2), (0, 3)]
+
+g = igraph.Graph() # Create an empty graph
+g.add_vertices(4) # Add 4 vertices
+g.add_edges(edge_list) # Add edges to the graph
+
+# Plot the graph
+fig, ax = plt.subplots(figsize=(5, 5))
+igraph.plot(g, bbox=(150, 150), vertex_label=list(range(4)), target = ax)
 ```
 
+---
 
+Let’s compute the paths between nodes 2 and 3.
+
+```python
+g.get_all_simple_paths(2, to=3)
+```
+
+Shortest path(s):
+
+```python
+g.get_shortest_paths(2, to=3)
+```
+
+Distance between nodes 2 and 3:
+```python
+g.distances(2, 3)
+```
+
+---
+
+Let's find the connected components.
+```python
+components = g.connected_components()
+```
+
+Membership:
+```python
+components.membership
+```
+
+Size:
+```python
+components.size
+```
+
+The largest connected component:
+```python
+components.giant()
+```
 
 ---
 

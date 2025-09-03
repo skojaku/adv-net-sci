@@ -19,23 +19,39 @@ import marimo
 __generated_with = "0.15.2"
 app = marimo.App()
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""## Undirected Graph""")
+    return
 
 @app.cell
 def _():
-
+    edge_list = [(0, 1), (1, 2), (0, 2), (0, 3)]
 
     return
 
-
 @app.cell
-def _(ig):
-    ig
+def _():
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""# Libraries# Libraries""")
+    mo.md("""## Directed Graph""")
+    return
+
+@app.cell
+def _():
+    edge_list =[(0, 1), (1, 2), (2, 1), (2, 3), (2, 5), (3, 1), (3, 4), (3, 5), (4, 5), (5, 3)]
+    return
+
+@app.cell
+def _():
+    return
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""# Libraries""")
     return
 
 
