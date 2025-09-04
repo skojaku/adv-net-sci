@@ -63,3 +63,7 @@ The historical significance extends beyond the puzzle - Euler's abstraction crea
 ### Giant Component
 
 A giant component is a connected component that contains a significant fraction of the entire graph's nodes.
+
+### Degree and Self-loops 
+
+Degree of a node is the number of edges pertained to a node. If the edge is a self-loop, then the self-loop increments the degree by 2. 
