@@ -66,4 +66,4 @@ A giant component is a connected component that contains a significant fraction 
 
 ### Degree and Self-loops 
 
-Degree of a node is the number of edges pertained to a node. If the edge is a self-loop, then the self-loop increments the degree by 2. 
+Degree of a node is the number of edges pertained to a node. 
