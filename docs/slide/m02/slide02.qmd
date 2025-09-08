@@ -35,6 +35,35 @@ skojaku@binghamton.edu
 
 ---
 
+Quiz
+
+Let us denote the adjacency list of a directed graph as follows:
+
+```python
+neighbors = {
+    i: [j, k, ...]
+}
+```
+
+where $i, j, k, \ldots$ are the nodes in a graph, and there are directed edge from $i$ to $j$ and from $i$ to $k$.
+
+Identify the number of *strongly connected components* in the following graph.
+
+```python
+neighbors = {
+    a: [b],
+    b: [c, e, f],
+    c: [d, g],
+    d: [c, h],
+    e: [a, f],
+    f: [g],
+    g: [f],
+    h: [d, g],
+}
+```
+
+---
+
 ## What You'll Learn in this Module
 
 - How to measure **distance** between two nodes

@@ -207,6 +207,26 @@
 <p><img data-src="https://skojaku.github.io/adv-net-sci/figs/milgram-small-world-experiment.png"></p>
 </div></div>
 </section>
+<section class="slide level2">
+
+<p>Quiz</p>
+<p>Let us denote the adjacency list of a directed graph as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>neighbors <span class="op">=</span> {</span>
+<span id="cb1-2"><a href=""></a>    i: [j, k, ...]</span>
+<span id="cb1-3"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>where <span class="math inline">\(i, j, k, \ldots\)</span> are the nodes in a graph, and there are directed edge from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> and from <span class="math inline">\(i\)</span> to <span class="math inline">\(k\)</span>.</p>
+<p>Identify the number of <em>strongly connected components</em> in the following graph.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a>neighbors <span class="op">=</span> {</span>
+<span id="cb2-2"><a href=""></a>    a: [b],</span>
+<span id="cb2-3"><a href=""></a>    b: [c, e, f],</span>
+<span id="cb2-4"><a href=""></a>    c: [d, g],</span>
+<span id="cb2-5"><a href=""></a>    d: [c, h],</span>
+<span id="cb2-6"><a href=""></a>    e: [a, f],</span>
+<span id="cb2-7"><a href=""></a>    f: [g],</span>
+<span id="cb2-8"><a href=""></a>    g: [f],</span>
+<span id="cb2-9"><a href=""></a>    h: [d, g],</span>
+<span id="cb2-10"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 <section id="what-youll-learn-in-this-module" class="slide level2">
 <h2>What You’ll Learn in this Module</h2>
 <ul>
@@ -1071,77 +1091,77 @@ L &amp;= \frac{1}{6} \left( \underbrace{1}_{A-B} + \underbrace{1}_{A-C} + \under
 <p><strong>Marimo:</strong></p>
 <p><a href="https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.py">https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.py</a></p>
 <p>Open the terminal and run:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">marimo</span> edit <span class="at">--sandbox</span> starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">marimo</span> edit <span class="at">--sandbox</span> starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>or via <code>uv</code></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">uvx</span> marimo edit starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href=""></a><span class="ex">uvx</span> marimo edit starter.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Jupyter Notebook:</strong></p>
 <p><a href="https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.ipynb">https://github.com/skojaku/adv-net-sci/notebooks/m02-small-world/starter.ipynb</a></p>
 </section>
 <section id="toy-network" class="slide level2">
 <h2>Toy network</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="im">import</span> igraph</span>
-<span id="cb3-2"><a href=""></a></span>
-<span id="cb3-3"><a href=""></a>edge_list <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>)]</span>
-<span id="cb3-4"><a href=""></a></span>
-<span id="cb3-5"><a href=""></a>g <span class="op">=</span> igraph.Graph() <span class="co"># Create an empty graph</span></span>
-<span id="cb3-6"><a href=""></a>g.add_vertices(<span class="dv">4</span>) <span class="co"># Add 4 vertices</span></span>
-<span id="cb3-7"><a href=""></a>g.add_edges(edge_list) <span class="co"># Add edges to the graph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="im">import</span> igraph</span>
+<span id="cb5-2"><a href=""></a></span>
+<span id="cb5-3"><a href=""></a>edge_list <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>)]</span>
+<span id="cb5-4"><a href=""></a></span>
+<span id="cb5-5"><a href=""></a>g <span class="op">=</span> igraph.Graph() <span class="co"># Create an empty graph</span></span>
+<span id="cb5-6"><a href=""></a>g.add_vertices(<span class="dv">4</span>) <span class="co"># Add 4 vertices</span></span>
+<span id="cb5-7"><a href=""></a>g.add_edges(edge_list) <span class="co"># Add edges to the graph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Plot the graph.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb4-2"><a href=""></a></span>
-<span id="cb4-3"><a href=""></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
-<span id="cb4-4"><a href=""></a></span>
-<span id="cb4-5"><a href=""></a><span class="co"># Draw the graph on the matplotlib axes using igraph</span></span>
-<span id="cb4-6"><a href=""></a>igraph.plot(</span>
-<span id="cb4-7"><a href=""></a>    g,</span>
-<span id="cb4-8"><a href=""></a>    bbox<span class="op">=</span>(<span class="dv">50</span>, <span class="dv">50</span>),</span>
-<span id="cb4-9"><a href=""></a>    vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">4</span>)),</span>
-<span id="cb4-10"><a href=""></a>    target<span class="op">=</span>ax,</span>
-<span id="cb4-11"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-2"><a href=""></a></span>
+<span id="cb6-3"><a href=""></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb6-4"><a href=""></a></span>
+<span id="cb6-5"><a href=""></a><span class="co"># Draw the graph on the matplotlib axes using igraph</span></span>
+<span id="cb6-6"><a href=""></a>igraph.plot(</span>
+<span id="cb6-7"><a href=""></a>    g,</span>
+<span id="cb6-8"><a href=""></a>    bbox<span class="op">=</span>(<span class="dv">50</span>, <span class="dv">50</span>),</span>
+<span id="cb6-9"><a href=""></a>    vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">4</span>)),</span>
+<span id="cb6-10"><a href=""></a>    target<span class="op">=</span>ax,</span>
+<span id="cb6-11"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="path" class="slide level2">
 <h2>Path</h2>
 <p>Simple paths:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a>g.get_all_simple_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a>g.get_all_simple_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Shortest path:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="co"># Shortest path</span></span>
-<span id="cb6-2"><a href=""></a>g.get_shortest_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="co"># Shortest path</span></span>
+<span id="cb8-2"><a href=""></a>g.get_shortest_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Distance:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="co"># Distance</span></span>
-<span id="cb7-2"><a href=""></a>g.distances(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="co"># Distance</span></span>
+<span id="cb9-2"><a href=""></a>g.distances(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="connected-components" class="slide level2">
 <h2>Connected Components</h2>
 <p>Find connected components:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Membership:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a>components.membership</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href=""></a>components.membership</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Size:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a>components.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href=""></a>components.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The largest connected component:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href=""></a>components.giant()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href=""></a>components.giant()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="clustering-coefficient" class="slide level2">
 <h2>Clustering coefficient</h2>
 <p>Local clustering coefficient:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href=""></a>g_cluster.transitivity_local_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a>g_cluster.transitivity_local_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Average clustering coefficient:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href=""></a>g_cluster.transitivity_avglocal_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href=""></a>g_cluster.transitivity_avglocal_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Global clustering coefficient:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a>g_cluster.transitivity_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href=""></a>g_cluster.transitivity_undirected()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="watts-strogatz-model" class="slide level2">
 <h2>Watts-Strogatz Model</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href=""></a>n_ws <span class="op">=</span> <span class="dv">30</span> <span class="co"># Number of nodes</span></span>
-<span id="cb15-2"><a href=""></a>k_ws <span class="op">=</span> <span class="dv">6</span> <span class="co"># Number of nearest neighbors in the ring lattice</span></span>
-<span id="cb15-3"><a href=""></a>p_rewire <span class="op">=</span> <span class="fl">0.1</span> <span class="co"># Probability of rewiring each edge</span></span>
-<span id="cb15-4"><a href=""></a></span>
-<span id="cb15-5"><a href=""></a>g_smallworld <span class="op">=</span> igraph.Graph.Watts_Strogatz(</span>
-<span id="cb15-6"><a href=""></a>    dim<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb15-7"><a href=""></a>    size<span class="op">=</span>n_ws,</span>
-<span id="cb15-8"><a href=""></a>    nei<span class="op">=</span>k_ws <span class="op">//</span> <span class="dv">2</span>,</span>
-<span id="cb15-9"><a href=""></a>    p<span class="op">=</span>p_rewire,</span>
-<span id="cb15-10"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href=""></a>n_ws <span class="op">=</span> <span class="dv">30</span> <span class="co"># Number of nodes</span></span>
+<span id="cb17-2"><a href=""></a>k_ws <span class="op">=</span> <span class="dv">6</span> <span class="co"># Number of nearest neighbors in the ring lattice</span></span>
+<span id="cb17-3"><a href=""></a>p_rewire <span class="op">=</span> <span class="fl">0.1</span> <span class="co"># Probability of rewiring each edge</span></span>
+<span id="cb17-4"><a href=""></a></span>
+<span id="cb17-5"><a href=""></a>g_smallworld <span class="op">=</span> igraph.Graph.Watts_Strogatz(</span>
+<span id="cb17-6"><a href=""></a>    dim<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb17-7"><a href=""></a>    size<span class="op">=</span>n_ws,</span>
+<span id="cb17-8"><a href=""></a>    nei<span class="op">=</span>k_ws <span class="op">//</span> <span class="dv">2</span>,</span>
+<span id="cb17-9"><a href=""></a>    p<span class="op">=</span>p_rewire,</span>
+<span id="cb17-10"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Compute the small-worldness <span class="math inline">\(\sigma\)</span> using the formula below:</p>
 <p><span class="math display">\[
 \sigma = \dfrac{\sigma_{\text{naive}}}{\sigma_{\text{random}}}, \; \text{where}\;

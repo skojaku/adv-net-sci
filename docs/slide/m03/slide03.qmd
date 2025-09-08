@@ -1,0 +1,777 @@
+---
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: true
+    preview-links: auto
+    css: css/style.css
+highlight-style: oblivion
+execute:
+    enabled: true
+    echo: false
+---
+
+# Module 03: Network Robustness
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Advanced Topics in Network Science
+
+Sadamori Kojaku
+
+skojaku@binghamton.edu
+
+:::
+
+::: {.column width="50%"}
+
+![](https://www.geni.org/globalenergy/library/national_energy_grid/united-states-of-america/graphics/UnitedStatesPowerGrid.jpg)
+
+:::
+::::
+
+---
+
+## Learning Objectives
+
+- **MST**: Minimum spanning trees and network design
+- **Robustness**: Random failures vs. targeted attacks
+- **Theory**: Percolation theory and connectivity
+- **Design**: Robust networks balancing efficiency and resilience
+
+**Keywords**: MST, Kruskal's algorithm, Prim's algorithm, percolation, R-index, robustness paradox
+
+---
+
+[Pen & Paper Exercise](./pen-and-paper/exercise.pdf)
+
+---
+
+# Part I: Minimum Spanning Tree
+
+---
+
+## Post-WWI Czechoslovakia Challenge
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+- Connect all towns with electricity
+- Limited resources for infrastructure
+- Minimize cable length
+- First systematic solution by Otakar Borůvka (1899-1995)
+
+
+:::
+
+::: {.column width="50%"}
+
+![](https://www.railpass.com/sites/default/files/2016-07/CZECH.02.jpg)
+
+
+:::
+::::
+
+**❓ Question**: How would you connect all towns with the minimum total cable length?
+
+*Take 30 seconds to think about your approach...*
+
+---
+
+## 💡 Key Insight
+
+**Key Insight**: We need a **tree** that connects all nodes with minimum total weight.
+
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+**Why a tree?**
+
+- No redundant connections (cycles)
+- Every node connected exactly once
+- Minimum possible edges for full connectivity
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 3
+//| fig-align: center
+//| fig-cap: "Red edges form a tree. Dashed edges are redundant."
+graph G {
+    rankdir=LR
+    layout=fdp
+    node [shape=circle]
+
+    // MST edges (highlighted)
+    1 -- 2 [penwidth=3, color=red]
+    3 -- 6 [penwidth=3, color=red]
+    4 -- 5 [penwidth=3, color=red]
+    2 -- 6 [penwidth=3, color=red]
+    6 -- 5 [penwidth=3, color=red]
+
+    // Non-MST edges (normal)
+    1 -- 6 [style=dashed]
+    3 -- 4 [style=dashed]
+  }
+```
+
+
+:::
+::::
+
+---
+
+## Minimum Spanning Tree (MST)
+
+
+::: {.columns}
+
+::: {.column width="60%"}
+A **minimum spanning tree (MST)** of a weighted network is a tree that:
+
+- **Spans** all nodes (connects every location)
+- Is a **tree** (no cycles, no redundant loops)
+- Has **minimum total weight** among all spanning trees
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-align: center
+graph G {
+    rankdir=LR
+    layout=circo
+    node [shape=circle]
+
+    // MST edges (highlighted)
+    1 -- 2 [label="1", color=red, penwidth=3]
+    3 -- 6 [label="2", color=red, penwidth=3]
+    4 -- 5 [label="6", color=red, penwidth=3]
+    2 -- 6 [label="9", color=red, penwidth=3]
+    3 -- 4 [label="11", color=red, penwidth=3]
+
+    // Non-MST edges (normal)
+    1 -- 6 [label="14"]
+    2 -- 3 [label="10"]
+    5 -- 6 [label="9"]
+}
+```
+
+
+:::
+::::
+
+
+## 🤔 Algorithm Design Question
+
+**❓ Question**: Given that we want the minimum spanning tree, what strategy would you use to build it?
+
+*Think about: Should we start with the cheapest connections? What if adding a cheap connection creates a loop?*
+
+---
+
+## 💡 The Answer: Kruskal's Algorithm
+
+**Intuition**: "Choose cheapest option, avoid wasteful loops"
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+1. Sort edges by weight (cheapest first)
+2. Add edges in order
+3. Skip if creates cycle
+4. Continue until all connected
+
+**Global Perspective**: Considers all connections simultaneously
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-align: center
+graph G {
+    rankdir=LR
+    layout=circo
+    node [shape=circle]
+
+    // MST edges (highlighted)
+    1 -- 2 [label="1", penwidth=3, color=red, fontsize=20]
+    3 -- 6 [label="2", penwidth=3, color=red, fontsize=20]
+    4 -- 5 [label="6", penwidth=3, color=red, fontsize=20]
+    2 -- 6 [label="9", penwidth=3, color=red, fontsize=20]
+    3 -- 4 [label="11", penwidth=3, color=red, fontsize=20]
+
+    // Non-MST edges (normal)
+    1 -- 6 [label="14", fontsize=20]
+    2 -- 3 [label="10", fontsize=20]
+    5 -- 6 [label="9", fontsize=20]
+}
+```
+
+:::
+::::
+
+---
+
+## 💡 Prim's Algorithm
+
+**Intuition**: "Organic growth from starting point"
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+1. Start from any node (power plant)
+2. Find cheapest connection to an unconnected node
+3. Add edge, mark node as connected
+4. Repeat until all connected
+
+**Local Perspective**: Builds incrementally from existing network
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-align: center
+graph G {
+    rankdir=LR
+    layout=circo
+    node [shape=circle]
+
+    // MST edges (highlighted)
+    1 -- 2 [label="1", penwidth=3, color=red, fontsize=20]
+    3 -- 6 [label="2", penwidth=3, color=red, fontsize=20]
+    4 -- 5 [label="6", penwidth=3, color=red, fontsize=20]
+    2 -- 6 [label="9", penwidth=3, color=red, fontsize=20]
+    3 -- 4 [label="11", penwidth=3, color=red, fontsize=20]
+
+    // Non-MST edges (normal)
+    1 -- 6 [label="14", fontsize=20]
+    2 -- 3 [label="10", fontsize=20]
+    5 -- 6 [label="9", fontsize=20]
+}
+```
+
+:::
+::::
+
+## Kruskal vs. Prim
+
+[A demo in lecture notes](https://skojaku.github.io/adv-net-sci/m03-robustness/01-concepts.html)
+
+**💬 Discussion**: When do they find the same MST? When not?
+
+# Part II: Network Robustness
+
+
+## 🤔 The Vulnerability Problem
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+What happens if a single node in our MST fails?
+
+*Think about: How many towns would lose power? What does this mean for real infrastructure?*
+
+Cost efficiency ≠ Robustness
+
+
+:::
+
+::: {.column width="50%"}
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-align: center
+graph G {
+    rankdir=LR
+    layout=circo
+    node [shape=circle]
+
+    // MST edges (highlighted)
+    1 -- 2 [label="1", penwidth=3, color=red, fontsize=20]
+    3 -- 6 [label="2", penwidth=3, color=red, fontsize=20]
+    4 -- 5 [label="6", penwidth=3, color=red, fontsize=20]
+    2 -- 6 [label="9", penwidth=3, color=red, fontsize=20]
+    3 -- 4 [label="11", penwidth=3, color=red, fontsize=20]
+
+    // Non-MST edges (normal)
+    1 -- 6 [label="14", fontsize=20]
+    2 -- 3 [label="10", fontsize=20]
+    5 -- 6 [label="9", fontsize=20]
+}
+```
+:::
+::::
+
+**💬 Discussion**: How would you modify the network to make it more robust? What are the trade-offs between cost and reliability?
+
+---
+
+## Measuring Network Connectivity
+
+$$\text{Connectivity} = \frac{\text{Size of largest component after removal}}{\text{Original network size}}$$
+
+
+![](https://skojaku.github.io/adv-net-sci/figs/single-node-failure.jpg){fig-align="center"}
+
+
+---
+
+**Robustness Profile**: Connectivity vs. fraction of nodes removed
+
+
+![](https://skojaku.github.io/adv-net-sci/figs/robustness-profile.jpg){fig-align="center"}
+
+**R-index**: Area under robustness curve
+$$R = \frac{1}{N} \sum_{k=1}^{N-1} y_k$$
+
+---
+
+## 🤔 Attack Strategies
+
+**Random Failures**:
+
+- Unpredictable events
+- Earthquakes, equipment malfunctions
+- Technical problems, random server crashes
+- Characterized by equal probability of failure for all nodes
+
+**Targeted Attacks**:
+
+- Strategic node removal by adversaries
+- Target busiest airports to disrupt air travel
+- Characterized by removing highest-degree nodes, then next highest
+
+---
+
+## Game Time!
+
+[Interactive game](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+
+- Think about a structure that is robust to random failures/targeted attacks/both
+
+- Why might the same network structure respond so differently to these two scenarios? What does this tell us about network design?
+
+# Part III: Theoretical Framework
+
+## Percolation Theory
+
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Suppose puddles are scattered on the ground.
+- As rain falls, puddles begin to merge with nearby puddles.
+- At first, most puddles are isolated; as more rain falls, clusters form, and eventually a giant puddle spans a large part of the area.
+:::
+
+::: {.column width="50%"}
+
+![](https://jamesmccaffrey.wordpress.com/wp-content/uploads/2021/07/percolation.jpg)
+
+:::
+:::
+
+**Percolation theory** studies how local connections (like merging puddles) lead to sudden global connectivity.
+
+[Lecture notes for demonstration](https://skojaku.github.io/adv-net-sci/m03-robustness/01-concepts.html)
+
+---
+
+## Phase Transition
+
+**Critical Point ($p_c$)**: Threshold where giant component emerges/disappears
+
+**2D Lattice Example**: $p_c \approx 0.593$
+
+[Lecture notes for demonstration](https://skojaku.github.io/adv-net-sci/m03-robustness/01-concepts.html)
+
+The sharp transition around $p_c$ demonstrates a **phase transition**, i.e., a sudden change from a disconnected to connected state as we cross the critical threshold.
+
+Network Robustness - Where is the critical point?
+
+
+---
+
+## 🤔 Let's Think Like Network Scientists
+
+::: {.callout-note title = "Question:"}
+We've seen that networks can suddenly lose connectivity as nodes are removed. 
+
+**Your challenge**: Can you predict this critical point based on the network's structure alone, without running simulations?
+:::
+
+*Turn to your neighbor and discuss for 30 seconds: What properties of a network might predict its resilience?*
+
+---
+
+## 🧠 The Key Insight
+
+Let's think step by step...
+
+::: {.callout-note title = "Question:"}
+Imagine you're a node in a network. For you to be part of the largest connected component, what do you need?
+:::
+
+*Think about it...*
+
+::: {.incremental}
+- You need **friends** (connections)
+- But is that enough?
+- *What else do your friends need?*
+:::
+
+---
+
+## 🔗 Friends of Friends
+
+::: {.callout-note title = "Question:"}
+You have some friends. For you to be connected to the rest of the network through them, what must your friends have?
+:::
+
+*Discuss with your neighbor: How many connections does each friend need minimum?*
+
+::: {.incremental}
+- **Your insight**: Each friend needs at least **2 connections**
+- One connection: **to you**  
+- Another connection: **to someone else** (to reach the rest of the network)
+:::
+
+*So what matters is not just how many friends you have, but how many friends your friends have!*
+
+---
+
+## 📊 Putting It Together
+
+Let's formalize this insight:
+
+::: {.callout-note title = "Question:"}
+If what matters is "friends of friends," what mathematical quantity should we calculate?
+:::
+
+*Take 30 seconds to think...*
+
+::: {.incremental}
+- **Your idea**: Average number of friends that friends have
+- In network terms: $\frac{\langle k^2 \rangle}{\langle k \rangle}$
+- **Critical threshold**: This must be > 2
+:::
+
+---
+
+## 🎯 The Molloy-Reed Criterion
+
+You just discovered the **Molloy-Reed Criterion**!
+
+$$\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2$$
+
+::: {.callout-tip title = "What you found:"}
+- $\kappa$: Average degree of a friend
+- When $\kappa > 2$: Giant component exists
+- When $\kappa \leq 2$: Network fragments easily
+:::
+
+**Critical fraction for random failures**: $f_c = 1 - \frac{1}{\kappa - 1}$
+
+---
+
+## 💬 Let's Discuss
+
+::: {.callout-note title = "Question:"}
+Now that you understand the criterion, what does high κ tell us about a network's structure?
+:::
+
+*Think about: Hub networks vs. regular networks*
+
+::: {.incremental}
+- **High κ**: Hub-dominated networks (some nodes have many friends)
+- **Low κ**: Degree homogeneous networks (everyone has similar friends)
+- **Implication**: Hubs make networks more robust... but also more vulnerable to targeted attacks!
+:::
+
+
+---
+
+## Part VI: Network Types & Robustness
+
+---
+
+## Degree Homogeneous Networks
+
+**Example**: Random networks
+
+**Characteristics**:
+$$\langle k^2 \rangle = \langle k \rangle^2, \text{ so } \kappa = \langle k \rangle$$
+
+**Critical Fraction**:
+$$f_c = 1 - \frac{1}{\langle k \rangle}$$
+
+**Robustness**: Depends on average degree
+
+::: {.callout-tip}
+## Design Implication
+A large average degree ⟨k⟩ results in a larger f_c, meaning the network is more robust against random failures.
+:::
+
+---
+
+## 🤔 Scale-Free Networks Question
+
+**❓ Question**: What happens to network robustness when we have a few very highly connected nodes (hubs) and many poorly connected nodes?
+
+*Think about: How would random failures affect this type of network? What about targeted attacks?*
+
+---
+
+## 💡 The Answer: Scale-Free Networks (Power Law)
+
+**Degree Distribution**:
+$$P(k) \sim k^{-\gamma}$$
+
+**Two Regimes**:
+
+- **2 < γ < 3**: f_c → 1 (extremely robust to random failures)
+- **γ > 3**: Finite f_c (moderate robustness)
+
+**Critical Fraction**:
+$$f_c = \begin{cases}
+1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\text{min}} ^{\gamma-2} k_{\text{max}}^{3-\gamma} -1} & \text{if } 2 < \gamma < 3 \\
+1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\text{min}} - 1} & \text{if } \gamma > 3 \\
+\end{cases}$$
+
+**Key Insight**: Scale-free networks are remarkably robust to random failures
+
+**💬 Discussion**: Why are scale-free networks so robust to random failures? What's the intuition behind this counterintuitive result?
+
+---
+
+## 🤔 The Achilles' Heel Question
+
+**❓ Question**: If scale-free networks are so robust to random failures, what's their weakness?
+
+*Hint: Think about what happens when you deliberately target the most important nodes...*
+
+---
+
+## 💡 The Answer: Vulnerability to Targeted Attacks
+
+**Vulnerability**: Scale-free networks fragile under targeted attacks
+
+**Mathematical Analysis**:
+$$f_c^{\text{attack}} \ll f_c^{\text{random}}$$
+
+**Critical Attack Threshold**:
+$$f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)$$
+
+**Real-world Implications**:
+
+- Power grids protect major substations
+- Internet infrastructure includes hub redundancy
+- Transportation networks maintain backup routes
+
+**💬 Discussion**: This creates a fundamental dilemma - how do you design a network that's both efficient and secure? What strategies might you use?
+
+---
+
+## Part VII: Design Principles
+
+---
+
+## 🤔 Design Challenge
+
+**❓ Question**: Given what we've learned about network vulnerabilities, how would you design a robust network?
+
+*Consider: What principles would you use? How would you balance cost, efficiency, and security?*
+
+---
+
+## 💡 The Answer: Robust Network Design Principles
+
+1. **Balanced Degree Distribution**: Avoid extreme homogeneity or hub concentration
+2. **Multiple Redundant Pathways**: Ensure no single point of failure
+3. **Strategic Hub Protection**: Invest heavily in protecting critical nodes
+4. **Hierarchical Design**: Combine local clusters with hub connections
+5. **Adaptive Responses**: Design systems that can reconfigure when attacks detected
+
+**💬 Discussion**: Which of these principles do you think is most important? How would you prioritize them given limited resources? What real-world examples can you think of that implement these strategies?
+
+---
+
+## The Robustness Paradox
+
+**Trade-off**: Efficiency vs. Security
+
+**No Perfect Solution**: No single structure optimal against all failure types
+
+**Design Challenge**: Balance cost efficiency with resilience
+
+**Context-Dependent**: Optimal design depends on threat model and cost constraints
+
+---
+
+## Part VIII: Practical Applications
+
+---
+
+## Coding Implementation
+
+**Tools**:
+
+- `igraph` - comprehensive network analysis
+- `scipy.sparse.csgraph` - efficient connected component algorithms
+- `networkx` - alternative approach with different robustness metrics
+
+**Key Functions**:
+
+- Connected components analysis
+- MST algorithms
+- Robustness simulation
+- Percolation analysis
+
+---
+
+## 🤔 Real-World Application Question
+
+**❓ Question**: How would you test our theoretical predictions about network robustness using real data?
+
+*Think about: What kind of network would be good to study? How would you measure robustness in practice?*
+
+---
+
+## 💡 The Answer: Airport Network Analysis
+
+**Case Study**: Airport connectivity network
+
+**Theoretical Prediction**: Using Molloy-Reed criterion
+
+- Calculate degree statistics: κ = ⟨k²⟩/⟨k⟩
+- Predict critical fraction: f_c = 1 - 1/(κ-1)
+
+**Empirical Validation**: Compare predicted vs. observed critical fractions
+
+**💬 Discussion**: The high f_c value indicates the airport network is extremely robust to random failures. Why do you think this is? What does this tell us about how transportation networks are designed?
+
+---
+
+## Part IX: Interactive Elements
+
+---
+
+## Hands-on Exercises
+
+**Pen-and-Paper**: [MST to robust grid design](./pen-and-paper/exercise.pdf)
+
+**Interactive Demo**: [Network robustness simulation](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+
+**Coding Exercises**:
+
+- Random vs. targeted attack comparison
+- Percolation simulation
+- Real-world network analysis
+
+---
+
+## Assignment Overview
+
+**Repository Access**:
+
+- Enrolled students: Dedicated GitHub classroom link
+- Others: [Fork assignment repository](https://github.com/sk-classroom/advnetsci-robustness)
+
+**Grading**: Automated testing framework
+
+- `bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`
+- `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
+
+**Learning Objectives**: Apply concepts to real network data
+
+---
+
+## Conclusion & Key Takeaways
+
+---
+
+## Summary
+
+- **MST**: Optimal cost efficiency but vulnerable to failures
+- **Robustness**: Requires redundancy beyond minimum connectivity
+- **Attack Asymmetry**: Random failures vs. targeted attacks create different vulnerabilities
+- **Design Balance**: No single solution - context-dependent optimization
+
+---
+
+## Next Steps
+
+**Assignment**: Apply concepts to real network data
+
+**Further Reading**:
+
+- Borůvka (1926) - Original MST work
+- Albert, Jeong & Barabási (2000) - Network robustness
+- Cohen & Havlin (2010) - Comprehensive treatment
+
+**Applications**: Infrastructure design, cybersecurity, system resilience
+
+---
+
+## Questions?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Contact**: skojaku@binghamton.edu
+
+**Course Materials**: Available on course website
+
+**Office Hours**: Check course schedule
+
+:::
+
+::: {.column width="50%"}
+
+**Interactive Resources**:
+
+- [Network Robustness Demo](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+- [Percolation Simulation](https://visualize-it.github.io/bernoulli_percolation/simulation.html)
+- [Assignment Repository](https://github.com/sk-classroom/advnetsci-robustness)
+
+:::
+::::
+
+---
+
+## References
+
+1. **Borůvka, O.** (1926). O jistém problému minimálním. *Práce Moravské Přírodovědecké Společnosti*, 3, 37-58.
+
+2. **Albert, R., Jeong, H., & Barabási, A. L.** (2000). Error and attack tolerance of complex networks. *Nature*, 406(6794), 378-382.
+
+3. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629.
+
+4. **Molloy, M., & Reed, B.** (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180.
+
+5. **Cohen, R., & Havlin, S.** (2010). *Complex Networks: Structure, Robustness and Function*. Cambridge University Press.
