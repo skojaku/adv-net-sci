@@ -379,22 +379,23 @@ graph G {
 
 [Global clustering coefficient]{.red-text} focuses on the total number of triangles in the network.
 
-**Definition**
-
 $$
-C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}
+C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}} = \frac{3 \times \text{number of triangles}}{\sum_{i} k_i(k_i-1)/2}
 $$
 
+where $k_i$ is the degree of node $i$.
 
 ::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="55%"}
 
-[Connected triplets]{.blue-text} = A *sequence of three nodes* connected by at least two edges, forming either a closed triplet (triangle) or an open triplet (wedge).
+[Connected triplets]{.blue-text} = Three nodes joined by at least two edges.
+[When counting, we distinguish the triplets by the node that is centered]{.red-text}.
+A triangle counts as three triplets. A node with degree $k$ has $k(k-1)/2$ triplets.
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 
 
 

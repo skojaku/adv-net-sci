@@ -34,6 +34,107 @@ skojaku@binghamton.edu
 
 ---
 
+
+## Clustering Coefficient (3)
+
+[Global clustering coefficient]{.red-text} focuses on the total number of triangles in the network.
+
+$$
+C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}} = \frac{3 \times \text{number of triangles}}{\sum_{i} k_i(k_i-1)/2}
+$$
+
+where $k_i$ is the degree of node $i$.
+
+::: {.columns}
+
+::: {.column width="55%"}
+
+[Connected triplets]{.blue-text} = Three nodes joined by at least two edges.
+[When counting, we distinguish the triplets by the node that is centered]{.red-text}.
+A triangle counts as three triplets. A node with degree $k$ has $k(k-1)/2$ triplets.
+
+:::
+
+::: {.column width="45%"}
+
+
+
+```{dot}
+//| fig-width: 5
+//| fig-height: 2.5
+//| fig-cap: "Closed triplet (left) and open triplet (right)"
+//| fig-align: center
+graph G {
+  layout=neato;
+  fontsize=16;
+
+  node [fontsize=14];
+
+  subgraph cluster_0 {
+    label="Closed Triplet";
+    fontsize=16;
+    style=filled;
+    color=lightgrey;
+    node [shape=circle, fillcolor="#f5cbcc", style="filled,bold", penwidth=2];
+    A1 [pos="-1.5,0!" shape=circle];
+    B1 [pos="-2.5,-1!" shape=circle];
+    C1 [pos="-0.5,-1!" shape=circle];
+    A1 -- B1;
+    B1 -- C1;
+    C1 -- A1;
+  }
+
+  subgraph cluster_1 {
+    label="Open Triplet";
+    fontsize=16;
+    style=filled;
+    color=lightgrey;
+    node [shape=circle, fillcolor="#d0e2f3", style="filled,bold", penwidth=2];
+    A2 [pos="1.5,0!" ];
+    B2 [pos="0.5,-1!" ];
+    C2 [pos="2.5,-1!" ];
+    A2 -- B2;
+    B2 -- C2;
+  }
+}
+```
+
+:::
+:::
+
+---
+
+Quiz:
+
+- Compute the global clustering coefficient and the average path length of the following network.
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 2.5
+//| fig-align: center
+graph G {
+  layout=circo
+  A [shape=circle, fillcolor="#f5cbcc", style="filled,bold", penwidth=2, pos="0,0!"];
+  B [shape=circle];
+  C [shape=circle];
+  D [shape=circle];
+  E [shape=circle];
+  F [shape=circle];
+
+  A -- B;
+  A -- C;
+  A -- D;
+  A -- E;
+  A -- F;
+  B -- F;
+  C -- E;
+}
+```
+
+- Let's define the ratio of the clustering coefficient to the average path length as the small-worldness index. What is the problem with this definition?
+
+---
+
 ## Learning Objectives
 
 - **MST**: Minimum spanning trees and network design
@@ -418,127 +519,233 @@ Network Robustness - Where is the critical point?
 
 ## 🤔 Let's Think Like Network Scientists
 
-::: {.callout-note title = "Question:"}
-We've seen that networks can suddenly lose connectivity as nodes are removed. 
+We've seen that networks can suddenly lose connectivity as nodes are removed.
 
-**Your challenge**: Can you predict this critical point based on the network's structure alone, without running simulations?
-:::
+Can you predict this critical point based on the network's structure alone, without running simulations?
 
-*Turn to your neighbor and discuss for 30 seconds: What properties of a network might predict its resilience?*
-
----
-
-## 🧠 The Key Insight
-
-Let's think step by step...
-
-::: {.callout-note title = "Question:"}
 Imagine you're a node in a network. For you to be part of the largest connected component, what do you need?
-:::
 
-*Think about it...*
-
-::: {.incremental}
 - You need **friends** (connections)
 - But is that enough?
-- *What else do your friends need?*
-:::
+- What else do your friends need?
+
+*Take 3 mins to think about it...*
+
 
 ---
 
 ## 🔗 Friends of Friends
 
-::: {.callout-note title = "Question:"}
 You have some friends. For you to be connected to the rest of the network through them, what must your friends have?
-:::
-
-*Discuss with your neighbor: How many connections does each friend need minimum?*
 
 ::: {.incremental}
-- **Your insight**: Each friend needs at least **2 connections**
-- One connection: **to you**  
+- Each friend needs at least **2 connections**
+- One connection: **to you**
 - Another connection: **to someone else** (to reach the rest of the network)
+- *So what matters is not just how many friends you have, but how many friends your friends have!*
 :::
 
-*So what matters is not just how many friends you have, but how many friends your friends have!*
 
 ---
 
-## 📊 Putting It Together
+$$
+\text{Average \# of friends that friends have} \geq 2
+$$
 
-Let's formalize this insight:
+Let's formalize this insight. *Take 2 mins to think about it...*
 
-::: {.callout-note title = "Question:"}
-If what matters is "friends of friends," what mathematical quantity should we calculate?
+::: {.columns}
+
+::: {.column width="50%"}
+
+
+1. Suppose you are node 1 with one hand
+2. Other nodes have $k$ hands with probability $p(k)$
+3. When you handshake with a randomly picked **hand** (not node), how many hands do your friends would have on average 🤔?
+
 :::
 
-*Take 30 seconds to think...*
+::: {.column width="50%"}
 
-::: {.incremental}
-- **Your idea**: Average number of friends that friends have
-- In network terms: $\frac{\langle k^2 \rangle}{\langle k \rangle}$
-- **Critical threshold**: This must be > 2
+```{dot}
+//| fig-width: 5
+//| fig-height: 5
+//| fig-align: center
+graph G {
+    node [shape=circle]
+
+    10 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    20 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    21 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    30 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    31 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    32 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    40 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    41 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    42 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    43 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+
+    1 -- 10 [penwidth=3, color="#1a43bf", fontsize=20]
+
+    // MST edges (highlighted)
+    10 -- 20 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 21 [penwidth=0, color="#ffffffff", fontsize=20]
+
+    10 -- 30 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 31 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 32 [penwidth=0, color="#ffffffff", fontsize=20]
+
+
+    10 -- 40 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 41 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 42 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 43 [penwidth=0, color="#ffffffff", fontsize=20]
+
+    // ----
+    20 -- 2 [penwidth=3, color="#1a43bf", fontsize=20]
+    21 -- 2 [penwidth=3, color="#1a43bf", fontsize=20]
+
+
+    30 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+    31 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+    32 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+
+
+    40 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    41 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    42 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    43 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+}
+```
+
 :::
+:::
+
+
+---
+
+There are $p(k)$ nodes with $k$ hands. The total number of hands that nodes with $k$ hands have is $k p(k)$.
+
+If I randomly pick a hand, I would handshake with a node with $k$ hands with probability proportional to $k p(k)$. That is
+
+$$
+q(k) = \frac{k p(k)}{\sum_{k=1}^{\infty} k p(k)} = \frac{k}{\langle k \rangle } p(k),
+$$
+
+where $\langle k \rangle = \sum_{k=1}^{\infty} k p(k)$ is the average degree. Now, the average number of hands that my friends would have on average is
+
+$$
+\langle k \rangle_{q(k)} = \sum_{k=1}^{\infty} k q(k) = \sum_{k=1}^{\infty} k^2 / \langle k \rangle p(k) = \frac{\langle k^2 \rangle}{\langle k \rangle}.
+$$
 
 ---
 
 ## 🎯 The Molloy-Reed Criterion
-
 You just discovered the **Molloy-Reed Criterion**!
-
 $$\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2$$
 
-::: {.callout-tip title = "What you found:"}
-- $\kappa$: Average degree of a friend
-- When $\kappa > 2$: Giant component exists
-- When $\kappa \leq 2$: Network fragments easily
-:::
+When is the $\kappa$ smallest 🤔? What is the implication in terms of the robust network structure against random failures?
 
-**Critical fraction for random failures**: $f_c = 1 - \frac{1}{\kappa - 1}$
-
----
-
-## 💬 Let's Discuss
-
-::: {.callout-note title = "Question:"}
-Now that you understand the criterion, what does high κ tell us about a network's structure?
-:::
-
-*Think about: Hub networks vs. regular networks*
+*Take 2 mins to think about it...*
 
 ::: {.incremental}
 - **High κ**: Hub-dominated networks (some nodes have many friends)
 - **Low κ**: Degree homogeneous networks (everyone has similar friends)
-- **Implication**: Hubs make networks more robust... but also more vulnerable to targeted attacks!
-:::
-
-
----
-
-## Part VI: Network Types & Robustness
-
----
-
-## Degree Homogeneous Networks
-
-**Example**: Random networks
-
-**Characteristics**:
-$$\langle k^2 \rangle = \langle k \rangle^2, \text{ so } \kappa = \langle k \rangle$$
-
-**Critical Fraction**:
-$$f_c = 1 - \frac{1}{\langle k \rangle}$$
-
-**Robustness**: Depends on average degree
-
-::: {.callout-tip}
-## Design Implication
-A large average degree ⟨k⟩ results in a larger f_c, meaning the network is more robust against random failures.
+- **Implication**: Hubs make networks more robust!
 :::
 
 ---
 
-## 🤔 Scale-Free Networks Question
+## 🧮 From κ to Critical Fraction
+Now let's figure out: **What fraction of nodes can we remove before the network fragments?**
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+Hint: After removing a fraction $f$ of nodes randomly, what happens to the number of friends a friend would have?
+
+And when does the Molloy-Reed criterion break?
+
+*Take 3 mins to think about it.*
+
+:::
+
+::: {.column width="50%"}
+
+
+```{dot}
+//| fig-width: 5
+//| fig-height: 5
+//| fig-align: center
+graph G {
+    node [shape=circle, style="filled",width=1.0, penwidth=2, fillcolor=white]
+
+    1 [label = "You", fillcolor = "#d0e2f3"]
+    2 [label = "Friend", fillcolor = "#f5cbcc"]
+    21 [label="Survived"]
+    22 [label="Survived"]
+    23 [style="dashed", label="Removed"]
+
+
+    1 -- 2
+    2 -- 21
+    2 -- 22
+    2 -- 23 [style="dashed"]
+}
+```
+
+:::
+:::
+
+---
+
+
+::: {.incremental}
+- After removing fraction $f$, my friend who initially has---$\kappa$ friends on average---have $(1-f)(\kappa -1)$ friends on average.
+- It's $\kappa-1$ not $\kappa$ because one of the friends is me.
+- Thus, the network breaks when $(1-f)(\kappa - 1) = 1$
+- Solving for $f$, we get $$f_c = 1 - \frac{1}{\kappa - 1}$$
+:::
+
+## 🤔 Case Study: Degree-Homogeneous Networks
+
+Let's consider a degree-homogeneous network, where
+the degree distribution is Poisson with mean $\lambda$, i.e.,
+
+$$
+k \sim \mathrm{Poisson}(\lambda)
+$$
+
+What is the critical point $f_c$?
+
+Hint:
+
+- $f_c = 1 - \frac{1}{\kappa - 1}$, $\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle}$
+- The mean and variance of the Poisson distribution are identical.
+
+---
+
+For a Poisson distribution with mean $\lambda$:
+
+- The first moment (mean degree) is $\langle k \rangle = \lambda$
+- The second moment is $\langle k^2 \rangle = \lambda^2 + \lambda$
+
+Now, we can calculate $\kappa$:
+
+$$
+\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} = \frac{\lambda^2 + \lambda}{\lambda} = \lambda + 1
+$$
+
+Finally, we can find the critical fraction $f_c$:
+$$
+f_c = 1 - \frac{1}{\kappa - 1} = 1 - \frac{1}{(\lambda + 1) - 1} = 1 - \frac{1}{\lambda} $$
+
+**Key Insight**: Higher average degree makes the network more robust.
+
+---
+
+## 🤔 Case Study: Degree-Heterogenous networks
 
 **❓ Question**: What happens to network robustness when we have a few very highly connected nodes (hubs) and many poorly connected nodes?
 
@@ -549,12 +756,13 @@ A large average degree ⟨k⟩ results in a larger f_c, meaning the network is m
 ## 💡 The Answer: Scale-Free Networks (Power Law)
 
 **Degree Distribution**:
+
 $$P(k) \sim k^{-\gamma}$$
 
 **Two Regimes**:
 
-- **2 < γ < 3**: f_c → 1 (extremely robust to random failures)
-- **γ > 3**: Finite f_c (moderate robustness)
+- **2 < γ < 3**: $f_c → 1$ (extremely robust to random failures)
+- **γ > 3**: Finite $f_c$ (moderate robustness)
 
 **Critical Fraction**:
 $$f_c = \begin{cases}

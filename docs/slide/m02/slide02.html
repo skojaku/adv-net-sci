@@ -688,13 +688,13 @@ C_i = \dfrac{\text{# of triangles involving } i \text{ and its neighbors}}{\text
 <section id="clustering-coefficient-3" class="slide level2">
 <h2>Clustering Coefficient (3)</h2>
 <p><span class="red-text">Global clustering coefficient</span> focuses on the total number of triangles in the network.</p>
-<p><strong>Definition</strong></p>
 <p><span class="math display">\[
-C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}}
+C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplets}} = \frac{3 \times \text{number of triangles}}{\sum_{i} k_i(k_i-1)/2}
 \]</span></p>
+<p>where <span class="math inline">\(k_i\)</span> is the degree of node <span class="math inline">\(i\)</span>.</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p><span class="blue-text">Connected triplets</span> = A <em>sequence of three nodes</em> connected by at least two edges, forming either a closed triplet (triangle) or an open triplet (wedge).</p>
+<p><span class="blue-text">Connected triplets</span> = Three nodes joined by at least two edges (triangle or wedge). A triangle counts as three triplets. A node with degree <span class="math inline">\(k\)</span> has <span class="math inline">\(k(k-1)/2\)</span> triplets.</p>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-fig-width="5" data-fig-height="2.5" data-layout-align="center">
 <div class="cell-output-display">
