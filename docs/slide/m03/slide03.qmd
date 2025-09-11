@@ -971,4 +971,34 @@ Create a network with [Interactive game](https://skojaku.github.io/adv-net-sci/a
 
 ---
 
+List of all nodes
+```python
+import igraph
+import numpy as np
+
+g = igraph.Graph.Famous("Zachary")
+g.vs.indices
+```
+
+Remove a node
+```python
+node_idx = 0
+g.delete_vertices(node_idx)
+```
+
+Component size
+```python
+components = g.connected_components()
+components.sizes() # Sizes of all components
+np.max(components.sizes()) # Size of the largest component
+```
+
+Misc:
+```python
+np.max(a) # Maximum value of a
+np.random.choice(a) # Random choice from a
+np.argmax(a) # Index of the maximum value of a
+```
+
+
 
