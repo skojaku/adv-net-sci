@@ -176,26 +176,49 @@ class ValidateQuestionSimilarity(dspy.Signature):
 
 
 class EvaluateAnswer(dspy.Signature):
-    """Evaluate an LLM's answer against the student's correct answer."""
+    """Evaluate an LLM's answer against the student's provided answer, while fact-checking both.
+    
+    IMPORTANT EVALUATION CRITERIA:
+    1. First, verify if the student's provided answer is factually correct
+    2. Then, evaluate if the LLM's answer is factually correct
+    3. Student wins ONLY if their answer is correct AND the LLM's answer is incorrect
+    4. If student's answer is factually wrong, they cannot win regardless of LLM's answer
+    
+    FACT-CHECKING GUIDELINES:
+    - Verify factual accuracy based on established knowledge
+    - Check for logical consistency in the reasoning
+    - Identify misconceptions or errors in understanding
+    - Consider if there might be multiple valid perspectives
+    
+    EXAMPLES:
+    - If student says "False" to a true statement, their answer is incorrect
+    - If student provides wrong reasoning (e.g., "depends on network size" when it actually depends on rewiring probability), mark as incorrect
+    - If both answers are correct but approach differently, both are correct"""
 
     question: str = dspy.InputField(desc="The student's quiz question")
     correct_answer: str = dspy.InputField(desc="The student's provided correct answer")
     llm_answer: str = dspy.InputField(desc="The LLM's attempt at answering the student's question")
 
     verdict: Literal["CORRECT", "INCORRECT"] = dspy.OutputField(
-        desc="Whether the LLM's answer is correct"
+        desc="Whether the LLM's answer is factually correct"
+    )
+    student_answer_correctness: Literal["CORRECT", "INCORRECT", "PARTIALLY_CORRECT"] = dspy.OutputField(
+        desc="Whether the student's provided answer is factually correct"
     )
     student_wins: bool = dspy.OutputField(
-        desc="True if student wins (LLM got it wrong), False if LLM correct"
+        desc="True if student wins (student correct AND LLM wrong), False otherwise"
     )
     explanation: str = dspy.OutputField(
-        desc="Brief explanation of the evaluation decision and reasoning"
+        desc="Detailed explanation including fact-checking of both answers"
     )
     confidence: Literal["HIGH", "MEDIUM", "LOW"] = dspy.OutputField(
         desc="Confidence level in the evaluation"
     )
+    factual_issues: List[str] = dspy.OutputField(
+        desc="List of factual errors found in either answer"
+    )
     improvement_suggestions: List[str] = dspy.OutputField(
-        desc="Suggestions for making the question more challenging if LLM answered correctly"
+        desc="Suggestions for improving the question or correcting misconceptions"
     )
 
 
