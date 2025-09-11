@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-17">
+<meta name="dcterms.date" content="2025-09-11">
 
 <title>Coding - Network Robustness Analysis – Advanced Topics in Network Science</title>
 <style>
@@ -748,7 +748,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 17, 2025</p>
+      <p class="date">September 11, 2025</p>
     </div>
   </div>
   
@@ -785,7 +785,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="create-a-robust-test-network" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="create-a-robust-test-network">Create a robust test network</h3>
 <p>Let’s start by creating a network using the famous Zachary’s karate club, which provides an excellent testbed for robustness analysis:</p>
-<div id="3b42b7d1" class="cell" data-execution_count="1">
+<div id="0f31b4fa" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the famous Zachary's karate club network</span></span>
@@ -809,7 +809,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="connected-components" class="level3">
 <h3 class="anchored" data-anchor-id="connected-components">Connected Components</h3>
 <p>Before analyzing robustness, let’s understand how to measure network connectivity. In network analysis, we often need to identify connected components:</p>
-<div id="cf47f3bd" class="cell" data-execution_count="2">
+<div id="a41bda85" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of components:"</span>, <span class="bu">len</span>(components))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Component sizes:"</span>, <span class="bu">list</span>(components.sizes()))</span>
@@ -821,7 +821,7 @@ Largest component size: 34</code></pre>
 </div>
 </div>
 <p>The connectivity of a network is typically measured as the fraction of nodes in the largest connected component:</p>
-<div id="af72400f" class="cell" data-execution_count="3">
+<div id="82d7273d" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> network_connectivity(graph, original_size<span class="op">=</span><span class="va">None</span>):</span>
@@ -847,8 +847,8 @@ Largest component size: 34</code></pre>
 <section id="network-robustness-analysis" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="network-robustness-analysis"><span class="header-section-number">2</span> Network Robustness Analysis</h2>
 <p>Now let’s explore how networks behave when nodes fail or are attacked systematically.</p>
-<p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="042a95a1" class="cell" data-execution_count="4">
+<p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
+<div id="4ea4e8aa" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install pycairo cairocffi</span></span>
@@ -857,7 +857,7 @@ Largest component size: 34</code></pre>
 <section id="random-attack-simulation" class="level3">
 <h3 class="anchored" data-anchor-id="random-attack-simulation">Random Attack Simulation</h3>
 <p>Random attacks simulate random failures where nodes are removed with equal probability. Let’s implement a systematic approach:</p>
-<div id="5f2f0e5d" class="cell" data-execution_count="5">
+<div id="c36a5faa" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_random_attack(graph):</span>
@@ -886,7 +886,7 @@ Largest component size: 34</code></pre>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>df_random <span class="op">=</span> simulate_random_attack(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s visualize the robustness profile:</p>
-<div id="9255116f" class="cell" data-execution_count="6">
+<div id="bc0e1293" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -916,7 +916,7 @@ Largest component size: 34</code></pre>
 <section id="targeted-attack-simulation" class="level3">
 <h3 class="anchored" data-anchor-id="targeted-attack-simulation">Targeted Attack Simulation</h3>
 <p>Targeted attacks remove nodes based on specific criteria, such as degree centrality. High-degree nodes (hubs) often play crucial roles in network connectivity:</p>
-<div id="48353c50" class="cell" data-execution_count="7">
+<div id="b3bc6581" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_targeted_attack(graph, criterion<span class="op">=</span><span class="st">"degree"</span>):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate targeted node removal based on specified criterion"""</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    g_test <span class="op">=</span> graph.copy()</span>
@@ -946,7 +946,7 @@ Largest component size: 34</code></pre>
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>df_targeted <span class="op">=</span> simulate_targeted_attack(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now let’s compare both attack strategies:</p>
-<div id="00e688c0" class="cell" data-execution_count="8">
+<div id="3fba3415" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ax.plot(df_random[<span class="st">"frac_nodes_removed"</span>],</span>
@@ -987,7 +987,7 @@ Largest component size: 34</code></pre>
 <section id="minimum-spanning-tree-analysis" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="minimum-spanning-tree-analysis"><span class="header-section-number">3</span> Minimum Spanning Tree Analysis</h2>
 <p>Understanding network structure through minimum spanning trees can provide insights into network robustness. Let’s explore this concept:</p>
-<div id="72ecfce2" class="cell" data-execution_count="9">
+<div id="21b1f24b" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a weighted version of our network for MST analysis</span></span>
@@ -1009,7 +1009,7 @@ Largest component size: 34</code></pre>
 <section id="computing-the-minimum-spanning-tree" class="level3">
 <h3 class="anchored" data-anchor-id="computing-the-minimum-spanning-tree">Computing the Minimum Spanning Tree</h3>
 <p>The minimum spanning tree represents the most efficient way to connect all nodes:</p>
-<div id="001d041d" class="cell" data-execution_count="10">
+<div id="bac01553" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find minimum spanning tree</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mst <span class="op">=</span> g_weighted.spanning_tree(weights<span class="op">=</span>g_weighted.es[<span class="st">"weight"</span>])</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1031,7 +1031,7 @@ Largest component size: 34</code></pre>
 <section id="percolation-theory" class="level2 page-columns page-full" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="percolation-theory"><span class="header-section-number">4</span> Percolation Theory</h2>
 <p>Network robustness can be viewed as the inverse process of <strong>percolation</strong>. In percolation theory, we study how connectivity emerges as we randomly add nodes to a network.</p>
-<div id="8804deb2" class="cell" data-execution_count="11">
+<div id="be33a413" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">100</span>, p_values<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate percolation on a 2D lattice"""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> p_values <span class="kw">is</span> <span class="va">None</span>:</span>
@@ -1060,7 +1060,7 @@ Largest component size: 34</code></pre>
 <span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Run percolation simulation</span></span>
 <span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>df_percolation <span class="op">=</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="55a1cde5" class="cell" data-execution_count="12">
+<div id="c05a37da" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>ax.plot(df_percolation[<span class="st">"p"</span>],</span>
@@ -1109,14 +1109,14 @@ Play around with it and watch how the puddles grow and connect. 🌊
 <li>Calculate theoretical predictions using the Molloy-Reed criterion</li>
 </ol>
 <p><strong>Hint:</strong> For large networks, consider sampling node pairs to estimate average path length rather than computing all pairwise distances.</p>
-<div id="9d417c0c" class="cell" data-execution_count="13">
+<div id="4df66729" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your implementation here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="real-world-case-study-airport-network" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="real-world-case-study-airport-network"><span class="header-section-number">6</span> Real-World Case Study: Airport Network</h2>
 <p>Let’s analyze a more complex real-world network to see robustness principles in action:</p>
-<div id="e685218e" class="cell" data-execution_count="14">
+<div id="e7f61d7f" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load airport network data</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df_airports <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/skojaku/core-periphery-detection/master/data/edge-table-airport.csv"</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1138,7 +1138,7 @@ Play around with it and watch how the puddles grow and connect. 🌊
 <section id="theoretical-prediction-using-molloy-reed-criterion" class="level3">
 <h3 class="anchored" data-anchor-id="theoretical-prediction-using-molloy-reed-criterion">Theoretical Prediction using Molloy-Reed Criterion</h3>
 <p>The Molloy-Reed criterion provides a theoretical framework for predicting network robustness:</p>
-<div id="9625bfbd" class="cell" data-execution_count="15">
+<div id="c9cac041" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate degree statistics</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> np.array(g_airports.degree())</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>k_mean <span class="op">=</span> np.mean(degrees)</span>
@@ -1157,7 +1157,7 @@ Predicted critical fraction f_c = 0.991</code></pre>
 </div>
 </div>
 <p>The high f_c value indicates the airport network is extremely robust to random failures, maintaining connectivity until almost all nodes are removed.</p>
-<div id="14ea4f84" class="cell" data-execution_count="16">
+<div id="be46e83d" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate and visualize (using subset for efficiency)</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="bu">min</span>(<span class="dv">500</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">1</span>)  <span class="co"># Sample for computational efficiency</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sample_indices <span class="op">=</span> np.linspace(<span class="dv">0</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">2</span>, n_samples, dtype<span class="op">=</span><span class="bu">int</span>)</span>
@@ -1764,7 +1764,7 @@ Predicted critical fraction f_c = 0.991</code></pre>
 <span id="cb23-96"><a href="#cb23-96" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-97"><a href="#cb23-97" aria-hidden="true" tabindex="-1"></a>Now let's explore how networks behave when nodes fail or are attacked systematically.</span>
 <span id="cb23-98"><a href="#cb23-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-99"><a href="#cb23-99" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> target</span><span class="op">=</span><span class="st">"_blank"</span><span class="ot"> href</span><span class="op">=</span><span class="st">"https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/exercise-m03-robustness.ipynb"</span><span class="dt">&gt;</span></span>
+<span id="cb23-99"><a href="#cb23-99" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> target</span><span class="op">=</span><span class="st">"_blank"</span><span class="ot"> href</span><span class="op">=</span><span class="st">"https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb"</span><span class="dt">&gt;</span></span>
 <span id="cb23-100"><a href="#cb23-100" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://colab.research.google.com/assets/colab-badge.svg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Open In Colab"</span><span class="dt">/&gt;</span></span>
 <span id="cb23-101"><a href="#cb23-101" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span>
 <span id="cb23-102"><a href="#cb23-102" aria-hidden="true" tabindex="-1"></a></span>
