@@ -519,40 +519,61 @@ Network Robustness - Where is the critical point?
 
 ## 🤔 Let's Think Like Network Scientists
 
-We've seen that networks can suddenly lose connectivity as nodes are removed.
 
-Can you predict this critical point based on the network's structure alone, without running simulations?
+Let's learn how to find the critical point $p_c \approx 0.593$
 
-Imagine you're a node in a network. For you to be part of the largest connected component, what do you need?
+::: {.columns}
+
+::: {.column width="50%"}
+Imagine you're a node in a network. For you to be a part of the largest connected component, what do you & your friends need 🤔?
 
 - You need **friends** (connections)
-- But is that enough?
 - What else do your friends need?
 
-*Take 3 mins to think about it...*
+:::
 
+::: {.column width="50%"}
 
----
+![](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgK7a_hh-YeNoQIsQUnW8A2tnO7Us97s6XrvVTOpSWzKuixhdj8sRMK3drH3c-p94r9RRqMZNGaT7-Xat-zQwt4lmh0k1gdRDqTbtlYGqxOG4JzuoCUEzkF19eRWDmPxYBa9cAe-lLV0vaD/s500/world_people_circle.png)
+
+:::
+:::
 
 ## 🔗 Friends of Friends
 
-You have some friends. For you to be connected to the rest of the network through them, what must your friends have?
+::: {.columns}
+
+::: {.column width="50%"}
 
 ::: {.incremental}
 - Each friend needs at least **2 connections**
 - One connection: **to you**
 - Another connection: **to someone else** (to reach the rest of the network)
-- *So what matters is not just how many friends you have, but how many friends your friends have!*
 :::
 
+:::
 
----
+::: {.column width="50%"}
+
+![](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgK7a_hh-YeNoQIsQUnW8A2tnO7Us97s6XrvVTOpSWzKuixhdj8sRMK3drH3c-p94r9RRqMZNGaT7-Xat-zQwt4lmh0k1gdRDqTbtlYGqxOG4JzuoCUEzkF19eRWDmPxYBa9cAe-lLV0vaD/s500/world_people_circle.png)
+
+:::
+:::
+
+# Your friends need at least 2 friends (on average) for you to be a part of the giant component!
 
 $$
 \text{Average \# of friends that friends have} \geq 2
 $$
 
-Let's formalize this insight. *Take 2 mins to think about it...*
+---
+
+Let's formalize this insight.
+
+$$
+\text{Average \# of friends that friends have} \geq 2
+$$
+
 
 ::: {.columns}
 
@@ -624,7 +645,7 @@ graph G {
 
 ---
 
-There are $p(k)$ nodes with $k$ hands. The total number of hands that nodes with $k$ hands have is $k p(k)$.
+Suppose $p(k)$ is the fraction of nodes with $k$ hands. Altogether, nodes with $k$ hands contribute $k p(k)$ hands to the network.
 
 If I randomly pick a hand, I would handshake with a node with $k$ hands with probability proportional to $k p(k)$. That is
 
@@ -745,68 +766,187 @@ f_c = 1 - \frac{1}{\kappa - 1} = 1 - \frac{1}{(\lambda + 1) - 1} = 1 - \frac{1}{
 
 ---
 
-## 🤔 Case Study: Degree-Heterogenous networks
+## 🤔 Case Study: Degree-heterogenous networks
+
+::: {.columns}
+
+::: {.column width="50%"}
 
 **❓ Question**: What happens to network robustness when we have a few very highly connected nodes (hubs) and many poorly connected nodes?
 
 *Think about: How would random failures affect this type of network? What about targeted attacks?*
 
----
+:::
 
-## 💡 The Answer: Scale-Free Networks (Power Law)
+::: {.column width="50%"}
 
-**Degree Distribution**:
+![](https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg)
+
+:::
+:::
+
+## 💡 Robustness of scale-free networks
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+Let's consider a scale-free network with the degree distribution:
 
 $$P(k) \sim k^{-\gamma}$$
 
-**Two Regimes**:
+Infinite variance for $\gamma < 3$, undefined mean for $\gamma \leq 2$.
 
-- **2 < γ < 3**: $f_c → 1$ (extremely robust to random failures)
-- **γ > 3**: Finite $f_c$ (moderate robustness)
+Most real-world networks do not have finite variance!
 
-**Critical Fraction**:
+What does it mean in terms of the robustness of the network?
+
+:::
+
+::: {.column width="50%"}
+
+![](https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg)
+
+
+:::
+:::
+
+---
+
+::: {.columns}
+
+
+::: {.column width="60%"}
+
+When the network is infinite,
+
+$f_c \rightarrow 1$ when $2 < \gamma < 3$.
+
+When the network is finite,
+
 $$f_c = \begin{cases}
 1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\text{min}} ^{\gamma-2} k_{\text{max}}^{3-\gamma} -1} & \text{if } 2 < \gamma < 3 \\
 1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\text{min}} - 1} & \text{if } \gamma > 3 \\
 \end{cases}$$
+$
+where $k_{\text{min}}$ and $k_{\text{max}}$ are the minimum and maximum degree.
+([Visualization](https://skojaku.github.io/adv-net-sci/m03-robustness/01-concepts.html))
 
-**Key Insight**: Scale-free networks are remarkably robust to random failures
 
-**💬 Discussion**: Why are scale-free networks so robust to random failures? What's the intuition behind this counterintuitive result?
+:::
 
----
+::: {.column width="40%"}
 
-## 🤔 The Achilles' Heel Question
+![](https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg)
 
-**❓ Question**: If scale-free networks are so robust to random failures, what's their weakness?
 
-*Hint: Think about what happens when you deliberately target the most important nodes...*
 
----
 
-## 💡 The Answer: Vulnerability to Targeted Attacks
+:::
+:::
 
-**Vulnerability**: Scale-free networks fragile under targeted attacks
 
-**Mathematical Analysis**:
-$$f_c^{\text{attack}} \ll f_c^{\text{random}}$$
+**Key Insight**: Scale-free networks are remarkably robust to random failures.
 
-**Critical Attack Threshold**:
+
+
+## 🤔 Questions
+
+::: {.incremental}
+- **❓ Question #1**: If scale-free networks are so robust to random failures, what's their weakness?
+  - *Scale-free networks are fragile under targeted attacks.*
+- **❓ Question #2**: What type of attack is the most effective and why?
+  - *Removing the highest degree node and then the second highest degree node, and so on, is the most effective.*
+  - *...because the critical fraction depends on $k_{\text{max}}$.*
+:::
+
+
+## Critical point $f_c$ for targeted attacks
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+A node removal changes the degree distribution from $P(k)$ to $P'(k)$. Specifically,
+
+1. A node with degree $k$ is removed from $P(k)$, and
+2. its neighbors lose 1 degree.
+
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 3.5
+//| fig-height: 3.5
+//| fig-align: center
+graph G {
+    layout=fdp
+
+    node [shape=circle, style="filled", width=0.8, penwidth=2, fillcolor=white, fontsize=12]
+    edge [penwidth=2, color="#666666"]
+
+
+    1 [label="Removed", style="dashed", fillcolor="#ffeeee"]
+
+    // Surviving nodes with reduced degrees
+    2 [label = "A", fillcolor="#f5cbcc"]
+    3 [label = "B", fillcolor="#f5cbcc"]
+    4 [label = "C", fillcolor="#f5cbcc"]
+    5 [label = "E", fillcolor="#d0e2f3"]
+    6 [label = "F", fillcolor="#f5cbcc"]
+    7 [label = "G", fillcolor="#d0e2f3"]
+
+    // Ghost edges to removed node
+    1 -- 2 [style="dashed", color="#cccccc"]
+    1 -- 3 [style="dashed", color="#cccccc"]
+    1 -- 4 [style="dashed", color="#cccccc"]
+    1 -- 6 [style="dashed", color="#cccccc"]
+
+    // Remaining edges
+    2 -- 3
+    2 -- 5
+    3 -- 4
+    3 -- 6
+    4 -- 7
+    5 -- 6
+    6 -- 7
+}
+```
+
+:::
+:::
+
+We ask: when does $P'(k)$ lose the giant component as nodes are removed?
+This gives:
+
 $$f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)$$
 
-**Real-world Implications**:
+---
 
-- Power grids protect major substations
-- Internet infrastructure includes hub redundancy
-- Transportation networks maintain backup routes
+::: {.columns}
 
-**💬 Discussion**: This creates a fundamental dilemma - how do you design a network that's both efficient and secure? What strategies might you use?
+::: {.column width="40%"}
+
+- $f_c$ increases as $\gamma$ increases, which is in contrast to the random failures case.
+
+- $f_c$ for the random and targeted attacks converge to the same value as $\gamma \rightarrow \infty$.
+
+:::
+
+::: {.column width="60%"}
+
+$$f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)$$
+
+![](https://networksciencebook.com/images/ch-08/figure-8-12.jpg)
+
+:::
+:::
 
 ---
 
-## Part VII: Design Principles
-
----
 
 ## 🤔 Design Challenge
 
@@ -814,172 +954,12 @@ $$f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \l
 
 *Consider: What principles would you use? How would you balance cost, efficiency, and security?*
 
----
-
-## 💡 The Answer: Robust Network Design Principles
-
-1. **Balanced Degree Distribution**: Avoid extreme homogeneity or hub concentration
-2. **Multiple Redundant Pathways**: Ensure no single point of failure
-3. **Strategic Hub Protection**: Invest heavily in protecting critical nodes
-4. **Hierarchical Design**: Combine local clusters with hub connections
-5. **Adaptive Responses**: Design systems that can reconfigure when attacks detected
-
-**💬 Discussion**: Which of these principles do you think is most important? How would you prioritize them given limited resources? What real-world examples can you think of that implement these strategies?
+Create a network with [Interactive game](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
 
 ---
 
-## The Robustness Paradox
-
-**Trade-off**: Efficiency vs. Security
-
-**No Perfect Solution**: No single structure optimal against all failure types
-
-**Design Challenge**: Balance cost efficiency with resilience
-
-**Context-Dependent**: Optimal design depends on threat model and cost constraints
+# Let's code!
 
 ---
 
-## Part VIII: Practical Applications
 
----
-
-## Coding Implementation
-
-**Tools**:
-
-- `igraph` - comprehensive network analysis
-- `scipy.sparse.csgraph` - efficient connected component algorithms
-- `networkx` - alternative approach with different robustness metrics
-
-**Key Functions**:
-
-- Connected components analysis
-- MST algorithms
-- Robustness simulation
-- Percolation analysis
-
----
-
-## 🤔 Real-World Application Question
-
-**❓ Question**: How would you test our theoretical predictions about network robustness using real data?
-
-*Think about: What kind of network would be good to study? How would you measure robustness in practice?*
-
----
-
-## 💡 The Answer: Airport Network Analysis
-
-**Case Study**: Airport connectivity network
-
-**Theoretical Prediction**: Using Molloy-Reed criterion
-
-- Calculate degree statistics: κ = ⟨k²⟩/⟨k⟩
-- Predict critical fraction: f_c = 1 - 1/(κ-1)
-
-**Empirical Validation**: Compare predicted vs. observed critical fractions
-
-**💬 Discussion**: The high f_c value indicates the airport network is extremely robust to random failures. Why do you think this is? What does this tell us about how transportation networks are designed?
-
----
-
-## Part IX: Interactive Elements
-
----
-
-## Hands-on Exercises
-
-**Pen-and-Paper**: [MST to robust grid design](./pen-and-paper/exercise.pdf)
-
-**Interactive Demo**: [Network robustness simulation](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
-
-**Coding Exercises**:
-
-- Random vs. targeted attack comparison
-- Percolation simulation
-- Real-world network analysis
-
----
-
-## Assignment Overview
-
-**Repository Access**:
-
-- Enrolled students: Dedicated GitHub classroom link
-- Others: [Fork assignment repository](https://github.com/sk-classroom/advnetsci-robustness)
-
-**Grading**: Automated testing framework
-
-- `bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`
-- `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
-
-**Learning Objectives**: Apply concepts to real network data
-
----
-
-## Conclusion & Key Takeaways
-
----
-
-## Summary
-
-- **MST**: Optimal cost efficiency but vulnerable to failures
-- **Robustness**: Requires redundancy beyond minimum connectivity
-- **Attack Asymmetry**: Random failures vs. targeted attacks create different vulnerabilities
-- **Design Balance**: No single solution - context-dependent optimization
-
----
-
-## Next Steps
-
-**Assignment**: Apply concepts to real network data
-
-**Further Reading**:
-
-- Borůvka (1926) - Original MST work
-- Albert, Jeong & Barabási (2000) - Network robustness
-- Cohen & Havlin (2010) - Comprehensive treatment
-
-**Applications**: Infrastructure design, cybersecurity, system resilience
-
----
-
-## Questions?
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Contact**: skojaku@binghamton.edu
-
-**Course Materials**: Available on course website
-
-**Office Hours**: Check course schedule
-
-:::
-
-::: {.column width="50%"}
-
-**Interactive Resources**:
-
-- [Network Robustness Demo](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
-- [Percolation Simulation](https://visualize-it.github.io/bernoulli_percolation/simulation.html)
-- [Assignment Repository](https://github.com/sk-classroom/advnetsci-robustness)
-
-:::
-::::
-
----
-
-## References
-
-1. **Borůvka, O.** (1926). O jistém problému minimálním. *Práce Moravské Přírodovědecké Společnosti*, 3, 37-58.
-
-2. **Albert, R., Jeong, H., & Barabási, A. L.** (2000). Error and attack tolerance of complex networks. *Nature*, 406(6794), 378-382.
-
-3. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629.
-
-4. **Molloy, M., & Reed, B.** (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180.
-
-5. **Cohen, R., & Havlin, S.** (2010). *Complex Networks: Structure, Robustness and Function*. Cambridge University Press.

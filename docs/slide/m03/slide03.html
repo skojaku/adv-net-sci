@@ -1001,32 +1001,44 @@ C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplet
 </section>
 <section id="lets-think-like-network-scientists" class="slide level2">
 <h2>🤔 Let’s Think Like Network Scientists</h2>
-<p>We’ve seen that networks can suddenly lose connectivity as nodes are removed.</p>
-<p>Can you predict this critical point based on the network’s structure alone, without running simulations?</p>
-<p>Imagine you’re a node in a network. For you to be part of the largest connected component, what do you need?</p>
+<p>Let’s learn how to find the critical point <span class="math inline">\(p_c \approx 0.593\)</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Imagine you’re a node in a network. For you to be a part of the largest connected component, what do you &amp; your friends need 🤔?</p>
 <ul>
 <li>You need <strong>friends</strong> (connections)</li>
-<li>But is that enough?</li>
 <li>What else do your friends need?</li>
 </ul>
-<p><em>Take 3 mins to think about it…</em></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgK7a_hh-YeNoQIsQUnW8A2tnO7Us97s6XrvVTOpSWzKuixhdj8sRMK3drH3c-p94r9RRqMZNGaT7-Xat-zQwt4lmh0k1gdRDqTbtlYGqxOG4JzuoCUEzkF19eRWDmPxYBa9cAe-lLV0vaD/s500/world_people_circle.png"></p>
+</div></div>
 </section>
 <section id="friends-of-friends" class="slide level2">
 <h2>🔗 Friends of Friends</h2>
-<p>You have some friends. For you to be connected to the rest of the network through them, what must your friends have?</p>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
 <li class="fragment">Each friend needs at least <strong>2 connections</strong></li>
 <li class="fragment">One connection: <strong>to you</strong></li>
 <li class="fragment">Another connection: <strong>to someone else</strong> (to reach the rest of the network)</li>
-<li class="fragment"><em>So what matters is not just how many friends you have, but how many friends your friends have!</em></li>
 </ul>
-</section>
-<section class="slide level2">
-
+</div><div class="column" style="width:50%;">
+<p><img data-src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgK7a_hh-YeNoQIsQUnW8A2tnO7Us97s6XrvVTOpSWzKuixhdj8sRMK3drH3c-p94r9RRqMZNGaT7-Xat-zQwt4lmh0k1gdRDqTbtlYGqxOG4JzuoCUEzkF19eRWDmPxYBa9cAe-lLV0vaD/s500/world_people_circle.png"></p>
+</div></div>
+</section></section>
+<section>
+<section id="your-friends-need-at-least-2-friends-on-average-for-you-to-be-a-part-of-the-giant-component" class="title-slide slide level1 center">
+<h1>Your friends need at least 2 friends (on average) for you to be a part of the giant component!</h1>
 <p><span class="math display">\[
 \text{Average \# of friends that friends have} \geq 2
 \]</span></p>
-<p>Let’s formalize this insight. <em>Take 2 mins to think about it…</em></p>
+</section>
+<section class="slide level2">
+
+<p>Let’s formalize this insight.</p>
+<p><span class="math display">\[
+\text{Average \# of friends that friends have} \geq 2
+\]</span></p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <ol type="1">
@@ -1224,7 +1236,7 @@ C = \frac{3 \times \text{number of triangles}}{\text{number of connected triplet
 </section>
 <section class="slide level2">
 
-<p>There are <span class="math inline">\(p(k)\)</span> nodes with <span class="math inline">\(k\)</span> hands. The total number of hands that nodes with <span class="math inline">\(k\)</span> hands have is <span class="math inline">\(k p(k)\)</span>.</p>
+<p>Suppose <span class="math inline">\(p(k)\)</span> is the fraction of nodes with <span class="math inline">\(k\)</span> hands. Altogether, nodes with <span class="math inline">\(k\)</span> hands contribute <span class="math inline">\(k p(k)\)</span> hands to the network.</p>
 <p>If I randomly pick a hand, I would handshake with a node with <span class="math inline">\(k\)</span> hands with probability proportional to <span class="math inline">\(k p(k)\)</span>. That is</p>
 <p><span class="math display">\[
 q(k) = \frac{k p(k)}{\sum_{k=1}^{\infty} k p(k)} = \frac{k}{\langle k \rangle } p(k),
@@ -1360,36 +1372,203 @@ f_c = 1 - \frac{1}{\kappa - 1} = 1 - \frac{1}{(\lambda + 1) - 1} = 1 - \frac{1}{
 <p><strong>Key Insight</strong>: Higher average degree makes the network more robust.</p>
 </section>
 <section id="case-study-degree-heterogenous-networks" class="slide level2">
-<h2>🤔 Case Study: Degree-Heterogenous networks</h2>
+<h2>🤔 Case Study: Degree-heterogenous networks</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <p><strong>❓ Question</strong>: What happens to network robustness when we have a few very highly connected nodes (hubs) and many poorly connected nodes?</p>
 <p><em>Think about: How would random failures affect this type of network? What about targeted attacks?</em></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg"></p>
+</div></div>
 </section>
-<section id="the-answer-scale-free-networks-power-law" class="slide level2">
-<h2>💡 The Answer: Scale-Free Networks (Power Law)</h2>
-<p><strong>Degree Distribution</strong>:</p>
+<section id="robustness-of-scale-free-networks" class="slide level2">
+<h2>💡 Robustness of scale-free networks</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Let’s consider a scale-free network with the degree distribution:</p>
 <p><span class="math display">\[P(k) \sim k^{-\gamma}\]</span></p>
-<p><strong>Two Regimes</strong>:</p>
-<ul>
-<li><strong>2 &lt; γ &lt; 3</strong>: <span class="math inline">\(f_c → 1\)</span> (extremely robust to random failures)</li>
-<li><strong>γ &gt; 3</strong>: Finite <span class="math inline">\(f_c\)</span> (moderate robustness)</li>
-</ul>
-<p><strong>Critical Fraction</strong>: <span class="math display">\[f_c = \begin{cases}
+<p>Infinite variance for <span class="math inline">\(\gamma &lt; 3\)</span>, undefined mean for <span class="math inline">\(\gamma \leq 2\)</span>.</p>
+<p>Most real-world networks do not have finite variance!</p>
+<p>What does it mean in terms of the robustness of the network?</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg"></p>
+</div></div>
+</section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>When the network is infinite,</p>
+<p><span class="math inline">\(f_c \rightarrow 1\)</span> when <span class="math inline">\(2 &lt; \gamma &lt; 3\)</span>.</p>
+<p>When the network is finite,</p>
+<p><span class="math display">\[f_c = \begin{cases}
 1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\text{min}} ^{\gamma-2} k_{\text{max}}^{3-\gamma} -1} &amp; \text{if } 2 &lt; \gamma &lt; 3 \\
 1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\text{min}} - 1} &amp; \text{if } \gamma &gt; 3 \\
-\end{cases}\]</span></p>
-<p><strong>Key Insight</strong>: Scale-free networks are remarkably robust to random failures</p>
-<p><strong>💬 Discussion</strong>: Why are scale-free networks so robust to random failures? What’s the intuition behind this counterintuitive result?</p>
+\end{cases}\]</span> $ where <span class="math inline">\(k_{\text{min}}\)</span> and <span class="math inline">\(k_{\text{max}}\)</span> are the minimum and maximum degree. (<a href="https://skojaku.github.io/adv-net-sci/m03-robustness/01-concepts.html">Visualization</a>)</p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="https://live.staticflickr.com/8473/8425835703_dd0f952b5b_b.jpg"></p>
+</div></div>
+<p><strong>Key Insight</strong>: Scale-free networks are remarkably robust to random failures.</p>
 </section>
-<section id="the-achilles-heel-question" class="slide level2">
-<h2>🤔 The Achilles’ Heel Question</h2>
-<p><strong>❓ Question</strong>: If scale-free networks are so robust to random failures, what’s their weakness?</p>
-<p><em>Hint: Think about what happens when you deliberately target the most important nodes…</em></p>
+<section id="questions" class="slide level2">
+<h2>🤔 Questions</h2>
+<ul>
+<li class="fragment"><strong>❓ Question #1</strong>: If scale-free networks are so robust to random failures, what’s their weakness?
+<ul>
+<li class="fragment"><em>Scale-free networks are fragile under targeted attacks.</em></li>
+</ul></li>
+<li class="fragment"><strong>❓ Question #2</strong>: What type of attack is the most effective and why?
+<ul>
+<li class="fragment"><em>Removing the highest degree node and then the second highest degree node, and so on, is the most effective.</em></li>
+<li class="fragment"><em>…because the critical fraction depends on <span class="math inline">\(k_{\text{max}}\)</span>.</em></li>
+</ul></li>
+</ul>
 </section>
-<section id="the-answer-vulnerability-to-targeted-attacks" class="slide level2">
-<h2>💡 The Answer: Vulnerability to Targeted Attacks</h2>
-<p><strong>Vulnerability</strong>: Scale-free networks fragile under targeted attacks</p>
-<p><strong>Mathematical Analysis</strong>: <span class="math display">\[f_c^{\text{attack}} \ll f_c^{\text{random}}\]</span></p>
-<p><strong>Critical Attack Threshold</strong>: <span class="math display">\[f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)\]</span></p>
+<section id="critical-point-f_c-for-targeted-attacks" class="slide level2">
+<h2>Critical point <span class="math inline">\(f_c\)</span> for targeted attacks</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>A node removal changes the degree distribution from <span class="math inline">\(P(k)\)</span> to <span class="math inline">\(P'(k)\)</span>. Specifically,</p>
+<ol type="1">
+<li>A node with degree <span class="math inline">\(k\)</span> is removed from <span class="math inline">\(P(k)\)</span>, and</li>
+<li>its neighbors lose 1 degree.</li>
+</ol>
+</div><div class="column" style="width:40%;">
+<div class="cell" data-fig-width="3.5" data-fig-height="3.5" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="336" height="336" viewbox="0.00 0.00 313.00 272.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 268)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-268 309,-268 309,4 -4,4"></polygon>
+<!-- 1 -->
+<g id="node1" class="node">
+<title>1</title>
+<ellipse fill="none" stroke="black" stroke-width="2" stroke-dasharray="5,2" cx="204.53" cy="-121.31" rx="33.7" ry="33.7"></ellipse>
+<text text-anchor="middle" x="204.53" y="-117.71" font-family="Times,serif" font-size="12.00">Removed</text>
+</g>
+<!-- 2 -->
+<g id="node2" class="node">
+<title>2</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="248.06" cy="-28.74" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="248.06" y="-25.14" font-family="Times,serif" font-size="12.00">A</text>
+</g>
+<!-- 1&#45;&#45;2 -->
+<g id="edge1" class="edge">
+<title>1--2</title>
+<path fill="none" stroke="#cccccc" stroke-width="2" stroke-dasharray="5,2" d="M218.9,-90.74C224.3,-79.26 230.39,-66.32 235.6,-55.24"></path>
+</g>
+<!-- 3 -->
+<g id="node3" class="node">
+<title>3</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="133.16" cy="-66.88" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="133.16" y="-63.28" font-family="Times,serif" font-size="12.00">B</text>
+</g>
+<!-- 1&#45;&#45;3 -->
+<g id="edge2" class="edge">
+<title>1--3</title>
+<path fill="none" stroke="#cccccc" stroke-width="2" stroke-dasharray="5,2" d="M177.55,-100.73C170.6,-95.44 163.19,-89.78 156.44,-84.64"></path>
+</g>
+<!-- 4 -->
+<g id="node4" class="node">
+<title>4</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="82.12" cy="-163.6" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="82.12" y="-160" font-family="Times,serif" font-size="12.00">C</text>
+</g>
+<!-- 1&#45;&#45;4 -->
+<g id="edge3" class="edge">
+<title>1--4</title>
+<path fill="none" stroke="#cccccc" stroke-width="2" stroke-dasharray="5,2" d="M172.69,-132.31C153.14,-139.07 128.35,-147.63 109.65,-154.09"></path>
+</g>
+<!-- 6 -->
+<g id="node6" class="node">
+<title>6</title>
+<ellipse fill="#f5cbcc" stroke="black" stroke-width="2" cx="149.59" cy="-195.64" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="149.59" y="-192.04" font-family="Times,serif" font-size="12.00">F</text>
+</g>
+<!-- 1&#45;&#45;6 -->
+<g id="edge4" class="edge">
+<title>1--6</title>
+<path fill="none" stroke="#cccccc" stroke-width="2" stroke-dasharray="5,2" d="M184.38,-148.56C178.63,-156.35 172.41,-164.77 166.84,-172.3"></path>
+</g>
+<!-- 2&#45;&#45;3 -->
+<g id="edge5" class="edge">
+<title>2--3</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M220.25,-37.97C202.18,-43.97 178.74,-51.75 160.72,-57.74"></path>
+</g>
+<!-- 5 -->
+<g id="node5" class="node">
+<title>5</title>
+<ellipse fill="#d0e2f3" stroke="black" stroke-width="2" cx="276.1" cy="-148.85" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="276.1" y="-145.25" font-family="Times,serif" font-size="12.00">E</text>
+</g>
+<!-- 2&#45;&#45;5 -->
+<g id="edge6" class="edge">
+<title>2--5</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M254.71,-57.2C259.18,-76.35 265.04,-101.49 269.5,-120.59"></path>
+</g>
+<!-- 3&#45;&#45;4 -->
+<g id="edge7" class="edge">
+<title>3--4</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M119.62,-92.55C112.24,-106.54 103.12,-123.81 95.73,-137.82"></path>
+</g>
+<!-- 3&#45;&#45;6 -->
+<g id="edge8" class="edge">
+<title>3--6</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M136.85,-95.78C139.56,-116.98 143.21,-145.66 145.92,-166.84"></path>
+</g>
+<!-- 7 -->
+<g id="node7" class="node">
+<title>7</title>
+<ellipse fill="#d0e2f3" stroke="black" stroke-width="2" cx="28.97" cy="-235.43" rx="29" ry="29"></ellipse>
+<text text-anchor="middle" x="28.97" y="-231.83" font-family="Times,serif" font-size="12.00">G</text>
+</g>
+<!-- 4&#45;&#45;7 -->
+<g id="edge9" class="edge">
+<title>4--7</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M64.72,-187.12C58.79,-195.14 52.16,-204.1 46.24,-212.1"></path>
+</g>
+<!-- 5&#45;&#45;6 -->
+<g id="edge10" class="edge">
+<title>5--6</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M248.65,-159C227.43,-166.85 198.19,-177.66 176.99,-185.5"></path>
+</g>
+<!-- 6&#45;&#45;7 -->
+<g id="edge11" class="edge">
+<title>6--7</title>
+<path fill="none" stroke="#666666" stroke-width="2" d="M121.92,-204.77C102.31,-211.24 76.1,-219.88 56.52,-226.34"></path>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+<p>We ask: when does <span class="math inline">\(P'(k)\)</span> lose the giant component as nodes are removed? This gives:</p>
+<p><span class="math display">\[f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)\]</span></p>
+</section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li><p><span class="math inline">\(f_c\)</span> increases as <span class="math inline">\(\gamma\)</span> increases, which is in contrast to the random failures case.</p></li>
+<li><p><span class="math inline">\(f_c\)</span> for the random and targeted attacks converge to the same value as <span class="math inline">\(\gamma \rightarrow \infty\)</span>.</p></li>
+</ul>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)\]</span></p>
+<p><img data-src="https://networksciencebook.com/images/ch-08/figure-8-12.jpg"></p>
+</div></div>
+</section>
+<section class="slide level2">
+
+</section>
+<section class="slide level2">
+
 <p><strong>Real-world Implications</strong>:</p>
 <ul>
 <li>Power grids protect major substations</li>
@@ -1510,7 +1689,7 @@ f_c = 1 - \frac{1}{\kappa - 1} = 1 - \frac{1}{(\lambda + 1) - 1} = 1 - \frac{1}{
 </ul>
 <p><strong>Applications</strong>: Infrastructure design, cybersecurity, system resilience</p>
 </section>
-<section id="questions" class="slide level2">
+<section id="questions-1" class="slide level2">
 <h2>Questions?</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
