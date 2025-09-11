@@ -88,6 +88,8 @@ class QuizResult:
     difficulty_assessment: Optional[str] = None  # Assessment of question difficulty
     improvement_suggestions: List[str] = None  # Suggestions for improving student's question
     clarity_score: Optional[str] = None  # Assessment of question clarity
+    student_answer_correctness: Optional[str] = None  # Correctness of student's answer
+    factual_issues: List[str] = None  # Factual errors found in answers
     error: Optional[str] = None
 
 
@@ -123,6 +125,7 @@ class DSPyQuizChallenge:
         enable_detailed_feedback: bool = False,
         dspy_lm: Optional[dspy.LM] = None,
         context_strictness: str = "normal",
+        verify_student_answers: bool = True,
     ):
         """Initialize the DSPy-based quiz challenge system."""
 
@@ -148,6 +151,7 @@ class DSPyQuizChallenge:
         # Store configuration
         self.enable_detailed_feedback = enable_detailed_feedback
         self.context_strictness = context_strictness  # "strict", "normal", or "lenient"
+        self.verify_student_answers = verify_student_answers  # Enable fact-checking of student answers
 
         # Initialize DSPy predictors - they will use the context when called
         self.question_parser = dspy.Predict(ParseQuestionAndAnswer)
@@ -680,9 +684,21 @@ class DSPyQuizChallenge:
                     raise ValueError("Answer evaluator returned None")
 
                 verdict = getattr(evaluation, 'verdict', 'INCORRECT')
+                student_answer_correctness = getattr(evaluation, 'student_answer_correctness', 'CORRECT')
                 student_won_this_question = getattr(evaluation, 'student_wins', False)
+                factual_issues = getattr(evaluation, 'factual_issues', [])
+                
+                # Apply fact-checking logic if enabled
+                if self.verify_student_answers:
+                    # Student can only win if their answer is correct
+                    if student_answer_correctness != 'CORRECT':
+                        student_won_this_question = False
+                        logger.info(f"Question {question.number}: Student's answer is {student_answer_correctness}, cannot win")
+                        if factual_issues:
+                            logger.info(f"Factual issues found: {', '.join(factual_issues)}")
+                
                 logger.debug(
-                    f"Evaluation: verdict={verdict}, student_wins={student_won_this_question}"
+                    f"Evaluation: LLM verdict={verdict}, student_answer={student_answer_correctness}, student_wins={student_won_this_question}"
                 )
                 pbar.update(1)  # Step 4 complete
 
@@ -690,6 +706,9 @@ class DSPyQuizChallenge:
                 if student_won_this_question:
                     student_wins += 1
                     pbar.set_description(f"Q{question.number}: Complete - Student wins!")
+                elif student_answer_correctness != 'CORRECT' and self.verify_student_answers:
+                    # Student's answer is incorrect - neither wins
+                    pbar.set_description(f"Q{question.number}: Complete - Student answer incorrect")
                 else:
                     llm_wins += 1
                     pbar.set_description(f"Q{question.number}: Complete - LLM wins")
@@ -713,6 +732,8 @@ class DSPyQuizChallenge:
                     difficulty_assessment=getattr(validation, 'difficulty_assessment', 'APPROPRIATE'),
                     improvement_suggestions=getattr(evaluation, 'improvement_suggestions', []),
                     clarity_score=getattr(validation, 'clarity_score', None),
+                    student_answer_correctness=student_answer_correctness,
+                    factual_issues=factual_issues,
                 )
                 question_results.append(result)
                 pbar.update(1)  # Step 5 complete
@@ -793,10 +814,20 @@ class DSPyQuizChallenge:
             # Simple feedback for fast mode
             if evaluated_questions == 0:
                 feedback_summary = "No questions were successfully processed. Please check your quiz format and try again."
-            elif student_wins == 0:
-                feedback_summary = "The AI answered your question correctly. Try creating a more challenging question!"
             else:
-                feedback_summary = f"Great job! You stumped the AI. Your question was challenging enough that the AI got it wrong."
+                # Count questions with incorrect student answers
+                incorrect_answer_count = 0
+                if self.verify_student_answers:
+                    for result in question_results:
+                        if result.is_valid and result.student_answer_correctness == 'INCORRECT':
+                            incorrect_answer_count += 1
+                
+                if incorrect_answer_count > 0:
+                    feedback_summary = f"⚠️ Warning: {incorrect_answer_count} of your answers were factually incorrect. Review the factual issues identified and correct your understanding before resubmitting."
+                elif student_wins == 0:
+                    feedback_summary = "The AI answered your question correctly. Try creating a more challenging question!"
+                else:
+                    feedback_summary = f"Great job! You stumped the AI. Your question was challenging enough that the AI got it wrong."
 
         return QuizResults(
             quiz_title=quiz_title,

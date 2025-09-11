@@ -299,6 +299,20 @@ GitHub Classroom Integration:
         default="normal",
         help="How strictly to check context alignment: 'strict' (only direct matches), 'normal' (direct + extensions), 'lenient' (also allows tangential) (default: normal)",
     )
+    
+    parser.add_argument(
+        "--verify-answers",
+        action="store_true",
+        default=True,
+        help="Enable fact-checking of student answers to ensure correctness (default: True)",
+    )
+    
+    parser.add_argument(
+        "--no-verify-answers",
+        dest="verify_answers",
+        action="store_false",
+        help="Disable fact-checking of student answers (trust student answers as ground truth)",
+    )
 
     return parser
 
@@ -338,6 +352,7 @@ def main():
             evaluator_model=args.evaluator_model,
             context_urls_file=args.context_urls,
             context_strictness=args.context_strictness,
+            verify_student_answers=args.verify_answers,
         )
 
         # Load and run quiz
@@ -370,7 +385,10 @@ def main():
         # Display detailed results for each question
         for result in results.question_results:
             if result.is_valid:
-                if result.student_wins:
+                # Determine status based on student answer correctness and win status
+                if hasattr(result, 'student_answer_correctness') and result.student_answer_correctness == 'INCORRECT':
+                    status_text = f"{Colors.ERROR}❌ Your answer is incorrect{Colors.RESET}"
+                elif result.student_wins:
                     status_text = f"{Colors.WIN}✅ You win!{Colors.RESET}"
                 else:
                     status_text = f"{Colors.LOSE}❌ AI wins{Colors.RESET}"
@@ -384,6 +402,17 @@ def main():
                 print(
                     f"  {Colors.HEADER}Your answer:{Colors.RESET} {Colors.ANSWER}{result.question.answer}{Colors.RESET}"
                 )
+                
+                # Show if student answer has issues
+                if hasattr(result, 'student_answer_correctness') and result.student_answer_correctness != 'CORRECT':
+                    print(
+                        f"  {Colors.ERROR}Answer Status: {result.student_answer_correctness}{Colors.RESET}"
+                    )
+                    if hasattr(result, 'factual_issues') and result.factual_issues:
+                        print(
+                            f"  {Colors.ERROR}Factual Issues: {', '.join(result.factual_issues)}{Colors.RESET}"
+                        )
+                
                 print(
                     f"  {Colors.HEADER}AI's answer:{Colors.RESET} {Colors.AI_RESPONSE}{result.llm_answer}{Colors.RESET}"
                 )
