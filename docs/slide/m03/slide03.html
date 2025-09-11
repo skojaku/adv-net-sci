@@ -141,6 +141,14 @@
 <p><img data-src="https://www.geni.org/globalenergy/library/national_energy_grid/united-states-of-america/graphics/UnitedStatesPowerGrid.jpg"></p>
 </div></div>
 </section>
+<section class="slide level2">
+
+<p>Good LLM questions for Starter Assignment:</p>
+<ul>
+<li>https://github.com/sk-classroom/starter-amahury/blob/main/assignment/quiz.toml</li>
+<li>https://github.com/sk-classroom/starter-nedachocolate63/blob/main/assignment/quiz.toml</li>
+</ul>
+</section>
 <section id="clustering-coefficient-3" class="slide level2">
 <h2>Clustering Coefficient (3)</h2>
 <p><span class="red-text">Global clustering coefficient</span> focuses on the total number of triangles in the network.</p>
@@ -1564,156 +1572,22 @@ f_c = 1 - \frac{1}{\kappa - 1} = 1 - \frac{1}{(\lambda + 1) - 1} = 1 - \frac{1}{
 <p><img data-src="https://networksciencebook.com/images/ch-08/figure-8-12.jpg"></p>
 </div></div>
 </section>
-<section class="slide level2">
-
-</section>
-<section class="slide level2">
-
-<p><strong>Real-world Implications</strong>:</p>
-<ul>
-<li>Power grids protect major substations</li>
-<li>Internet infrastructure includes hub redundancy</li>
-<li>Transportation networks maintain backup routes</li>
-</ul>
-<p><strong>💬 Discussion</strong>: This creates a fundamental dilemma - how do you design a network that’s both efficient and secure? What strategies might you use?</p>
-</section>
-<section id="part-vii-design-principles" class="slide level2">
-<h2>Part VII: Design Principles</h2>
-</section>
 <section id="design-challenge" class="slide level2">
 <h2>🤔 Design Challenge</h2>
 <p><strong>❓ Question</strong>: Given what we’ve learned about network vulnerabilities, how would you design a robust network?</p>
 <p><em>Consider: What principles would you use? How would you balance cost, efficiency, and security?</em></p>
+<p>Create a network with <a href="https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html">Interactive game</a></p>
 </section>
-<section id="the-answer-robust-network-design-principles" class="slide level2">
-<h2>💡 The Answer: Robust Network Design Principles</h2>
-<ol type="1">
-<li><strong>Balanced Degree Distribution</strong>: Avoid extreme homogeneity or hub concentration</li>
-<li><strong>Multiple Redundant Pathways</strong>: Ensure no single point of failure</li>
-<li><strong>Strategic Hub Protection</strong>: Invest heavily in protecting critical nodes</li>
-<li><strong>Hierarchical Design</strong>: Combine local clusters with hub connections</li>
-<li><strong>Adaptive Responses</strong>: Design systems that can reconfigure when attacks detected</li>
-</ol>
-<p><strong>💬 Discussion</strong>: Which of these principles do you think is most important? How would you prioritize them given limited resources? What real-world examples can you think of that implement these strategies?</p>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="lets-code" class="title-slide slide level1 center">
+<h1>Let’s code!</h1>
+
 </section>
-<section id="the-robustness-paradox" class="slide level2">
-<h2>The Robustness Paradox</h2>
-<p><strong>Trade-off</strong>: Efficiency vs.&nbsp;Security</p>
-<p><strong>No Perfect Solution</strong>: No single structure optimal against all failure types</p>
-<p><strong>Design Challenge</strong>: Balance cost efficiency with resilience</p>
-<p><strong>Context-Dependent</strong>: Optimal design depends on threat model and cost constraints</p>
-</section>
-<section id="part-viii-practical-applications" class="slide level2">
-<h2>Part VIII: Practical Applications</h2>
-</section>
-<section id="coding-implementation" class="slide level2">
-<h2>Coding Implementation</h2>
-<p><strong>Tools</strong>:</p>
-<ul>
-<li><code>igraph</code> - comprehensive network analysis</li>
-<li><code>scipy.sparse.csgraph</code> - efficient connected component algorithms</li>
-<li><code>networkx</code> - alternative approach with different robustness metrics</li>
-</ul>
-<p><strong>Key Functions</strong>:</p>
-<ul>
-<li>Connected components analysis</li>
-<li>MST algorithms</li>
-<li>Robustness simulation</li>
-<li>Percolation analysis</li>
-</ul>
-</section>
-<section id="real-world-application-question" class="slide level2">
-<h2>🤔 Real-World Application Question</h2>
-<p><strong>❓ Question</strong>: How would you test our theoretical predictions about network robustness using real data?</p>
-<p><em>Think about: What kind of network would be good to study? How would you measure robustness in practice?</em></p>
-</section>
-<section id="the-answer-airport-network-analysis" class="slide level2">
-<h2>💡 The Answer: Airport Network Analysis</h2>
-<p><strong>Case Study</strong>: Airport connectivity network</p>
-<p><strong>Theoretical Prediction</strong>: Using Molloy-Reed criterion</p>
-<ul>
-<li>Calculate degree statistics: κ = ⟨k²⟩/⟨k⟩</li>
-<li>Predict critical fraction: f_c = 1 - 1/(κ-1)</li>
-</ul>
-<p><strong>Empirical Validation</strong>: Compare predicted vs.&nbsp;observed critical fractions</p>
-<p><strong>💬 Discussion</strong>: The high f_c value indicates the airport network is extremely robust to random failures. Why do you think this is? What does this tell us about how transportation networks are designed?</p>
-</section>
-<section id="part-ix-interactive-elements" class="slide level2">
-<h2>Part IX: Interactive Elements</h2>
-</section>
-<section id="hands-on-exercises" class="slide level2">
-<h2>Hands-on Exercises</h2>
-<p><strong>Pen-and-Paper</strong>: <a href="./pen-and-paper/exercise.pdf">MST to robust grid design</a></p>
-<p><strong>Interactive Demo</strong>: <a href="https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html">Network robustness simulation</a></p>
-<p><strong>Coding Exercises</strong>:</p>
-<ul>
-<li>Random vs.&nbsp;targeted attack comparison</li>
-<li>Percolation simulation</li>
-<li>Real-world network analysis</li>
-</ul>
-</section>
-<section id="assignment-overview" class="slide level2">
-<h2>Assignment Overview</h2>
-<p><strong>Repository Access</strong>:</p>
-<ul>
-<li>Enrolled students: Dedicated GitHub classroom link</li>
-<li>Others: <a href="https://github.com/sk-classroom/advnetsci-robustness">Fork assignment repository</a></li>
-</ul>
-<p><strong>Grading</strong>: Automated testing framework</p>
-<ul>
-<li><code>bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb</code></li>
-<li><code>bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb</code></li>
-</ul>
-<p><strong>Learning Objectives</strong>: Apply concepts to real network data</p>
-</section>
-<section id="conclusion-key-takeaways" class="slide level2">
-<h2>Conclusion &amp; Key Takeaways</h2>
-</section>
-<section id="summary" class="slide level2">
-<h2>Summary</h2>
-<ul>
-<li><strong>MST</strong>: Optimal cost efficiency but vulnerable to failures</li>
-<li><strong>Robustness</strong>: Requires redundancy beyond minimum connectivity</li>
-<li><strong>Attack Asymmetry</strong>: Random failures vs.&nbsp;targeted attacks create different vulnerabilities</li>
-<li><strong>Design Balance</strong>: No single solution - context-dependent optimization</li>
-</ul>
-</section>
-<section id="next-steps" class="slide level2">
-<h2>Next Steps</h2>
-<p><strong>Assignment</strong>: Apply concepts to real network data</p>
-<p><strong>Further Reading</strong>:</p>
-<ul>
-<li>Borůvka (1926) - Original MST work</li>
-<li>Albert, Jeong &amp; Barabási (2000) - Network robustness</li>
-<li>Cohen &amp; Havlin (2010) - Comprehensive treatment</li>
-</ul>
-<p><strong>Applications</strong>: Infrastructure design, cybersecurity, system resilience</p>
-</section>
-<section id="questions-1" class="slide level2">
-<h2>Questions?</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Contact</strong>: skojaku@binghamton.edu</p>
-<p><strong>Course Materials</strong>: Available on course website</p>
-<p><strong>Office Hours</strong>: Check course schedule</p>
-</div><div class="column" style="width:50%;">
-<p><strong>Interactive Resources</strong>:</p>
-<ul>
-<li><a href="https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html">Network Robustness Demo</a></li>
-<li><a href="https://visualize-it.github.io/bernoulli_percolation/simulation.html">Percolation Simulation</a></li>
-<li><a href="https://github.com/sk-classroom/advnetsci-robustness">Assignment Repository</a></li>
-</ul>
-</div></div>
-</section>
-<section id="references" class="slide level2">
-<h2>References</h2>
-<ol type="1">
-<li><p><strong>Borůvka, O.</strong> (1926). O jistém problému minimálním. <em>Práce Moravské Přírodovědecké Společnosti</em>, 3, 37-58.</p></li>
-<li><p><strong>Albert, R., Jeong, H., &amp; Barabási, A. L.</strong> (2000). Error and attack tolerance of complex networks. <em>Nature</em>, 406(6794), 378-382.</p></li>
-<li><p><strong>Cohen, R., Erez, K., ben-Avraham, D., &amp; Havlin, S.</strong> (2000). Resilience of the Internet to random breakdowns. <em>Physical Review Letters</em>, 85(21), 4626-4629.</p></li>
-<li><p><strong>Molloy, M., &amp; Reed, B.</strong> (1995). A critical point for random graphs with a given degree sequence. <em>Random Structures &amp; Algorithms</em>, 6(2-3), 161-180.</p></li>
-<li><p><strong>Cohen, R., &amp; Havlin, S.</strong> (2010). <em>Complex Networks: Structure, Robustness and Function</em>. Cambridge University Press.</p></li>
-</ol>
+<section class="slide level2">
+
 
 </section></section>
     </div>
