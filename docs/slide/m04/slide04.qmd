@@ -1,0 +1,184 @@
+---
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: true
+    preview-links: auto
+    css: css/style.css
+  html:
+    code-fold: true
+    code-tools: true
+highlight-style: oblivion
+execute:
+    enabled: true
+    echo: false
+---
+
+
+# Module 04: Friendship paradox
+
+Advanced Topics in Network Science
+
+Sadamori Kojaku
+
+skojaku@binghamton.edu
+
+---
+
+# Advanced Topics in Network Science
+
+Lecture 04: Friendship Paradox
+Sadamori Kojaku
+
+## Learning Objectives
+
+- 📚 Understand the friendship paradox
+- 🔍 Explore its importance and consequences
+- 📊 How to plot degree distribution? (not as easy as it seems!)
+  - Histogram
+  - CDF
+  - CCDF
+  - Log-log plot
+- 🧠 Excess degree distribution
+
+## Let's start with a game!
+
+- 🎮 Play the [Vaccination Game](https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html)
+- 💉 Vaccinate strategically to halt virus spread
+
+## What is the average number of friends that...
+
+::: {.columns}
+
+::: {.column width="30%"}
+
+- ...you have?
+- ...your friends have?
+
+:::
+
+::: {.column width="70%"}
+
+![](https://www.quantamagazine.org/wp-content/uploads/2018/08/Fat-Tail_Network_2880x1620.jpg)
+
+# Friendship Paradox
+
+**Your friends have more friends than you, on average**
+
+## Friendship Paradox Explained 🤔
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- 📊 It's about measurement, not friendship formation!
+- Average # of friends of you = Average over nodes
+- Average # of friends of your friends = Average over edges
+
+:::
+
+::: {.column width="50%"}
+
+![](figs/nodes-vs-edges.jpg)
+
+:::
+:::
+
+---
+
+Let's approach this mathematically.
+
+::: {.incremental}
+- Let $P_0(k)$ be the probability of a node having degree $k$
+- Let $P_1(k)$ be the probability of a friend having degree $k$
+- How does $P_1(k)$ look like in terms of $P_0(k)$ and $k$?
+- Hint:
+  - Nodes with $k$ edges appear $k$ times more likely as a friend of someone than a person with $1$ edge. Thus, $P_1(k) \propto \; ????$. To get the actual distribution, you will need $\langle k \rangle = \sum_{k} k P_0(k)$
+- Compute the average degree of friends over edges
+:::
+
+## Degree distribution of friends
+
+- $P_1(k) = \frac{k}{\langle k \rangle} P_0(k)$
+
+- Average degree of friends
+  - $\langle k_f \rangle = \sum_{k} k P_1(k) = \sum_{k} \frac{k^2}{\langle k \rangle} P_0(k) = \frac{\langle k^2 \rangle}{\langle k \rangle}$
+
+---
+
+- 🎮 Play the [Vaccination Game](https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html)
+- Think about how the friendship paradox influences your strategy
+
+
+## Degree is crucial for network science!
+
+- Network Robustness
+- Epidemic Spreading and Controlling
+- Community Detection
+- ...
+
+Understanding degree distribution is crucial for network analysis. But how do we plot it? 🤔 (it's not as easy as it seems!)
+
+## It's not as easy as it seems!
+
+
+![](https://hongtaoh.com/en/blog/2020-08-19-igraph-distribution_files/figure-html/unnamed-chunk-16-1.png)
+
+
+## Exercise: Basic visualization techniques
+
+- [Pen and paper exercise](../lecture-note/m04-friendship-paradox/pen-and-paper-friendship-paradox/main.pdf)
+
+## Data Visualization: CDF and CCDF 📉
+
+## Definitions
+
+::: {.columns}
+::: {.column width="50%"}
+
+- CDF: $F(x) = P(X \leq x)$
+- CCDF: $\bar{F}(x) = P(X > x) = 1 - F(x)$
+
+:::
+::: {.column width="50%"}
+
+![](https://nap.nationalacademies.org/openbook/0309054915/xhtml/images/img00034.jpg)
+
+:::
+:::
+
+---
+
+# Visualization of Degree Distribution: Hands-on 🧠
+
+1. Create Barabási-Albert network
+3. Compute degree of each node
+4. Calculate degree distribution
+
+## Visualization
+- Use log-log plots
+- CCDF for clearer tail visualization
+
+---
+
+# CCDF in Log-Log Plot 📉
+
+## Interpretation
+- Slope indicates heterogeneity
+- Steep slope: more homogeneous
+- Flat slope: more heterogeneous
+
+## Power-Law Relation
+$\log [\text{CCDF}(d)] = (-\gamma + 1) \cdot \log d + \text{const.}$
+
+
+---
+
+# Key Takeaways 🗝️
+
+- 🤝 Friendship paradox is universal in social networks
+- 📊 Proper data visualization is crucial for understanding
+- 🧮 Degree distributions provide insights into network structure
+- 💉 Practical applications include disease control strategies
+- 🧠 Critical thinking about network structures and their implications
