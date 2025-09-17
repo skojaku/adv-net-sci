@@ -155,6 +155,89 @@ graph G {
 
 ---
 
+
+::: {.columns}
+
+::: {.column width="70%"}
+
+**Quiz**:
+Prove the following Molly-Reed criterion:
+A random network (with a given degree distribution) has a giant component if and only if
+
+$$
+\frac{\langle k^2 \rangle}{\langle k \rangle} > 2,
+$$
+
+where $\langle k \rangle$ and $\langle k^2 \rangle$ are the average degree and the average squared degree, respectively.
+:::
+
+::: {.column width="30%"}
+
+
+```{dot}
+//| fig-width: 3
+//| fig-height: 3
+//| fig-align: center
+graph G {
+    node [shape=circle]
+
+    10 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    20 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    21 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    30 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    31 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    32 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    40 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    41 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    42 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+    43 [color=black, label="", shape="square", width=0.1, fill="black", style="filled"]
+
+    1 -- 10 [penwidth=3, color="#1a43bf", fontsize=20]
+
+    // MST edges (highlighted)
+    10 -- 20 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 21 [penwidth=0, color="#ffffffff", fontsize=20]
+
+    10 -- 30 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 31 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 32 [penwidth=0, color="#ffffffff", fontsize=20]
+
+
+    10 -- 40 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 41 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 42 [penwidth=0, color="#ffffffff", fontsize=20]
+    10 -- 43 [penwidth=0, color="#ffffffff", fontsize=20]
+
+    // ----
+    20 -- 2 [penwidth=3, color="#1a43bf", fontsize=20]
+    21 -- 2 [penwidth=3, color="#1a43bf", fontsize=20]
+
+
+    30 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+    31 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+    32 -- 3 [penwidth=3, color="#1a43bf", fontsize=20]
+
+
+    40 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    41 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    42 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+    43 -- 4 [penwidth=3, color="#1a43bf", fontsize=20]
+}
+```
+
+
+
+:::
+:::
+
+
+**Hint**:
+1. Think about how many friends a node's friends should have on average to be a part of the giant component.
+2. Then, identify the probability to handshake with a node with degree $k$ given degree distribution $p(k)$.
+3. Integrate over the distribution to get the average degree of a friend
+
+---
+
 [Pen & Paper Exercise](./pen-and-paper/exercise.pdf)
 
 ---
