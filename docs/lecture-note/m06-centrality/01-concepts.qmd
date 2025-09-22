@@ -1,37 +1,26 @@
-# Module 6: Centrality Concepts
-
-## What to learn in this module
-
-In this module, we will learn centrality, one of the most widely-used yet controversial techniques in network analysis. We will learn:
-- What is centrality in networks?
-- How to operationalize centrality?
-- How to find centrality in networks?
-- Limitations of centrality
-- **Keywords**: degree centrality, closeness centrality, betweenness centrality, eigenvector centrality, PageRank, Katz centrality, HITS, random walk
+---
+title: "Centrality Concepts"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
 
 ## What is centrality?
 
 Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
-These questions are all about finding out what's important in a network of people, ideas, or things. In network science, we call this *centrality.*
+These questions are all about finding out what's important in a network of people, ideas, or things. In network science, we call this *centrality*.
 
 Centrality or *importance* is a question of how important a node is in a network.
 But the notion of *importance* is somewhat vague.
 In what sense we say a node is important?
-Answering this question needs a specific *context*, and there are many contexts in which the *importance* is defined.
 
-![](../figs/centrality.jpg)
+::: {.callout-note title="Exercise"}
 
-## Degree-based centrality
+Try out the pen and paper exercise below to get a sense of centrality: [School exercises](./pen-and-paper/exercise.pdf)
 
-The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
+:::
 
-**Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
-
-$$
-c_i = d_i = \sum_{j} A_{ij}
-$$
-
-where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
+![](../figs/centrality.jpg){width="50%" fig-align="center"}
 
 ## Distance-based centrality
 
@@ -45,6 +34,9 @@ Perhaps the Romans understood the importance of being central in terms of distan
 
 This family of centrality measures is based on shortest path distances between nodes. They consider a node important if it has short distances to other nodes or if it lies on many shortest paths.
 
+
+### Closeness centrality
+
 **Closeness centrality** measures how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as
 
 $$
@@ -53,10 +45,9 @@ $$
 
 where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the normalization factor to make the centrality have a maximum value of 1.
 
-::: {.callout-note title="Exercise"}
-:class: tip
+::: {.column-margin}
 
-Create a graph where a node has the maximum closeness centrality of value 1.
+Question: What would be a graph where a node has the maximum closeness centrality of value 1?
 
 ::: {.callout collapse="true"}
 ## Click to see the answer
@@ -64,19 +55,43 @@ Create a graph where a node has the maximum closeness centrality of value 1.
 The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+
+:::
 :::
 
-**Harmonic centrality** adjusts closeness centrality to work even in disconnected networks. The problem with closeness centrality is that it cannot handle disconnected networks. When a network is disconnected, some nodes can't reach others, making their distance infinite. This causes all centrality values to become zero, which isn't very helpful! To fix this, Beauchamp {footcite:p}`beauchamp1965improved` came up with a clever solution called *harmonic centrality*. It works even when the network is disconnected.
+### Harmonic centrality
+
+The closeness centrality falls short for disconnected networks. This is because the shortest distance between two nodes in different connected components is infinite, making the closeness centrality of all nodes in the disconnected components zero.
+
+A remedy is **Harmonic centrality** which adjusts closeness centrality [@beauchamp1965improved] which is defined as
 
 $$
 c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
 $$
 
-**Eccentricity centrality** is based on the farthest distance from a node to any other node. The eccentricity centrality is defined as
+The distance between two nodes in different connected components has zero contribution to the harmonic centrality, making it a useful measure for disconnected networks.
+
+### Eccentricity centrality
+
+While the closeness and harmonic centralities focus on "average" distance, eccentricity centrality focuses on the farthest distance from a node to any other node. It is defined as
 
 $$
 c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
 $$
+
+**When is eccentricity centrality useful?**
+
+Eccentricity centrality is particularly valuable when you need to identify nodes that minimize the maximum distance to any other node in the network - essentially finding the "center" that ensures no node is too far away. This makes it especially useful for:
+
+1. **Emergency services and facility location**: When placing hospitals, fire stations, or emergency response centers, you want to minimize the maximum response time to any location in the service area.
+
+2. **Network robustness and fault tolerance**: In communication or transportation networks, nodes with high eccentricity centrality serve as optimal backbone locations that maintain connectivity even when parts of the network fail.
+
+3. **Supply chain and logistics**: Distribution centers positioned at nodes with high eccentricity centrality ensure that the most remote customers still receive reasonably fast delivery.
+
+Unlike closeness centrality (which optimizes average distance) or harmonic centrality (which handles disconnected components), eccentricity centrality is **worst-case optimized** - it focuses on ensuring that even the most disadvantaged connection is as good as possible. This makes it ideal for applications where equity and worst-case performance matter more than average performance.
+
+### Betweenness centrality
 
 **Betweenness centrality** considers that a node is important if it lies on many shortest paths between other nodes.
 
@@ -240,6 +255,14 @@ $$
 where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
 The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In the Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
 
-## Pen and paper exercises
+## Degree-based centrality
 
-- [School exercises](./pen-and-paper/exercise.pdf)
+The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
+
+**Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
+
+$$
+c_i = d_i = \sum_{j} A_{ij}
+$$
+
+where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
