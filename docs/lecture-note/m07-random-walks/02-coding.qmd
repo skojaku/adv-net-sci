@@ -1,8 +1,8 @@
 ---
 title: "Coding - Random Walks"
 jupyter: advnetsci
-execute:
-    enabled: true
+#execute:
+#    enabled: true
 ---
 
 # Random Walks: Implementation and Applications
@@ -13,7 +13,7 @@ In the previous section, we learned the theoretical foundations of random walks.
 
 Recall that a random walk is a process where we:
 1. Start at a node $i$
-2. Randomly choose an edge to traverse to a neighbor node $j$  
+2. Randomly choose an edge to traverse to a neighbor node $j$
 3. Repeat until we've taken $T$ steps
 
 Let's see how this simple process can reveal deep insights about network structure.
@@ -127,20 +127,20 @@ def random_walk(A, n_steps):
     k = np.sum(A, axis=1)
     P = A / k[:, np.newaxis]
     n_nodes = A.shape[0]
-    
+
     # Initialize position
     x = np.zeros(n_nodes)
     x[0] = 1  # Start at node 0
-    
+
     positions = [x.copy()]
-    
+
     for step in range(n_steps):
         probs = x @ P
         next_node = np.random.choice(n_nodes, p=probs)
         x[:] = 0
         x[next_node] = 1
         positions.append(x.copy())
-    
+
     return np.array(positions)
 
 # Test the function
@@ -189,16 +189,16 @@ def expected_position(A, x_0, t):
         A (np.ndarray): The adjacency matrix of the graph.
         x_0 (np.ndarray): The initial position of the walker.
         t (int): The number of steps to simulate.
-    
+
     Returns:
         np.ndarray: The expected position at time t.
     """
     k = np.sum(A, axis=1)
     P = A / k[:, np.newaxis]
-    
+
     # Compute P^t
     P_t = np.linalg.matrix_power(P, t)
-    
+
     return x_0 @ P_t
 
 # Test the function
@@ -218,28 +218,28 @@ import seaborn as sns
 
 def plot_convergence(A, x_0, max_t=100):
     """Plot the convergence to stationary distribution."""
-    
+
     k = np.sum(A, axis=1)
     P = A / k[:, np.newaxis]
     n_nodes = A.shape[0]
-    
+
     # Compute expected positions over time
     positions = []
     x_t = x_0.copy()
     positions.append(x_t.copy())
-    
+
     for t in range(max_t):
         x_t = x_t @ P
         positions.append(x_t.copy())
-    
+
     positions = np.array(positions)
-    
+
     # Plot
     fig, ax = plt.subplots(figsize=(10, 6))
-    
+
     for i in range(n_nodes):
         ax.plot(range(max_t + 1), positions[:, i], label=f"Node {i}", linewidth=2)
-    
+
     ax.set_xlabel("Time")
     ax.set_ylabel("Probability")
     ax.set_title("Random Walk Convergence to Stationary Distribution")
@@ -250,7 +250,7 @@ def plot_convergence(A, x_0, max_t=100):
 # Test with different starting positions
 starting_positions = [
     [1, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0], 
+    [0, 1, 0, 0, 0],
     [0, 0, 0, 0, 1]
 ]
 
@@ -322,7 +322,7 @@ plt.show()
 
 We observe three key features:
 1. The distribution oscillates with decaying amplitude before converging
-2. Nodes of the same degree converge to the same stationary probability  
+2. Nodes of the same degree converge to the same stationary probability
 3. Nodes with higher degree have higher stationary probability
 
 Let's verify this by comparing with the theoretical stationary distribution:
@@ -423,44 +423,44 @@ import networkx as nx
 
 def create_sbm_and_analyze(n_communities=4, n_nodes_per_community=25, p_intra=0.2, p_inter=0.05):
     """Create SBM network and analyze random walk dynamics."""
-    
+
     # Create stochastic block model
     sizes = [n_nodes_per_community] * n_communities
     p_matrix = np.full((n_communities, n_communities), p_inter)
     np.fill_diagonal(p_matrix, p_intra)
-    
+
     G = nx.stochastic_block_model(sizes, p_matrix)
     g = igraph.Graph().Adjacency(nx.to_numpy_array(G).tolist()).as_undirected()
-    
+
     # Create membership vector for coloring
     membership = np.repeat(np.arange(n_communities), n_nodes_per_community)
-    
+
     # Compute transition matrix
     A = g.get_adjacency_sparse()
     k = np.array(g.degree())
     P = sparse.diags(1 / k) @ A
-    
+
     # Analyze walker dynamics
     x_t = np.zeros(g.vcount())
     x_t[0] = 1  # Start from node 0
-    
+
     time_steps = [0, 5, 10, 1000]
     results = {}
-    
+
     x_current = x_t.copy()
     for t in range(max(time_steps) + 1):
         if t in time_steps:
             results[t] = x_current.copy()
         if t < max(time_steps):
             x_current = x_current @ P
-    
+
     return g, membership, results
 
 # Part 1: Low inter-community connectivity
 print("Part 1: Inter-community probability = 0.05")
 g1, membership1, results1 = create_sbm_and_analyze(p_inter=0.05)
 
-# Part 2: Higher inter-community connectivity  
+# Part 2: Higher inter-community connectivity
 print("Part 2: Inter-community probability = 0.15")
 g2, membership2, results2 = create_sbm_and_analyze(p_inter=0.15)
 
@@ -471,7 +471,7 @@ for scenario, (g, membership, results) in enumerate([(g1, membership1, results1)
     for i, t in enumerate([0, 5, 10, 1000]):
         prob = results[t]
         colors = [plt.cm.viridis(prob[j] / np.max(prob)) if np.max(prob) > 0 else 'lightgray' for j in range(g.vcount())]
-        
+
         # Use membership for layout
         pos = []
         for node_id in range(g.vcount()):
@@ -481,8 +481,8 @@ for scenario, (g, membership, results) in enumerate([(g1, membership1, results1)
             x = radius * np.cos(angle) + 0.3 * np.random.randn()
             y = radius * np.sin(angle) + 0.3 * np.random.randn()
             pos.append((x, y))
-        
-        igraph.plot(g, layout=pos, vertex_size=8, vertex_color=colors, 
+
+        igraph.plot(g, layout=pos, vertex_size=8, vertex_color=colors,
                    target=axes[scenario][i], edge_width=0.5)
         axes[scenario][i].set_title(f"{'Low' if scenario == 0 else 'High'} inter-comm, t={t}")
 
@@ -575,7 +575,7 @@ def random_walk_centrality(graph):
     """Compute random walk centrality (stationary distribution)."""
     A = graph.get_adjacency_sparse()
     deg = np.array(A.sum(axis=1)).flatten()
-    
+
     # Stationary distribution is proportional to degree
     centrality = deg / np.sum(deg)
     return centrality
@@ -604,10 +604,10 @@ def random_walk_modularity(graph, communities):
     A = graph.get_adjacency_sparse().toarray()
     deg = np.array(graph.degree())
     m = np.sum(deg) / 2  # Total number of edges
-    
+
     modularity = 0
     n_nodes = len(deg)
-    
+
     for i in range(n_nodes):
         for j in range(n_nodes):
             if communities[i] == communities[j]:
@@ -615,9 +615,9 @@ def random_walk_modularity(graph, communities):
                 pi_i = deg[i] / (2 * m)  # Stationary probability
                 P_ij = A[i, j] / deg[i] if deg[i] > 0 else 0  # Transition probability
                 pi_j = deg[j] / (2 * m)  # Stationary probability
-                
+
                 modularity += (pi_i * P_ij) - (pi_i * pi_j)
-    
+
     return modularity
 
 # Test with our community network
@@ -636,7 +636,7 @@ Through this coding exploration, we've seen how random walks provide practical t
 
 1. **Implementation**: Random walks are straightforward to simulate using matrix operations
 2. **Stationary distributions**: Naturally emerge as degree-based centrality measures
-3. **Community detection**: Temporal dynamics reveal modular structure 
+3. **Community detection**: Temporal dynamics reveal modular structure
 4. **Spectral analysis**: Eigenvalues determine convergence rates and mixing times
 5. **Applications**: Provide new perspectives on modularity and centrality
 
