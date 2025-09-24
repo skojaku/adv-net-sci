@@ -5,6 +5,56 @@ execute:
     enabled: true
 ---
 
+```{python}
+#| echo: false
+#| include: false
+
+import igraph as ig
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create the graph
+edges = [(0,1), (0,3), (1,2), (1,3), (1,4), (2,4), (2,7), (3,4), (3,5), (4,5), (5,6), (6,8), (8,9)]
+g = ig.Graph(edges=edges, directed=False)
+g.vs["label"] = range(g.vcount())
+layout = g.layout("fr")
+
+# Plotting function
+def plot_centrality(g, scores, title):
+    fig, ax = plt.subplots(figsize=(4, 3))
+    cmap = plt.cm.magma
+
+    # Handle cases where all scores are the same
+    min_score, max_score = np.min(scores), np.max(scores)
+    if min_score == max_score:
+        normalized_scores = np.ones_like(scores)
+    else:
+        normalized_scores = (np.array(scores) - min_score) / (max_score - min_score)
+
+    vertex_color = [cmap(s) for s in normalized_scores]
+
+    ig.plot(
+        g,
+        target=ax,
+        layout=layout,
+        vertex_size=20,
+        vertex_color=vertex_color,
+        vertex_label_color="black",
+        vertex_label_dist=0,
+        vertex_label_size=10
+    )
+
+    ax.set_title(title, fontsize=12)
+
+    # Add a colorbar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_score, vmax=max_score))
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, shrink=0.8)
+    cbar.set_label("Centrality", rotation=270, labelpad=15)
+
+    #return fig
+```
+
 ## What is centrality?
 
 Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
@@ -43,6 +93,15 @@ $$
 c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
 $$
 
+```{python}
+#| echo: false
+#| fig-cap: "Closeness Centrality Visualization. Nodes with higher centrality (brighter colors) are closer to all other nodes on average."
+#| label: fig-closeness
+
+scores = g.closeness()
+plot_centrality(g, scores, "Closeness Centrality")
+```
+
 where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the normalization factor to make the centrality have a maximum value of 1.
 
 ::: {.column-margin}
@@ -69,6 +128,15 @@ $$
 c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
 $$
 
+```{python}
+#| echo: false
+#| fig-cap: "Harmonic Centrality Visualization. A variant of closeness that works well with disconnected components."
+#| label: fig-harmonic
+
+scores = g.harmonic_centrality()
+plot_centrality(g, scores, "Harmonic Centrality")
+```
+
 The distance between two nodes in different connected components has zero contribution to the harmonic centrality, making it a useful measure for disconnected networks.
 
 ### Eccentricity centrality
@@ -79,17 +147,23 @@ $$
 c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
 $$
 
-**When is eccentricity centrality useful?**
+```{python}
+#| echo: false
+#| fig-cap: "Eccentricity Centrality Visualization. High-centrality nodes (brighter colors) have the smallest maximum distance to any other node."
+#| label: fig-eccentricity
 
-Eccentricity centrality is particularly valuable when you need to identify nodes that minimize the maximum distance to any other node in the network - essentially finding the "center" that ensures no node is too far away. This makes it especially useful for:
+scores = g.eccentricity()
+# Eccentricity is a distance, so lower is better. We plot 1/eccentricity for centrality.
+plot_centrality(g, [1/e if e > 0 else 0 for e in scores], "Eccentricity Centrality (1/eccentricity)")
+```
 
-1. **Emergency services and facility location**: When placing hospitals, fire stations, or emergency response centers, you want to minimize the maximum response time to any location in the service area.
 
-2. **Network robustness and fault tolerance**: In communication or transportation networks, nodes with high eccentricity centrality serve as optimal backbone locations that maintain connectivity even when parts of the network fail.
+::: {.column-margin}
+::: {.callout-note title="When is eccentricity centrality useful?"}
+Unlike closeness or harmonic centrality, eccentricity centrality optimizes for the worst-case scenario, making it ideal when equity and maximum response times are critical. For example, placing emergency services or facilities to ensure no location is too far from help, designing robust communication or transportation networks that remain connected even if parts fail, and positioning distribution centers to guarantee reasonable delivery times to the most remote customers.
 
-3. **Supply chain and logistics**: Distribution centers positioned at nodes with high eccentricity centrality ensure that the most remote customers still receive reasonably fast delivery.
-
-Unlike closeness centrality (which optimizes average distance) or harmonic centrality (which handles disconnected components), eccentricity centrality is **worst-case optimized** - it focuses on ensuring that even the most disadvantaged connection is as good as possible. This makes it ideal for applications where equity and worst-case performance matter more than average performance.
+:::
+:::
 
 ### Betweenness centrality
 
@@ -98,6 +172,15 @@ Unlike closeness centrality (which optimizes average distance) or harmonic centr
 $$
 c_i = \sum_{j < k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
 $$
+
+```{python}
+#| echo: false
+#| fig-cap: "Betweenness Centrality Visualization. Brighter nodes lie on a larger number of shortest paths between other nodes."
+#| label: fig-betweenness
+
+scores = g.betweenness()
+plot_centrality(g, scores, "Betweenness Centrality")
+```
 
 where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of shortest paths between nodes $j$ and $k$ that pass through node $i$.
 
@@ -109,22 +192,34 @@ This idea can be applied to define the *centrality* of a node in a network.
 
 This family of centrality measures considers that a node is important if it is connected to other important nodes, or if it receives many "walks" or "votes" from other nodes in the network. These measures often use recursive definitions and are computed using linear algebra techniques.
 
+::: {.column-margin}
+**Aesop** was an ancient Greek storyteller believed to have lived around the 6th century BCE. He is famous for his fables—short stories that use animals and everyday situations to teach moral lessons.
+
+
+![The Wolf and the Kid. Taken from [Aesop's Fables from Heritage History](https://www.heritage-history.com/index.php?c=read&author=winter&book=aesop&story=wolf)](https://www.heritage-history.com/books/winter/aesop/zpage010.gif)
+:::
+
+
+
+### Eigenvector centrality
+
 **Eigenvector centrality** considers that a node is important if it is connected to other important nodes. Yes, it sounds like circular! But it is actually computable! Let us define it more precisely by the following equation.
 
 $$
-c_i = \lambda \sum_{j} A_{ij} c_j
+\lambda c_i = \sum_{j} A_{ij} c_j
 $$
 
-where $\lambda$ is a constant. It suggests that the centrality of a node ($c_i$) is the sum of the centralities of its neighbors ($A_{ij} c_j$; note that $A_{ij}=1$ if $j$ is a neighbor, and otherwise $A_{ij}=0$), normalized by $\lambda$.
+where $\lambda$ is a constant. It suggests that the centrality of a node ($c_i$), when multiplied by a constant $\lambda$, is the sum of the centralities of its neighbors ($A_{ij} c_j$; note that $A_{ij}=1$ if $j$ is a neighbor, and otherwise $A_{ij}=0$).
 Using vector notation, we can rewrite the equation as
 
 $$
+\lambda
 \begin{bmatrix}
 c_1 \\
 c_2 \\
 \vdots \\
 c_n
-\end{bmatrix} = \lambda
+\end{bmatrix} =
 \begin{bmatrix}
 A_{11} & A_{12} & \cdots & A_{1n} \\
 A_{21} & A_{22} & \cdots & A_{2n} \\
@@ -142,17 +237,32 @@ $$
 or equivalently,
 
 $$
-\mathbf{c} = \lambda \mathbf{A} \mathbf{c}
+\lambda \mathbf{c} = \mathbf{A} \mathbf{c}
 $$
 
-Okay, but how do we solve this? Well, this is actually the eigenvector equation! And the solution to this equation is the eigenvector of the adjacency matrix, $\mathbf{A}$. But here's the tricky part - there are multiple eigenvectors. So which one should we choose?
+Okay, but how do we solve this? Well, this is the standard eigenvector equation! The solution $\mathbf{c}$ is an eigenvector of the adjacency matrix $\mathbf{A}$, and $\lambda$ is its corresponding eigenvalue. But here's the tricky part - a matrix can have multiple eigenvectors. So which one should we choose?
 
-Let's think about it for a moment. We want our centrality measure to be positive. It wouldn't make much sense to have negative importance! So, we're looking for an eigenvector where all the elements are positive. And a good news is that there's a special eigenvector that fits the bill perfectly.
-Perron-Frobenius theorem guarantees that the eigenvector associated with the largest eigenvalue always has all positive elements.
+Let's think about what we want again. We want our centrality measure to be positive. It wouldn't make much sense to have negative importance! So, we're looking for an eigenvector where all the elements are positive. And a good news is that there's a special eigenvector that fits the bill perfectly.
+The Perron-Frobenius theorem guarantees that the eigenvector associated with the largest eigenvalue always has all positive elements.
 
-**Hyperlink-Induced Topic Search (HITS) centrality**
+```{python}
+#| echo: false
+#| fig-cap: "Eigenvector Centrality Visualization. Brighter nodes are connected to other highly central nodes."
+#| label: fig-eigenvector
 
-extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
+scores = g.eigenvector_centrality()
+plot_centrality(g, scores, "Eigenvector Centrality")
+```
+
+::: {.column-margin}
+**Perron-Frobenius theorem**: For a regular matrix $\mathbf{A}$ with and non-negative entries ($A_{ij} \geq 0$), there exists a unique largest eigenvalue $r > 0$ such that its corresponding eigenvector $\mathbf{v}$ has all positive entries: $v_i > 0$ for all $i$.
+:::
+
+Thus, the eigenvector centrality is the eigenvector of the adjacency matrix associated with the largest eigenvalue.
+
+### Hyperlink-Induced Topic Search (HITS) centrality
+
+**HITS centrality** extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
 
 Let's put on a math hat to concretely define the hub and authority centralities.
 We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, we can define the hub and authority centralities as follows:
@@ -175,12 +285,11 @@ $$
 
 Again, we obtain the eigenvector equations whose solutions are the eigenvectors of $\mathbf{A}^T \mathbf{A}$ and $\mathbf{A} \mathbf{A}^T$ for $\mathbf{x}$ and $\mathbf{y}$, respectively.
 
-::: {.callout-note title="Exercise"}
-:class: tip
+::: {.column-margin}
 
 If the original network is *undirected*, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.
 
-::: {.callout-note collapse="true" title="Click to see the answer"}
+::: {.callout collapse="true" title="Click to see the answer"}
 If the graph is undirected, the hub and authority centralities are equivalent. And the solution is given by the eigenvector of $\mathbf{A} \mathbf{A}^T$. Now, let us consider the eigenvector equation for the adjacency matrix $\mathbf{A}$.
 
 $$
@@ -199,33 +308,17 @@ $$
 
 where we used the fact that $\mathbf{A}$ is symmetric. It suggests that the eigenvector of $\mathbf{A}^\top \mathbf{A}$ is the same as that of $\mathbf{A}$, and that the eigenvalue of $\mathbf{A}^\top \mathbf{A}$ is the square of that of $\mathbf{A}$.
 Thus, the eigenvector centrality is equivalent to the HITS centrality if the network is undirected.
+
+:::
 :::
 
-::: {.callout-note title="Exercise"}
-:class: tip
-
-Consider the case where the graph is undirected and we normalize the hub centrality by the degree $d_j$ of the authority, namely
-
-$$
-x_i = \sum_j \frac{A_{ji}}{d_j} y_j,\quad y_i = \sum_j A_{ij} x_j
-$$
-
-Then we will get the hub centrality equivalent to the degree centrality. Confirm this by substituting $x_i = d_i$.
-:::
+### Katz centrality
 
 **Katz centrality** addresses a limitation of eigenvector centrality, which tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. The solution is to add a little bit of score to all nodes.
 
 $$
 c_i = \beta + \lambda \sum_{j} A_{ij} c_j
 $$
-
-::: {.callout-note title="Exercise"}
-:class: tip
-
-Derive the solution of the Katz centrality.
-
-::: {.callout collapse="true"}
-## Click to see the answer
 
 The equation can be solved by
 
@@ -241,28 +334,130 @@ $$
 
 By taking the inverse of $\mathbf{I} - \lambda \mathbf{A}$, we get
 
-$$
+$
 \mathbf{c} = \beta \left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} \mathbf{1}
 $$
-:::
+
+```{python}
+#| echo: false
+#| fig-cap: "Katz Centrality Visualization. A measure of influence that accounts for both direct and indirect connections."
+#| label: fig-katz
+import numpy as np
+
+# Get adjacency matrix
+A = np.array(g.get_adjacency().data)
+n = g.vcount()
+I = np.identity(n)
+
+# Set parameters for Katz centrality
+# Alpha must be less than 1 / largest eigenvalue of A
+eigenvalues = np.linalg.eigvals(A)
+alpha = 0.9 / np.max(np.abs(eigenvalues))
+beta = 1.0
+
+# Calculate Katz centrality scores
+scores = np.linalg.inv(I - alpha * A.T) @ np.ones(n) * beta
+
+plot_centrality(g, scores.tolist(), "Katz Centrality")
+```
+
+### PageRank
 
 **PageRank** is the celebrated idea behind Google Search and can be seen as a cousin of Katz centrality.
 
 $$
-c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
+c_i = \underbrace{(1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{Random walk from neighbors}} + \underbrace{\beta \cdot \frac{1}{N}}_{\text{teleportation}}
 $$
+
+```{python}
+#| echo: false
+#| fig-cap: "PageRank Centrality Visualization. Brighter nodes have a higher probability of being visited by a random walker."
+#| label: fig-pagerank
+
+scores = g.pagerank()
+plot_centrality(g, scores, "PageRank")
+```
 
 where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
 The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In the Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
 
+
+::: {.column-margin}
+See the following video for more details on PageRank:
+
+<iframe width="220" height="158" src="https://www.youtube.com/embed/v7n7wZhHJj8?si=qVfcEBCc-DEiiZ9w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+:::
+
+
+### Personalized PageRank
+
+**Personalized PageRank** extends the standard PageRank algorithm by contextualizing the importance of nodes from a specific perspective in a network.
+To understand this, imagine you have a network of movies connected by similarity (sharing genres, actors, directors, etc.). Standard PageRank would rank movies based on their overall centrality in this similarity network. But suppose a student just watched "The Matrix" and wants to find similar movies. Personalized PageRank would start random walks from "The Matrix" and measure which movies are most reachable from it, effectively finding movies that are similar to "The Matrix" rather than just globally popular movies.
+
+Put it more formarmally, suppose a random walker starting from a node $\ell$. The walker moves to the neighboring nodes just like in PageRank, but with a probability $\beta$, it goes back to the starting node $\ell$ at every step.
+
+Thus,
+$$
+c_i = \underbrace{(1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{Random walk from neighbors}} + \underbrace{\beta \cdot p_{\ell}}_{\text{Teleport to the starting node}}
+$$
+
+where $p_{\ell}$ is a one-hot vector that is 1 at the $\ell$-th position and 0 elsewhere.
+The first term represents
+This equation can be solved numerically by taking the power iteration like we do for the PageRank. Alternatively, we can solve it by solving the linear system of equations.
+
+::: {.column-margin}
+
+Personalized PageRank can also be interpreted as the sum of probabilities of reaching each node from a focal set of nodes, where the probability decreases exponentially with distance.
+Let $p_{\ell i}^{(k)}$ be the probability of reaching node $i$ from node $\ell$ in $k$ steps. Then,
+the personalized PageRank is given by
+
+$$
+c_i = \sum_{k=0}^{\infty} \beta (1-\beta)^k p_{\ell i}^{(k)}
+$$
+
+where ther term $\beta (1-\beta)^k$ is the probability of reaching a node that is exactly $k$ steps away.
+Think of it as a "weight" that decreases with distance. As $i$ gets further away from the starting node $\ell$.
+In other words, centrality of node $i$ tends to be higher if it is closer to the starting node $\ell$.
+
+:::
+
+::: {.column-margin}
+
+PageRank and Personalized PageRank have been one of the most influential ideas in network science.
+There are many variants and extensions of these ideas. Here are some of my favorites:
+
+1. [@lambiotte2012ranking] proposes a teleportation method that corrects the bias coming from the degree of the starting node of PageRank.
+
+2. [@wu2017second] proposes a second-order random walk-based proximity measure that considers the importance of a node in the context of a ranking problem.
+
+3. [@tong2006fast] proposes a random walk with restart that considers the importance of a node in the context of a ranking problem.
+
+
+:::
+
+
 ## Degree-based centrality
 
 The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
-
 **Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
 
 $$
 c_i = d_i = \sum_{j} A_{ij}
 $$
 
+```{python}
+#| echo: false
+#| fig-cap: "Degree Centrality Visualization. The simplest measure: brighter nodes have more direct connections."
+#| label: fig-degree
+
+scores = g.degree()
+plot_centrality(g, scores, "Degree Centrality")
+```
+
 where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
+
+Degree centrality is a no brainer measure of centrality. Interestingly, degree centralities are often strongly correlated with other centrality measures, such as the eigenvector centrality, pagerank, along with distance-based centralities (e.g., closeness centrality). Of course, degree centrality is a crude importance measure as it only focuses on the direct connections of a node and ignores who these connections are to.
+
+to.
+

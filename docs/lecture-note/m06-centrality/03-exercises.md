@@ -1,4 +1,9 @@
-# Assignment
+---
+title: "Exercises & Assignments"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
 
 We will compute the various centrality measures for airport networks.
 
@@ -9,5 +14,3 @@ We will compute the various centrality measures for airport networks.
   - This repository does not offer auto-grading. But you can grade the assignment by yourself by
     - `bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`
     - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
-
-

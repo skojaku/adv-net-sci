@@ -5,20 +5,26 @@ execute:
     enabled: true
 ---
 
-# Random Walks: Core Concepts
-
 ## What is a random walk?
 
 Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.
 
 While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.
 
+::: {.column-margin title="Real-World Random Walk Examples"}
+Random walks appear everywhere in daily life:
+
+- **Netflix browsing**: You click on a movie, then another recommended movie, then another... Your viewing pattern follows a random walk through the recommendation network!
+- **Wikipedia surfing**: Starting from "Coffee", you click links to "Brazil" → "Soccer" → "Mathematics" → "Physics"... Each click is a step in a random walk through knowledge.
+- **Stock market movements**: Daily price changes can be modeled as random walks, where each day's price depends on the previous day plus some random fluctuation.
+
+:::
+
 ## Introduction through Games: Ladder Lottery
 
 To make random walk concepts tangible, let's start with a fun game that perfectly illustrates random walk principles:
 
 ::: {.callout-note title="Ladder Lottery"}
-:class: tip
 
 Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:
 1. A player is given a board with a set of vertical lines.
@@ -27,7 +33,7 @@ Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) i
 4. The player wins if the player can hit a marked line at the bottom of the board.
 5. You cannot see the horizontal lines in advance!
 
-Play the {{ '[Ladder Lottery Game! 🎮✨]( BASE_URL/vis/amida-kuji.html?)'.replace('BASE_URL', base_url) }} and try to answer the following questions:
+Play the [Ladder Lottery Game! 🎮✨]( https://skojaku.github.io/adv-net-sci/assets/vis/amida-kuji.html?) and try to answer the following questions:
 
 1. Is there a strategy to maximize the probability of winning?
 2. How does the probability of winning change as the number of horizontal lines increases?
@@ -38,23 +44,20 @@ Play the {{ '[Ladder Lottery Game! 🎮✨]( BASE_URL/vis/amida-kuji.html?)'.rep
 
 The Ladder Lottery game is actually a perfect introduction to random walks! In this game, **states** are the vertical lines, **transitions** happen when you encounter horizontal connections, **randomness** comes from not knowing where the horizontal lines are placed, and **long-term behavior** determines your probability of winning. This simple game illustrates many key concepts we'll explore in random walks on networks.
 
-## Formal Definition
-
 A random walk in undirected networks follows this process:
 1. Start at a node $i$
 2. Randomly choose an edge to traverse to a neighbor node $j$
 3. Repeat step 2 until you have taken $T$ steps
 
-```{note}
+::: {.column-margin}
 In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.
-```
+:::
 
 <img src="../figs/random-walk.png" alt="Random walk on a network" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
 
 When studying random walks, we want to understand several key aspects: **short-term behavior** (where does the walker go in the first few steps?), **long-term behavior** (after many steps, where does the walker spend most of its time?), **structural insights** (what does the walker's behavior tell us about the network?), and **applications** (how can we use random walks for centrality and community detection?).
 
 ::: {.callout-note title="Interactive Exploration"}
-:class: tip
 
 Play with the [Random Walk Simulator! 🎮✨](vis/random-walks/index.html) and try to answer the following questions:
 
@@ -65,7 +68,7 @@ Play with the [Random Walk Simulator! 🎮✨](vis/random-walks/index.html) and 
 
 :::
 
-## Pen and Paper Exercises
+### Pen and Paper Exercises
 
 Before diving into the mathematical details and coding, it's important to work through some fundamental concepts by hand.
 
@@ -77,7 +80,7 @@ These exercises will help you:
 - Explore simple examples of stationary distributions
 - Connect random walk concepts to network properties
 
-## Mathematical Foundation: Transition Probabilities
+### Mathematical Foundation: Transition Probabilities
 
 A random walk is characterized by the transition probabilities between nodes. The transition probability from node $i$ to node $j$ is:
 
@@ -86,6 +89,70 @@ P_{ij} = \frac{A_{ij}}{k_i}
 $$
 
 where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.
+
+::: {.callout-note title="Example: A Larger Network"}
+Let's see how this works with a more complex example. Consider a network with 10 nodes:
+
+```{python}
+#| echo: false
+import numpy as np
+import matplotlib.pyplot as plt
+import igraph as ig
+from matplotlib.patches import FancyBboxPatch
+import seaborn as sns
+
+# Set style
+plt.style.use('default')
+sns.set_palette("husl")
+
+# Create the larger network
+edges = [(0,1), (0,3), (1,2), (1,3), (1,4), (2,4), (2,7), (3,4), (3,5), (4,5), (5,6), (6,8), (8,9)]
+n_nodes = 10
+G = ig.Graph(n=n_nodes, edges=edges, directed=False)
+
+# Create adjacency matrix
+A = np.array(G.get_adjacency().data)
+
+# Calculate degrees
+degrees = np.array(G.degree())
+
+# Create transition matrix
+P = np.diag(1.0 / degrees) @ A
+
+# Find a node with highest degree for example
+max_degree_node = np.argmax(degrees)
+```
+
+::: {.column-margin}
+
+Let us consider the following graph.
+```{python}
+#| echo: false
+fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+ig.plot(G, target=ax, vertex_label=list(range(n_nodes)))
+```
+
+The transition matrix is given by:
+```{python}
+#| echo: false
+import pandas as pd
+plt.figure(figsize=(6,5))
+sns.heatmap(P, annot=True, fmt=".2f", cmap="YlGnBu",
+            xticklabels=list(range(n_nodes)), yticklabels=list(range(n_nodes)))
+plt.title("Transition Matrix Heatmap")
+plt.xlabel("To Node")
+plt.ylabel("From Node")
+plt.show()
+```
+:::
+
+**Key observations:**
+- **Network structure**: More complex with varying node degrees
+- **Adjacency Matrix**: Sparse matrix showing connection patterns
+- **Degrees**: Nodes have different connectivity (ranging from isolated to highly connected)
+- **Transition Matrix**: Probabilities depend on local node degree
+- **Real insight**: High-degree nodes have lower individual transition probabilities to each neighbor
+:::
 
 We can represent all transition probabilities in a transition probability matrix $\mathbf{P}$:
 
@@ -104,12 +171,58 @@ This matrix $\mathbf{P}$ encapsulates the entire random walk process. We can use
 - After two steps: $\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}$
 - After $T$ steps: $\left(\mathbf{P}^{T}\right)_{ij}$
 
-```{note}
+::: {.column-margin}
+
+Let's compute $\mathbf{P}^2$ for our larger network to see what happens after 2 steps:
+
+```{python}
+#| echo: false
+# Use the same network and transition matrix from previous example
+P2 = P @ P  # Matrix multiplication for 2-step transitions
+plt.figure(figsize=(6,5))
+sns.heatmap(P2, annot=True, fmt=".2f", cmap="YlGnBu",
+            xticklabels=list(range(n_nodes)), yticklabels=list(range(n_nodes)))
+plt.title("Transition Matrix Heatmap")
+plt.xlabel("To Node")
+plt.ylabel("From Node")
+plt.show()
+```
+
+This is after 10 steps.
+```{python}
+#| echo: false
+# Use the same network and transition matrix from previous example
+P100 = np.linalg.matrix_power(P, 10)   # Matrix multiplication for 2-step transitions
+plt.figure(figsize=(6,5))
+sns.heatmap(P100, annot=True, fmt=".2f", cmap="YlGnBu",
+            xticklabels=list(range(n_nodes)), yticklabels=list(range(n_nodes)))
+plt.title("Transition Matrix Heatmap")
+plt.xlabel("To Node")
+plt.ylabel("From Node")
+plt.show()
+```
+
+This is after 1000 steps.
+```{python}
+#| echo: false
+# Use the same network and transition matrix from previous example
+P100 = np.linalg.matrix_power(P, 100)   # Matrix multiplication for 2-step transitions
+plt.figure(figsize=(6,5))
+sns.heatmap(P100, annot=True, fmt=".2f", cmap="YlGnBu",
+            xticklabels=list(range(n_nodes)), yticklabels=list(range(n_nodes)))
+plt.title("Transition Matrix Heatmap")
+plt.xlabel("To Node")
+plt.ylabel("From Node")
+plt.show()
+```
+
+:::
+
 Let's explore why $\mathbf{P}^2$ represents the transition probabilities after two steps.
 
 First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:
 
-$$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$$
+$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$
 
 This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we must pass through some intermediate node $k$. Let's break this down step by step:
 
@@ -119,7 +232,6 @@ This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we mu
 4. We sum over all possible intermediate nodes $k$ to get the total probability.
 
 And we can extend this reasoning for any number of steps $t$. In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.
-```
 
 ## Expected Behavior and Stationary Distribution
 
@@ -128,6 +240,101 @@ The expected position of the walker after $t$ steps starting from position $\mat
 $$
 \mathbb{E}[\mathbf{x}(t)] = \mathbf{x}(0) \mathbf{P}^t
 $$
+
+::: {.callout-note title="Understanding Position Vectors"}
+The position vector $\mathbf{x}(t)$ represents where the walker might be at time $t$:
+
+```{python}
+#| echo: false
+# Visualize position vectors over time for the larger network
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+
+# Use the same network from previous examples
+# Start from the highest degree node
+start_node = max_degree_node
+x0 = np.zeros(n_nodes)
+x0[start_node] = 1.0  # Start at the highest degree node
+
+# Calculate position vectors for several steps
+x1 = x0 @ P
+x2 = x0 @ (P @ P)
+x3 = x0 @ np.linalg.matrix_power(P, 3)
+x5 = x0 @ np.linalg.matrix_power(P, 5)
+x10 = x0 @ np.linalg.matrix_power(P, 10)
+
+# Calculate stationary distribution (proportional to degrees)
+total_degree = sum(degrees)
+x_inf = np.array([d/total_degree if d > 0 else 0 for d in degrees])
+
+# 1. Show evolution for nodes with significant probability
+# Focus on nodes that have non-zero stationary probability
+active_nodes = [i for i in range(n_nodes) if x_inf[i] > 0.01]
+steps_data = np.array([x0, x1, x2, x3, x5, x10, x_inf])
+step_labels = ['t=0', 't=1', 't=2', 't=3', 't=5', 't=10', 't=∞']
+
+# Create subset for visualization (only active nodes)
+subset_data = steps_data[:, active_nodes]
+
+im = ax1.imshow(subset_data, cmap='viridis', aspect='auto')
+ax1.set_title("Position Vector Evolution\n(Active Nodes Only)", fontsize=14, fontweight='bold')
+ax1.set_yticks(range(len(step_labels)))
+ax1.set_yticklabels(step_labels)
+ax1.set_xticks(range(len(active_nodes)))
+ax1.set_xticklabels([f'Node {i}' for i in active_nodes], rotation=45)
+
+# Add text annotations for significant probabilities
+for i in range(len(step_labels)):
+    for j in range(len(active_nodes)):
+        if subset_data[i, j] > 0.05:  # Only show significant probabilities
+            ax1.text(j, i, f'{subset_data[i, j]:.2f}', ha='center', va='center',
+                    fontsize=9, fontweight='bold', color='white')
+
+# Add colorbar
+cbar = plt.colorbar(im, ax=ax1, shrink=0.8)
+cbar.set_label('Probability', rotation=270, labelpad=15)
+
+# 2. Line plot showing convergence for most important nodes
+steps = np.arange(len(step_labels))
+top_nodes = sorted(active_nodes, key=lambda x: x_inf[x], reverse=True)[:5]  # Top 5 by stationary prob
+colors = plt.cm.Set1(np.linspace(0, 1, len(top_nodes)))
+
+for i, node in enumerate(top_nodes):
+    node_probs = steps_data[:, node]
+    ax2.plot(steps, node_probs, 'o-', label=f'Node {node}',
+             linewidth=2, markersize=6, color=colors[i])
+
+    # Add stationary line
+    ax2.axhline(y=x_inf[node], color=colors[i], linestyle='--', alpha=0.5)
+
+ax2.set_title(f"Convergence to Stationary Distribution\n(Starting from Node {start_node})",
+              fontsize=14, fontweight='bold')
+ax2.set_xlabel("Time Steps")
+ax2.set_ylabel("Probability")
+ax2.set_xticks(steps)
+ax2.set_xticklabels(step_labels)
+ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+ax2.grid(True, alpha=0.3)
+ax2.set_ylim(0, max(x0) * 1.1)
+
+plt.tight_layout()
+plt.show()
+
+print(f"\nKey observations starting from Node {start_node}:")
+print(f"- Initial position: 100% at Node {start_node}")
+print(f"- After 1 step: spreads to neighbors {[i for i in range(n_nodes) if x1[i] > 0]}")
+print(f"- After 10 steps: probability distribution stabilizing")
+print(f"- Stationary distribution: proportional to node degrees")
+print(f"- Nodes with highest long-term probability: {top_nodes[:3]}")
+```
+
+**Key observations:**
+- **t=0**: Walker starts at the highest-degree node
+- **Early steps**: Walker spreads to immediate neighbors
+- **Later steps**: Probability distribution spreads throughout the connected network
+- **Stationary**: Eventually proportional to node degrees (high-degree nodes visited more often)
+
+The position vector shows how **probability mass flows** through the network over time!
+:::
 
 As $t$ becomes very large, the probability distribution approaches a constant value called the **stationary distribution**:
 
@@ -146,6 +353,89 @@ For undirected networks, this stationary distribution always exists and is propo
 $$
 \pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j
 $$
+
+::: {.callout-note title="Network Example: Stationary Distribution"}
+For our larger network, nodes have different degrees, so the stationary distribution is proportional to degree:
+
+```{python}
+#| echo: false
+# Calculate and visualize the stationary distribution
+total_degree = sum(degrees)
+pi_theoretical = np.array([d/total_degree if d > 0 else 0 for d in degrees])
+
+# Verify by computing the left eigenvector of P
+# For undirected graphs, stationary distribution should be proportional to degrees
+active_nodes = [i for i in range(n_nodes) if degrees[i] > 0]
+
+# Create visualization
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
+
+# 1. Compare degrees vs stationary distribution
+ax1.scatter(degrees, pi_theoretical, s=100, alpha=0.7, color='red')
+ax1.plot([0, max(degrees)], [0, max(pi_theoretical)], 'k--', alpha=0.5, label='Proportional relationship')
+ax1.set_xlabel("Node Degree")
+ax1.set_ylabel("Stationary Probability")
+ax1.set_title("Stationary Probability ∝ Degree", fontsize=14, fontweight='bold')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Add node labels
+for i in active_nodes:
+    ax1.annotate(f'{i}', (degrees[i], pi_theoretical[i]),
+                xytext=(5, 5), textcoords='offset points', fontsize=10)
+
+# 2. Verify the eigenvector equation π = πP for active nodes
+# Check if our theoretical stationary distribution satisfies the equation
+verification = pi_theoretical @ P
+difference = np.abs(pi_theoretical - verification)
+
+bars = ax2.bar(range(len(active_nodes)), [pi_theoretical[i] for i in active_nodes],
+               alpha=0.6, label='Theoretical π', color='blue')
+ax2.bar(range(len(active_nodes)), [verification[i] for i in active_nodes],
+        alpha=0.6, label='π × P', color='red', width=0.5)
+
+ax2.set_title("Verification: π = π × P", fontsize=14, fontweight='bold')
+ax2.set_xlabel("Node")
+ax2.set_ylabel("Probability")
+ax2.set_xticks(range(len(active_nodes)))
+ax2.set_xticklabels([str(i) for i in active_nodes])
+ax2.legend()
+
+# 3. Show the actual stationary probabilities
+sorted_nodes = sorted(active_nodes, key=lambda x: pi_theoretical[x], reverse=True)
+sorted_probs = [pi_theoretical[i] for i in sorted_nodes]
+sorted_degrees = [degrees[i] for i in sorted_nodes]
+
+bars = ax3.bar(range(len(sorted_nodes)), sorted_probs, color='green', alpha=0.7)
+ax3.set_title("Stationary Distribution\n(Sorted by Probability)", fontsize=14, fontweight='bold')
+ax3.set_xlabel("Node (sorted)")
+ax3.set_ylabel("Stationary Probability")
+ax3.set_xticks(range(len(sorted_nodes)))
+ax3.set_xticklabels([f'{node}\n(k={degrees[node]})' for node in sorted_nodes], rotation=45)
+
+# Add probability labels
+for bar, prob in zip(bars, sorted_probs):
+    ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005,
+             f'{prob:.3f}', ha='center', va='bottom', fontweight='bold', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+
+print("Stationary Distribution Analysis:")
+print("-" * 40)
+for node in sorted_nodes:
+    print(f"Node {node}: degree = {degrees[node]}, π = {pi_theoretical[node]:.4f}")
+
+print(f"\nVerification (max error): {max(difference):.2e}")
+print("✓ The theoretical stationary distribution satisfies π = πP!")
+```
+
+**Key insights:**
+- **Proportionality**: Stationary probability ∝ node degree
+- **High-degree nodes**: Visited more frequently in the long run
+- **Mathematical verification**: π = πP confirms our calculation is correct
+- **Network structure matters**: Well-connected nodes become "probability sinks"
+:::
 
 This means the probability of being at node $j$ in the long run is proportional to the degree of node $j$. The normalization ensures that the sum of all probabilities is 1, i.e., $\sum_{j=1}^N \pi_j = 1$.
 
@@ -193,6 +483,27 @@ where $\mu = 1-\lambda_2$.
 
 Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network's modular structure.
 
+::: {.callout-note title="Intuitive Example: University Social Networks"}
+Imagine a random walker exploring friendships at a university:
+
+**Short-term behavior (first few steps)**:
+- Start with a Computer Science student
+- Walker mostly visits other CS students (same classes, shared interests)
+- Occasionally ventures to Math or Engineering students
+
+**Medium-term behavior**:
+- Walker starts exploring other departments
+- Still biased toward technical fields due to connections
+
+**Long-term behavior**:
+- Eventually visits all departments proportional to their size
+- Lost all memory of starting point
+
+**Key insight**: The time it takes to "escape" the CS community tells us how tightly knit that community is! Tight-knit communities have longer escape times.
+
+This is exactly how random walk-based community detection works - we look at where walkers get "trapped" in the short term.
+:::
+
 The position of the walker at intermediate time steps (before convergence) reveals the community structure, as walkers spend more time exploring their local neighborhood before venturing into other communities.
 
 An important observation is that the walker spends more time in the community that it started from and then diffuses to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.
@@ -236,9 +547,9 @@ Where:
 
 The PageRank values are the stationary distribution of this modified random walk, representing the long-term probability of finding the walker at each node.
 
-```{note}
+::: {.callout-note}
 This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.
-```
+:::
 
 ## Summary
 
