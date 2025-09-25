@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-27">
+<meta name="dcterms.date" content="2025-09-22">
 
-<title>Advanced Topics in Network Science</title>
+<title>Exercises &amp; Assignments – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -67,8 +67,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m08-embedding/01-concepts.html" rel="next">
-<link href="../m07-random-walks/02-coding.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -104,49 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
@@ -332,7 +287,7 @@ window.Quarto = {
  <span class="dropdown-text">Coding</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.qmd">
  <span class="dropdown-text">Exercises</span></a>
   </li>  
         <li class="dropdown-header">─── M08: Embedding ───</li>
@@ -387,7 +342,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Exercises &amp; Assignments</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -646,50 +601,47 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Centrality Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding - Centrality</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises &amp; Assignments</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
  <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Random Walks Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding - Random Walks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
+ <span class="menu-text">m07-random-walks/03-exercises.qmd</span>
+  </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -771,9 +723,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Exercises &amp; Assignments</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -790,7 +742,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2025</p>
+      <p class="date">September 22, 2025</p>
     </div>
   </div>
   
@@ -802,300 +754,26 @@ window.Quarto = {
 </header>
 
 
-<section id="random-walks-exercises-and-practice" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Random Walks: Exercises and Practice</h1>
-<p>This section contains all the exercises from the Random Walks module, organized by topic and difficulty level.</p>
-<section id="coding-exercises" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="coding-exercises"><span class="header-section-number">1.1</span> Coding Exercises</h2>
-<section id="exercise-01-basic-random-walk-simulation" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-01-basic-random-walk-simulation">Exercise 01: Basic Random Walk Simulation</h3>
-<p>Write the following function to simulate the random walk for a given number of steps and return the position for each step.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">        n_steps (int): The number of steps to simulate.</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The position of the walker after each step.</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Hints:</strong> - Initialize the walker at a random starting position - Use the transition probability matrix P = A / k (where k is the degree vector) - For each step, randomly choose the next node based on transition probabilities - Store the position at each step</p>
-</section>
-<section id="exercise-02-expected-position-calculation" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-02-expected-position-calculation">Exercise 02: Expected Position Calculation</h3>
-<p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span> using the formula <span class="math inline">\mathbb{E}[x(t)] = x(0) P^t</span>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">        x_0 (np.ndarray): The initial position of the walker.</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">        t (int): The number of steps to simulate.</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The expected position distribution at time t.</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Hints:</strong> - Compute the transition matrix P from adjacency matrix A - Use matrix power P^t to get multi-step transition probabilities - Apply the initial distribution x_0 to get the expected position</p>
-</section>
-<section id="exercise-03-convergence-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-03-convergence-analysis">Exercise 03: Convergence Analysis</h3>
-<p>Plot each element of <span class="math inline">x(t)</span> as a function of <span class="math inline">t</span> for <span class="math inline">t=0,1,2,\ldots, 1000</span>. Try different initial positions and compare the results!</p>
-<p><strong>Steps:</strong> 1. Define the initial position of the walker 2. Compute the expected position of the walker at time <span class="math inline">t</span> using the function from Exercise 02 3. Draw a line for each element of <span class="math inline">x(t)</span>, totaling 5 lines for a 5-node network 4. Create multiple such plots for different initial positions and compare them</p>
-<p><strong>Questions to explore:</strong> - Do all initial positions converge to the same stationary distribution? - How long does it take to converge? - What does the stationary distribution tell us about the network structure?</p>
-</section>
-<section id="exercise-04-community-detection-through-random-walks" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-04-community-detection-through-random-walks">Exercise 04: Community Detection through Random Walks</h3>
-<ol type="1">
-<li><strong>Stochastic Block Model Analysis:</strong>
+<p>We will implement and analyze random walks on real-world networks, exploring their applications for centrality measures and community detection.</p>
 <ul>
-<li>Generate a network of 100 nodes with 4 communities using a stochastic block model</li>
-<li>Set inter-community edge probability to <span class="math inline">0.05</span> and intra-community edge probability to <span class="math inline">0.2</span></li>
-<li>Compute the expected position of the walker starting from node zero after <span class="math inline">x</span> steps</li>
-<li>Plot the results for <span class="math inline">x = 0, 5, 10, 1000</span></li>
+<li><strong>For students enrolled in SSIE 641</strong>
+<ul>
+<li>You will receive a dedicated link to the assignment repository from the instructor.</li>
 </ul></li>
-<li><strong>Parameter Sensitivity:</strong>
+<li><em>For those who are not enrolled in SSIE 641</em>
 <ul>
-<li>Increase the inter-community edge probability to <span class="math inline">0.15</span> and repeat the simulation</li>
-<li>Compare the results with the previous simulation</li>
-<li>What happens to community detection when communities become more connected?</li>
+<li>You can access the assignment repository at <a href="https://github.com/sk-classroom/adv-net-sci-random-walks">Github</a>.</li>
+<li>This repository does not offer auto-grading. But you can grade the assignment by yourself by
+<ul>
+<li><code>bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb</code></li>
+<li><code>bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb</code></li>
 </ul></li>
-</ol>
-<p><strong>Implementation hints:</strong></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Example stochastic block model generation</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_sbm(n_nodes_per_community, p_within, p_between):</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a stochastic block model network"""</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your implementation here</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="theoretical-exercises" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="theoretical-exercises"><span class="header-section-number">1.2</span> Theoretical Exercises</h2>
-<section id="exercise-05-hits-centrality-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-05-hits-centrality-analysis">Exercise 05: HITS Centrality Analysis</h3>
-<p>If the original network is <em>undirected</em>, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.</p>
-<p><strong>Solution Framework:</strong> - Consider the HITS equations for undirected networks - Compare with eigenvector centrality equation - Use the symmetry property of undirected networks - Show the mathematical relationship between the two measures</p>
-</section>
-<section id="exercise-06-degree-normalized-hits" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-06-degree-normalized-hits">Exercise 06: Degree-Normalized HITS</h3>
-<p>Consider the case where the graph is undirected and we normalize the hub centrality by the degree <span class="math inline">d_j</span> of the authority:</p>
-<p><span class="math display">
-x_i = \sum_j \frac{A_{ji}}{d_j} y_j,\quad y_i = \sum_j A_{ij} x_j
-</span></p>
-<p>Show that the hub centrality becomes equivalent to the degree centrality by substituting <span class="math inline">x_i = d_i</span>.</p>
-<p><strong>Steps to verify:</strong> 1. Substitute <span class="math inline">x_i = d_i</span> into the first equation 2. Show that this satisfies the system of equations 3. Interpret the result in terms of network centrality</p>
-</section>
-</section>
-<section id="mathematical-derivation-exercises" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="mathematical-derivation-exercises"><span class="header-section-number">1.3</span> Mathematical Derivation Exercises</h2>
-<section id="exercise-07-katz-centrality-solution" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-07-katz-centrality-solution">Exercise 07: Katz Centrality Solution</h3>
-<p>Derive the solution of the Katz centrality equation:</p>
-<p><span class="math display">
-c_i = \beta + \lambda \sum_{j} A_{ij} c_j
-</span></p>
-<p><strong>Solution steps:</strong> - Write the equation in matrix form - Rearrange to isolate the centrality vector - Find the matrix inverse solution - Verify the solution satisfies the original equation</p>
-</section>
-<section id="exercise-08-random-walk-interpretation-of-pagerank" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-08-random-walk-interpretation-of-pagerank">Exercise 08: Random Walk Interpretation of PageRank</h3>
-<p>Show that PageRank can be written as the stationary distribution of a modified random walk with teleportation.</p>
-<p><strong>Starting equation:</strong> <span class="math display">
-c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
-</span></p>
-<p><strong>Tasks:</strong> 1. Identify the transition probabilities in this equation 2. Show that this represents a Markov chain 3. Prove that the solution is a stationary distribution 4. Interpret the teleportation parameter <span class="math inline">\beta</span></p>
-</section>
-</section>
-<section id="pen-and-paper-exercises" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="pen-and-paper-exercises"><span class="header-section-number">1.4</span> Pen and Paper Exercises</h2>
-<section id="exercise-09-manual-calculations" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-09-manual-calculations">Exercise 09: Manual Calculations</h3>
-<ul>
-<li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
-</ul>
-<p>These exercises include: - Hand calculation of transition matrices for small networks - Manual computation of stationary distributions - Step-by-step random walk simulations - Eigenvalue calculations for simple graphs</p>
-</section>
-</section>
-<section id="interactive-exercises" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="interactive-exercises"><span class="header-section-number">1.5</span> Interactive Exercises</h2>
-<section id="exercise-10-ladder-lottery-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-10-ladder-lottery-analysis">Exercise 10: Ladder Lottery Analysis</h3>
-<p>Using the <a href="vis/amida-kuji.html">Ladder Lottery Game! 🎮✨</a>, explore:</p>
-<ol type="1">
-<li><strong>Strategy Development:</strong>
-<ul>
-<li>Is there a strategy to maximize the probability of winning?</li>
-<li>How does the starting position affect winning probability?</li>
 </ul></li>
-<li><strong>Parameter Effects:</strong>
-<ul>
-<li>How does the probability of winning change as the number of horizontal lines increases?</li>
-<li>What happens with different numbers of vertical lines?</li>
-</ul></li>
-<li><strong>Connection to Random Walks:</strong>
-<ul>
-<li>How does this game relate to random walks on networks?</li>
-<li>What type of transition matrix would represent this game?</li>
-</ul></li>
-</ol>
-</section>
-<section id="exercise-11-random-walk-simulation" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-11-random-walk-simulation">Exercise 11: Random Walk Simulation</h3>
-<p>Using the <a href="vis/random-walks/index.html">Random Walk Simulator! 🎮✨</a>, investigate:</p>
-<ol type="1">
-<li><strong>Short-term vs.&nbsp;Long-term behavior:</strong>
-<ul>
-<li>When the random walker makes many steps, where does it tend to visit most frequently?</li>
-<li>When the walker makes only a few steps, where does it tend to visit?</li>
-</ul></li>
-<li><strong>Network Structure Analysis:</strong>
-<ul>
-<li>Does the behavior of the walker inform us about centrality of the nodes?</li>
-<li>Does the behavior of the walker inform us about communities in the network?</li>
-</ul></li>
-<li><strong>Parameter Exploration:</strong>
-<ul>
-<li>Try different network topologies (star, ring, complete graph)</li>
-<li>Observe how network structure affects random walk behavior</li>
-</ul></li>
-</ol>
-</section>
-</section>
-<section id="advanced-exercises" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="advanced-exercises"><span class="header-section-number">1.6</span> Advanced Exercises</h2>
-<section id="exercise-12-mixing-time-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-12-mixing-time-analysis">Exercise 12: Mixing Time Analysis</h3>
-<ol type="1">
-<li><strong>Theoretical Calculation:</strong>
-<ul>
-<li>For a given network, compute the second-largest eigenvalue</li>
-<li>Calculate the theoretical mixing time bound</li>
-<li>Compare with empirical convergence time</li>
-</ul></li>
-<li><strong>Network Comparison:</strong>
-<ul>
-<li>Compare mixing times across different network types</li>
-<li>How does community structure affect mixing time?</li>
-<li>What about scale-free vs.&nbsp;random networks?</li>
-</ul></li>
-</ol>
-</section>
-<section id="exercise-13-modularity-and-random-walks" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-13-modularity-and-random-walks">Exercise 13: Modularity and Random Walks</h3>
-<ol type="1">
-<li><strong>Derivation Verification:</strong>
-<ul>
-<li>Verify the random walk interpretation of modularity step by step</li>
-<li>Show that high modularity corresponds to slow mixing between communities</li>
-</ul></li>
-<li><strong>Empirical Validation:</strong>
-<ul>
-<li>Generate networks with known community structure</li>
-<li>Compute modularity using both traditional and random walk approaches</li>
-<li>Compare the results and interpretation</li>
-</ul></li>
-</ol>
-</section>
-<section id="exercise-14-custom-centrality-measures" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-14-custom-centrality-measures">Exercise 14: Custom Centrality Measures</h3>
-<p>Design your own centrality measure based on random walks:</p>
-<ol type="1">
-<li><strong>Design Phase:</strong>
-<ul>
-<li>Choose a specific aspect of random walk behavior to capture</li>
-<li>Define your measure mathematically</li>
-<li>Justify why it captures important network properties</li>
-</ul></li>
-<li><strong>Implementation:</strong>
-<ul>
-<li>Implement your measure in Python</li>
-<li>Test on various network types</li>
-<li>Compare with existing centrality measures</li>
-</ul></li>
-<li><strong>Validation:</strong>
-<ul>
-<li>Evaluate on networks where you know the “ground truth”</li>
-<li>Analyze computational complexity</li>
-<li>Discuss practical applications</li>
-</ul></li>
-</ol>
-</section>
-</section>
-<section id="challenge-problems" class="level2" data-number="1.7">
-<h2 data-number="1.7" class="anchored" data-anchor-id="challenge-problems"><span class="header-section-number">1.7</span> Challenge Problems</h2>
-<section id="exercise-15-multi-layer-networks" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-15-multi-layer-networks">Exercise 15: Multi-layer Networks</h3>
-<p>Extend random walks to multi-layer networks:</p>
-<ol type="1">
-<li><strong>Model Development:</strong>
-<ul>
-<li>How would you define transition probabilities between layers?</li>
-<li>What does the stationary distribution represent?</li>
-</ul></li>
-<li><strong>Implementation:</strong>
-<ul>
-<li>Code a multi-layer random walk simulator</li>
-<li>Analyze convergence properties</li>
-<li>Compare with single-layer results</li>
-</ul></li>
-</ol>
-</section>
-<section id="exercise-16-dynamic-networks" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-16-dynamic-networks">Exercise 16: Dynamic Networks</h3>
-<p>Consider random walks on time-varying networks:</p>
-<ol type="1">
-<li><strong>Theoretical Framework:</strong>
-<ul>
-<li>How do you handle changing adjacency matrices?</li>
-<li>What is the appropriate notion of stationary distribution?</li>
-</ul></li>
-<li><strong>Simulation Study:</strong>
-<ul>
-<li>Implement random walks on temporal networks</li>
-<li>Study how network dynamics affect walker behavior</li>
-<li>Develop time-dependent centrality measures</li>
-</ul></li>
-</ol>
-</section>
-</section>
-<section id="assessment-guidelines" class="level2" data-number="1.8">
-<h2 data-number="1.8" class="anchored" data-anchor-id="assessment-guidelines"><span class="header-section-number">1.8</span> Assessment Guidelines</h2>
-<section id="for-instructors" class="level3">
-<h3 class="anchored" data-anchor-id="for-instructors">For Instructors</h3>
-<p><strong>Beginner Level (Exercises 1-6):</strong> - Focus on understanding basic concepts - Emphasize coding implementation - Check mathematical derivations step-by-step</p>
-<p><strong>Intermediate Level (Exercises 7-11):</strong> - Require deeper mathematical understanding - Expect connections between theory and practice - Look for creative interpretations</p>
-<p><strong>Advanced Level (Exercises 12-16):</strong> - Demand original thinking and research - Expect novel implementations - Require critical analysis and comparison</p>
-</section>
-<section id="grading-rubric" class="level3">
-<h3 class="anchored" data-anchor-id="grading-rubric">Grading Rubric</h3>
-<p><strong>Code Quality (40%):</strong> - Correctness of implementation - Efficiency and elegance - Documentation and comments</p>
-<p><strong>Mathematical Understanding (30%):</strong> - Correct derivations - Clear explanations - Proper use of notation</p>
-<p><strong>Analysis and Interpretation (30%):</strong> - Insightful discussion of results - Connections to network science concepts - Critical thinking about limitations and extensions</p>
-</section>
-</section>
-<section id="additional-resources" class="level2" data-number="1.9">
-<h2 data-number="1.9" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">1.9</span> Additional Resources</h2>
-<ul>
-<li><strong>Datasets:</strong> Use networks from SNAP, NetworkX, or create synthetic ones</li>
-<li><strong>Visualization:</strong> Consider using NetworkX, igraph, or D3.js for interactive plots</li>
-<li><strong>Further Reading:</strong> Consult papers on spectral graph theory and Markov chain analysis</li>
-<li><strong>Software:</strong> Explore specialized tools like graph-tool or GTNA for large-scale analysis</li>
 </ul>
 
 
 <!-- -->
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1547,336 +1225,23 @@ c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}
       }
     }
   });
-  </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../m07-random-walks/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../m08-embedding/01-concepts.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Random Walks: Exercises and Practice</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>This section contains all the exercises from the Random Walks module, organized by topic and difficulty level.</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Coding Exercises</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 01: Basic Random Walk Simulation</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Write the following function to simulate the random walk for a given number of steps and return the position for each step.</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">        n_steps (int): The number of steps to simulate.</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The position of the walker after each step.</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>**Hints:**</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Initialize the walker at a random starting position</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use the transition probability matrix P = A / k (where k is the degree vector)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For each step, randomly choose the next node based on transition probabilities</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Store the position at each step</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 02: Expected Position Calculation</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>Write a function to compute the expected position of the walker at time $t$ using the formula $\mathbb{E}<span class="co">[</span><span class="ot">x(t)</span><span class="co">]</span> = x(0) P^t$:</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">        x_0 (np.ndarray): The initial position of the walker.</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">        t (int): The number of steps to simulate.</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The expected position distribution at time t.</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>**Hints:**</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Compute the transition matrix P from adjacency matrix A</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use matrix power P^t to get multi-step transition probabilities</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Apply the initial distribution x_0 to get the expected position</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 03: Convergence Analysis</span></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>Plot each element of $x(t)$ as a function of $t$ for $t=0,1,2,\ldots, 1000$. Try different initial positions and compare the results!</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>**Steps:**</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Define the initial position of the walker</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compute the expected position of the walker at time $t$ using the function from Exercise 02</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Draw a line for each element of $x(t)$, totaling 5 lines for a 5-node network</span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Create multiple such plots for different initial positions and compare them</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>**Questions to explore:**</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Do all initial positions converge to the same stationary distribution?</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How long does it take to converge?</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What does the stationary distribution tell us about the network structure?</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 04: Community Detection through Random Walks</span></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Stochastic Block Model Analysis:**</span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Generate a network of 100 nodes with 4 communities using a stochastic block model</span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Set inter-community edge probability to $0.05$ and intra-community edge probability to $0.2$</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compute the expected position of the walker starting from node zero after $x$ steps</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Plot the results for $x = 0, 5, 10, 1000$</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Parameter Sensitivity:**</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Increase the inter-community edge probability to $0.15$ and repeat the simulation</span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare the results with the previous simulation</span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What happens to community detection when communities become more connected?</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>**Implementation hints:**</span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="co"># Example stochastic block model generation</span></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_sbm(n_nodes_per_community, p_within, p_between):</span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a stochastic block model network"""</span></span>
-<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your implementation here</span></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
-<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## Theoretical Exercises</span></span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 05: HITS Centrality Analysis</span></span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>If the original network is *undirected*, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>**Solution Framework:**</span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Consider the HITS equations for undirected networks</span>
-<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Compare with eigenvector centrality equation</span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use the symmetry property of undirected networks</span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Show the mathematical relationship between the two measures</span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 06: Degree-Normalized HITS</span></span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>Consider the case where the graph is undirected and we normalize the hub centrality by the degree $d_j$ of the authority:</span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>x_i = \sum_j \frac{A_{ji}}{d_j} y_j,\quad y_i = \sum_j A_{ij} x_j</span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>Show that the hub centrality becomes equivalent to the degree centrality by substituting $x_i = d_i$.</span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>**Steps to verify:**</span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Substitute $x_i = d_i$ into the first equation</span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Show that this satisfies the system of equations</span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Interpret the result in terms of network centrality</span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mathematical Derivation Exercises</span></span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 07: Katz Centrality Solution</span></span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>Derive the solution of the Katz centrality equation:</span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>c_i = \beta + \lambda \sum_{j} A_{ij} c_j</span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>**Solution steps:**</span>
-<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Write the equation in matrix form</span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Rearrange to isolate the centrality vector</span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Find the matrix inverse solution</span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Verify the solution satisfies the original equation</span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 08: Random Walk Interpretation of PageRank</span></span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>Show that PageRank can be written as the stationary distribution of a modified random walk with teleportation.</span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>**Starting equation:**</span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}</span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>**Tasks:**</span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Identify the transition probabilities in this equation</span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Show that this represents a Markov chain</span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Prove that the solution is a stationary distribution</span>
-<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Interpret the teleportation parameter $\beta$</span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen and Paper Exercises</span></span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 09: Manual Calculations</span></span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>These exercises include:</span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Hand calculation of transition matrices for small networks</span>
-<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Manual computation of stationary distributions</span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Step-by-step random walk simulations</span>
-<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Eigenvalue calculations for simple graphs</span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interactive Exercises</span></span>
-<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 10: Ladder Lottery Analysis</span></span>
-<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>Using the <span class="co">[</span><span class="ot">Ladder Lottery Game! 🎮✨</span><span class="co">](vis/amida-kuji.html)</span>, explore:</span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Strategy Development:**</span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Is there a strategy to maximize the probability of winning?</span>
-<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How does the starting position affect winning probability?</span>
-<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Parameter Effects:**</span>
-<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How does the probability of winning change as the number of horizontal lines increases?</span>
-<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What happens with different numbers of vertical lines?</span>
-<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Connection to Random Walks:**</span>
-<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How does this game relate to random walks on networks?</span>
-<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What type of transition matrix would represent this game?</span>
-<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 11: Random Walk Simulation</span></span>
-<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>Using the <span class="co">[</span><span class="ot">Random Walk Simulator! 🎮✨</span><span class="co">](vis/random-walks/index.html)</span>, investigate:</span>
-<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Short-term vs. Long-term behavior:**</span>
-<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>When the random walker makes many steps, where does it tend to visit most frequently?</span>
-<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>When the walker makes only a few steps, where does it tend to visit?</span>
-<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Network Structure Analysis:**</span>
-<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Does the behavior of the walker inform us about centrality of the nodes?</span>
-<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Does the behavior of the walker inform us about communities in the network?</span>
-<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Parameter Exploration:**</span>
-<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Try different network topologies (star, ring, complete graph)</span>
-<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Observe how network structure affects random walk behavior</span>
-<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a><span class="fu">## Advanced Exercises</span></span>
-<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 12: Mixing Time Analysis</span></span>
-<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Theoretical Calculation:**</span>
-<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>For a given network, compute the second-largest eigenvalue</span>
-<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Calculate the theoretical mixing time bound</span>
-<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare with empirical convergence time</span>
-<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Network Comparison:**</span>
-<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare mixing times across different network types</span>
-<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How does community structure affect mixing time?</span>
-<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What about scale-free vs. random networks?</span>
-<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 13: Modularity and Random Walks</span></span>
-<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Derivation Verification:**</span>
-<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Verify the random walk interpretation of modularity step by step</span>
-<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Show that high modularity corresponds to slow mixing between communities</span>
-<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Empirical Validation:**</span>
-<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Generate networks with known community structure</span>
-<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compute modularity using both traditional and random walk approaches</span>
-<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare the results and interpretation</span>
-<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 14: Custom Centrality Measures</span></span>
-<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>Design your own centrality measure based on random walks:</span>
-<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Design Phase:**</span>
-<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Choose a specific aspect of random walk behavior to capture</span>
-<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Define your measure mathematically</span>
-<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Justify why it captures important network properties</span>
-<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Implementation:**</span>
-<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Implement your measure in Python</span>
-<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Test on various network types</span>
-<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare with existing centrality measures</span>
-<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Validation:**</span>
-<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Evaluate on networks where you know the "ground truth"</span>
-<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Analyze computational complexity</span>
-<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Discuss practical applications</span>
-<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a><span class="fu">## Challenge Problems</span></span>
-<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 15: Multi-layer Networks</span></span>
-<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a>Extend random walks to multi-layer networks:</span>
-<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Model Development:**</span>
-<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How would you define transition probabilities between layers?</span>
-<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What does the stationary distribution represent?</span>
-<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Implementation:**</span>
-<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Code a multi-layer random walk simulator</span>
-<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Analyze convergence properties</span>
-<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare with single-layer results</span>
-<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 16: Dynamic Networks</span></span>
-<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a>Consider random walks on time-varying networks:</span>
-<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Theoretical Framework:**</span>
-<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>How do you handle changing adjacency matrices?</span>
-<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>What is the appropriate notion of stationary distribution?</span>
-<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Simulation Study:**</span>
-<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Implement random walks on temporal networks</span>
-<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Study how network dynamics affect walker behavior</span>
-<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Develop time-dependent centrality measures</span>
-<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assessment Guidelines</span></span>
-<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Instructors</span></span>
-<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>**Beginner Level (Exercises 1-6):**</span>
-<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Focus on understanding basic concepts</span>
-<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Emphasize coding implementation</span>
-<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Check mathematical derivations step-by-step</span>
-<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a>**Intermediate Level (Exercises 7-11):**</span>
-<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Require deeper mathematical understanding</span>
-<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Expect connections between theory and practice</span>
-<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Look for creative interpretations</span>
-<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a>**Advanced Level (Exercises 12-16):**</span>
-<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Demand original thinking and research</span>
-<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Expect novel implementations</span>
-<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Require critical analysis and comparison</span>
-<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a><span class="fu">### Grading Rubric</span></span>
-<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a>**Code Quality (40%):**</span>
-<span id="cb4-298"><a href="#cb4-298" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Correctness of implementation</span>
-<span id="cb4-299"><a href="#cb4-299" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Efficiency and elegance</span>
-<span id="cb4-300"><a href="#cb4-300" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Documentation and comments</span>
-<span id="cb4-301"><a href="#cb4-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-302"><a href="#cb4-302" aria-hidden="true" tabindex="-1"></a>**Mathematical Understanding (30%):**</span>
-<span id="cb4-303"><a href="#cb4-303" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Correct derivations</span>
-<span id="cb4-304"><a href="#cb4-304" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Clear explanations</span>
-<span id="cb4-305"><a href="#cb4-305" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Proper use of notation</span>
-<span id="cb4-306"><a href="#cb4-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-307"><a href="#cb4-307" aria-hidden="true" tabindex="-1"></a>**Analysis and Interpretation (30%):**</span>
-<span id="cb4-308"><a href="#cb4-308" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Insightful discussion of results</span>
-<span id="cb4-309"><a href="#cb4-309" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connections to network science concepts</span>
-<span id="cb4-310"><a href="#cb4-310" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Critical thinking about limitations and extensions</span>
-<span id="cb4-311"><a href="#cb4-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-312"><a href="#cb4-312" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
-<span id="cb4-313"><a href="#cb4-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-314"><a href="#cb4-314" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Datasets:** Use networks from SNAP, NetworkX, or create synthetic ones</span>
-<span id="cb4-315"><a href="#cb4-315" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Visualization:** Consider using NetworkX, igraph, or D3.js for interactive plots</span>
-<span id="cb4-316"><a href="#cb4-316" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Further Reading:** Consult papers on spectral graph theory and Markov chain analysis</span>
-<span id="cb4-317"><a href="#cb4-317" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Software:** Explore specialized tools like graph-tool or GTNA for large-scale analysis</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Exercises &amp; Assignments"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>We will implement and analyze random walks on real-world networks, exploring their applications for centrality measures and community detection.</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**For students enrolled in SSIE 641**</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You will receive a dedicated link to the assignment repository from the instructor.</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>*For those who are not enrolled in SSIE 641*</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>You can access the assignment repository at <span class="co">[</span><span class="ot">Github</span><span class="co">](https://github.com/sk-classroom/adv-net-sci-random-walks)</span>.</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>This repository does not offer auto-grading. But you can grade the assignment by yourself by</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -1886,7 +1251,7 @@ c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/03-exercises.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

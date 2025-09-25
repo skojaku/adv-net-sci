@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-27">
+<meta name="dcterms.date" content="2025-09-22">
 
-<title>Random Walks: Core Concepts</title>
+<title>Random Walks Concepts – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -151,7 +151,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -332,7 +332,7 @@ window.Quarto = {
  <span class="dropdown-text">Coding</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
+    <a class="dropdown-item" href="../m07-random-walks/03-exercises.qmd">
  <span class="dropdown-text">Exercises</span></a>
   </li>  
         <li class="dropdown-header">─── M08: Embedding ───</li>
@@ -387,7 +387,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">Random Walks Concepts</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -646,19 +646,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Centrality Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding - Centrality</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises &amp; Assignments</span></a>
   </div>
 </li>
       </ul>
@@ -675,21 +675,18 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Random Walks Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding - Random Walks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
-  </div>
-</li>
+ <span class="menu-text">m07-random-walks/03-exercises.qmd</span>
+  </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -767,13 +764,14 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">Random Walks Concepts</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Random Walks: Core Concepts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Random Walks Concepts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -790,7 +788,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2025</p>
+      <p class="date">September 22, 2025</p>
     </div>
   </div>
   
@@ -802,10 +800,22 @@ window.Quarto = {
 </header>
 
 
-<section id="introduction-through-games-ladder-lottery" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="introduction-through-games-ladder-lottery"><span class="header-section-number">1</span> Introduction through Games: Ladder Lottery</h2>
-<p>In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We’ll explore what random walks are, how to simulate them on networks, their behavior patterns, and their connections to community detection and network centralities.</p>
-<p>To make these concepts tangible, let’s start with a fun game that perfectly illustrates random walk principles:</p>
+<section id="what-is-a-random-walk" class="level2 page-columns page-full" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="what-is-a-random-walk"><span class="header-section-number">1</span> What is a random walk?</h2>
+<p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
+<p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</p>
+
+<div class="no-row-height column-margin column-container"><div class="" title="Real-World Random Walk Examples">
+<p>Random walks appear everywhere in daily life:</p>
+<ul>
+<li><strong>Netflix browsing</strong>: You click on a movie, then another recommended movie, then another… Your viewing pattern follows a random walk through the recommendation network!</li>
+<li><strong>Wikipedia surfing</strong>: Starting from “Coffee”, you click links to “Brazil” → “Soccer” → “Mathematics” → “Physics”… Each click is a step in a random walk through knowledge.</li>
+<li><strong>Stock market movements</strong>: Daily price changes can be modeled as random walks, where each day’s price depends on the previous day plus some random fluctuation.</li>
+</ul>
+</div></div></section>
+<section id="introduction-through-games-ladder-lottery" class="level2 page-columns page-full" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="introduction-through-games-ladder-lottery"><span class="header-section-number">2</span> Introduction through Games: Ladder Lottery</h2>
+<p>To make random walk concepts tangible, let’s start with a fun game that perfectly illustrates random walk principles:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Ladder Lottery">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -816,9 +826,8 @@ Ladder Lottery
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>:class: tip</p>
 <p>Ladder Lottery is a fun East Asian game, also known as “鬼腳圖” (Guijiaotu) in Chinese, “阿弥陀籤” (Amida-kuzi) in Japanese, “사다리타기” (Sadaritagi) in Korean, and “Ladder Lottery” in English. The game is played as follows: 1. A player is given a board with a set of vertical lines. 2. The player chooses a line and starts to move along the line 3. When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line. 4. The player wins if the player can hit a marked line at the bottom of the board. 5. You cannot see the horizontal lines in advance!</p>
-<p>Play the {{ ‘<a href="BASE_URL/vis/amida-kuji.html?">Ladder Lottery Game! 🎮✨</a>’.replace(‘BASE_URL’, base_url) }} and try to answer the following questions:</p>
+<p>Play the <a href="https://skojaku.github.io/adv-net-sci/assets/vis/amida-kuji.html?">Ladder Lottery Game! 🎮✨</a> and try to answer the following questions:</p>
 <ol type="1">
 <li>Is there a strategy to maximize the probability of winning?</li>
 <li>How does the probability of winning change as the number of horizontal lines increases?</li>
@@ -827,27 +836,332 @@ Ladder Lottery
 </div>
 </div>
 <p>The Ladder Lottery game is actually a perfect introduction to random walks! In this game, <strong>states</strong> are the vertical lines, <strong>transitions</strong> happen when you encounter horizontal connections, <strong>randomness</strong> comes from not knowing where the horizontal lines are placed, and <strong>long-term behavior</strong> determines your probability of winning. This simple game illustrates many key concepts we’ll explore in random walks on networks.</p>
-</section>
-<section id="understanding-random-walks" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="understanding-random-walks"><span class="header-section-number">2</span> Understanding Random Walks</h2>
-<p>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</p>
-<p>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</p>
-<p>More formally, a random walk in undirected networks follows this process: 1. Start at a node <span class="math inline">i</span> 2. Randomly choose an edge to traverse to a neighbor node <span class="math inline">j</span> 3. Repeat step 2 until you have taken <span class="math inline">T</span> steps</p>
-<pre class="{note}"><code>In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</code></pre>
+<p>A random walk in undirected networks follows this process: 1. Start at a node <span class="math inline">i</span> 2. Randomly choose an edge to traverse to a neighbor node <span class="math inline">j</span> 3. Repeat step 2 until you have taken <span class="math inline">T</span> steps</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called “dead end” that does not have any outgoing edges.</p>
+</div></div><p><img src="../figs/random-walk.png" alt="Random walk on a network" width="50%" style="display: block; margin-left: auto; margin-right: auto;"></p>
 <p>When studying random walks, we want to understand several key aspects: <strong>short-term behavior</strong> (where does the walker go in the first few steps?), <strong>long-term behavior</strong> (after many steps, where does the walker spend most of its time?), <strong>structural insights</strong> (what does the walker’s behavior tell us about the network?), and <strong>applications</strong> (how can we use random walks for centrality and community detection?).</p>
-</section>
-<section id="pen-and-paper-exercises" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="pen-and-paper-exercises"><span class="header-section-number">3</span> Pen and Paper Exercises</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Interactive Exploration">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Interactive Exploration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Play with the <a href="vis/random-walks/index.html">Random Walk Simulator! 🎮✨</a> and try to answer the following questions:</p>
+<ol type="1">
+<li>When the random walker makes many steps, where does it tend to visit most frequently?</li>
+<li>When the walker makes only a few steps, where does it tend to visit?</li>
+<li>Does the behavior of the walker inform us about centrality of the nodes?</li>
+<li>Does the behavior of the walker inform us about communities in the network?</li>
+</ol>
+</div>
+</div>
+<section id="pen-and-paper-exercises" class="level3">
+<h3 class="anchored" data-anchor-id="pen-and-paper-exercises">Pen and Paper Exercises</h3>
 <p>Before diving into the mathematical details and coding, it’s important to work through some fundamental concepts by hand.</p>
 <ul>
 <li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
 </ul>
 <p>These exercises will help you: - Understand the basic mechanics of random walks - Calculate transition probabilities manually - Explore simple examples of stationary distributions - Connect random walk concepts to network properties</p>
 </section>
-<section id="preview-whats-coming-next" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="preview-whats-coming-next"><span class="header-section-number">4</span> Preview: What’s Coming Next</h2>
-<p>In the following sections, we will: 1. <strong>Dive into the mathematics</strong> behind random walks and their connection to Markov chains 2. <strong>Implement random walks in code</strong> and visualize their behavior on real networks 3. <strong>Explore applications</strong> including centrality measures and community detection 4. <strong>Work through practical exercises</strong> to solidify your understanding</p>
-<p>The journey from this simple concept to powerful network analysis tools is both fascinating and practical!</p>
+<section id="mathematical-foundation-transition-probabilities" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="mathematical-foundation-transition-probabilities">Mathematical Foundation: Transition Probabilities</h3>
+<p>A random walk is characterized by the transition probabilities between nodes. The transition probability from node <span class="math inline">i</span> to node <span class="math inline">j</span> is:</p>
+<p><span class="math display">
+P_{ij} = \frac{A_{ij}}{k_i}
+</span></p>
+<p>where <span class="math inline">A_{ij}</span> is the adjacency matrix element and <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Example: A Larger Network">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example: A Larger Network
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let’s see how this works with a more complex example. Consider a network with 10 nodes:</p>
+
+<p><strong>Key observations:</strong> - <strong>Network structure</strong>: More complex with varying node degrees - <strong>Adjacency Matrix</strong>: Sparse matrix showing connection patterns - <strong>Degrees</strong>: Nodes have different connectivity (ranging from isolated to highly connected) - <strong>Transition Matrix</strong>: Probabilities depend on local node degree - <strong>Real insight</strong>: High-degree nodes have lower individual transition probabilities to each neighbor</p>
+</div>
+</div>
+<div class="no-row-height column-margin column-container"><div class="callout-margin-content">
+<p>Let us consider the following graph.</p>
+<div id="7350dc9e" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The transition matrix is given by:</p>
+<div id="c612adf3" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div><p>We can represent all transition probabilities in a transition probability matrix <span class="math inline">\mathbf{P}</span>:</p>
+<p><span class="math display">
+\mathbf{P} = \begin{pmatrix}
+p_{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} \\
+p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}
+\end{pmatrix}
+</span></p>
+<p>This matrix <span class="math inline">\mathbf{P}</span> encapsulates the entire random walk process. We can use it to calculate the probability of visiting each node after any number of steps:</p>
+<ul>
+<li>After one step: <span class="math inline">P_{ij} = p_{ij}</span></li>
+<li>After two steps: <span class="math inline">\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}</span></li>
+<li>After <span class="math inline">T</span> steps: <span class="math inline">\left(\mathbf{P}^{T}\right)_{ij}</span></li>
+</ul>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Let’s compute <span class="math inline">\mathbf{P}^2</span> for our larger network to see what happens after 2 steps:</p>
+<div id="d495105d" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is after 10 steps.</p>
+<div id="fb9721eb" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is after 1000 steps.</p>
+<div id="42580072" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div><p>Let’s explore why <span class="math inline">\mathbf{P}^2</span> represents the transition probabilities after two steps.</p>
+<p>First, recall that <span class="math inline">\mathbf{P}_{ij}</span> is the probability of moving from node <span class="math inline">i</span> to node <span class="math inline">j</span> in one step. Now, consider a two-step walk from <span class="math inline">i</span> to <span class="math inline">j</span>. We can express this as:</p>
+<p><span class="math inline">(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}</span></p>
+<p>This equation encapsulates a key idea: to go from <span class="math inline">i</span> to <span class="math inline">j</span> in two steps, we must pass through some intermediate node <span class="math inline">k</span>. Let’s break this down step by step:</p>
+<ol type="1">
+<li>The probability of the first step (<span class="math inline">i</span> to <span class="math inline">k</span>) is <span class="math inline">\mathbf{P}_{ik}</span>.</li>
+<li>The probability of the second step (<span class="math inline">k</span> to <span class="math inline">j</span>) is <span class="math inline">\mathbf{P}_{kj}</span>.</li>
+<li>The probability of this specific path (<span class="math inline">i</span> → <span class="math inline">k</span> → <span class="math inline">j</span>) is the product <span class="math inline">\mathbf{P}_{ik} \mathbf{P}_{kj}</span>.</li>
+<li>We sum over all possible intermediate nodes <span class="math inline">k</span> to get the total probability.</li>
+</ol>
+<p>And we can extend this reasoning for any number of steps <span class="math inline">t</span>. In summary, for any number of steps <span class="math inline">t</span>, <span class="math inline">\left( \mathbf{P}^t \right)_{ij}</span> gives the probability of being at node <span class="math inline">j</span> after <span class="math inline">t</span> steps, starting from node <span class="math inline">i</span>.</p>
+</section>
+</section>
+<section id="expected-behavior-and-stationary-distribution" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="expected-behavior-and-stationary-distribution"><span class="header-section-number">3</span> Expected Behavior and Stationary Distribution</h2>
+<p>The expected position of the walker after <span class="math inline">t</span> steps starting from position <span class="math inline">\mathbf{x}(0)</span> is:</p>
+<p><span class="math display">
+\mathbb{E}[\mathbf{x}(t)] = \mathbf{x}(0) \mathbf{P}^t
+</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Understanding Position Vectors">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Understanding Position Vectors
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The position vector <span class="math inline">\mathbf{x}(t)</span> represents where the walker might be at time <span class="math inline">t</span>:</p>
+<div id="61b79481" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Key observations starting from Node 1:
+- Initial position: 100% at Node 1
+- After 1 step: spreads to neighbors [0, 2, 3, 4]
+- After 10 steps: probability distribution stabilizing
+- Stationary distribution: proportional to node degrees
+- Nodes with highest long-term probability: [1, 3, 4]</code></pre>
+</div>
+</div>
+<p><strong>Key observations:</strong> - <strong>t=0</strong>: Walker starts at the highest-degree node - <strong>Early steps</strong>: Walker spreads to immediate neighbors - <strong>Later steps</strong>: Probability distribution spreads throughout the connected network - <strong>Stationary</strong>: Eventually proportional to node degrees (high-degree nodes visited more often)</p>
+<p>The position vector shows how <strong>probability mass flows</strong> through the network over time!</p>
+</div>
+</div>
+<p>As <span class="math inline">t</span> becomes very large, the probability distribution approaches a constant value called the <strong>stationary distribution</strong>:</p>
+<p><span class="math display">
+\mathbf{x}(\infty) = \boldsymbol{\pi}
+</span></p>
+<p>where <span class="math inline">\boldsymbol{\pi}</span> satisfies the eigenvector equation:</p>
+<p><span class="math display">
+\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}
+</span></p>
+<p>For undirected networks, this stationary distribution always exists and is proportional to the degree of each node:</p>
+<p><span class="math display">
+\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j
+</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Network Example: Stationary Distribution">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Network Example: Stationary Distribution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For our larger network, nodes have different degrees, so the stationary distribution is proportional to degree:</p>
+<div id="f4fbe07c" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-concepts_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stationary Distribution Analysis:
+----------------------------------------
+Node 1: degree = 4, π = 0.1538
+Node 3: degree = 4, π = 0.1538
+Node 4: degree = 4, π = 0.1538
+Node 2: degree = 3, π = 0.1154
+Node 5: degree = 3, π = 0.1154
+Node 0: degree = 2, π = 0.0769
+Node 6: degree = 2, π = 0.0769
+Node 8: degree = 2, π = 0.0769
+Node 7: degree = 1, π = 0.0385
+Node 9: degree = 1, π = 0.0385
+
+Verification (max error): 0.00e+00
+✓ The theoretical stationary distribution satisfies π = πP!</code></pre>
+</div>
+</div>
+<p><strong>Key insights:</strong> - <strong>Proportionality</strong>: Stationary probability ∝ node degree - <strong>High-degree nodes</strong>: Visited more frequently in the long run - <strong>Mathematical verification</strong>: π = πP confirms our calculation is correct - <strong>Network structure matters</strong>: Well-connected nodes become “probability sinks”</p>
+</div>
+</div>
+<p>This means the probability of being at node <span class="math inline">j</span> in the long run is proportional to the degree of node <span class="math inline">j</span>. The normalization ensures that the sum of all probabilities is 1, i.e., <span class="math inline">\sum_{j=1}^N \pi_j = 1</span>.</p>
+</section>
+<section id="spectral-analysis-and-mixing-time" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="spectral-analysis-and-mixing-time"><span class="header-section-number">4</span> Spectral Analysis and Mixing Time</h2>
+<p>The convergence speed to the stationary distribution is determined by the eigenvalues of the transition matrix. We can decompose the transition matrix using spectral analysis.</p>
+<p>Since <span class="math inline">\mathbf{P}</span> is not symmetric, we use a transformation:</p>
+<p><span class="math display">
+\mathbf{P} = \mathbf{D}^{-1} \mathbf{A} = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}
+</span></p>
+<p>where <span class="math inline">\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}</span> is the normalized adjacency matrix.</p>
+<p>The advantage is that <span class="math inline">\overline{\mathbf{A}}</span> is diagonalizable: <span class="math inline">\overline{\mathbf{A}} = \mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^T</span>. Using this, we can compute <span class="math inline">\mathbf{P}^t</span>:</p>
+<p><span class="math display">
+\mathbf{P}^t = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T
+</span></p>
+<p>where <span class="math inline">\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}</span> and <span class="math inline">\mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}</span>.</p>
+<p>The <strong>mixing time</strong> <span class="math inline">t_{\text{mix}}</span> represents how quickly a random walk reaches its stationary distribution:</p>
+<p><span class="math display">
+t_{\text{mix}} = \min\{t : \max_{\mathbf{x}(0)} \|\mathbf{x}(t) - \boldsymbol{\pi}\|_{1} \leq \epsilon\}
+</span></p>
+<p>The mixing time is closely related to the second largest eigenvalue <span class="math inline">\lambda_2</span> of the normalized adjacency matrix:</p>
+<p><span class="math display">
+t_{\text{mix}} &lt; \frac{1}{1-\lambda_2} \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right)
+</span></p>
+<p>More commonly, it is expressed using the second smallest eigenvalue <span class="math inline">\mu</span> of the normalized Laplacian matrix:</p>
+<p><span class="math display">
+t_{\text{mix}} \leq \frac{1}{\mu}
+</span></p>
+<p>where <span class="math inline">\mu = 1-\lambda_2</span>.</p>
+</section>
+<section id="community-detection-through-random-walks" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="community-detection-through-random-walks"><span class="header-section-number">5</span> Community Detection through Random Walks</h2>
+<p>Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network’s modular structure.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Intuitive Example: University Social Networks">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Intuitive Example: University Social Networks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Imagine a random walker exploring friendships at a university:</p>
+<p><strong>Short-term behavior (first few steps)</strong>: - Start with a Computer Science student - Walker mostly visits other CS students (same classes, shared interests) - Occasionally ventures to Math or Engineering students</p>
+<p><strong>Medium-term behavior</strong>: - Walker starts exploring other departments - Still biased toward technical fields due to connections</p>
+<p><strong>Long-term behavior</strong>: - Eventually visits all departments proportional to their size - Lost all memory of starting point</p>
+<p><strong>Key insight</strong>: The time it takes to “escape” the CS community tells us how tightly knit that community is! Tight-knit communities have longer escape times.</p>
+<p>This is exactly how random walk-based community detection works - we look at where walkers get “trapped” in the short term.</p>
+</div>
+</div>
+<p>The position of the walker at intermediate time steps (before convergence) reveals the community structure, as walkers spend more time exploring their local neighborhood before venturing into other communities.</p>
+<p>An important observation is that the walker spends more time in the community that it started from and then diffuses to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.</p>
+</section>
+<section id="connections-to-centrality-measures" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="connections-to-centrality-measures"><span class="header-section-number">6</span> Connections to Centrality Measures</h2>
+<section id="random-walk-interpretation-of-modularity" class="level3">
+<h3 class="anchored" data-anchor-id="random-walk-interpretation-of-modularity">Random Walk Interpretation of Modularity</h3>
+<p>Modularity can be interpreted through random walks:</p>
+<p><span class="math display">
+Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)
+</span></p>
+<p>where: - <span class="math inline">\pi_i = \frac{d_i}{2m}</span> is the stationary distribution of the random walk - <span class="math inline">P_{ij}</span> is the transition probability between nodes <span class="math inline">i</span> and <span class="math inline">j</span> - <span class="math inline">\delta(c_i, c_j)</span> is 1 if nodes <span class="math inline">i</span> and <span class="math inline">j</span> are in the same community, 0 otherwise</p>
+<p>The expression suggests that: 1. The first term, <span class="math inline">\pi_i P_{ij} \delta(c_i, c_j)</span>, represents the probability that a walker is at node <span class="math inline">i</span> and moves to node <span class="math inline">j</span> within the same community <strong>by one step</strong>. 2. The second term, <span class="math inline">\pi_i \pi_j</span>, represents the probability that a walker is at node <span class="math inline">i</span> and moves to another node <span class="math inline">j</span> within the same community <strong>after long steps</strong>.</p>
+<p>High modularity indicates walkers are more likely to stay within communities in the short term than in the long term.</p>
+</section>
+<section id="pagerank-as-random-walk-with-teleportation" class="level3">
+<h3 class="anchored" data-anchor-id="pagerank-as-random-walk-with-teleportation">PageRank as Random Walk with Teleportation</h3>
+<p>PageRank represents a random walk where: - With probability <span class="math inline">(1-\beta)</span>: follow a link to the next node - With probability <span class="math inline">\beta</span>: teleport to a random node</p>
+<p><span class="math display">
+c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
+</span></p>
+<p>Where: - <span class="math inline">c_i</span> is the PageRank of node <span class="math inline">i</span> - <span class="math inline">P_{ji}</span> is the transition probability from node <span class="math inline">j</span> to node <span class="math inline">i</span> - <span class="math inline">\beta</span> is the teleportation probability - <span class="math inline">N</span> is the total number of nodes</p>
+<p>The PageRank values are the stationary distribution of this modified random walk, representing the long-term probability of finding the walker at each node.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability <span class="math inline">\beta</span> or by following a link to a page with probability <span class="math inline">1-\beta</span>. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="summary"><span class="header-section-number">7</span> Summary</h2>
+<p>Random walks provide a unified framework for understanding networks through the lens of stochastic processes. Key insights include:</p>
+<ol type="1">
+<li><strong>Stationary distributions</strong> connect to degree centrality naturally</li>
+<li><strong>Temporal dynamics</strong> reveal community structure through short-term vs.&nbsp;long-term behavior</li>
+<li><strong>Spectral properties</strong> determine convergence rates and mixing times</li>
+<li><strong>Applications</strong> include new interpretations of modularity and PageRank</li>
+<li><strong>Mathematical foundation</strong> links to Markov chains and linear algebra</li>
+</ol>
+<p>This theoretical foundation prepares us for implementing and applying random walks computationally in the next section, where we’ll see how these concepts translate into practical algorithms and network analysis tools.</p>
 
 
 <!-- -->
@@ -1307,83 +1621,580 @@ Ladder Lottery
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
+      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Exercises &amp; Assignments">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Exercises &amp; Assignments</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m07-random-walks/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m07-random-walks/02-coding.html" class="pagination-link" aria-label="Coding - Random Walks">
+        <span class="nav-page-text">Coding - Random Walks</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Random Walks: Core Concepts</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction through Games: Ladder Lottery</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn random walks, one of the most fundamental techniques in network analysis. We'll explore what random walks are, how to simulate them on networks, their behavior patterns, and their connections to community detection and network centralities.</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>To make these concepts tangible, let's start with a fun game that perfectly illustrates random walk principles:</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Ladder Lottery"}</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="sc">:class:</span> tip</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>A player is given a board with a set of vertical lines.</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The player chooses a line and starts to move along the line</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The player wins if the player can hit a marked line at the bottom of the board.</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>You cannot see the horizontal lines in advance!</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>Play the {{ '<span class="co">[</span><span class="ot">Ladder Lottery Game! 🎮✨</span><span class="co">]( BASE_URL/vis/amida-kuji.html?)</span>'.replace('BASE_URL', base_url) }} and try to answer the following questions:</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Is there a strategy to maximize the probability of winning?</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How does the probability of winning change as the number of horizontal lines increases?</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif)</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>The Ladder Lottery game is actually a perfect introduction to random walks! In this game, **states** are the vertical lines, **transitions** happen when you encounter horizontal connections, **randomness** comes from not knowing where the horizontal lines are placed, and **long-term behavior** determines your probability of winning. This simple game illustrates many key concepts we'll explore in random walks on networks.</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Understanding Random Walks</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>More formally, a random walk in undirected networks follows this process:</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Start at a node $i$</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Randomly choose an edge to traverse to a neighbor node $j$</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Repeat step 2 until you have taken $T$ steps</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{note}</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="in">In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>When studying random walks, we want to understand several key aspects: **short-term behavior** (where does the walker go in the first few steps?), **long-term behavior** (after many steps, where does the walker spend most of its time?), **structural insights** (what does the walker's behavior tell us about the network?), and **applications** (how can we use random walks for centrality and community detection?).</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pen and Paper Exercises</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>Before diving into the mathematical details and coding, it's important to work through some fundamental concepts by hand.</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>These exercises will help you:</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand the basic mechanics of random walks</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate transition probabilities manually</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explore simple examples of stationary distributions</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connect random walk concepts to network properties</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preview: What's Coming Next</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>In the following sections, we will:</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Dive into the mathematics** behind random walks and their connection to Markov chains</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Implement random walks in code** and visualize their behavior on real networks</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Explore applications** including centrality measures and community detection</span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Work through practical exercises** to solidify your understanding</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>The journey from this simple concept to powerful network analysis tools is both fascinating and practical!</span>
+<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Random Walks Concepts"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## What is a random walk?</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>::: {.column-margin title="Real-World Random Walk Examples"}</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>Random walks appear everywhere in daily life:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Netflix browsing**: You click on a movie, then another recommended movie, then another... Your viewing pattern follows a random walk through the recommendation network!</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Wikipedia surfing**: Starting from "Coffee", you click links to "Brazil" → "Soccer" → "Mathematics" → "Physics"... Each click is a step in a random walk through knowledge.</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Stock market movements**: Daily price changes can be modeled as random walks, where each day's price depends on the previous day plus some random fluctuation.</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction through Games: Ladder Lottery</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>To make random walk concepts tangible, let's start with a fun game that perfectly illustrates random walk principles:</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Ladder Lottery"}</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>A player is given a board with a set of vertical lines.</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The player chooses a line and starts to move along the line</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The player wins if the player can hit a marked line at the bottom of the board.</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>You cannot see the horizontal lines in advance!</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>Play the <span class="co">[</span><span class="ot">Ladder Lottery Game! 🎮✨</span><span class="co">]( https://skojaku.github.io/adv-net-sci/assets/vis/amida-kuji.html?)</span> and try to answer the following questions:</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Is there a strategy to maximize the probability of winning?</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How does the probability of winning change as the number of horizontal lines increases?</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif)</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>The Ladder Lottery game is actually a perfect introduction to random walks! In this game, **states** are the vertical lines, **transitions** happen when you encounter horizontal connections, **randomness** comes from not knowing where the horizontal lines are placed, and **long-term behavior** determines your probability of winning. This simple game illustrates many key concepts we'll explore in random walks on networks.</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>A random walk in undirected networks follows this process:</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Start at a node $i$</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Randomly choose an edge to traverse to a neighbor node $j$</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Repeat step 2 until you have taken $T$ steps</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"../figs/random-walk.png"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Random walk on a network"</span><span class="ot"> width</span><span class="op">=</span><span class="st">"50%"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"display: block; margin-left: auto; margin-right: auto;"</span><span class="dt">&gt;</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>When studying random walks, we want to understand several key aspects: **short-term behavior** (where does the walker go in the first few steps?), **long-term behavior** (after many steps, where does the walker spend most of its time?), **structural insights** (what does the walker's behavior tell us about the network?), and **applications** (how can we use random walks for centrality and community detection?).</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Interactive Exploration"}</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>Play with the <span class="co">[</span><span class="ot">Random Walk Simulator! 🎮✨</span><span class="co">](vis/random-walks/index.html)</span> and try to answer the following questions:</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>When the random walker makes many steps, where does it tend to visit most frequently?</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>When the walker makes only a few steps, where does it tend to visit?</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Does the behavior of the walker inform us about centrality of the nodes?</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Does the behavior of the walker inform us about communities in the network?</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pen and Paper Exercises</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>Before diving into the mathematical details and coding, it's important to work through some fundamental concepts by hand.</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>These exercises will help you:</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand the basic mechanics of random walks</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate transition probabilities manually</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explore simple examples of stationary distributions</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connect random walk concepts to network properties</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mathematical Foundation: Transition Probabilities</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>A random walk is characterized by the transition probabilities between nodes. The transition probability from node $i$ to node $j$ is:</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>P_{ij} = \frac{A_{ij}}{k_i}</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Example: A Larger Network"}</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>Let's see how this works with a more complex example. Consider a network with 10 nodes:</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> FancyBboxPatch</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="co"># Set style</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'default'</span>)</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>sns.set_palette(<span class="st">"husl"</span>)</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the larger network</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [(<span class="dv">0</span>,<span class="dv">1</span>), (<span class="dv">0</span>,<span class="dv">3</span>), (<span class="dv">1</span>,<span class="dv">2</span>), (<span class="dv">1</span>,<span class="dv">3</span>), (<span class="dv">1</span>,<span class="dv">4</span>), (<span class="dv">2</span>,<span class="dv">4</span>), (<span class="dv">2</span>,<span class="dv">7</span>), (<span class="dv">3</span>,<span class="dv">4</span>), (<span class="dv">3</span>,<span class="dv">5</span>), (<span class="dv">4</span>,<span class="dv">5</span>), (<span class="dv">5</span>,<span class="dv">6</span>), (<span class="dv">6</span>,<span class="dv">8</span>), (<span class="dv">8</span>,<span class="dv">9</span>)]</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> ig.Graph(n<span class="op">=</span>n_nodes, edges<span class="op">=</span>edges, directed<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="co"># Create adjacency matrix</span></span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(G.get_adjacency().data)</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate degrees</span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> np.array(G.degree())</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Create transition matrix</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.diag(<span class="fl">1.0</span> <span class="op">/</span> degrees) <span class="op">@</span> A</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="co"># Find a node with highest degree for example</span></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>max_degree_node <span class="op">=</span> np.argmax(degrees)</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>Let us consider the following graph.</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">4</span>))</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>ig.plot(G, target<span class="op">=</span>ax, vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)))</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>The transition matrix is given by:</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">".2f"</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>,</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)), yticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)))</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Transition Matrix Heatmap"</span>)</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"To Node"</span>)</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"From Node"</span>)</span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>**Key observations:**</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Network structure**: More complex with varying node degrees</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Adjacency Matrix**: Sparse matrix showing connection patterns</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degrees**: Nodes have different connectivity (ranging from isolated to highly connected)</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Transition Matrix**: Probabilities depend on local node degree</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Real insight**: High-degree nodes have lower individual transition probabilities to each neighbor</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>We can represent all transition probabilities in a transition probability matrix $\mathbf{P}$:</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>\mathbf{P} = \begin{pmatrix}</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>p_{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} <span class="sc">\\</span></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} <span class="sc">\\</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>This matrix $\mathbf{P}$ encapsulates the entire random walk process. We can use it to calculate the probability of visiting each node after any number of steps:</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>After one step: $P_{ij} = p_{ij}$</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>After two steps: $\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}$</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>After $T$ steps: $\left(\mathbf{P}^{T}\right)_{ij}$</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>Let's compute $\mathbf{P}^2$ for our larger network to see what happens after 2 steps:</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the same network and transition matrix from previous example</span></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>P2 <span class="op">=</span> P <span class="op">@</span> P  <span class="co"># Matrix multiplication for 2-step transitions</span></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P2, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">".2f"</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>,</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)), yticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)))</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Transition Matrix Heatmap"</span>)</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"To Node"</span>)</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"From Node"</span>)</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>This is after 10 steps.</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the same network and transition matrix from previous example</span></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>P100 <span class="op">=</span> np.linalg.matrix_power(P, <span class="dv">10</span>)   <span class="co"># Matrix multiplication for 2-step transitions</span></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P100, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">".2f"</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>,</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)), yticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)))</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Transition Matrix Heatmap"</span>)</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"To Node"</span>)</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"From Node"</span>)</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>This is after 1000 steps.</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the same network and transition matrix from previous example</span></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>P100 <span class="op">=</span> np.linalg.matrix_power(P, <span class="dv">100</span>)   <span class="co"># Matrix multiplication for 2-step transitions</span></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P100, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">".2f"</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>,</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)), yticklabels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(n_nodes)))</span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Transition Matrix Heatmap"</span>)</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"To Node"</span>)</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"From Node"</span>)</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>Let's explore why $\mathbf{P}^2$ represents the transition probabilities after two steps.</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we must pass through some intermediate node $k$. Let's break this down step by step:</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The probability of the first step ($i$ to $k$) is $\mathbf{P}_{ik}$.</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The probability of the second step ($k$ to $j$) is $\mathbf{P}_{kj}$.</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The probability of this specific path ($i$ → $k$ → $j$) is the product $\mathbf{P}_{ik} \mathbf{P}_{kj}$.</span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>We sum over all possible intermediate nodes $k$ to get the total probability.</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>And we can extend this reasoning for any number of steps $t$. In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="fu">## Expected Behavior and Stationary Distribution</span></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>The expected position of the walker after $t$ steps starting from position $\mathbf{x}(0)$ is:</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>\mathbb{E}<span class="co">[</span><span class="ot">\mathbf{x}(t)</span><span class="co">]</span> = \mathbf{x}(0) \mathbf{P}^t</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Understanding Position Vectors"}</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>The position vector $\mathbf{x}(t)$ represents where the walker might be at time $t$:</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize position vectors over time for the larger network</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">6</span>))</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the same network from previous examples</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co"># Start from the highest degree node</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>start_node <span class="op">=</span> max_degree_node</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> np.zeros(n_nodes)</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>x0[start_node] <span class="op">=</span> <span class="fl">1.0</span>  <span class="co"># Start at the highest degree node</span></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate position vectors for several steps</span></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> x0 <span class="op">@</span> P</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> x0 <span class="op">@</span> (P <span class="op">@</span> P)</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>x3 <span class="op">=</span> x0 <span class="op">@</span> np.linalg.matrix_power(P, <span class="dv">3</span>)</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>x5 <span class="op">=</span> x0 <span class="op">@</span> np.linalg.matrix_power(P, <span class="dv">5</span>)</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>x10 <span class="op">=</span> x0 <span class="op">@</span> np.linalg.matrix_power(P, <span class="dv">10</span>)</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate stationary distribution (proportional to degrees)</span></span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>total_degree <span class="op">=</span> <span class="bu">sum</span>(degrees)</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>x_inf <span class="op">=</span> np.array([d<span class="op">/</span>total_degree <span class="cf">if</span> d <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span> <span class="cf">for</span> d <span class="kw">in</span> degrees])</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Show evolution for nodes with significant probability</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="co"># Focus on nodes that have non-zero stationary probability</span></span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>active_nodes <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes) <span class="cf">if</span> x_inf[i] <span class="op">&gt;</span> <span class="fl">0.01</span>]</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>steps_data <span class="op">=</span> np.array([x0, x1, x2, x3, x5, x10, x_inf])</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>step_labels <span class="op">=</span> [<span class="st">'t=0'</span>, <span class="st">'t=1'</span>, <span class="st">'t=2'</span>, <span class="st">'t=3'</span>, <span class="st">'t=5'</span>, <span class="st">'t=10'</span>, <span class="st">'t=∞'</span>]</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="co"># Create subset for visualization (only active nodes)</span></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>subset_data <span class="op">=</span> steps_data[:, active_nodes]</span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ax1.imshow(subset_data, cmap<span class="op">=</span><span class="st">'viridis'</span>, aspect<span class="op">=</span><span class="st">'auto'</span>)</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Position Vector Evolution</span><span class="ch">\n</span><span class="st">(Active Nodes Only)"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>ax1.set_yticks(<span class="bu">range</span>(<span class="bu">len</span>(step_labels)))</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>ax1.set_yticklabels(step_labels)</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>ax1.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(active_nodes)))</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>ax1.set_xticklabels([<span class="ss">f'Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> active_nodes], rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co"># Add text annotations for significant probabilities</span></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(step_labels)):</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(active_nodes)):</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> subset_data[i, j] <span class="op">&gt;</span> <span class="fl">0.05</span>:  <span class="co"># Only show significant probabilities</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a>            ax1.text(j, i, <span class="ss">f'</span><span class="sc">{</span>subset_data[i, j]<span class="sc">:.2f}</span><span class="ss">'</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>                    fontsize<span class="op">=</span><span class="dv">9</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span><span class="st">'white'</span>)</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="co"># Add colorbar</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> plt.colorbar(im, ax<span class="op">=</span>ax1, shrink<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>cbar.set_label(<span class="st">'Probability'</span>, rotation<span class="op">=</span><span class="dv">270</span>, labelpad<span class="op">=</span><span class="dv">15</span>)</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Line plot showing convergence for most important nodes</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>steps <span class="op">=</span> np.arange(<span class="bu">len</span>(step_labels))</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>top_nodes <span class="op">=</span> <span class="bu">sorted</span>(active_nodes, key<span class="op">=</span><span class="kw">lambda</span> x: x_inf[x], reverse<span class="op">=</span><span class="va">True</span>)[:<span class="dv">5</span>]  <span class="co"># Top 5 by stationary prob</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> plt.cm.Set1(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(top_nodes)))</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, node <span class="kw">in</span> <span class="bu">enumerate</span>(top_nodes):</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a>    node_probs <span class="op">=</span> steps_data[:, node]</span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>    ax2.plot(steps, node_probs, <span class="st">'o-'</span>, label<span class="op">=</span><span class="ss">f'Node </span><span class="sc">{</span>node<span class="sc">}</span><span class="ss">'</span>,</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>             linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">6</span>, color<span class="op">=</span>colors[i])</span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add stationary line</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>    ax2.axhline(y<span class="op">=</span>x_inf[node], color<span class="op">=</span>colors[i], linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="ss">f"Convergence to Stationary Distribution</span><span class="ch">\n</span><span class="ss">(Starting from Node </span><span class="sc">{</span>start_node<span class="sc">}</span><span class="ss">)"</span>,</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>              fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"Time Steps"</span>)</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Probability"</span>)</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>ax2.set_xticks(steps)</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a>ax2.set_xticklabels(step_labels)</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>ax2.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="dv">1</span>), loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>ax2.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(<span class="dv">0</span>, <span class="bu">max</span>(x0) <span class="op">*</span> <span class="fl">1.1</span>)</span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Key observations starting from Node </span><span class="sc">{</span>start_node<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"- Initial position: 100% at Node </span><span class="sc">{</span>start_node<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"- After 1 step: spreads to neighbors </span><span class="sc">{</span>[i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes) <span class="cf">if</span> x1[i] <span class="op">&gt;</span> <span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"- After 10 steps: probability distribution stabilizing"</span>)</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"- Stationary distribution: proportional to node degrees"</span>)</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"- Nodes with highest long-term probability: </span><span class="sc">{</span>top_nodes[:<span class="dv">3</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>**Key observations:**</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**t=0**: Walker starts at the highest-degree node</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Early steps**: Walker spreads to immediate neighbors</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Later steps**: Probability distribution spreads throughout the connected network</span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Stationary**: Eventually proportional to node degrees (high-degree nodes visited more often)</span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>The position vector shows how **probability mass flows** through the network over time!</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a>As $t$ becomes very large, the probability distribution approaches a constant value called the **stationary distribution**:</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>\mathbf{x}(\infty) = \boldsymbol{\pi}</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a>where $\boldsymbol{\pi}$ satisfies the eigenvector equation:</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}</span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>For undirected networks, this stationary distribution always exists and is proportional to the degree of each node:</span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a>\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j</span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Network Example: Stationary Distribution"}</span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a>For our larger network, nodes have different degrees, so the stationary distribution is proportional to degree:</span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate and visualize the stationary distribution</span></span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a>total_degree <span class="op">=</span> <span class="bu">sum</span>(degrees)</span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>pi_theoretical <span class="op">=</span> np.array([d<span class="op">/</span>total_degree <span class="cf">if</span> d <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span> <span class="cf">for</span> d <span class="kw">in</span> degrees])</span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify by computing the left eigenvector of P</span></span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="co"># For undirected graphs, stationary distribution should be proportional to degrees</span></span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>active_nodes <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes) <span class="cf">if</span> degrees[i] <span class="op">&gt;</span> <span class="dv">0</span>]</span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualization</span></span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2, ax3) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">18</span>, <span class="dv">5</span>))</span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Compare degrees vs stationary distribution</span></span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>ax1.scatter(degrees, pi_theoretical, s<span class="op">=</span><span class="dv">100</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a>ax1.plot([<span class="dv">0</span>, <span class="bu">max</span>(degrees)], [<span class="dv">0</span>, <span class="bu">max</span>(pi_theoretical)], <span class="st">'k--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, label<span class="op">=</span><span class="st">'Proportional relationship'</span>)</span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Node Degree"</span>)</span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Stationary Probability"</span>)</span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Stationary Probability ∝ Degree"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>ax1.legend()</span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>ax1.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a><span class="co"># Add node labels</span></span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> active_nodes:</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a>    ax1.annotate(<span class="ss">f'</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>, (degrees[i], pi_theoretical[i]),</span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a>                xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>), textcoords<span class="op">=</span><span class="st">'offset points'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Verify the eigenvector equation π = πP for active nodes</span></span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if our theoretical stationary distribution satisfies the equation</span></span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>verification <span class="op">=</span> pi_theoretical <span class="op">@</span> P</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a>difference <span class="op">=</span> np.<span class="bu">abs</span>(pi_theoretical <span class="op">-</span> verification)</span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> ax2.bar(<span class="bu">range</span>(<span class="bu">len</span>(active_nodes)), [pi_theoretical[i] <span class="cf">for</span> i <span class="kw">in</span> active_nodes],</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.6</span>, label<span class="op">=</span><span class="st">'Theoretical π'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>ax2.bar(<span class="bu">range</span>(<span class="bu">len</span>(active_nodes)), [verification[i] <span class="cf">for</span> i <span class="kw">in</span> active_nodes],</span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span><span class="fl">0.6</span>, label<span class="op">=</span><span class="st">'π × P'</span>, color<span class="op">=</span><span class="st">'red'</span>, width<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">"Verification: π = π × P"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"Node"</span>)</span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Probability"</span>)</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a>ax2.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(active_nodes)))</span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a>ax2.set_xticklabels([<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> active_nodes])</span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a>ax2.legend()</span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Show the actual stationary probabilities</span></span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a>sorted_nodes <span class="op">=</span> <span class="bu">sorted</span>(active_nodes, key<span class="op">=</span><span class="kw">lambda</span> x: pi_theoretical[x], reverse<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a>sorted_probs <span class="op">=</span> [pi_theoretical[i] <span class="cf">for</span> i <span class="kw">in</span> sorted_nodes]</span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a>sorted_degrees <span class="op">=</span> [degrees[i] <span class="cf">for</span> i <span class="kw">in</span> sorted_nodes]</span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> ax3.bar(<span class="bu">range</span>(<span class="bu">len</span>(sorted_nodes)), sorted_probs, color<span class="op">=</span><span class="st">'green'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a>ax3.set_title(<span class="st">"Stationary Distribution</span><span class="ch">\n</span><span class="st">(Sorted by Probability)"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">"Node (sorted)"</span>)</span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">"Stationary Probability"</span>)</span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a>ax3.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(sorted_nodes)))</span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a>ax3.set_xticklabels([<span class="ss">f'</span><span class="sc">{</span>node<span class="sc">}</span><span class="ch">\n</span><span class="ss">(k=</span><span class="sc">{</span>degrees[node]<span class="sc">}</span><span class="ss">)'</span> <span class="cf">for</span> node <span class="kw">in</span> sorted_nodes], rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a><span class="co"># Add probability labels</span></span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bar, prob <span class="kw">in</span> <span class="bu">zip</span>(bars, sorted_probs):</span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a>    ax3.text(bar.get_x() <span class="op">+</span> bar.get_width()<span class="op">/</span><span class="dv">2</span>, bar.get_height() <span class="op">+</span> <span class="fl">0.005</span>,</span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a>             <span class="ss">f'</span><span class="sc">{</span>prob<span class="sc">:.3f}</span><span class="ss">'</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Stationary Distribution Analysis:"</span>)</span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">40</span>)</span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> sorted_nodes:</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Node </span><span class="sc">{</span>node<span class="sc">}</span><span class="ss">: degree = </span><span class="sc">{</span>degrees[node]<span class="sc">}</span><span class="ss">, π = </span><span class="sc">{</span>pi_theoretical[node]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Verification (max error): </span><span class="sc">{</span><span class="bu">max</span>(difference)<span class="sc">:.2e}</span><span class="ss">"</span>)</span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✓ The theoretical stationary distribution satisfies π = πP!"</span>)</span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a>**Key insights:**</span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Proportionality**: Stationary probability ∝ node degree</span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**High-degree nodes**: Visited more frequently in the long run</span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mathematical verification**: π = πP confirms our calculation is correct</span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Network structure matters**: Well-connected nodes become "probability sinks"</span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a>This means the probability of being at node $j$ in the long run is proportional to the degree of node $j$. The normalization ensures that the sum of all probabilities is 1, i.e., $\sum_{j=1}^N \pi_j = 1$.</span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a><span class="fu">## Spectral Analysis and Mixing Time</span></span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>The convergence speed to the stationary distribution is determined by the eigenvalues of the transition matrix. We can decompose the transition matrix using spectral analysis.</span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a>Since $\mathbf{P}$ is not symmetric, we use a transformation:</span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>\mathbf{P} = \mathbf{D}^{-1} \mathbf{A} = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}</span>
+<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a>where $\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}$ is the normalized adjacency matrix.</span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a>The advantage is that $\overline{\mathbf{A}}$ is diagonalizable: $\overline{\mathbf{A}} = \mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^T$. Using this, we can compute $\mathbf{P}^t$:</span>
+<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a>\mathbf{P}^t = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T</span>
+<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a>where $\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}$ and $\mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}$.</span>
+<span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a>The **mixing time** $t_{\text{mix}}$ represents how quickly a random walk reaches its stationary distribution:</span>
+<span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a>t_{\text{mix}} = \min<span class="sc">\{</span>t : \max_{\mathbf{x}(0)} <span class="sc">\|</span>\mathbf{x}(t) - \boldsymbol{\pi}<span class="sc">\|</span>_{1} \leq \epsilon<span class="sc">\}</span></span>
+<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a>The mixing time is closely related to the second largest eigenvalue $\lambda_2$ of the normalized adjacency matrix:</span>
+<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a>t_{\text{mix}} &lt; \frac{1}{1-\lambda_2} \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right)</span>
+<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a>More commonly, it is expressed using the second smallest eigenvalue $\mu$ of the normalized Laplacian matrix:</span>
+<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a>t_{\text{mix}} \leq \frac{1}{\mu}</span>
+<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a>where $\mu = 1-\lambda_2$.</span>
+<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a><span class="fu">## Community Detection through Random Walks</span></span>
+<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a>Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network's modular structure.</span>
+<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Intuitive Example: University Social Networks"}</span>
+<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a>Imagine a random walker exploring friendships at a university:</span>
+<span id="cb3-504"><a href="#cb3-504" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a>**Short-term behavior (first few steps)**:</span>
+<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Start with a Computer Science student</span>
+<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Walker mostly visits other CS students (same classes, shared interests)</span>
+<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Occasionally ventures to Math or Engineering students</span>
+<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a>**Medium-term behavior**:</span>
+<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Walker starts exploring other departments</span>
+<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Still biased toward technical fields due to connections</span>
+<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a>**Long-term behavior**:</span>
+<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Eventually visits all departments proportional to their size</span>
+<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lost all memory of starting point</span>
+<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a>**Key insight**: The time it takes to "escape" the CS community tells us how tightly knit that community is! Tight-knit communities have longer escape times.</span>
+<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a>This is exactly how random walk-based community detection works - we look at where walkers get "trapped" in the short term.</span>
+<span id="cb3-521"><a href="#cb3-521" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a>The position of the walker at intermediate time steps (before convergence) reveals the community structure, as walkers spend more time exploring their local neighborhood before venturing into other communities.</span>
+<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-525"><a href="#cb3-525" aria-hidden="true" tabindex="-1"></a>An important observation is that the walker spends more time in the community that it started from and then diffuses to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.</span>
+<span id="cb3-526"><a href="#cb3-526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-527"><a href="#cb3-527" aria-hidden="true" tabindex="-1"></a><span class="fu">## Connections to Centrality Measures</span></span>
+<span id="cb3-528"><a href="#cb3-528" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-529"><a href="#cb3-529" aria-hidden="true" tabindex="-1"></a><span class="fu">### Random Walk Interpretation of Modularity</span></span>
+<span id="cb3-530"><a href="#cb3-530" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-531"><a href="#cb3-531" aria-hidden="true" tabindex="-1"></a>Modularity can be interpreted through random walks:</span>
+<span id="cb3-532"><a href="#cb3-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-533"><a href="#cb3-533" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-534"><a href="#cb3-534" aria-hidden="true" tabindex="-1"></a>Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)</span>
+<span id="cb3-535"><a href="#cb3-535" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-536"><a href="#cb3-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-537"><a href="#cb3-537" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb3-538"><a href="#cb3-538" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\pi_i = \frac{d_i}{2m}$ is the stationary distribution of the random walk</span>
+<span id="cb3-539"><a href="#cb3-539" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$P_{ij}$ is the transition probability between nodes $i$ and $j$</span>
+<span id="cb3-540"><a href="#cb3-540" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\delta(c_i, c_j)$ is 1 if nodes $i$ and $j$ are in the same community, 0 otherwise</span>
+<span id="cb3-541"><a href="#cb3-541" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-542"><a href="#cb3-542" aria-hidden="true" tabindex="-1"></a>The expression suggests that:</span>
+<span id="cb3-543"><a href="#cb3-543" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The first term, $\pi_i P_{ij} \delta(c_i, c_j)$, represents the probability that a walker is at node $i$ and moves to node $j$ within the same community **by one step**.</span>
+<span id="cb3-544"><a href="#cb3-544" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The second term, $\pi_i \pi_j$, represents the probability that a walker is at node $i$ and moves to another node $j$ within the same community **after long steps**.</span>
+<span id="cb3-545"><a href="#cb3-545" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-546"><a href="#cb3-546" aria-hidden="true" tabindex="-1"></a>High modularity indicates walkers are more likely to stay within communities in the short term than in the long term.</span>
+<span id="cb3-547"><a href="#cb3-547" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-548"><a href="#cb3-548" aria-hidden="true" tabindex="-1"></a><span class="fu">### PageRank as Random Walk with Teleportation</span></span>
+<span id="cb3-549"><a href="#cb3-549" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-550"><a href="#cb3-550" aria-hidden="true" tabindex="-1"></a>PageRank represents a random walk where:</span>
+<span id="cb3-551"><a href="#cb3-551" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>With probability $(1-\beta)$: follow a link to the next node</span>
+<span id="cb3-552"><a href="#cb3-552" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>With probability $\beta$: teleport to a random node</span>
+<span id="cb3-553"><a href="#cb3-553" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-554"><a href="#cb3-554" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-555"><a href="#cb3-555" aria-hidden="true" tabindex="-1"></a>c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}</span>
+<span id="cb3-556"><a href="#cb3-556" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-557"><a href="#cb3-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-558"><a href="#cb3-558" aria-hidden="true" tabindex="-1"></a>Where:</span>
+<span id="cb3-559"><a href="#cb3-559" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$c_i$ is the PageRank of node $i$</span>
+<span id="cb3-560"><a href="#cb3-560" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$P_{ji}$ is the transition probability from node $j$ to node $i$</span>
+<span id="cb3-561"><a href="#cb3-561" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta$ is the teleportation probability</span>
+<span id="cb3-562"><a href="#cb3-562" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$N$ is the total number of nodes</span>
+<span id="cb3-563"><a href="#cb3-563" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-564"><a href="#cb3-564" aria-hidden="true" tabindex="-1"></a>The PageRank values are the stationary distribution of this modified random walk, representing the long-term probability of finding the walker at each node.</span>
+<span id="cb3-565"><a href="#cb3-565" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-566"><a href="#cb3-566" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb3-567"><a href="#cb3-567" aria-hidden="true" tabindex="-1"></a>This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.</span>
+<span id="cb3-568"><a href="#cb3-568" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-569"><a href="#cb3-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-570"><a href="#cb3-570" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
+<span id="cb3-571"><a href="#cb3-571" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-572"><a href="#cb3-572" aria-hidden="true" tabindex="-1"></a>Random walks provide a unified framework for understanding networks through the lens of stochastic processes. Key insights include:</span>
+<span id="cb3-573"><a href="#cb3-573" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-574"><a href="#cb3-574" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Stationary distributions** connect to degree centrality naturally</span>
+<span id="cb3-575"><a href="#cb3-575" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Temporal dynamics** reveal community structure through short-term vs. long-term behavior</span>
+<span id="cb3-576"><a href="#cb3-576" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Spectral properties** determine convergence rates and mixing times</span>
+<span id="cb3-577"><a href="#cb3-577" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Applications** include new interpretations of modularity and PageRank</span>
+<span id="cb3-578"><a href="#cb3-578" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Mathematical foundation** links to Markov chains and linear algebra</span>
+<span id="cb3-579"><a href="#cb3-579" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-580"><a href="#cb3-580" aria-hidden="true" tabindex="-1"></a>This theoretical foundation prepares us for implementing and applying random walks computationally in the next section, where we'll see how these concepts translate into practical algorithms and network analysis tools.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
