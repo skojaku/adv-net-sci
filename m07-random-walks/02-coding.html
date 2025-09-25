@@ -812,7 +812,7 @@ window.Quarto = {
 <section id="setting-up-simple-graph" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-simple-graph">Setting Up: Simple Graph</h3>
 <p>We’ll start by implementing random walks on a simple graph of five nodes.</p>
-<div id="f2bd7174" class="cell">
+<div id="18b7c736" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -828,7 +828,7 @@ window.Quarto = {
 <p>A random walk is characterized by the transition probabilities between nodes:</p>
 <p><span class="math display">P_{ij} = \frac{A_{ij}}{k_i}</span></p>
 <p>Let’s compute and visualize the transition probability matrix <span class="math inline">\mathbf{P}</span>:</p>
-<div id="01d69b06" class="cell">
+<div id="2b660923" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -848,10 +848,10 @@ window.Quarto = {
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># or even more efficiently</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="a9ac8799" class="cell">
+<div id="25992203" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="ba7f4203" class="cell">
+<div id="ffff712e" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -863,19 +863,19 @@ window.Quarto = {
 <section id="simulating-random-walk-steps" class="level3">
 <h3 class="anchored" data-anchor-id="simulating-random-walk-steps">Simulating Random Walk Steps</h3>
 <p>Now let’s simulate a random walk step by step. We represent the position of the walker using a vector <span class="math inline">\mathbf{x}</span> with five elements, where we mark the current node with <code>1</code> and others as <code>0</code>:</p>
-<div id="c88c0fba" class="cell">
+<div id="42921b26" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial position of the walker:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This vector representation lets us compute transition probabilities to other nodes:</p>
 <p><span class="math display">\mathbf{x} \mathbf{P}</span></p>
-<div id="05880063" class="cell">
+<div id="f01626ca" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probabilities from current position:</span><span class="ch">\n</span><span class="st">"</span>, probs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then draw the next node based on these probabilities:</p>
-<div id="9cf544c8" class="cell">
+<div id="a0981a1d" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>x[:] <span class="op">=</span> <span class="dv">0</span> <span class="co"># zero out the vector</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x[next_node] <span class="op">=</span> <span class="dv">1</span> <span class="co"># set the next node to 1</span></span>
@@ -885,7 +885,7 @@ window.Quarto = {
 <section id="exercise-01" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-01">Exercise 01</h3>
 <p>Write the following function to simulate the random walk for a given number of steps and return the <span class="math inline">x</span> for each step:</p>
-<div id="c7edd9d4" class="cell">
+<div id="178adb8d" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
@@ -929,14 +929,14 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="computing-expected-positions">Computing Expected Positions</h3>
 <p>What is the expected position of the walker after multiple steps? For the first step from initial position <span class="math inline">\mathbf{x}(0)</span>:</p>
 <p><span class="math display">\mathbb{E}[\mathbf{x}(1)] = \mathbf{x}(0) \mathbf{P}</span></p>
-<div id="77a73334" class="cell">
+<div id="1dd091d5" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x_1 <span class="op">=</span> x_0 <span class="op">@</span> P</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after one step:</span><span class="ch">\n</span><span class="st">"</span>, x_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For the second step:</p>
 <p><span class="math display">\mathbb{E}[\mathbf{x}(2)] = \mathbf{x}(0) \mathbf{P}^2</span></p>
-<div id="8063a3bc" class="cell">
+<div id="bbd0b164" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after two steps:</span><span class="ch">\n</span><span class="st">"</span>, x_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -946,7 +946,7 @@ window.Quarto = {
 <section id="exercise-02" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-02">Exercise 02</h3>
 <p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span>:</p>
-<div id="8eaefe78" class="cell">
+<div id="b1cc2913" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
@@ -977,7 +977,7 @@ window.Quarto = {
 <section id="exercise-03" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-03">Exercise 03</h3>
 <p>Plot each element of <span class="math inline">\mathbf{x}(t)</span> as a function of <span class="math inline">t</span> for <span class="math inline">t=0,1,2,\ldots, 100</span>. Try different initial positions and compare the results!</p>
-<div id="80aaf79e" class="cell">
+<div id="4710ee65" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1028,7 +1028,7 @@ window.Quarto = {
 <section id="practical-demonstration-with-real-networks" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="practical-demonstration-with-real-networks"><span class="header-section-number">1.4</span> Practical Demonstration with Real Networks</h2>
 <p>Let’s demonstrate random walks on a more complex network structure.</p>
-<div id="44b3e53c" class="cell">
+<div id="8426245b" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1046,7 +1046,7 @@ window.Quarto = {
 <section id="computing-stationary-distribution" class="level3">
 <h3 class="anchored" data-anchor-id="computing-stationary-distribution">Computing Stationary Distribution</h3>
 <p>The transition probability matrix <span class="math inline">\mathbf{P}</span> is:</p>
-<div id="9feedda1" class="cell">
+<div id="4bca8752" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
@@ -1055,7 +1055,7 @@ window.Quarto = {
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> Dinv <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s compute the stationary distribution using the power method:</p>
-<div id="bee54270" class="cell">
+<div id="048aa8c1" class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1082,7 +1082,7 @@ window.Quarto = {
 </div>
 <p>We observe three key features: 1. The distribution oscillates with decaying amplitude before converging 2. Nodes of the same degree converge to the same stationary probability 3. Nodes with higher degree have higher stationary probability</p>
 <p>Let’s verify this by comparing with the theoretical stationary distribution:</p>
-<div id="f3dbbdcb" class="cell">
+<div id="e8601e9d" class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>n_edges <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
@@ -1098,7 +1098,7 @@ window.Quarto = {
 <section id="community-structure-detection" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="community-structure-detection"><span class="header-section-number">1.5</span> Community Structure Detection</h2>
 <p>Random walks can capture community structure. Let’s explore this with a ring of cliques:</p>
-<div id="f882dff0" class="cell">
+<div id="c32d0d32" class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1118,7 +1118,7 @@ window.Quarto = {
 <section id="visualizing-random-walk-dynamics" class="level3">
 <h3 class="anchored" data-anchor-id="visualizing-random-walk-dynamics">Visualizing Random Walk Dynamics</h3>
 <p>Let’s compute the expected position over time and visualize how the walker explores communities:</p>
-<div id="8364322d" class="cell">
+<div id="62f4b6d0" class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the adjacency matrix and degree</span></span>
@@ -1128,7 +1128,7 @@ window.Quarto = {
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the transition matrix efficiently using scipy.sparse</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> sparse.diags(<span class="dv">1</span> <span class="op">/</span> k) <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="ef13977d" class="cell">
+<div id="fa979d82" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the expected position from node 2 over 300 steps</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>x_t <span class="op">=</span> np.zeros(g.vcount())</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>x_t[<span class="dv">2</span>] <span class="op">=</span> <span class="dv">1</span></span>
@@ -1138,7 +1138,7 @@ window.Quarto = {
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    x_list.append(x_t)</span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> np.array(x_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="bc27befb" class="cell">
+<div id="d2171d6b" class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the network at different time steps</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette(<span class="st">"viridis"</span>, as_cmap<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1162,7 +1162,7 @@ window.Quarto = {
 <li><p>Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability <span class="math inline">0.05</span> and intra-community edge probability <span class="math inline">0.2</span>. Then, compute the expected position of the walker starting from node zero after <span class="math inline">x</span> steps. Plot the results for <span class="math inline">x = 0, 5, 10, 1000</span>.</p></li>
 <li><p>Increase the inter-community edge probability to <span class="math inline">0.15</span> and repeat the simulation. Compare the results with the previous simulation.</p></li>
 </ol>
-<div id="554eba91" class="cell">
+<div id="ea1a7526" class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solution for Exercise 04</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1250,7 +1250,7 @@ window.Quarto = {
 <section id="computing-eigenvalues-and-mixing-time" class="level3">
 <h3 class="anchored" data-anchor-id="computing-eigenvalues-and-mixing-time">Computing Eigenvalues and Mixing Time</h3>
 <p>Let’s demonstrate the spectral analysis of random walks:</p>
-<div id="c5ea77d0" class="cell">
+<div id="46158e5d" class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the two-clique network from before</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> g.get_adjacency_sparse()</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A_norm.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).flatten()</span>
@@ -1259,11 +1259,11 @@ window.Quarto = {
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> Dinv_sqrt <span class="op">@</span> A_norm <span class="op">@</span> Dinv_sqrt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="217d7709" class="cell">
+<div id="951f3bae" class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute eigenvalues and eigenvectors</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="97553392" class="cell">
+<div id="b7fea348" class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display eigenvalues</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvalue"</span>: evals</span>
@@ -1273,7 +1273,7 @@ window.Quarto = {
 </section>
 <section id="relaxation-time" class="level3">
 <h3 class="anchored" data-anchor-id="relaxation-time">Relaxation Time</h3>
-<div id="078bda1f" class="cell">
+<div id="9c669a1c" class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>lambda_2 <span class="op">=</span> <span class="op">-</span>np.sort(<span class="op">-</span>evals)[<span class="dv">1</span>]  <span class="co"># Second largest eigenvalue</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> lambda_2)  <span class="co"># Relaxation time</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The second largest eigenvalue is </span><span class="sc">{</span>lambda_2<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
@@ -1283,7 +1283,7 @@ window.Quarto = {
 <section id="verifying-spectral-decomposition" class="level3">
 <h3 class="anchored" data-anchor-id="verifying-spectral-decomposition">Verifying Spectral Decomposition</h3>
 <p>Let’s verify we can compute multi-step transitions using eigenvalues:</p>
-<div id="79f91fc5" class="cell">
+<div id="e090fa5f" class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.zeros(g.vcount())</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>x_0[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
@@ -1311,7 +1311,7 @@ window.Quarto = {
 <section id="random-walk-centrality" class="level3">
 <h3 class="anchored" data-anchor-id="random-walk-centrality">Random Walk Centrality</h3>
 <p>The stationary distribution of a random walk gives us a natural centrality measure:</p>
-<div id="a44d64fe" class="cell">
+<div id="d1d5d328" class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk_centrality(graph):</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute random walk centrality (stationary distribution)."""</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> graph.get_adjacency_sparse()</span>
@@ -1338,7 +1338,7 @@ window.Quarto = {
 <section id="detecting-communities-via-random-walk-modularity" class="level3">
 <h3 class="anchored" data-anchor-id="detecting-communities-via-random-walk-modularity">Detecting Communities via Random Walk Modularity</h3>
 <p>We can measure modularity using random walk interpretation:</p>
-<div id="67562e81" class="cell">
+<div id="193e6682" class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk_modularity(graph, communities):</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute modularity using random walk interpretation."""</span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> graph.get_adjacency_sparse().toarray()</span>

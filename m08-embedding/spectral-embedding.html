@@ -825,7 +825,7 @@ window.Quarto = {
 <section id="an-example-for-the-spectral-embedding" class="level3">
 <h3 class="anchored" data-anchor-id="an-example-for-the-spectral-embedding">An example for the spectral embedding</h3>
 <p>Let us demonstrate the results with a simple example as follows.</p>
-<div id="78521944" class="cell">
+<div id="874daed9" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -840,7 +840,7 @@ window.Quarto = {
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette()</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nx.draw(G, with_labels<span class="op">=</span><span class="va">False</span>, node_color<span class="op">=</span>[cmap[i] <span class="cf">for</span> i <span class="kw">in</span> labels])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="835079fc" class="cell">
+<div id="ba823f79" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the spectral decomposition</span></span>
@@ -872,7 +872,7 @@ Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
 </span></p>
 <p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
 <p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix.</p>
-<div id="a02dec17" class="cell">
+<div id="229b57fd" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
@@ -951,7 +951,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <section id="an-example-for-the-laplacian-eigenmap" class="level3">
 <h3 class="anchored" data-anchor-id="an-example-for-the-laplacian-eigenmap">An example for the Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="19a8c3c8" class="cell">
+<div id="5c7c31b1" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> np.diag(np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>))</span>
@@ -965,7 +965,7 @@ J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>eigvecs <span class="op">=</span> eigvecs[:, sorted_indices]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The eigenvectors corresponding to the <span class="math inline">d</span> smallest eigenvalues are:</p>
-<div id="5f357862" class="cell">
+<div id="88795336" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
