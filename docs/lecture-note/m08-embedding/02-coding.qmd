@@ -1,3 +1,10 @@
+---
+title: "Network Embedding Concepts"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
+
 # Embedding Methods: Implementation and Practice
 
 In this section, we implement the embedding methods discussed in the [concepts section](./01-concepts.md).
@@ -9,7 +16,7 @@ In this section, we implement the embedding methods discussed in the [concepts s
 Let us demonstrate spectral embedding with a simple example using the karate club network.
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 import numpy as np
 import networkx as nx
@@ -25,7 +32,7 @@ nx.draw(G, with_labels=False, node_color=[cmap[i] for i in labels])
 ```
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 # Compute the spectral decomposition
 eigvals, eigvecs = np.linalg.eig(A)
@@ -54,7 +61,7 @@ The second eigenvector captures the community structure of the network, clearly 
 We can use the modularity matrix to generate a low-dimensional embedding of the network.
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 deg = np.sum(A, axis=1)
 m = np.sum(deg) / 2
@@ -80,7 +87,7 @@ plt.show()
 
 Let us first compute the Laplacian matrix and its eigenvectors.
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 D = np.diag(np.sum(A, axis=1))
 L = D - A
@@ -95,7 +102,7 @@ eigvecs = eigvecs[:, sorted_indices]
 
 The eigenvectors corresponding to the $d$ smallest eigenvalues are:
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 fig, ax = plt.subplots(figsize=(7, 5))
 sns.scatterplot(x = eigvecs[:, 0], y = eigvecs[:, 1], hue=labels, ax=ax)
@@ -151,7 +158,7 @@ model.most_similar(positive=['woman', "king"], negative=['man'], topn=5)
 The last example is to visualize the word embeddings.
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -214,7 +221,7 @@ We will use the karate club network as an example.
 
 **Load the data**
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 import igraph
 import networkx as nx
@@ -303,7 +310,7 @@ embedding = np.array(embedding)
 
 **Print the first 3 nodes**
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 embedding[:3]
 ```
@@ -311,7 +318,7 @@ embedding[:3]
 Let's visualize the node embeddings using UMAP.
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 import umap
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook
@@ -484,7 +491,7 @@ embedding = np.array(embedding)
 Let's visualize the node embeddings from node2vec.
 
 ```{python}
-:tags: [hide-input]
+#| echo: false
 
 reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, metric="cosine")
 xy = reducer.fit_transform(embedding)
