@@ -134,51 +134,48 @@ word2vec is a neural network model that learns word embeddings in a continuous v
 
 ### How word2vec Works
 
-"You shall know a word by the company it keeps" [@church1988word] is a famous quote in linguistics. It means that you can understand the meaning of a word by looking at the words that appear in the same context. word2vec operates on the same principle.
+word2vec learns word meanings from context, following the linguistic principle: "You shall know a word by the company it keeps" [@church1988word].
 
-word2vec identifies a word's context by examining the words within a fixed window around it. For example, in the sentence:
+**The Core Idea**: Given a target word, predict its surrounding context words within a fixed window. For example, in:
 
 > The quick brown fox jumps over a lazy dog
 
-The context of the word *fox* includes *quick*, *brown*, *jumps*, *over*, and *lazy*. word2vec is trained to predict which words are likely to appear as the context of an input word.
+The context of *fox* (with window size 2) includes: *quick*, *brown*, *jumps*, *over*.
 
-```{note}
-There are two main architectures for word2vec:
-1. **Continuous Bag of Words (CBOW)**: Predicts the target word (center word) from the context words (surrounding words).
-2. **Skip-gram**: Predicts the context words (surrounding words) from the target word (center word).
-```
+**Two Training Approaches**:
 
-word2vec is a neural network model that looks like a bow tie. It has two layers of the vocabulary size coupled with a much smaller hidden layer.
+- **Skip-gram**: Given a target word → predict context words (we'll use this)
+- **CBOW**: Given context words → predict target word
+
+**Network Architecture**: word2vec uses a simple 3-layer neural network:
 
 ![](../figs/word2vec.png)
 
-- **Input layer**: The input layer consists of $N$ neurons, where $N$ is the size of the vocabulary (i.e., the number of unique words in the corpus). Each neuron corresponds to a unique word in the vocabulary. When a word is inputted, its corresponding neuron is activated and the other neurons are inhibited. Thus, the input layer is essentially a lookup mechanism that transforms the input word into a corresponding one-hot vector.
+- **Input layer** ($N$ neurons): One-hot encoding of the target word
+- **Hidden layer** ($d$ neurons, $d \ll N$): The learned word embedding
+- **Output layer** ($N$ neurons): Probability distribution over context words (via softmax)
 
-- **Output layer**: The output layer also consists of $N$ neurons, each corresponding to a unique word in the vocabulary. Unlike the input layer, multiple neurons can be activated for a single input. The strength of the activation of each neuron (with a normalization by the softmax function) represents the probability of the corresponding word being the input word's context.
+The hidden layer activations become the word embeddings—dense, low-dimensional vectors that capture semantic relationships.
 
-- **Hidden layer**: The hidden layer is much smaller than the input and output layers. Multiple neurons in the hidden layer can be activated for a single input, and this activation pattern represents the word's *embedding*.
+### Key Technical Components
 
-We can consider word2vec as a *dimensionality reduction* technique that reduces the dimensionality of the input layer to the hidden layer based on the co-occurrence of words within a short distance. The distance is named the *window size*, which is a user-defined hyperparameter.
+#### The Computational Challenge
 
-### Key Technical Components of word2vec
-
-#### Skip-gram Model
-
-The skip-gram model trains word2vec by predicting context words given a target word. For example, given the sentence "The quick brown fox jumps over the lazy dog", in the skip-gram model, given the target word "fox", the model will try to predict the context words "quick", "brown", "jumps", and "over".
-
-#### Hierarchical Softmax
-
-The goal of word2vec is to predict context words given a target word. For example, if our target word is $w_t$ and our context word is $w_c$, we want to find the probability of $w_c$ given $w_t$. This probability is calculated using the softmax function:
+To predict context word $w_c$ given target word $w_t$, we compute:
 
 $$
-P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{u}_{w_t})}
+P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{v}_{w_t})}
 $$
 
-Here, $\mathbf{v}_w$ and $\mathbf{u}_w$ represent the vector for word $w$ as context and target respectively, and $V$ is the entire vocabulary. The tricky part is the denominator, which requires summing over all words in the vocabulary. If we have a large vocabulary, this can be very computationally expensive. Imagine having to compute 100,000 exponentials and their sum for each training example if our vocabulary size is 100,000!
+**The problem**: The denominator sums over all vocabulary words (e.g., 100,000+ terms), making training prohibitively slow.
 
-Hierarchical softmax helps us solve this problem. Instead of calculating the probability directly, it organizes the vocabulary into a binary tree, where each word is a leaf node. To find the probability of a word, we calculate the product of probabilities along the path from the root to the leaf node. This method significantly reduces the computational complexity. Instead of being proportional to the vocabulary size, it becomes proportional to the logarithm of the vocabulary size. This makes it much more efficient, especially for large vocabularies.
+#### Two Solutions
+
+**Hierarchical Softmax**: Organizes vocabulary as a binary tree with words at leaves. Computing probability becomes traversing root-to-leaf paths, reducing complexity from $O(|V|)$ to $O(\log |V|)$.
 
 ![](https://lh5.googleusercontent.com/proxy/_omrC8G6quTl2SGarwFe57qzbIs-PtGkEA5yODFE5I0Ny2IHGiJwsUhMrcuUqg5o-R2nD9hkgMuZsQJKoCggP29zXtj-Vz-X8BE)
+
+**Negative Sampling**: Instead of normalizing over all words, sample a few "negative" (non-context) words. Contrast the target's true context with these random words. This approximates the full softmax much more efficiently.
 
 ### What's Special About word2vec?
 
@@ -207,38 +204,35 @@ DeepWalk typically uses the skip-gram model with hierarchical softmax for effici
 
 ### node2vec
 
-node2vec is a sibling of DeepWalk proposed by [@grover2016node2vec]. Both use word2vec trained on random walks on networks. However, the following two components make them very different:
-
-#### Biased Random Walk
-
-node2vec uses biased random walks that can move in different directions. The biased walk is parameterized by two parameters, $p$ and $q$:
+node2vec [@grover2016node2vec] extends DeepWalk with **biased random walks** controlled by two parameters:
 
 $$
 P(v_{t+1} = x | v_t = v, v_{t-1} = t) \propto
 \begin{cases}
-\frac{1}{p} & \text{if } d(v,t) = 0 \\
-1 & \text{if } d(v,t) = 1 \\
-\frac{1}{q} & \text{if } d(v,t) = 2 \\
+\frac{1}{p} & \text{if } d(t,x) = 0 \text{ (return to previous)} \\
+1 & \text{if } d(t,x) = 1 \text{ (close neighbor)} \\
+\frac{1}{q} & \text{if } d(t,x) = 2 \text{ (explore further)} \\
 \end{cases}
 $$
 
-where $d(v,x)$ is the shortest path distance between node $v$ and $x$. A smaller $p$ leads to more bias towards the previous node, $v_{t-1} = t$. A smaller $q$ leads to more bias towards the nodes that are further away from the previous node, $v_{t-1} = t$.
+where $d(t,x)$ is the shortest path distance from the previous node $t$ to candidate node $x$.
 
-By adjusting the parameters $p$ and $q$, we can influence the random walk to behave more like either breadth-first sampling (BFS) or depth-first sampling (DFS).
+**Controlling Exploration**:
 
-- **Breadth-First Sampling (BFS)**: This type of sampling explores all the neighbors of a node before moving on to the next level of neighbors. It is useful for capturing community structures within the graph. When we set the parameters to favor BFS, the resulting embeddings will reflect these community structures.
+- Low $p$ → return bias (local revisiting)
+- Low $q$ → outward bias (exploration)
+- High $q$ → inward bias (stay local)
 
-- **Depth-First Sampling (DFS)**: This type of sampling goes deep into the graph, exploring as far as possible along each branch before backtracking. It is useful for capturing structural equivalence, where nodes that have similar roles in the graph (even if they are not directly connected) are represented similarly. When we set the parameters to favor DFS, the resulting embeddings will reflect these structural equivalences.
+**Two Exploration Strategies**:
 
 ![](https://www.researchgate.net/publication/354654762/figure/fig3/AS:1069013035655173@1631883977008/A-biased-random-walk-procedure-of-node2vec-B-BFS-and-DFS-search-strategies-from-node-u.png)
 
-The embeddings generated by node2vec can capture different aspects of the graph depending on the sampling strategy used. With BFS, we capture community structures, and with DFS, we capture structural equivalence.
+- **BFS-like** (low $q$): Explore immediate neighborhoods → captures **community structure**
+- **DFS-like** (high $q$): Explore deep paths → captures **structural roles**
 
 ![](https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png)
 
-#### Negative Sampling
-
-node2vec uses negative sampling instead of hierarchical softmax. This difference appears to be minor, but it has significant consequences on the characteristics of the embeddings. This is beyond the scope of this lecture, but you can refer to [@kojaku2021neurips] and [@dyer2014notes] for more details.
+**Technical Note**: node2vec uses **negative sampling** instead of hierarchical softmax, which affects embedding characteristics [@kojaku2021neurips; @dyer2014notes].
 
 ### LINE
 
@@ -246,32 +240,32 @@ LINE [@tang2015line] is another pioneering work to learn node embeddings by dire
 
 ## Comparing Spectral and Neural Embedding Approaches
 
-We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects.
+Both approaches have complementary strengths:
 
 ### Analytical Tractability
 
-**Spectral methods** are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized Laplacian matrices are shown to be optimal for detecting communities in the stochastic block model [@nadakuditi2012graph].
+**Spectral methods**: Fully analyzable using linear algebra. We can prove optimality—e.g., adjacency and Laplacian spectral embeddings are optimal for community detection in stochastic block models [@nadakuditi2012graph].
 
-**Neural embedding methods** are less analytically tractable. But it is still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under very specific conditions [@qiu2018network; @kojaku2023network]. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact optimal embedding methods for community detection for the stochastic block model.
+**Neural methods**: Less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2023network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model.
 
-### Scalability and Performance
+### Scalability
 
-A key limitation of **spectral embedding** is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit-learn package as `TruncatedSVD`), they might be unstable depending on the spectrum distribution of the matrix to be decomposed.
+**Spectral methods**: Computationally expensive (eigendecomposition scales poorly). Randomized algorithms like `TruncatedSVD` (scikit-learn) help, but can be numerically unstable depending on the eigenvalue spectrum.
 
-**Neural embedding methods** are often more stable and scalable, making them particularly suitable for large networks where computational efficiency is critical.
+**Neural methods**: More stable and scalable for large networks. Training via stochastic gradient descent handles millions of nodes efficiently.
 
-### Flexibility and Extensions
+### Flexibility
 
-**Neural embeddings** are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings [@nickel2017poincare] for embedding networks in hyperbolic space.
+**Neural methods**: Highly adaptable. Can modify loss functions to capture different notions of proximity. Example: Poincaré embeddings [@nickel2017poincare] use hyperbolic geometry to better represent hierarchical structures.
 
 ![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)
 
-This flexibility extends to implementation choices and software options. There are various software packages for network embeddings, though due to technical complexity, some of them do not faithfully implement the algorithms in the paper. We provide a list of software packages for network embeddings below:
+**Implementation Note**: Many libraries take shortcuts that deviate from original papers:
 
-- [fastnode2vec](https://github.com/louisabraham/fastnode2vec). This is a very fast implementation of node2vec. However, it uses a uniform probability distribution for the negative sampling, which is different from the original node2vec paper that uses a different distribution. This leads to some degeneracy of the embedding quality in community detection tasks.
-- [pytorch-geometric](https://github.com/pyg-team/pytorch_geometric). This is a very popular package for graph neural networks. It also uses a uniform probability distribution for the negative sampling, potentially having the same issue as `fastnode2vec`.
-- [gnn-tools](https://github.com/skojaku/gnn-tools). This is a collection of my experiments on network embedding methods.
-- [My collection](https://github.com/skojaku/graphvec). This is a lighter version of the `gnn-tools` collection.
+- [fastnode2vec](https://github.com/louisabraham/fastnode2vec): Fast but uses uniform negative sampling (degrades quality)
+- [pytorch-geometric](https://github.com/pyg-team/pytorch_geometric): Popular GNN library with similar limitation
+- [gnn-tools](https://github.com/skojaku/gnn-tools): Experimental implementations
+- [graphvec](https://github.com/skojaku/graphvec): Lightweight embedding collection
 
 ## Exercises
 
