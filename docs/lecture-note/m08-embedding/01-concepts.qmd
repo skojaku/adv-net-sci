@@ -142,6 +142,14 @@ word2vec learns word meanings from context, following the linguistic principle: 
 
 The context of *fox* (with window size 2) includes: *quick*, *brown*, *jumps*, *over*.
 
+**Why This Works**: Words appearing in similar contexts get similar embeddings. Consider:
+
+- "The quick brown **fox** jumps over the fence"
+- "The quick brown **dog** runs over the fence"
+- "The **student** studies in the library"
+
+Both *fox* and *dog* appear with words like "quick," "brown," and "jumps/runs," so they'll have similar embeddings. But *student* appears in completely different contexts (like "studies," "library"), so its embedding will be far from *fox* and *dog*. This is how word2vec captures semantic similarity without explicit supervision.
+
 **Two Training Approaches**:
 
 - **Skip-gram**: Given a target word → predict context words (we'll use this)
