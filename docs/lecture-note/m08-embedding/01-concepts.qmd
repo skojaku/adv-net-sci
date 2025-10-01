@@ -191,7 +191,10 @@ This is the softmax function—it converts dot products into probabilities that 
 
 **Hierarchical Softmax**: Organizes vocabulary as a binary tree with words at leaves. Computing probability becomes traversing root-to-leaf paths, reducing complexity from $O(|V|)$ to $O(\log |V|)$.
 
-![](https://lh5.googleusercontent.com/proxy/_omrC8G6quTl2SGarwFe57qzbIs-PtGkEA5yODFE5I0Ny2IHGiJwsUhMrcuUqg5o-R2nD9hkgMuZsQJKoCggP29zXtj-Vz-X8BE)
+::: {#fig-hierarchical-softmax}
+![](https://building-babylon.net/wp-content/uploads/2017/07/hs4-1536x834.png)
+This figure is taken from [Hierarchical Softmax](https://building-babylon.net/2017/08/01/hierarchical-softmax/) by Building Babylon.
+:::
 
 **Negative Sampling**: Instead of normalizing over all words, sample a few "negative" (non-context) words. Contrast the target's true context with these random words. This approximates the full softmax much more efficiently.
 
@@ -203,7 +206,10 @@ Typically, 5-20 negative samples are enough. The model learns to distinguish tru
 
 With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.
 
+::: {#fig-word2vec-embedding}
 ![](https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg)
+This figure is taken from [Word2Vec](https://medium.com/@laura.wj.w/word2vec-207131259292) by Laura Wang.
+:::
 
 word2vec embeddings can capture semantic relationships, such as analogies (e.g., *man* is to *woman* as *king* is to *queen*) and can visualize relationships between concepts (e.g., countries and their capitals form parallel vectors in the embedding space).
 
@@ -266,12 +272,8 @@ where $d(t,x)$ is the shortest path distance from the previous node $t$ to candi
 
 LINE [@tang2015line] is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with $p=1$, $q=1$, and window size 1.
 
-## Comparing Spectral and Neural Embedding Approaches
-
-Both approaches have complementary strengths:
-
 ::: {.column-margin}
-**Analytical Tractability**: Spectral methods are fully analyzable using linear algebra. We can prove optimality—e.g., adjacency and Laplacian spectral embeddings are optimal for community detection in stochastic block models [@nadakuditi2012graph]. Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2023network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model.
+Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2024network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model [@kojaku2024network].
 :::
 
 ### Scalability
