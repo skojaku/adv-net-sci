@@ -7,9 +7,21 @@ execute:
 
 ## What is Network Embedding?
 
+
+::: {#fig-karate-to-embedding}
+
+![](https://transformerswsz.github.io/2022/09/09/DeepWalk%E8%A7%A3%E8%AF%BB/karate_to_embedding.jpg)
+
+This figure is taken from [DeepWalk: Online Learning of Social Representations](https://arxiv.org/abs/1403.6652).
+:::
+
 Networks are high-dimensional discrete data that can be difficult to analyze with traditional machine learning methods that assume continuous and smooth data. Network embedding is a technique to represent networks in low-dimensional continuous spaces, enabling us to apply standard machine learning algorithms.
 
 The goal of network embedding is to map each node in a network to a point in a low-dimensional space (typically $\mathbb{R}^d$ where $d \ll N$) while preserving important structural properties of the network.
+
+## Exercises
+
+- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
 
 ## Spectral Embedding
 
@@ -276,65 +288,92 @@ LINE [@tang2015line] is another pioneering work to learn node embeddings by dire
 Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2024network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model [@kojaku2024network].
 :::
 
-### Scalability
-
-**Spectral methods**: Computationally expensive (eigendecomposition scales poorly). Randomized algorithms like `TruncatedSVD` (scikit-learn) help, but can be numerically unstable depending on the eigenvalue spectrum.
-
-**Neural methods**: More stable and scalable for large networks. Training via stochastic gradient descent handles millions of nodes efficiently.
-
-### Flexibility
-
-**Neural methods**: Highly adaptable. Can modify loss functions to capture different notions of proximity. Example: Poincaré embeddings [@nickel2017poincare] use hyperbolic geometry to better represent hierarchical structures.
-
-![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)
-
-**Implementation Note**: Many libraries take shortcuts that deviate from original papers:
-
-- [fastnode2vec](https://github.com/louisabraham/fastnode2vec): Fast but uses uniform negative sampling (degrades quality)
-- [pytorch-geometric](https://github.com/pyg-team/pytorch_geometric): Popular GNN library with similar limitation
-- [gnn-tools](https://github.com/skojaku/gnn-tools): Experimental implementations
-- [graphvec](https://github.com/skojaku/graphvec): Lightweight embedding collection
 
 ## Hyperbolic Embeddings: Beyond Euclidean Space
 
 All the embedding methods we've discussed so far operate in Euclidean space (standard flat geometry). However, many real-world networks exhibit hierarchical structures and scale-free properties that are difficult to capture in Euclidean space. **Hyperbolic embeddings** offer a powerful alternative by embedding networks in hyperbolic geometry—a curved space with negative curvature.
 
+### The Popularity-Similarity Framework
+
+The foundation for hyperbolic network embeddings comes from a seminal discovery: **real networks grow by optimizing trade-offs between popularity and similarity** [@papadopoulos2012popularity]. When analyzing the evolution of the Internet, metabolic networks, and social networks, Papadopoulos et al. found that new connections are not formed simply by preferential attachment to popular nodes. Instead, nodes balance two factors:
+
+- **Popularity**: Connecting to well-established, highly connected nodes
+- **Similarity**: Connecting to nodes with similar characteristics or interests
+
+This popularity × similarity optimization has a remarkable geometric interpretation: it naturally emerges as **optimization in hyperbolic space**. In this framework:
+
+- Node **popularity** maps to radial position (birth time, with older = more central)
+- Node **similarity** maps to angular distance on a circle
+- New connections form to nodes that are **hyperbolically closest**
+
+![](https://openmetric.org/assets/posts/popularity-similarity-in-networks/internet-routers.png)
+
+
+::: {.column-margin}
+In the popularity-similarity model, hyperbolic distance $x_{ij} \approx r_i + r_j + \ln(\theta_{ij}/2)$ combines popularity (radial coordinates $r$) and similarity (angular distance $\theta$). New nodes connect to the $m$ hyperbolically closest nodes.
+:::
+
+This framework elegantly explains why **preferential attachment emerges** as a phenomenon: it's not a primitive mechanism, but rather a consequence of local geometric optimization. The probability that a node of degree $k$ attracts a new link follows $\Pi(k) \propto k$, exactly as in preferential attachment—but now with crucial differences in which specific nodes get connected based on their similarity.
+
+::: {.column-margin}
+The popularity-similarity framework directly validates against real network evolution: the probability of new connections as a function of hyperbolic distance matches theoretical predictions for Internet, metabolic, and social networks, while pure preferential attachment is off by orders of magnitude [@papadopoulos2012popularity].
+:::
+
 ### Why Hyperbolic Space?
 
-Hyperbolic space has a unique property: its volume grows exponentially with radius, similar to how tree-like hierarchies grow. This makes it naturally suited for representing hierarchical networks with far fewer dimensions than Euclidean embeddings require.
+The study of hyperbolic geometry in complex networks emerged from foundational work showing that **networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath** [@krioukov2010hyperbolic]. Hyperbolic space has a unique property: its volume grows **exponentially** with radius, similar to how tree-like hierarchies grow. This naturally captures key network properties:
 
-![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)
-
-::: {.column-margin}
-In hyperbolic space, distance grows exponentially with hierarchy depth, naturally capturing tree-like structures and power-law degree distributions common in real networks.
-:::
-
-### Poincaré Embeddings
-
-Poincaré embeddings [@nickel2017poincare] learn node representations in the Poincaré ball model of hyperbolic space. The method optimizes embeddings to preserve network distances using Riemannian optimization, placing hierarchically similar nodes close together while maintaining exponentially increasing distances across hierarchy levels.
-
-### Network Geometry and Generative Models
-
-Hyperbolic geometry also provides a foundation for network generative models. Networks can be viewed as having an underlying geometric structure where connection probability decreases with hyperbolic distance. This perspective has led to geometric network models that reproduce key properties of real networks:
-
-- **Scale-free degree distributions**: Power-law degree distributions emerge naturally from hyperbolic geometry
-- **Strong clustering**: Nodes form tightly connected communities
-- **Small-world property**: Short paths exist between most node pairs despite high clustering
+- **Scale-free degree distributions**: Power-law degrees emerge from negative curvature
+- **Strong clustering**: Nodes form tight communities based on metric proximity
+- **Small-world property**: Short paths exist despite high clustering
+- **Self-similarity and navigability**: Arise from underlying hyperbolic geometry [@serrano2008self; @boguna2009navigability]
 
 ::: {.column-margin}
-The hyperbolic geometric framework unifies network embedding and generative modeling, suggesting real networks may have latent hyperbolic geometry.
+The connection between hyperbolic geometry and network structure was established through a series of papers by Krioukov, Boguñá, and colleagues (2008-2010), showing that the statistical mechanics of complex networks maps directly to geometric properties of hyperbolic space.
 :::
 
-### Hyperbolic Embeddings for Random Hyperbolic Graphs
+### Mathematical Models of Hyperbolic Space
 
-Building on the geometric perspective, hyperbolic embeddings can be specifically designed for random hyperbolic graphs (also known as popularity-similarity models). These methods embed nodes such that the hyperbolic distances reflect the underlying geometric structure that generated the network.
+Hyperbolic space can be represented through different mathematical models, each with different computational properties:
 
-### Lorentzian Embeddings: Computational Efficiency
+**Poincaré Ball Model**: Points lie within the unit ball $\mathcal{B}^n = \{\mathbf{x} \in \mathbb{R}^n : \|\mathbf{x}\| < 1\}$. The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{B}^n$ is:
 
-While Poincaré embeddings are powerful, they face computational challenges due to the complexity of Riemannian optimization in curved spaces. **Lorentzian embeddings** offer a remedy by using Lorentzian geometry (the geometry of spacetime in relativity theory), which shares hyperbolic properties but enables more efficient gradient-based optimization.
+$$
+d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
+$$
 
-The Lorentzian model trades some geometric purity for computational tractability, making hyperbolic embeddings practical for very large networks while maintaining the ability to capture hierarchical structures.
+::: {.column-margin}
+![](https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg){width=100%}
 
-## Exercises
+The **Poincaré disk** (2D version of the ball) visualizes hyperbolic space within a circle. Although shapes appear to shrink near the boundary in Euclidean terms, they are actually all the same size in hyperbolic geometry—the disk has infinite hyperbolic area. Geodesics (shortest paths) appear as circular arcs perpendicular to the boundary. This model is intuitive for visualization but requires careful handling of Riemannian gradients during optimization.
+:::
 
-- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
+**Lorentzian (Hyperboloid) Model**: Points lie on the hyperboloid $\mathcal{H}^n = \{\mathbf{x} \in \mathbb{R}^{n+1} : \langle\mathbf{x}, \mathbf{x}\rangle_L = -1, x_0 > 0\}$ where the Lorentzian inner product is:
+
+$$
+\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
+$$
+
+The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{H}^n$ is:
+
+$$
+d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
+$$
+
+::: {.column-margin}
+
+![](https://bjlkeng.io/images/poincare_projection.png){width=100%}
+
+The **hyperboloid model** embeds hyperbolic space as a sheet in Minkowski space (the geometry of special relativity). Points on the hyperboloid can be projected onto the Poincaré disk, showing the equivalence between models. The Lorentzian model enables more efficient optimization because gradients can be computed in the ambient Euclidean space $\mathbb{R}^{n+1}$, avoiding complex Riemannian operations.
+:::
+
+These models are isometric (distance-preserving transformations exist between them), but differ in computational efficiency. The Poincaré model [@nickel2017poincare] is intuitive but requires complex Riemannian optimization. The Lorentzian model [@nickel2018learning] trades geometric purity for efficiency by computing gradients in ambient Euclidean space, making hyperbolic embeddings practical for large networks.
+
+::: {#fig-hyperbolic0-embedding-knowledge-graph}
+
+![](https://www.researchgate.net/publication/384245499/figure/fig3/AS:11431281279545169@1727060754985/Wordnet-nouns-embedded-in-hyperbolic-space-Nickel-2018.jpg)
+
+Hyperbolic embedding of wordnet nouns [@nickel2018learning]. Abstract terms like "Entity" positions near the center. As we go towards the boundary, we see more concrete concepts like  "Material", "Wood", and "Hardwood".
+
+:::
+
