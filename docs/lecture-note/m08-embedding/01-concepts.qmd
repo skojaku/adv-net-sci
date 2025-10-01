@@ -91,7 +91,16 @@ In matrix form: $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \math
 See [Appendix](./04-appendix.md) for full details.
 :::
 
-The solution minimizes distances between connected nodes. By taking the derivative and setting it to zero:
+The solution minimizes distances between connected nodes. Through algebraic manipulation (see margin), we can rewrite the objective as $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$, where $\mathbf{L}$ is the graph Laplacian matrix:
+
+$$
+L_{ij} = \begin{cases}
+k_i & \text{if } i = j \\
+-A_{ij} & \text{if } i \neq j
+\end{cases}
+$$
+
+By taking the derivative and setting it to zero:
 
 $$
 \frac{\partial J_{LE}}{\partial \mathbf{U}} = 0 \implies \mathbf{L} \mathbf{U} = \lambda \mathbf{U}
@@ -114,6 +123,12 @@ word2vec is a neural network model that learns word embeddings in a continuous v
 ### How word2vec Works
 
 word2vec learns word meanings from context, following the linguistic principle: "You shall know a word by the company it keeps" [@church1988word].
+
+::: {.column-margin}
+This phrase means a person is similar to those they spend time with. It comes from Aesop's fable *The Ass and his Purchaser* (500s B.C.): a man brings an ass to his farm on trial. The ass immediately seeks out the laziest, greediest ass in the herd. The man returns the ass, knowing it will be lazy and greedy based on the company it chose.
+
+<iframe width="100%" height="200" src="https://www.youtube.com/embed/gQddtTdmG_8?si=x8DUQnll2Rnj8qkn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+:::
 
 **The Core Idea**: Given a target word, predict its surrounding context words within a fixed window. For example, in:
 
@@ -151,6 +166,10 @@ Skip-gram works better for small datasets and rare words. CBOW is faster to trai
 - **Output layer** ($N$ neurons): Probability distribution over context words (via softmax)
 
 The hidden layer activations become the word embeddings—dense, low-dimensional vectors that capture semantic relationships.
+
+::: {.column-margin}
+For a visual walkthrough of word2vec, see [The Illustrated Word2vec](https://jalammar.github.io/illustrated-word2vec/) by Jay Alammar.
+:::
 
 ### Key Technical Components
 
