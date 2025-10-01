@@ -258,7 +258,9 @@ where $d(t,x)$ is the shortest path distance from the previous node $t$ to candi
 
 ![](https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png)
 
+::: {.column-margin}
 **Technical Note**: node2vec uses **negative sampling** instead of hierarchical softmax, which affects embedding characteristics [@kojaku2021neurips; @dyer2014notes].
+:::
 
 ### LINE
 
@@ -268,11 +270,9 @@ LINE [@tang2015line] is another pioneering work to learn node embeddings by dire
 
 Both approaches have complementary strengths:
 
-### Analytical Tractability
-
-**Spectral methods**: Fully analyzable using linear algebra. We can prove optimality—e.g., adjacency and Laplacian spectral embeddings are optimal for community detection in stochastic block models [@nadakuditi2012graph].
-
-**Neural methods**: Less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2023network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model.
+::: {.column-margin}
+**Analytical Tractability**: Spectral methods are fully analyzable using linear algebra. We can prove optimality—e.g., adjacency and Laplacian spectral embeddings are optimal for community detection in stochastic block models [@nadakuditi2012graph]. Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2023network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model.
+:::
 
 ### Scalability
 
