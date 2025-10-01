@@ -1,8 +1,8 @@
 ---
 title: "Coding - Random Walks"
 jupyter: advnetsci
-#execute:
-#    enabled: true
+execute:
+    enabled: true
 ---
 
 # Random Walks: Implementation and Applications
@@ -112,7 +112,7 @@ print("Position after one step:\n", x)
 
 Write the following function to simulate the random walk for a given number of steps and return the $x$ for each step:
 
-```{python}
+```python
 def random_walk(A, n_steps):
     """
     Simulate the random walk on a graph with adjacency matrix A.
@@ -136,7 +136,7 @@ def random_walk(A, n_steps):
 
     for step in range(n_steps):
         probs = x @ P
-        next_node = np.random.choice(n_nodes, p=probs)
+        next_node = ... # fill in the missing code
         x[:] = 0
         x[next_node] = 1
         positions.append(x.copy())
@@ -180,7 +180,7 @@ $$\mathbb{E}[\mathbf{x}(t)] = \mathbf{x}(0) \mathbf{P}^t$$
 
 Write a function to compute the expected position of the walker at time $t$:
 
-```{python}
+```python
 def expected_position(A, x_0, t):
     """
     Compute the expected position of the walker at time t.
@@ -197,7 +197,7 @@ def expected_position(A, x_0, t):
     P = A / k[:, np.newaxis]
 
     # Compute P^t
-    P_t = np.linalg.matrix_power(P, t)
+    P_t = ... # fill in the missing code
 
     return x_0 @ P_t
 
@@ -411,95 +411,7 @@ The color intensity represents the probability of the walker being at each node.
 
 This temporal behavior reveals the community structure!
 
-### Exercise 04
-
-1. Generate a network of 100 nodes with 4 communities using a stochastic block model, with inter-community edge probability $0.05$ and intra-community edge probability $0.2$. Then, compute the expected position of the walker starting from node zero after $x$ steps. Plot the results for $x = 0, 5, 10, 1000$.
-
-2. Increase the inter-community edge probability to $0.15$ and repeat the simulation. Compare the results with the previous simulation.
-
-```{python}
-# Solution for Exercise 04
-import networkx as nx
-
-def create_sbm_and_analyze(n_communities=4, n_nodes_per_community=25, p_intra=0.2, p_inter=0.05):
-    """Create SBM network and analyze random walk dynamics."""
-
-    # Create stochastic block model
-    sizes = [n_nodes_per_community] * n_communities
-    p_matrix = np.full((n_communities, n_communities), p_inter)
-    np.fill_diagonal(p_matrix, p_intra)
-
-    G = nx.stochastic_block_model(sizes, p_matrix)
-    g = igraph.Graph().Adjacency(nx.to_numpy_array(G).tolist()).as_undirected()
-
-    # Create membership vector for coloring
-    membership = np.repeat(np.arange(n_communities), n_nodes_per_community)
-
-    # Compute transition matrix
-    A = g.get_adjacency_sparse()
-    k = np.array(g.degree())
-    P = sparse.diags(1 / k) @ A
-
-    # Analyze walker dynamics
-    x_t = np.zeros(g.vcount())
-    x_t[0] = 1  # Start from node 0
-
-    time_steps = [0, 5, 10, 1000]
-    results = {}
-
-    x_current = x_t.copy()
-    for t in range(max(time_steps) + 1):
-        if t in time_steps:
-            results[t] = x_current.copy()
-        if t < max(time_steps):
-            x_current = x_current @ P
-
-    return g, membership, results
-
-# Part 1: Low inter-community connectivity
-print("Part 1: Inter-community probability = 0.05")
-g1, membership1, results1 = create_sbm_and_analyze(p_inter=0.05)
-
-# Part 2: Higher inter-community connectivity
-print("Part 2: Inter-community probability = 0.15")
-g2, membership2, results2 = create_sbm_and_analyze(p_inter=0.15)
-
-# Visualize results
-fig, axes = plt.subplots(2, 4, figsize=(16, 8))
-
-for scenario, (g, membership, results) in enumerate([(g1, membership1, results1), (g2, membership2, results2)]):
-    for i, t in enumerate([0, 5, 10, 1000]):
-        prob = results[t]
-        colors = [plt.cm.viridis(prob[j] / np.max(prob)) if np.max(prob) > 0 else 'lightgray' for j in range(g.vcount())]
-
-        # Use membership for layout
-        pos = []
-        for node_id in range(g.vcount()):
-            community = membership[node_id]
-            angle = 2 * np.pi * community / 4
-            radius = 1.5
-            x = radius * np.cos(angle) + 0.3 * np.random.randn()
-            y = radius * np.sin(angle) + 0.3 * np.random.randn()
-            pos.append((x, y))
-
-        igraph.plot(g, layout=pos, vertex_size=8, vertex_color=colors,
-                   target=axes[scenario][i], edge_width=0.5)
-        axes[scenario][i].set_title(f"{'Low' if scenario == 0 else 'High'} inter-comm, t={t}")
-
-plt.tight_layout()
-plt.show()
-
-# Compare community mixing
-for scenario, (label, results) in enumerate([("Low inter-community (0.05)", results1), ("High inter-community (0.15)", results2)]):
-    print(f"\n{label}:")
-    for t in [5, 10, 1000]:
-        prob = results[t]
-        # Calculate probability mass in starting community (nodes 0-24)
-        community_0_mass = np.sum(prob[:25])
-        print(f"  t={t}: Probability in starting community = {community_0_mass:.3f}")
-```
-
-## Advanced Topics: Mixing Time and Spectral Analysis
+## Mixing Time and Spectral Analysis
 
 ### Computing Eigenvalues and Mixing Time
 
@@ -563,84 +475,6 @@ pd.DataFrame({
     "Power iteration": x_t_power.flatten()
 }).style.background_gradient(cmap='cividis', axis = None).set_caption("Comparison of Spectral and Power Iteration Methods")
 ```
-
-## Applications: Centrality and Community Detection
-
-### Random Walk Centrality
-
-The stationary distribution of a random walk gives us a natural centrality measure:
-
-```{python}
-def random_walk_centrality(graph):
-    """Compute random walk centrality (stationary distribution)."""
-    A = graph.get_adjacency_sparse()
-    deg = np.array(A.sum(axis=1)).flatten()
-
-    # Stationary distribution is proportional to degree
-    centrality = deg / np.sum(deg)
-    return centrality
-
-# Compare with other centralities
-rw_centrality = random_walk_centrality(g)
-degree_centrality = np.array(g.degree()) / max(g.degree())
-eigenvector_centrality = np.array(g.eigenvector_centrality())
-
-comparison_df = pd.DataFrame({
-    "Random Walk Centrality": rw_centrality,
-    "Degree Centrality": degree_centrality,
-    "Eigenvector Centrality": eigenvector_centrality
-}).style.format("{:.4f}").background_gradient(cmap='viridis')
-
-comparison_df
-```
-
-### Detecting Communities via Random Walk Modularity
-
-We can measure modularity using random walk interpretation:
-
-```{python}
-def random_walk_modularity(graph, communities):
-    """Compute modularity using random walk interpretation."""
-    A = graph.get_adjacency_sparse().toarray()
-    deg = np.array(graph.degree())
-    m = np.sum(deg) / 2  # Total number of edges
-
-    modularity = 0
-    n_nodes = len(deg)
-
-    for i in range(n_nodes):
-        for j in range(n_nodes):
-            if communities[i] == communities[j]:
-                # Random walk interpretation
-                pi_i = deg[i] / (2 * m)  # Stationary probability
-                P_ij = A[i, j] / deg[i] if deg[i] > 0 else 0  # Transition probability
-                pi_j = deg[j] / (2 * m)  # Stationary probability
-
-                modularity += (pi_i * P_ij) - (pi_i * pi_j)
-
-    return modularity
-
-# Test with our community network
-communities = [0] * 5 + [1] * 5 + [0]  # Two communities plus bridge
-modularity = random_walk_modularity(g, communities)
-print(f"Random walk modularity: {modularity:.4f}")
-
-# Compare with igraph's modularity
-igraph_modularity = g.modularity(communities)
-print(f"igraph modularity: {igraph_modularity:.4f}")
-```
-
-## Summary
-
-Through this coding exploration, we've seen how random walks provide practical tools for network analysis:
-
-1. **Implementation**: Random walks are straightforward to simulate using matrix operations
-2. **Stationary distributions**: Naturally emerge as degree-based centrality measures
-3. **Community detection**: Temporal dynamics reveal modular structure
-4. **Spectral analysis**: Eigenvalues determine convergence rates and mixing times
-5. **Applications**: Provide new perspectives on modularity and centrality
-
-The combination of theoretical understanding and practical implementation makes random walks one of the most versatile techniques in network science, bridging concepts from probability theory, linear algebra, and graph theory into powerful analytical tools.
 
 ### Key Takeaways
 
