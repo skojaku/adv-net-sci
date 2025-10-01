@@ -142,6 +142,10 @@ word2vec learns word meanings from context, following the linguistic principle: 
 
 The context of *fox* (with window size 2) includes: *quick*, *brown*, *jumps*, *over*.
 
+::: {.column-margin}
+The window size determines how far we look around the target word. A window size of 2 means we consider 2 words before and 2 words after.
+:::
+
 **Why This Works**: Words appearing in similar contexts get similar embeddings. Consider:
 
 - "The quick brown **fox** jumps over the fence"
@@ -155,9 +159,13 @@ Both *fox* and *dog* appear with words like "quick," "brown," and "jumps/runs," 
 - **Skip-gram**: Given a target word → predict context words (we'll use this)
 - **CBOW**: Given context words → predict target word
 
+::: {.column-margin}
+Skip-gram works better for small datasets and rare words. CBOW is faster to train.
+:::
+
 **Network Architecture**: word2vec uses a simple 3-layer neural network:
 
-![](../figs/word2vec.png)
+![](../figs/word2vec.png){width="70%" fig-align="center"}
 
 - **Input layer** ($N$ neurons): One-hot encoding of the target word
 - **Hidden layer** ($d$ neurons, $d \ll N$): The learned word embedding
@@ -175,6 +183,10 @@ $$
 P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{v}_{w_t})}
 $$
 
+::: {.column-margin}
+This is the softmax function—it converts dot products into probabilities that sum to 1.
+:::
+
 **The problem**: The denominator sums over all vocabulary words (e.g., 100,000+ terms), making training prohibitively slow.
 
 #### Two Solutions
@@ -184,6 +196,10 @@ $$
 ![](https://lh5.googleusercontent.com/proxy/_omrC8G6quTl2SGarwFe57qzbIs-PtGkEA5yODFE5I0Ny2IHGiJwsUhMrcuUqg5o-R2nD9hkgMuZsQJKoCggP29zXtj-Vz-X8BE)
 
 **Negative Sampling**: Instead of normalizing over all words, sample a few "negative" (non-context) words. Contrast the target's true context with these random words. This approximates the full softmax much more efficiently.
+
+::: {.column-margin}
+Typically, 5-20 negative samples are enough. The model learns to distinguish true context words from random words.
+:::
 
 ### What's Special About word2vec?
 
@@ -196,6 +212,10 @@ word2vec embeddings can capture semantic relationships, such as analogies (e.g.,
 ## Graph Embedding with word2vec
 
 How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequences of words as input, while graph data are discrete and unordered. A solution to fill this gap is *random walk*, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.
+
+::: {.column-margin}
+Random walks create "sentences" from graphs: each walk is a sequence of nodes, just like a sentence is a sequence of words.
+:::
 
 ### DeepWalk
 
