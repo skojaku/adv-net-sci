@@ -293,6 +293,46 @@ Both approaches have complementary strengths:
 - [gnn-tools](https://github.com/skojaku/gnn-tools): Experimental implementations
 - [graphvec](https://github.com/skojaku/graphvec): Lightweight embedding collection
 
+## Hyperbolic Embeddings: Beyond Euclidean Space
+
+All the embedding methods we've discussed so far operate in Euclidean space (standard flat geometry). However, many real-world networks exhibit hierarchical structures and scale-free properties that are difficult to capture in Euclidean space. **Hyperbolic embeddings** offer a powerful alternative by embedding networks in hyperbolic geometry—a curved space with negative curvature.
+
+### Why Hyperbolic Space?
+
+Hyperbolic space has a unique property: its volume grows exponentially with radius, similar to how tree-like hierarchies grow. This makes it naturally suited for representing hierarchical networks with far fewer dimensions than Euclidean embeddings require.
+
+![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)
+
+::: {.column-margin}
+In hyperbolic space, distance grows exponentially with hierarchy depth, naturally capturing tree-like structures and power-law degree distributions common in real networks.
+:::
+
+### Poincaré Embeddings
+
+Poincaré embeddings [@nickel2017poincare] learn node representations in the Poincaré ball model of hyperbolic space. The method optimizes embeddings to preserve network distances using Riemannian optimization, placing hierarchically similar nodes close together while maintaining exponentially increasing distances across hierarchy levels.
+
+### Network Geometry and Generative Models
+
+Hyperbolic geometry also provides a foundation for network generative models. Networks can be viewed as having an underlying geometric structure where connection probability decreases with hyperbolic distance. This perspective has led to geometric network models that reproduce key properties of real networks:
+
+- **Scale-free degree distributions**: Power-law degree distributions emerge naturally from hyperbolic geometry
+- **Strong clustering**: Nodes form tightly connected communities
+- **Small-world property**: Short paths exist between most node pairs despite high clustering
+
+::: {.column-margin}
+The hyperbolic geometric framework unifies network embedding and generative modeling, suggesting real networks may have latent hyperbolic geometry.
+:::
+
+### Hyperbolic Embeddings for Random Hyperbolic Graphs
+
+Building on the geometric perspective, hyperbolic embeddings can be specifically designed for random hyperbolic graphs (also known as popularity-similarity models). These methods embed nodes such that the hyperbolic distances reflect the underlying geometric structure that generated the network.
+
+### Lorentzian Embeddings: Computational Efficiency
+
+While Poincaré embeddings are powerful, they face computational challenges due to the complexity of Riemannian optimization in curved spaces. **Lorentzian embeddings** offer a remedy by using Lorentzian geometry (the geometry of spacetime in relativity theory), which shares hyperbolic properties but enables more efficient gradient-based optimization.
+
+The Lorentzian model trades some geometric purity for computational tractability, making hyperbolic embeddings practical for very large networks while maintaining the ability to capture hierarchical structures.
+
 ## Exercises
 
 - [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
