@@ -527,6 +527,3 @@ labels = Kmeans_with_silhouette(embedding)
 cmap = sns.color_palette().as_hex()
 igraph.plot(g, vertex_color=[cmap[label] for label in labels], bbox=(500, 500), vertex_label=["%d" %  d for d in  np.arange(n_nodes)])
 ```
-
-```{footbibliography}
-```
