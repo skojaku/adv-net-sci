@@ -5,8 +5,6 @@ execute:
     enabled: true
 ---
 
-# Embedding Methods: Implementation and Practice
-
 In this section, we implement the embedding methods discussed in the [concepts section](./01-concepts.md).
 
 ## Data Preparation
@@ -212,88 +210,122 @@ We can see that word2vec places the words representing countries close to each o
 
 ## Graph Embedding with word2vec
 
-### Exercise 01: Implement DeepWalk
+### DeepWalk: Learning Network Embeddings via Random Walks
 
-In this exercise, we implement DeepWalk step by step using the karate club network loaded earlier.
+DeepWalk treats random walks on a graph as "sentences" and applies word2vec to learn node embeddings. The key insight is that nodes appearing in similar contexts (neighborhoods) should have similar embeddings.
 
-##### Step 1: Generate random walks
+::: {.column-margin}
+DeepWalk was introduced by Perozzi et al. (2014) and was one of the first methods to successfully apply natural language processing techniques to graph embedding.
+:::
 
-Next, we generate the training data for the word2vec model by generating multiple random walks starting from each node in the network.
-Let us first implement a function to sample random walks from a given network.
+#### Step 1: Generate Random Walks
+
+The first step is to generate training data for word2vec. We do this by sampling random walks from the network. Each random walk is like a "sentence" where nodes are "words".
+
+Let's implement a function to sample random walks. A random walk starts at a node and repeatedly moves to a random neighbor until it reaches the desired length.
 
 ```{python}
-
 def random_walk(net, start_node, walk_length):
-    # Initialize the walk with the starting node
+    """
+    Generate a random walk starting from start_node.
+
+    Parameters:
+    -----------
+    net : sparse matrix
+        Adjacency matrix of the network
+    start_node : int
+        Starting node for the walk
+    walk_length : int
+        Length of the walk
+
+    Returns:
+    --------
+    walk : list
+        List of node indices representing the random walk
+    """
     walk = [start_node]
 
-    # Continue the walk until the desired length is reached
     while len(walk) < walk_length:
-        # Get the current node (the last node in the walk)
         cur = walk[-1]
-
-        # Get the neighbors of the current node
         cur_nbrs = list(net[cur].indices)
 
-        # If the current node has neighbors, randomly choose one and add it to the walk
         if len(cur_nbrs) > 0:
+            # Randomly choose one of the neighbors
             walk.append(np.random.choice(cur_nbrs))
         else:
-            # If the current node has no neighbors, terminate the walk
+            # Dead end - terminate the walk
             break
 
-    # Return the generated walk
     return walk
 ```
 
-Generate 10 random walks of length 50 starting from each node.
+::: {.column-margin}
+In practice, we generate multiple walks per node to ensure each node appears in various contexts, which helps the model learn better representations.
+:::
+
+Now we generate multiple random walks starting from each node. We'll use 10 walks per node, each of length 50.
 
 ```{python}
 n_nodes = g.vcount()
 n_walkers_per_node = 10
 walk_length = 50
+
 walks = []
 for i in range(n_nodes):
     for _ in range(n_walkers_per_node):
         walks.append(random_walk(A, i, walk_length))
+
+print(f"Generated {len(walks)} random walks")
+print(f"Example walk: {walks[0][:10]}...")  # Show first 10 nodes of first walk
 ```
 
-##### Step 2: Train the word2vec model
-Then, we feed the random walks to the word2vec model.
+#### Step 2: Train the Word2Vec Model
+
+Now we feed the random walks to the word2vec model. The model will learn to predict which nodes appear together in the same walk, similar to how it learns which words appear together in sentences.
 
 ```{python}
 from gensim.models import Word2Vec
 
-model = Word2Vec(walks, vector_size=32, window=3, min_count=1, sg=1, hs = 1)
+model = Word2Vec(
+    walks,
+    vector_size=32,   # Dimension of the embedding vectors
+    window=3,         # Maximum distance between current and predicted node
+    min_count=1,      # Minimum frequency for a node to be included
+    sg=1,             # Use skip-gram model (vs CBOW)
+    hs=1              # Use hierarchical softmax for training
+)
 ```
 
-Here,
+::: {.column-margin}
+**Key Parameters:**
 
-- `vector_size` is the dimension of the embedding vectors.
-- `window` indicates the maximum distance between a word and its context words. For example, in the random walk `[0, 1, 2, 3, 4, 5, 6, 7]`, the context words of node 2 are `[0, 1, 3, 4, 5]` when `window=3`.
-- `min_count` is the minimum number of times a word must appear in the training data to be included in the vocabulary.
-- `sg=1` indicates that we are using the skip-gram model.
-- `hs=1` indicates that we are using hierarchical softmax.
+- `vector_size`: Higher dimensions capture more information but require more data and computation.
+- `window`: Larger windows capture broader context but may dilute local structure.
+- `sg=1`: Skip-gram predicts context from target. It works better for small datasets.
+- `hs=1`: Hierarchical softmax is faster than negative sampling for small vocabularies.
+:::
 
-Now, we extract the node embeddings from the word2vec model. In the word2vec model, the embeddings are stored in the `wv` attribute. The embedding of node $i$ is given by `model.wv[i]`.
+The `window` parameter is crucial. For a random walk `[0, 1, 2, 3, 4, 5, 6, 7]`, when `window=3`, the context of node 2 includes nodes `[0, 1, 3, 4, 5]` - all nodes within distance 3.
+
+#### Step 3: Extract Node Embeddings
+
+After training, we can extract the learned embeddings for each node from the model.
 
 ```{python}
-embedding = []
-for i in range(n_nodes):
-    embedding.append(model.wv[i])
-embedding = np.array(embedding)
+# Extract embeddings for all nodes
+embedding = np.array([model.wv[i] for i in range(n_nodes)])
+
+print(f"Embedding matrix shape: {embedding.shape}")
+print(f"First node embedding (first 5 dimensions): {embedding[0][:5]}")
 ```
 
-`embedding` is the matrix of node embeddings. It has the same number of rows as the number of nodes in the network, and the number of columns is the embedding dimension.
+#### Step 4: Visualize Embeddings
 
-**Print the first 3 nodes**
-```{python}
-#| echo: false
+Let's visualize the learned embeddings in 2D using UMAP (Uniform Manifold Approximation and Projection). UMAP reduces the 32-dimensional embeddings to 2D while preserving the local structure.
 
-embedding[:3]
-```
-
-Let's visualize the node embeddings using UMAP.
+::: {.column-margin}
+UMAP is a dimensionality reduction technique that preserves both local and global structure better than t-SNE, making it ideal for visualizing high-dimensional embeddings.
+:::
 
 ```{python}
 #| echo: false
@@ -302,15 +334,16 @@ from bokeh.plotting import figure, show
 from bokeh.io import output_notebook
 from bokeh.models import ColumnDataSource, HoverTool
 
-
+# Reduce embeddings to 2D
 reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, metric="cosine")
 xy = reducer.fit_transform(embedding)
 
 output_notebook()
 
-# Calculate the degree of each node
+# Calculate node degrees for visualization
 degrees = A.sum(axis=1).A1
 
+# Create interactive plot
 source = ColumnDataSource(data=dict(
     x=xy[:, 0],
     y=xy[:, 1],
@@ -318,197 +351,264 @@ source = ColumnDataSource(data=dict(
     community=[palette[label] for label in g.vs["label"]]
 ))
 
-p = figure(title="Node Embeddings from Word2Vec", x_axis_label="X", y_axis_label="Y")
-
+p = figure(title="DeepWalk Node Embeddings (UMAP projection)", x_axis_label="UMAP 1", y_axis_label="UMAP 2")
 p.scatter('x', 'y', size='size', source=source, line_color="black", color="community")
 
 show(p)
 ```
 
-##### Step 3: Clustering
+Notice how nodes from the same community (shown in the same color) tend to cluster together in the embedding space. This demonstrates that DeepWalk successfully captures the community structure.
 
-One of the interesting applications with node embeddings is clustering. While we have good community detection methods, like the modularity maximization and stochastic block model, we can use clustering methods from machine learning, such as $K$-means and Gaussian mixture model. Let's see what we can get from the node embeddings.
+#### Step 5: Clustering with K-means
+
+One practical application of node embeddings is clustering. While we have dedicated community detection methods like modularity maximization, embeddings allow us to use general machine learning algorithms like K-means.
+
+::: {.column-margin}
+The advantage of using embeddings is that we can leverage the rich ecosystem of machine learning tools designed for vector data.
+:::
+
+Let's implement K-means clustering with automatic selection of the number of clusters using the silhouette score.
 
 ```{python}
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-# Determine the optimal number of clusters using the silhouette score
-def Kmeans_with_silhouette(embedding, n_clusters_range=(2, 10)):
+def find_optimal_clusters(embedding, n_clusters_range=(2, 10)):
+    """
+    Find the optimal number of clusters using silhouette score.
+
+    The silhouette score measures how well each node fits within its cluster
+    compared to other clusters. Scores range from -1 to 1, where higher is better.
+    """
     silhouette_scores = []
 
-    # Iterate over a range of cluster numbers from 2 to 9
     for n_clusters in range(*n_clusters_range):
-        # Create a KMeans object with the current number of clusters
-        kmeans = KMeans(n_clusters=n_clusters)
-
-        # Fit the KMeans model to the embedding data
-        kmeans.fit(embedding)
-
-        # Calculate the silhouette score for the current clustering
-        score = silhouette_score(embedding, kmeans.labels_)
-
-        # Append the number of clusters and its corresponding silhouette score to the list
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        cluster_labels = kmeans.fit_predict(embedding)
+        score = silhouette_score(embedding, cluster_labels)
         silhouette_scores.append((n_clusters, score))
+        print(f"k={n_clusters}: silhouette score = {score:.3f}")
 
-    # Find the number of clusters that has the highest silhouette score
-    optimal_n_clusters = max(silhouette_scores, key=lambda x: x[1])[0]
+    # Select the number of clusters with highest silhouette score
+    optimal_k = max(silhouette_scores, key=lambda x: x[1])[0]
+    print(f"\nOptimal number of clusters: {optimal_k}")
 
-    # Create a KMeans object with the optimal number of clusters
-    kmeans = KMeans(n_clusters=optimal_n_clusters)
+    # Perform final clustering with optimal k
+    kmeans = KMeans(n_clusters=optimal_k, random_state=42)
+    return kmeans.fit_predict(embedding)
 
-    # Fit the KMeans model to the embedding data with the optimal number of clusters
-    kmeans.fit(embedding)
-
-    # Return the labels (cluster assignments) for each data point
-    return kmeans.labels_
+# Find clusters
+cluster_labels = find_optimal_clusters(embedding)
 ```
 
+::: {.column-margin}
+The silhouette score measures both cohesion (how close nodes are within their cluster) and separation (how far clusters are from each other).
+:::
+
+Now let's visualize the discovered clusters on the network:
+
 ```{python}
-import seaborn as sns
-labels = Kmeans_with_silhouette(embedding)
+# Visualize the clustering results
 cmap = sns.color_palette().as_hex()
-igraph.plot(g, vertex_color=[cmap[label] for label in labels], bbox=(500, 500))
+igraph.plot(
+    g,
+    vertex_color=[cmap[label] for label in cluster_labels],
+    bbox=(500, 500),
+    vertex_size=20
+)
 ```
 
-### Exercise 02: Implement node2vec
+The K-means algorithm successfully identifies community structure using only the learned embeddings, demonstrating that DeepWalk captures meaningful structural properties of the network.
 
-Let's implement the biased random walk for node2vec
+### Node2vec: Flexible Graph Embeddings
+
+Node2vec extends DeepWalk by introducing a biased random walk strategy. Instead of uniformly choosing the next node, node2vec uses two parameters, $p$ and $q$, to control the exploration strategy:
+
+- **Return parameter $p$**: Controls the likelihood of returning to the previous node
+- **In-out parameter $q$**: Controls whether the walk explores locally (BFS-like) or ventures further (DFS-like)
+
+::: {.column-margin}
+Node2vec was introduced by Grover and Leskovec (2016). The biased walk allows it to learn embeddings that capture different structural properties depending on the task.
+:::
+
+#### Step 1: Implement Biased Random Walk
+
+The key innovation in node2vec is the biased random walk. Let's implement it step by step.
 ```{python}
-
 def node2vec_random_walk(net, start_node, walk_length, p, q):
     """
-    Sample a random walk starting from start_node.
+    Generate a biased random walk for node2vec.
+
+    Parameters:
+    -----------
+    net : sparse matrix
+        Adjacency matrix of the network
+    start_node : int
+        Starting node for the walk
+    walk_length : int
+        Length of the walk
+    p : float
+        Return parameter (controls likelihood of returning to previous node)
+    q : float
+        In-out parameter (controls BFS vs DFS behavior)
+
+    Returns:
+    --------
+    walk : list
+        List of node indices representing the biased random walk
     """
-    # Initialize the walk with the start_node
     walk = [start_node]
 
-    # Continue the walk until it reaches the desired length
     while len(walk) < walk_length:
-        # Get the current node in the walk
         cur = walk[-1]
-        # Get the neighbors of the current node
         cur_nbrs = list(net[cur].indices)
-        # Check if the current node has any neighbors
+
         if len(cur_nbrs) > 0:
-            # If the walk has just started, randomly choose the next node from the neighbors
             if len(walk) == 1:
+                # First step: uniform random choice
                 walk.append(np.random.choice(cur_nbrs))
             else:
-                # Get the previous node in the walk
+                # Subsequent steps: biased choice based on p and q
                 prev = walk[-2]
-                # Use the alias sampling method to choose the next node based on the bias parameters p and q
-                next_node = alias_sample(net, cur_nbrs, prev, p, q)
-                # Append the chosen next node to the walk
+                next_node = biased_choice(net, cur_nbrs, prev, p, q)
                 walk.append(next_node)
         else:
-            # If the current node has no neighbors, terminate the walk
             break
 
     return walk
 
-def alias_sample(net, neighbors, prev, p, q):
+def biased_choice(net, neighbors, prev, p, q):
     """
-    Helper function to sample the next node in the walk.
+    Choose the next node with bias controlled by p and q.
+
+    The transition probability is:
+    - 1/p if returning to the previous node
+    - 1   if moving to a neighbor of the previous node (distance 1)
+    - 1/q if moving away from the previous node (distance 2)
     """
-    # Implement the logic to sample the next node based on the bias parameters p and q
-    # You can use the formula provided in the instructions to calculate the probabilities
-    # and then sample the next node accordingly.
-    # Initialize an empty list to store the unnormalized probabilities for each neighbor
     unnormalized_probs = []
 
-    # Iterate over each neighbor of the current node
     for neighbor in neighbors:
-        # If the neighbor is the same as the previous node in the walk
         if neighbor == prev:
-            # Append the probability 1/p to the unnormalized probabilities list
+            # Returning to previous node
             unnormalized_probs.append(1 / p)
-        # If the neighbor is connected to the previous node in the walk
         elif neighbor in net[prev].indices:
-            # Append the probability 1 to the unnormalized probabilities list
-            unnormalized_probs.append(1)
-        # If the neighbor is not connected to the previous node in the walk
+            # Moving to a common neighbor (BFS-like)
+            unnormalized_probs.append(1.0)
         else:
-            # Append the probability 1/q to the unnormalized probabilities list
+            # Moving away from previous node (DFS-like)
             unnormalized_probs.append(1 / q)
 
-    # Calculate the normalization constant by summing all unnormalized probabilities
+    # Normalize probabilities
     norm_const = sum(unnormalized_probs)
+    normalized_probs = [prob / norm_const for prob in unnormalized_probs]
 
-    # Normalize the probabilities by dividing each unnormalized probability by the normalization constant
-    normalized_probs = [float(prob) / norm_const for prob in unnormalized_probs]
-
-    # Randomly choose the next node from the neighbors based on the normalized probabilities
-    next_node = np.random.choice(neighbors, size=1, p=normalized_probs)[0]
-
-    # Return the chosen next node
-    return next_node
+    # Sample next node
+    return np.random.choice(neighbors, p=normalized_probs)
 ```
 
-Now, let's set up the word2vec model for node2vec.
+::: {.column-margin}
+**Understanding p and q:**
+
+- Small $p$ ($p < 1$): Encourages returning to previous node, leading to local exploration
+- Large $q$ ($q > 1$): Discourages moving away, resulting in BFS-like behavior
+- Small $q$ ($q < 1$): Encourages exploration, resulting in DFS-like behavior
+:::
+
+#### Step 2: Generate Walks and Train Model
+
+Now let's generate biased random walks and train the word2vec model. We'll use $p=1$ and $q=0.1$, which encourages outward exploration (DFS-like behavior) to capture community structure.
 
 ```{python}
-walks = []
-p = 1
-q = 0.1
+# Generate biased random walks
+p = 1.0   # Return parameter
+q = 0.1   # In-out parameter (q < 1 means DFS-like)
+
+walks_node2vec = []
 for i in range(n_nodes):
     for _ in range(n_walkers_per_node):
-        walks.append(node2vec_random_walk(A, i, walk_length, p, q))
-model = Word2Vec(walks, vector_size=32, window=3, min_count=1, sg=1, hs = 1)
+        walks_node2vec.append(node2vec_random_walk(A, i, walk_length, p, q))
+
+print(f"Generated {len(walks_node2vec)} biased random walks")
+print(f"Example walk: {walks_node2vec[0][:10]}...")
 ```
 
-Now, we extract the node embeddings from the word2vec model.
+::: {.column-margin}
+With $q=0.1$, the walk is 10 times more likely to explore distant nodes than return to the immediate neighborhood, encouraging discovery of global community structure.
+:::
+
+Train the word2vec model on the biased walks:
 
 ```{python}
-embedding = []
-for i in range(n_nodes):
-    embedding.append(model.wv[i])
-embedding = np.array(embedding)
+# Train node2vec model
+model_node2vec = Word2Vec(
+    walks_node2vec,
+    vector_size=32,
+    window=3,
+    min_count=1,
+    sg=1,
+    hs=1
+)
+
+# Extract embeddings
+embedding_node2vec = np.array([model_node2vec.wv[i] for i in range(n_nodes)])
+print(f"Node2vec embedding shape: {embedding_node2vec.shape}")
 ```
 
-Let's visualize the node embeddings from node2vec.
+#### Step 3: Visualize Node2vec Embeddings
+
+Let's visualize the node2vec embeddings and compare them with DeepWalk.
 
 ```{python}
 #| echo: false
 
-reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, metric="cosine")
-xy = reducer.fit_transform(embedding)
+# Reduce node2vec embeddings to 2D
+reducer_n2v = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, metric="cosine")
+xy_n2v = reducer_n2v.fit_transform(embedding_node2vec)
 
 output_notebook()
 
-# Calculate the degree of each node
 degrees = A.sum(axis=1).A1
 
-source = ColumnDataSource(data=dict(
-    x=xy[:, 0],
-    y=xy[:, 1],
+source_n2v = ColumnDataSource(data=dict(
+    x=xy_n2v[:, 0],
+    y=xy_n2v[:, 1],
     size=np.sqrt(degrees / np.max(degrees)) * 30,
     community=[palette[label] for label in g.vs["label"]],
     name = [str(i) for i in range(n_nodes)]
 ))
 
-p = figure(title="Node Embeddings from Word2Vec", x_axis_label="X", y_axis_label="Y")
-
-p.scatter('x', 'y', size='size', source=source, line_color="black", color="community")
+p_n2v = figure(title="Node2vec Embeddings (UMAP projection)", x_axis_label="UMAP 1", y_axis_label="UMAP 2")
+p_n2v.scatter('x', 'y', size='size', source=source_n2v, line_color="black", color="community")
 
 hover = HoverTool()
 hover.tooltips = [
-    ("Name", "@name"),
+    ("Node", "@name"),
     ("Community", "@community")
 ]
-p.add_tools(hover)
+p_n2v.add_tools(hover)
 
-show(p)
+show(p_n2v)
 ```
 
-The results for clustering are as follows:
+Notice how the node2vec embeddings with $q=0.1$ (DFS-like exploration) create even more distinct community clusters compared to DeepWalk. This is because the biased walk explores the community structure more thoroughly.
+
+#### Step 4: Clustering Analysis
+
+Let's apply K-means clustering to the node2vec embeddings:
 
 ```{python}
-import seaborn as sns
+# Find optimal clusters for node2vec embeddings
+cluster_labels_n2v = find_optimal_clusters(embedding_node2vec)
 
-labels = Kmeans_with_silhouette(embedding)
-
-
-cmap = sns.color_palette().as_hex()
-igraph.plot(g, vertex_color=[cmap[label] for label in labels], bbox=(500, 500), vertex_label=["%d" %  d for d in  np.arange(n_nodes)])
+# Visualize the clustering results
+igraph.plot(
+    g,
+    vertex_color=[palette[label] for label in cluster_labels_n2v],
+    bbox=(500, 500),
+    vertex_size=20,
+    vertex_label=[str(i) for i in range(n_nodes)]
+)
 ```
+
+By tuning the $p$ and $q$ parameters, node2vec can adapt to different network analysis tasks - from community detection (small $q$) to role discovery (large $q$).
