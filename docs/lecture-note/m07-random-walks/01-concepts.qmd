@@ -80,17 +80,9 @@ These exercises will help you:
 - Explore simple examples of stationary distributions
 - Connect random walk concepts to network properties
 
-### Mathematical Foundation: Transition Probabilities
+## Transition Probabilities
 
-A random walk is characterized by the transition probabilities between nodes. The transition probability from node $i$ to node $j$ is:
-
-$$
-P_{ij} = \frac{A_{ij}}{k_i}
-$$
-
-where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.
-
-::: {.callout-note title="Example: A Larger Network"}
+::: {.column-margin}
 Let's see how this works with a more complex example. Consider a network with 10 nodes:
 
 ```{python}
@@ -123,8 +115,6 @@ P = np.diag(1.0 / degrees) @ A
 max_degree_node = np.argmax(degrees)
 ```
 
-::: {.column-margin}
-
 Let us consider the following graph.
 ```{python}
 #| echo: false
@@ -146,13 +136,14 @@ plt.show()
 ```
 :::
 
-**Key observations:**
-- **Network structure**: More complex with varying node degrees
-- **Adjacency Matrix**: Sparse matrix showing connection patterns
-- **Degrees**: Nodes have different connectivity (ranging from isolated to highly connected)
-- **Transition Matrix**: Probabilities depend on local node degree
-- **Real insight**: High-degree nodes have lower individual transition probabilities to each neighbor
-:::
+A random walk is characterized by the transition probabilities between nodes. The transition probability from node $i$ to node $j$ is:
+
+$$
+P_{ij} = \frac{A_{ij}}{k_i}
+$$
+
+where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.
+
 
 We can represent all transition probabilities in a transition probability matrix $\mathbf{P}$:
 
@@ -170,6 +161,23 @@ This matrix $\mathbf{P}$ encapsulates the entire random walk process. We can use
 - After one step: $P_{ij} = p_{ij}$
 - After two steps: $\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}$
 - After $T$ steps: $\left(\mathbf{P}^{T}\right)_{ij}$
+
+Let's understand why $\mathbf{P}^2$ represents the transition probabilities after two steps.
+
+First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:
+
+$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$
+
+This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we must pass through some intermediate node $k$. Let's break this down step by step:
+
+1. The probability of the first step ($i$ to $k$) is $\mathbf{P}_{ik}$.
+2. The probability of the second step ($k$ to $j$) is $\mathbf{P}_{kj}$.
+3. The probability of this specific path ($i$ → $k$ → $j$) is the product $\mathbf{P}_{ik} \mathbf{P}_{kj}$.
+4. We sum over all possible intermediate nodes $k$ to get the total probability.
+
+And we can extend this reasoning for any number of steps $t$. In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.
+
+## Stationary Distribution
 
 ::: {.column-margin}
 
@@ -205,8 +213,9 @@ plt.show()
 This is after 1000 steps.
 ```{python}
 #| echo: false
-# Use the same network and transition matrix from previous example
-P100 = np.linalg.matrix_power(P, 100)   # Matrix multiplication for 2-step transitions
+#| label: fig-long-term-P
+#| fig-cap: "Transition Matrix after 100 steps"
+P100 = np.linalg.matrix_power(P, 100)   # Matrix multiplication for 100-step transitions
 plt.figure(figsize=(6,5))
 sns.heatmap(P100, annot=True, fmt=".2f", cmap="YlGnBu",
             xticklabels=list(range(n_nodes)), yticklabels=list(range(n_nodes)))
@@ -218,301 +227,216 @@ plt.show()
 
 :::
 
-Let's explore why $\mathbf{P}^2$ represents the transition probabilities after two steps.
 
-First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:
+Stationary distribution is the probability distribtion of the walker after infinite steps, representing the long-term behavior of the walker.
 
-$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$
-
-This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we must pass through some intermediate node $k$. Let's break this down step by step:
-
-1. The probability of the first step ($i$ to $k$) is $\mathbf{P}_{ik}$.
-2. The probability of the second step ($k$ to $j$) is $\mathbf{P}_{kj}$.
-3. The probability of this specific path ($i$ → $k$ → $j$) is the product $\mathbf{P}_{ik} \mathbf{P}_{kj}$.
-4. We sum over all possible intermediate nodes $k$ to get the total probability.
-
-And we can extend this reasoning for any number of steps $t$. In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.
-
-## Expected Behavior and Stationary Distribution
-
-The expected position of the walker after $t$ steps starting from position $\mathbf{x}(0)$ is:
+Assuming that a stationary distribution exists (i.e., which is always true for undirected networks),
+the random walker at the stationary state must satisfy the following balance condition:
 
 $$
-\mathbb{E}[\mathbf{x}(t)] = \mathbf{x}(0) \mathbf{P}^t
+x(t+1) = x(t) \; \text{for a large } t,
+$$
+where $x(t)$ is the probability distribution of the walker at time $t$, represented as a column vector, where
+
+$$
+x(t) =
+\begin{pmatrix}
+x_{i}(t) \\
+x_{j}(t) \\
+\vdots \\
+x_{N}(t)
+\end{pmatrix}
 $$
 
-::: {.callout-note title="Understanding Position Vectors"}
-The position vector $\mathbf{x}(t)$ represents where the walker might be at time $t$:
+where $x_{i}(t)$ is the probability of being at node $i$ at time $t$. The balance condition means that the system becomes time invariant, meaning that the probability of being at node $i$ at time $t$ is the same as the probability of being at node $i$ at time $t+1$.
+
+What does $x(t)$ look like in the stationary state? To understand this, let us represent $x(t)$ using $P$ and an initial distribution $x(0)$, i.e.,
+
+$$
+x(t) = x^\top(t-1) P = x^\top(0) P^t.
+$$
+
+To see how $P^t$ looks like, see the figure on the right column.
+Notice that each column of $P^t$ has the same values across all rows. Remind also that $P_{ij}$ represents the transition probability from node $i$ (row) to node $j$ (column).
+This means that a random walker at time $t$, not matter where it was at time $t-1$, it will have the same probability of being at any node at time $t$!
+
+Now, why $P^t$ has this peculiar property? This is because of the spectral property of matrix, $P$.
+
+First of all, we can rewrite the balance condition as the following eigenvalue equation:
+$$
+\pi = \pi P
+$$
+where $\pi=\lim_{t\to\infty} x(t)$ is the stationary distribution. This means that the stationary distribution vector $\pi$ is parallel to the left eigenvector of $P$.
+
+::: {.callout-note}
+Note that $\pi$ is **parallel** to but not necessarily equal to the left eigenvector of $P$, as $\pi$ is a probability whose sum is 1 while the left eigenvector has unit norm (i.e., the sum of the squared elements is 1).
+:::
+
+
+The left-eigenvector associated with the stationary distribution $\pi$ is in fact associated with the largest eigenvalue of $P$, as per the Perron-Frobenius theorem.
+An intuition behind this is that the number of walkers in a graph remains invariant after a transition, which is evident from the fact $\sum_{j} P_{ij}=1$ (if it's greater than 1, the number of walkers increases and explodes to infinity).
+In language of spectra of matrices, this means that the eigenvalue is not rescaled by the transition matrix, which mathematically corresponds to having eigenvalue 1.
+
+
+::: {.column-margin}
+
 
 ```{python}
 #| echo: false
-# Visualize position vectors over time for the larger network
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+#| label: fig-spectrum
+#| fig-cap: "Spectrum of Transition Matrix $P$"
+sns.set_style('white')
+sns.set(font_scale=1.2)
+sns.set_style('ticks')
 
-# Use the same network from previous examples
-# Start from the highest degree node
-start_node = max_degree_node
-x0 = np.zeros(n_nodes)
-x0[start_node] = 1.0  # Start at the highest degree node
+# Compute the eigenvalues of the transition matrix P
+eigenvalues = np.linalg.eigvals(P)
 
-# Calculate position vectors for several steps
-x1 = x0 @ P
-x2 = x0 @ (P @ P)
-x3 = x0 @ np.linalg.matrix_power(P, 3)
-x5 = x0 @ np.linalg.matrix_power(P, 5)
-x10 = x0 @ np.linalg.matrix_power(P, 10)
+eigenvalues = np.sort(eigenvalues)[::-1]
 
-# Calculate stationary distribution (proportional to degrees)
-total_degree = sum(degrees)
-x_inf = np.array([d/total_degree if d > 0 else 0 for d in degrees])
+# Plot the spectrum (distribution of eigenvalues) in the complex plane
+fig, ax = plt.subplots(figsize=(6, 6))
+sns.pointplot(x=np.arange(len(eigenvalues)), y=eigenvalues, ax=ax)
 
-# 1. Show evolution for nodes with significant probability
-# Focus on nodes that have non-zero stationary probability
-active_nodes = [i for i in range(n_nodes) if x_inf[i] > 0.01]
-steps_data = np.array([x0, x1, x2, x3, x5, x10, x_inf])
-step_labels = ['t=0', 't=1', 't=2', 't=3', 't=5', 't=10', 't=∞']
+ax.set_xlabel("Index")
+ax.set_ylabel("Eigenvalue")
+ax.set_title("Spectrum of Transition Matrix $P$")
 
-# Create subset for visualization (only active nodes)
-subset_data = steps_data[:, active_nodes]
-
-im = ax1.imshow(subset_data, cmap='viridis', aspect='auto')
-ax1.set_title("Position Vector Evolution\n(Active Nodes Only)", fontsize=14, fontweight='bold')
-ax1.set_yticks(range(len(step_labels)))
-ax1.set_yticklabels(step_labels)
-ax1.set_xticks(range(len(active_nodes)))
-ax1.set_xticklabels([f'Node {i}' for i in active_nodes], rotation=45)
-
-# Add text annotations for significant probabilities
-for i in range(len(step_labels)):
-    for j in range(len(active_nodes)):
-        if subset_data[i, j] > 0.05:  # Only show significant probabilities
-            ax1.text(j, i, f'{subset_data[i, j]:.2f}', ha='center', va='center',
-                    fontsize=9, fontweight='bold', color='white')
-
-# Add colorbar
-cbar = plt.colorbar(im, ax=ax1, shrink=0.8)
-cbar.set_label('Probability', rotation=270, labelpad=15)
-
-# 2. Line plot showing convergence for most important nodes
-steps = np.arange(len(step_labels))
-top_nodes = sorted(active_nodes, key=lambda x: x_inf[x], reverse=True)[:5]  # Top 5 by stationary prob
-colors = plt.cm.Set1(np.linspace(0, 1, len(top_nodes)))
-
-for i, node in enumerate(top_nodes):
-    node_probs = steps_data[:, node]
-    ax2.plot(steps, node_probs, 'o-', label=f'Node {node}',
-             linewidth=2, markersize=6, color=colors[i])
-
-    # Add stationary line
-    ax2.axhline(y=x_inf[node], color=colors[i], linestyle='--', alpha=0.5)
-
-ax2.set_title(f"Convergence to Stationary Distribution\n(Starting from Node {start_node})",
-              fontsize=14, fontweight='bold')
-ax2.set_xlabel("Time Steps")
-ax2.set_ylabel("Probability")
-ax2.set_xticks(steps)
-ax2.set_xticklabels(step_labels)
-ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-ax2.grid(True, alpha=0.3)
-ax2.set_ylim(0, max(x0) * 1.1)
-
-plt.tight_layout()
+sns.despine(ax=ax)
 plt.show()
-
-print(f"\nKey observations starting from Node {start_node}:")
-print(f"- Initial position: 100% at Node {start_node}")
-print(f"- After 1 step: spreads to neighbors {[i for i in range(n_nodes) if x1[i] > 0]}")
-print(f"- After 10 steps: probability distribution stabilizing")
-print(f"- Stationary distribution: proportional to node degrees")
-print(f"- Nodes with highest long-term probability: {top_nodes[:3]}")
 ```
-
-**Key observations:**
-- **t=0**: Walker starts at the highest-degree node
-- **Early steps**: Walker spreads to immediate neighbors
-- **Later steps**: Probability distribution spreads throughout the connected network
-- **Stationary**: Eventually proportional to node degrees (high-degree nodes visited more often)
-
-The position vector shows how **probability mass flows** through the network over time!
 :::
 
-As $t$ becomes very large, the probability distribution approaches a constant value called the **stationary distribution**:
-
-$$
-\mathbf{x}(\infty) = \boldsymbol{\pi}
-$$
-
-where $\boldsymbol{\pi}$ satisfies the eigenvector equation:
-
-$$
-\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}
-$$
-
-For undirected networks, this stationary distribution always exists and is proportional to the degree of each node:
-
-$$
-\pi_j = \frac{k_j}{\sum_{\ell} k_\ell} \propto k_j
-$$
-
-::: {.callout-note title="Network Example: Stationary Distribution"}
-For our larger network, nodes have different degrees, so the stationary distribution is proportional to degree:
-
-```{python}
-#| echo: false
-# Calculate and visualize the stationary distribution
-total_degree = sum(degrees)
-pi_theoretical = np.array([d/total_degree if d > 0 else 0 for d in degrees])
-
-# Verify by computing the left eigenvector of P
-# For undirected graphs, stationary distribution should be proportional to degrees
-active_nodes = [i for i in range(n_nodes) if degrees[i] > 0]
-
-# Create visualization
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
-
-# 1. Compare degrees vs stationary distribution
-ax1.scatter(degrees, pi_theoretical, s=100, alpha=0.7, color='red')
-ax1.plot([0, max(degrees)], [0, max(pi_theoretical)], 'k--', alpha=0.5, label='Proportional relationship')
-ax1.set_xlabel("Node Degree")
-ax1.set_ylabel("Stationary Probability")
-ax1.set_title("Stationary Probability ∝ Degree", fontsize=14, fontweight='bold')
-ax1.legend()
-ax1.grid(True, alpha=0.3)
-
-# Add node labels
-for i in active_nodes:
-    ax1.annotate(f'{i}', (degrees[i], pi_theoretical[i]),
-                xytext=(5, 5), textcoords='offset points', fontsize=10)
-
-# 2. Verify the eigenvector equation π = πP for active nodes
-# Check if our theoretical stationary distribution satisfies the equation
-verification = pi_theoretical @ P
-difference = np.abs(pi_theoretical - verification)
-
-bars = ax2.bar(range(len(active_nodes)), [pi_theoretical[i] for i in active_nodes],
-               alpha=0.6, label='Theoretical π', color='blue')
-ax2.bar(range(len(active_nodes)), [verification[i] for i in active_nodes],
-        alpha=0.6, label='π × P', color='red', width=0.5)
-
-ax2.set_title("Verification: π = π × P", fontsize=14, fontweight='bold')
-ax2.set_xlabel("Node")
-ax2.set_ylabel("Probability")
-ax2.set_xticks(range(len(active_nodes)))
-ax2.set_xticklabels([str(i) for i in active_nodes])
-ax2.legend()
-
-# 3. Show the actual stationary probabilities
-sorted_nodes = sorted(active_nodes, key=lambda x: pi_theoretical[x], reverse=True)
-sorted_probs = [pi_theoretical[i] for i in sorted_nodes]
-sorted_degrees = [degrees[i] for i in sorted_nodes]
-
-bars = ax3.bar(range(len(sorted_nodes)), sorted_probs, color='green', alpha=0.7)
-ax3.set_title("Stationary Distribution\n(Sorted by Probability)", fontsize=14, fontweight='bold')
-ax3.set_xlabel("Node (sorted)")
-ax3.set_ylabel("Stationary Probability")
-ax3.set_xticks(range(len(sorted_nodes)))
-ax3.set_xticklabels([f'{node}\n(k={degrees[node]})' for node in sorted_nodes], rotation=45)
-
-# Add probability labels
-for bar, prob in zip(bars, sorted_probs):
-    ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005,
-             f'{prob:.3f}', ha='center', va='bottom', fontweight='bold', fontsize=10)
-
-plt.tight_layout()
-plt.show()
-
-print("Stationary Distribution Analysis:")
-print("-" * 40)
-for node in sorted_nodes:
-    print(f"Node {node}: degree = {degrees[node]}, π = {pi_theoretical[node]:.4f}")
-
-print(f"\nVerification (max error): {max(difference):.2e}")
-print("✓ The theoretical stationary distribution satisfies π = πP!")
-```
-
-**Key insights:**
-- **Proportionality**: Stationary probability ∝ node degree
-- **High-degree nodes**: Visited more frequently in the long run
-- **Mathematical verification**: π = πP confirms our calculation is correct
-- **Network structure matters**: Well-connected nodes become "probability sinks"
-:::
-
-This means the probability of being at node $j$ in the long run is proportional to the degree of node $j$. The normalization ensures that the sum of all probabilities is 1, i.e., $\sum_{j=1}^N \pi_j = 1$.
+The other eigenvalues are less than one in magnitude and describes the short-term behavior of random walks, which we will discuss in the next section.
 
 ## Spectral Analysis and Mixing Time
 
-The convergence speed to the stationary distribution is determined by the eigenvalues of the transition matrix. We can decompose the transition matrix using spectral analysis.
+Now, let's turn our attention to the short-term dynamics of random walks. These are governed by the non-dominant (non-principal) eigenvectors of the transition probability matrix $P$. To analyze this behavior, we'll need to use some concepts from linear algebra.
 
-Since $\mathbf{P}$ is not symmetric, we use a transformation:
+The short-term behavior of random walks is described as:
 
 $$
-\mathbf{P} = \mathbf{D}^{-1} \mathbf{A} = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}
+x(t) = P^t  x(0)
 $$
 
-where $\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}$ is the normalized adjacency matrix.
+Thus, it is determined by the initial distribution $x(0)$ and the power of the transition probability matrix $P^t$. In long term, $P^t$ approaches to that for the stationary distribution $\pi$. Here we focus on the ehavior before the equilibrium is reached.
 
-The advantage is that $\overline{\mathbf{A}}$ is diagonalizable: $\overline{\mathbf{A}} = \mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^T$. Using this, we can compute $\mathbf{P}^t$:
+To understand the short-term behavior, we represent $P$ as:
+$$
+P = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}
+$$
+
+where $\overline{\mathbf{A}}$ is a symmetric matrix and $\mathbf{D}^{-\frac{1}{2}}$ is a diagonal matrix. These are defined respectively as follows.
+
+- **Diagonal degree matrix, $\mathbf{D}$**: we define a diagonal matrix whose diagonal elements are the degrees of the nodes, i.e.,
+$$
+\mathbf{D} = \begin{pmatrix}
+d_1 & 0 & \cdots & 0 \\
+0 & d_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & d_N
+\end{pmatrix}
+$$
+where $d_i$ is the degree of node $i$.
+
+- **Normalized adjacency matrix, $\overline{\mathbf{A}}$**: we define a normalized adjacency matrix whose elements are the normalized adjacency matrix, i.e.,
+$$
+\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}
+$$
+where $\mathbf{A}$ is the adjacency matrix. It is normalized in the sense that each entry is normalized by the squared root of the degree of the nodes.
+
+The key property we will leverage is that the normalized adjacency matrix is diagonalizable, i.e.,
+$$
+\overline{\mathbf{A}} = \mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^T
+$$
+
+where $\mathbf{Q}$ is an orthogonal matrix and $\mathbf{\Lambda}$ is a diagonal matrix.
+The transition matrix $\mathbf{P}$ can be written as:
+$$
+\mathbf{P} = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T
+$$
+
+::: {.column-margin}
+
+::: {#fig-diagonalizable}
+
+![](../figs/diagonalizable.jpg)
+
+A visual representation of diagonalizable matrix.
+:::
+
+
+Symmetric matrices are diagonalizable. And $\overline{\mathbf{A}}$ is symmetric as far as the undirected network is considered.
+:::
+
+
+where
+$$
+\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}, \quad \mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}.
+$$
+Importantly, $\mathbf{Q}$ is an orthogonal matrix, i.e., $\mathbf{Q} \mathbf{Q}^T = \mathbf{I}$.
+Putting all together, we can compute $\mathbf{P}^t$ as:
 
 $$
 \mathbf{P}^t = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T
 $$
 
-where $\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}$ and $\mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}$.
+::: {.column-margin}
+This could be understood by thinking of $\mathbf{P}^2$, i.e.,
 
-The **mixing time** $t_{\text{mix}}$ represents how quickly a random walk reaches its stationary distribution:
+$$
+\begin{aligned}
+\mathbf{P}^2 & = \mathbf{Q}_L \mathbf{\Lambda} \underbrace{\mathbf{Q}_R^T \mathbf{Q}_L}_{= \mathbf{I}} \mathbf{\Lambda} \mathbf{Q}_R^T \\
+& = \mathbf{Q}_L \mathbf{\Lambda}^2 \mathbf{Q}_R^T \\
+\end{aligned}
+$$
+:::
 
+
+::: {#fig-diagonalizable-sum}
+
+![](../figs/diagonalizable-sum.jpg)
+
+A visual representation of the short term behavior of random walks.
+We can see that $x(t)$ can be edcomposed into the row of $\mathbf{Q}_R$ scaled by a dot-product of the initial distribution $x(0)$ and the column of $\mathbf{Q}_L$, along with the eigenvalues of the normalized adjacency matrix $\overline{\mathbf{A}}$.
+In this view, the short term distribution $x(t)$ is more strongly influenced by the second largest eigenvalue $\lambda_2$ followed by the other remaining eigenvalues.
+
+
+:::
+
+Armed with this result, let us understand the short-term behavior of random walks.
+A key property is the *mixing time*, which is the time it takes for the random walk to reach the stationary distribution.
+Formally, the **mixing time** $t_{\text{mix}}$ is defined as
 $$
 t_{\text{mix}} = \min\{t : \max_{\mathbf{x}(0)} \|\mathbf{x}(t) - \boldsymbol{\pi}\|_{1} \leq \epsilon\}
 $$
 
-The mixing time is closely related to the second largest eigenvalue $\lambda_2$ of the normalized adjacency matrix:
+It is not trivial to connect with this definition to the spectral properties of $\overline{\mathbf{A}}$.
+But, since the transition matrix $\mathbf{P}$ is determined by the eigenvalues and eigenvectors of the normalizsed adjacency matrix $\overline{\mathbf{A}}$, the mixing time is determined by the eigenvalues of $\overline{\mathbf{A}}$, in particular the second largest eigenvalue $\lambda_2$, which dominates in $\mathbf{P}^t$ following the principal eigenvector $\pi$. In fact, the mixing time is bounded by the second largest eigenvalue.
+
 
 $$
 t_{\text{mix}} < \frac{1}{1-\lambda_2} \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right)
 $$
 
-More commonly, it is expressed using the second smallest eigenvalue $\mu$ of the normalized Laplacian matrix:
+::: {.column-margin}
+An alternative represention is to use the second smallest eigenvalue $\mu$ of the normalized Laplacian matrix:
 
 $$
 t_{\text{mix}} \leq \frac{1}{\mu}
 $$
 
 where $\mu = 1-\lambda_2$.
+:::
+
 
 ## Community Detection through Random Walks
 
 Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network's modular structure.
 
-::: {.callout-note title="Intuitive Example: University Social Networks"}
-Imagine a random walker exploring friendships at a university:
-
-**Short-term behavior (first few steps)**:
-- Start with a Computer Science student
-- Walker mostly visits other CS students (same classes, shared interests)
-- Occasionally ventures to Math or Engineering students
-
-**Medium-term behavior**:
-- Walker starts exploring other departments
-- Still biased toward technical fields due to connections
-
-**Long-term behavior**:
-- Eventually visits all departments proportional to their size
-- Lost all memory of starting point
-
-**Key insight**: The time it takes to "escape" the CS community tells us how tightly knit that community is! Tight-knit communities have longer escape times.
-
-This is exactly how random walk-based community detection works - we look at where walkers get "trapped" in the short term.
-:::
-
-The position of the walker at intermediate time steps (before convergence) reveals the community structure, as walkers spend more time exploring their local neighborhood before venturing into other communities.
-
-An important observation is that the walker spends more time in the community that it started from and then diffuses to others. Thus, the position of the walker before reaching the steady state tells us the community structure of the network.
-
-## Connections to Centrality Measures
-
 ### Random Walk Interpretation of Modularity
 
-Modularity can be interpreted through random walks:
+Modularity can be interpreted through random walks [@delvenne2010stability]:
 
 $$
 Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)
@@ -529,36 +453,27 @@ The expression suggests that:
 
 High modularity indicates walkers are more likely to stay within communities in the short term than in the long term.
 
-### PageRank as Random Walk with Teleportation
 
-PageRank represents a random walk where:
-- With probability $(1-\beta)$: follow a link to the next node
-- With probability $\beta$: teleport to a random node
-
-$$
-c_i = (1-\beta) \sum_j P_{ji} c_j + \beta \cdot \frac{1}{N}
-$$
-
-Where:
-- $c_i$ is the PageRank of node $i$
-- $P_{ji}$ is the transition probability from node $j$ to node $i$
-- $\beta$ is the teleportation probability
-- $N$ is the total number of nodes
-
-The PageRank values are the stationary distribution of this modified random walk, representing the long-term probability of finding the walker at each node.
-
-::: {.callout-note}
-This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.
+::: {.column-margin}
+[@delvenne2010stability] extends the modularity to the case of multi-step random walks, which can identify communities across different resolution scales.
 :::
 
-## Summary
+### Infomap: Information-Theoretic Community Detection
 
-Random walks provide a unified framework for understanding networks through the lens of stochastic processes. Key insights include:
+While modularity provides one approach to community detection through random walks, **Infomap** offers an information-theoretic perspective [@rosvall2008maps; @rosvall2009map].
 
-1. **Stationary distributions** connect to degree centrality naturally
-2. **Temporal dynamics** reveal community structure through short-term vs. long-term behavior
-3. **Spectral properties** determine convergence rates and mixing times
-4. **Applications** include new interpretations of modularity and PageRank
-5. **Mathematical foundation** links to Markov chains and linear algebra
+Infomap asks: *How can we most efficiently describe the path of a random walker through a network?* The key insight is that if a network has strong community structure, a random walker will spend most of its time within communities, making short jumps between communities. This pattern can be *compressed efficiently* using a two-level code:
 
-This theoretical foundation prepares us for implementing and applying random walks computationally in the next section, where we'll see how these concepts translate into practical algorithms and network analysis tools.
+1. **Module code**: A unique identifier for each community
+2. **Exit code**: A special symbol indicating when the walker leaves a community
+3. **Node code**: Identifiers for nodes within each community
+
+By compressing the trajectory of random walks, Infomap can find a community structure that minimizes the average bits needed to describe the random walk.
+
+::: {#fig-infomap}
+
+![](https://www.mapequation.org/assets/img/metadatamapequation.svg)
+
+Infomap finds community detection by compressing the trajectory of random walks. (a) shows a random walker's trajectory through a network, while (d) demonstrates the hierarchical encoding scheme that minimizes description length by assigning short, reusable codewords to nodes within modules (colored regions) and special transition codes (pentagons/triangles) for movements between modules, with the optimal community structure being the partition that minimizes the average bits needed to describe the random walk
+
+:::
