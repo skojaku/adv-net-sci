@@ -1,0 +1,394 @@
+---
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: true
+    preview-links: auto
+    theme: simple
+    css: css/style.css
+highlight-style: github
+---
+
+# Module 01: Königsberg Bridge Puzzle
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Advanced Topics in Network Science
+
+Sadamori Kojaku
+
+skojaku@binghamton.edu
+
+:::
+
+::: {.column width="50%"}
+
+![](https://images.squarespace-cdn.com/content/v1/5cc95b569d4149226d0f4e4a/1556727689524-ENOT8C0BYFAWICK0WANX/Image-Koenigsberg%2C_Map_by_Merian-Erben_1652.jpg)
+
+:::
+:::
+
+## Quiz
+
+1. Explain in your own words what is the conditions for a graph to have an Euler path, and why?
+
+2. What is the minimum number of bridges required to make the Königsberg bridge puzzle have an Euler circuit? Explain your reasoning.
+
+![](https://www.lancaster.ac.uk/stor-i-student-sites/harini-jayaraman/wp-content/uploads/sites/35/2022/05/Screenshot-201-1-1024x576.png){width=100% fig-align="center"}
+
+
+
+## Menue
+
+1. Connected components
+2. Representation of networks
+3. Coding exercise: set up
+4. Assignment set up
+
+
+## Connected Component
+
+
+**Definition:** [A connected component]{.red-text} is a maximal set of nodes where every node can reach every other node within that set.
+
+
+![](./connected-component.jpg){width=100% fig-align="center"}
+
+
+*Question: Is a single node a connected component?*
+
+---
+
+In large real-world networks, what would you expect 🤔?
+
+- Many tiny components of 2-3 nodes?
+- One huge component containing most nodes?
+- All components roughly equal size?
+
+
+::: {.incremental}
+- Many networks contain [a giant component]{.red-text} that contains a significant fraction of all nodes in the network
+- **Definition:** [A giant component]{.red-text} is a connected component where almost every node in the network is reachable from any other node in the component.
+:::
+
+
+---
+
+**Context:** What if edges have direction? (Think Twitter follows, webpage links)
+
+:::: {.columns}
+
+::: {.column width="45%" .column-divider}
+
+### Strongly connected 💪
+Every node can reach every other node following edge directions
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Strong {
+  layout=circo
+
+  A [shape=circle, fillcolor="#e1f5fe", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#f3e5f5", style="filled"];
+
+  A -> B -> C -> A;
+}
+```
+
+:::
+
+::: {.column width="45%"}
+
+### Weakly connected 🤝
+
+Connected if we ignore edge directions
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Weak {
+  layout=circo
+
+  A [shape=circle, fillcolor="#ffcdd2", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#c8e6c9", style="filled"];
+
+  A -> B -> C;
+}
+```
+
+:::
+
+::::
+
+**Question:** Is every strongly connected component also weakly connected?
+
+## Coding Networks in Python 💻
+
+Given any network, how would you represent it in a computer?
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+
+Three ways to represent the same network:
+
+1. **Edge Table** - List of connections
+2. **Adjacency List** - Each node's neighbors
+3. **Adjacency Matrix** - Grid of 1s and 0s
+
+:::
+
+::: {.column width="40%"}
+
+![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg){width=200px fig-align="center"}
+
+*5 nodes, 6 edges*
+
+:::
+
+::::
+
+## Edge Table: The Direct Approach 📋
+
+Simply list every connection:
+
+```python
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+```
+
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
+
+## Adjacency List: Neighborhood Map 🗺️
+
+Each node knows its neighbors:
+
+```python
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1,2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0,2,3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0,1,4
+    3: [1, 4],     # Node 3 connects to nodes 1,4
+    4: [2, 3]      # Node 4 connects to nodes 2,3
+}
+```
+
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
+
+## Adjacency Matrix: The Math Way 📐
+
+Grid where entry $(i,j) = 1$ if connected:
+
+```python
+import numpy as np
+
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0: connects to 1,2
+    [1, 0, 1, 1, 0],  # Node 1: connects to 0,2,3
+    [1, 1, 0, 0, 1],  # Node 2: connects to 0,1,4
+    [0, 1, 0, 0, 1],  # Node 3: connects to 1,4
+    [0, 0, 1, 1, 0]   # Node 4: connects to 2,3
+])
+```
+
+- *How would you count the degree of node 1 from this matrix?*
+- *How would you find the neighbors of node 1?*
+
+## Implementing Euler's Theorem 🧮
+
+```python
+def has_euler_path(adjacency_matrix):
+    # Calculate degrees
+    degrees = adjacency_matrix.sum(axis=1)
+
+    # Count odd degrees
+    odd_count = sum(1 for d in degrees if d % 2 == 1)
+
+    # Euler's condition
+    return odd_count == 0 or odd_count == 2
+```
+
+*Do you agree with this?*
+
+## The Missing Piece: Connectivity ⚖️
+
+::: {.callout-tip title = "Revisit"}
+An Euler path exists if and only if:
+
+1. **The graph is connected** ← We forgot this!
+2. **Exactly 0 or 2 nodes have odd degree**
+
+:::
+
+# Module 01 Review 🎯
+
+
+---
+
+::: {.incremental}
+- **Euler's legacy** (1736)
+  - Abstraction over physical details
+  - Focus on relationships $\rightarrow$ Birth of graph theory
+- **Euler's theorem**
+  - [Euler path]{.red-text} exists if and only if the graph is [connected]{.red-text} and exactly 0 or 2 nodes have odd [degree]{.red-text}
+- **Key concepts**:
+  - Path, walk, trail, circuit, cycle
+  - Connected component, giant component, degree
+- **Computational Representation**
+  - Edge table, adjacency list, adjacency matrix
+:::
+
+---
+
+::: {.incremental}
+- **Walk**
+  - Any sequence of connected nodes
+- **Trail**
+  - Walk without repeated edges
+- **Path**
+  - Walk without repeated nodes
+- **Circuit/Cycle:**
+  - Closed versions that return to start
+- [Is a path always a trail 🤔?]{.blue-text}
+  - [Yes. Path does not repeat edges.]{.blue-text}
+:::
+
+---
+
+::: {.incremental}
+- **Connected**
+  - A network where there is a path between every pair of nodes
+- **Connected component**
+  - A maximal set of nodes where every node can reach every other node within that set
+- **Giant component**
+  - A connected component where almost every node in the network is reachable from any other node in the component
+- **Strongly connected**
+  - A network where every node can reach every other node following edge directions
+- **Weakly connected**
+  - A network where there is a path between every pair of nodes ignoring edge directions
+:::
+
+---
+
+::: {.incremental}
+- **Euler path**
+  - A path that visits each edge exactly once
+- **Euler circuit**
+  - An Euler path that starts and ends at the same node
+- [What is the condition for the existence of an Euler circuit?]{.blue-text}
+  - [Graph is connected and all nodes have even degree.]{.blue-text}
+:::
+
+---
+
+## Representation of Networks
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+**Edge Table**
+```python
+edges = [
+    (0, 1),
+    (1, 2),
+    (2, 3)
+]
+```
+*Best for:* Storage, I/O
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency List**
+```python
+neighbors = {
+    0: [1],
+    1: [0, 2],
+    2: [1, 3]
+}
+```
+*Best for:* Neighbor search
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency Matrix**
+```python
+matrix = np.array([
+    [0, 1, 0],
+    [1, 0, 1],
+    [0, 1, 0]
+])
+```
+*Best for:* Math operations
+
+:::
+
+::::
+
+**My recommendation:**
+
+Use edge table for saving the network data. Use (sparse) adjacency matrices for analysis.
+
+## Coming up in Module 02:
+
+**Small world networks**
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](https://arc-anglerfish-arc2-prod-bostonglobe.s3.amazonaws.com/public/KAFMHCBENYI6HMSJRGIHNL55SU.jpg)
+
+:::
+
+
+::: {.column width="50%"}
+
+Almost all 8 billion people on the planet are your friends of friends of friends of friends of friends of friends.
+
+:::
+:::
+
+## Coding Exercise
+
+::: {.columns}
+
+::: {.column width="35%"}
+- Represent the bridge network as either an edge table, an adjacency list, or an adjacency matrix in Python.
+- Write a function that takes the network data and returns the existence of an Euler path.
+
+:::
+
+::: {.column width="65%"}
+![](https://github.com/skojaku/adv-net-sci/raw/main/docs/lecture-note/figs/binghamton-map.jpg)
+:::
+:::
+
+## Assignment set up
+
+- [https://classroom.github.com/a/Sdey2VNh](https://docs.docker.com/desktop/).
+
+- Preparations: Install [Docker Desktop](https://docs.docker.com/desktop/) and [GitHub Desktop](https://desktop.github.com/download/)
+
+- [A simple workflow](https://docs.google.com/presentation/d/19Zvrp5kha6ohF4KvTX9W2jodKkfmsOrJfEZtO_Wg0go/edit?usp=sharing) using GitHub Web UI
+- [A recommended workflow](https://docs.google.com/presentation/d/1fi5x85pW8m37eh5xIJbFrZXihM9K5BxXwmdI85h45AU/edit?usp=sharing) using Docker and VS Code.

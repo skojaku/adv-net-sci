@@ -1,0 +1,603 @@
+---
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: false
+    preview-links: auto
+    theme: simple
+    css: css/style.css
+highlight-style: github
+---
+
+# Check list
+
+- [ ] Microphone turned on
+- [ ] Zoom room open
+- [ ] MyBinder launched
+- [ ] Sound Volume on
+
+# Introduction
+:::: {.columns}
+
+::: {.column width="50%"}
+Advanced Topics in Network Science
+
+Sadamori Kojaku
+
+skojaku@binghamton.edu
+
+:::
+
+::: {.column width="50%"}
+
+![](https://newmedialab.cuny.edu/wp-content/uploads/2014/01/Internet.gif)
+
+:::
+
+::::
+
+
+
+## Enginet
+
+![](../enginet-intro-slide/enginet-01.png)
+
+## Enginet
+
+![](../enginet-intro-slide/enginet-02.png)
+
+## Enginet
+
+![](../enginet-intro-slide/enginet-03.png)
+
+## Course Overview
+
+- **Instructor:** Sadamori Kojaku (幸若完壮)
+- **Email:** skojaku@binghamton.edu
+- **Office Hours:** Friday 10:00-14:00
+- **Course Website:** [https://skojaku.github.io/adv-net-sci](https://skojaku.github.io/adv-net-sci)
+
+
+## Let's start with a story... 🦠
+
+2009: H1N1 pandemic spreads globally
+
+Do you remember which countries were infected first and second? Why do you think these countries were affected first and second?
+
+Think about it for 30 seconds.
+
+::: {.incremental}
+
+- **Your predictions:**
+
+  - Geographic distance matters?
+  - Nearby countries first?
+  - Then spreading outward in circles?
+
+- *Let's hear some thoughts...*
+
+:::
+
+## Answer
+
+
+- First: United States
+
+- Second: **Spain**
+
+
+## Here's what actually happened...
+
+<img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+**Question:** What do you notice? Does this match your prediction?
+
+---
+
+**Key insight:** Network structure (air travel) determined spread, not geography!
+
+<img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" style="width: 100%; max-width: none; margin-bottom: 20px;">
+
+
+## Spot the Networks! 👀
+
+**Look around you right now...**
+
+What networks do you interact with daily?
+
+*Take 1 minute - list as many networks as you can*
+
+## Let's Share! 🗣️
+
+**What did you come up with?**
+
+*I'll collect a few examples from the class...*
+
+## Here Are Some You Might Have Missed:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Plant-Pollinator Networks** 🌼
+
+![](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png){width=90% fig-align="center"}
+
+:::
+
+::: {.column width="50%"}
+
+**Your Brain Right Now!** 🧠
+
+![](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp){width=90% fig-align="center"}
+
+*As you're listening, billions of neurons are connecting...*
+
+:::
+
+::::
+
+## Social Networks (Obviously!) 📱
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png){width=100% fig-align="center"}
+
+:::
+
+::: {.column width="50%"}
+
+How do ideas spread through social networks?
+
+Same as diseases? Different?
+
+:::
+
+::::
+
+## How Did You Get to Class Today? 🚗
+
+![](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png){width=80% fig-align="center"}
+
+**Transportation networks shape our daily choices!**
+
+## Wait - Isn't This Just Graph Theory? 🤔
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+These are typical topological patterns studied in Graph Theory.
+
+What do you notice about this pattern?
+
+:::
+
+::: {.column width="50%"}
+
+![](https://mathworld.wolfram.com/images/eps-svg/DistanceRegularCubic_800.svg)
+
+:::
+
+::::
+
+
+## Real-World Networks Look Like This:
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+![](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png){width=100% fig-align="center"}
+
+:::
+
+::: {.column width="40%"}
+
+What's different here?
+
+Why does this "messiness" matter?
+
+*Question - what makes real networks "messy"?*
+
+:::
+
+::::
+
+
+# The Dawn of Network Science
+
+
+
+![](https://naturebackin.com/wp-content/uploads/2019/04/1-sunrise-savuti-botswana.jpg?w=950)
+
+
+---
+
+
+## Philosophers on the Nature of Reality
+
+::: {.incremental}
+- Thales of Miletus (c. 624–546 BCE): *Everything is water.*
+- Pythagoras of Samos (c. 570–495 BCE): *All is number.*
+- Democritus of Abdera (c. 460–370 BCE): *Everything is made of atoms.*
+- René Descartes (1596–1650): *Divide each problem into as many parts as possible.*
+
+- **Key insight:** Seek the fundamental building blocks—whether substance, number, atom, or principle—by [breaking down complex systems into their simplest elements]{.red-text}.
+:::
+
+
+
+## The Reductionist Approach 🧩
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+*Break it down → Understand parts → Reassemble*
+
+*This works well. Does it?*
+
+:::
+
+::: {.column width="60%"}
+
+![](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg){width=80% fig-align="center"}
+
+:::
+
+::::
+
+## Thought Experiment 🤔
+
+:::: {.columns}
+
+::: {.column width="70%"}
+
+
+::: {.incremental}
+
+- Imagine you're an Alien scientist (like von Neumann!) studying humans...
+
+- You understand every single neuron in the human brain perfectly.
+
+- Can we say we understand human consciousness? Why?
+
+:::
+
+:::
+
+::: {.column width="30%"}
+
+![](https://upload.wikimedia.org/wikipedia/commons/5/5e/JohnvonNeumann-LosAlamos.gif){width=50% fig-align="center"}
+
+:::
+
+::::
+
+---
+
+::: {.incremental}
+- You can know every neuron *but not predict consciousness*
+- You can study every person *but not understand social movements*
+- ...because [parts do not operate in isolation but work together in tandem]{.red-text}
+- **The relationship of parts matters!**
+:::
+
+
+## Today's highlight
+
+Who is among the first to study the relationship of parts?
+
+**Leonhard Euler (1707–1783)**
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Leonhard_Euler_-_Jakob_Emanuel_Handmann_%28Kunstmuseum_Basel%29.jpg/500px-Leonhard_Euler_-_Jakob_Emanuel_Handmann_%28Kunstmuseum_Basel%29.jpg){width=50% fig-align="center"}
+
+
+
+---
+
+### About this course
+
+## Course Objectives
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+We will:
+
+- 🔍 Analyze networks
+- 🧠 Learn key concepts
+- 🤖 Apply AI to networks
+
+:::
+
+
+::: {.column width="60%"}
+
+After this course, you'll be able to:
+
+- 📖 Understand network science papers
+- 🛠️ Do advanced network analysis
+- 📝 Design network research
+- 🔗 Connect Systems Science and networks
+
+:::
+
+::::
+
+---
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+### Core Learning Philosophy
+
+- Learning by doing
+
+
+- *Doing it wrong, and learning from it!*
+
+- There are many traps to make you fail!
+(not in the sense of failing the course)
+
+
+:::
+
+::: {.column width="50%"}
+
+![](https://media1.tenor.com/m/-LDi5jsgk_8AAAAd/bruce-lee-dont-think.gif){width=70% fig-align="center" style="display:block; margin-left:auto; margin-right:auto;"}
+
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_NZxWrYf1VvFyG5we1DtkTZOkbsVkbUFtAg&s){width=80% fig-align="center"}
+
+:::
+
+::::
+
+
+## Trap \#1
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+**Pen & Paper Exercise**
+
+All modules start with an in-class pen & paper exercise.
+
+- Bring your pen to class
+- You solve it by yourself
+- Then, discuss with your mates
+
+:::
+
+::: {.column width="40%"}
+
+![](https://static1.xdaimages.com/wordpress/wp-content/uploads/wm/2024/09/why-i-use-pen-and-paper-with-note-taking-apps.jpg)
+
+:::
+
+::::
+
+## Trap \#2
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+**Interactive Visualization**
+
+Most modules have an interactive game to play
+
+- Wining the game requires Network Science knowledge
+- You don't have the knowledge initially but play the game
+- You will learn Network Science by learning how to win the game
+
+:::
+
+::: {.column width="40%"}
+
+Link: [Vaccination Game](https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html)
+
+<iframe src="https://skojaku.github.io/adv-net-sci/assets/vis/vaccination-game.html" width="100%" height="500" frameborder="0"></iframe>
+
+:::
+
+::::
+
+## Trap \#3
+
+**Weekly Quiz**
+
+Every class begins with a weekly quiz to review the previous week's topics.
+
+- Written quiz
+- Only few questions
+- Graded and reviewed during the class
+- You can resubmit the quiz (one time)
+- (Enginet students will submit via Brightspace)
+
+## Trap \#4
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+**Assignment**
+
+- Most modules have coding assignments
+
+- Distributed via GitHub Classroom
+
+- Unlimited attempts until deadline
+
+- Autograded
+
+
+:::
+
+::: {.column width="40%"}
+
+
+
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTDkP2xHhQHiAYDwy6k1KJ2HuQ6JoanN91Atdp9Wbfq8_1zvX2VKOx07xvLru4HvekNEzYC_WoUINRy/pubembed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
+We'll cover assignment submission in class. Find the detailed instruction on the lecture note.
+:::
+
+::::
+
+## Trap \#5
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+**LLM Dojo**
+
+
+- You'll create challenging questions for LLMs.
+
+- You'll win if you can create one that stumps LLMs.
+
+- Every module has a LLM Dojo exercise
+
+- Collected & Graded on GitHub
+
+:::
+
+::: {.column width="60%"}
+
+You'll create a quiz & answer for LLMs.
+
+```toml
+[[questions]]
+question = """
+    When is the global clustering not a
+    good representation of the network?
+    """
+answer = """
+    When the network is degree
+    heterogeneous. This is because
+    a single hub can create
+    substantially many triangles
+    in the network, not
+    representing the number of
+    triangles typical nodes
+    in the network form.
+    """
+```
+
+:::
+
+::::
+
+## Trap \#6
+
+**Network of the Week**
+
+- You'll pick a paper on network science of your interest
+
+- You'll present the paper in the class
+  - roughly 10 minutes
+  - 5 mins for Q&A
+
+- The instructor can help you find a paper
+
+## Grading items
+
+- Quiz (10%)
+- Network of the Week Presentation (10%)
+- Assignments (20%)
+- Exam (30%)
+- Project (30%)
+
+::: {.incremental}
+- ✨ Bonus (30%)
+  - 10% bonus for the best project (one team)
+  - 10% for the excellent Network of the Week Presentation
+  - 10% bonus for excellent question-answer assignment
+:::
+
+## Exam
+
+- **Final exam on all topics**
+- During exam week (Dec 8-12)
+- All multiple choice questions
+- Take home exam
+- Brightspace will be used for submission
+
+## Final Project 🎓
+
+- Individual project (30% of grade) 📊
+- Timeline 📅
+  - Proposal: Sept 30; Paper: Dec 5; Presentations: Dec 5
+
+- Requirements 📋
+  - About Network Science
+  - Develop a new method, new visualization, literature review, case study, etc.
+
+## Example Project 01
+
+Analysing the network of scientific topics
+
+![](sci-topic-net.png)
+
+
+## Example Project 02
+
+Correlation between the neural activities of the brain
+
+![](ecog.png)
+
+## Example Project 03
+
+Tesla Supercharger Network
+
+![](super-charger.png)
+
+# Lecture note
+
+- 📚 [Online Lecture Note](https://skojaku.github.io/adv-net-sci)
+- See [The course GitHub repo](https://github.com/skojaku/adv-net-sci/) for details
+
+## AI Tutor 🤖
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+![](minidora.png)
+
+**Minidora**, an AI tutor for this course available 24/7 through Discord
+
+
+:::
+
+::: {.column width="50%"}
+
+- You can chat, ask questions, and take quizzes with Minidora.
+- Sign up for the course on Discord to get access
+- Demo: `/ask What is an Euler tour?`
+
+:::
+
+::::
+
+## Policy
+
+- 📚 3-credit course: 6.5+ hours of work/week outside class
+- 🤖 AI tools allowed for learning, but cite if used in assignments
+- 💾 Back up all data and code (loss not an excuse for late work)
+- ♿ Accommodations available for students with disabilities
+- 🚫 Zero tolerance for academic dishonesty
+
+# Questions?

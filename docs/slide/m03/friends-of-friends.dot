@@ -1,0 +1,70 @@
+digraph friends_of_friends {
+    // Graph settings
+    rankdir=LR;
+    bgcolor="transparent";
+    node [fontname="Arial", fontsize=12];
+    edge [color="#666666", penwidth=2];
+    
+    // Define node styles
+    node [shape=circle, style=filled, width=0.8, height=0.8];
+    
+    // Central node (you)
+    me [label="You", fillcolor="#4CAF50", fontcolor="white", fontsize=14, pos="0,0!"];
+    
+    // Friend nodes with different stub counts
+    f1 [label="Friend 1\n(k=1)", fillcolor="#FF9800", fontcolor="white", pos="3,2!"];
+    f2 [label="Friend 2\n(k=2)", fillcolor="#2196F3", fontcolor="white", pos="3,1!"];
+    f3 [label="Friend 3\n(k=3)", fillcolor="#2196F3", fontcolor="white", pos="3,0!"];
+    f4 [label="Friend 4\n(k=4)", fillcolor="#2196F3", fontcolor="white", pos="3,-1!"];
+    f5 [label="Friend 5\n(k=5)", fillcolor="#2196F3", fontcolor="white", pos="3,-2!"];
+    
+    // Stub nodes (representing additional connections)
+    node [shape=circle, style="filled,dashed", fillcolor="#E0E0E0", fontcolor="#666666", width=0.5, height=0.5];
+    
+    // Stubs for friend 2
+    s2 [label="", pos="5,1!"];
+    
+    // Stubs for friend 3
+    s3a [label="", pos="5,0.5!"];
+    s3b [label="", pos="5,-0.5!"];
+    
+    // Stubs for friend 4  
+    s4a [label="", pos="5,-0.5!"];
+    s4b [label="", pos="5,-1!"];
+    s4c [label="", pos="5,-1.5!"];
+    
+    // Stubs for friend 5
+    s5a [label="", pos="5,-1.5!"];
+    s5b [label="", pos="5,-2!"];
+    s5c [label="", pos="5,-2.5!"];
+    s5d [label="", pos="5,-3!"];
+    
+    // Connections from you to friends
+    me -> f1 [color="#4CAF50", penwidth=3];
+    me -> f2 [color="#4CAF50", penwidth=3];
+    me -> f3 [color="#4CAF50", penwidth=3];
+    me -> f4 [color="#4CAF50", penwidth=3];
+    me -> f5 [color="#4CAF50", penwidth=3];
+    
+    // Connections from friends to their stubs
+    f2 -> s2 [color="#2196F3", style=dashed];
+    
+    f3 -> s3a [color="#2196F3", style=dashed];
+    f3 -> s3b [color="#2196F3", style=dashed];
+    
+    f4 -> s4a [color="#2196F3", style=dashed];
+    f4 -> s4b [color="#2196F3", style=dashed];  
+    f4 -> s4c [color="#2196F3", style=dashed];
+    
+    f5 -> s5a [color="#2196F3", style=dashed];
+    f5 -> s5b [color="#2196F3", style=dashed];
+    f5 -> s5c [color="#2196F3", style=dashed];
+    f5 -> s5d [color="#2196F3", style=dashed];
+    
+    // Labels
+    subgraph cluster_legend {
+        style=invis;
+        label_me [label="You need friends...", shape=plaintext, fontsize=10, pos="-1,-3!"];
+        label_friends [label="But friends need ≥2 connections\nto connect you to the network!", shape=plaintext, fontsize=10, pos="4,-4!"];
+    }
+}
