@@ -71,58 +71,37 @@ $$
 \min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
 $$
 
-In this equation, $\| u_i - u_j \|^2$ represents the squared distance between nodes $i$ and $j$ in the low-dimensional space. The goal is to minimize this distance for connected nodes (where $A_{ij} = 1$). The factor $\frac{1}{2}$ is included for mathematical convenience in later calculations.
+::: {.column-margin}
+**Derivation steps:**
 
-To solve this optimization problem, we rewrite $J_{LE}(\mathbf{U})$ as follows:
+Starting from $J_{LE}(\mathbf{U})$, we expand:
 
 $$
 \begin{aligned}
-J_{LE}(\mathbf{U}) &= \frac{1}{2}\sum_{i}\sum_{j} A_{ij} \| u_i - u_j \|^2 \\
-&= \frac{1}{2}\sum_{i}\sum_{j} A_{ij} \left( \| u_i \|^2 - 2 u_i^\top u_j + \| u_j \|^2 \right) \\
-&= \sum_{i}\sum_{j} A_{ij} \| u_i \|^2 - \sum_{i}\sum_{j} A_{ij} u_i^\top u_j\\
+&= \frac{1}{2}\sum_{i,j} A_{ij} \left( \| u_i \|^2 - 2 u_i^\top u_j + \| u_j \|^2 \right) \\
 &= \sum_{i} k_i \| u_i \|^2 - \sum_{i,j} A_{ij} u_i^\top u_j\\
 &= \sum_{i,j} L_{ij} u_i^\top u_j
 \end{aligned}
 $$
 
-where
+where $L_{ij} = k_i$ if $i=j$ and $L_{ij} = -A_{ij}$ otherwise.
 
-$$
-L_{ij} = \begin{cases}
-k_i & \text{if } i = j \\
--A_{ij} & \text{if } i \neq j
-\end{cases}
-$$
+In matrix form: $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$
 
-The minimization problem can be rewritten as:
+See [Appendix](./04-appendix.md) for full details.
+:::
 
-$$
-J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
-$$
-
-where
-
-$$
-\mathbf{U} =
-\begin{bmatrix}
-\mathbf{u}_1 ^\top \\
-\mathbf{u}_2 ^\top \\
-\vdots \\
-\mathbf{u}_N ^\top \\
-\end{bmatrix}
-$$
-
-See the [Appendix section](./04-appendix.md) for the detailed derivation.
-
-By taking the derivative of $J_{LE}(\mathbf{U})$ with respect to $\mathbf{U}$ and setting it to zero, we obtain the following equation:
+The solution minimizes distances between connected nodes. By taking the derivative and setting it to zero:
 
 $$
 \frac{\partial J_{LE}}{\partial \mathbf{U}} = 0 \implies \mathbf{L} \mathbf{U} = \lambda \mathbf{U}
 $$
 
-The solution is the $d$ eigenvectors associated with the $d$ smallest eigenvalues of $\mathbf{L}$.
+**Solution**: The $d$ eigenvectors associated with the $d$ smallest eigenvalues of the Laplacian matrix $\mathbf{L}$.
 
-It is important to note that the eigenvector corresponding to the smallest eigenvalue (which is always zero for connected graphs) is trivial - it's the all-one vector. Therefore, in practice, we typically compute the $d+1$ smallest eigenvectors and discard the one corresponding to the zero eigenvalue.
+::: {.column-margin}
+The smallest eigenvalue is always zero (with eigenvector of all ones). In practice, compute $d+1$ smallest eigenvectors and discard the trivial one.
+:::
 
 ## Neural Embedding
 
