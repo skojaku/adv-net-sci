@@ -1,196 +1,127 @@
 # Module 04: Node Degree - Coding Implementation
 
-## Degree Calculation and Analysis
+## Computing and Visualizing Degree Distributions
 
-### Basic Degree Computation
+This section follows the narrative from the lecture notes, using a Barabási-Albert scale-free network to demonstrate best practices for visualizing heavy-tailed degree distributions.
+
+### 1. Generating Network Data and Computing Degrees
+
+We start by creating a scale-free network and calculating its degree distribution.
+
 ```python
 import igraph
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
+from scipy import sparse
 
-# Create or load network
-g = igraph.Graph.Famous('Zachary')
+# Create a Barabási-Albert network with 10,000 nodes
+g = igraph.Graph.Barabasi(n=10000, m=1)
+A = g.get_adjacency()
 
-# Get degrees
-degrees = g.degree()
-print("Node degrees:", degrees)
-print("Max degree:", max(degrees))
-print("Min degree:", min(degrees))
-print("Average degree:", np.mean(degrees))
+# Compute degree for each node
+deg = np.sum(A, axis=1).flatten()
+
+# Convert to probability distribution (PDF)
+p_deg = np.bincount(deg) / len(deg)
 ```
 
-### Degree Distribution Analysis
+### 2. The Problem with Linear-Scale Histograms
+
+A standard histogram on a linear scale fails to reveal the structure of the degree distribution because most nodes have very low degrees, hiding the long tail of high-degree hubs.
+
 ```python
-from collections import Counter
-
-def analyze_degree_distribution(graph):
-    """Comprehensive degree distribution analysis"""
-    degrees = graph.degree()
-    
-    # Basic statistics
-    degree_stats = {
-        'mean': np.mean(degrees),
-        'std': np.std(degrees),
-        'min': min(degrees),
-        'max': max(degrees),
-        'median': np.median(degrees)
-    }
-    
-    # Degree distribution
-    degree_counts = Counter(degrees)
-    degree_values = sorted(degree_counts.keys())
-    degree_frequencies = [degree_counts[k] for k in degree_values]
-    degree_probabilities = [f/len(degrees) for f in degree_frequencies]
-    
-    return {
-        'stats': degree_stats,
-        'degree_values': degree_values,
-        'frequencies': degree_frequencies,
-        'probabilities': degree_probabilities,
-        'raw_degrees': degrees
-    }
-
-# Analysis
-dist_analysis = analyze_degree_distribution(g)
-print("Degree statistics:", dist_analysis['stats'])
+fig, ax = plt.subplots(figsize=(8, 5))
+ax = sns.lineplot(x=np.arange(len(p_deg)), y=p_deg)
+ax.set_xlabel('Degree')
+ax.set_ylabel('Probability')
+ax.set_title('Linear Scale: Most Information Hidden')
 ```
 
-## Degree Distribution Visualization
+### 3. Using Log-Log Plots to Reveal Structure
 
-### Basic Histogram
+Switching to logarithmic scales on both axes (a log-log plot) makes the underlying power-law structure visible. Power-law relationships appear as straight lines in log-log space.
+
 ```python
-def plot_degree_histogram(degrees, title="Degree Distribution"):
-    """Plot degree distribution as histogram"""
-    fig, ax = plt.subplots(figsize=(8, 6))
-    
-    ax.hist(degrees, bins=range(min(degrees), max(degrees) + 2), 
-            alpha=0.7, edgecolor='black')
-    ax.set_xlabel('Degree')
-    ax.set_ylabel('Number of Nodes')
-    ax.set_title(title)
-    ax.grid(True, alpha=0.3)
-    
-    return fig
-
-plot_degree_histogram(g.degree())
+fig, ax = plt.subplots(figsize=(8, 5))
+ax = sns.lineplot(x=np.arange(len(p_deg)), y=p_deg)
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_ylim(np.min(p_deg[p_deg>0])*0.01, None)
+ax.set_xlabel('Degree')
+ax.set_ylabel('Probability')
+ax.set_title('Log-Log Scale: Structure Revealed')
 ```
+While better, the plot is noisy in the tail due to statistical fluctuations.
 
-### Log-Log Plot for Scale-Free Detection
+### 4. The CCDF: The Standard for Visualizing Degree Distributions
+
+The **Complementary Cumulative Distribution Function (CCDF)** is the preferred method. It plots the fraction of nodes with a degree *greater than* k. This smooths the data without arbitrary binning and provides a clear view of the distribution's tail.
+
 ```python
-def plot_degree_distribution_loglog(graph, title="Degree Distribution (Log-Log)"):
-    """Plot degree distribution on log-log scale to detect power laws"""
-    degrees = graph.degree()
-    degree_counts = Counter(degrees)
-    
-    # Filter out zero degrees for log scale
-    degrees_nonzero = [k for k in degree_counts.keys() if k > 0]
-    probabilities = [degree_counts[k]/len(degrees) for k in degrees_nonzero]
-    
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.loglog(degrees_nonzero, probabilities, 'bo', markersize=6)
-    ax.set_xlabel('Degree (log scale)')
-    ax.set_ylabel('P(degree) (log scale)')
-    ax.set_title(title)
-    ax.grid(True, alpha=0.3)
-    
-    return fig, degrees_nonzero, probabilities
+# Compute CCDF: fraction of nodes with degree > k
+ccdf_deg = 1 - np.cumsum(p_deg)[:-1]  # Exclude last element (always 0)
 
-plot_degree_distribution_loglog(g)
+fig, ax = plt.subplots(figsize=(8, 5))
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg)
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('CCDF (Fraction of nodes with degree > k)')
+ax.set_title('CCDF: Smooth Power-Law Visualization')
 ```
+The CCDF produces a clean, interpretable curve, making it the standard for analyzing heavy-tailed distributions in network science.
 
-### Complementary Cumulative Distribution
+## Implementing the Friendship Paradox
+
+This section demonstrates the friendship paradox computationally using an efficient, edge-based sampling method as shown in the lecture.
+
+### 1. Edge-Based Sampling to Find "Friends"
+
+To correctly sample "friends," we sample edges uniformly at random. The endpoints of these edges represent the friends. High-degree nodes are part of more edges, so they are naturally overrepresented in this sample, which is the source of the paradox.
+
 ```python
-def plot_ccdf(degrees, title="Complementary Cumulative Distribution"):
-    """Plot complementary cumulative distribution function"""
-    sorted_degrees = np.sort(degrees)[::-1]  # Sort in descending order
-    ccdf_values = np.arange(1, len(sorted_degrees) + 1) / len(sorted_degrees)
-    
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.loglog(sorted_degrees, ccdf_values, 'r-', linewidth=2)
-    ax.set_xlabel('Degree (log scale)')
-    ax.set_ylabel('P(Degree ≥ k) (log scale)')
-    ax.set_title(title)
-    ax.grid(True, alpha=0.3)
-    
-    return fig
+# Extract all edges from the adjacency matrix
+src, trg, _ = sparse.find(A)
+print(f"Total number of edges: {len(src)}")
 
-plot_ccdf(g.degree())
+# Get degrees of "friends" (source nodes from the edge list)
+deg_friend = deg[src]
+
+# Compare average degrees
+print(f"Average degree in network: {np.mean(deg):.2f}")
+print(f"Average degree of friends: {np.mean(deg_friend):.2f}")
+print(f"Friendship paradox ratio: {np.mean(deg_friend) / np.mean(deg):.2f}")
 ```
 
-## Friendship Paradox Implementation
+### 2. Visualizing the Degree Bias with CCDF
 
-### Calculate Friend Degrees
+A side-by-side CCDF plot of the node degree distribution and the friend degree distribution provides the clearest visualization of the friendship paradox.
+
 ```python
-def friendship_paradox_analysis(graph):
-    """Analyze the friendship paradox in a network"""
-    results = []
-    
-    for node in range(graph.vcount()):
-        node_degree = graph.degree(node)
-        neighbors = graph.neighbors(node)
-        
-        if neighbors:  # If node has neighbors
-            neighbor_degrees = [graph.degree(neighbor) for neighbor in neighbors]
-            avg_friend_degree = np.mean(neighbor_degrees)
-        else:
-            avg_friend_degree = 0
-        
-        results.append({
-            'node': node,
-            'degree': node_degree,
-            'avg_friend_degree': avg_friend_degree,
-            'paradox_difference': avg_friend_degree - node_degree
-        })
-    
-    return results
+# Compute degree distribution of friends
+p_deg_friend = np.bincount(deg_friend) / len(deg_friend)
 
-# Analyze friendship paradox
-fp_results = friendship_paradox_analysis(g)
+# Compute CCDFs for both distributions
+ccdf_deg = 1 - np.cumsum(p_deg)[:-1]
+ccdf_deg_friend = 1 - np.cumsum(p_deg_friend)[:-1]
 
-# Summary statistics
-own_degrees = [r['degree'] for r in fp_results if r['degree'] > 0]
-friend_degrees = [r['avg_friend_degree'] for r in fp_results if r['degree'] > 0]
+# Create comparison plot
+fig, ax = plt.subplots(figsize=(10, 6))
+ax = sns.lineplot(x=np.arange(len(ccdf_deg)), y=ccdf_deg,
+                  label='All Nodes (Uniform Sampling)', linewidth=2, color='blue')
+ax = sns.lineplot(x=np.arange(len(ccdf_deg_friend)), y=ccdf_deg_friend,
+                  label='Friends (Edge-Based Sampling)', linewidth=2, color='red', ax=ax)
 
-print(f"Average own degree: {np.mean(own_degrees):.2f}")
-print(f"Average friend degree: {np.mean(friend_degrees):.2f}")
-print(f"Friendship paradox holds: {np.mean(friend_degrees) > np.mean(own_degrees)}")
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('CCDF')
+ax.set_title('Friendship Paradox: Friends Have Higher Degrees')
+ax.legend(frameon=False)
+ax.grid(True, alpha=0.3)
 ```
-
-### Visualize Friendship Paradox
-```python
-def plot_friendship_paradox(results):
-    """Visualize the friendship paradox"""
-    # Filter nodes with degree > 0
-    filtered = [r for r in results if r['degree'] > 0]
-    own_degrees = [r['degree'] for r in filtered]
-    friend_degrees = [r['avg_friend_degree'] for r in filtered]
-    
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    
-    # Scatter plot
-    ax1.scatter(own_degrees, friend_degrees, alpha=0.6)
-    ax1.plot([0, max(own_degrees)], [0, max(own_degrees)], 'r--', label='y=x line')
-    ax1.set_xlabel('Own Degree')
-    ax1.set_ylabel('Average Friend Degree')
-    ax1.set_title('Friendship Paradox')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
-    
-    # Distribution comparison
-    ax2.hist(own_degrees, alpha=0.5, label='Own degrees', bins=15)
-    ax2.hist(friend_degrees, alpha=0.5, label='Friend degrees', bins=15)
-    ax2.axvline(np.mean(own_degrees), color='blue', linestyle='--', label=f'Mean own: {np.mean(own_degrees):.1f}')
-    ax2.axvline(np.mean(friend_degrees), color='orange', linestyle='--', label=f'Mean friend: {np.mean(friend_degrees):.1f}')
-    ax2.set_xlabel('Degree')
-    ax2.set_ylabel('Count')
-    ax2.set_title('Degree Distributions')
-    ax2.legend()
-    
-    plt.tight_layout()
-    return fig
-
-plot_friendship_paradox(fp_results)
-```
+The plot shows that the friend distribution (red) is shifted towards higher degrees compared to the general node population (blue), visually confirming the paradox.
 
 ## High-Degree Node Analysis
 
