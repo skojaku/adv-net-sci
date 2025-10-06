@@ -249,10 +249,10 @@ We'll use only a small subset of labeled nodes for training (semi-supervised lea
 train_mask = torch.zeros(n_nodes, dtype=torch.bool)
 test_mask = torch.zeros(n_nodes, dtype=torch.bool)
 
-# Select 2 nodes from each class for training
+# Select 4 nodes from each class for training
 for label in [0, 1]:
     label_indices = np.where(membership == label)[0]
-    train_indices = np.random.choice(label_indices, size=2, replace=False)
+    train_indices = np.random.choice(label_indices, size=4, replace=False)
     train_mask[train_indices] = True
 
 # All other nodes are for testing
@@ -269,6 +269,12 @@ print(f"Training node indices: {torch.where(train_mask)[0].numpy()}")
 ### Step 5: Define the GNN Model
 
 We'll create a simple 2-layer Graph Convolutional Network (GCN).
+
+::: {.column-margin}
+**GCNConv**: PyTorch Geometric's implementation of Graph Convolutional Network layer from [Kipf & Welling (2017)](https://arxiv.org/abs/1609.02907). It performs neighborhood aggregation with symmetric normalization: $\mathbf{X}^{(l+1)} = \sigma(\mathbf{\hat{D}}^{-1/2}\mathbf{\hat{A}}\mathbf{\hat{D}}^{-1/2}\mathbf{X}^{(l)}\mathbf{W}^{(l)})$.
+
+[GCNConv Documentation →](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.GCNConv.html)
+:::
 
 ```{python}
 class GCN(torch.nn.Module):
@@ -299,6 +305,12 @@ model = GCN(
 print(model)
 print(f"\nTotal parameters: {sum(p.numel() for p in model.parameters())}")
 ```
+
+::: {.column-margin}
+**ReLU** (Rectified Linear Unit): Activation function $\text{ReLU}(x) = \max(0, x)$ that introduces non-linearity. It outputs the input if positive, otherwise zero. This allows the network to learn complex patterns.
+
+**Dropout**: Regularization technique that randomly sets a fraction of neurons to zero during training (here 50%). This prevents overfitting by forcing the network to learn robust features that don't rely on specific neurons.
+:::
 
 ### Step 6: Training Loop
 
@@ -367,6 +379,7 @@ print(f'\nFinal Test Accuracy: {test_accs[-1]:.4f}')
 Let's visualize how the model learned over time.
 
 ```{python}
+#| echo: false
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
 # Plot loss
