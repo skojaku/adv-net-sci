@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-27">
+<meta name="dcterms.date" content="2025-10-06">
 
-<title>Advanced Topics in Network Science</title>
+<title>Network Embedding Concepts – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,7 +57,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -104,11 +124,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../assets/custom.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -294,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M08: Embedding ───</li>
         <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
@@ -311,7 +374,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
         <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
@@ -344,7 +407,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">Network Embedding Concepts</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -661,13 +724,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Network Embedding Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Network Embedding Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -695,26 +758,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preparation - Image processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Concepts - From image to graph</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises: Graph Neural Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Graph Neural Networks</span></a>
   </div>
 </li>
       </ul>
@@ -724,13 +793,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">Network Embedding Concepts</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Network Embedding Concepts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -747,7 +817,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2025</p>
+      <p class="date">October 6, 2025</p>
     </div>
   </div>
   
@@ -759,51 +829,386 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="network-embedding-concepts" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Network Embedding Concepts</h1>
-<section id="what-to-learn-in-this-module" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-to-learn-in-this-module"><span class="header-section-number">1.1</span> What to Learn in This Module</h2>
-<p>In this module, we will learn how to embed networks into low-dimensional spaces. We will learn: - Spectral embedding - Neural embedding - <strong>Keywords</strong>: Laplacian EigenMap, Normalized Spectral Embedding, DeepWalk, Node2Vec</p>
+<section id="what-is-network-embedding" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="what-is-network-embedding"><span class="header-section-number">1</span> What is Network Embedding?</h2>
+<div id="fig-karate-to-embedding" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-karate-to-embedding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://transformerswsz.github.io/2022/09/09/DeepWalk%E8%A7%A3%E8%AF%BB/karate_to_embedding.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-karate-to-embedding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: This figure is taken from <a href="https://arxiv.org/abs/1403.6652">DeepWalk: Online Learning of Social Representations</a>.
+</figcaption>
+</figure>
+</div>
+<p>Networks are high-dimensional discrete data that can be difficult to analyze with traditional machine learning methods that assume continuous and smooth data. Network embedding is a technique to represent networks in low-dimensional continuous spaces, enabling us to apply standard machine learning algorithms.</p>
+<p>The goal of network embedding is to map each node in a network to a point in a low-dimensional space (typically <span class="math inline">\mathbb{R}^d</span> where <span class="math inline">d \ll N</span>) while preserving important structural properties of the network.</p>
 </section>
-<section id="comparing-spectral-and-neural-embedding-approaches" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="comparing-spectral-and-neural-embedding-approaches"><span class="header-section-number">1.2</span> Comparing Spectral and Neural Embedding Approaches</h2>
-<p>We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects.</p>
-</section>
-<section id="analytical-tractability" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="analytical-tractability"><span class="header-section-number">1.3</span> Analytical Tractability</h2>
-<p><strong>Spectral methods</strong> are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model {footcite}<code>nadakuditi2012graph</code>.</p>
-<p><strong>Neural embedding methods</strong> are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition {footcite}<code>qiu2018network,kojaku2023network</code>. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</p>
-</section>
-<section id="scalability-and-performance" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="scalability-and-performance"><span class="header-section-number">1.4</span> Scalability and Performance</h2>
-<p>A key limitation of the <strong>spectral embedding</strong> is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit learn package as <code>TruncatedSVD</code>), they might be unstable depending on the spectrum distribution of the matrix to be decomposed.</p>
-<p><strong>Neural embedding methods</strong> are often more stable and scalable, making them particularly suitable for large networks where computational efficiency is critical.</p>
-</section>
-<section id="flexibility-and-extensions" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="flexibility-and-extensions"><span class="header-section-number">1.5</span> Flexibility and Extensions</h2>
-<p><strong>Neural embeddings</strong> are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings {footcite}<code>nickel2017poincare</code> for embedding networks in hyperbolic space.</p>
-<p><img src="https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg" class="img-fluid"></p>
-<p>This flexibility extends to implementation choices and software options. There are various software packages for network embeddings, though due to technical complexity, some of them do not faithfully implement the algorithms in the paper. We provide a list of software packages for network embeddings below:</p>
-<ul>
-<li><a href="https://github.com/louisabraham/fastnode2vec">fastnode2vec</a>. This is a very fast implementation of node2vec. However, it uses a uniform probability distribution for the negative sampling, which is different from the original node2vec paper that uses a different distribution. This leads to some degeneracy of the embedding quality in community detection tasks.</li>
-<li><a href="https://github.com/pyg-team/pytorch_geometric">pytorch-geometric</a>. This is a very popular package for graph neural networks. It also uses a uniform probability distribution for the negative sampling, potentially having the same issue as <code>fastnode2vec</code>.</li>
-<li><a href="https://github.com/skojaku/gnn-tools">gnn-tools</a>. This is a collection of my experiments on network embedding methods.</li>
-<li><a href="https://github.com/skojaku/graphvec">My collection</a>. This is a lighter version of the <code>gnn-tools</code> collection.</li>
-</ul>
-</section>
-<section id="exercises" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.6</span> Exercises</h2>
+<section id="exercises" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="exercises"><span class="header-section-number">2</span> Exercises</h2>
 <ul>
 <li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
 </ul>
+</section>
+<section id="spectral-embedding" class="level2 page-columns page-full" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="spectral-embedding"><span class="header-section-number">3</span> Spectral Embedding</h2>
+<section id="network-compression-approach" class="level3">
+<h3 class="anchored" data-anchor-id="network-compression-approach">Network Compression Approach</h3>
+<p>Let us approach spectral embedding from the perspective of network compression. Suppose we have an adjacency matrix <span class="math inline">\mathbf{A}</span> of a network. The adjacency matrix is high-dimensional data, i.e., a matrix of size <span class="math inline">N \times N</span> for a network of <span class="math inline">N</span> nodes. We want to compress it into a lower-dimensional matrix <span class="math inline">\mathbf{U}</span> of size <span class="math inline">N \times d</span> for a user-defined small integer <span class="math inline">d &lt; N</span>. A good <span class="math inline">\mathbf{U}</span> should preserve the network structure and thus can reconstruct the original data <span class="math inline">\mathbf{A}</span> as closely as possible. This leads to the following optimization problem:</p>
+<p><span class="math display">
+\min_{\mathbf{U}} J(\mathbf{U}),\quad J(\mathbf{U}) = \| \mathbf{A} - \mathbf{U}\mathbf{U}^\top \|_F^2
+</span></p>
+<p>where:</p>
+<ol type="1">
+<li><span class="math inline">\mathbf{U}\mathbf{U}^\top</span> is the outer product of <span class="math inline">\mathbf{U}</span> and represents the reconstructed network.</li>
+<li><span class="math inline">\|\cdot\|_F</span> is the Frobenius norm, which is the sum of the squares of the elements in the matrix.</li>
+<li><span class="math inline">J(\mathbf{U})</span> is the loss function that measures the difference between the original network <span class="math inline">\mathbf{A}</span> and the reconstructed network <span class="math inline">\mathbf{U}\mathbf{U}^\top</span>.</li>
+</ol>
+<p>By minimizing the Frobenius norm with respect to <span class="math inline">\mathbf{U}</span>, we obtain the best low-dimensional embedding of the network.</p>
+</section>
+<section id="spectral-decomposition-solution" class="level3">
+<h3 class="anchored" data-anchor-id="spectral-decomposition-solution">Spectral Decomposition Solution</h3>
+<p>Consider the spectral decomposition of <span class="math inline">\mathbf{A}</span>:</p>
+<p><span class="math display">
+\mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top
+</span></p>
+<p>where <span class="math inline">\lambda_i</span> are eigenvalues (weights) and <span class="math inline">\mathbf{u}_i</span> are eigenvectors. Each term <span class="math inline">\lambda_i \mathbf{u}_i \mathbf{u}_i^\top</span> is a rank-one matrix that captures a part of the network’s structure. The larger the weight <span class="math inline">\lambda_i</span>, the more important that term is in describing the network.</p>
+<p>To compress the network, we can select the <span class="math inline">d</span> terms with the largest weights <span class="math inline">\lambda_i</span>. By combining the corresponding <span class="math inline">\mathbf{u}_i</span> vectors into a matrix <span class="math inline">\mathbf{U}</span>, we obtain a good low-dimensional embedding of the network.</p>
+<p><img src="../figs/spectral-decomposition.jpg" class="img-fluid"></p>
+<p>For a formal proof, please refer to the <a href="../m08-embedding/04-appendix.html">Appendix section</a>.</p>
+</section>
+<section id="modularity-embedding" class="level3">
+<h3 class="anchored" data-anchor-id="modularity-embedding">Modularity Embedding</h3>
+<p>In a similar vein, we can use the modularity matrix to generate a low-dimensional embedding of the network. Let us define the modularity matrix <span class="math inline">\mathbf{Q}</span> as follows:</p>
+<p><span class="math display">
+Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}
+</span></p>
+<p>where <span class="math inline">k_i</span> is the degree of node <span class="math inline">i</span>, and <span class="math inline">m</span> is the number of edges in the network.</p>
+<p>We then compute the eigenvectors of <span class="math inline">\mathbf{Q}</span> and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix. The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes with the same sign of the second eigenvector <span class="citation" data-cites="newman2006modularity">(<a href="#ref-newman2006modularity" role="doc-biblioref">Newman 2006</a>)</span>.</p>
+</section>
+<section id="laplacian-eigenmap" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="laplacian-eigenmap">Laplacian Eigenmap</h3>
+<p>Laplacian Eigenmap <span class="citation" data-cites="belkin2003laplacian">(<a href="#ref-belkin2003laplacian" role="doc-biblioref">Belkin and Niyogi 2003</a>)</span> is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:</p>
+<p><span class="math display">
+\min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
+</span></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><strong>Derivation steps:</strong></p>
+<p>Starting from <span class="math inline">J_{LE}(\mathbf{U})</span>, we expand:</p>
+<p><span class="math display">
+\begin{aligned}
+&amp;= \frac{1}{2}\sum_{i,j} A_{ij} \left( \| u_i \|^2 - 2 u_i^\top u_j + \| u_j \|^2 \right) \\
+&amp;= \sum_{i} k_i \| u_i \|^2 - \sum_{i,j} A_{ij} u_i^\top u_j\\
+&amp;= \sum_{i,j} L_{ij} u_i^\top u_j
+\end{aligned}
+</span></p>
+<p>where <span class="math inline">L_{ij} = k_i</span> if <span class="math inline">i=j</span> and <span class="math inline">L_{ij} = -A_{ij}</span> otherwise.</p>
+<p>In matrix form: <span class="math inline">J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})</span></p>
+<p>See <a href="../m08-embedding/04-appendix.html">Appendix</a> for full details.</p>
+</div></div><p>The solution minimizes distances between connected nodes. Through algebraic manipulation (see margin), we can rewrite the objective as <span class="math inline">J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})</span>, where <span class="math inline">\mathbf{L}</span> is the graph Laplacian matrix:</p>
+<p><span class="math display">
+L_{ij} = \begin{cases}
+k_i &amp; \text{if } i = j \\
+-A_{ij} &amp; \text{if } i \neq j
+\end{cases}
+</span></p>
+<p>By taking the derivative and setting it to zero:</p>
+<p><span class="math display">
+\frac{\partial J_{LE}}{\partial \mathbf{U}} = 0 \implies \mathbf{L} \mathbf{U} = \lambda \mathbf{U}
+</span></p>
+<p><strong>Solution</strong>: The <span class="math inline">d</span> eigenvectors associated with the <span class="math inline">d</span> smallest eigenvalues of the Laplacian matrix <span class="math inline">\mathbf{L}</span>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The smallest eigenvalue is always zero (with eigenvector of all ones). In practice, compute <span class="math inline">d+1</span> smallest eigenvectors and discard the trivial one.</p>
+</div></div></section>
+</section>
+<section id="neural-embedding" class="level2 page-columns page-full" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="neural-embedding"><span class="header-section-number">4</span> Neural Embedding</h2>
+<section id="introduction-to-word2vec" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-to-word2vec">Introduction to word2vec</h3>
+<p>Neural embedding methods leverage neural network architectures to learn node representations. Before discussing graph-specific methods, we first introduce <em>word2vec</em>, which forms the foundation for many neural graph embedding techniques.</p>
+<p>word2vec is a neural network model that learns word embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 <span class="citation" data-cites="mikolov2013distributed">(<a href="#ref-mikolov2013distributed" role="doc-biblioref">Mikolov et al. 2013</a>)</span>.</p>
+</section>
+<section id="how-word2vec-works" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="how-word2vec-works">How word2vec Works</h3>
+<p>word2vec learns word meanings from context, following the linguistic principle: “You shall know a word by the company it keeps” <span class="citation" data-cites="church1988word">(<a href="#ref-church1988word" role="doc-biblioref"><strong>church1988word?</strong></a>)</span>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>This phrase means a person is similar to those they spend time with. It comes from Aesop’s fable <em>The Ass and his Purchaser</em> (500s B.C.): a man brings an ass to his farm on trial. The ass immediately seeks out the laziest, greediest ass in the herd. The man returns the ass, knowing it will be lazy and greedy based on the company it chose.</p>
+<iframe width="100%" height="200" src="https://www.youtube.com/embed/gQddtTdmG_8?si=x8DUQnll2Rnj8qkn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+</div></div><p><strong>The Core Idea</strong>: Given a target word, predict its surrounding context words within a fixed window. For example, in:</p>
+<blockquote class="blockquote">
+<p>The quick brown fox jumps over a lazy dog</p>
+</blockquote>
+<p>The context of <em>fox</em> (with window size 2) includes: <em>quick</em>, <em>brown</em>, <em>jumps</em>, <em>over</em>.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The window size determines how far we look around the target word. A window size of 2 means we consider 2 words before and 2 words after.</p>
+</div></div><p><strong>Why This Works</strong>: Words appearing in similar contexts get similar embeddings. Consider:</p>
+<ul>
+<li>“The quick brown <strong>fox</strong> jumps over the fence”</li>
+<li>“The quick brown <strong>dog</strong> runs over the fence”</li>
+<li>“The <strong>student</strong> studies in the library”</li>
+</ul>
+<p>Both <em>fox</em> and <em>dog</em> appear with words like “quick,” “brown,” and “jumps/runs,” so they’ll have similar embeddings. But <em>student</em> appears in completely different contexts (like “studies,” “library”), so its embedding will be far from <em>fox</em> and <em>dog</em>. This is how word2vec captures semantic similarity without explicit supervision.</p>
+<p><strong>Two Training Approaches</strong>:</p>
+<ul>
+<li><strong>Skip-gram</strong>: Given a target word → predict context words (we’ll use this)</li>
+<li><strong>CBOW</strong>: Given context words → predict target word</li>
+</ul>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Skip-gram works better for small datasets and rare words. CBOW is faster to train.</p>
+</div></div><p><strong>Network Architecture</strong>: word2vec uses a simple 3-layer neural network:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/word2vec.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<ul>
+<li><strong>Input layer</strong> (<span class="math inline">N</span> neurons): One-hot encoding of the target word</li>
+<li><strong>Hidden layer</strong> (<span class="math inline">d</span> neurons, <span class="math inline">d \ll N</span>): The learned word embedding</li>
+<li><strong>Output layer</strong> (<span class="math inline">N</span> neurons): Probability distribution over context words (via softmax)</li>
+</ul>
+<p>The hidden layer activations become the word embeddings—dense, low-dimensional vectors that capture semantic relationships.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>For a visual walkthrough of word2vec, see <a href="https://jalammar.github.io/illustrated-word2vec/">The Illustrated Word2vec</a> by Jay Alammar.</p>
+</div></div></section>
+<section id="key-technical-components" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="key-technical-components">Key Technical Components</h3>
+<section id="the-computational-challenge" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="the-computational-challenge">The Computational Challenge</h4>
+<p>To predict context word <span class="math inline">w_c</span> given target word <span class="math inline">w_t</span>, we compute:</p>
+<p><span class="math display">
+P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{v}_{w_t})}
+</span></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>This is the softmax function—it converts dot products into probabilities that sum to 1.</p>
+</div></div><p><strong>The problem</strong>: The denominator sums over all vocabulary words (e.g., 100,000+ terms), making training prohibitively slow.</p>
+</section>
+<section id="two-solutions" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="two-solutions">Two Solutions</h4>
+<p><strong>Hierarchical Softmax</strong>: Organizes vocabulary as a binary tree with words at leaves. Computing probability becomes traversing root-to-leaf paths, reducing complexity from <span class="math inline">O(|V|)</span> to <span class="math inline">O(\log |V|)</span>.</p>
+<div id="fig-hierarchical-softmax" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hierarchical-softmax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://building-babylon.net/wp-content/uploads/2017/07/hs4-1536x834.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-hierarchical-softmax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2
+</figcaption>
+</figure>
+</div>
+<p><strong>Negative Sampling</strong>: Instead of normalizing over all words, sample a few “negative” (non-context) words. Contrast the target’s true context with these random words. This approximates the full softmax much more efficiently.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Typically, 5-20 negative samples are enough. The model learns to distinguish true context words from random words.</p>
+</div></div></section>
+</section>
+<section id="whats-special-about-word2vec" class="level3">
+<h3 class="anchored" data-anchor-id="whats-special-about-word2vec">What’s Special About word2vec?</h3>
+<p>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</p>
+<div id="fig-word2vec-embedding" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-word2vec-embedding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-word2vec-embedding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3
+</figcaption>
+</figure>
+</div>
+<p>word2vec embeddings can capture semantic relationships, such as analogies (e.g., <em>man</em> is to <em>woman</em> as <em>king</em> is to <em>queen</em>) and can visualize relationships between concepts (e.g., countries and their capitals form parallel vectors in the embedding space).</p>
+</section>
+</section>
+<section id="graph-embedding-with-word2vec" class="level2 page-columns page-full" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="graph-embedding-with-word2vec"><span class="header-section-number">5</span> Graph Embedding with word2vec</h2>
+<p>How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequences of words as input, while graph data are discrete and unordered. A solution to fill this gap is <em>random walk</em>, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Random walks create “sentences” from graphs: each walk is a sequence of nodes, just like a sentence is a sequence of words.</p>
+</div></div><section id="deepwalk" class="level3">
+<h3 class="anchored" data-anchor-id="deepwalk">DeepWalk</h3>
+<p><img src="https://dt5vp8kor0orz.cloudfront.net/7c56c256b9fbf06693da47737ac57fae803a5a4f/1-Figure1-1.png" class="img-fluid"></p>
+<p>DeepWalk is one of the pioneering works to apply word2vec to graph data <span class="citation" data-cites="perozzi2014deepwalk">(<a href="#ref-perozzi2014deepwalk" role="doc-biblioref">Perozzi, Al-Rfou, and Skiena 2014</a>)</span>. It views the nodes as words and the random walks on the graph as sentences, and applies word2vec to learn the node embeddings.</p>
+<p>More specifically, the method contains the following steps:</p>
+<ol type="1">
+<li>Sample multiple random walks from the graph.</li>
+<li>Treat the random walks as sentences and feed them to word2vec to learn the node embeddings.</li>
+</ol>
+<p>DeepWalk typically uses the skip-gram model with hierarchical softmax for efficient training.</p>
+</section>
+<section id="node2vec" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="node2vec">node2vec</h3>
+<p>node2vec <span class="citation" data-cites="grover2016node2vec">(<a href="#ref-grover2016node2vec" role="doc-biblioref">Grover and Leskovec 2016</a>)</span> extends DeepWalk with <strong>biased random walks</strong> controlled by two parameters:</p>
+<p><span class="math display">
+P(v_{t+1} = x | v_t = v, v_{t-1} = t) \propto
+\begin{cases}
+\frac{1}{p} &amp; \text{if } d(t,x) = 0 \text{ (return to previous)} \\
+1 &amp; \text{if } d(t,x) = 1 \text{ (close neighbor)} \\
+\frac{1}{q} &amp; \text{if } d(t,x) = 2 \text{ (explore further)} \\
+\end{cases}
+</span></p>
+<p>where <span class="math inline">d(t,x)</span> is the shortest path distance from the previous node <span class="math inline">t</span> to candidate node <span class="math inline">x</span>.</p>
+<p><strong>Controlling Exploration</strong>:</p>
+<ul>
+<li>Low <span class="math inline">p</span> → return bias (local revisiting)</li>
+<li>Low <span class="math inline">q</span> → outward bias (exploration)</li>
+<li>High <span class="math inline">q</span> → inward bias (stay local)</li>
+</ul>
+<p><strong>Two Exploration Strategies</strong>:</p>
+<p><img src="https://www.researchgate.net/publication/354654762/figure/fig3/AS:1069013035655173@1631883977008/A-biased-random-walk-procedure-of-node2vec-B-BFS-and-DFS-search-strategies-from-node-u.png" class="img-fluid"></p>
+<ul>
+<li><strong>BFS-like</strong> (low <span class="math inline">q</span>): Explore immediate neighborhoods → captures <strong>community structure</strong></li>
+<li><strong>DFS-like</strong> (high <span class="math inline">q</span>): Explore deep paths → captures <strong>structural roles</strong></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png" class="img-fluid"></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><strong>Technical Note</strong>: node2vec uses <strong>negative sampling</strong> instead of hierarchical softmax, which affects embedding characteristics <span class="citation" data-cites="kojaku2021neurips dyer2014notes">(<a href="#ref-kojaku2021neurips" role="doc-biblioref">Kojaku et al. 2021</a>; <a href="#ref-dyer2014notes" role="doc-biblioref">Dyer 2014</a>)</span>.</p>
+</div></div></section>
+<section id="line" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="line">LINE</h3>
+<p>LINE <span class="citation" data-cites="tang2015line">(<a href="#ref-tang2015line" role="doc-biblioref">Tang et al. 2015</a>)</span> is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with <span class="math inline">p=1</span>, <span class="math inline">q=1</span>, and window size 1.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions <span class="citation" data-cites="qiu2018network kojaku2024network">(<a href="#ref-qiu2018network" role="doc-biblioref">Qiu et al. 2018</a>; <a href="#ref-kojaku2024network" role="doc-biblioref">Kojaku et al. 2024</a>)</span>. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model <span class="citation" data-cites="kojaku2024network">(<a href="#ref-kojaku2024network" role="doc-biblioref">Kojaku et al. 2024</a>)</span>.</p>
+</div></div></section>
+</section>
+<section id="hyperbolic-embeddings-beyond-euclidean-space" class="level2 page-columns page-full" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="hyperbolic-embeddings-beyond-euclidean-space"><span class="header-section-number">6</span> Hyperbolic Embeddings: Beyond Euclidean Space</h2>
+<p>All the embedding methods we’ve discussed so far operate in Euclidean space (standard flat geometry). However, many real-world networks exhibit hierarchical structures and scale-free properties that are difficult to capture in Euclidean space. <strong>Hyperbolic embeddings</strong> offer a powerful alternative by embedding networks in hyperbolic geometry—a curved space with negative curvature.</p>
+<section id="the-popularity-similarity-framework" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="the-popularity-similarity-framework">The Popularity-Similarity Framework</h3>
+<p>The foundation for hyperbolic network embeddings comes from a seminal discovery: <strong>real networks grow by optimizing trade-offs between popularity and similarity</strong> <span class="citation" data-cites="papadopoulos2012popularity">(<a href="#ref-papadopoulos2012popularity" role="doc-biblioref">Papadopoulos et al. 2012</a>)</span>. When analyzing the evolution of the Internet, metabolic networks, and social networks, Papadopoulos et al.&nbsp;found that new connections are not formed simply by preferential attachment to popular nodes. Instead, nodes balance two factors:</p>
+<ul>
+<li><strong>Popularity</strong>: Connecting to well-established, highly connected nodes</li>
+<li><strong>Similarity</strong>: Connecting to nodes with similar characteristics or interests</li>
+</ul>
+<p>This popularity × similarity optimization has a remarkable geometric interpretation: it naturally emerges as <strong>optimization in hyperbolic space</strong>. In this framework:</p>
+<ul>
+<li>Node <strong>popularity</strong> maps to radial position (birth time, with older = more central)</li>
+<li>Node <strong>similarity</strong> maps to angular distance on a circle</li>
+<li>New connections form to nodes that are <strong>hyperbolically closest</strong></li>
+</ul>
+<p><img src="https://openmetric.org/assets/posts/popularity-similarity-in-networks/internet-routers.png" class="img-fluid"></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>In the popularity-similarity model, hyperbolic distance <span class="math inline">x_{ij} \approx r_i + r_j + \ln(\theta_{ij}/2)</span> combines popularity (radial coordinates <span class="math inline">r</span>) and similarity (angular distance <span class="math inline">\theta</span>). New nodes connect to the <span class="math inline">m</span> hyperbolically closest nodes.</p>
+</div></div><p>This framework elegantly explains why <strong>preferential attachment emerges</strong> as a phenomenon: it’s not a primitive mechanism, but rather a consequence of local geometric optimization. The probability that a node of degree <span class="math inline">k</span> attracts a new link follows <span class="math inline">\Pi(k) \propto k</span>, exactly as in preferential attachment—but now with crucial differences in which specific nodes get connected based on their similarity.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The popularity-similarity framework directly validates against real network evolution: the probability of new connections as a function of hyperbolic distance matches theoretical predictions for Internet, metabolic, and social networks, while pure preferential attachment is off by orders of magnitude <span class="citation" data-cites="papadopoulos2012popularity">(<a href="#ref-papadopoulos2012popularity" role="doc-biblioref">Papadopoulos et al. 2012</a>)</span>.</p>
+</div></div></section>
+<section id="why-hyperbolic-space" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="why-hyperbolic-space">Why Hyperbolic Space?</h3>
+<p>The study of hyperbolic geometry in complex networks emerged from foundational work showing that <strong>networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath</strong> <span class="citation" data-cites="krioukov2010hyperbolic">(<a href="#ref-krioukov2010hyperbolic" role="doc-biblioref">Krioukov et al. 2010</a>)</span>. Hyperbolic space has a unique property: its volume grows <strong>exponentially</strong> with radius, similar to how tree-like hierarchies grow. This naturally captures key network properties:</p>
+<ul>
+<li><strong>Scale-free degree distributions</strong>: Power-law degrees emerge from negative curvature</li>
+<li><strong>Strong clustering</strong>: Nodes form tight communities based on metric proximity</li>
+<li><strong>Small-world property</strong>: Short paths exist despite high clustering</li>
+<li><strong>Self-similarity and navigability</strong>: Arise from underlying hyperbolic geometry <span class="citation" data-cites="serrano2008self boguna2009navigability">(<a href="#ref-serrano2008self" role="doc-biblioref">Serrano, Krioukov, and Boguñá 2008</a>; <a href="#ref-boguna2009navigability" role="doc-biblioref">Boguñá, Krioukov, and Claffy 2009</a>)</span></li>
+</ul>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The connection between hyperbolic geometry and network structure was established through a series of papers by Krioukov, Boguñá, and colleagues (2008-2010), showing that the statistical mechanics of complex networks maps directly to geometric properties of hyperbolic space.</p>
+</div></div></section>
+<section id="mathematical-models-of-hyperbolic-space" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="mathematical-models-of-hyperbolic-space">Mathematical Models of Hyperbolic Space</h3>
+<p>Hyperbolic space can be represented through different mathematical models, each with different computational properties:</p>
+<p><strong>Poincaré Ball Model</strong>: Points lie within the unit ball <span class="math inline">\mathcal{B}^n = \{\mathbf{x} \in \mathbb{R}^n : \|\mathbf{x}\| &lt; 1\}</span>. The distance between two points <span class="math inline">\mathbf{u}, \mathbf{v} \in \mathcal{B}^n</span> is:</p>
+<p><span class="math display">
+d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
+</span></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><img src="https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg" class="img-fluid" style="width:100.0%"></p>
+<p>The <strong>Poincaré disk</strong> (2D version of the ball) visualizes hyperbolic space within a circle. Although shapes appear to shrink near the boundary in Euclidean terms, they are actually all the same size in hyperbolic geometry—the disk has infinite hyperbolic area. Geodesics (shortest paths) appear as circular arcs perpendicular to the boundary. This model is intuitive for visualization but requires careful handling of Riemannian gradients during optimization.</p>
+</div></div><p><strong>Lorentzian (Hyperboloid) Model</strong>: Points lie on the hyperboloid <span class="math inline">\mathcal{H}^n = \{\mathbf{x} \in \mathbb{R}^{n+1} : \langle\mathbf{x}, \mathbf{x}\rangle_L = -1, x_0 &gt; 0\}</span> where the Lorentzian inner product is:</p>
+<p><span class="math display">
+\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
+</span></p>
+<p>The distance between two points <span class="math inline">\mathbf{u}, \mathbf{v} \in \mathcal{H}^n</span> is:</p>
+<p><span class="math display">
+d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
+</span></p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><img src="https://bjlkeng.io/images/poincare_projection.png" class="img-fluid" style="width:100.0%"></p>
+<p>The <strong>hyperboloid model</strong> embeds hyperbolic space as a sheet in Minkowski space (the geometry of special relativity). Points on the hyperboloid can be projected onto the Poincaré disk, showing the equivalence between models. The Lorentzian model enables more efficient optimization because gradients can be computed in the ambient Euclidean space <span class="math inline">\mathbb{R}^{n+1}</span>, avoiding complex Riemannian operations.</p>
+</div></div><p>These models are isometric (distance-preserving transformations exist between them), but differ in computational efficiency. The Poincaré model <span class="citation" data-cites="nickel2017poincare">(<a href="#ref-nickel2017poincare" role="doc-biblioref">Nickel and Kiela 2017</a>)</span> is intuitive but requires complex Riemannian optimization. The Lorentzian model <span class="citation" data-cites="nickel2018learning">(<a href="#ref-nickel2018learning" role="doc-biblioref">Nickel and Kiela 2018</a>)</span> trades geometric purity for efficiency by computing gradients in ambient Euclidean space, making hyperbolic embeddings practical for large networks.</p>
+<div id="fig-hyperbolic0-embedding-knowledge-graph" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hyperbolic0-embedding-knowledge-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://www.researchgate.net/publication/384245499/figure/fig3/AS:11431281279545169@1727060754985/Wordnet-nouns-embedded-in-hyperbolic-space-Nickel-2018.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hyperbolic0-embedding-knowledge-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Hyperbolic embedding of wordnet nouns <span class="citation" data-cites="nickel2018learning">(<a href="#ref-nickel2018learning" role="doc-biblioref">Nickel and Kiela 2018</a>)</span>. Abstract terms like “Entity” positions near the center. As we go towards the boundary, we see more concrete concepts like “Material”, “Wood”, and “Hardwood”.
+</figcaption>
+</figure>
+</div>
 
 
 <!-- -->
 
+
 </section>
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-belkin2003laplacian" class="csl-entry" role="listitem">
+Belkin, Mikhail, and Partha Niyogi. 2003. <span>“Laplacian Eigenmaps for Dimensionality Reduction and Data Representation.”</span> <em>Neural Computation</em> 15 (6): 1373–96. <a href="https://doi.org/10.1162/089976603321780317">https://doi.org/10.1162/089976603321780317</a>.
+</div>
+<div id="ref-boguna2009navigability" class="csl-entry" role="listitem">
+Boguñá, Marián, Dmitri Krioukov, and KC Claffy. 2009. <span>“<span class="nocase">Navigability of complex networks</span>.”</span> <em>Nature Physics</em> 5 (1): 74–80.
+</div>
+<div id="ref-dyer2014notes" class="csl-entry" role="listitem">
+Dyer, Chris. 2014. <span>“Notes on Noise Contrastive Estimation and Negative Sampling.”</span> <em>arXiv Preprint arXiv:1410.8251</em>.
+</div>
+<div id="ref-grover2016node2vec" class="csl-entry" role="listitem">
+Grover, Aditya, and Jure Leskovec. 2016. <span>“Node2vec: Scalable Feature Learning for Networks.”</span> In <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 855–64.
+</div>
+<div id="ref-kojaku2024network" class="csl-entry" role="listitem">
+Kojaku, Sadamori, Filippo Radicchi, Yong-Yeol Ahn, and Santo Fortunato. 2024. <span>“Network Community Detection via Neural Embeddings.”</span> <em>Nature Communications</em> 15 (1): 9446.
+</div>
+<div id="ref-kojaku2021neurips" class="csl-entry" role="listitem">
+Kojaku, Sadamori, Jisung Yoon, Isabel Constantino, and Yong-Yeol Ahn. 2021. <span>“Residual2Vec: Debiasing Graph Embedding Using Random Graphs.”</span> In <em>Advances in Neural Information Processing Systems</em>. Curran Associates, Inc.
+</div>
+<div id="ref-krioukov2010hyperbolic" class="csl-entry" role="listitem">
+Krioukov, Dmitri, Fragkiskos Papadopoulos, Maksim Kitsak, Marián Boguñá, and Amin Vahdat. 2010. <span>“<span class="nocase">Hyperbolic geometry of complex networks</span>.”</span> <em>Physical Review E</em> 82 (3): 036106.
+</div>
+<div id="ref-mikolov2013distributed" class="csl-entry" role="listitem">
+Mikolov, Tomas, Ilya Sutskever, Kai Chen, Greg S Corrado, and Jeff Dean. 2013. <span>“Distributed Representations of Words and Phrases and Their Compositionality.”</span> <em>Advances in Neural Information Processing Systems</em> 26.
+</div>
+<div id="ref-newman2006modularity" class="csl-entry" role="listitem">
+Newman, M. E. J. 2006. <span>“Modularity and Community Structure in Networks.”</span> <em>Proceedings of the National Academy of Sciences</em> 103 (23): 8577–82. <a href="https://doi.org/10.1073/pnas.0601602103">https://doi.org/10.1073/pnas.0601602103</a>.
+</div>
+<div id="ref-nickel2017poincare" class="csl-entry" role="listitem">
+Nickel, Maximillian, and Douwe Kiela. 2017. <span>“Poincaré Embeddings for Learning Hierarchical Representations.”</span> In <em>Advances in Neural Information Processing Systems</em>, edited by I. Guyon, U. Von Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett. Vol. 30. Curran Associates, Inc. <a href="https://proceedings.neurips.cc/paper_files/paper/2017/file/59dfa2df42d9e3d41f5b02bfc32229dd-Paper.pdf">https://proceedings.neurips.cc/paper_files/paper/2017/file/59dfa2df42d9e3d41f5b02bfc32229dd-Paper.pdf</a>.
+</div>
+<div id="ref-nickel2018learning" class="csl-entry" role="listitem">
+———. 2018. <span>“<span class="nocase">Learning continuous hierarchies in the Lorentz model of hyperbolic geometry</span>.”</span> In <em>International Conference on Machine Learning</em>, 3779–88. PMLR.
+</div>
+<div id="ref-papadopoulos2012popularity" class="csl-entry" role="listitem">
+Papadopoulos, Fragkiskos, Maksim Kitsak, M. Ángeles Serrano, Marián Boguñá, and Dmitri Krioukov. 2012. <span>“<span class="nocase">Popularity versus similarity in growing networks</span>.”</span> <em>Nature</em> 489 (7417): 537–40. <a href="https://doi.org/10.1038/nature11459">https://doi.org/10.1038/nature11459</a>.
+</div>
+<div id="ref-perozzi2014deepwalk" class="csl-entry" role="listitem">
+Perozzi, Bryan, Rami Al-Rfou, and Steven Skiena. 2014. <span>“Deepwalk: Online Learning of Social Representations.”</span> In <em>Proceedings of the 20th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 701–10.
+</div>
+<div id="ref-qiu2018network" class="csl-entry" role="listitem">
+Qiu, Jiezhong, Yuxiao Dong, Hao Ma, Jian Li, Kuansan Wang, and Jie Tang. 2018. <span>“Network Embedding as Matrix Factorization: Unifying Deepwalk, Line, Pte, and Node2vec.”</span> In <em>Proceedings of the Eleventh ACM International Conference on Web Search and Data Mining</em>, 459–67.
+</div>
+<div id="ref-serrano2008self" class="csl-entry" role="listitem">
+Serrano, M. Ángeles, Dmitri Krioukov, and Marián Boguñá. 2008. <span>“<span class="nocase">Self-similarity of complex networks and hidden metric spaces</span>.”</span> <em>Physical Review Letters</em> 100 (7): 078701.
+</div>
+<div id="ref-tang2015line" class="csl-entry" role="listitem">
+Tang, Jian, Meng Qu, Mingzhe Wang, Ming Zhang, Jun Yan, and Qiaozhu Mei. 2015. <span>“LINE: Large-Scale Information Network Embedding.”</span> In <em>Proceedings of the 24th International Conference on World Wide Web</em>, 1067–77. WWW ’15. Republic; Canton of Geneva, CHE: International World Wide Web Conferences Steering Committee. <a href="https://doi.org/10.1145/2736277.2741093">https://doi.org/10.1145/2736277.2741093</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1261,52 +1666,389 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m08-embedding/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m08-embedding/02-coding.html" class="pagination-link" aria-label="Network Embedding Concepts">
+        <span class="nav-page-text">Network Embedding Concepts</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Network Embedding Concepts</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## What to Learn in This Module</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>In this module, we will learn how to embed networks into low-dimensional spaces. We will learn:</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Spectral embedding</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Neural embedding</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keywords**: Laplacian EigenMap, Normalized Spectral Embedding, DeepWalk, Node2Vec</span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Network Embedding Concepts"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## What is Network Embedding?</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparing Spectral and Neural Embedding Approaches</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>We have learned two types of graph embedding methods: spectral methods and neural embedding methods. But which one is better than the other? We will compare the two types of methods from multiple aspects.</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analytical Tractability</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>**Spectral methods** are more analytically tractable and thus are easier to understand using linear algebra. It is even possible to derive the capability and limitation of the spectral methods. For example, spectral methods based on adjacency matrices and normalized laplacian matrices are shown to be optimal for detecting communities in the stochastic block model {footcite}<span class="in">`nadakuditi2012graph`</span>. </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>::: {#fig-karate-to-embedding}</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://transformerswsz.github.io/2022/09/09/DeepWalk%E8%A7%A3%E8%AF%BB/karate_to_embedding.jpg)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>This figure is taken from <span class="co">[</span><span class="ot">DeepWalk: Online Learning of Social Representations</span><span class="co">](https://arxiv.org/abs/1403.6652)</span>.</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>**Neural embedding methods** are less analytically tractable. But still possible to analyze the theoretical properties by using an equivalence between a spectral embedding and a neural embedding under a very specific condition {footcite}<span class="in">`qiu2018network,kojaku2023network`</span>. These theoretical results have demonstrated that DeepWalk, node2vec, and LINE are in fact an optimal embedding methods for community detection for the stochatic block model.</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>Networks are high-dimensional discrete data that can be difficult to analyze with traditional machine learning methods that assume continuous and smooth data. Network embedding is a technique to represent networks in low-dimensional continuous spaces, enabling us to apply standard machine learning algorithms.</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Scalability and Performance</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>The goal of network embedding is to map each node in a network to a point in a low-dimensional space (typically $\mathbb{R}^d$ where $d \ll N$) while preserving important structural properties of the network.</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>A key limitation of the **spectral embedding** is the computational cost. While efficient methods exist like randomized singular value decomposition (implemented in scikit learn package as <span class="in">`TruncatedSVD`</span>), they might be unstable depending on the spectrum distribution of the matrix to be decomposed. </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercises</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>**Neural embedding methods** are often more stable and scalable, making them particularly suitable for large networks where computational efficiency is critical.</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Flexibility and Extensions</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Spectral Embedding</span></span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>**Neural embeddings** are more flexible than spectral embeddings. It is easy to change the objective functions of neural embeddings using the same training procedure. For example, the proximity of nodes in both embedding spaces are inherently dot similarity, but one can train neural embeddings to optimize for other metrics to embed the network in a non-Euclidean space. An interesting example of this is the Poincaré embeddings {footcite}<span class="in">`nickel2017poincare`</span> for embedding networks in hyperbolic space.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">### Network Compression Approach</span></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://pbs.twimg.com/media/DUUj0sxU8AACV50.jpg)</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>This flexibility extends to implementation choices and software options. There are various software packages for network embeddings, though due to technical complexity, some of them do not faithfully implement the algorithms in the paper. We provide a list of software packages for network embeddings below:</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">fastnode2vec</span><span class="co">](https://github.com/louisabraham/fastnode2vec)</span>. This is a very fast implementation of node2vec. However, it uses a uniform probability distribution for the negative sampling, which is different from the original node2vec paper that uses a different distribution. This leads to some degeneracy of the embedding quality in community detection tasks.</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">pytorch-geometric</span><span class="co">](https://github.com/pyg-team/pytorch_geometric)</span>. This is a very popular package for graph neural networks. It also uses a uniform probability distribution for the negative sampling, potentially having the same issue as <span class="in">`fastnode2vec`</span>.</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">gnn-tools</span><span class="co">](https://github.com/skojaku/gnn-tools)</span>. This is a collection of my experiments on network embedding methods.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">My collection</span><span class="co">](https://github.com/skojaku/graphvec)</span>. This is a lighter version of the <span class="in">`gnn-tools`</span> collection.</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercises</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>Let us approach spectral embedding from the perspective of network compression.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>Suppose we have an adjacency matrix $\mathbf{A}$ of a network.</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>The adjacency matrix is high-dimensional data, i.e., a matrix of size $N \times N$ for a network of $N$ nodes.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>We want to compress it into a lower-dimensional matrix $\mathbf{U}$ of size $N \times d$ for a user-defined small integer $d &lt; N$.</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>A good $\mathbf{U}$ should preserve the network structure and thus can reconstruct the original data $\mathbf{A}$ as closely as possible.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>This leads to the following optimization problem:</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>\min_{\mathbf{U}} J(\mathbf{U}),\quad J(\mathbf{U}) = <span class="sc">\|</span> \mathbf{A} - \mathbf{U}\mathbf{U}^\top <span class="sc">\|</span>_F^2</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\mathbf{U}\mathbf{U}^\top$ is the outer product of $\mathbf{U}$ and represents the reconstructed network.</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$<span class="sc">\|</span>\cdot<span class="sc">\|</span>_F$ is the Frobenius norm, which is the sum of the squares of the elements in the matrix.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$J(\mathbf{U})$ is the loss function that measures the difference between the original network $\mathbf{A}$ and the reconstructed network $\mathbf{U}\mathbf{U}^\top$.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>By minimizing the Frobenius norm with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="fu">### Spectral Decomposition Solution</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>Consider the spectral decomposition of $\mathbf{A}$:</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>\mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>where $\lambda_i$ are eigenvalues (weights) and $\mathbf{u}_i$ are eigenvectors. Each term $\lambda_i \mathbf{u}_i \mathbf{u}_i^\top$ is a rank-one matrix that captures a part of the network's structure. The larger the weight $\lambda_i$, the more important that term is in describing the network.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>To compress the network, we can select the $d$ terms with the largest weights $\lambda_i$. By combining the corresponding $\mathbf{u}_i$ vectors into a matrix $\mathbf{U}$, we obtain a good low-dimensional embedding of the network.</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/spectral-decomposition.jpg)</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>For a formal proof, please refer to the <span class="co">[</span><span class="ot">Appendix section</span><span class="co">](./04-appendix.md)</span>.</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modularity Embedding</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>In a similar vein, we can use the modularity matrix to generate a low-dimensional embedding of the network.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>Let us define the modularity matrix $\mathbf{Q}$ as follows:</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>Q_{ij} = \frac{1}{2m}A_{ij} - \frac{k_i k_j}{4m^2}</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>where $k_i$ is the degree of node $i$, and $m$ is the number of edges in the network.</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>We then compute the eigenvectors of $\mathbf{Q}$ and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix. The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes with the same sign of the second eigenvector <span class="co">[</span><span class="ot">@newman2006modularity</span><span class="co">]</span>.</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### Laplacian Eigenmap</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>Laplacian Eigenmap <span class="co">[</span><span class="ot">@belkin2003laplacian</span><span class="co">]</span> is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>\min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} <span class="sc">\|</span> u_i - u_j <span class="sc">\|</span>^2</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>**Derivation steps:**</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>Starting from $J_{LE}(\mathbf{U})$, we expand:</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{2}\sum_{i,j} A_{ij} \left( <span class="sc">\|</span> u_i <span class="sc">\|</span>^2 - 2 u_i^\top u_j + <span class="sc">\|</span> u_j <span class="sc">\|</span>^2 \right) <span class="sc">\\</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>&amp;= \sum_{i} k_i <span class="sc">\|</span> u_i <span class="sc">\|</span>^2 - \sum_{i,j} A_{ij} u_i^\top u_j<span class="sc">\\</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>&amp;= \sum_{i,j} L_{ij} u_i^\top u_j</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>where $L_{ij} = k_i$ if $i=j$ and $L_{ij} = -A_{ij}$ otherwise.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>In matrix form: $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>See <span class="co">[</span><span class="ot">Appendix</span><span class="co">](./04-appendix.md)</span> for full details.</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>The solution minimizes distances between connected nodes. Through algebraic manipulation (see margin), we can rewrite the objective as $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$, where $\mathbf{L}$ is the graph Laplacian matrix:</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>L_{ij} = \begin{cases}</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>k_i &amp; \text{if } i = j <span class="sc">\\</span></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>-A_{ij} &amp; \text{if } i \neq j</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>By taking the derivative and setting it to zero:</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>\frac{\partial J_{LE}}{\partial \mathbf{U}} = 0 \implies \mathbf{L} \mathbf{U} = \lambda \mathbf{U}</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>**Solution**: The $d$ eigenvectors associated with the $d$ smallest eigenvalues of the Laplacian matrix $\mathbf{L}$.</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>The smallest eigenvalue is always zero (with eigenvector of all ones). In practice, compute $d+1$ smallest eigenvectors and discard the trivial one.</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="fu">## Neural Embedding</span></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="fu">### Introduction to word2vec</span></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>Neural embedding methods leverage neural network architectures to learn node representations. Before discussing graph-specific methods, we first introduce *word2vec*, which forms the foundation for many neural graph embedding techniques.</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>word2vec is a neural network model that learns word embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 <span class="co">[</span><span class="ot">@mikolov2013distributed</span><span class="co">]</span>.</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a><span class="fu">### How word2vec Works</span></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>word2vec learns word meanings from context, following the linguistic principle: "You shall know a word by the company it keeps" <span class="co">[</span><span class="ot">@church1988word</span><span class="co">]</span>.</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>This phrase means a person is similar to those they spend time with. It comes from Aesop's fable *The Ass and his Purchaser* (500s B.C.): a man brings an ass to his farm on trial. The ass immediately seeks out the laziest, greediest ass in the herd. The man returns the ass, knowing it will be lazy and greedy based on the company it chose.</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"100%"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"200"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/gQddtTdmG_8?si=x8DUQnll2Rnj8qkn"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>**The Core Idea**: Given a target word, predict its surrounding context words within a fixed window. For example, in:</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The quick brown fox jumps over a lazy dog</span></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>The context of *fox* (with window size 2) includes: *quick*, *brown*, *jumps*, *over*.</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>The window size determines how far we look around the target word. A window size of 2 means we consider 2 words before and 2 words after.</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>**Why This Works**: Words appearing in similar contexts get similar embeddings. Consider:</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>"The quick brown **fox** jumps over the fence"</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>"The quick brown **dog** runs over the fence"</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>"The **student** studies in the library"</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>Both *fox* and *dog* appear with words like "quick," "brown," and "jumps/runs," so they'll have similar embeddings. But *student* appears in completely different contexts (like "studies," "library"), so its embedding will be far from *fox* and *dog*. This is how word2vec captures semantic similarity without explicit supervision.</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>**Two Training Approaches**:</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Skip-gram**: Given a target word → predict context words (we'll use this)</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CBOW**: Given context words → predict target word</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>Skip-gram works better for small datasets and rare words. CBOW is faster to train.</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>**Network Architecture**: word2vec uses a simple 3-layer neural network:</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/word2vec.png)</span>{width="70%" fig-align="center"}</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Input layer** ($N$ neurons): One-hot encoding of the target word</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hidden layer** ($d$ neurons, $d \ll N$): The learned word embedding</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Output layer** ($N$ neurons): Probability distribution over context words (via softmax)</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>The hidden layer activations become the word embeddings—dense, low-dimensional vectors that capture semantic relationships.</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>For a visual walkthrough of word2vec, see <span class="co">[</span><span class="ot">The Illustrated Word2vec</span><span class="co">](https://jalammar.github.io/illustrated-word2vec/)</span> by Jay Alammar.</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Technical Components</span></span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a><span class="fu">#### The Computational Challenge</span></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>To predict context word $w_c$ given target word $w_t$, we compute:</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a>P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{v}_{w_t})}</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a>This is the softmax function—it converts dot products into probabilities that sum to 1.</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a>**The problem**: The denominator sums over all vocabulary words (e.g., 100,000+ terms), making training prohibitively slow.</span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Two Solutions</span></span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a>**Hierarchical Softmax**: Organizes vocabulary as a binary tree with words at leaves. Computing probability becomes traversing root-to-leaf paths, reducing complexity from $O(|V|)$ to $O(\log |V|)$.</span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>::: {#fig-hierarchical-softmax}</span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://building-babylon.net/wp-content/uploads/2017/07/hs4-1536x834.png)</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>This figure is taken from <span class="co">[</span><span class="ot">Hierarchical Softmax</span><span class="co">](https://building-babylon.net/2017/08/01/hierarchical-softmax/)</span> by Building Babylon.</span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a>**Negative Sampling**: Instead of normalizing over all words, sample a few "negative" (non-context) words. Contrast the target's true context with these random words. This approximates the full softmax much more efficiently.</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a>Typically, 5-20 negative samples are enough. The model learns to distinguish true context words from random words.</span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="fu">### What's Special About word2vec?</span></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a>With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.</span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a>::: {#fig-word2vec-embedding}</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg)</span></span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a>This figure is taken from <span class="co">[</span><span class="ot">Word2Vec</span><span class="co">](https://medium.com/@laura.wj.w/word2vec-207131259292)</span> by Laura Wang.</span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a>word2vec embeddings can capture semantic relationships, such as analogies (e.g., *man* is to *woman* as *king* is to *queen*) and can visualize relationships between concepts (e.g., countries and their capitals form parallel vectors in the embedding space).</span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a><span class="fu">## Graph Embedding with word2vec</span></span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a>How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequences of words as input, while graph data are discrete and unordered. A solution to fill this gap is *random walk*, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.</span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a>Random walks create "sentences" from graphs: each walk is a sequence of nodes, just like a sentence is a sequence of words.</span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a><span class="fu">### DeepWalk</span></span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://dt5vp8kor0orz.cloudfront.net/7c56c256b9fbf06693da47737ac57fae803a5a4f/1-Figure1-1.png)</span></span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a>DeepWalk is one of the pioneering works to apply word2vec to graph data <span class="co">[</span><span class="ot">@perozzi2014deepwalk</span><span class="co">]</span>. It views the nodes as words and the random walks on the graph as sentences, and applies word2vec to learn the node embeddings.</span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a>More specifically, the method contains the following steps:</span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Sample multiple random walks from the graph.</span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Treat the random walks as sentences and feed them to word2vec to learn the node embeddings.</span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a>DeepWalk typically uses the skip-gram model with hierarchical softmax for efficient training.</span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a><span class="fu">### node2vec</span></span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>node2vec <span class="co">[</span><span class="ot">@grover2016node2vec</span><span class="co">]</span> extends DeepWalk with **biased random walks** controlled by two parameters:</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>P(v_{t+1} = x | v_t = v, v_{t-1} = t) \propto</span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>\begin{cases}</span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a>\frac{1}{p} &amp; \text{if } d(t,x) = 0 \text{ (return to previous)} <span class="sc">\\</span></span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a>1 &amp; \text{if } d(t,x) = 1 \text{ (close neighbor)} <span class="sc">\\</span></span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a>\frac{1}{q} &amp; \text{if } d(t,x) = 2 \text{ (explore further)} <span class="sc">\\</span></span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a>where $d(t,x)$ is the shortest path distance from the previous node $t$ to candidate node $x$.</span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a>**Controlling Exploration**:</span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Low $p$ → return bias (local revisiting)</span>
+<span id="cb1-267"><a href="#cb1-267" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Low $q$ → outward bias (exploration)</span>
+<span id="cb1-268"><a href="#cb1-268" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>High $q$ → inward bias (stay local)</span>
+<span id="cb1-269"><a href="#cb1-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-270"><a href="#cb1-270" aria-hidden="true" tabindex="-1"></a>**Two Exploration Strategies**:</span>
+<span id="cb1-271"><a href="#cb1-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-272"><a href="#cb1-272" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://www.researchgate.net/publication/354654762/figure/fig3/AS:1069013035655173@1631883977008/A-biased-random-walk-procedure-of-node2vec-B-BFS-and-DFS-search-strategies-from-node-u.png)</span></span>
+<span id="cb1-273"><a href="#cb1-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-274"><a href="#cb1-274" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**BFS-like** (low $q$): Explore immediate neighborhoods → captures **community structure**</span>
+<span id="cb1-275"><a href="#cb1-275" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**DFS-like** (high $q$): Explore deep paths → captures **structural roles**</span>
+<span id="cb1-276"><a href="#cb1-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-277"><a href="#cb1-277" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png)</span></span>
+<span id="cb1-278"><a href="#cb1-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-279"><a href="#cb1-279" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-280"><a href="#cb1-280" aria-hidden="true" tabindex="-1"></a>**Technical Note**: node2vec uses **negative sampling** instead of hierarchical softmax, which affects embedding characteristics <span class="co">[</span><span class="ot">@kojaku2021neurips; @dyer2014notes</span><span class="co">]</span>.</span>
+<span id="cb1-281"><a href="#cb1-281" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-282"><a href="#cb1-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-283"><a href="#cb1-283" aria-hidden="true" tabindex="-1"></a><span class="fu">### LINE</span></span>
+<span id="cb1-284"><a href="#cb1-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-285"><a href="#cb1-285" aria-hidden="true" tabindex="-1"></a>LINE <span class="co">[</span><span class="ot">@tang2015line</span><span class="co">]</span> is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with $p=1$, $q=1$, and window size 1.</span>
+<span id="cb1-286"><a href="#cb1-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-287"><a href="#cb1-287" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-288"><a href="#cb1-288" aria-hidden="true" tabindex="-1"></a>Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions <span class="co">[</span><span class="ot">@qiu2018network; @kojaku2024network</span><span class="co">]</span>. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model <span class="co">[</span><span class="ot">@kojaku2024network</span><span class="co">]</span>.</span>
+<span id="cb1-289"><a href="#cb1-289" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-290"><a href="#cb1-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-291"><a href="#cb1-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-292"><a href="#cb1-292" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hyperbolic Embeddings: Beyond Euclidean Space</span></span>
+<span id="cb1-293"><a href="#cb1-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-294"><a href="#cb1-294" aria-hidden="true" tabindex="-1"></a>All the embedding methods we've discussed so far operate in Euclidean space (standard flat geometry). However, many real-world networks exhibit hierarchical structures and scale-free properties that are difficult to capture in Euclidean space. **Hyperbolic embeddings** offer a powerful alternative by embedding networks in hyperbolic geometry—a curved space with negative curvature.</span>
+<span id="cb1-295"><a href="#cb1-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-296"><a href="#cb1-296" aria-hidden="true" tabindex="-1"></a><span class="fu">### The Popularity-Similarity Framework</span></span>
+<span id="cb1-297"><a href="#cb1-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-298"><a href="#cb1-298" aria-hidden="true" tabindex="-1"></a>The foundation for hyperbolic network embeddings comes from a seminal discovery: **real networks grow by optimizing trade-offs between popularity and similarity** <span class="co">[</span><span class="ot">@papadopoulos2012popularity</span><span class="co">]</span>. When analyzing the evolution of the Internet, metabolic networks, and social networks, Papadopoulos et al. found that new connections are not formed simply by preferential attachment to popular nodes. Instead, nodes balance two factors:</span>
+<span id="cb1-299"><a href="#cb1-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-300"><a href="#cb1-300" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Popularity**: Connecting to well-established, highly connected nodes</span>
+<span id="cb1-301"><a href="#cb1-301" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Similarity**: Connecting to nodes with similar characteristics or interests</span>
+<span id="cb1-302"><a href="#cb1-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-303"><a href="#cb1-303" aria-hidden="true" tabindex="-1"></a>This popularity × similarity optimization has a remarkable geometric interpretation: it naturally emerges as **optimization in hyperbolic space**. In this framework:</span>
+<span id="cb1-304"><a href="#cb1-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-305"><a href="#cb1-305" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Node **popularity** maps to radial position (birth time, with older = more central)</span>
+<span id="cb1-306"><a href="#cb1-306" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Node **similarity** maps to angular distance on a circle</span>
+<span id="cb1-307"><a href="#cb1-307" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>New connections form to nodes that are **hyperbolically closest**</span>
+<span id="cb1-308"><a href="#cb1-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-309"><a href="#cb1-309" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://openmetric.org/assets/posts/popularity-similarity-in-networks/internet-routers.png)</span></span>
+<span id="cb1-310"><a href="#cb1-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-311"><a href="#cb1-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-312"><a href="#cb1-312" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-313"><a href="#cb1-313" aria-hidden="true" tabindex="-1"></a>In the popularity-similarity model, hyperbolic distance $x_{ij} \approx r_i + r_j + \ln(\theta_{ij}/2)$ combines popularity (radial coordinates $r$) and similarity (angular distance $\theta$). New nodes connect to the $m$ hyperbolically closest nodes.</span>
+<span id="cb1-314"><a href="#cb1-314" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-315"><a href="#cb1-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-316"><a href="#cb1-316" aria-hidden="true" tabindex="-1"></a>This framework elegantly explains why **preferential attachment emerges** as a phenomenon: it's not a primitive mechanism, but rather a consequence of local geometric optimization. The probability that a node of degree $k$ attracts a new link follows $\Pi(k) \propto k$, exactly as in preferential attachment—but now with crucial differences in which specific nodes get connected based on their similarity.</span>
+<span id="cb1-317"><a href="#cb1-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-318"><a href="#cb1-318" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-319"><a href="#cb1-319" aria-hidden="true" tabindex="-1"></a>The popularity-similarity framework directly validates against real network evolution: the probability of new connections as a function of hyperbolic distance matches theoretical predictions for Internet, metabolic, and social networks, while pure preferential attachment is off by orders of magnitude <span class="co">[</span><span class="ot">@papadopoulos2012popularity</span><span class="co">]</span>.</span>
+<span id="cb1-320"><a href="#cb1-320" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-321"><a href="#cb1-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-322"><a href="#cb1-322" aria-hidden="true" tabindex="-1"></a><span class="fu">### Why Hyperbolic Space?</span></span>
+<span id="cb1-323"><a href="#cb1-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-324"><a href="#cb1-324" aria-hidden="true" tabindex="-1"></a>The study of hyperbolic geometry in complex networks emerged from foundational work showing that **networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath** [@krioukov2010hyperbolic]. Hyperbolic space has a unique property: its volume grows **exponentially** with radius, similar to how tree-like hierarchies grow. This naturally captures key network properties:</span>
+<span id="cb1-325"><a href="#cb1-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-326"><a href="#cb1-326" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Scale-free degree distributions**: Power-law degrees emerge from negative curvature</span>
+<span id="cb1-327"><a href="#cb1-327" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Strong clustering**: Nodes form tight communities based on metric proximity</span>
+<span id="cb1-328"><a href="#cb1-328" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Small-world property**: Short paths exist despite high clustering</span>
+<span id="cb1-329"><a href="#cb1-329" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Self-similarity and navigability**: Arise from underlying hyperbolic geometry <span class="co">[</span><span class="ot">@serrano2008self; @boguna2009navigability</span><span class="co">]</span></span>
+<span id="cb1-330"><a href="#cb1-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-331"><a href="#cb1-331" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-332"><a href="#cb1-332" aria-hidden="true" tabindex="-1"></a>The connection between hyperbolic geometry and network structure was established through a series of papers by Krioukov, Boguñá, and colleagues (2008-2010), showing that the statistical mechanics of complex networks maps directly to geometric properties of hyperbolic space.</span>
+<span id="cb1-333"><a href="#cb1-333" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-334"><a href="#cb1-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-335"><a href="#cb1-335" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mathematical Models of Hyperbolic Space</span></span>
+<span id="cb1-336"><a href="#cb1-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-337"><a href="#cb1-337" aria-hidden="true" tabindex="-1"></a>Hyperbolic space can be represented through different mathematical models, each with different computational properties:</span>
+<span id="cb1-338"><a href="#cb1-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-339"><a href="#cb1-339" aria-hidden="true" tabindex="-1"></a>**Poincaré Ball Model**: Points lie within the unit ball $\mathcal{B}^n = <span class="sc">\{</span>\mathbf{x} \in \mathbb{R}^n : <span class="sc">\|</span>\mathbf{x}<span class="sc">\|</span> &lt; 1<span class="sc">\}</span>$. The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{B}^n$ is:</span>
+<span id="cb1-340"><a href="#cb1-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-341"><a href="#cb1-341" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-342"><a href="#cb1-342" aria-hidden="true" tabindex="-1"></a>d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{<span class="sc">\|</span>\mathbf{u} - \mathbf{v}<span class="sc">\|</span>^2}{(1 - <span class="sc">\|</span>\mathbf{u}<span class="sc">\|</span>^2)(1 - <span class="sc">\|</span>\mathbf{v}<span class="sc">\|</span>^2)}\right)</span>
+<span id="cb1-343"><a href="#cb1-343" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-344"><a href="#cb1-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-345"><a href="#cb1-345" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-346"><a href="#cb1-346" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg)</span>{width=100%}</span>
+<span id="cb1-347"><a href="#cb1-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-348"><a href="#cb1-348" aria-hidden="true" tabindex="-1"></a>The **Poincaré disk** (2D version of the ball) visualizes hyperbolic space within a circle. Although shapes appear to shrink near the boundary in Euclidean terms, they are actually all the same size in hyperbolic geometry—the disk has infinite hyperbolic area. Geodesics (shortest paths) appear as circular arcs perpendicular to the boundary. This model is intuitive for visualization but requires careful handling of Riemannian gradients during optimization.</span>
+<span id="cb1-349"><a href="#cb1-349" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-350"><a href="#cb1-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-351"><a href="#cb1-351" aria-hidden="true" tabindex="-1"></a>**Lorentzian (Hyperboloid) Model**: Points lie on the hyperboloid $\mathcal{H}^n = <span class="sc">\{</span>\mathbf{x} \in \mathbb{R}^{n+1} : \langle\mathbf{x}, \mathbf{x}\rangle_L = -1, x_0 &gt; 0<span class="sc">\}</span>$ where the Lorentzian inner product is:</span>
+<span id="cb1-352"><a href="#cb1-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-353"><a href="#cb1-353" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-354"><a href="#cb1-354" aria-hidden="true" tabindex="-1"></a>\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n</span>
+<span id="cb1-355"><a href="#cb1-355" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-356"><a href="#cb1-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-357"><a href="#cb1-357" aria-hidden="true" tabindex="-1"></a>The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{H}^n$ is:</span>
+<span id="cb1-358"><a href="#cb1-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-359"><a href="#cb1-359" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-360"><a href="#cb1-360" aria-hidden="true" tabindex="-1"></a>d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)</span>
+<span id="cb1-361"><a href="#cb1-361" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-362"><a href="#cb1-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-363"><a href="#cb1-363" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb1-364"><a href="#cb1-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-365"><a href="#cb1-365" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://bjlkeng.io/images/poincare_projection.png)</span>{width=100%}</span>
+<span id="cb1-366"><a href="#cb1-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-367"><a href="#cb1-367" aria-hidden="true" tabindex="-1"></a>The **hyperboloid model** embeds hyperbolic space as a sheet in Minkowski space (the geometry of special relativity). Points on the hyperboloid can be projected onto the Poincaré disk, showing the equivalence between models. The Lorentzian model enables more efficient optimization because gradients can be computed in the ambient Euclidean space $\mathbb{R}^{n+1}$, avoiding complex Riemannian operations.</span>
+<span id="cb1-368"><a href="#cb1-368" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-369"><a href="#cb1-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-370"><a href="#cb1-370" aria-hidden="true" tabindex="-1"></a>These models are isometric (distance-preserving transformations exist between them), but differ in computational efficiency. The Poincaré model <span class="co">[</span><span class="ot">@nickel2017poincare</span><span class="co">]</span> is intuitive but requires complex Riemannian optimization. The Lorentzian model <span class="co">[</span><span class="ot">@nickel2018learning</span><span class="co">]</span> trades geometric purity for efficiency by computing gradients in ambient Euclidean space, making hyperbolic embeddings practical for large networks.</span>
+<span id="cb1-371"><a href="#cb1-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-372"><a href="#cb1-372" aria-hidden="true" tabindex="-1"></a>::: {#fig-hyperbolic0-embedding-knowledge-graph}</span>
+<span id="cb1-373"><a href="#cb1-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-374"><a href="#cb1-374" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://www.researchgate.net/publication/384245499/figure/fig3/AS:11431281279545169@1727060754985/Wordnet-nouns-embedded-in-hyperbolic-space-Nickel-2018.jpg)</span></span>
+<span id="cb1-375"><a href="#cb1-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-376"><a href="#cb1-376" aria-hidden="true" tabindex="-1"></a>Hyperbolic embedding of wordnet nouns <span class="co">[</span><span class="ot">@nickel2018learning</span><span class="co">]</span>. Abstract terms like "Entity" positions near the center. As we go towards the boundary, we see more concrete concepts like  "Material", "Wood", and "Hardwood".</span>
+<span id="cb1-377"><a href="#cb1-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-378"><a href="#cb1-378" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -1316,7 +2058,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m08-embedding/01-concepts.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m08-embedding/01-concepts.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

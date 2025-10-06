@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-30">
+<meta name="dcterms.date" content="2025-10-06">
 
-<title>Advanced Topics in Network Science</title>
+<title>Exercises: Graph Neural Networks – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -294,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M08: Embedding ───</li>
         <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
@@ -311,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
         <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
  <span class="dropdown-text">Concepts</span></a>
   </li>  
         <li>
@@ -344,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/01-concepts.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/03-exercises.html">Exercises: Graph Neural Networks</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -661,13 +661,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Network Embedding Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Network Embedding Concepts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -695,26 +695,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preparation - Image processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Concepts - From image to graph</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises: Graph Neural Networks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Graph Neural Networks</span></a>
   </div>
 </li>
       </ul>
@@ -728,9 +734,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/01-concepts.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/03-exercises.html">Advanced Topics in Network Science</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/03-exercises.html">Exercises: Graph Neural Networks</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Advanced Topics in Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Exercises: Graph Neural Networks</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -747,7 +753,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 30, 2025</p>
+      <p class="date">October 6, 2025</p>
     </div>
   </div>
   
@@ -759,10 +765,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="exercises-graph-neural-networks" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Exercises: Graph Neural Networks</h1>
-<section id="theoretical-exercises" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="theoretical-exercises"><span class="header-section-number">1.1</span> Theoretical Exercises</h2>
+<section id="theoretical-exercises" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="theoretical-exercises"><span class="header-section-number">1</span> Theoretical Exercises</h2>
 <section id="pen-and-paper-exercises" class="level3">
 <h3 class="anchored" data-anchor-id="pen-and-paper-exercises">Pen and Paper Exercises</h3>
 <ul>
@@ -778,8 +782,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 </section>
 </section>
-<section id="programming-exercises" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="programming-exercises"><span class="header-section-number">1.2</span> Programming Exercises</h2>
+<section id="programming-exercises" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="programming-exercises"><span class="header-section-number">2</span> Programming Exercises</h2>
 <section id="coding-exercise-gcn-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="coding-exercise-gcn-implementation">Coding Exercise: GCN Implementation</h3>
 <div class="callout callout-style-default callout-note callout-titled" title="Exercise">
@@ -803,52 +807,10 @@ Exercise
 <li><strong>Spectral Filtering</strong>: Understanding how GCNs relate to spectral graph theory</li>
 <li><strong>Comparison with Other Methods</strong>: Benchmarking against traditional approaches</li>
 </ol>
-</section>
-<section id="key-learning-objectives" class="level3">
-<h3 class="anchored" data-anchor-id="key-learning-objectives">Key Learning Objectives</h3>
-<p>Through these exercises, you will:</p>
-<ul>
-<li><strong>Understand the Mathematics</strong>: Connect spectral graph theory to practical GNN implementations</li>
-<li><strong>Implement Core Algorithms</strong>: Build GCN, GraphSAGE, GAT, and GIN from fundamental principles</li>
-<li><strong>Apply to Real Problems</strong>: Use GNNs for node classification, graph classification, and link prediction</li>
-<li><strong>Analyze Performance</strong>: Compare different GNN architectures and understand their strengths/weaknesses</li>
-<li><strong>Debug and Optimize</strong>: Learn common pitfalls and optimization strategies for GNNs</li>
-</ul>
-</section>
-<section id="exercise-topics" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-topics">Exercise Topics</h3>
-<ol type="1">
-<li><strong>Basic GCN Implementation</strong>
-<ul>
-<li>Implement the GCN layer forward pass</li>
-<li>Add self-loops and normalization</li>
-<li>Train on Cora dataset for node classification</li>
-</ul></li>
-<li><strong>Spectral Analysis</strong>
-<ul>
-<li>Visualize graph spectra and eigenvectors</li>
-<li>Implement spectral filtering</li>
-<li>Compare low-pass vs high-pass filters</li>
-</ul></li>
-<li><strong>Advanced Architectures</strong>
-<ul>
-<li>Implement GraphSAGE with different aggregators</li>
-<li>Build GAT with attention visualization</li>
-<li>Create GIN and test on graph isomorphism</li>
-</ul></li>
-<li><strong>Practical Applications</strong>
-<ul>
-<li>Social network analysis</li>
-<li>Citation network node classification</li>
-<li>Molecular property prediction</li>
-</ul></li>
-</ol>
-<p>These exercises bridge theory and practice, ensuring you understand both the mathematical foundations and practical implementation details of Graph Neural Networks.</p>
 
 
 <!-- -->
 
-</section>
 </section>
 </section>
 
@@ -1305,83 +1267,54 @@ Exercise
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m09-graph-neural-networks/02-coding.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
+      <a href="../m09-graph-neural-networks/02-coding.html" class="pagination-link" aria-label="Coding: Graph Neural Networks Implementation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Coding: Graph Neural Networks Implementation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m09-graph-neural-networks/04-appendix.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <span class="nav-page-text">Advanced Topics in Network Science</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m09-graph-neural-networks/04-appendix.html" class="pagination-link" aria-label="Appendix: Graph Neural Networks">
+        <span class="nav-page-text">Appendix: Graph Neural Networks</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exercises: Graph Neural Networks</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Theoretical Exercises</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pen and Paper Exercises</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>The pen and paper exercises cover fundamental concepts including:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fourier Analysis on Graphs**: Extending classical signal processing to graph domains</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Convolution Operations**: Defining convolution for irregular graph structures</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Message Passing**: Mathematical formulation of information aggregation in graphs</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Network Architecture Design**: Principles for designing effective GNN architectures</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Programming Exercises</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">### Coding Exercise: GCN Implementation</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Exercise"}</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="sc">:class:</span> note</span>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Exercises: Graph Neural Networks"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Theoretical Exercises</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pen and Paper Exercises</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>The pen and paper exercises cover fundamental concepts including:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fourier Analysis on Graphs**: Extending classical signal processing to graph domains</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Convolution Operations**: Defining convolution for irregular graph structures</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Message Passing**: Mathematical formulation of information aggregation in graphs</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Network Architecture Design**: Principles for designing effective GNN architectures</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Programming Exercises</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Let's implement a simple GCN model for node classification.</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Coding Exercise</span><span class="co">](../../../notebooks/legacy/exercise-m09-graph-neural-net.ipynb)</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>This coding exercise will guide you through:</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Building a GCN from Scratch**: Implementing the basic GCN layer</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Node Classification**: Training GCN for semi-supervised node classification</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Spectral Filtering**: Understanding how GCNs relate to spectral graph theory</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Comparison with Other Methods**: Benchmarking against traditional approaches</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### Coding Exercise: GCN Implementation</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Exercise"}</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="sc">:class:</span> note</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>Let's implement a simple GCN model for node classification.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Coding Exercise</span><span class="co">](../../../notebooks/legacy/exercise-m09-graph-neural-net.ipynb)</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>This coding exercise will guide you through:</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Learning Objectives</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>Through these exercises, you will:</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Understand the Mathematics**: Connect spectral graph theory to practical GNN implementations</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Implement Core Algorithms**: Build GCN, GraphSAGE, GAT, and GIN from fundamental principles</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Apply to Real Problems**: Use GNNs for node classification, graph classification, and link prediction</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Analyze Performance**: Compare different GNN architectures and understand their strengths/weaknesses</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Debug and Optimize**: Learn common pitfalls and optimization strategies for GNNs</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise Topics</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Basic GCN Implementation**</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Implement the GCN layer forward pass</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Add self-loops and normalization</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Train on Cora dataset for node classification</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Spectral Analysis**</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Visualize graph spectra and eigenvectors</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Implement spectral filtering</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Compare low-pass vs high-pass filters</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Advanced Architectures**</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Implement GraphSAGE with different aggregators</span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Build GAT with attention visualization</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Create GIN and test on graph isomorphism</span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Practical Applications**</span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Social network analysis</span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Citation network node classification</span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Molecular property prediction</span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>These exercises bridge theory and practice, ensuring you understand both the mathematical foundations and practical implementation details of Graph Neural Networks.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Building a GCN from Scratch**: Implementing the basic GCN layer</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Node Classification**: Training GCN for semi-supervised node classification</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Spectral Filtering**: Understanding how GCNs relate to spectral graph theory</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Comparison with Other Methods**: Benchmarking against traditional approaches</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
