@@ -17,7 +17,7 @@
         "\n",
         "We will use the karate club network throughout this notebook."
       ],
-      "id": "911967c2"
+      "id": "8898bd4b"
     },
     {
       "cell_type": "code",
@@ -40,7 +40,7 @@
         "palette = sns.color_palette().as_hex()\n",
         "igraph.plot(g, vertex_color=[palette[label] for label in labels], bbox=(300, 300))"
       ],
-      "id": "048cba5c",
+      "id": "b7c4281c",
       "execution_count": null,
       "outputs": []
     },
@@ -54,7 +54,7 @@
         "\n",
         "Let us demonstrate spectral embedding with the karate club network."
       ],
-      "id": "09477a83"
+      "id": "c542ec72"
     },
     {
       "cell_type": "code",
@@ -63,7 +63,7 @@
         "# Convert to dense array for eigendecomposition\n",
         "A_dense = A.toarray()"
       ],
-      "id": "eb300168",
+      "id": "588efeae",
       "execution_count": null,
       "outputs": []
     },
@@ -88,7 +88,7 @@
         "ax.set_ylabel('Eigenvector 2')\n",
         "plt.show()"
       ],
-      "id": "ece1c41e",
+      "id": "bd49034a",
       "execution_count": null,
       "outputs": []
     },
@@ -103,7 +103,7 @@
         "\n",
         "We can use the modularity matrix to generate a low-dimensional embedding of the network."
       ],
-      "id": "8c6aeb9c"
+      "id": "8ce00658"
     },
     {
       "cell_type": "code",
@@ -128,7 +128,7 @@
         "ax.set_ylabel('Eigenvector 2')\n",
         "plt.show()"
       ],
-      "id": "c0a0a837",
+      "id": "1801dc3b",
       "execution_count": null,
       "outputs": []
     },
@@ -140,7 +140,7 @@
         "\n",
         "Let us first compute the Laplacian matrix and its eigenvectors."
       ],
-      "id": "807fb992"
+      "id": "77f0e825"
     },
     {
       "cell_type": "code",
@@ -164,7 +164,7 @@
         "ax.set_ylabel('Eigenvector 3')\n",
         "plt.show()"
       ],
-      "id": "bc40caf7",
+      "id": "fb19ac42",
       "execution_count": null,
       "outputs": []
     },
@@ -178,7 +178,7 @@
         "\n",
         "To showcase the effectiveness of word2vec, let's walk through an example using the `gensim` library."
       ],
-      "id": "3dc239c2"
+      "id": "b5b862e2"
     },
     {
       "cell_type": "code",
@@ -191,7 +191,7 @@
         "# Load pre-trained word2vec model from Google News\n",
         "model = gensim.downloader.load('word2vec-google-news-300')"
       ],
-      "id": "2d829a76",
+      "id": "4cf4225a",
       "execution_count": null,
       "outputs": []
     },
@@ -201,7 +201,7 @@
       "source": [
         "Our first example is to find the words most similar to *king*."
       ],
-      "id": "d6f8dbb2"
+      "id": "a283af34"
     },
     {
       "cell_type": "code",
@@ -214,7 +214,7 @@
         "for similar_word, similarity in similar_words:\n",
         "    print(f\"{similar_word}: {similarity:.4f}\")"
       ],
-      "id": "aba7170d",
+      "id": "ec6dc463",
       "execution_count": null,
       "outputs": []
     },
@@ -228,7 +228,7 @@
         "\n",
         "We can use word embeddings to solve this puzzle."
       ],
-      "id": "290edecd"
+      "id": "0d287ff0"
     },
     {
       "cell_type": "code",
@@ -242,7 +242,7 @@
         "#\n",
         "model.most_similar(positive=['woman', \"king\"], negative=['man'], topn=5)"
       ],
-      "id": "513b2c13",
+      "id": "fc11fad1",
       "execution_count": null,
       "outputs": []
     },
@@ -252,7 +252,7 @@
       "source": [
         "The last example is to visualize the word embeddings."
       ],
-      "id": "279e2c22"
+      "id": "0bc7b157"
     },
     {
       "cell_type": "code",
@@ -306,7 +306,7 @@
         "ax = plt.gca()\n",
         "ax.set_axis_off()"
       ],
-      "id": "5256c8fe",
+      "id": "08ba4a2f",
       "execution_count": null,
       "outputs": []
     },
@@ -332,7 +332,7 @@
         "\n",
         "Let's implement a function to sample random walks. A random walk starts at a node and repeatedly moves to a random neighbor until it reaches the desired length."
       ],
-      "id": "e05b654e"
+      "id": "387b158d"
     },
     {
       "cell_type": "code",
@@ -371,7 +371,7 @@
         "\n",
         "    return walk"
       ],
-      "id": "c2fe1230",
+      "id": "c04567e6",
       "execution_count": null,
       "outputs": []
     },
@@ -385,7 +385,7 @@
         "\n",
         "Now we generate multiple random walks starting from each node. We'll use 10 walks per node, each of length 50."
       ],
-      "id": "e73e5e9b"
+      "id": "d1e47ecd"
     },
     {
       "cell_type": "code",
@@ -403,7 +403,7 @@
         "print(f\"Generated {len(walks)} random walks\")\n",
         "print(f\"Example walk: {walks[0][:10]}...\")  # Show first 10 nodes of first walk"
       ],
-      "id": "e906a473",
+      "id": "dfd2ee13",
       "execution_count": null,
       "outputs": []
     },
@@ -415,7 +415,7 @@
         "\n",
         "Now we feed the random walks to the word2vec model. The model will learn to predict which nodes appear together in the same walk, similar to how it learns which words appear together in sentences."
       ],
-      "id": "c40a1d93"
+      "id": "426ec36e"
     },
     {
       "cell_type": "code",
@@ -432,7 +432,7 @@
         "    hs=1              # Use hierarchical softmax for training\n",
         ")"
       ],
-      "id": "42ca290e",
+      "id": "855f36d8",
       "execution_count": null,
       "outputs": []
     },
@@ -455,7 +455,7 @@
         "\n",
         "After training, we can extract the learned embeddings for each node from the model."
       ],
-      "id": "3fda641e"
+      "id": "4c3cd39b"
     },
     {
       "cell_type": "code",
@@ -467,7 +467,7 @@
         "print(f\"Embedding matrix shape: {embedding.shape}\")\n",
         "print(f\"First node embedding (first 5 dimensions): {embedding[0][:5]}\")"
       ],
-      "id": "cb0f6a8a",
+      "id": "9badd1ac",
       "execution_count": null,
       "outputs": []
     },
@@ -483,7 +483,7 @@
         "UMAP is a dimensionality reduction technique that preserves both local and global structure better than t-SNE, making it ideal for visualizing high-dimensional embeddings.\n",
         ":::"
       ],
-      "id": "88df0803"
+      "id": "e1ead7d7"
     },
     {
       "cell_type": "code",
@@ -517,7 +517,7 @@
         "\n",
         "show(p)"
       ],
-      "id": "35132be4",
+      "id": "96879a16",
       "execution_count": null,
       "outputs": []
     },
@@ -537,7 +537,7 @@
         "\n",
         "Let's implement K-means clustering with automatic selection of the number of clusters using the silhouette score."
       ],
-      "id": "9803a433"
+      "id": "8433a6f4"
     },
     {
       "cell_type": "code",
@@ -573,7 +573,7 @@
         "# Find clusters\n",
         "cluster_labels = find_optimal_clusters(embedding)"
       ],
-      "id": "7b2406af",
+      "id": "ef6ebbe2",
       "execution_count": null,
       "outputs": []
     },
@@ -587,7 +587,7 @@
         "\n",
         "Now let's visualize the discovered clusters on the network:"
       ],
-      "id": "b93ea69d"
+      "id": "701aa902"
     },
     {
       "cell_type": "code",
@@ -602,7 +602,7 @@
         "    vertex_size=20\n",
         ")"
       ],
-      "id": "7cdf9565",
+      "id": "db3b62b9",
       "execution_count": null,
       "outputs": []
     },
@@ -627,7 +627,7 @@
         "\n",
         "The key innovation in node2vec is the biased random walk. Let's implement it step by step."
       ],
-      "id": "fc061863"
+      "id": "755d3a57"
     },
     {
       "cell_type": "code",
@@ -704,7 +704,7 @@
         "    # Sample next node\n",
         "    return np.random.choice(neighbors, p=normalized_probs)"
       ],
-      "id": "65b58815",
+      "id": "698db46c",
       "execution_count": null,
       "outputs": []
     },
@@ -724,7 +724,7 @@
         "\n",
         "Now let's generate biased random walks and train the word2vec model. We'll use $p=1$ and $q=0.1$, which encourages outward exploration (DFS-like behavior) to capture community structure."
       ],
-      "id": "9e5f6fd2"
+      "id": "b1307d92"
     },
     {
       "cell_type": "code",
@@ -742,7 +742,7 @@
         "print(f\"Generated {len(walks_node2vec)} biased random walks\")\n",
         "print(f\"Example walk: {walks_node2vec[0][:10]}...\")"
       ],
-      "id": "e1ee0804",
+      "id": "8ef78d41",
       "execution_count": null,
       "outputs": []
     },
@@ -756,7 +756,7 @@
         "\n",
         "Train the word2vec model on the biased walks:"
       ],
-      "id": "7ca65c54"
+      "id": "ba5bc4c3"
     },
     {
       "cell_type": "code",
@@ -776,7 +776,7 @@
         "embedding_node2vec = np.array([model_node2vec.wv[i] for i in range(n_nodes)])\n",
         "print(f\"Node2vec embedding shape: {embedding_node2vec.shape}\")"
       ],
-      "id": "3605b10d",
+      "id": "3802a6fb",
       "execution_count": null,
       "outputs": []
     },
@@ -788,7 +788,7 @@
         "\n",
         "Let's visualize the node2vec embeddings and compare them with DeepWalk."
       ],
-      "id": "39d0f573"
+      "id": "2d2d87c8"
     },
     {
       "cell_type": "code",
@@ -824,7 +824,7 @@
         "\n",
         "show(p_n2v)"
       ],
-      "id": "3512969c",
+      "id": "b6b4f6d6",
       "execution_count": null,
       "outputs": []
     },
@@ -838,7 +838,7 @@
         "\n",
         "Let's apply K-means clustering to the node2vec embeddings:"
       ],
-      "id": "42f84c9f"
+      "id": "ff57d2b0"
     },
     {
       "cell_type": "code",
@@ -856,7 +856,7 @@
         "    vertex_label=[str(i) for i in range(n_nodes)]\n",
         ")"
       ],
-      "id": "86356956",
+      "id": "dd96eae0",
       "execution_count": null,
       "outputs": []
     },
@@ -866,7 +866,7 @@
       "source": [
         "By tuning the $p$ and $q$ parameters, node2vec can adapt to different network analysis tasks - from community detection (small $q$) to role discovery (large $q$)."
       ],
-      "id": "9bb3dce0"
+      "id": "25278e2c"
     }
   ],
   "metadata": {
