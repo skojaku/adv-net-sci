@@ -13,6 +13,7 @@ Let us showcase the idea of spectral filtering with a simple example with the ka
 ```{python}
 #| echo: false
 import igraph as ig
+import seaborn as sns
 import numpy as np
 from scipy import sparse
 import matplotlib.pyplot as plt
@@ -142,7 +143,23 @@ The high-pass filter increases the contrast of the eigenvector centrality, empha
 
 ## Training Graph Neural Networks with PyTorch Geometric
 
+### What is PyTorch Geometric?
+
+[PyTorch Geometric (PyG)](https://pytorch-geometric.readthedocs.io/) is a library built on top of PyTorch specifically designed for deep learning on graphs and other irregular structures. It provides:
+
+- **Efficient data structures** for representing graphs (edge lists, sparse matrices)
+- **Pre-implemented GNN layers** (GCN, GAT, GraphSAGE, GIN, and many more)
+- **Common graph datasets** (citation networks, social networks, molecular graphs)
+- **Mini-batching utilities** for training on large graphs
+- **Message passing framework** for easily building custom GNN architectures
+
+PyTorch Geometric handles the complexity of implementing graph convolutions and lets us focus on model design and experimentation. Instead of manually implementing the aggregation operations we discussed earlier, we can use pre-built layers like `GCNConv`, `GATConv`, etc.
+
+### Our Task: Semi-Supervised Node Classification
+
 In this section, we'll learn how to train a Graph Neural Network (GNN) to perform node classification. We'll use the Karate Club network and predict membership labels based on partially labeled nodes. Our node features will be eigenvectors of the normalized Laplacian matrix.
+
+This is a **semi-supervised learning** task: we have labels for only a small subset of nodes and want to predict labels for the remaining nodes by leveraging the graph structure.
 
 ### Step 1: Install and Import Libraries
 
@@ -165,17 +182,15 @@ import seaborn as sns
 We'll load the Karate Club network and compute node features from the normalized Laplacian eigenvectors.
 
 ```{python}
+import networkx as nx
+
 # Load the Karate Club network
-G = ig.Graph.Famous("Zachary")
-A = G.get_adjacency_sparse()
+G = nx.karate_club_graph()
+A = nx.adjacency_matrix(G)
+membership = np.unique([d[1]['club'] for d in G.nodes(data=True)], return_inverse=True)[1]
 n_nodes = A.shape[0]
 
 # Get true community labels (0 or 1)
-membership = np.array(G.vs["Faction"])
-
-print(f"Number of nodes: {n_nodes}")
-print(f"Number of edges: {G.ecount()}")
-print(f"Class distribution: {np.bincount(membership)}")
 ```
 
 Now, let's compute the normalized Laplacian and extract eigenvectors as node features:
@@ -213,10 +228,6 @@ y = torch.tensor(membership, dtype=torch.long)
 
 # Create PyTorch Geometric Data object
 data = Data(x=x, edge_index=edge_index, y=y)
-
-print(f"Data object: {data}")
-print(f"Number of features per node: {data.num_node_features}")
-print(f"Number of classes: {len(np.unique(membership))}")
 ```
 
 ### Step 4: Create Train/Test Masks
