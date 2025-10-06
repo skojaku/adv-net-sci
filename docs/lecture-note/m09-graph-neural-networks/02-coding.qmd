@@ -168,7 +168,7 @@ First, let's import the necessary libraries:
 ::: {.column-margin}
 **Installing PyTorch Geometric**: If you don't have PyTorch Geometric installed, run:
 ```bash
-pip install torch-geometric
+pip install torch_geometric
 ```
 
 For detailed installation instructions (including GPU support and specific PyTorch versions), see the [official installation guide](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html).
@@ -254,14 +254,15 @@ We'll use only a small subset of labeled nodes for training (semi-supervised lea
 
 ```{python}
 # Create train/test masks
+# We'll label only 4 nodes (2 from each community) for training
 train_mask = torch.zeros(n_nodes, dtype=torch.bool)
 test_mask = torch.zeros(n_nodes, dtype=torch.bool)
 
-# Select 2 nodes from each class for training
+# Select 4 nodes from each class for training
 for label in [0, 1]:
     label_indices = np.where(membership == label)[0]
-    np.random.shuffle(label_indices)
-    train_mask[label_indices[:2]] = True
+    train_indices = np.random.choice(label_indices, size=4, replace=False)
+    train_mask[train_indices] = True
 
 # All other nodes are for testing
 test_mask = ~train_mask
@@ -413,10 +414,6 @@ plt.show()
 ### Step 8: Visualize Predictions
 
 Finally, let's visualize the network with true labels, training nodes, and predictions.
-
-::: {.column-margin}
-**Squares vs Circles**: In the left plot, square nodes represent the **training nodes** (labeled data used for learning), while circle nodes represent **test nodes** (unlabeled data to predict). This visualization shows that the GNN learned from only 4 labeled nodes to predict labels for the remaining 30 nodes.
-:::
 
 ```{python}
 #| echo: false

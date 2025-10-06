@@ -1,4 +1,9 @@
-# Appendix
+---
+title: "Appendix: Graph Neural Networks"
+jupyter: advnetsci
+execute:
+    enabled: true
+---
 
 ## Bruna's Spectral GCN
 
@@ -6,7 +11,6 @@
 Let's first implement Bruna's spectral GCN.
 
 ```{python}
-:tags: [hide-input]
 
 import numpy as np
 import scipy.sparse as sp
@@ -109,8 +113,6 @@ class BrunaGraphConv(nn.Module):
 Next, we will train the model on the karate club network to predict the given node labels indicating nodes' community memberships. We load the data by
 
 ```{python}
-:tags: [hide-input]
-
 import networkx as nx
 import torch
 import matplotlib.pyplot as plt
@@ -126,8 +128,6 @@ We apply the convolution twice with ReLu activation in between. This can be impl
 
 
 ```{python}
-:tags: [hide-input]
-
 # Define a simple GCN model
 class SimpleGCN(nn.Module):
     def __init__(self, in_features, out_features, hidden_features, n_nodes):
@@ -146,8 +146,6 @@ class SimpleGCN(nn.Module):
 We then train the model by
 
 ```{python}
-:tags: [hide-input]
-
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
 
@@ -196,7 +194,6 @@ Observe that the accuracy increases as the training progresses. We can use the m
 The model has a hidden layer, and let's visualize the data in the hidden space.
 
 ```{python}
-:tags: [hide-input]
 import seaborn as sns
 from sklearn.manifold import TSNE
 
@@ -217,8 +214,6 @@ plt.show()
 Let's implement the ChebNet layer.
 
 ```{python}
-:tags: [hide-input]
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -360,8 +355,6 @@ class ChebConv(nn.Module):
 We stack the layers to form a simple GCN model.
 
 ```{python}
-:tags: [hide-input]
-
 class ChebNet(nn.Module):
     """
     ChebNet model for node classification
@@ -411,7 +404,6 @@ class ChebNet(nn.Module):
 Let's train the model on the karate club network.
 
 ```{python}
-:tags: [hide-input]
 
 import seaborn as sns
 from sklearn.manifold import TSNE
@@ -482,7 +474,6 @@ for epoch in range(n_train):
 Let's visualize the learned embeddings.
 
 ```{python}
-:tags: [hide-input]
 
 model.eval()
 with torch.no_grad():
