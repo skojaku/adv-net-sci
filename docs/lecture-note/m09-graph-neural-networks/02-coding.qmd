@@ -187,11 +187,20 @@ import networkx as nx
 # Load the Karate Club network
 G = nx.karate_club_graph()
 A = nx.adjacency_matrix(G)
+
+# Get true community labels
 membership = np.unique([d[1]['club'] for d in G.nodes(data=True)], return_inverse=True)[1]
 n_nodes = A.shape[0]
 
-# Get true community labels (0 or 1)
+print(f"Number of nodes: {n_nodes}")
+print(f"Membership: {membership}")
 ```
+
+#### Creating Node Features
+
+Graph neural networks require node features as input to make predictions. However, the Karate Club network doesn't come with node metadata (attributes like age, interests, etc.) - we only have the network structure and membership labels.
+
+Since we need features but don't have any, we'll create them using **spectral embedding** - specifically, eigenvectors of the normalized Laplacian matrix. This is a common approach when dealing with networks that lack node attributes.
 
 Now, let's compute the normalized Laplacian and extract eigenvectors as node features:
 
@@ -385,6 +394,7 @@ plt.show()
 Finally, let's visualize the network with true labels, training nodes, and predictions.
 
 ```{python}
+#| echo: false
 # Get final predictions
 model.eval()
 with torch.no_grad():
@@ -403,6 +413,8 @@ vertex_colors_true = [colors_true[label] for label in membership]
 vertex_shapes = ['circle' if not train_mask[i] else 'square'
                  for i in range(n_nodes)]
 vertex_sizes = [15 if not train_mask[i] else 25 for i in range(n_nodes)]
+
+G = ig.Graph.Famous("Zachary")
 
 ig.plot(
     G,
