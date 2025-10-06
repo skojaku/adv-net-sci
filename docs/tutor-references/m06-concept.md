@@ -2,196 +2,167 @@
 
 ## What is Centrality?
 
-**Centrality** measures node importance in a network. The concept of "importance" is context-dependent - different situations require different centrality measures.
-
-Key question: In what sense is a node important?
+**Centrality** measures the importance of a node in a network. The concept of "importance" is context-dependent, and different situations call for different centrality measures. The core question is: in what sense is a node important?
 
 ## Degree-Based Centrality
 
 ### Degree Centrality
-The simplest centrality measure: count direct connections.
+The simplest centrality measure is to count a node's direct connections (its degree).
 
-```
-c_i = d_i = Σⱼ A_ij
-```
+$$
+c_i = d_i = \sum_{j} A_{ij}
+$$
 
-**Interpretation**: Nodes with many direct connections are most important.
-
-**Applications**: Social influence, viral spread, immediate reach.
+**Interpretation**: A node is important if it has many direct connections.
+**Applications**: Useful for understanding immediate influence, social popularity, and viral spread.
 
 ## Distance-Based Centrality
 
-Inspired by the Roman *Milliarium Aureum* (Golden Milestone) - the central point from which all distances were measured in the Roman Empire.
+This family of measures is inspired by the Roman *Milliarium Aureum* (Golden Milestone), the central point from which all distances were measured in the Roman Empire. A node is considered central if it is "close" to other nodes.
 
 ### Closeness Centrality
-Measures how close a node is to all other nodes.
+Measures how close a node is to all other nodes in the network on average.
 
-```
-c_i = (N-1) / Σⱼ d(i,j)
-```
+$$
+c_i = \frac{N - 1}{\sum_{j=1}^N d(i,j)}
+$$
 
-Where d(i,j) is shortest path length from i to j.
+where $d(i,j)$ is the shortest path length from node $i$ to node $j$.
 
-**Interpretation**: Nodes that can reach others quickly are most important.
+**Interpretation**: A node is important if it can reach other nodes quickly.
+**Limitation**: Fails in disconnected networks, as infinite distances make the centrality zero for all nodes in smaller components.
 
-### Harmonic Centrality  
-Handles disconnected networks by using reciprocal distances.
+### Harmonic Centrality
+An adjustment to closeness centrality that works for disconnected networks.
 
-```
-c_i = Σⱼ≠ᵢ 1/d(i,j)
-```
+$$
+c_i = \sum_{j \neq i} \frac{1}{d(i,j)}
+$$
 
-**Advantage**: Works even when network is disconnected.
+**Advantage**: Infinite distances contribute zero to the sum, making it robust for disconnected graphs.
 
 ### Eccentricity Centrality
-Based on the farthest distance from a node.
+Measures a node's importance based on the longest shortest path from it to any other node.
 
-```
-c_i = 1/max_j d(i,j)
-```
+$$
+c_i = \frac{1}{\max_{j} d(i,j)}
+$$
 
-**Interpretation**: Nodes with small maximum distances are most central.
+**Interpretation**: A node is important if its maximum distance to any other node is small. It optimizes for the worst-case scenario, making it useful for placing emergency services or distribution centers.
 
 ### Betweenness Centrality
-Measures how often a node lies on shortest paths between other nodes.
+Measures how often a node lies on the shortest paths between other pairs of nodes.
 
-```
-c_i = Σⱼ<ₖ σⱼₖ(i)/σⱼₖ
-```
+$$
+c_i = \sum_{j < k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
+$$
 
-Where:
-- σⱼₖ = number of shortest paths between j and k
-- σⱼₖ(i) = number of those paths passing through i
+where:
+- $\sigma_{jk}$ is the total number of shortest paths between nodes $j$ and $k$.
+- $\sigma_{jk}(i)$ is the number of those paths that pass through node $i$.
 
-**Interpretation**: Nodes controlling information flow are most important.
+**Interpretation**: A node is important if it acts as a "bridge" and controls the flow of information or resources.
 
 ## Walk-Based Centrality
 
-Based on Aesop's principle: "A man is known by the company he keeps."
+This family of measures is based on the idea that "a man is known by the company he keeps." A node's importance is determined by the importance of its neighbors.
 
 ### Eigenvector Centrality
-A node is important if connected to other important nodes.
+A node is important if it is connected to other important nodes. This circular definition is resolved using linear algebra.
 
-```
-c_i = λ Σⱼ A_ij c_j
-```
+$$
+\lambda c_i = \sum_{j} A_{ij} c_j \quad \text{or in matrix form,} \quad \lambda \mathbf{c} = \mathbf{A} \mathbf{c}
+$$
 
-**Circular definition** resolved through eigenvalue decomposition:
-- **λ** = largest eigenvalue of adjacency matrix
-- **c** = corresponding eigenvector
+The solution, $\mathbf{c}$, is the eigenvector of the adjacency matrix $\mathbf{A}$ corresponding to the largest eigenvalue, $\lambda$. The Perron-Frobenius theorem guarantees this eigenvector is unique and has all positive entries.
 
-**Interpretation**: Importance comes from connections to other important nodes.
-
-### PageRank
-Google's famous algorithm, adding damping factor to eigenvector centrality.
-
-```
-PR(i) = (1-d)/N + d Σⱼ PR(j)/L(j)
-```
-
-Where:
-- d = damping parameter (typically 0.85)
-- L(j) = number of outbound links from j
-- N = total number of nodes
-
-**Interpretation**: Importance with random jump probability.
+**Interpretation**: Captures influence that extends beyond direct connections.
 
 ### Katz Centrality
-Weighted sum of all walks starting from a node.
+Extends eigenvector centrality by giving each node a small amount of base centrality, $\beta$. This helps address limitations where eigenvector centrality can over-emphasize a few well-connected nodes.
 
-```
-c_i = Σₖ₌₁^∞ Σⱼ αᵏ(Aᵏ)ⱼᵢ
-```
+$$
+c_i = \beta + \lambda \sum_{j} A_{ij} c_j \quad \text{or in matrix form,} \quad \mathbf{c} = \beta \mathbf{1} + \lambda \mathbf{A} \mathbf{c}
+$$
 
-Where α < 1/λ₁ (largest eigenvalue) for convergence.
+The solution can be found by solving the linear system:
+$$
+\mathbf{c} = \beta (\mathbf{I} - \lambda \mathbf{A})^{-1} \mathbf{1}
+$$
 
-**Interpretation**: More walks leading to a node = higher centrality.
+**Interpretation**: Measures influence by counting all walks, with shorter walks weighted more heavily.
 
-### HITS Algorithm
-Separates **authorities** (pointed to) from **hubs** (pointing to authorities).
+### HITS (Hyperlink-Induced Topic Search)
+Designed for directed networks, HITS distinguishes between two types of importance:
+- **Authority**: A node is a good authority if it is pointed to by many good hubs.
+- **Hub**: A node is a good hub if it points to many good authorities.
 
-**Authority score**: 
-```
-a_i = Σⱼ A_ji h_j
-```
+$$
+\mathbf{x} = \lambda_x \mathbf{A}^T \mathbf{y} \quad (\text{Hubs})
+$$
+$$
+\mathbf{y} = \lambda_y \mathbf{A} \mathbf{x} \quad (\text{Authorities})
+$$
 
-**Hub score**:
-```
-h_i = Σⱼ A_ij a_j
-```
+These equations can be solved by finding the principal eigenvectors of $\mathbf{A}^T\mathbf{A}$ for hubs and $\mathbf{A}\mathbf{A}^T$ for authorities.
 
-**Applications**: Web search, citation analysis.
+**Applications**: Web search, identifying influential papers in citation networks.
 
-## Random Walk Centrality
+### PageRank
+The algorithm that powered Google Search. It simulates a random walker on the network. A node is important if it is likely to be visited.
 
-### Random Walk Betweenness
-Expected number of times a random walk passes through a node.
+$$
+c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot \frac{1}{N}
+$$
 
-### Current Flow Betweenness  
-Based on electrical current flow through network resistors.
+The formula has two parts:
+1.  **Random walk from neighbors**: A node receives a share of its neighbors' importance.
+2.  **Teleportation**: With probability $\beta$, the walker jumps to a random node in the network. This ensures the walk doesn't get stuck in dead ends.
 
-**Advantage**: Considers all paths, not just shortest paths.
+**Interpretation**: A node is important if many important pages link to it.
+
+### Personalized PageRank
+Extends PageRank by making the "teleportation" step biased towards a specific starting node or set of nodes.
+
+$$
+c_i = (1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j} + \beta \cdot p_{\ell}
+$$
+
+where $p_{\ell}$ is a vector that is 1 for the starting node $\ell$ and 0 otherwise. Instead of jumping to any random node, the walker jumps back to the starting node $\ell$.
+
+**Interpretation**: Ranks nodes based on their proximity to a specific "focal" node, making it ideal for personalized recommendations (e.g., "find movies similar to this one").
 
 ## Choosing the Right Centrality
 
 ### Context-Dependent Selection
 
-**Information Spread**:
-- Initial spread: Degree centrality
-- Efficient broadcast: Closeness centrality
-- Control bottlenecks: Betweenness centrality
-
-**Social Networks**:
-- Popular individuals: Degree centrality
-- Opinion leaders: Eigenvector centrality
-- Bridges between groups: Betweenness centrality
-
-**Infrastructure**:
-- Critical failures: Betweenness centrality
-- Service efficiency: Closeness centrality
-- Load distribution: Random walk centrality
+| Goal                     | Recommended Centrality                               |
+| ------------------------ | ---------------------------------------------------- |
+| **Find popular nodes**   | Degree                                               |
+| **Find efficient nodes** | Closeness, Harmonic                                  |
+| **Find critical nodes**  | Betweenness, Eccentricity                            |
+| **Find influential nodes** | Eigenvector, PageRank, Katz                          |
+| **Personalized search**  | Personalized PageRank                                |
 
 ### Computational Considerations
 
-**Time Complexity**:
-- Degree: O(m) - very fast
-- Closeness: O(nm) - moderate for small networks
-- Betweenness: O(nm + n²log n) - slow for large networks
-- Eigenvector: O(n³) or iterative methods - moderate
-
-**Memory Requirements**:
-- Degree: O(n) - minimal
-- Distance-based: O(n²) - all-pairs distances
-- Walk-based: O(n) - iterative computation
+| Centrality  | Time Complexity       | Notes                               |
+| ----------- | --------------------- | ----------------------------------- |
+| Degree      | $O(m)$                | Very fast.                          |
+| Closeness   | $O(nm)$               | Moderate, requires all-pairs paths. |
+| Betweenness | $O(nm)$               | Can be slow on large, dense graphs. |
+| Eigenvector | Iterative             | Moderate, depends on convergence.   |
 
 ## Centrality Correlations
 
-### Positive Correlations
-- Degree and eigenvector centrality (usually strong)
-- Closeness and betweenness (in many networks)
-
-### Network-Dependent Patterns
-- **Star networks**: Degree = betweenness at center
-- **Path networks**: Betweenness peaks at center, degree uniform
-- **Clique networks**: All centralities nearly equal
+Centrality measures are often correlated, but the strength of the correlation depends on the network's structure.
+- **Degree** and **Eigenvector** centrality are often strongly correlated.
+- In a **star network**, the central node dominates Degree and Betweenness scores.
+- In a **path network**, Betweenness peaks in the middle, while Degree is uniform (except at the ends).
 
 ## Applications and Implications
 
-### Network Robustness
-- Target high-centrality nodes for maximum disruption
-- Protect high-centrality nodes for resilience
-
-### Epidemic Modeling
-- Patient zero identification
-- Vaccination strategies
-- Containment protocols
-
-### Social Dynamics
-- Leadership emergence
-- Innovation diffusion  
-- Social capital measurement
-
-### Economic Networks
-- Systemic risk identification
-- Supply chain vulnerabilities
-- Financial contagion pathways
+- **Network Robustness**: Identify critical nodes to protect or target.
+- **Epidemic Modeling**: Find super-spreaders and optimal vaccination targets.
+- **Social Dynamics**: Uncover leaders, influencers, and bridges between communities.
+- **Economic Networks**: Detect systemic risks and supply chain vulnerabilities.
