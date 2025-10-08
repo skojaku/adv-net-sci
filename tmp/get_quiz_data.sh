@@ -19,22 +19,23 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-# Step 1: Clone all student repositories using gh classroom
-echo "Cloning student repositories for assignment $ASSIGNMENT_ID..."
-gh classroom clone student-repos -a "$ASSIGNMENT_ID"
+# Step 1: Clone all student repositories using gh classroom (only if not already cloned)
+if [ -d "$CLONE_DIR" ] && [ "$(ls -A $CLONE_DIR 2>/dev/null)" ]; then
+    echo "Directory '$CLONE_DIR' already exists and contains repositories. Skipping clone."
+    echo "To re-clone, delete the directory first: rm -rf $CLONE_DIR"
+else
+    echo "Cloning student repositories for assignment $ASSIGNMENT_ID into $CLONE_DIR..."
+    gh classroom clone "$CLONE_DIR" -a "$ASSIGNMENT_ID"
 
-# Check if clone was successful
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clone student repositories"
-    exit 1
+    # Check if clone was successful
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone student repositories"
+        exit 1
+    fi
 fi
 
 # Step 2: Clear the output files if they exist
 > "$OUTPUT_FILE"
-> "$CSV_FILE"
-
-# Write CSV header
-echo "Repository,Student_Success_Rate,Valid_Questions,Invalid_Questions,Student_Wins,LLM_Wins,Passes,GitHub_Result,Actions_Status,Actions_Conclusion" >> "$CSV_FILE"
 
 echo "Processing student repositories..."
 
@@ -63,50 +64,73 @@ for repo_dir in "$CLONE_DIR"/*; do
             gh_actions_conclusion=$(gh run list --workflow=quiz.yml --limit 1 --json status,conclusion --jq '.[0].conclusion // "N/A"' 2>/dev/null || echo "N/A")
             cd - > /dev/null
 
-            # Write to CSV
-            echo "$repo_name,$student_success_rate,$valid_questions,$invalid_questions,$student_wins,$llm_wins,$student_passes,$github_result,$gh_actions_status,$gh_actions_conclusion" >> "$CSV_FILE"
-
             # Write detailed output to text file
             {
-                echo "================================================================"
-                echo "=== Repository: $repo_name"
-                echo "================================================================"
+                echo "================================================================================"
+                echo "Repository: $repo_name"
+                echo "================================================================================"
                 echo ""
-                echo "GitHub Actions Status: $gh_actions_status ($gh_actions_conclusion)"
+                echo "SUMMARY"
+                echo "-------"
+                echo "  GitHub Actions:      $gh_actions_status ($gh_actions_conclusion)"
+                echo "  Student Success Rate: $student_success_rate"
+                echo "  Valid Questions:      $valid_questions"
+                echo "  Invalid Questions:    $invalid_questions"
+                echo "  Student Wins:         $student_wins"
+                echo "  LLM Wins:             $llm_wins"
+                echo "  Student Passes:       $student_passes"
+                echo "  GitHub Result:        $github_result"
                 echo ""
-                echo "--- Summary ---"
-                echo "Student Success Rate: $student_success_rate"
-                echo "Valid Questions: $valid_questions"
-                echo "Invalid Questions: $invalid_questions"
-                echo "Student Wins: $student_wins"
-                echo "LLM Wins: $llm_wins"
-                echo "Student Passes: $student_passes"
-                echo "GitHub Result: $github_result"
                 echo ""
 
-                if [ -f "$quiz_file" ]; then
-                    echo "----------------------------------------------------------------"
-                    echo "--- Quiz Questions (quiz.toml)"
-                    echo "----------------------------------------------------------------"
-                    cat "$quiz_file"
+                # Parse and display each question with details
+                question_count=$(jq '.question_results | length' "$results_file")
+                for i in $(seq 0 $(($question_count - 1))); do
+                    echo "--------------------------------------------------------------------------------"
+                    echo "QUESTION $(($i + 1))"
+                    echo "--------------------------------------------------------------------------------"
                     echo ""
-                fi
 
-                echo "----------------------------------------------------------------"
-                echo "--- Question Results (Parsed from quiz_results.json)"
-                echo "----------------------------------------------------------------"
-                jq -r '.question_results[] | "Question \(.question_number): \(.question)\nCorrect Answer: \(.correct_answer)\nLLM Answer: \(.llm_answer)\nStudent Wins: \(.student_wins)\nIs Correct: \(.is_correct)\nValidation: \(.validation.valid // false) (Issues: \(.validation.issues // [] | join(", ")))\nExplanation: \(.evaluation_explanation)\n"' "$results_file"
+                    question=$(jq -r ".question_results[$i].question" "$results_file")
+                    correct_answer=$(jq -r ".question_results[$i].correct_answer" "$results_file")
+                    llm_answer=$(jq -r ".question_results[$i].llm_answer" "$results_file")
+                    is_correct=$(jq -r ".question_results[$i].is_correct" "$results_file")
+                    student_wins_q=$(jq -r ".question_results[$i].student_wins" "$results_file")
+                    valid=$(jq -r ".question_results[$i].validation.valid // false" "$results_file")
+                    issues=$(jq -r ".question_results[$i].validation.issues // [] | join(\", \")" "$results_file")
+                    explanation=$(jq -r ".question_results[$i].evaluation_explanation" "$results_file")
 
-                echo -e "\n\n"
+                    echo "Question:"
+                    echo "  $question"
+                    echo ""
+                    echo "Student's Correct Answer:"
+                    echo "  $correct_answer"
+                    echo ""
+                    echo "LLM's Answer:"
+                    echo "  $llm_answer"
+                    echo ""
+                    echo "Result:"
+                    echo "  Is Correct:    $is_correct"
+                    echo "  Student Wins:  $student_wins_q"
+                    echo "  Valid:         $valid"
+                    if [ "$issues" != "" ]; then
+                        echo "  Issues:        $issues"
+                    fi
+                    echo ""
+                    echo "AI Evaluation:"
+                    echo "  $explanation"
+                    echo ""
+                done
+
+                echo "================================================================================"
+                echo ""
+                echo ""
             } >> "$OUTPUT_FILE"
         else
             echo "  Warning: Quiz results file not found in $repo_name"
-            echo "$repo_name,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A" >> "$CSV_FILE"
         fi
     fi
 done
 
 echo ""
-echo "Done! Results saved to:"
-echo "  - Detailed output: $OUTPUT_FILE"
-echo "  - CSV summary: $CSV_FILE"
+echo "Done! Results saved to: $OUTPUT_FILE"
