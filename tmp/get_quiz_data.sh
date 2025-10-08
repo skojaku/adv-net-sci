@@ -8,8 +8,8 @@
 # Example: ./get_quiz_data.sh 834116 student-repos quiz_results.txt quiz_summary.csv
 
 # Configuration - all can be overridden via command line arguments
-ASSIGNMENT_ID="${1:-834116}"  # Default assignment ID
-CLONE_DIR="${2:-student-repos}"  # Directory to clone repos into
+ASSIGNMENT_ID=$1  # Default assignment ID
+CLONE_DIR=$2  # Directory to clone repos into
 OUTPUT_FILE="${3:-quiz_and_results.txt}"  # Detailed output file
 CSV_FILE="${4:-quiz_summary.csv}"  # CSV summary file
 
