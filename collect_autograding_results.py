@@ -55,6 +55,8 @@ def get_latest_autograding_run(repo_path):
 def get_autograding_score(repo_path, run_id):
     """Extract autograding score from workflow run logs."""
     try:
+        import re
+
         # Get the workflow run logs
         result = subprocess.run(
             ['gh', 'run', 'view', str(run_id), '--log'],
@@ -65,36 +67,45 @@ def get_autograding_score(repo_path, run_id):
         )
 
         if result.returncode != 0:
-            return None, "Failed to get logs"
+            return None, None, {}
 
         log_content = result.stdout
 
-        # Look for the autograding score in the logs
-        # GitHub Classroom autograding typically outputs: "Points: X/Y" or similar
-        score = None
+        # Look for the GitHub Classroom autograding summary
+        # Pattern: ##[notice]Points X/Y
+        total_score = None
         max_score = None
+        task_scores = {}
 
         for line in log_content.split('\n'):
-            # Look for patterns like "Points: 10/10" or "Score: 10/10"
-            if 'Points' in line or 'Score' in line or 'pts' in line:
-                # Try to extract numbers
-                import re
-                # Match patterns like "10/10", "10 / 10", "10 out of 10"
-                match = re.search(r'(\d+\.?\d*)\s*[/out of]+\s*(\d+\.?\d*)', line)
+            # Look for total score: ##[notice]Points 5/20
+            if '##[notice]Points' in line:
+                match = re.search(r'##\[notice\]Points\s+(\d+)/(\d+)', line)
                 if match:
-                    score = float(match.group(1))
-                    max_score = float(match.group(2))
-                    break
-                # Also try to match "Points: 10"
-                match = re.search(r'(?:Points|Score):\s*(\d+\.?\d*)', line)
-                if match:
-                    score = float(match.group(1))
+                    total_score = int(match.group(1))
+                    max_score = int(match.group(2))
 
-        return score, max_score
+            # Look for individual task scores in the table
+            # Pattern: │ task-1             │ 0           │ 10          │
+            if '│' in line and ('task-' in line.lower() or 'quiz-' in line.lower()):
+                # Remove ANSI color codes and parse
+                clean_line = re.sub(r'\x1b\[[0-9;]*m', '', line)
+                parts = [p.strip() for p in clean_line.split('│') if p.strip()]
+                # Parts will be: [prefix with timestamp, task_name, score, max_score]
+                if len(parts) >= 4:
+                    task_name = parts[1]
+                    try:
+                        task_score = int(parts[2])
+                        task_max = int(parts[3])
+                        task_scores[task_name] = f"{task_score}/{task_max}"
+                    except (ValueError, IndexError):
+                        pass
+
+        return total_score, max_score, task_scores
 
     except Exception as e:
         print(f"Exception getting score for {repo_path}: {e}")
-        return None, None
+        return None, None, {}
 
 def get_student_name_from_repo(repo_path):
     """Try to get student name from repository (e.g., from commits or README)."""
@@ -154,38 +165,43 @@ def main():
             print(f"  Latest run: {run_id} - Status: {status}, Conclusion: {conclusion}")
 
             # Get score from logs
-            score, max_score = get_autograding_score(repo_path, run_id)
+            total_score, max_score, task_scores = get_autograding_score(repo_path, run_id)
 
-            if score is not None:
-                print(f"  Score: {score}/{max_score if max_score else '?'}")
+            if total_score is not None:
+                print(f"  Total Score: {total_score}/{max_score}")
+                if task_scores:
+                    print(f"  Task breakdown: {task_scores}")
+                score_display = f"{total_score}/{max_score}"
             else:
                 print(f"  Score: Could not extract")
-                # If we can't extract score, use conclusion as indicator
-                if conclusion == 'success':
-                    score = "PASS"
-                else:
-                    score = "FAIL"
+                score_display = "N/A"
         else:
             print("  No workflow runs found")
             status = "No runs"
             conclusion = "N/A"
-            score = "N/A"
+            total_score = None
             max_score = None
+            task_scores = {}
+            score_display = "N/A"
 
         results.append({
             'student_name': student_name,
             'github_username': username,
-            'repository': repo_name,
             'status': status if run else "No runs",
             'conclusion': conclusion if run else "N/A",
-            'score': score if score is not None else "N/A"
+            'total_score': total_score if total_score is not None else 0,
+            'max_score': max_score if max_score is not None else 0,
+            'score': score_display,
+            'task_1': task_scores.get('task-1', 'N/A'),
+            'task_2': task_scores.get('task-2', 'N/A'),
+            'quiz': task_scores.get('quiz-challenge', 'N/A')
         })
 
     # Write results to CSV
     output_file = '/Users/skojaku-admin/Documents/projects/adv-net-sci/tmp/autograding_results.csv'
 
     with open(output_file, 'w', newline='') as csvfile:
-        fieldnames = ['student_name', 'github_username', 'repository', 'status', 'conclusion', 'score']
+        fieldnames = ['student_name', 'github_username', 'total_score', 'max_score', 'score', 'task_1', 'task_2', 'quiz', 'status', 'conclusion']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
