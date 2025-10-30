@@ -614,25 +614,4 @@ Complementary visualizations of Les Misérables coappearance network generated b
 
 ### Let's try it out!
 
-```python
-def node2vec_random_walk(A, p, q, num_walks):
-  walks = []
-  for _ in range(num_walks):
-    start_node = np.random.choice(A.shape[0])
-    walk = [start_node]
-    prev_node = start_node
-    prev_neighbor = 
-    while len(walk) < walk_length:
-      current_node = walk[-1]
-      neighbors = A[current_node].nonzero()[0]
-
-      weights = np.ones(len(neighbors))
-      for i, neighbor in enumerate(neighbors):
-        if neighbor == prev_node:
-          weights[i] = 1/p
-        else:
-          weights[i] = 1
-
-      next_node = np.random.choice(neighbors)
-      walk.append(next_node)
-```
+[Notebook](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m08-network-embedding/node2vec_demo.ipynb)
