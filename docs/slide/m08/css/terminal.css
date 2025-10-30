@@ -38,7 +38,7 @@
 
 .reveal {
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--terminal-text);
 }
@@ -92,7 +92,7 @@
   font-size: 1.5em;
   color: var(--terminal-yellow);
   text-shadow: none;
-  text-align: center;
+  text-align: left;
   padding: 15px 0;
 }
 
@@ -287,22 +287,17 @@
   position: relative;
   width: 80%;
   margin: 20px auto;
-  padding: 15px 20px 15px 35px;
+  padding: 15px 20px 15px 30px;
   background: #000000;
-  border-left: 6px solid var(--terminal-yellow);
+  border-left: 4px solid var(--terminal-yellow);
   font-style: normal;
   color: var(--terminal-text);
   line-height: 1.5;
 }
 
 .reveal blockquote::before {
-  content: "▍";
-  position: absolute;
-  left: 12px;
-  color: var(--terminal-yellow);
-  font-size: 1.2em;
-  font-style: normal;
-  font-weight: bold;
+  content: "";
+  /* Removed ▍ character to avoid double yellow line */
 }
 
 .reveal blockquote p {
@@ -588,4 +583,32 @@
 
 .reveal .MathJax {
   font-family: initial !important;
+}
+
+/*********************************************
+ * COLUMN LAYOUTS WITH DIVIDERS
+ *********************************************/
+
+/* Add vertical partition line to columns */
+.reveal .columns {
+  display: flex;
+  gap: 30px;
+}
+
+.reveal .column {
+  flex: 1;
+}
+
+/* Column with right border (divider) */
+.reveal .column.divider {
+  border-right: 2px solid var(--terminal-dark-gray);
+  padding-right: 20px;
+  margin-right: 10px;
+}
+
+/* Alternative: add divider class to parent columns */
+.reveal .columns.divider .column:not(:last-child) {
+  border-right: 2px solid var(--terminal-dark-gray);
+  padding-right: 20px;
+  margin-right: 10px;
 }

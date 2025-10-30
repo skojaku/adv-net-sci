@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corrected D3.js Amidakuji Game with Aligned Trophy</title>
+    <title>Fixed Amidakuji Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <style>
         body {
@@ -19,6 +19,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
         }
         button {
             margin: 5px;
@@ -65,44 +72,58 @@
             <input type="range" id="lines" min="5" max="500" value="10">
             <span id="lines-value">10</span>
         </div>
-        <button id="auto-play">🤖 Play 1000 Times</button>
-        <button id="reset-stats">🔄 Reset Statistics</button>
+        <div class="button-row">
+            <button id="auto-play">🤖 Play 1000 Times</button>
+            <button id="reset-stats">🔄 Reset Statistics</button>
+        </div>
+        <div class="button-row">
+            <button id="reveal-trophy">🏆 Reveal the Trophy</button>
+        </div>
         <div id="stats"></div>
         <div id="amidakuji"></div>
         <div id="result"></div>
     </div>
 
     <script>
-        const width = 480;
-        const height = 400;
-        const margin = { top: 40, right: 10, bottom: 40, left: 10 };
-        const gameWidth = width - margin.left - margin.right;
-        const gameHeight = height - margin.top - margin.bottom;
+        // Configuration constants
+        const CONFIG = {
+            width: 480,
+            height: 400,
+            margin: { top: 40, right: 10, bottom: 40, left: 10 },
+            numPaths: 7,
+            minRungSpacing: 20,
+            stepSize: 2,
+            detectionTolerance: 3
+        };
+
+        const gameWidth = CONFIG.width - CONFIG.margin.left - CONFIG.margin.right;
+        const gameHeight = CONFIG.height - CONFIG.margin.top - CONFIG.margin.bottom;
 
         const svg = d3.select("#amidakuji")
             .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+            .attr("width", CONFIG.width)
+            .attr("height", CONFIG.height);
 
         const gameArea = svg.append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+            .attr("transform", `translate(${CONFIG.margin.left},${CONFIG.margin.top})`);
 
         let horizontalLines = [];
-        const verticalLines = 7; // 6 paths + 1 (for spacing)
         let cellWidth, cellHeight;
         let gameState = 'ready';
         let currentPath = [];
-        let winningStats = [0, 0, 0, 0, 0, 0];
-        let winningColumn = 5; // Default to the second from the right (5th out of 6)
+        let winningStats = [0, 0, 0, 0, 0, 0, 0];
+        let winningColumn = 5;
         let totalGames = 0;
+        let trophyVisible = false;
 
         const linesSlider = document.getElementById('lines');
         const linesValue = document.getElementById('lines-value');
         const autoPlayButton = document.getElementById('auto-play');
         const resetStatsButton = document.getElementById('reset-stats');
+        const revealTrophyButton = document.getElementById('reveal-trophy');
         const resultDiv = document.getElementById('result');
 
-        const emojis = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍉'];
+        const emojis = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍉', '🍍'];
         const flagEmoji = '🚩';
         const trophyEmoji = '🏆';
 
@@ -119,10 +140,16 @@
         function generateHorizontalLines() {
             horizontalLines = [];
             const lineCount = parseInt(linesSlider.value);
+
             for (let i = 0; i < lineCount; i++) {
-                const x = Math.floor(Math.random() * (verticalLines - 2)) + 1;
-                horizontalLines.push({ x: x, y: (i + 1) / (lineCount + 1) });
+                // Rungs connect adjacent lines x to x+1, so x ranges from 0 to numPaths-2
+                const x = Math.floor(Math.random() * (CONFIG.numPaths - 1));
+                const y = (i + 1) / (lineCount + 1);
+                horizontalLines.push({ x: x, y: y });
             }
+
+            // Sort by Y position for correct processing
+            horizontalLines.sort((a, b) => a.y - b.y);
         }
 
         function calculateWinningStart() {
@@ -134,17 +161,17 @@
                     x++;
                 }
             }
-            winningStats[x - 1]++;
+            winningStats[x]++;
         }
 
         function drawGame() {
             gameArea.selectAll("*").remove();
 
-            cellWidth = gameWidth / verticalLines;
+            cellWidth = gameWidth / CONFIG.numPaths;
             cellHeight = gameHeight / (horizontalLines.length + 2);
 
             // Draw vertical lines
-            for (let i = 1; i < verticalLines; i++) {
+            for (let i = 0; i < CONFIG.numPaths; i++) {
                 gameArea.append("line")
                     .attr("x1", i * cellWidth)
                     .attr("y1", 0)
@@ -167,20 +194,20 @@
             });
 
             // Draw clickable path selectors at the top
-            for (let i = 1; i < verticalLines; i++) {
+            for (let i = 0; i < CONFIG.numPaths; i++) {
                 gameArea.append("text")
                     .attr("x", i * cellWidth)
                     .attr("y", -10)
                     .attr("text-anchor", "middle")
                     .attr("fill", "#ffffff")
                     .attr("font-size", "24px")
-                    .text(emojis[i-1])
+                    .text(emojis[i])
                     .on("click", () => handleClick(i))
                     .style("cursor", "pointer");
             }
 
             // Draw clickable winner selectors and trophies at the bottom
-            for (let i = 1; i < verticalLines; i++) {
+            for (let i = 0; i < CONFIG.numPaths; i++) {
                 gameArea.append("text")
                     .attr("x", i * cellWidth)
                     .attr("y", gameHeight + 30)
@@ -191,8 +218,7 @@
                     .on("click", () => setWinningColumn(i))
                     .style("cursor", "pointer");
 
-                // Draw trophy for the winning column
-                if (i === winningColumn) {
+                if (i === winningColumn && trophyVisible) {
                     gameArea.append("text")
                         .attr("x", i * cellWidth)
                         .attr("y", gameHeight + 20)
@@ -211,25 +237,36 @@
 
         function drawPath(column, color) {
             let x = column;
-            let y = 0;
-            currentPath = [{x, y}];
+            let currentYPixel = 0;
+            let rungIndex = 0;
 
             const path = d3.path();
             path.moveTo(x * cellWidth, 0);
 
-            horizontalLines.forEach(line => {
-                y = line.y * gameHeight;
-                path.lineTo(x * cellWidth, y);
+            // Process rungs in order
+            while (currentYPixel <= gameHeight && rungIndex < horizontalLines.length) {
+                const nextRung = horizontalLines[rungIndex];
+                const nextRungY = nextRung.y * gameHeight;
 
-                if (x === line.x) {
-                    x++;
-                    path.lineTo(x * cellWidth, y);
-                } else if (x === line.x + 1) {
-                    x--;
-                    path.lineTo(x * cellWidth, y);
+                // Move to the rung's Y position
+                if (currentYPixel < nextRungY) {
+                    currentYPixel = nextRungY;
+                    path.lineTo(x * cellWidth, currentYPixel);
                 }
-            });
 
+                // Check if we're on this rung
+                if (x === nextRung.x) {
+                    x++;
+                    path.lineTo(x * cellWidth, currentYPixel);
+                } else if (x === nextRung.x + 1) {
+                    x--;
+                    path.lineTo(x * cellWidth, currentYPixel);
+                }
+
+                rungIndex++;
+            }
+
+            // Draw to bottom
             path.lineTo(x * cellWidth, gameHeight);
 
             gameArea.append("path")
@@ -246,7 +283,7 @@
 
             gameState = 'drawing';
             const userEndColumn = drawPath(column, "yellow");
-            const winningStartColumn = winningStats.indexOf(Math.max(...winningStats)) + 1;
+            const winningStartColumn = winningStats.indexOf(Math.max(...winningStats));
             drawPath(winningStartColumn, "red");
 
             setTimeout(() => {
@@ -256,16 +293,20 @@
 
         function checkResult(startColumn, endColumn) {
             if (endColumn === winningColumn) {
-                resultDiv.innerHTML = `${emojis[startColumn-1]} Path ${startColumn} is a winner! 🎉 Congratulations! 🎊`;
+                resultDiv.innerHTML = `${emojis[startColumn]} Path ${startColumn} is a winner! 🎉 Congratulations! 🎊`;
             } else {
-                resultDiv.innerHTML = `${emojis[startColumn-1]} Path ${startColumn} is not a winner. 😢 Try again! 🍀`;
+                resultDiv.innerHTML = `${emojis[startColumn]} Path ${startColumn} is not a winner. 😢 Try again! 🍀`;
             }
             updateStats();
             setTimeout(initGame, 1500);
         }
 
         function updateStats() {
-            const data = winningStats.map((value, index) => ({ path: index + 1, count: value, percentage: (value / totalGames) * 100 }));
+            const data = winningStats.map((value, index) => ({
+                path: index,
+                count: value,
+                percentage: totalGames > 0 ? (value / totalGames) * 100 : 0
+            }));
 
             d3.select("#stats").selectAll("*").remove();
 
@@ -290,7 +331,8 @@
                 .range([chartHeight, 0]);
 
             x.domain(data.map(d => d.path));
-            y.domain([0, d3.max(data, d => d.percentage)]);
+            const maxPercentage = d3.max(data, d => d.percentage);
+            y.domain([0, maxPercentage > 0 ? maxPercentage : 100]);
 
             statsSvg.selectAll(".bar")
                 .data(data)
@@ -334,10 +376,10 @@
             function playOne() {
                 if (count < 1000) {
                     initGame();
-                    const randomColumn = Math.floor(Math.random() * 6) + 1;
+                    const randomColumn = Math.floor(Math.random() * CONFIG.numPaths);
                     const endColumn = drawPath(randomColumn, `rgba(255, 255, 0, 0.1)`);
                     drawPath(winningColumn, `rgba(255, 0, 0, 0.1)`);
-                    winningStats[randomColumn - 1] += (endColumn === winningColumn ? 1 : 0);
+                    winningStats[randomColumn] += (endColumn === winningColumn ? 1 : 0);
                     count++;
                     if (count % 10 === 0) {
                         updateStats();
@@ -353,10 +395,28 @@
         }
 
         function resetStats() {
-            winningStats = [0, 0, 0, 0, 0, 0];
+            winningStats = [0, 0, 0, 0, 0, 0, 0];
             totalGames = 0;
             updateStats();
             resultDiv.innerHTML = 'Statistics have been reset! 🔄';
+        }
+
+        function revealTrophy() {
+            trophyVisible = !trophyVisible;
+
+            if (trophyVisible) {
+                revealTrophyButton.textContent = '🙈 Hide Trophy';
+                if (gameState === 'ready') {
+                    const winningStartColumn = winningStats.indexOf(Math.max(...winningStats));
+                    drawPath(winningStartColumn, "red");
+                    resultDiv.innerHTML = `🏆 The trophy is at position ${winningColumn}! The winning path starts from ${emojis[winningStartColumn]} (position ${winningStartColumn})`;
+                }
+            } else {
+                revealTrophyButton.textContent = '🏆 Reveal the Trophy';
+                resultDiv.innerHTML = '';
+            }
+
+            drawGame();
         }
 
         linesSlider.addEventListener('input', () => {
@@ -366,6 +426,7 @@
 
         autoPlayButton.addEventListener('click', autoPlay);
         resetStatsButton.addEventListener('click', resetStats);
+        revealTrophyButton.addEventListener('click', revealTrophy);
 
         initGame();
     </script>

@@ -7,10 +7,12 @@ format:
     preview-links: auto
     theme: night
     css: css/terminal.css
+    html-math-method: katex
+    slide-level: 3
   html:
     code-fold: true
     code-tools: true
-highlight-style: monokai
+#highlight-style: monokai
 execute:
     enabled: true
     echo: false
@@ -30,7 +32,7 @@ Check list
 
 Sadamori Kojaku
 
-# Network Embedding 🌐
+## Network Embedding 🌐
 
 :::: {.columns}
 
@@ -79,7 +81,8 @@ $$
 Try solving this for the 1d case (only u_1)
 :::
 
-## Proof sketch
+
+### Proof sketch
 
 $$
 \frac{1}{2}||\mathbf{A} - \lambda \mathbf{U}\mathbf{U}^\top||_F^2 = \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N (A_{ij} - \lambda u_i u_j)^2
@@ -91,7 +94,7 @@ $$
 \frac{\partial}{\partial u_i}\left[ \frac{1}{2}\sum_{i=1}^N \sum_{j=1}^N (A_{ij} - \lambda u_i u_j)^2 \right] = 0
 $$
 
-## Deriving the solution
+### Deriving the solution
 
 By setting the derivative to 0, we get:
 
@@ -106,7 +109,7 @@ $$
 \end{align}
 $$
 
-## Eigenvalue problem
+### Eigenvalue problem
 
 This is an eigenvalue problem of $A$, i.e.,
 
@@ -118,7 +121,7 @@ $$
 But we have $N$ eigenvectors ($u_i$) with 0 gradient. Which one should we choose?
 :::
 
-## Which eigenvector should we choose?
+### Which eigenvector should we choose?
 
 A guiding criterion is *the reconstruction error*, i.e., choose the eigenvector with eigenvalue $\lambda$ that minimizes the reconstruction error.
 
@@ -134,14 +137,14 @@ $$
 
 And see how it relates to the eigenvalue.
 
-## Finding the optimal eigenvalue
+### Finding the optimal eigenvalue
 
 Expanding it gives
 
 $$
 \begin{align}
-\text{Tr}((\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)^\top (\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)) = \underbrace{\text{Tr}(\mathbf{A}^\top\mathbf{A})}_{\text{const.}} - 2\lambda \text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u}) + \lambda^2 \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{u}\mathbf{u}^\top\mathbf{u})}_{\text{const. (why? 🤔)}}) \\
-\propto -2 \lambda \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u})}_{\text{$=\lambda$ (why? 🤔)}}
+\text{Tr}((\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)^\top (\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)) &= \underbrace{\text{Tr}(\mathbf{A}^\top\mathbf{A})}_{\text{const.}} - 2\lambda \text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u}) + \lambda^2 \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{u}\mathbf{u}^\top\mathbf{u})}_{\text{const. (why? 🤔)}}) \\
+&\propto -2 \lambda \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u})}_{\text{$=\lambda$ (why? 🤔)}}
 \end{align}
 $$
 
@@ -153,11 +156,11 @@ $$
 
 It is minimized when $\lambda$ is the largest eigenvalue. So the best $u$ is the eigenvector corresponding to **the largest eigenvalue**.
 
-## Why eigenvectors?
+### Why eigenvectors?
 
 ![](figs/spectral-decomposition.jpg){width=80% fig-align="center"}
 
-## Visualizing basis matrices
+### Intuition behind eigenvectors
 
 ```{python}
 #| echo: true
@@ -186,11 +189,11 @@ axes[0].set_title("Adjacency Matrix")
 plt.show()
 ```
 
-## Solution for general $d$ dimensional case
+### Solution for general $d$ dimensional case
 
 The $d$ eigenvectors associated with the largest $d$ eigenvalues give the optimal solution that minimizes the reconstruction error for the $d$ dimensional case.
 
-## Fed up with the math? Let's try it out! 🧑‍💻
+### Fed up with the math? Let's try it out! 🧑‍💻
 
 ```python
 import numpy as np
@@ -208,9 +211,27 @@ $$
 
 where $u_i$ is the eigenvector corresponding to the $i$-th largest eigenvalue $\lambda_i$.
 
+### Let's try it out more!
+
+The adjacency matrix is not the only matrix that represents a network.
+
+What do the eigenvectors of the following matrices look like? Compute the eigenvectors, visualize them (e.g., heatmap) and see what they are likely to represent.
+
+1. Laplacian matrix $L = D - A$, where $D$ is the degree matrix.
+2. Normalized Laplacian matrix $L_n = I - D^{-1/2} A D^{-1/2}$.
+
+Work with Zachary's karate club network.
+
+```python
+import numpy as np
+import igraph as ig
+A = ig.Graph.Famous("Zachary").get_adjacency_sparse() # Load the karate club network
+```
+
+
 # Idea 2: Graph Cut ✂️
 
-## Graph cut Problem
+### Graph cut Problem
 
 **Graph cut Problem** ✂️
 
@@ -226,7 +247,13 @@ $$
 
 where $|Q \cup S| = N, \quad Q \cap S = \emptyset$
 
-This has a close relationship with the spectra of the network.
+This has a close relationship with *the Laplacian matrices* $L$ and $L_n$ given by
+
+$$
+L = D - A, \quad L_n = I - D^{-1/2} A D^{-1/2}
+$$
+
+where $D$ is the degree matrix and $A$ is the adjacency matrix.
 
 :::
 
@@ -236,35 +263,19 @@ This has a close relationship with the spectra of the network.
 
 ::::
 
-## Ratio Cut
+### Ratio Cut
 
 :::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="50%" .divider}
 
 Ratio Cut:
 
 $$
-\sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right)
+\sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right) = \frac{1}{N} \mathbf{x}^\top \mathbf{L} \mathbf{x}
 $$
 
-**Challenge from me**: The RatioCut objective can be expressed concisely as:
-
-$$
-\mathbf{x}^\top \mathbf{L} \mathbf{x}
-$$
-
-where $L$ is the combinatorial Laplacian matrix given by
-
-$$
-\mathbf{L} = \mathbf{D} - \mathbf{A}.
-$$
-
-:::
-
-::: {.column width="50%"}
-
-and $x=[x_1,x_2,...,x_N]$ is an indicator:
+where $L = D - A$ (the combinatorial Laplacian matrix) with ${\bf x}=[x_1,x_2,...,x_N]^\top$ is an indicator vector for the partition.
 
 $$
 x_i = \begin{cases}
@@ -273,23 +284,25 @@ x_i = \begin{cases}
 \end{cases}
 $$
 
-Prove this!
-
-::: {.callout-note title="Note:"}
-I'll challenge you with a similar problem (normalized cut) later. Will ask you to form a group and try to solve it together. If you can solve it during the lecture, I'll give a bonus point to everyone in the group. DO NOT LOOK UP THE LAPTOP and PHONE. Feel free to chat.
 :::
 
-:::
+::: {.column width="50%"}
 
-::::
 
-**Note**: $x_i$ appears to be peculiar but has convenient properties, i.e., **zero mean** and **normalization**, i.e.,
+$x_i$ appears to be peculiar but has convenient properties, i.e., **zero mean** and **normalization**, i.e.,
 
 $$
 \sum_i x_i = 0, \quad \sum_i x_i^2 = N
 $$
 
-## Deriving the Ratio Cut formula
+:::
+
+::::
+
+Let's prove this!
+
+
+### Deriving the Ratio Cut formula
 
 Consider distance between points $x_i$ and $x_j$:
 
@@ -308,33 +321,40 @@ $$
 
 (The last equality holds because $(x_i - x_j)^2 = 0$ for $i,j \in Q$ or $i,j \in S$.)
 
-## Connecting to Laplacian
+### Connecting to Laplacian
 
+::: {.columns}
+
+::: {.column width="60%" .divider}
 By expanding the square term, we get
 
 $$
-\begin{align}
+\begin{align*}
 \text{RatioCut}(Q,S) &= \frac{1}{2N}\sum_{i=1}^N  \sum_{j=1}^N A_{ij}  \left( x_i - x_j \right)^2 \\
 &= \frac{1}{N}\sum_{i=1}^N x^2_i \underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree } k_i}  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
 &= \frac{1}{N}\sum_{i=1}^N k_i x^2_i  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
 &= \frac{1}{N}\sum_{i=1}^N \sum_{j=1} ^N L_{ij} x_i x_j \\
-\end{align}
+\end{align*}
 $$
 
-where $L$ is the **Combinatorial Laplacian matrix** given by
+:::
+
+::: {.column width="40%"}
+
+Therefore,
 
 $$
-\mathbf{L} = \begin{bmatrix}
-k_1 & -A_{12} & \cdots & -A_{1n} \\
--A_{21} & k_2 & \cdots & -A_{2n} \\
-\vdots & \vdots & \ddots & \vdots \\
--A_{n1} & -A_{n2} & \cdots & k_n
-\end{bmatrix}
+\text{RatioCut}(Q,S) = \frac{1}{N} \mathbf{x}^\top \mathbf{L} \mathbf{x}.
 $$
 
-## The optimization problem
+:::
 
-So the optimization problem is
+:::
+
+
+### The optimization problem
+
+The ratio cut minimization problem is formulated as
 
 $$
 \min_{\mathbf{x}} \mathbf{x}^\top \mathbf{L} \mathbf{x}
@@ -360,6 +380,10 @@ What is the solution to this optimization problem?
 
 ## Solution via eigenvalue problem
 
+::: {.columns}
+
+::: {.column width="50%" .divider}
+
 Consider the eigenvalue problem:
 
 $$
@@ -376,14 +400,15 @@ where we have used $||x|| = 1$. The left-hand side is exactly the objective func
 
 Thus the solution is the eigenvector corresponding to the smallest eigenvalue 😉....
 
-## Confirmation exercise
+:::
 
-> Thus the solution is the eigenvector corresponding to the smallest eigenvalue 😉....
+::: {.column width="50%"}
 
 ```python
 import numpy as np
 import igraph as ig
-A = ig.Graph.Famous("Zachary").get_adjacency_sparse() # Load
+A = ig.Graph.Famous("Zachary")
+      .get_adjacency_sparse() # Load
 ```
 
 Compute the combinatorial Laplacian matrix $L$ given by
@@ -394,11 +419,18 @@ $$
 
 where $D$ is the degree matrix.
 
-**Task 1**: Compute the smallest eigenvalues and eigenvectors of $L$ and plot the eigenvector.
+**Task 1**: Compute the eigenvector associated with the smallest eigenvalue of $L$ and visualize it.
 
 **Task 2**: Compute the second smallest eigenvector and plot it.
 
+:::
+:::
+
 ## Issue with the "best" solution
+
+::: {.columns}
+
+::: {.column width="50%" .divider}
 
 > ~~Thus the solution is the eigenvector corresponding to the smallest eigenvalue 😉~~.
 
@@ -416,11 +448,17 @@ $$
 \mathbf{x}^\top \mathbf{1} = 0
 $$
 
+:::
+
+::: {.column width="50%"}
+
 The second smallest eigenvector is orthogonal to $x_1$.
 
 - This is because the eigenvectors are orthogonal to each other.
 - Thus, the solution is the eigenvector corresponding to **the second smallest eigenvalue**!
 - The second, and third, and ... smallest eigenvectors can be used to get a k-way partition of the network.
+:::
+:::
 
 ## Normalized Cut
 
@@ -502,9 +540,6 @@ What is the solution to this optimization problem?
 This is one way. Another popular way is to use *convolution* inspired from image processing.
 :::
 
-## Pen and Paper exercise
-
-[Pen and Paper Exercise](https://skojaku.github.io/adv-net-sci/_downloads/bda4489e6c047dd517f24d5dbdbcae89/exercise.pdf)
 
 ## CBOW Model
 
@@ -527,33 +562,34 @@ Precisely speaking, this is not an accurate model description. node2vec is train
 
 ## node2vec random walks
 
-:::: {.columns}
-
-::: {.column width="40%"}
-
 **Biased Random Walk**:
 
 $$
-\begin{align}
-P(\text{next}|\text{current}, \text{previous})
+\begin{align*}
+P(x_{t+1}|x_t, x_{t-1})
 \propto\begin{cases}
-\frac{1}{p} & \text{Return to previous} \\
-1 & \text{Move to neighbor} \\
-\frac{1}{q} & \text{Explore further}
+\frac{1}{p} & \text{Return to } x_{t-1} \\
+1 & \text{Move to a neighbor $x_{t+1}$ directly connected to } x_{t-1} \\
+\frac{1}{q} & \text{Move to a neighbor $x_{t+1}$ *not* directly connected to } x_{t-1}
 \end{cases}
-\end{align}
+\end{align*}
 $$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
 
 **Parameters**:
 
 - $p$: Return parameter (lower = more backtracking)
-- $q$: Out-degree parameter (lower = more exploration)
+- $q$: Exploration parameter (lower = more exploration)
 
 which control the walker to *move away* from the previous node or *stay locally*.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="40%"}
 ![](figs/node2vec-random-walk.png){width=100% fig-align="center"}
 :::
 
@@ -574,3 +610,29 @@ Complementary visualizations of Les Misérables coappearance network generated b
 :::
 
 ::::
+
+
+### Let's try it out!
+
+```python
+def node2vec_random_walk(A, p, q, num_walks):
+  walks = []
+  for _ in range(num_walks):
+    start_node = np.random.choice(A.shape[0])
+    walk = [start_node]
+    prev_node = start_node
+    prev_neighbor = 
+    while len(walk) < walk_length:
+      current_node = walk[-1]
+      neighbors = A[current_node].nonzero()[0]
+
+      weights = np.ones(len(neighbors))
+      for i, neighbor in enumerate(neighbors):
+        if neighbor == prev_node:
+          weights[i] = 1/p
+        else:
+          weights[i] = 1
+
+      next_node = np.random.choice(neighbors)
+      walk.append(next_node)
+```
