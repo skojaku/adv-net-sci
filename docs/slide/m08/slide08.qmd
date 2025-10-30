@@ -615,3 +615,258 @@ Complementary visualizations of Les Misérables coappearance network generated b
 ### Let's try it out!
 
 [Notebook](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m08-network-embedding/node2vec_demo.ipynb)
+
+## Hyperbolic Embedding Methods
+
+### Let's think about geometry... 🌍
+
+::: {.callout-note title = "Question:"}
+All the embedding methods we've seen so far use Euclidean space (flat geometry).
+
+But what if our network has a hierarchical structure—like a tree or organization chart?
+
+Can flat space efficiently capture exponentially growing hierarchies?
+:::
+
+*Take 30 seconds to think about it...*
+
+### The Challenge with Euclidean Space
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.incremental}
+- **Problem**: Real networks have
+  - Hierarchical structures
+  - Scale-free properties
+  - Strong clustering + small-world
+- **Issue**: In flat (Euclidean) space, volume grows **polynomially** with radius
+- **But**: Tree-like hierarchies grow **exponentially**
+- *This is a fundamental mismatch!*
+:::
+
+:::
+
+::: {.column width="40%"}
+![](https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg){width=100% fig-align="center"}
+:::
+
+::::
+
+### What is Hyperbolic Space?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Hyperbolic geometry** = curved space with **negative curvature**
+
+::: {.callout-tip title = "Key Property:"}
+Volume grows **exponentially** with radius—just like trees!
+:::
+
+This naturally captures:
+- Scale-free degree distributions
+- Strong clustering
+- Small-world property
+- Self-similarity
+
+:::
+
+::: {.column width="50%"}
+
+![](https://bjlkeng.io/images/poincare_projection.png){width=100% fig-align="center"}
+
+*Poincaré disk: hyperbolic space visualized in a circle*
+
+:::
+
+::::
+
+## The Popularity-Similarity Framework
+
+### How do real networks actually grow? 🤔
+
+::: {.callout-note title = "Question:"}
+2012: Researchers analyzed Internet, metabolic, and social networks
+
+Do new nodes just connect to popular nodes (preferential attachment)?
+
+Or is there something more going on?
+:::
+
+*Discuss with your neighbor for 30 seconds*
+
+### Answer: It's Both! ⚖️
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.callout-tip title = "Discovery:"}
+Networks grow by balancing **two factors**:
+- **Popularity**: Connect to well-established nodes
+- **Similarity**: Connect to similar nodes
+:::
+
+**Remarkable finding**: This optimization naturally emerges in **hyperbolic space**!
+
+- **Popularity** → radial position (birth time)
+- **Similarity** → angular distance
+- New connections → hyperbolically closest nodes
+
+:::
+
+::: {.column width="40%"}
+![](https://openmetric.org/assets/posts/popularity-similarity-in-networks/internet-routers.png){width=100% fig-align="center"}
+:::
+
+::::
+
+### Why does this explain preferential attachment?
+
+::: {.incremental}
+- Preferential attachment is **not** a primitive mechanism
+- It's a **consequence** of geometric optimization!
+- Probability $\Pi(k) \propto k$ emerges naturally
+- But with crucial differences: **which** nodes connect depends on similarity
+:::
+
+## Mathematical Models of Hyperbolic Space
+
+### Two Ways to Represent Hyperbolic Space
+
+::: {.callout-note title = "Question:"}
+How can we mathematically represent this curved space in a computer?
+:::
+
+We have two main models (they're mathematically equivalent but computationally different):
+
+### 1. Poincaré Ball Model 🔮
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+Points lie within unit ball: $\|\mathbf{x}\| < 1$
+
+**Distance formula**:
+
+$$
+d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
+$$
+
+**Properties**:
+- Intuitive visualization
+- Geodesics = circular arcs
+- Requires complex Riemannian optimization
+
+:::
+
+::: {.column width="40%"}
+![](https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg){width=100% fig-align="center"}
+
+*Shapes appear to shrink near boundary, but they're all the same hyperbolic size!*
+:::
+
+::::
+
+### 2. Lorentzian (Hyperboloid) Model 🎯
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+Points lie on hyperboloid in Minkowski space
+
+**Lorentzian inner product**:
+
+$$
+\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
+$$
+
+**Distance formula**:
+
+$$
+d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
+$$
+
+**Advantage**: More efficient optimization (gradients in Euclidean ambient space)
+
+:::
+
+::: {.column width="40%"}
+![](https://bjlkeng.io/images/poincare_projection.png){width=90% fig-align="center"}
+
+*Hyperboloid projects onto Poincaré disk*
+:::
+
+::::
+
+## Hyperbolic Embeddings in Practice
+
+### What do hyperbolic embeddings look like?
+
+![](https://www.researchgate.net/publication/384245499/figure/fig3/AS:11431281279545169@1727060754985/Wordnet-nouns-embedded-in-hyperbolic-space-Nickel-2018.jpg){width=70% fig-align="center"}
+
+### Interpreting the Embedding
+
+::: {.callout-note title = "Question:"}
+Look at the WordNet embedding above.
+
+Where are abstract concepts like "Entity"? Where are concrete concepts like "Hardwood"?
+
+*What pattern do you notice?*
+:::
+
+### Answer: Natural Hierarchy Emerges! 🌳
+
+::: {.incremental}
+- **Center**: Abstract terms ("Entity", "Object")
+- **Moving outward**: Increasingly specific
+  - "Material" → "Wood" → "Hardwood"
+- **Key insight**: Hyperbolic space automatically organizes concepts hierarchically
+- No explicit supervision needed!
+:::
+
+::: {.callout-tip title = "Why This Works:"}
+The exponential volume growth in hyperbolic space naturally accommodates the exponentially growing number of specific concepts at lower hierarchy levels
+:::
+
+## Key Takeaways
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Euclidean Embeddings**:
+- Standard flat geometry
+- Works for many networks
+- Polynomial volume growth
+
+**Limitations**:
+- Struggles with hierarchies
+- Inefficient for trees
+- Distorts scale-free structure
+
+:::
+
+::: {.column width="50%"}
+
+**Hyperbolic Embeddings**:
+- Curved negative-curvature space
+- Exponential volume growth
+- Natural for hierarchies
+
+**Advantages**:
+- Captures scale-free properties
+- Preserves strong clustering
+- Efficient tree embeddings
+- Explains popularity × similarity
+
+:::
+
+::::
+
+
