@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-10-06">
+<meta name="dcterms.date" content="2025-10-30">
 
-<title>Network Embedding Concepts – Advanced Topics in Network Science</title>
+<title>Network Embedding Coding – Advanced Topics in Network Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -390,7 +390,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Network Embedding Concepts</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Network Embedding Coding</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -713,7 +713,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">Network Embedding Coding</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -781,9 +781,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Network Embedding Concepts</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m08-embedding/01-concepts.html">M08: Embedding</a></li><li class="breadcrumb-item"><a href="../m08-embedding/02-coding.html">Network Embedding Coding</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Network Embedding Concepts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Network Embedding Coding</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -800,7 +800,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 6, 2025</p>
+      <p class="date">October 30, 2025</p>
     </div>
   </div>
   
@@ -816,7 +816,7 @@ window.Quarto = {
 <section id="data-preparation" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">1</span> Data Preparation</h2>
 <p>We will use the karate club network throughout this notebook.</p>
-<div id="a2112655" class="cell" data-execution_count="1">
+<div id="2117e949" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -847,11 +847,11 @@ window.Quarto = {
 <section id="example-spectral-embedding-with-adjacency-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="example-spectral-embedding-with-adjacency-matrix">Example: Spectral Embedding with Adjacency Matrix</h3>
 <p>Let us demonstrate spectral embedding with the karate club network.</p>
-<div id="e968b2bd" class="cell" data-execution_count="2">
+<div id="f91fb290" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dense array for eigendecomposition</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>A_dense <span class="op">=</span> A.toarray()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="bb3c8231" class="cell" data-execution_count="3">
+<div id="57e8572f" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the spectral decomposition</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>eigvals, eigvecs <span class="op">=</span> np.linalg.eig(A_dense)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -891,7 +891,7 @@ window.Quarto = {
 <section id="example-modularity-embedding" class="level3">
 <h3 class="anchored" data-anchor-id="example-modularity-embedding">Example: Modularity Embedding</h3>
 <p>We can use the modularity matrix to generate a low-dimensional embedding of the network.</p>
-<div id="6ae73a74" class="cell" data-execution_count="4">
+<div id="59ab7bad" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.<span class="bu">sum</span>(A_dense, axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> A_dense <span class="op">-</span> np.outer(deg, deg) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> m)</span>
@@ -932,7 +932,7 @@ window.Quarto = {
 <section id="example-laplacian-eigenmap" class="level3">
 <h3 class="anchored" data-anchor-id="example-laplacian-eigenmap">Example: Laplacian Eigenmap</h3>
 <p>Let us first compute the Laplacian matrix and its eigenvectors.</p>
-<div id="a102073b" class="cell" data-execution_count="5">
+<div id="466309dd" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> np.diag(np.<span class="bu">sum</span>(A_dense, axis<span class="op">=</span><span class="dv">1</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> D <span class="op">-</span> A_dense</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -965,7 +965,7 @@ window.Quarto = {
 <section id="example-word2vec-with-text" class="level3">
 <h3 class="anchored" data-anchor-id="example-word2vec-with-text">Example: word2vec with Text</h3>
 <p>To showcase the effectiveness of word2vec, let’s walk through an example using the <code>gensim</code> library.</p>
-<div id="765e20fd" class="cell" data-execution_count="6">
+<div id="7af7e645" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim.downloader</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
@@ -974,7 +974,7 @@ window.Quarto = {
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> gensim.downloader.load(<span class="st">'word2vec-google-news-300'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Our first example is to find the words most similar to <em>king</em>.</p>
-<div id="36f68d12" class="cell" data-execution_count="7">
+<div id="b8e581df" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>word <span class="op">=</span> <span class="st">"king"</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>similar_words <span class="op">=</span> model.most_similar(word)</span>
@@ -1000,7 +1000,7 @@ throne: 0.5422</code></pre>
 <p><em>man</em> is to <em>woman</em> as <em>king</em> is to ___ ?</p>
 </blockquote>
 <p>We can use word embeddings to solve this puzzle.</p>
-<div id="397f91a9" class="cell" data-execution_count="8">
+<div id="b5efd7df" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We solve the puzzle by</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  vec(king) - vec(man) + vec(woman)</span></span>
@@ -1017,7 +1017,7 @@ throne: 0.5422</code></pre>
 </div>
 </div>
 <p>The last example is to visualize the word embeddings.</p>
-<div id="fb225004" class="cell" data-execution_count="9">
+<div id="f7ec95f9" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1041,7 +1041,7 @@ throne: 0.5422</code></pre>
 <h4 class="anchored" data-anchor-id="step-1-generate-random-walks">Step 1: Generate Random Walks</h4>
 <p>The first step is to generate training data for word2vec. We do this by sampling random walks from the network. Each random walk is like a “sentence” where nodes are “words”.</p>
 <p>Let’s implement a function to sample random walks. A random walk starts at a node and repeatedly moves to a random neighbor until it reaches the desired length.</p>
-<div id="aa6db027" class="cell" data-execution_count="10">
+<div id="214c80ad" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(net, start_node, walk_length):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Generate a random walk starting from start_node.</span></span>
@@ -1079,7 +1079,7 @@ throne: 0.5422</code></pre>
 <div class="no-row-height column-margin column-container"><div class="">
 <p>In practice, we generate multiple walks per node to ensure each node appears in various contexts, which helps the model learn better representations.</p>
 </div></div><p>Now we generate multiple random walks starting from each node. We’ll use 10 walks per node, each of length 50.</p>
-<div id="320e01b9" class="cell" data-execution_count="11">
+<div id="f5b09ae3" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>n_walkers_per_node <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>walk_length <span class="op">=</span> <span class="dv">50</span></span>
@@ -1093,14 +1093,14 @@ throne: 0.5422</code></pre>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Example walk: </span><span class="sc">{</span>walks[<span class="dv">0</span>][:<span class="dv">10</span>]<span class="sc">}</span><span class="ss">..."</span>)  <span class="co"># Show first 10 nodes of first walk</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generated 340 random walks
-Example walk: [0, 31, 32, 31, 0, 21, 1, 21, 0, 4]...</code></pre>
+Example walk: [0, 12, 3, 1, 21, 0, 11, 0, 4, 0]...</code></pre>
 </div>
 </div>
 </section>
 <section id="step-2-train-the-word2vec-model" class="level4 page-columns page-full">
 <h4 class="anchored" data-anchor-id="step-2-train-the-word2vec-model">Step 2: Train the Word2Vec Model</h4>
 <p>Now we feed the random walks to the word2vec model. The model will learn to predict which nodes appear together in the same walk, similar to how it learns which words appear together in sentences.</p>
-<div id="090bd09d" class="cell" data-execution_count="12">
+<div id="e935f4b3" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Word2Vec(</span>
@@ -1109,8 +1109,9 @@ Example walk: [0, 31, 32, 31, 0, 21, 1, 21, 0, 4]...</code></pre>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">3</span>,         <span class="co"># Maximum distance between current and predicted node</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    min_count<span class="op">=</span><span class="dv">1</span>,      <span class="co"># Minimum frequency for a node to be included</span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    sg<span class="op">=</span><span class="dv">1</span>,             <span class="co"># Use skip-gram model (vs CBOW)</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span>              <span class="co"># Use hierarchical softmax for training</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span>,              <span class="co"># Use hierarchical softmax for training,</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    workers <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
@@ -1126,7 +1127,7 @@ Example walk: [0, 31, 32, 31, 0, 21, 1, 21, 0, 4]...</code></pre>
 <section id="step-3-extract-node-embeddings" class="level4">
 <h4 class="anchored" data-anchor-id="step-3-extract-node-embeddings">Step 3: Extract Node Embeddings</h4>
 <p>After training, we can extract the learned embeddings for each node from the model.</p>
-<div id="920fbceb" class="cell" data-execution_count="13">
+<div id="2e28042d" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract embeddings for all nodes</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> np.array([model.wv[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)])</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1134,7 +1135,7 @@ Example walk: [0, 31, 32, 31, 0, 21, 1, 21, 0, 4]...</code></pre>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"First node embedding (first 5 dimensions): </span><span class="sc">{</span>embedding[<span class="dv">0</span>][:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Embedding matrix shape: (34, 32)
-First node embedding (first 5 dimensions): [-0.08491512 -0.25203085  0.7852992  -0.00493573  0.07329542]</code></pre>
+First node embedding (first 5 dimensions): [-0.14915937 -0.46659192  0.36447555  0.0024673   0.20961773]</code></pre>
 </div>
 </div>
 </section>
@@ -1144,7 +1145,7 @@ First node embedding (first 5 dimensions): [-0.08491512 -0.25203085  0.7852992  
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>UMAP is a dimensionality reduction technique that preserves both local and global structure better than t-SNE, making it ideal for visualizing high-dimensional embeddings.</p>
-</div></div><div id="0aa3211e" class="cell" data-execution_count="14">
+</div></div><div id="11d2540c" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-stderr">
 <pre><code>/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/umap/umap_.py:1952: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
   warn(
@@ -1161,7 +1162,7 @@ OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active
     </style>
     <div>
         <a href="https://bokeh.org" target="_blank" class="bk-notebook-logo"></a>
-        <span id="e13a5654-7a72-4763-995d-51a3867d54bb">Loading BokehJS ...</span>
+        <span id="a831b718-284e-4740-b399-b46573258918">Loading BokehJS ...</span>
     </div>
 </div>
 <div class="cell-output cell-output-display">
@@ -1329,7 +1330,7 @@ const JS_MIME_TYPE = 'application/javascript';
      "</div>"}};
 
   function display_loaded(error = null) {
-    const el = document.getElementById("e13a5654-7a72-4763-995d-51a3867d54bb");
+    const el = document.getElementById("a831b718-284e-4740-b399-b46573258918");
     if (el != null) {
       const html = (() => {
         if (typeof root.Bokeh === "undefined") {
@@ -1463,7 +1464,7 @@ function(Bokeh) {
       console.log("Bokeh: BokehJS failed to load within specified timeout.");
       root._bokeh_failed_load = true;
     } else if (force !== true) {
-      const cell = $(document.getElementById("e13a5654-7a72-4763-995d-51a3867d54bb")).parents('.cell').data().cell;
+      const cell = $(document.getElementById("a831b718-284e-4740-b399-b46573258918")).parents('.cell').data().cell;
       cell.output_area.append_execute_result(NB_LOAD_WARNING)
     }
   }
@@ -1482,14 +1483,14 @@ function(Bokeh) {
 </div>
 <div class="cell-output cell-output-display">
 
-  <div id="a6e0ea8d-db09-4473-aee8-0afe001bd8c6" data-root-id="p1011" style="display: contents;"></div>
+  <div id="a88ea120-b5e9-4838-84ad-c52c1c303966" data-root-id="p1011" style="display: contents;"></div>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/javascript">
 (function(root) {
   function embed_document(root) {
-  const docs_json = {"6675cdba-2a86-447b-876a-bad8b0c45de9":{"version":"3.8.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1055","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1056"}}},"roots":[{"type":"object","name":"Figure","id":"p1011","attributes":{"x_range":{"type":"object","name":"DataRange1d","id":"p1012"},"y_range":{"type":"object","name":"DataRange1d","id":"p1013"},"x_scale":{"type":"object","name":"LinearScale","id":"p1021"},"y_scale":{"type":"object","name":"LinearScale","id":"p1022"},"title":{"type":"object","name":"Title","id":"p1014","attributes":{"text":"DeepWalk Node Embeddings (UMAP projection)"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1052","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1008","attributes":{"selected":{"type":"object","name":"Selection","id":"p1009","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1010"},"data":{"type":"map","entries":[["x",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/hmlOQKPlf0D2Q5ZAjcZ9QA5pE0BxlSBA5loPQK/hiUDC6KtAvUe3QNtmJkAtOkNAaCFoQCyvlECjBbxAfmuvQNXS9j+wjVhA2G+wQNSBiUCJfZ5AQstuQE4FpUBrEM5A2tXcQLlW6kBdzcFAK2/eQFIKzUCBechAzgiqQIhz4EDtZa1AAnioQH/4XeiIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["y",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/7GyVP3/YUT/9GUA/WRiwPoR9J0BdOCRAeCI3QPytAj+YY8pALoTMQJB7PkDTHD8/U8tEP+bBpD/qB/xAZV3uQJAgL0AzWhE/MRYCQXEjvz+iePNAPNuGP6b6+0COw/tAKiHjQCNr3UDN3gZBtqrQQC7QyEC7KQNBUSG7QNWj2kAZXOlA7frbQLSjaWeIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["size",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/9NqcT2yUcrWQUHZJJj1iqmDhXdFmxeTuUNOyuyJMy8ZOsi375tZa6LpoAVWp4tBHzknOk3A1cChYd3pA/lTVNDUy8LF0dURomHm4JKHmQdTh64e5j5c7kf1n6UDAxjYOQAA2QugHBABAAA="},"shape":[34],"dtype":"float64","order":"little"}],["community",["#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e"]]]}}},"view":{"type":"object","name":"CDSView","id":"p1053","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1054"}}},"glyph":{"type":"object","name":"Scatter","id":"p1049","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"fill_color":{"type":"field","field":"community"},"hatch_color":{"type":"field","field":"community"}}},"nonselection_glyph":{"type":"object","name":"Scatter","id":"p1050","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"Scatter","id":"p1051","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1020","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1033"},{"type":"object","name":"WheelZoomTool","id":"p1034","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1035","attributes":{"dimensions":"both","overlay":{"type":"object","name":"BoxAnnotation","id":"p1036","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1042","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1041","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1043"},{"type":"object","name":"ResetTool","id":"p1044"},{"type":"object","name":"HelpTool","id":"p1045"}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1028","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1029","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1030"},"axis_label":"UMAP 2","major_label_policy":{"type":"object","name":"AllLabels","id":"p1031"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1023","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1024","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1025"},"axis_label":"UMAP 1","major_label_policy":{"type":"object","name":"AllLabels","id":"p1026"}}}],"center":[{"type":"object","name":"Grid","id":"p1027","attributes":{"axis":{"id":"p1023"}}},{"type":"object","name":"Grid","id":"p1032","attributes":{"dimension":1,"axis":{"id":"p1028"}}}]}}]}};
-  const render_items = [{"docid":"6675cdba-2a86-447b-876a-bad8b0c45de9","roots":{"p1011":"a6e0ea8d-db09-4473-aee8-0afe001bd8c6"},"root_ids":["p1011"]}];
+  const docs_json = {"366bdbc1-74ed-4598-932e-e95c1bcaa45f":{"version":"3.8.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1055","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1056"}}},"roots":[{"type":"object","name":"Figure","id":"p1011","attributes":{"x_range":{"type":"object","name":"DataRange1d","id":"p1012"},"y_range":{"type":"object","name":"DataRange1d","id":"p1013"},"x_scale":{"type":"object","name":"LinearScale","id":"p1021"},"y_scale":{"type":"object","name":"LinearScale","id":"p1022"},"title":{"type":"object","name":"Title","id":"p1014","attributes":{"text":"DeepWalk Node Embeddings (UMAP projection)"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1052","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1008","attributes":{"selected":{"type":"object","name":"Selection","id":"p1009","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1010"},"data":{"type":"map","entries":[["x",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/pZ2DQagHjUFUnItBSwKIQQbyfUHCc4JByVyDQRu7iUGc85y/X0jbv4NTgUGicIRBB4OHQX3fjkEY8UC/At4dv577gUGPcYpBpBmPvlnIjUE/Mu++iK2IQSwjWb/nKWHA6rlWwCBCVcAusz29mNs5wLc1IcAy5zA+mUagvzfCRsDLZpU8MxbZvocCFiaIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["y",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/WjiEwD84kcAl/aXAbQSQwB9pPMAVVVDA++84wHRsmsBoM+hAPq3qQAoJS8DYTpXAYA+hwJH0ncDaCvdAPAUFQbsDMsAwiY3A28H/QInwhcDfZwlBw2eDwNiIAUFXd/1AnmsCQbGQ80CgxglBGIUAQfh49kArIwVBUpLyQDpc/0CVFvFAfBrxQKcwbNOIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["size",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/9NqcT2yUcrWQUHZJJj1iqmDhXdFmxeTuUNOyuyJMy8ZOsi375tZa6LpoAVWp4tBHzknOk3A1cChYd3pA/lTVNDUy8LF0dURomHm4JKHmQdTh64e5j5c7kf1n6UDAxjYOQAA2QugHBABAAA="},"shape":[34],"dtype":"float64","order":"little"}],["community",["#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e"]]]}}},"view":{"type":"object","name":"CDSView","id":"p1053","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1054"}}},"glyph":{"type":"object","name":"Scatter","id":"p1049","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"fill_color":{"type":"field","field":"community"},"hatch_color":{"type":"field","field":"community"}}},"nonselection_glyph":{"type":"object","name":"Scatter","id":"p1050","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"Scatter","id":"p1051","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1020","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1033"},{"type":"object","name":"WheelZoomTool","id":"p1034","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1035","attributes":{"dimensions":"both","overlay":{"type":"object","name":"BoxAnnotation","id":"p1036","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1042","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1041","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1043"},{"type":"object","name":"ResetTool","id":"p1044"},{"type":"object","name":"HelpTool","id":"p1045"}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1028","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1029","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1030"},"axis_label":"UMAP 2","major_label_policy":{"type":"object","name":"AllLabels","id":"p1031"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1023","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1024","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1025"},"axis_label":"UMAP 1","major_label_policy":{"type":"object","name":"AllLabels","id":"p1026"}}}],"center":[{"type":"object","name":"Grid","id":"p1027","attributes":{"axis":{"id":"p1023"}}},{"type":"object","name":"Grid","id":"p1032","attributes":{"dimension":1,"axis":{"id":"p1028"}}}]}}]}};
+  const render_items = [{"docid":"366bdbc1-74ed-4598-932e-e95c1bcaa45f","roots":{"p1011":"a88ea120-b5e9-4838-84ad-c52c1c303966"},"root_ids":["p1011"]}];
   void root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
   }
   if (root.Bokeh !== undefined) {
@@ -1522,7 +1523,7 @@ function(Bokeh) {
 <div class="no-row-height column-margin column-container"><div class="">
 <p>The advantage of using embeddings is that we can leverage the rich ecosystem of machine learning tools designed for vector data.</p>
 </div></div><p>Let’s implement K-means clustering with automatic selection of the number of clusters using the silhouette score.</p>
-<div id="f481e29e" class="cell" data-execution_count="15">
+<div id="98d80437" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1553,14 +1554,14 @@ function(Bokeh) {
 <span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Find clusters</span></span>
 <span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>cluster_labels <span class="op">=</span> find_optimal_clusters(embedding)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>k=2: silhouette score = 0.423
-k=3: silhouette score = 0.476
-k=4: silhouette score = 0.505
-k=5: silhouette score = 0.447
-k=6: silhouette score = 0.414
-k=7: silhouette score = 0.356
-k=8: silhouette score = 0.330
-k=9: silhouette score = 0.300
+<pre><code>k=2: silhouette score = 0.457
+k=3: silhouette score = 0.497
+k=4: silhouette score = 0.520
+k=5: silhouette score = 0.458
+k=6: silhouette score = 0.432
+k=7: silhouette score = 0.340
+k=8: silhouette score = 0.219
+k=9: silhouette score = 0.189
 
 Optimal number of clusters: 4</code></pre>
 </div>
@@ -1569,7 +1570,7 @@ Optimal number of clusters: 4</code></pre>
 <div class="no-row-height column-margin column-container"><div class="">
 <p>The silhouette score measures both cohesion (how close nodes are within their cluster) and separation (how far clusters are from each other).</p>
 </div></div><p>Now let’s visualize the discovered clusters on the network:</p>
-<div id="4663fd23" class="cell" data-execution_count="16">
+<div id="9928f84e" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clustering results</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette().as_hex()</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>igraph.plot(</span>
@@ -1602,7 +1603,7 @@ Optimal number of clusters: 4</code></pre>
 </div></div><section id="step-1-implement-biased-random-walk" class="level4 page-columns page-full">
 <h4 class="anchored" data-anchor-id="step-1-implement-biased-random-walk">Step 1: Implement Biased Random Walk</h4>
 <p>The key innovation in node2vec is the biased random walk. Let’s implement it step by step.</p>
-<div id="15b74401" class="cell" data-execution_count="17">
+<div id="37bc5976" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Generate a biased random walk for node2vec.</span></span>
@@ -1686,7 +1687,7 @@ Optimal number of clusters: 4</code></pre>
 <section id="step-2-generate-walks-and-train-model" class="level4 page-columns page-full">
 <h4 class="anchored" data-anchor-id="step-2-generate-walks-and-train-model">Step 2: Generate Walks and Train Model</h4>
 <p>Now let’s generate biased random walks and train the word2vec model. We’ll use <span class="math inline">p=1</span> and <span class="math inline">q=0.1</span>, which encourages outward exploration (DFS-like behavior) to capture community structure.</p>
-<div id="927fe52e" class="cell" data-execution_count="18">
+<div id="f29cfab8" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate biased random walks</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># Return parameter</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># In-out parameter (q &lt; 1 means DFS-like)</span></span>
@@ -1700,14 +1701,14 @@ Optimal number of clusters: 4</code></pre>
 <span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Example walk: </span><span class="sc">{</span>walks_node2vec[<span class="dv">0</span>][:<span class="dv">10</span>]<span class="sc">}</span><span class="ss">..."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generated 340 biased random walks
-Example walk: [0, 21, 1, 2, 9, 33, 32, 22, 32, 20]...</code></pre>
+Example walk: [0, 6, 16, 5, 10, 4, 6, 16, 6, 0]...</code></pre>
 </div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>With <span class="math inline">q=0.1</span>, the walk is 10 times more likely to explore distant nodes than return to the immediate neighborhood, encouraging discovery of global community structure.</p>
 </div></div><p>Train the word2vec model on the biased walks:</p>
-<div id="99dece9e" class="cell" data-execution_count="19">
+<div id="fec8da3e" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train node2vec model</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>model_node2vec <span class="op">=</span> Word2Vec(</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    walks_node2vec,</span>
@@ -1729,7 +1730,7 @@ Example walk: [0, 21, 1, 2, 9, 33, 32, 22, 32, 20]...</code></pre>
 <section id="step-3-visualize-node2vec-embeddings" class="level4">
 <h4 class="anchored" data-anchor-id="step-3-visualize-node2vec-embeddings">Step 3: Visualize Node2vec Embeddings</h4>
 <p>Let’s visualize the node2vec embeddings and compare them with DeepWalk.</p>
-<div id="f68d02b2" class="cell" data-execution_count="20">
+<div id="92c5a406" class="cell" data-execution_count="20">
 <div class="cell-output cell-output-stderr">
 <pre><code>/Users/skojaku-admin/miniforge3/envs/advnetsci/lib/python3.11/site-packages/umap/umap_.py:1952: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
   warn(</code></pre>
@@ -1745,7 +1746,7 @@ Example walk: [0, 21, 1, 2, 9, 33, 32, 22, 32, 20]...</code></pre>
     </style>
     <div>
         <a href="https://bokeh.org" target="_blank" class="bk-notebook-logo"></a>
-        <span id="b19198d0-d40b-4e3c-9d71-5e68aa2a869c">Loading BokehJS ...</span>
+        <span id="f7d31ea7-3bdf-4768-a6a3-759caad46e4c">Loading BokehJS ...</span>
     </div>
 </div>
 <div class="cell-output cell-output-display">
@@ -1913,7 +1914,7 @@ const JS_MIME_TYPE = 'application/javascript';
      "</div>"}};
 
   function display_loaded(error = null) {
-    const el = document.getElementById("b19198d0-d40b-4e3c-9d71-5e68aa2a869c");
+    const el = document.getElementById("f7d31ea7-3bdf-4768-a6a3-759caad46e4c");
     if (el != null) {
       const html = (() => {
         if (typeof root.Bokeh === "undefined") {
@@ -2047,7 +2048,7 @@ function(Bokeh) {
       console.log("Bokeh: BokehJS failed to load within specified timeout.");
       root._bokeh_failed_load = true;
     } else if (force !== true) {
-      const cell = $(document.getElementById("b19198d0-d40b-4e3c-9d71-5e68aa2a869c")).parents('.cell').data().cell;
+      const cell = $(document.getElementById("f7d31ea7-3bdf-4768-a6a3-759caad46e4c")).parents('.cell').data().cell;
       cell.output_area.append_execute_result(NB_LOAD_WARNING)
     }
   }
@@ -2066,14 +2067,14 @@ function(Bokeh) {
 </div>
 <div class="cell-output cell-output-display">
 
-  <div id="daf57d73-39a0-40d4-a786-cdfcf713a8aa" data-root-id="p1063" style="display: contents;"></div>
+  <div id="c36e5583-2f8c-49d0-8bd1-5264f41bc7f5" data-root-id="p1063" style="display: contents;"></div>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/javascript">
 (function(root) {
   function embed_document(root) {
-  const docs_json = {"70e07e2a-9294-4b50-965a-8c518bb6bb58":{"version":"3.8.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1108","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1109"}}},"roots":[{"type":"object","name":"Figure","id":"p1063","attributes":{"x_range":{"type":"object","name":"DataRange1d","id":"p1064"},"y_range":{"type":"object","name":"DataRange1d","id":"p1065"},"x_scale":{"type":"object","name":"LinearScale","id":"p1073"},"y_scale":{"type":"object","name":"LinearScale","id":"p1074"},"title":{"type":"object","name":"Title","id":"p1066","attributes":{"text":"Node2vec Embeddings (UMAP projection)"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1104","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1060","attributes":{"selected":{"type":"object","name":"Selection","id":"p1061","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1062"},"data":{"type":"map","entries":[["x",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/YtvBQIg7q0Cg5cVA+5CiQB+YA0FrmwBB1Hb3QNXUokCY9tJA56zMQGSVBEHeDs1Ap0StQECNrUC1AgBBo03pQOw3AEHd4bFAvvH3QBNh2EAGOfJAEJC3QPAX7UDC+c9ADgrPQB+byEDF1fpABC/BQBqDxkDuQuZAfa+zQBsNukCYHQRBQsX8QCXRPQWIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["y",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/O4WFQazvfEFEQkNBWReEQVBohkG93odB+kOJQUFagEFp90RBu9o8QQ7FiEF5m4dB9X6FQfMyc0EUazRBjRYxQdAEi0H524FB4TI3QdAwP0FlOy9Btk2HQf8VOkHhNChBrqofQfe3IkG9nyxBg2gpQc08OEEJfiVBoyV5QdG1JkFIDixBPIYlQQhzbROIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["size",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/9NqcT2yUcrWQUHZJJj1iqmDhXdFmxeTuUNOyuyJMy8ZOsi375tZa6LpoAVWp4tBHzknOk3A1cChYd3pA/lTVNDUy8LF0dURomHm4JKHmQdTh64e5j5c7kf1n6UDAxjYOQAA2QugHBABAAA="},"shape":[34],"dtype":"float64","order":"little"}],["community",["#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e"]],["name",["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33"]]]}}},"view":{"type":"object","name":"CDSView","id":"p1105","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1106"}}},"glyph":{"type":"object","name":"Scatter","id":"p1101","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"fill_color":{"type":"field","field":"community"},"hatch_color":{"type":"field","field":"community"}}},"nonselection_glyph":{"type":"object","name":"Scatter","id":"p1102","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"Scatter","id":"p1103","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1072","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1085"},{"type":"object","name":"WheelZoomTool","id":"p1086","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1087","attributes":{"dimensions":"both","overlay":{"type":"object","name":"BoxAnnotation","id":"p1088","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1094","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1093","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1095"},{"type":"object","name":"ResetTool","id":"p1096"},{"type":"object","name":"HelpTool","id":"p1097"},{"type":"object","name":"HoverTool","id":"p1107","attributes":{"renderers":"auto","tooltips":[["Node","@name"],["Community","@community"]],"sort_by":null}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1080","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1081","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1082"},"axis_label":"UMAP 2","major_label_policy":{"type":"object","name":"AllLabels","id":"p1083"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1075","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1076","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1077"},"axis_label":"UMAP 1","major_label_policy":{"type":"object","name":"AllLabels","id":"p1078"}}}],"center":[{"type":"object","name":"Grid","id":"p1079","attributes":{"axis":{"id":"p1075"}}},{"type":"object","name":"Grid","id":"p1084","attributes":{"dimension":1,"axis":{"id":"p1080"}}}]}}]}};
-  const render_items = [{"docid":"70e07e2a-9294-4b50-965a-8c518bb6bb58","roots":{"p1063":"daf57d73-39a0-40d4-a786-cdfcf713a8aa"},"root_ids":["p1063"]}];
+  const docs_json = {"8be79f4b-af15-4f23-9e76-abb88e96ffd4":{"version":"3.8.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1108","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1109"}}},"roots":[{"type":"object","name":"Figure","id":"p1063","attributes":{"x_range":{"type":"object","name":"DataRange1d","id":"p1064"},"y_range":{"type":"object","name":"DataRange1d","id":"p1065"},"x_scale":{"type":"object","name":"LinearScale","id":"p1073"},"y_scale":{"type":"object","name":"LinearScale","id":"p1074"},"title":{"type":"object","name":"Title","id":"p1066","attributes":{"text":"Node2vec Embeddings (UMAP projection)"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1104","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1060","attributes":{"selected":{"type":"object","name":"Selection","id":"p1061","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1062"},"data":{"type":"map","entries":[["x",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/foqSQc01ikEK6oBBm0qPQfKpvEDZIMJAwIm/QG7pjEGLrX9BSMF5Qdz3yEBqOpBBXbOMQRnigkFQGXBBUP1mQZcmtUA315FBABdpQd1chkEH7F9B3eqPQYB7akFa+V5B9StgQViyZUGvumNBhPxnQRZuaUE0JV1BnrR8Qdv1ZUF2u2BBWTl0QRt1LFuIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["y",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/wGIAHf/8Un+QEj670A9FQJBJ+XsQEfdj0FEgI5B6SWPQaT250DKwPRAemQCQeTKjEEzhvlA/M39QIwg/UCX6kxBTV9QQdW+kUFtXOdA8UVMQc5m+UANYVBBCFsCQf0dVEGj6zBBqDIrQaRhMkE1PkRBrTgtQT3BIUFLRkJB29QJQURrJkEeD0pBhi1GQaf8IiCIAAAA"},"shape":[34],"dtype":"float32","order":"little"}],["size",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAC/9NqcT2yUcrWQUHZJJj1iqmDhXdFmxeTuUNOyuyJMy8ZOsi375tZa6LpoAVWp4tBHzknOk3A1cChYd3pA/lTVNDUy8LF0dURomHm4JKHmQdTh64e5j5c7kf1n6UDAxjYOQAA2QugHBABAAA="},"shape":[34],"dtype":"float64","order":"little"}],["community",["#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#1f77b4","#1f77b4","#ff7f0e","#ff7f0e","#1f77b4","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#1f77b4","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e","#ff7f0e"]],["name",["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33"]]]}}},"view":{"type":"object","name":"CDSView","id":"p1105","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1106"}}},"glyph":{"type":"object","name":"Scatter","id":"p1101","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"fill_color":{"type":"field","field":"community"},"hatch_color":{"type":"field","field":"community"}}},"nonselection_glyph":{"type":"object","name":"Scatter","id":"p1102","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"Scatter","id":"p1103","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"size":{"type":"field","field":"size"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"field","field":"community"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"field","field":"community"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1072","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1085"},{"type":"object","name":"WheelZoomTool","id":"p1086","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1087","attributes":{"dimensions":"both","overlay":{"type":"object","name":"BoxAnnotation","id":"p1088","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1094","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1093","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1095"},{"type":"object","name":"ResetTool","id":"p1096"},{"type":"object","name":"HelpTool","id":"p1097"},{"type":"object","name":"HoverTool","id":"p1107","attributes":{"renderers":"auto","tooltips":[["Node","@name"],["Community","@community"]],"sort_by":null}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1080","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1081","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1082"},"axis_label":"UMAP 2","major_label_policy":{"type":"object","name":"AllLabels","id":"p1083"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1075","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1076","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1077"},"axis_label":"UMAP 1","major_label_policy":{"type":"object","name":"AllLabels","id":"p1078"}}}],"center":[{"type":"object","name":"Grid","id":"p1079","attributes":{"axis":{"id":"p1075"}}},{"type":"object","name":"Grid","id":"p1084","attributes":{"dimension":1,"axis":{"id":"p1080"}}}]}}]}};
+  const render_items = [{"docid":"8be79f4b-af15-4f23-9e76-abb88e96ffd4","roots":{"p1063":"c36e5583-2f8c-49d0-8bd1-5264f41bc7f5"},"root_ids":["p1063"]}];
   void root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
   }
   if (root.Bokeh !== undefined) {
@@ -2102,7 +2103,7 @@ function(Bokeh) {
 <section id="step-4-clustering-analysis" class="level4">
 <h4 class="anchored" data-anchor-id="step-4-clustering-analysis">Step 4: Clustering Analysis</h4>
 <p>Let’s apply K-means clustering to the node2vec embeddings:</p>
-<div id="ed4b3d93" class="cell" data-execution_count="21">
+<div id="8fa7bd89" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find optimal clusters for node2vec embeddings</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cluster_labels_n2v <span class="op">=</span> find_optimal_clusters(embedding_node2vec)</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2115,14 +2116,14 @@ function(Bokeh) {
 <span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    vertex_label<span class="op">=</span>[<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)]</span>
 <span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>k=2: silhouette score = 0.448
-k=3: silhouette score = 0.527
-k=4: silhouette score = 0.454
-k=5: silhouette score = 0.400
-k=6: silhouette score = 0.366
-k=7: silhouette score = 0.290
-k=8: silhouette score = 0.337
-k=9: silhouette score = 0.343
+<pre><code>k=2: silhouette score = 0.404
+k=3: silhouette score = 0.483
+k=4: silhouette score = 0.346
+k=5: silhouette score = 0.392
+k=6: silhouette score = 0.317
+k=7: silhouette score = 0.281
+k=8: silhouette score = 0.283
+k=9: silhouette score = 0.259
 
 Optimal number of clusters: 3</code></pre>
 </div>
@@ -2607,7 +2608,7 @@ Optimal number of clusters: 3</code></pre>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb31" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Network Embedding Concepts"</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Network Embedding Coding"</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
@@ -2899,326 +2900,327 @@ Optimal number of clusters: 3</code></pre>
 <span id="cb31-315"><a href="#cb31-315" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">3</span>,         <span class="co"># Maximum distance between current and predicted node</span></span>
 <span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a>    min_count<span class="op">=</span><span class="dv">1</span>,      <span class="co"># Minimum frequency for a node to be included</span></span>
 <span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a>    sg<span class="op">=</span><span class="dv">1</span>,             <span class="co"># Use skip-gram model (vs CBOW)</span></span>
-<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span>              <span class="co"># Use hierarchical softmax for training</span></span>
-<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-320"><a href="#cb31-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a>**Key Parameters:**</span>
-<span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`vector_size`</span>: Higher dimensions capture more information but require more data and computation.</span>
-<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`window`</span>: Larger windows capture broader context but may dilute local structure.</span>
-<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`sg=1`</span>: Skip-gram predicts context from target. It works better for small datasets.</span>
-<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`hs=1`</span>: Hierarchical softmax is faster than negative sampling for small vocabularies.</span>
-<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a>The <span class="in">`window`</span> parameter is crucial. For a random walk <span class="in">`[0, 1, 2, 3, 4, 5, 6, 7]`</span>, when <span class="in">`window=3`</span>, the context of node 2 includes nodes <span class="in">`[0, 1, 3, 4, 5]`</span> - all nodes within distance 3.</span>
-<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 3: Extract Node Embeddings</span></span>
-<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-335"><a href="#cb31-335" aria-hidden="true" tabindex="-1"></a>After training, we can extract the learned embeddings for each node from the model.</span>
-<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract embeddings for all nodes</span></span>
-<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> np.array([model.wv[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)])</span>
-<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Embedding matrix shape: </span><span class="sc">{</span>embedding<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"First node embedding (first 5 dimensions): </span><span class="sc">{</span>embedding[<span class="dv">0</span>][:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 4: Visualize Embeddings</span></span>
-<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-349"><a href="#cb31-349" aria-hidden="true" tabindex="-1"></a>Let's visualize the learned embeddings in 2D using UMAP (Uniform Manifold Approximation and Projection). UMAP reduces the 32-dimensional embeddings to 2D while preserving the local structure.</span>
-<span id="cb31-350"><a href="#cb31-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-351"><a href="#cb31-351" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-352"><a href="#cb31-352" aria-hidden="true" tabindex="-1"></a>UMAP is a dimensionality reduction technique that preserves both local and global structure better than t-SNE, making it ideal for visualizing high-dimensional embeddings.</span>
-<span id="cb31-353"><a href="#cb31-353" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-354"><a href="#cb31-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-357"><a href="#cb31-357" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-358"><a href="#cb31-358" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb31-359"><a href="#cb31-359" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> umap</span>
-<span id="cb31-360"><a href="#cb31-360" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.plotting <span class="im">import</span> figure, show</span>
-<span id="cb31-361"><a href="#cb31-361" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.io <span class="im">import</span> output_notebook</span>
-<span id="cb31-362"><a href="#cb31-362" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.models <span class="im">import</span> ColumnDataSource, HoverTool</span>
-<span id="cb31-363"><a href="#cb31-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-364"><a href="#cb31-364" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduce embeddings to 2D</span></span>
-<span id="cb31-365"><a href="#cb31-365" aria-hidden="true" tabindex="-1"></a>reducer <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, n_neighbors<span class="op">=</span><span class="dv">15</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span>
-<span id="cb31-366"><a href="#cb31-366" aria-hidden="true" tabindex="-1"></a>xy <span class="op">=</span> reducer.fit_transform(embedding)</span>
-<span id="cb31-367"><a href="#cb31-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-368"><a href="#cb31-368" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
-<span id="cb31-369"><a href="#cb31-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-370"><a href="#cb31-370" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate node degrees for visualization</span></span>
-<span id="cb31-371"><a href="#cb31-371" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>).A1</span>
-<span id="cb31-372"><a href="#cb31-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-373"><a href="#cb31-373" aria-hidden="true" tabindex="-1"></a><span class="co"># Create interactive plot</span></span>
-<span id="cb31-374"><a href="#cb31-374" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb31-375"><a href="#cb31-375" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>xy[:, <span class="dv">0</span>],</span>
-<span id="cb31-376"><a href="#cb31-376" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>xy[:, <span class="dv">1</span>],</span>
-<span id="cb31-377"><a href="#cb31-377" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span>np.sqrt(degrees <span class="op">/</span> np.<span class="bu">max</span>(degrees)) <span class="op">*</span> <span class="dv">30</span>,</span>
-<span id="cb31-378"><a href="#cb31-378" aria-hidden="true" tabindex="-1"></a>    community<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> g.vs[<span class="st">"label"</span>]]</span>
-<span id="cb31-379"><a href="#cb31-379" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb31-380"><a href="#cb31-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-381"><a href="#cb31-381" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"DeepWalk Node Embeddings (UMAP projection)"</span>, x_axis_label<span class="op">=</span><span class="st">"UMAP 1"</span>, y_axis_label<span class="op">=</span><span class="st">"UMAP 2"</span>)</span>
-<span id="cb31-382"><a href="#cb31-382" aria-hidden="true" tabindex="-1"></a>p.scatter(<span class="st">'x'</span>, <span class="st">'y'</span>, size<span class="op">=</span><span class="st">'size'</span>, source<span class="op">=</span>source, line_color<span class="op">=</span><span class="st">"black"</span>, color<span class="op">=</span><span class="st">"community"</span>)</span>
-<span id="cb31-383"><a href="#cb31-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-384"><a href="#cb31-384" aria-hidden="true" tabindex="-1"></a>show(p)</span>
-<span id="cb31-385"><a href="#cb31-385" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-386"><a href="#cb31-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-387"><a href="#cb31-387" aria-hidden="true" tabindex="-1"></a>Notice how nodes from the same community (shown in the same color) tend to cluster together in the embedding space. This demonstrates that DeepWalk successfully captures the community structure.</span>
-<span id="cb31-388"><a href="#cb31-388" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-389"><a href="#cb31-389" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 5: Clustering with K-means</span></span>
-<span id="cb31-390"><a href="#cb31-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-391"><a href="#cb31-391" aria-hidden="true" tabindex="-1"></a>One practical application of node embeddings is clustering. While we have dedicated community detection methods like modularity maximization, embeddings allow us to use general machine learning algorithms like K-means.</span>
-<span id="cb31-392"><a href="#cb31-392" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-393"><a href="#cb31-393" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-394"><a href="#cb31-394" aria-hidden="true" tabindex="-1"></a>The advantage of using embeddings is that we can leverage the rich ecosystem of machine learning tools designed for vector data.</span>
-<span id="cb31-395"><a href="#cb31-395" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-396"><a href="#cb31-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-397"><a href="#cb31-397" aria-hidden="true" tabindex="-1"></a>Let's implement K-means clustering with automatic selection of the number of clusters using the silhouette score.</span>
-<span id="cb31-398"><a href="#cb31-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-401"><a href="#cb31-401" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-402"><a href="#cb31-402" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
-<span id="cb31-403"><a href="#cb31-403" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
-<span id="cb31-404"><a href="#cb31-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-405"><a href="#cb31-405" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_optimal_clusters(embedding, n_clusters_range<span class="op">=</span>(<span class="dv">2</span>, <span class="dv">10</span>)):</span>
-<span id="cb31-406"><a href="#cb31-406" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb31-407"><a href="#cb31-407" aria-hidden="true" tabindex="-1"></a><span class="co">    Find the optimal number of clusters using silhouette score.</span></span>
-<span id="cb31-408"><a href="#cb31-408" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-409"><a href="#cb31-409" aria-hidden="true" tabindex="-1"></a><span class="co">    The silhouette score measures how well each node fits within its cluster</span></span>
-<span id="cb31-410"><a href="#cb31-410" aria-hidden="true" tabindex="-1"></a><span class="co">    compared to other clusters. Scores range from -1 to 1, where higher is better.</span></span>
-<span id="cb31-411"><a href="#cb31-411" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb31-412"><a href="#cb31-412" aria-hidden="true" tabindex="-1"></a>    silhouette_scores <span class="op">=</span> []</span>
-<span id="cb31-413"><a href="#cb31-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-414"><a href="#cb31-414" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n_clusters <span class="kw">in</span> <span class="bu">range</span>(<span class="op">*</span>n_clusters_range):</span>
-<span id="cb31-415"><a href="#cb31-415" aria-hidden="true" tabindex="-1"></a>        kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>n_clusters, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-416"><a href="#cb31-416" aria-hidden="true" tabindex="-1"></a>        cluster_labels <span class="op">=</span> kmeans.fit_predict(embedding)</span>
-<span id="cb31-417"><a href="#cb31-417" aria-hidden="true" tabindex="-1"></a>        score <span class="op">=</span> silhouette_score(embedding, cluster_labels)</span>
-<span id="cb31-418"><a href="#cb31-418" aria-hidden="true" tabindex="-1"></a>        silhouette_scores.append((n_clusters, score))</span>
-<span id="cb31-419"><a href="#cb31-419" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"k=</span><span class="sc">{</span>n_clusters<span class="sc">}</span><span class="ss">: silhouette score = </span><span class="sc">{</span>score<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-420"><a href="#cb31-420" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-421"><a href="#cb31-421" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Select the number of clusters with highest silhouette score</span></span>
-<span id="cb31-422"><a href="#cb31-422" aria-hidden="true" tabindex="-1"></a>    optimal_k <span class="op">=</span> <span class="bu">max</span>(silhouette_scores, key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>])[<span class="dv">0</span>]</span>
-<span id="cb31-423"><a href="#cb31-423" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Optimal number of clusters: </span><span class="sc">{</span>optimal_k<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-424"><a href="#cb31-424" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-425"><a href="#cb31-425" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Perform final clustering with optimal k</span></span>
-<span id="cb31-426"><a href="#cb31-426" aria-hidden="true" tabindex="-1"></a>    kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>optimal_k, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-427"><a href="#cb31-427" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.fit_predict(embedding)</span>
-<span id="cb31-428"><a href="#cb31-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-429"><a href="#cb31-429" aria-hidden="true" tabindex="-1"></a><span class="co"># Find clusters</span></span>
-<span id="cb31-430"><a href="#cb31-430" aria-hidden="true" tabindex="-1"></a>cluster_labels <span class="op">=</span> find_optimal_clusters(embedding)</span>
-<span id="cb31-431"><a href="#cb31-431" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-432"><a href="#cb31-432" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-433"><a href="#cb31-433" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-434"><a href="#cb31-434" aria-hidden="true" tabindex="-1"></a>The silhouette score measures both cohesion (how close nodes are within their cluster) and separation (how far clusters are from each other).</span>
-<span id="cb31-435"><a href="#cb31-435" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-436"><a href="#cb31-436" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-437"><a href="#cb31-437" aria-hidden="true" tabindex="-1"></a>Now let's visualize the discovered clusters on the network:</span>
-<span id="cb31-438"><a href="#cb31-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-441"><a href="#cb31-441" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-442"><a href="#cb31-442" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clustering results</span></span>
-<span id="cb31-443"><a href="#cb31-443" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette().as_hex()</span>
-<span id="cb31-444"><a href="#cb31-444" aria-hidden="true" tabindex="-1"></a>igraph.plot(</span>
-<span id="cb31-445"><a href="#cb31-445" aria-hidden="true" tabindex="-1"></a>    g,</span>
-<span id="cb31-446"><a href="#cb31-446" aria-hidden="true" tabindex="-1"></a>    vertex_color<span class="op">=</span>[cmap[label] <span class="cf">for</span> label <span class="kw">in</span> cluster_labels],</span>
-<span id="cb31-447"><a href="#cb31-447" aria-hidden="true" tabindex="-1"></a>    bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>),</span>
-<span id="cb31-448"><a href="#cb31-448" aria-hidden="true" tabindex="-1"></a>    vertex_size<span class="op">=</span><span class="dv">20</span></span>
-<span id="cb31-449"><a href="#cb31-449" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-450"><a href="#cb31-450" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-451"><a href="#cb31-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-452"><a href="#cb31-452" aria-hidden="true" tabindex="-1"></a>The K-means algorithm successfully identifies community structure using only the learned embeddings, demonstrating that DeepWalk captures meaningful structural properties of the network.</span>
-<span id="cb31-453"><a href="#cb31-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-454"><a href="#cb31-454" aria-hidden="true" tabindex="-1"></a><span class="fu">### Node2vec: Flexible Graph Embeddings</span></span>
-<span id="cb31-455"><a href="#cb31-455" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-456"><a href="#cb31-456" aria-hidden="true" tabindex="-1"></a>Node2vec extends DeepWalk by introducing a biased random walk strategy. Instead of uniformly choosing the next node, node2vec uses two parameters, $p$ and $q$, to control the exploration strategy:</span>
-<span id="cb31-457"><a href="#cb31-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-458"><a href="#cb31-458" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Return parameter $p$**: Controls the likelihood of returning to the previous node</span>
-<span id="cb31-459"><a href="#cb31-459" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**In-out parameter $q$**: Controls whether the walk explores locally (BFS-like) or ventures further (DFS-like)</span>
-<span id="cb31-460"><a href="#cb31-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-461"><a href="#cb31-461" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-462"><a href="#cb31-462" aria-hidden="true" tabindex="-1"></a>Node2vec was introduced by Grover and Leskovec (2016). The biased walk allows it to learn embeddings that capture different structural properties depending on the task.</span>
-<span id="cb31-463"><a href="#cb31-463" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-464"><a href="#cb31-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-465"><a href="#cb31-465" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 1: Implement Biased Random Walk</span></span>
-<span id="cb31-466"><a href="#cb31-466" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-467"><a href="#cb31-467" aria-hidden="true" tabindex="-1"></a>The key innovation in node2vec is the biased random walk. Let's implement it step by step.</span>
-<span id="cb31-470"><a href="#cb31-470" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-471"><a href="#cb31-471" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
-<span id="cb31-472"><a href="#cb31-472" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb31-473"><a href="#cb31-473" aria-hidden="true" tabindex="-1"></a><span class="co">    Generate a biased random walk for node2vec.</span></span>
-<span id="cb31-474"><a href="#cb31-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-475"><a href="#cb31-475" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
-<span id="cb31-476"><a href="#cb31-476" aria-hidden="true" tabindex="-1"></a><span class="co">    -----------</span></span>
-<span id="cb31-477"><a href="#cb31-477" aria-hidden="true" tabindex="-1"></a><span class="co">    net : sparse matrix</span></span>
-<span id="cb31-478"><a href="#cb31-478" aria-hidden="true" tabindex="-1"></a><span class="co">        Adjacency matrix of the network</span></span>
-<span id="cb31-479"><a href="#cb31-479" aria-hidden="true" tabindex="-1"></a><span class="co">    start_node : int</span></span>
-<span id="cb31-480"><a href="#cb31-480" aria-hidden="true" tabindex="-1"></a><span class="co">        Starting node for the walk</span></span>
-<span id="cb31-481"><a href="#cb31-481" aria-hidden="true" tabindex="-1"></a><span class="co">    walk_length : int</span></span>
-<span id="cb31-482"><a href="#cb31-482" aria-hidden="true" tabindex="-1"></a><span class="co">        Length of the walk</span></span>
-<span id="cb31-483"><a href="#cb31-483" aria-hidden="true" tabindex="-1"></a><span class="co">    p : float</span></span>
-<span id="cb31-484"><a href="#cb31-484" aria-hidden="true" tabindex="-1"></a><span class="co">        Return parameter (controls likelihood of returning to previous node)</span></span>
-<span id="cb31-485"><a href="#cb31-485" aria-hidden="true" tabindex="-1"></a><span class="co">    q : float</span></span>
-<span id="cb31-486"><a href="#cb31-486" aria-hidden="true" tabindex="-1"></a><span class="co">        In-out parameter (controls BFS vs DFS behavior)</span></span>
-<span id="cb31-487"><a href="#cb31-487" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-488"><a href="#cb31-488" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb31-489"><a href="#cb31-489" aria-hidden="true" tabindex="-1"></a><span class="co">    --------</span></span>
-<span id="cb31-490"><a href="#cb31-490" aria-hidden="true" tabindex="-1"></a><span class="co">    walk : list</span></span>
-<span id="cb31-491"><a href="#cb31-491" aria-hidden="true" tabindex="-1"></a><span class="co">        List of node indices representing the biased random walk</span></span>
-<span id="cb31-492"><a href="#cb31-492" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb31-493"><a href="#cb31-493" aria-hidden="true" tabindex="-1"></a>    walk <span class="op">=</span> [start_node]</span>
-<span id="cb31-494"><a href="#cb31-494" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-495"><a href="#cb31-495" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(walk) <span class="op">&lt;</span> walk_length:</span>
-<span id="cb31-496"><a href="#cb31-496" aria-hidden="true" tabindex="-1"></a>        cur <span class="op">=</span> walk[<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb31-497"><a href="#cb31-497" aria-hidden="true" tabindex="-1"></a>        cur_nbrs <span class="op">=</span> <span class="bu">list</span>(net[cur].indices)</span>
-<span id="cb31-498"><a href="#cb31-498" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-499"><a href="#cb31-499" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(cur_nbrs) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb31-500"><a href="#cb31-500" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(walk) <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb31-501"><a href="#cb31-501" aria-hidden="true" tabindex="-1"></a>                <span class="co"># First step: uniform random choice</span></span>
-<span id="cb31-502"><a href="#cb31-502" aria-hidden="true" tabindex="-1"></a>                walk.append(np.random.choice(cur_nbrs))</span>
-<span id="cb31-503"><a href="#cb31-503" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb31-504"><a href="#cb31-504" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Subsequent steps: biased choice based on p and q</span></span>
-<span id="cb31-505"><a href="#cb31-505" aria-hidden="true" tabindex="-1"></a>                prev <span class="op">=</span> walk[<span class="op">-</span><span class="dv">2</span>]</span>
-<span id="cb31-506"><a href="#cb31-506" aria-hidden="true" tabindex="-1"></a>                next_node <span class="op">=</span> biased_choice(net, cur_nbrs, prev, p, q)</span>
-<span id="cb31-507"><a href="#cb31-507" aria-hidden="true" tabindex="-1"></a>                walk.append(next_node)</span>
-<span id="cb31-508"><a href="#cb31-508" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb31-509"><a href="#cb31-509" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb31-510"><a href="#cb31-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-511"><a href="#cb31-511" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> walk</span>
-<span id="cb31-512"><a href="#cb31-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-513"><a href="#cb31-513" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> biased_choice(net, neighbors, prev, p, q):</span>
-<span id="cb31-514"><a href="#cb31-514" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb31-515"><a href="#cb31-515" aria-hidden="true" tabindex="-1"></a><span class="co">    Choose the next node with bias controlled by p and q.</span></span>
-<span id="cb31-516"><a href="#cb31-516" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-517"><a href="#cb31-517" aria-hidden="true" tabindex="-1"></a><span class="co">    The transition probability is:</span></span>
-<span id="cb31-518"><a href="#cb31-518" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1/p if returning to the previous node</span></span>
-<span id="cb31-519"><a href="#cb31-519" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1   if moving to a neighbor of the previous node (distance 1)</span></span>
-<span id="cb31-520"><a href="#cb31-520" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1/q if moving away from the previous node (distance 2)</span></span>
-<span id="cb31-521"><a href="#cb31-521" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb31-522"><a href="#cb31-522" aria-hidden="true" tabindex="-1"></a>    unnormalized_probs <span class="op">=</span> []</span>
-<span id="cb31-523"><a href="#cb31-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-524"><a href="#cb31-524" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> neighbor <span class="kw">in</span> neighbors:</span>
-<span id="cb31-525"><a href="#cb31-525" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> neighbor <span class="op">==</span> prev:</span>
-<span id="cb31-526"><a href="#cb31-526" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Returning to previous node</span></span>
-<span id="cb31-527"><a href="#cb31-527" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="dv">1</span> <span class="op">/</span> p)</span>
-<span id="cb31-528"><a href="#cb31-528" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> neighbor <span class="kw">in</span> net[prev].indices:</span>
-<span id="cb31-529"><a href="#cb31-529" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Moving to a common neighbor (BFS-like)</span></span>
-<span id="cb31-530"><a href="#cb31-530" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="fl">1.0</span>)</span>
-<span id="cb31-531"><a href="#cb31-531" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb31-532"><a href="#cb31-532" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Moving away from previous node (DFS-like)</span></span>
-<span id="cb31-533"><a href="#cb31-533" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="dv">1</span> <span class="op">/</span> q)</span>
-<span id="cb31-534"><a href="#cb31-534" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-535"><a href="#cb31-535" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normalize probabilities</span></span>
-<span id="cb31-536"><a href="#cb31-536" aria-hidden="true" tabindex="-1"></a>    norm_const <span class="op">=</span> <span class="bu">sum</span>(unnormalized_probs)</span>
-<span id="cb31-537"><a href="#cb31-537" aria-hidden="true" tabindex="-1"></a>    normalized_probs <span class="op">=</span> [prob <span class="op">/</span> norm_const <span class="cf">for</span> prob <span class="kw">in</span> unnormalized_probs]</span>
-<span id="cb31-538"><a href="#cb31-538" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-539"><a href="#cb31-539" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sample next node</span></span>
-<span id="cb31-540"><a href="#cb31-540" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.random.choice(neighbors, p<span class="op">=</span>normalized_probs)</span>
-<span id="cb31-541"><a href="#cb31-541" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-542"><a href="#cb31-542" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-543"><a href="#cb31-543" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-544"><a href="#cb31-544" aria-hidden="true" tabindex="-1"></a>**Understanding p and q:**</span>
-<span id="cb31-545"><a href="#cb31-545" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-546"><a href="#cb31-546" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small $p$ ($p &lt; 1$): Encourages returning to previous node, leading to local exploration</span>
-<span id="cb31-547"><a href="#cb31-547" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Large $q$ ($q &gt; 1$): Discourages moving away, resulting in BFS-like behavior</span>
-<span id="cb31-548"><a href="#cb31-548" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small $q$ ($q &lt; 1$): Encourages exploration, resulting in DFS-like behavior</span>
-<span id="cb31-549"><a href="#cb31-549" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-550"><a href="#cb31-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-551"><a href="#cb31-551" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 2: Generate Walks and Train Model</span></span>
-<span id="cb31-552"><a href="#cb31-552" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-553"><a href="#cb31-553" aria-hidden="true" tabindex="-1"></a>Now let's generate biased random walks and train the word2vec model. We'll use $p=1$ and $q=0.1$, which encourages outward exploration (DFS-like behavior) to capture community structure.</span>
-<span id="cb31-554"><a href="#cb31-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-557"><a href="#cb31-557" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-558"><a href="#cb31-558" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate biased random walks</span></span>
-<span id="cb31-559"><a href="#cb31-559" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># Return parameter</span></span>
-<span id="cb31-560"><a href="#cb31-560" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># In-out parameter (q &lt; 1 means DFS-like)</span></span>
-<span id="cb31-561"><a href="#cb31-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-562"><a href="#cb31-562" aria-hidden="true" tabindex="-1"></a>walks_node2vec <span class="op">=</span> []</span>
-<span id="cb31-563"><a href="#cb31-563" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb31-564"><a href="#cb31-564" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_walkers_per_node):</span>
-<span id="cb31-565"><a href="#cb31-565" aria-hidden="true" tabindex="-1"></a>        walks_node2vec.append(node2vec_random_walk(A, i, walk_length, p, q))</span>
-<span id="cb31-566"><a href="#cb31-566" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-567"><a href="#cb31-567" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Generated </span><span class="sc">{</span><span class="bu">len</span>(walks_node2vec)<span class="sc">}</span><span class="ss"> biased random walks"</span>)</span>
-<span id="cb31-568"><a href="#cb31-568" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Example walk: </span><span class="sc">{</span>walks_node2vec[<span class="dv">0</span>][:<span class="dv">10</span>]<span class="sc">}</span><span class="ss">..."</span>)</span>
-<span id="cb31-569"><a href="#cb31-569" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-570"><a href="#cb31-570" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-571"><a href="#cb31-571" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb31-572"><a href="#cb31-572" aria-hidden="true" tabindex="-1"></a>With $q=0.1$, the walk is 10 times more likely to explore distant nodes than return to the immediate neighborhood, encouraging discovery of global community structure.</span>
-<span id="cb31-573"><a href="#cb31-573" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb31-574"><a href="#cb31-574" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-575"><a href="#cb31-575" aria-hidden="true" tabindex="-1"></a>Train the word2vec model on the biased walks:</span>
-<span id="cb31-576"><a href="#cb31-576" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-579"><a href="#cb31-579" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-580"><a href="#cb31-580" aria-hidden="true" tabindex="-1"></a><span class="co"># Train node2vec model</span></span>
-<span id="cb31-581"><a href="#cb31-581" aria-hidden="true" tabindex="-1"></a>model_node2vec <span class="op">=</span> Word2Vec(</span>
-<span id="cb31-582"><a href="#cb31-582" aria-hidden="true" tabindex="-1"></a>    walks_node2vec,</span>
-<span id="cb31-583"><a href="#cb31-583" aria-hidden="true" tabindex="-1"></a>    vector_size<span class="op">=</span><span class="dv">32</span>,</span>
-<span id="cb31-584"><a href="#cb31-584" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb31-585"><a href="#cb31-585" aria-hidden="true" tabindex="-1"></a>    min_count<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb31-586"><a href="#cb31-586" aria-hidden="true" tabindex="-1"></a>    sg<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb31-587"><a href="#cb31-587" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb31-588"><a href="#cb31-588" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-589"><a href="#cb31-589" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-590"><a href="#cb31-590" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract embeddings</span></span>
-<span id="cb31-591"><a href="#cb31-591" aria-hidden="true" tabindex="-1"></a>embedding_node2vec <span class="op">=</span> np.array([model_node2vec.wv[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)])</span>
-<span id="cb31-592"><a href="#cb31-592" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Node2vec embedding shape: </span><span class="sc">{</span>embedding_node2vec<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-593"><a href="#cb31-593" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-594"><a href="#cb31-594" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-595"><a href="#cb31-595" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 3: Visualize Node2vec Embeddings</span></span>
-<span id="cb31-596"><a href="#cb31-596" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-597"><a href="#cb31-597" aria-hidden="true" tabindex="-1"></a>Let's visualize the node2vec embeddings and compare them with DeepWalk.</span>
-<span id="cb31-598"><a href="#cb31-598" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-601"><a href="#cb31-601" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-602"><a href="#cb31-602" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb31-603"><a href="#cb31-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-604"><a href="#cb31-604" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduce node2vec embeddings to 2D</span></span>
-<span id="cb31-605"><a href="#cb31-605" aria-hidden="true" tabindex="-1"></a>reducer_n2v <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, n_neighbors<span class="op">=</span><span class="dv">15</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span>
-<span id="cb31-606"><a href="#cb31-606" aria-hidden="true" tabindex="-1"></a>xy_n2v <span class="op">=</span> reducer_n2v.fit_transform(embedding_node2vec)</span>
-<span id="cb31-607"><a href="#cb31-607" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-608"><a href="#cb31-608" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
-<span id="cb31-609"><a href="#cb31-609" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-610"><a href="#cb31-610" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>).A1</span>
-<span id="cb31-611"><a href="#cb31-611" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-612"><a href="#cb31-612" aria-hidden="true" tabindex="-1"></a>source_n2v <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb31-613"><a href="#cb31-613" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>xy_n2v[:, <span class="dv">0</span>],</span>
-<span id="cb31-614"><a href="#cb31-614" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>xy_n2v[:, <span class="dv">1</span>],</span>
-<span id="cb31-615"><a href="#cb31-615" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span>np.sqrt(degrees <span class="op">/</span> np.<span class="bu">max</span>(degrees)) <span class="op">*</span> <span class="dv">30</span>,</span>
-<span id="cb31-616"><a href="#cb31-616" aria-hidden="true" tabindex="-1"></a>    community<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> g.vs[<span class="st">"label"</span>]],</span>
-<span id="cb31-617"><a href="#cb31-617" aria-hidden="true" tabindex="-1"></a>    name <span class="op">=</span> [<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)]</span>
-<span id="cb31-618"><a href="#cb31-618" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb31-619"><a href="#cb31-619" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-620"><a href="#cb31-620" aria-hidden="true" tabindex="-1"></a>p_n2v <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"Node2vec Embeddings (UMAP projection)"</span>, x_axis_label<span class="op">=</span><span class="st">"UMAP 1"</span>, y_axis_label<span class="op">=</span><span class="st">"UMAP 2"</span>)</span>
-<span id="cb31-621"><a href="#cb31-621" aria-hidden="true" tabindex="-1"></a>p_n2v.scatter(<span class="st">'x'</span>, <span class="st">'y'</span>, size<span class="op">=</span><span class="st">'size'</span>, source<span class="op">=</span>source_n2v, line_color<span class="op">=</span><span class="st">"black"</span>, color<span class="op">=</span><span class="st">"community"</span>)</span>
-<span id="cb31-622"><a href="#cb31-622" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-623"><a href="#cb31-623" aria-hidden="true" tabindex="-1"></a>hover <span class="op">=</span> HoverTool()</span>
-<span id="cb31-624"><a href="#cb31-624" aria-hidden="true" tabindex="-1"></a>hover.tooltips <span class="op">=</span> [</span>
-<span id="cb31-625"><a href="#cb31-625" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Node"</span>, <span class="st">"@name"</span>),</span>
-<span id="cb31-626"><a href="#cb31-626" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Community"</span>, <span class="st">"@community"</span>)</span>
-<span id="cb31-627"><a href="#cb31-627" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb31-628"><a href="#cb31-628" aria-hidden="true" tabindex="-1"></a>p_n2v.add_tools(hover)</span>
-<span id="cb31-629"><a href="#cb31-629" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-630"><a href="#cb31-630" aria-hidden="true" tabindex="-1"></a>show(p_n2v)</span>
-<span id="cb31-631"><a href="#cb31-631" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-632"><a href="#cb31-632" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-633"><a href="#cb31-633" aria-hidden="true" tabindex="-1"></a>Notice how the node2vec embeddings with $q=0.1$ (DFS-like exploration) create even more distinct community clusters compared to DeepWalk. This is because the biased walk explores the community structure more thoroughly.</span>
-<span id="cb31-634"><a href="#cb31-634" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-635"><a href="#cb31-635" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 4: Clustering Analysis</span></span>
-<span id="cb31-636"><a href="#cb31-636" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-637"><a href="#cb31-637" aria-hidden="true" tabindex="-1"></a>Let's apply K-means clustering to the node2vec embeddings:</span>
-<span id="cb31-638"><a href="#cb31-638" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-641"><a href="#cb31-641" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-642"><a href="#cb31-642" aria-hidden="true" tabindex="-1"></a><span class="co"># Find optimal clusters for node2vec embeddings</span></span>
-<span id="cb31-643"><a href="#cb31-643" aria-hidden="true" tabindex="-1"></a>cluster_labels_n2v <span class="op">=</span> find_optimal_clusters(embedding_node2vec)</span>
-<span id="cb31-644"><a href="#cb31-644" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-645"><a href="#cb31-645" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clustering results</span></span>
-<span id="cb31-646"><a href="#cb31-646" aria-hidden="true" tabindex="-1"></a>igraph.plot(</span>
-<span id="cb31-647"><a href="#cb31-647" aria-hidden="true" tabindex="-1"></a>    g,</span>
-<span id="cb31-648"><a href="#cb31-648" aria-hidden="true" tabindex="-1"></a>    vertex_color<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> cluster_labels_n2v],</span>
-<span id="cb31-649"><a href="#cb31-649" aria-hidden="true" tabindex="-1"></a>    bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>),</span>
-<span id="cb31-650"><a href="#cb31-650" aria-hidden="true" tabindex="-1"></a>    vertex_size<span class="op">=</span><span class="dv">20</span>,</span>
-<span id="cb31-651"><a href="#cb31-651" aria-hidden="true" tabindex="-1"></a>    vertex_label<span class="op">=</span>[<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)]</span>
-<span id="cb31-652"><a href="#cb31-652" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-653"><a href="#cb31-653" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-654"><a href="#cb31-654" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-655"><a href="#cb31-655" aria-hidden="true" tabindex="-1"></a>By tuning the $p$ and $q$ parameters, node2vec can adapt to different network analysis tasks - from community detection (small $q$) to role discovery (large $q$).</span>
+<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span>,              <span class="co"># Use hierarchical softmax for training,</span></span>
+<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a>    workers <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb31-320"><a href="#cb31-320" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a>**Key Parameters:**</span>
+<span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`vector_size`</span>: Higher dimensions capture more information but require more data and computation.</span>
+<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`window`</span>: Larger windows capture broader context but may dilute local structure.</span>
+<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`sg=1`</span>: Skip-gram predicts context from target. It works better for small datasets.</span>
+<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`hs=1`</span>: Hierarchical softmax is faster than negative sampling for small vocabularies.</span>
+<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a>The <span class="in">`window`</span> parameter is crucial. For a random walk <span class="in">`[0, 1, 2, 3, 4, 5, 6, 7]`</span>, when <span class="in">`window=3`</span>, the context of node 2 includes nodes <span class="in">`[0, 1, 3, 4, 5]`</span> - all nodes within distance 3.</span>
+<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 3: Extract Node Embeddings</span></span>
+<span id="cb31-335"><a href="#cb31-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a>After training, we can extract the learned embeddings for each node from the model.</span>
+<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract embeddings for all nodes</span></span>
+<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> np.array([model.wv[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)])</span>
+<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Embedding matrix shape: </span><span class="sc">{</span>embedding<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"First node embedding (first 5 dimensions): </span><span class="sc">{</span>embedding[<span class="dv">0</span>][:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 4: Visualize Embeddings</span></span>
+<span id="cb31-349"><a href="#cb31-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-350"><a href="#cb31-350" aria-hidden="true" tabindex="-1"></a>Let's visualize the learned embeddings in 2D using UMAP (Uniform Manifold Approximation and Projection). UMAP reduces the 32-dimensional embeddings to 2D while preserving the local structure.</span>
+<span id="cb31-351"><a href="#cb31-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-352"><a href="#cb31-352" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-353"><a href="#cb31-353" aria-hidden="true" tabindex="-1"></a>UMAP is a dimensionality reduction technique that preserves both local and global structure better than t-SNE, making it ideal for visualizing high-dimensional embeddings.</span>
+<span id="cb31-354"><a href="#cb31-354" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-355"><a href="#cb31-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-358"><a href="#cb31-358" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-359"><a href="#cb31-359" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-360"><a href="#cb31-360" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> umap</span>
+<span id="cb31-361"><a href="#cb31-361" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.plotting <span class="im">import</span> figure, show</span>
+<span id="cb31-362"><a href="#cb31-362" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.io <span class="im">import</span> output_notebook</span>
+<span id="cb31-363"><a href="#cb31-363" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bokeh.models <span class="im">import</span> ColumnDataSource, HoverTool</span>
+<span id="cb31-364"><a href="#cb31-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-365"><a href="#cb31-365" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduce embeddings to 2D</span></span>
+<span id="cb31-366"><a href="#cb31-366" aria-hidden="true" tabindex="-1"></a>reducer <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, n_neighbors<span class="op">=</span><span class="dv">15</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span>
+<span id="cb31-367"><a href="#cb31-367" aria-hidden="true" tabindex="-1"></a>xy <span class="op">=</span> reducer.fit_transform(embedding)</span>
+<span id="cb31-368"><a href="#cb31-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-369"><a href="#cb31-369" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
+<span id="cb31-370"><a href="#cb31-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-371"><a href="#cb31-371" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate node degrees for visualization</span></span>
+<span id="cb31-372"><a href="#cb31-372" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>).A1</span>
+<span id="cb31-373"><a href="#cb31-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-374"><a href="#cb31-374" aria-hidden="true" tabindex="-1"></a><span class="co"># Create interactive plot</span></span>
+<span id="cb31-375"><a href="#cb31-375" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb31-376"><a href="#cb31-376" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>xy[:, <span class="dv">0</span>],</span>
+<span id="cb31-377"><a href="#cb31-377" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>xy[:, <span class="dv">1</span>],</span>
+<span id="cb31-378"><a href="#cb31-378" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span>np.sqrt(degrees <span class="op">/</span> np.<span class="bu">max</span>(degrees)) <span class="op">*</span> <span class="dv">30</span>,</span>
+<span id="cb31-379"><a href="#cb31-379" aria-hidden="true" tabindex="-1"></a>    community<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> g.vs[<span class="st">"label"</span>]]</span>
+<span id="cb31-380"><a href="#cb31-380" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb31-381"><a href="#cb31-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-382"><a href="#cb31-382" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"DeepWalk Node Embeddings (UMAP projection)"</span>, x_axis_label<span class="op">=</span><span class="st">"UMAP 1"</span>, y_axis_label<span class="op">=</span><span class="st">"UMAP 2"</span>)</span>
+<span id="cb31-383"><a href="#cb31-383" aria-hidden="true" tabindex="-1"></a>p.scatter(<span class="st">'x'</span>, <span class="st">'y'</span>, size<span class="op">=</span><span class="st">'size'</span>, source<span class="op">=</span>source, line_color<span class="op">=</span><span class="st">"black"</span>, color<span class="op">=</span><span class="st">"community"</span>)</span>
+<span id="cb31-384"><a href="#cb31-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-385"><a href="#cb31-385" aria-hidden="true" tabindex="-1"></a>show(p)</span>
+<span id="cb31-386"><a href="#cb31-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-387"><a href="#cb31-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-388"><a href="#cb31-388" aria-hidden="true" tabindex="-1"></a>Notice how nodes from the same community (shown in the same color) tend to cluster together in the embedding space. This demonstrates that DeepWalk successfully captures the community structure.</span>
+<span id="cb31-389"><a href="#cb31-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-390"><a href="#cb31-390" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 5: Clustering with K-means</span></span>
+<span id="cb31-391"><a href="#cb31-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-392"><a href="#cb31-392" aria-hidden="true" tabindex="-1"></a>One practical application of node embeddings is clustering. While we have dedicated community detection methods like modularity maximization, embeddings allow us to use general machine learning algorithms like K-means.</span>
+<span id="cb31-393"><a href="#cb31-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-394"><a href="#cb31-394" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-395"><a href="#cb31-395" aria-hidden="true" tabindex="-1"></a>The advantage of using embeddings is that we can leverage the rich ecosystem of machine learning tools designed for vector data.</span>
+<span id="cb31-396"><a href="#cb31-396" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-397"><a href="#cb31-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-398"><a href="#cb31-398" aria-hidden="true" tabindex="-1"></a>Let's implement K-means clustering with automatic selection of the number of clusters using the silhouette score.</span>
+<span id="cb31-399"><a href="#cb31-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-402"><a href="#cb31-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-403"><a href="#cb31-403" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb31-404"><a href="#cb31-404" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
+<span id="cb31-405"><a href="#cb31-405" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-406"><a href="#cb31-406" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_optimal_clusters(embedding, n_clusters_range<span class="op">=</span>(<span class="dv">2</span>, <span class="dv">10</span>)):</span>
+<span id="cb31-407"><a href="#cb31-407" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb31-408"><a href="#cb31-408" aria-hidden="true" tabindex="-1"></a><span class="co">    Find the optimal number of clusters using silhouette score.</span></span>
+<span id="cb31-409"><a href="#cb31-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-410"><a href="#cb31-410" aria-hidden="true" tabindex="-1"></a><span class="co">    The silhouette score measures how well each node fits within its cluster</span></span>
+<span id="cb31-411"><a href="#cb31-411" aria-hidden="true" tabindex="-1"></a><span class="co">    compared to other clusters. Scores range from -1 to 1, where higher is better.</span></span>
+<span id="cb31-412"><a href="#cb31-412" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb31-413"><a href="#cb31-413" aria-hidden="true" tabindex="-1"></a>    silhouette_scores <span class="op">=</span> []</span>
+<span id="cb31-414"><a href="#cb31-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-415"><a href="#cb31-415" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n_clusters <span class="kw">in</span> <span class="bu">range</span>(<span class="op">*</span>n_clusters_range):</span>
+<span id="cb31-416"><a href="#cb31-416" aria-hidden="true" tabindex="-1"></a>        kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>n_clusters, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-417"><a href="#cb31-417" aria-hidden="true" tabindex="-1"></a>        cluster_labels <span class="op">=</span> kmeans.fit_predict(embedding)</span>
+<span id="cb31-418"><a href="#cb31-418" aria-hidden="true" tabindex="-1"></a>        score <span class="op">=</span> silhouette_score(embedding, cluster_labels)</span>
+<span id="cb31-419"><a href="#cb31-419" aria-hidden="true" tabindex="-1"></a>        silhouette_scores.append((n_clusters, score))</span>
+<span id="cb31-420"><a href="#cb31-420" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"k=</span><span class="sc">{</span>n_clusters<span class="sc">}</span><span class="ss">: silhouette score = </span><span class="sc">{</span>score<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb31-421"><a href="#cb31-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-422"><a href="#cb31-422" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Select the number of clusters with highest silhouette score</span></span>
+<span id="cb31-423"><a href="#cb31-423" aria-hidden="true" tabindex="-1"></a>    optimal_k <span class="op">=</span> <span class="bu">max</span>(silhouette_scores, key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>])[<span class="dv">0</span>]</span>
+<span id="cb31-424"><a href="#cb31-424" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Optimal number of clusters: </span><span class="sc">{</span>optimal_k<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb31-425"><a href="#cb31-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-426"><a href="#cb31-426" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Perform final clustering with optimal k</span></span>
+<span id="cb31-427"><a href="#cb31-427" aria-hidden="true" tabindex="-1"></a>    kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>optimal_k, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-428"><a href="#cb31-428" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kmeans.fit_predict(embedding)</span>
+<span id="cb31-429"><a href="#cb31-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-430"><a href="#cb31-430" aria-hidden="true" tabindex="-1"></a><span class="co"># Find clusters</span></span>
+<span id="cb31-431"><a href="#cb31-431" aria-hidden="true" tabindex="-1"></a>cluster_labels <span class="op">=</span> find_optimal_clusters(embedding)</span>
+<span id="cb31-432"><a href="#cb31-432" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-433"><a href="#cb31-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-434"><a href="#cb31-434" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-435"><a href="#cb31-435" aria-hidden="true" tabindex="-1"></a>The silhouette score measures both cohesion (how close nodes are within their cluster) and separation (how far clusters are from each other).</span>
+<span id="cb31-436"><a href="#cb31-436" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-437"><a href="#cb31-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-438"><a href="#cb31-438" aria-hidden="true" tabindex="-1"></a>Now let's visualize the discovered clusters on the network:</span>
+<span id="cb31-439"><a href="#cb31-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-442"><a href="#cb31-442" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-443"><a href="#cb31-443" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clustering results</span></span>
+<span id="cb31-444"><a href="#cb31-444" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette().as_hex()</span>
+<span id="cb31-445"><a href="#cb31-445" aria-hidden="true" tabindex="-1"></a>igraph.plot(</span>
+<span id="cb31-446"><a href="#cb31-446" aria-hidden="true" tabindex="-1"></a>    g,</span>
+<span id="cb31-447"><a href="#cb31-447" aria-hidden="true" tabindex="-1"></a>    vertex_color<span class="op">=</span>[cmap[label] <span class="cf">for</span> label <span class="kw">in</span> cluster_labels],</span>
+<span id="cb31-448"><a href="#cb31-448" aria-hidden="true" tabindex="-1"></a>    bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>),</span>
+<span id="cb31-449"><a href="#cb31-449" aria-hidden="true" tabindex="-1"></a>    vertex_size<span class="op">=</span><span class="dv">20</span></span>
+<span id="cb31-450"><a href="#cb31-450" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-451"><a href="#cb31-451" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-452"><a href="#cb31-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-453"><a href="#cb31-453" aria-hidden="true" tabindex="-1"></a>The K-means algorithm successfully identifies community structure using only the learned embeddings, demonstrating that DeepWalk captures meaningful structural properties of the network.</span>
+<span id="cb31-454"><a href="#cb31-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-455"><a href="#cb31-455" aria-hidden="true" tabindex="-1"></a><span class="fu">### Node2vec: Flexible Graph Embeddings</span></span>
+<span id="cb31-456"><a href="#cb31-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-457"><a href="#cb31-457" aria-hidden="true" tabindex="-1"></a>Node2vec extends DeepWalk by introducing a biased random walk strategy. Instead of uniformly choosing the next node, node2vec uses two parameters, $p$ and $q$, to control the exploration strategy:</span>
+<span id="cb31-458"><a href="#cb31-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-459"><a href="#cb31-459" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Return parameter $p$**: Controls the likelihood of returning to the previous node</span>
+<span id="cb31-460"><a href="#cb31-460" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**In-out parameter $q$**: Controls whether the walk explores locally (BFS-like) or ventures further (DFS-like)</span>
+<span id="cb31-461"><a href="#cb31-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-462"><a href="#cb31-462" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-463"><a href="#cb31-463" aria-hidden="true" tabindex="-1"></a>Node2vec was introduced by Grover and Leskovec (2016). The biased walk allows it to learn embeddings that capture different structural properties depending on the task.</span>
+<span id="cb31-464"><a href="#cb31-464" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-465"><a href="#cb31-465" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-466"><a href="#cb31-466" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 1: Implement Biased Random Walk</span></span>
+<span id="cb31-467"><a href="#cb31-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-468"><a href="#cb31-468" aria-hidden="true" tabindex="-1"></a>The key innovation in node2vec is the biased random walk. Let's implement it step by step.</span>
+<span id="cb31-471"><a href="#cb31-471" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-472"><a href="#cb31-472" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node2vec_random_walk(net, start_node, walk_length, p, q):</span>
+<span id="cb31-473"><a href="#cb31-473" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb31-474"><a href="#cb31-474" aria-hidden="true" tabindex="-1"></a><span class="co">    Generate a biased random walk for node2vec.</span></span>
+<span id="cb31-475"><a href="#cb31-475" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-476"><a href="#cb31-476" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb31-477"><a href="#cb31-477" aria-hidden="true" tabindex="-1"></a><span class="co">    -----------</span></span>
+<span id="cb31-478"><a href="#cb31-478" aria-hidden="true" tabindex="-1"></a><span class="co">    net : sparse matrix</span></span>
+<span id="cb31-479"><a href="#cb31-479" aria-hidden="true" tabindex="-1"></a><span class="co">        Adjacency matrix of the network</span></span>
+<span id="cb31-480"><a href="#cb31-480" aria-hidden="true" tabindex="-1"></a><span class="co">    start_node : int</span></span>
+<span id="cb31-481"><a href="#cb31-481" aria-hidden="true" tabindex="-1"></a><span class="co">        Starting node for the walk</span></span>
+<span id="cb31-482"><a href="#cb31-482" aria-hidden="true" tabindex="-1"></a><span class="co">    walk_length : int</span></span>
+<span id="cb31-483"><a href="#cb31-483" aria-hidden="true" tabindex="-1"></a><span class="co">        Length of the walk</span></span>
+<span id="cb31-484"><a href="#cb31-484" aria-hidden="true" tabindex="-1"></a><span class="co">    p : float</span></span>
+<span id="cb31-485"><a href="#cb31-485" aria-hidden="true" tabindex="-1"></a><span class="co">        Return parameter (controls likelihood of returning to previous node)</span></span>
+<span id="cb31-486"><a href="#cb31-486" aria-hidden="true" tabindex="-1"></a><span class="co">    q : float</span></span>
+<span id="cb31-487"><a href="#cb31-487" aria-hidden="true" tabindex="-1"></a><span class="co">        In-out parameter (controls BFS vs DFS behavior)</span></span>
+<span id="cb31-488"><a href="#cb31-488" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-489"><a href="#cb31-489" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb31-490"><a href="#cb31-490" aria-hidden="true" tabindex="-1"></a><span class="co">    --------</span></span>
+<span id="cb31-491"><a href="#cb31-491" aria-hidden="true" tabindex="-1"></a><span class="co">    walk : list</span></span>
+<span id="cb31-492"><a href="#cb31-492" aria-hidden="true" tabindex="-1"></a><span class="co">        List of node indices representing the biased random walk</span></span>
+<span id="cb31-493"><a href="#cb31-493" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb31-494"><a href="#cb31-494" aria-hidden="true" tabindex="-1"></a>    walk <span class="op">=</span> [start_node]</span>
+<span id="cb31-495"><a href="#cb31-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-496"><a href="#cb31-496" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(walk) <span class="op">&lt;</span> walk_length:</span>
+<span id="cb31-497"><a href="#cb31-497" aria-hidden="true" tabindex="-1"></a>        cur <span class="op">=</span> walk[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb31-498"><a href="#cb31-498" aria-hidden="true" tabindex="-1"></a>        cur_nbrs <span class="op">=</span> <span class="bu">list</span>(net[cur].indices)</span>
+<span id="cb31-499"><a href="#cb31-499" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-500"><a href="#cb31-500" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(cur_nbrs) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb31-501"><a href="#cb31-501" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(walk) <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb31-502"><a href="#cb31-502" aria-hidden="true" tabindex="-1"></a>                <span class="co"># First step: uniform random choice</span></span>
+<span id="cb31-503"><a href="#cb31-503" aria-hidden="true" tabindex="-1"></a>                walk.append(np.random.choice(cur_nbrs))</span>
+<span id="cb31-504"><a href="#cb31-504" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb31-505"><a href="#cb31-505" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Subsequent steps: biased choice based on p and q</span></span>
+<span id="cb31-506"><a href="#cb31-506" aria-hidden="true" tabindex="-1"></a>                prev <span class="op">=</span> walk[<span class="op">-</span><span class="dv">2</span>]</span>
+<span id="cb31-507"><a href="#cb31-507" aria-hidden="true" tabindex="-1"></a>                next_node <span class="op">=</span> biased_choice(net, cur_nbrs, prev, p, q)</span>
+<span id="cb31-508"><a href="#cb31-508" aria-hidden="true" tabindex="-1"></a>                walk.append(next_node)</span>
+<span id="cb31-509"><a href="#cb31-509" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb31-510"><a href="#cb31-510" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb31-511"><a href="#cb31-511" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-512"><a href="#cb31-512" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> walk</span>
+<span id="cb31-513"><a href="#cb31-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-514"><a href="#cb31-514" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> biased_choice(net, neighbors, prev, p, q):</span>
+<span id="cb31-515"><a href="#cb31-515" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb31-516"><a href="#cb31-516" aria-hidden="true" tabindex="-1"></a><span class="co">    Choose the next node with bias controlled by p and q.</span></span>
+<span id="cb31-517"><a href="#cb31-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-518"><a href="#cb31-518" aria-hidden="true" tabindex="-1"></a><span class="co">    The transition probability is:</span></span>
+<span id="cb31-519"><a href="#cb31-519" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1/p if returning to the previous node</span></span>
+<span id="cb31-520"><a href="#cb31-520" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1   if moving to a neighbor of the previous node (distance 1)</span></span>
+<span id="cb31-521"><a href="#cb31-521" aria-hidden="true" tabindex="-1"></a><span class="co">    - 1/q if moving away from the previous node (distance 2)</span></span>
+<span id="cb31-522"><a href="#cb31-522" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb31-523"><a href="#cb31-523" aria-hidden="true" tabindex="-1"></a>    unnormalized_probs <span class="op">=</span> []</span>
+<span id="cb31-524"><a href="#cb31-524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-525"><a href="#cb31-525" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> neighbor <span class="kw">in</span> neighbors:</span>
+<span id="cb31-526"><a href="#cb31-526" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> neighbor <span class="op">==</span> prev:</span>
+<span id="cb31-527"><a href="#cb31-527" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Returning to previous node</span></span>
+<span id="cb31-528"><a href="#cb31-528" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="dv">1</span> <span class="op">/</span> p)</span>
+<span id="cb31-529"><a href="#cb31-529" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> neighbor <span class="kw">in</span> net[prev].indices:</span>
+<span id="cb31-530"><a href="#cb31-530" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Moving to a common neighbor (BFS-like)</span></span>
+<span id="cb31-531"><a href="#cb31-531" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="fl">1.0</span>)</span>
+<span id="cb31-532"><a href="#cb31-532" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb31-533"><a href="#cb31-533" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Moving away from previous node (DFS-like)</span></span>
+<span id="cb31-534"><a href="#cb31-534" aria-hidden="true" tabindex="-1"></a>            unnormalized_probs.append(<span class="dv">1</span> <span class="op">/</span> q)</span>
+<span id="cb31-535"><a href="#cb31-535" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-536"><a href="#cb31-536" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normalize probabilities</span></span>
+<span id="cb31-537"><a href="#cb31-537" aria-hidden="true" tabindex="-1"></a>    norm_const <span class="op">=</span> <span class="bu">sum</span>(unnormalized_probs)</span>
+<span id="cb31-538"><a href="#cb31-538" aria-hidden="true" tabindex="-1"></a>    normalized_probs <span class="op">=</span> [prob <span class="op">/</span> norm_const <span class="cf">for</span> prob <span class="kw">in</span> unnormalized_probs]</span>
+<span id="cb31-539"><a href="#cb31-539" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-540"><a href="#cb31-540" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sample next node</span></span>
+<span id="cb31-541"><a href="#cb31-541" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.random.choice(neighbors, p<span class="op">=</span>normalized_probs)</span>
+<span id="cb31-542"><a href="#cb31-542" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-543"><a href="#cb31-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-544"><a href="#cb31-544" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-545"><a href="#cb31-545" aria-hidden="true" tabindex="-1"></a>**Understanding p and q:**</span>
+<span id="cb31-546"><a href="#cb31-546" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-547"><a href="#cb31-547" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small $p$ ($p &lt; 1$): Encourages returning to previous node, leading to local exploration</span>
+<span id="cb31-548"><a href="#cb31-548" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Large $q$ ($q &gt; 1$): Discourages moving away, resulting in BFS-like behavior</span>
+<span id="cb31-549"><a href="#cb31-549" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Small $q$ ($q &lt; 1$): Encourages exploration, resulting in DFS-like behavior</span>
+<span id="cb31-550"><a href="#cb31-550" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-551"><a href="#cb31-551" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-552"><a href="#cb31-552" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 2: Generate Walks and Train Model</span></span>
+<span id="cb31-553"><a href="#cb31-553" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-554"><a href="#cb31-554" aria-hidden="true" tabindex="-1"></a>Now let's generate biased random walks and train the word2vec model. We'll use $p=1$ and $q=0.1$, which encourages outward exploration (DFS-like behavior) to capture community structure.</span>
+<span id="cb31-555"><a href="#cb31-555" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-558"><a href="#cb31-558" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-559"><a href="#cb31-559" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate biased random walks</span></span>
+<span id="cb31-560"><a href="#cb31-560" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># Return parameter</span></span>
+<span id="cb31-561"><a href="#cb31-561" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fl">0.1</span>   <span class="co"># In-out parameter (q &lt; 1 means DFS-like)</span></span>
+<span id="cb31-562"><a href="#cb31-562" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-563"><a href="#cb31-563" aria-hidden="true" tabindex="-1"></a>walks_node2vec <span class="op">=</span> []</span>
+<span id="cb31-564"><a href="#cb31-564" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
+<span id="cb31-565"><a href="#cb31-565" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_walkers_per_node):</span>
+<span id="cb31-566"><a href="#cb31-566" aria-hidden="true" tabindex="-1"></a>        walks_node2vec.append(node2vec_random_walk(A, i, walk_length, p, q))</span>
+<span id="cb31-567"><a href="#cb31-567" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-568"><a href="#cb31-568" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Generated </span><span class="sc">{</span><span class="bu">len</span>(walks_node2vec)<span class="sc">}</span><span class="ss"> biased random walks"</span>)</span>
+<span id="cb31-569"><a href="#cb31-569" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Example walk: </span><span class="sc">{</span>walks_node2vec[<span class="dv">0</span>][:<span class="dv">10</span>]<span class="sc">}</span><span class="ss">..."</span>)</span>
+<span id="cb31-570"><a href="#cb31-570" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-571"><a href="#cb31-571" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-572"><a href="#cb31-572" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
+<span id="cb31-573"><a href="#cb31-573" aria-hidden="true" tabindex="-1"></a>With $q=0.1$, the walk is 10 times more likely to explore distant nodes than return to the immediate neighborhood, encouraging discovery of global community structure.</span>
+<span id="cb31-574"><a href="#cb31-574" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-575"><a href="#cb31-575" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-576"><a href="#cb31-576" aria-hidden="true" tabindex="-1"></a>Train the word2vec model on the biased walks:</span>
+<span id="cb31-577"><a href="#cb31-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-580"><a href="#cb31-580" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-581"><a href="#cb31-581" aria-hidden="true" tabindex="-1"></a><span class="co"># Train node2vec model</span></span>
+<span id="cb31-582"><a href="#cb31-582" aria-hidden="true" tabindex="-1"></a>model_node2vec <span class="op">=</span> Word2Vec(</span>
+<span id="cb31-583"><a href="#cb31-583" aria-hidden="true" tabindex="-1"></a>    walks_node2vec,</span>
+<span id="cb31-584"><a href="#cb31-584" aria-hidden="true" tabindex="-1"></a>    vector_size<span class="op">=</span><span class="dv">32</span>,</span>
+<span id="cb31-585"><a href="#cb31-585" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb31-586"><a href="#cb31-586" aria-hidden="true" tabindex="-1"></a>    min_count<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb31-587"><a href="#cb31-587" aria-hidden="true" tabindex="-1"></a>    sg<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb31-588"><a href="#cb31-588" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb31-589"><a href="#cb31-589" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-590"><a href="#cb31-590" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-591"><a href="#cb31-591" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract embeddings</span></span>
+<span id="cb31-592"><a href="#cb31-592" aria-hidden="true" tabindex="-1"></a>embedding_node2vec <span class="op">=</span> np.array([model_node2vec.wv[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)])</span>
+<span id="cb31-593"><a href="#cb31-593" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Node2vec embedding shape: </span><span class="sc">{</span>embedding_node2vec<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb31-594"><a href="#cb31-594" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-595"><a href="#cb31-595" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-596"><a href="#cb31-596" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 3: Visualize Node2vec Embeddings</span></span>
+<span id="cb31-597"><a href="#cb31-597" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-598"><a href="#cb31-598" aria-hidden="true" tabindex="-1"></a>Let's visualize the node2vec embeddings and compare them with DeepWalk.</span>
+<span id="cb31-599"><a href="#cb31-599" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-602"><a href="#cb31-602" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-603"><a href="#cb31-603" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-604"><a href="#cb31-604" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-605"><a href="#cb31-605" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduce node2vec embeddings to 2D</span></span>
+<span id="cb31-606"><a href="#cb31-606" aria-hidden="true" tabindex="-1"></a>reducer_n2v <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, n_neighbors<span class="op">=</span><span class="dv">15</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span>
+<span id="cb31-607"><a href="#cb31-607" aria-hidden="true" tabindex="-1"></a>xy_n2v <span class="op">=</span> reducer_n2v.fit_transform(embedding_node2vec)</span>
+<span id="cb31-608"><a href="#cb31-608" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-609"><a href="#cb31-609" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
+<span id="cb31-610"><a href="#cb31-610" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-611"><a href="#cb31-611" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>).A1</span>
+<span id="cb31-612"><a href="#cb31-612" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-613"><a href="#cb31-613" aria-hidden="true" tabindex="-1"></a>source_n2v <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb31-614"><a href="#cb31-614" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>xy_n2v[:, <span class="dv">0</span>],</span>
+<span id="cb31-615"><a href="#cb31-615" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>xy_n2v[:, <span class="dv">1</span>],</span>
+<span id="cb31-616"><a href="#cb31-616" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span>np.sqrt(degrees <span class="op">/</span> np.<span class="bu">max</span>(degrees)) <span class="op">*</span> <span class="dv">30</span>,</span>
+<span id="cb31-617"><a href="#cb31-617" aria-hidden="true" tabindex="-1"></a>    community<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> g.vs[<span class="st">"label"</span>]],</span>
+<span id="cb31-618"><a href="#cb31-618" aria-hidden="true" tabindex="-1"></a>    name <span class="op">=</span> [<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)]</span>
+<span id="cb31-619"><a href="#cb31-619" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb31-620"><a href="#cb31-620" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-621"><a href="#cb31-621" aria-hidden="true" tabindex="-1"></a>p_n2v <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"Node2vec Embeddings (UMAP projection)"</span>, x_axis_label<span class="op">=</span><span class="st">"UMAP 1"</span>, y_axis_label<span class="op">=</span><span class="st">"UMAP 2"</span>)</span>
+<span id="cb31-622"><a href="#cb31-622" aria-hidden="true" tabindex="-1"></a>p_n2v.scatter(<span class="st">'x'</span>, <span class="st">'y'</span>, size<span class="op">=</span><span class="st">'size'</span>, source<span class="op">=</span>source_n2v, line_color<span class="op">=</span><span class="st">"black"</span>, color<span class="op">=</span><span class="st">"community"</span>)</span>
+<span id="cb31-623"><a href="#cb31-623" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-624"><a href="#cb31-624" aria-hidden="true" tabindex="-1"></a>hover <span class="op">=</span> HoverTool()</span>
+<span id="cb31-625"><a href="#cb31-625" aria-hidden="true" tabindex="-1"></a>hover.tooltips <span class="op">=</span> [</span>
+<span id="cb31-626"><a href="#cb31-626" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Node"</span>, <span class="st">"@name"</span>),</span>
+<span id="cb31-627"><a href="#cb31-627" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Community"</span>, <span class="st">"@community"</span>)</span>
+<span id="cb31-628"><a href="#cb31-628" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb31-629"><a href="#cb31-629" aria-hidden="true" tabindex="-1"></a>p_n2v.add_tools(hover)</span>
+<span id="cb31-630"><a href="#cb31-630" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-631"><a href="#cb31-631" aria-hidden="true" tabindex="-1"></a>show(p_n2v)</span>
+<span id="cb31-632"><a href="#cb31-632" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-633"><a href="#cb31-633" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-634"><a href="#cb31-634" aria-hidden="true" tabindex="-1"></a>Notice how the node2vec embeddings with $q=0.1$ (DFS-like exploration) create even more distinct community clusters compared to DeepWalk. This is because the biased walk explores the community structure more thoroughly.</span>
+<span id="cb31-635"><a href="#cb31-635" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-636"><a href="#cb31-636" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Step 4: Clustering Analysis</span></span>
+<span id="cb31-637"><a href="#cb31-637" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-638"><a href="#cb31-638" aria-hidden="true" tabindex="-1"></a>Let's apply K-means clustering to the node2vec embeddings:</span>
+<span id="cb31-639"><a href="#cb31-639" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-642"><a href="#cb31-642" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-643"><a href="#cb31-643" aria-hidden="true" tabindex="-1"></a><span class="co"># Find optimal clusters for node2vec embeddings</span></span>
+<span id="cb31-644"><a href="#cb31-644" aria-hidden="true" tabindex="-1"></a>cluster_labels_n2v <span class="op">=</span> find_optimal_clusters(embedding_node2vec)</span>
+<span id="cb31-645"><a href="#cb31-645" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-646"><a href="#cb31-646" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clustering results</span></span>
+<span id="cb31-647"><a href="#cb31-647" aria-hidden="true" tabindex="-1"></a>igraph.plot(</span>
+<span id="cb31-648"><a href="#cb31-648" aria-hidden="true" tabindex="-1"></a>    g,</span>
+<span id="cb31-649"><a href="#cb31-649" aria-hidden="true" tabindex="-1"></a>    vertex_color<span class="op">=</span>[palette[label] <span class="cf">for</span> label <span class="kw">in</span> cluster_labels_n2v],</span>
+<span id="cb31-650"><a href="#cb31-650" aria-hidden="true" tabindex="-1"></a>    bbox<span class="op">=</span>(<span class="dv">500</span>, <span class="dv">500</span>),</span>
+<span id="cb31-651"><a href="#cb31-651" aria-hidden="true" tabindex="-1"></a>    vertex_size<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb31-652"><a href="#cb31-652" aria-hidden="true" tabindex="-1"></a>    vertex_label<span class="op">=</span>[<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes)]</span>
+<span id="cb31-653"><a href="#cb31-653" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-654"><a href="#cb31-654" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-655"><a href="#cb31-655" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-656"><a href="#cb31-656" aria-hidden="true" tabindex="-1"></a>By tuning the $p$ and $q$ parameters, node2vec can adapt to different network analysis tasks - from community detection (small $q$) to role discovery (large $q$).</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
