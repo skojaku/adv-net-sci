@@ -1,0 +1,591 @@
+/*********************************************
+ * PRESENTERM-INSPIRED TERMINAL THEME
+ * Based on presenterm's terminal-dark aesthetic
+ * Dark terminal presentation theme for Reveal.js
+ *********************************************/
+
+/* Import terminal-style fonts */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Fira+Code:wght@400;600&display=swap');
+
+/*********************************************
+ * GLOBAL STYLES
+ * Color palette inspired by presenterm's terminal-dark and base16-eighties
+ *********************************************/
+
+:root {
+  /* Background and text - presenterm terminal-dark style */
+  --terminal-bg: #040312;
+  --terminal-text: #e6e6e6;
+  --terminal-bg-elevated: #1a1a2e;
+
+  /* Base16-eighties dark palette for syntax */
+  --terminal-green: #66ff66;
+  --terminal-cyan: #00ffff;
+  --terminal-yellow: #ffff00;
+  --terminal-orange: #ff8c00;
+  --terminal-pink: #ff00ff;
+  --terminal-purple: #bd93f9;
+  --terminal-red: #ff6b6b;
+  --terminal-blue: #6b9eff;
+  --terminal-gray: #999999;
+  --terminal-dark-gray: #393952;
+}
+
+.reveal-viewport {
+  background: var(--terminal-bg);
+  background-image: none;
+}
+
+.reveal {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--terminal-text);
+}
+
+/*********************************************
+ * HEADERS
+ *********************************************/
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: 0 0 20px 0;
+  color: var(--terminal-cyan);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: 0 0 10px rgba(0, 215, 255, 0.5);
+  word-wrap: break-word;
+}
+
+/* H1 - Cyan with block prefix (presenterm style: ██) */
+.reveal h1::before {
+  content: "██ ";
+  color: var(--terminal-cyan);
+  margin-right: 0.3em;
+  font-weight: 700;
+}
+
+.reveal h1 {
+  font-size: 1.6em;
+  border-bottom: none;
+  padding: 20px 0;
+  color: var(--terminal-cyan);
+  text-align: center;
+}
+
+/* H2 - Magenta/Yellow for slide titles (presenterm style: ▓▓▓) */
+.reveal h2::before {
+  content: "▓▓▓ ";
+  color: var(--terminal-pink);
+  margin-right: 0.3em;
+  font-weight: 700;
+}
+
+.reveal h2 {
+  font-size: 1.5em;
+  color: var(--terminal-yellow);
+  text-shadow: none;
+  text-align: center;
+  padding: 15px 0;
+}
+
+/* H3 - Red with block prefix (presenterm style: ▒▒▒▒) */
+.reveal h3::before {
+  content: "▒▒▒▒ ";
+  color: var(--terminal-red);
+  margin-right: 0.3em;
+  font-weight: 600;
+}
+
+.reveal h3 {
+  font-size: 1.2em;
+  color: var(--terminal-red);
+  text-shadow: none;
+}
+
+/* H4 - Blue with block prefix (presenterm style: ░░░░░) */
+.reveal h4::before {
+  content: "░░░░░ ";
+  color: var(--terminal-blue);
+  margin-right: 0.3em;
+}
+
+.reveal h4 {
+  font-size: 1.1em;
+  color: var(--terminal-blue);
+}
+
+/*********************************************
+ * TEXT ELEMENTS
+ *********************************************/
+
+.reveal p {
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.reveal strong,
+.reveal b {
+  font-weight: 700;
+  color: var(--terminal-yellow);
+}
+
+.reveal em,
+.reveal i {
+  font-style: italic;
+  color: var(--terminal-cyan);
+}
+
+.reveal a {
+  color: var(--terminal-blue);
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+  color: var(--terminal-cyan);
+  text-shadow: 0 0 10px rgba(0, 215, 255, 0.5);
+}
+
+/*********************************************
+ * CODE BLOCKS
+ *********************************************/
+
+/* Code blocks - presenterm style with base16-eighties.dark theme */
+.reveal pre {
+  display: block;
+  position: relative;
+  width: 90%;
+  margin: 20px auto;
+  text-align: left;
+  font-size: 0.7em;
+  font-family: 'Fira Code', monospace;
+  line-height: 1.4em;
+  word-wrap: break-word;
+  background-color: var(--terminal-bg-elevated);
+  border: 1px solid var(--terminal-dark-gray);
+  border-radius: 4px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.reveal code {
+  font-family: 'Fira Code', monospace;
+  text-transform: none;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: var(--terminal-text);
+}
+
+/* Inline code - green like presenterm */
+.reveal p code,
+.reveal li code {
+  background-color: var(--terminal-bg-elevated);
+  color: var(--terminal-green);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+.reveal pre code {
+  display: block;
+  padding: 20px 30px;
+  overflow: auto;
+  max-height: 600px;
+  word-wrap: normal;
+  background-color: transparent;
+  color: var(--terminal-text);
+}
+
+/*********************************************
+ * LISTS
+ *********************************************/
+
+.reveal ul,
+.reveal ol {
+  display: block;
+  text-align: left;
+  margin: 0 0 0 1em;
+}
+
+.reveal ul {
+  list-style-type: none;
+}
+
+.reveal ul li::before {
+  content: "▸ ";
+  color: var(--terminal-green);
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.reveal ol {
+  list-style-type: decimal;
+  color: var(--terminal-cyan);
+}
+
+.reveal ul ul,
+.reveal ul ol,
+.reveal ol ol,
+.reveal ol ul {
+  display: block;
+  margin-left: 40px;
+}
+
+.reveal li {
+  margin: 10px 0;
+}
+
+/*********************************************
+ * TABLES - Terminal Grid Style
+ *********************************************/
+
+.reveal table {
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: var(--terminal-bg-elevated);
+  border: 1px solid var(--terminal-dark-gray);
+  font-size: 0.85em;
+}
+
+.reveal table th {
+  font-weight: 600;
+  background-color: var(--terminal-bg-elevated);
+  color: var(--terminal-yellow);
+  border: 1px solid var(--terminal-dark-gray);
+  padding: 12px;
+}
+
+.reveal table td {
+  border: 1px solid var(--terminal-dark-gray);
+  padding: 10px;
+  color: var(--terminal-text);
+}
+
+.reveal table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/*********************************************
+ * QUOTES - Presenterm Style
+ * Uses yellow bar with ▍ prefix
+ *********************************************/
+
+.reveal blockquote {
+  display: block;
+  position: relative;
+  width: 80%;
+  margin: 20px auto;
+  padding: 15px 20px 15px 35px;
+  background: #000000;
+  border-left: 6px solid var(--terminal-yellow);
+  font-style: normal;
+  color: var(--terminal-text);
+  line-height: 1.5;
+}
+
+.reveal blockquote::before {
+  content: "▍";
+  position: absolute;
+  left: 12px;
+  color: var(--terminal-yellow);
+  font-size: 1.2em;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.reveal blockquote p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/*********************************************
+ * CALLOUT BOXES - Presenterm GitHub Alert Style
+ * Color-coded borders and backgrounds
+ *********************************************/
+
+.callout {
+  margin: 15px 0;
+  padding: 15px 20px;
+  border-left: 4px solid;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  line-height: 1.5;
+  font-size: 0.95em !important;
+}
+
+/* Note - Blue (presenterm blue) */
+.callout-note {
+  border-left-color: var(--terminal-blue);
+  background-color: rgba(107, 158, 255, 0.1);
+}
+
+.callout-note .callout-title {
+  color: var(--terminal-blue);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  margin: 0 0 8px 0;
+  font-size: 1em !important;
+}
+
+/* Tip - Green (presenterm green) */
+.callout-tip {
+  border-left-color: var(--terminal-green);
+  background-color: rgba(102, 255, 102, 0.1);
+}
+
+.callout-tip .callout-title {
+  color: var(--terminal-green);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  margin: 0 0 8px 0;
+  font-size: 1em !important;
+}
+
+/* Warning - Yellow (presenterm yellow) */
+.callout-warning {
+  border-left-color: var(--terminal-yellow);
+  background-color: rgba(255, 255, 0, 0.1);
+}
+
+.callout-warning .callout-title {
+  color: var(--terminal-yellow);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  margin: 0 0 8px 0;
+  font-size: 1em !important;
+}
+
+/* Important/Caution - Red (presenterm red) */
+.callout-important,
+.callout-caution {
+  border-left-color: var(--terminal-red);
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.callout-important .callout-title,
+.callout-caution .callout-title {
+  color: var(--terminal-red);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  margin: 0 0 8px 0;
+  font-size: 1em !important;
+}
+
+/* Reduce spacing inside callout content */
+.callout p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.callout p:first-child {
+  margin-top: 0;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* Compact spacing for callout body */
+.callout-body {
+  margin: 0;
+  padding: 0;
+}
+
+.callout-content {
+  font-size: 0.95em !important;
+}
+
+/*********************************************
+ * IMAGES
+ *********************************************/
+
+.reveal section img {
+  margin: 15px 0;
+  background: transparent;
+  border: 2px solid var(--terminal-dark-gray);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.reveal section img.terminal-border {
+  border: 2px solid var(--terminal-green);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+/*********************************************
+ * SLIDE BACKGROUNDS
+ *********************************************/
+
+.reveal .slide-background {
+  background-color: var(--terminal-bg);
+}
+
+/*********************************************
+ * PROGRESS BAR
+ *********************************************/
+
+.reveal .progress {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--terminal-cyan);
+  height: 3px;
+}
+
+.reveal .progress span {
+  background: var(--terminal-cyan);
+  box-shadow: 0 0 10px var(--terminal-cyan);
+}
+
+/*********************************************
+ * SLIDE NUMBER
+ *********************************************/
+
+.reveal .slide-number {
+  color: var(--terminal-gray);
+  background-color: transparent;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  padding: 5px 10px;
+  border: none;
+}
+
+/*********************************************
+ * CONTROLS
+ *********************************************/
+
+.reveal .controls {
+  color: var(--terminal-blue);
+}
+
+.reveal .controls button {
+  color: var(--terminal-blue);
+}
+
+.reveal .controls button:hover {
+  color: var(--terminal-cyan);
+}
+
+/*********************************************
+ * CURSOR EFFECT (Terminal-style)
+ *********************************************/
+
+.terminal-cursor::after {
+  content: "▋";
+  animation: blink 1s step-end infinite;
+  color: var(--terminal-green);
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/*********************************************
+ * INCREMENTAL LISTS
+ *********************************************/
+
+.reveal .fragment {
+  opacity: 0.3;
+}
+
+.reveal .fragment.visible {
+  opacity: 1;
+}
+
+/*********************************************
+ * TITLE SLIDE
+ *********************************************/
+
+.reveal .title-slide h1 {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  font-size: 2em;
+  font-weight: 400;
+  color: var(--terminal-cyan);
+  text-shadow: 0 0 20px rgba(0, 215, 255, 0.6);
+  border-bottom: 3px solid var(--terminal-cyan);
+  padding-bottom: 0.5em;
+}
+
+.reveal .title-slide .author {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  color: var(--terminal-cyan);
+  font-size: 1em;
+  font-weight: 400;
+  margin-top: 1em;
+}
+
+.reveal .title-slide .date {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  color: var(--terminal-gray);
+  font-size: 0.8em;
+  font-weight: 400;
+  margin-top: 0.5em;
+}
+
+/*********************************************
+ * CUSTOM TERMINAL PROMPTS
+ *********************************************/
+
+.terminal-prompt::before {
+  content: "$ ";
+  color: var(--terminal-green);
+  font-weight: bold;
+}
+
+.terminal-output::before {
+  content: "> ";
+  color: var(--terminal-cyan);
+}
+
+/*********************************************
+ * SYNTAX HIGHLIGHTING COLORS
+ *********************************************/
+
+.reveal pre code .hljs-comment {
+  color: var(--terminal-gray);
+}
+
+.reveal pre code .hljs-keyword {
+  color: var(--terminal-pink);
+}
+
+.reveal pre code .hljs-string {
+  color: var(--terminal-yellow);
+}
+
+.reveal pre code .hljs-number {
+  color: var(--terminal-purple);
+}
+
+.reveal pre code .hljs-function {
+  color: var(--terminal-green);
+}
+
+.reveal pre code .hljs-variable {
+  color: var(--terminal-cyan);
+}
+
+/*********************************************
+ * MATH FORMULAS (MathJax/KaTeX)
+ *********************************************/
+
+/* Reset font inheritance for MathJax containers only - let MathJax handle internals */
+.reveal mjx-container {
+  font-family: initial !important;
+}
+
+.reveal .MathJax {
+  font-family: initial !important;
+}
