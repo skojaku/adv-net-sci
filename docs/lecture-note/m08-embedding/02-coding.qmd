@@ -1,5 +1,5 @@
 ---
-title: "Network Embedding Concepts"
+title: "Network Embedding Coding"
 jupyter: advnetsci
 execute:
     enabled: true
@@ -292,7 +292,8 @@ model = Word2Vec(
     window=3,         # Maximum distance between current and predicted node
     min_count=1,      # Minimum frequency for a node to be included
     sg=1,             # Use skip-gram model (vs CBOW)
-    hs=1              # Use hierarchical softmax for training
+    hs=1,              # Use hierarchical softmax for training,
+    workers = 1,
 )
 ```
 
