@@ -708,7 +708,7 @@ Networks grow by balancing **two factors**:
 - **Similarity**: Connect to similar nodes
 :::
 
-**Remarkable finding**: This optimization naturally emerges in **hyperbolic space**!
+This optimization naturally emerges in hyperbolic space!
 
 - **Popularity** → radial position (birth time)
 - **Similarity** → angular distance
@@ -734,83 +734,43 @@ How do we generate a network that captures this?
 
 ### The Core Model: Popularity × Similarity
 
+:::: {.columns}
+::: {.column width="50%"}
 **Network Generation Process**:
 
-1. **Sequential node addition**: At each time $t = 1, 2, 3, \dots$, add a new node $t$
-2. **Each node gets coordinates**:
-   - **Similarity** $\theta_t$: Random position on a circle
-   - **Popularity** $r_t = \ln t$: Based on birth time (older = more popular)
-3. **New node connects**: Choose $m$ existing nodes $s < t$
+- At each time $t = 1, 2, 3, \dots$, add a new node $t$
+- Each node $t$ gets coordinates:
+   - Random angular position on a circle, $\theta_t$
+   - Radial position based on birth time, $r_t = \ln t$ (older = more popular)
+- New node $t$ connects to the $m$ nodes that minimize:
 
-::: {.callout-tip title = "The Connection Rule:"}
-Node $t$ connects to the $m$ nodes that minimize: $s \cdot \theta_{st}$
-:::
+$$
+s \cdot \theta_{st} \quad \text{for } s < t
+$$
 
-### Understanding the Coordinates 📍
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Similarity Coordinate ($\theta_t$)**:
-- Position on a circle
-- Angular distance $\theta_{st}$ = similarity measure
-- Small $\theta_{st}$ → nodes are similar
-
-**Popularity Coordinate ($r_t$)**:
-- Based on birth time: $r_t = \ln t$
-- Small $t$ → small $r_t$ → older node
-- Older nodes = more popular
+**Key property**: In this space, the rule "minimize $s \cdot \theta_{st}$" is mathematically equivalent to connecting to the $m$ *hyperbolically closest* nodes.
 
 :::
 
 ::: {.column width="50%"}
-
 ![](figs/internet-routers-hyperbolic.png){width=100% fig-align="center"}
-
-*Radial position = birth time, Angular position = similarity*
-
 :::
-
 ::::
+
 
 ### The Connection Rule: Balancing Two Forces ⚖️
 
-New node $t$ connects to $m$ existing nodes $s$ that minimize:
-
-$$
-s \cdot \theta_{st}
-$$
-
-::: {.callout-note title = "Question:"}
-When will this product $s \cdot \theta_{st}$ be small?
-
-Think about it for 30 seconds...
-:::
-
-### When is $s \cdot \theta_{st}$ small?
+**Key insight**:
 
 ::: {.incremental}
-- **Small if $s$ is small**: Node is old (popular)
-  - Connect to popular nodes!
-- **Small if $\theta_{st}$ is small**: Node is similar
-  - Connect to similar nodes!
-- **Key insight**: Natural trade-off emerges
-  - Very popular node? Connect even if not similar
-  - Very similar node? Connect even if not popular
-:::
-
-::: {.callout-tip title = "Why This Works:"}
-The product $s \cdot \theta_{st}$ elegantly balances popularity and similarity without explicit weights or parameters!
-:::
-
-### Why does this explain preferential attachment?
-
-::: {.incremental}
+- The *number* of nodes to connect to depends on both popularity and similarity
+  - If a node is very popular, it should connect to many nodes
+  - If a node is surrounded by many similar nodes, it should connect to many nodes
+  - The `radius` of the node is often referred to as the `implicit` degree.
+    - Example: European airports have high degree in part becaues there are many airports in Europe. Their implicit degree might be lower than what the degree suggests.
 - Preferential attachment is **not** a primitive mechanism
+  - Probability $\Pi(k) \propto k$ emerges naturally
 - It's a **consequence** of geometric optimization!
-- Probability $\Pi(k) \propto k$ emerges naturally
-- But with crucial differences: **which** nodes connect depends on similarity
 :::
 
 ## Mathematical Models of Hyperbolic Space
@@ -838,6 +798,7 @@ d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \math
 $$
 
 **Properties**:
+
 - Intuitive visualization
 - Geodesics = circular arcs
 - Requires complex Riemannian optimization
@@ -890,63 +851,14 @@ $$
 
 ![](figs/wordnet-hyperbolic-embedding.png){width=70% fig-align="center"}
 
-### Interpreting the Embedding
+### Natural Hierarchy Emerges! 🌳
 
-::: {.callout-note title = "Question:"}
-Look at the WordNet embedding above.
-
-Where are abstract concepts like "Entity"? Where are concrete concepts like "Hardwood"?
-
-*What pattern do you notice?*
-:::
-
-### Answer: Natural Hierarchy Emerges! 🌳
-
-::: {.incremental}
 - **Center**: Abstract terms ("Entity", "Object")
 - **Moving outward**: Increasingly specific
   - "Material" → "Wood" → "Hardwood"
 - **Key insight**: Hyperbolic space automatically organizes concepts hierarchically
 - No explicit supervision needed!
-:::
 
 ::: {.callout-tip title = "Why This Works:"}
 The exponential volume growth in hyperbolic space naturally accommodates the exponentially growing number of specific concepts at lower hierarchy levels
 :::
-
-## Key Takeaways
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-**Euclidean Embeddings**:
-- Standard flat geometry
-- Works for many networks
-- Polynomial volume growth
-
-**Limitations**:
-- Struggles with hierarchies
-- Inefficient for trees
-- Distorts scale-free structure
-
-:::
-
-::: {.column width="50%"}
-
-**Hyperbolic Embeddings**:
-- Curved negative-curvature space
-- Exponential volume growth
-- Natural for hierarchies
-
-**Advantages**:
-- Captures scale-free properties
-- Preserves strong clustering
-- Efficient tree embeddings
-- Explains popularity × similarity
-
-:::
-
-::::
-
-
