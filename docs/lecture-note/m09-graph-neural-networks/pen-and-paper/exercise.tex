@@ -4,6 +4,13 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{fontspec}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\usepackage{fontspec}
 \usepackage{hyperref}
 \usepackage{tikz}
 \usepackage{fontspec}
@@ -390,439 +397,294 @@ If we want to keep only the low-frequency components of the checkerboard pattern
 
 \clearpage
 
-\section{Color Spreading in Social Networks}
-In a network of students forming study groups, each student starts with a preferred subject, shown by colors - Math (Blue), Physics (Green), or Arts (Red). Through their study group interactions, students influence each other's interests. The network diagram below shows students as circles connected by lines representing their study partnerships.
+\section*{Weisfeiler-Lehman Test}
 
+A neural network's job is often graph classification (e.g., is this molecule toxic?). To do this, the network must be able to distinguish between two different graphs.
+
+Below are two molecules (Graph $G_1$ and Graph $G_2$). They consist of atoms labeled \textbf{A} and \textbf{B}. If we present this to a neural network that simply counts labels, it will likely not be able to distinguish between the two graphs.
+
+% --- PART 1 ---
 \begin{center}
-\begin{tikzpicture}[scale=1.5]
-    % Nodes for first clique
-    \node[circle,draw,fill=blue!30] (A) at (0,0) {A};
-    \node[circle,draw,fill=red!30] (B) at (1,0.866) {B};
-    \node[circle,draw,fill=white] (C) at (2,0) {C};
+\begin{tikzpicture}[scale=0.9, every node/.style={circle, draw=black, thick, minimum size=0.7cm, font=\bfseries}]
 
-    % Nodes for second clique
-    \node[circle,draw,fill=white] (D) at (4,0) {D};
-    \node[circle,draw,fill=white] (E) at (5,0.866) {E};
-    \node[circle,draw,fill=green!30] (F) at (6,0) {F};
+    % Graph 1: Perfect Alternating Hexagon
+    \def\R{1.2}
+    \node[fill=blue!10]   (1) at (90:\R)  {A};
+    \node[fill=orange!10] (2) at (30:\R)  {B};
+    \node[fill=blue!10]   (3) at (-30:\R) {A};
+    \node[fill=orange!10] (4) at (-90:\R) {B};
+    \node[fill=blue!10]   (5) at (-150:\R){A};
+    \node[fill=orange!10] (6) at (150:\R) {B};
+    \draw[thick] (1) -- (2) -- (3) -- (4) -- (5) -- (6) -- (1);
+    \node[draw=none, below=1.4cm] at (0,0) {\textbf{$G_1$}};
 
-    % Edges for first clique
-    \draw (A) -- (B);
-    \draw (B) -- (C);
-    \draw (C) -- (A);
-
-    % Edges for second clique
-    \draw (D) -- (E);
-    \draw (E) -- (F);
-    \draw (F) -- (D);
-
-    % Edge connecting the cliques
-    \draw (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\begin{enumerate}[resume]
-
-\item For each student, we'll follow this rule: "Adopt the most common subject among your study partners."
-If tied, choose Math (Blue) > Arts (Red) > Physics (Green).
-Now, let's start by looking at student D, who is currently undecided. What subject would student D choose?
-
-\item Now look at student E. Using the same rule, what subject would they choose?
-
-\item  Starting with nodes D, E, F, C, B, and A in that order, what color pattern emerges after many iterations?
-
-\begin{center}
-\begin{tikzpicture}[scale=1.5]
-    % Nodes for first clique
-    \node[circle,draw,fill=white] (A) at (0,0) {A};
-    \node[circle,draw,fill=white] (B) at (1,0.866) {B};
-    \node[circle,draw,fill=white] (C) at (2,0) {C};
-
-    % Nodes for second clique
-    \node[circle,draw,fill=white] (D) at (4,0) {D};
-    \node[circle,draw,fill=white] (E) at (5,0.866) {E};
-    \node[circle,draw,fill=white] (F) at (6,0) {F};
-
-    % Edges for first clique
-    \draw (A) -- (B);
-    \draw (B) -- (C);
-    \draw (C) -- (A);
-
-    % Edges for second clique
-    \draw (D) -- (E);
-    \draw (E) -- (F);
-    \draw (F) -- (D);
-
-    % Edge connecting the cliques
-    \draw (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\item If we repeat this process in order of A->B->C->D->E->F infinitely, what would be the final pattern of colors?
-
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % Nodes for first clique
-        \node[circle,draw,fill=white] (A) at (0,0) {A};
-        \node[circle,draw,fill=white] (B) at (1,0.866) {B};
-        \node[circle,draw,fill=white] (C) at (2,0) {C};
-
-        % Nodes for second clique
-        \node[circle,draw,fill=white] (D) at (4,0) {D};
-        \node[circle,draw,fill=white] (E) at (5,0.866) {E};
-        \node[circle,draw,fill=white] (F) at (6,0) {F};
-
-        % Edges for first clique
-        \draw (A) -- (B);
-        \draw (B) -- (C);
-        \draw (C) -- (A);
-
-        % Edges for second clique
-        \draw (D) -- (E);
-        \draw (E) -- (F);
-        \draw (F) -- (D);
-
-        % Edge connecting the cliques
-        \draw (C) -- (D);
-    \end{tikzpicture}
-\end{center}
-
-\item Let's introduce a self-reinforcing rule: When counting subjects among neighbors, a student's own chosen subject counts as an extra vote with weight three times as much as a vote from a neighbor. For example, if a student has chosen red and has two neighbors with green, red gets counted three times while green gets counted twice. Starting with nodes A, B, C, D, E, F in that order, what color pattern emerges after many iterations?
-
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % Nodes for first clique
-        \node[circle,draw,fill=white] (A) at (0,0) {A};
-        \node[circle,draw,fill=white] (B) at (1,0.866) {B};
-        \node[circle,draw,fill=white] (C) at (2,0) {C};
-
-        % Nodes for second clique
-        \node[circle,draw,fill=white] (D) at (4,0) {D};
-        \node[circle,draw,fill=white] (E) at (5,0.866) {E};
-        \node[circle,draw,fill=white] (F) at (6,0) {F};
-
-        % Edges for first clique
-        \draw (A) -- (B);
-        \draw (B) -- (C);
-        \draw (C) -- (A);
-
-        % Edges for second clique
-        \draw (D) -- (E);
-        \draw (E) -- (F);
-        \draw (F) -- (D);
-
-        % Edge connecting the cliques
-        \draw (C) -- (D);
-    \end{tikzpicture}
-\end{center}
-
-\end{enumerate}
-
-\clearpage
-
-\begin{enumerate}[resume]
-
-\item Let's make it more operational. Each color can be represented as a one-hot vector as follows:
-\begin{multicols}{2}
-\begin{itemize}
-    \item Blue (Math) = [1,0,0]
-    \item Green (Science) = [0,1,0]
-\end{itemize}
-\columnbreak
-\begin{itemize}
-    \item Red (Arts) = [0,0,1]
-    \item White (Undecided) = [0,0,0]
-\end{itemize}
-\end{multicols}
-
-Then, how can we represent the rule "Adopt the most common subject among your study partners" as a computational operation? Ignore self-reinforcing rule. Hint: it is a max-pooling operation.
-
-
-\vspace{10em}
-\item Design a computational operation that follows the self-reinforcing rule without altering the operation in the previous question?
-
-\vspace{10em}
-\item What if we use ``mean'' instead of ``max'' and repeat the operation infinitely? Draw the final pattern of colors. There is no tie in this case.
-
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % Nodes for first clique
-        \node[circle,draw,fill=white] (A) at (0,0) {A};
-        \node[circle,draw,fill=white] (B) at (1,0.866) {B};
-        \node[circle,draw,fill=white] (C) at (2,0) {C};
-
-        % Nodes for second clique
-        \node[circle,draw,fill=white] (D) at (4,0) {D};
-        \node[circle,draw,fill=white] (E) at (5,0.866) {E};
-        \node[circle,draw,fill=white] (F) at (6,0) {F};
-
-        % Edges for first clique
-        \draw (A) -- (B);
-        \draw (B) -- (C);
-        \draw (C) -- (A);
-
-        % Edges for second clique
-        \draw (D) -- (E);
-        \draw (E) -- (F);
-        \draw (F) -- (D);
-
-        % Edge connecting the cliques
-        \draw (C) -- (D);
-    \end{tikzpicture}
-\end{center}
-
-\item What if we use ``sum'' operation and repeat the operation infinitely?
-\end{enumerate}
-
-\clearpage
-
-\section{The Weisfeiler-Lehman Test}
-The color spreading process we just studied is closely related to a fundamental concept in graph theory called the Weisfeiler-Lehman (WL) test. This test helps us determine if two graphs might be structurally different by looking at how colors spread through them.
-
-\begin{enumerate}[resume]
-\item Consider these two graphs. Are they the same (isomorphic)?
-
-\begin{center}
-\begin{tikzpicture}[scale=1.5]
-    % First graph
-    \begin{scope}[xshift=0cm]
-        \node[circle,draw,fill=blue!30] (A1) at (0,0) {1};
-        \node[circle,draw,fill=red!30] (B1) at (1,0) {2};
-        \node[circle,draw,fill=green!30] (C1) at (0.5,0.866) {3};
-        \node[circle,draw,fill=yellow!30] (D1) at (0.5,-0.866) {4};
-
-        \draw[xkcd] (A1) -- (B1);
-        \draw[xkcd] (B1) -- (C1);
-        \draw[xkcd] (C1) -- (A1);
-        \draw[xkcd] (A1) -- (D1);
-        \draw[xkcd] (B1) -- (D1);
-    \end{scope}
-
-    % Second graph
-    \begin{scope}[xshift=4cm]
-        \node[circle,draw,fill=blue!30] (A2) at (0,0) {a};
-        \node[circle,draw,fill=red!30] (B2) at (1,0) {b};
-        \node[circle,draw,fill=green!30] (C2) at (0.5,0.866) {c};
-        \node[circle,draw,fill=yellow!30] (D2) at (0.5,-0.866) {d};
-
-        \draw[xkcd] (A2) -- (B2);
-        \draw[xkcd] (B2) -- (C2);
-        \draw[xkcd] (C2) -- (A2);
-        \draw[xkcd] (A2) -- (D2);
-        \draw[xkcd] (C2) -- (D2);
+    % Graph 2: Clumped Labels
+    \begin{scope}[xshift=6cm]
+        \node[fill=blue!10]   (1) at (90:\R)  {A};
+        \node[fill=blue!10]   (2) at (30:\R)  {A};
+        \node[fill=orange!10] (3) at (-30:\R) {B};
+        \node[fill=blue!10]   (4) at (-90:\R) {A};
+        \node[fill=orange!10] (5) at (-150:\R){B};
+        \node[fill=orange!10] (6) at (150:\R) {B};
+        \draw[thick] (1) -- (2) -- (3) -- (4) -- (5) -- (6) -- (1);
+        \node[draw=none, below=1.4cm] at (0,0) {\textbf{$G_2$}};
     \end{scope}
 \end{tikzpicture}
 \end{center}
 
-\item Now let's look at how the WL test works:
+\subsection*{Part 1: Distinguishing Labeled Graphs}
+
+Let's work up a solution step by step. Since counting labels (global pooling) doesn't work, let's look at the \textbf{local structure} around each node.
+
+\vspace{0.3cm}
+
+\textbf{Step 1: Message Passing.}
+Create a \textbf{signature} for every node: `(My Label, \{Neighbor Labels\})`.
+
+\begin{minipage}{0.48\textwidth}
+\textbf{Graph $G_1$ Signatures:}
+\begin{itemize}[leftmargin=*]
+    \item Any Node A: \texttt{(A, \{B, B\})}
+    \item Any Node B: \texttt{(B, \{A, A\})}
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\textbf{Graph $G_2$ Signatures:}
+\begin{itemize}[leftmargin=*]
+    \item Top Node (A): \underline{\hspace{4cm}}
+    \item Top-Right Node (A): \underline{\hspace{3.2cm}}
+    \item Bottom Node (A): \texttt{(A, \{B, B\})}
+\end{itemize}
+\end{minipage}
+
+\vspace{0.3cm}
+
+\textbf{Step 2: Compression (Hashing).}
+Assign a unique ID to every unique signature found across both graphs.
+
+\begin{center}
+\begin{tabular}{l c l | l c l}
+    \toprule
+    Signature & $\rightarrow$ & ID & Signature & $\rightarrow$ & ID \\
+    \midrule
+    (A, \{B, B\}) & $\rightarrow$ & \textbf{1} & (B, \{A, B\}) & $\rightarrow$ & \textbf{4} \\
+    (B, \{A, A\}) & $\rightarrow$ & \textbf{2} & (A, \{A, A\}) & $\rightarrow$ & \textbf{5} \\
+    (A, \{A, B\}) & $\rightarrow$ & \textbf{3} & (B, \{B, B\}) & $\rightarrow$ & \textbf{6} \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Step 3: Rewrite with Colors.}
+List the set of Color IDs present in each graph.
 \begin{itemize}
-    \item For each node,
-    \begin{itemize}
-        \item Collect the colors of its neighbors (including itself)
-        \item Count the frequency of each color, and create a list of color frequencies in order of Red, Green, Blue. For example, if there are two reds, one green, and one blue, the sorted frequency list is [2, 1, 1].
-    \end{itemize}
-    \item Once all nodes have been processed, reassign the same color to the nodes with the same sorted frequency list.
-    \item Count the number of nodes for each color, and create a sorted list of color frequencies for a graph.
+    \item \textbf{$G_1$ Colors:} \{ 1, 1, 1, 2, 2, 2 \}
+    \item \textbf{$G_2$ Colors:} \{ \underline{\hspace{0.5cm}}, \underline{\hspace{0.5cm}}, \underline{\hspace{0.5cm}}, \underline{\hspace{0.5cm}}, \underline{\hspace{0.5cm}}, \underline{\hspace{0.5cm}} \}
+\end{itemize}
+\textbf{Conclusion:} Are the sets of colors different? \textbf{[ Yes / No ]}
+
+\clearpage
+\subsubsection*{Exercise B: Structural Difference}
+Below are graphs $G_3$ (Line) and $G_4$ (Star). Both have \textbf{5 Nodes} (2 As, 3 Bs).
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9, every node/.style={circle, draw=black, thick, minimum size=0.7cm, font=\bfseries}]
+    % Graph 3: Linear Chain
+    \node[fill=orange!10] (1) at (0,0) {B};
+    \node[fill=blue!10]   (2) at (1.2,0) {A};
+    \node[fill=orange!10] (3) at (2.4,0) {B};
+    \node[fill=blue!10]   (4) at (3.6,0) {A};
+    \node[fill=orange!10] (5) at (4.8,0) {B};
+    \draw[thick] (1)--(2)--(3)--(4)--(5);
+    \node[draw=none, below=0.5cm] at (2.4,0) {\textbf{$G_3$}};
+
+    % Graph 4: Star
+    \begin{scope}[xshift=9cm, yshift=0cm]
+        \node[fill=blue!10] (C) at (0,0) {A};
+        \node[fill=orange!10] (N) at (0,1.5) {B};
+        \node[fill=orange!10] (S) at (0,-1.5) {B};
+        \node[fill=orange!10] (E) at (1.5,0) {B};
+        \node[fill=blue!10]   (W) at (-1.5,0) {A};
+        \draw[thick] (N)--(C)--(S); \draw[thick] (W)--(C)--(E);
+        \node[draw=none, below=1.6cm] at (0,0) {\textbf{$G_4$}};
+    \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\textbf{Task:} Fill in the signatures `(My Label, \{Neighbors\})` for all nodes.
+
+\begin{minipage}{0.48\textwidth}
+\textbf{Graph $G_3$ (Line):}
+\begin{itemize}[leftmargin=*]
+    \item Left B: \underline{\hspace{3.5cm}}
+    \item Left A: \underline{\hspace{3.5cm}}
+    \item Middle B: \underline{\hspace{3.5cm}}
+    \item Right A: \underline{\hspace{3.5cm}}
+    \item Right B: \underline{\hspace{3.5cm}}
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\textbf{Graph $G_4$ (Star):}
+\begin{itemize}[leftmargin=*]
+    \item Center A: \underline{\hspace{3.5cm}}
+    \item Left A: \underline{\hspace{3.5cm}}
+    \item Top B: \underline{\hspace{3.5cm}}
+    \item Right B: \underline{\hspace{3.5cm}}
+    \item Bottom B: \underline{\hspace{3.5cm}}
+\end{itemize}
+\end{minipage}
+
+\textbf{Compare:} Does $G_4$ generate a signature that is completely impossible in $G_3$? \textbf{[ Yes / No ]}
+
+% --- PART 2 ---
+\subsection*{Part 2: Identifying Isomorphic Graphs (Unlabeled)}
+
+Sometimes different drawings represent the same graph. A GNN should map these to the same embedding.
+Consider $H_1$ (The House) and $H_2$ (Pentagon w/ Chord).
+
+\begin{center}
+\begin{tikzpicture}[scale=1.0, every node/.style={circle, draw=black, thick, minimum size=0.6cm, font=\small\bfseries}]
+
+    % Graph H1: The House
+    \node (1) at (0,0) {1};
+    \node (2) at (1.2,0) {1};
+    \node (3) at (1.2,1.2) {1};
+    \node (4) at (0,1.2) {1};
+    \node (5) at (0.6, 1.8) {1};
+    \draw[thick] (1)--(2)--(3)--(4)--(1);
+    \draw[thick] (4)--(5)--(3);
+    \node[draw=none, below=0.5cm] at (0.6, 0) {\textbf{$H_1$}};
+
+    % Graph H2: Pentagon with Chord
+    \begin{scope}[xshift=5cm, yshift=0.6cm]
+        \def\R{1.0}
+        \node (A) at (90:\R) {1};
+        \node (B) at (18:\R) {1};
+        \node (C) at (-54:\R) {1};
+        \node (D) at (234:\R) {1};
+        \node (E) at (162:\R) {1};
+        \draw[thick] (A)--(B)--(C)--(D)--(E)--(A);
+        \draw[thick] (E)--(C);
+        \node[draw=none, below=1.1cm] at (0, -0.5) {\textbf{$H_2$}};
+    \end{scope}
+\end{tikzpicture}
+\end{center}
+
+Since there are no node labels (A or B), we initialize \textbf{all nodes} with the label "\textbf{1}". Perform the same Message Passing process as Part 1.
+Create signatures for every node: \texttt{(My Label, \{Neighbor Labels\})}.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Signature Found} & \textbf{Number of nodes in $H_1$} & \textbf{Number of nodes in $H_2$} \\
+    \hline
+    \texttt{(1, \{1, 1\})} & \hspace{3cm} & \hspace{3cm} \\
+    \hline
+    \texttt{(1, \{1, 1, 1\})} & \hspace{3cm} & \hspace{3cm} \\
+    \hline
+\end{tabular}
+\end{center}
+
+\textbf{Conclusion:} Compare the counts in the table.
+\begin{enumerate}
+    \item Are the "histograms" (counts of signatures) identical? \textbf{[ Yes / No ]}
+    \item If they are identical, the WL test cannot distinguish them (Likely Isomorphic).
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- PART 3 ---
+\subsection*{Part 3: When WL Fails}
+Consider $L_1$ (Hexagon) and $L_2$ (Two Triangles). All labels "1".
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9, every node/.style={circle, draw=black, thick, minimum size=0.6cm, font=\small\bfseries}]
+    % Graph L1: Hexagon
+    \def\R{1.5}
+    \node (1) at (90:\R) {1};
+    \node (2) at (30:\R) {1};
+    \node (3) at (-30:\R) {1};
+    \node (4) at (-90:\R) {1};
+    \node (5) at (-150:\R) {1};
+    \node (6) at (150:\R) {1};
+    \draw[thick] (1)--(2)--(3)--(4)--(5)--(6)--(1);
+    \node[draw=none, below=1.6cm] at (0,0) {\textbf{$L_1$}};
+
+    % Graph L2: Two Triangles
+    \begin{scope}[xshift=5cm]
+        \node (A1) at (0,1.2) {1};
+        \node (B1) at (-0.75,-0.6) {1};
+        \node (C1) at (0.75,-0.6) {1};
+        \draw[thick] (A1)--(B1)--(C1)--(A1);
+        \begin{scope}[xshift=3.0cm]
+             \node (A2) at (0,1.2) {1};
+             \node (B2) at (-0.75,-0.6) {1};
+             \node (C2) at (0.75,-0.6) {1};
+             \draw[thick] (A2)--(B2)--(C2)--(A2);
+        \end{scope}
+        \node[draw=none, below=0.8cm] at (1.0, -0.5) {\textbf{$L_2$}};
+    \end{scope}
+\end{tikzpicture}
+\end{center}
+
+Perform the same Message Passing process as Part 1, and fill in the table below.
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Signature Found} & \textbf{Number of nodes in $L_1$} & \textbf{Number of nodes in $L_2$} \\
+    \hline
+    \texttt{(1, \{1, 1\})} & \hspace{3cm} & \hspace{3cm} \\
+    \hline
+\end{tabular}
+\end{center}
+
+See if the counts in the table are identical (i.e., the WL test cannot distinguish them) or not (i.e., the WL test can distinguish them). What does this tell us about the power of the WL test?
+
+\clearpage
+
+% --- PART 4 ---
+\section*{Part 4: The Neural Connection (Mapping WL to GCN)}
+
+We've worked through the Weisfeiler-Lehman (WL) test by hand! Now let's see how this classic, step-by-step coloring idea shows up inside a Graph Convolutional Network (GCN). You can think of a GCN as a kind of ``smooth'' or ``continuous'' version of the WL process.
+
+A typical GCN layer updates the features $h_v$ of node $v$ with the following recipe:
+
+\[
+h_v^{(new)} = \sigma \left( W \cdot \sum_{u \in \mathcal{N}(v) \cup \{v\}} \frac{1}{\sqrt{d_v d_u}} h_u \right)
+\]
+
+\textbf{Notation:}
+\begin{itemize}
+    \item $h_v$ = feature vector of node $v$ (e.g., a vector like $[0.2, 1.5, -0.3]$)
+    \item $\mathcal{N}(v)$ = the set of neighbors of node $v$
+    \item $d_v$ = degree of node $v$ (number of neighbors)
+    \item $W$ = weight matrix (learnable parameters that transform features)
+    \item $\sigma$ = activation function (e.g., ReLU, sigmoid; adds nonlinearity)
 \end{itemize}
 
-For the graphs above, perform one iteration of the WL test, and provide the colors of the nodes after the iteration, and the sorted color frequency list for each graph.
+\vspace{0.3cm}
 
+Let's make some connections between the parts of this GCN equation and the steps you took in the WL test:
 
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % First graph
-        \begin{scope}[xshift=0cm]
-            \node[circle,draw,fill=white] (A1) at (0,0) {1};
-            \node[circle,draw,fill=white] (B1) at (1,0) {2};
-            \node[circle,draw,fill=white] (C1) at (0.5,0.866) {3};
-            \node[circle,draw,fill=white] (D1) at (0.5,-0.866) {4};
+\begin{enumerate}
+    \item \textbf{The ``Collection'' Step:} In the WL test, you ``collected'' the labels of neighbors into a bag (a multiset), like \{A, B, B\}. Which part of the formula above does something similar? \\
+    \vspace{0.5cm}
+    \textbf{Answer:} \underline{\hspace{8cm}}
 
-            \draw[xkcd] (A1) -- (B1);
-            \draw[xkcd] (B1) -- (C1);
-            \draw[xkcd] (C1) -- (A1);
-            \draw[xkcd] (A1) -- (D1);
-            \draw[xkcd] (B1) -- (D1);
-        \end{scope}
+    \item \textbf{The ``Hashing'' Step:} Remember how the WL test assigned a new color (ID) by looking up the unique neighbor patterns? In neural nets, we don't use lookup tables---instead, which component here ``mixes and matches'' those patterns into new features? \\
+    \vspace{0.5cm}
+    \textbf{Answer:} \underline{\hspace{8cm}}
 
-        % Second graph
-        \begin{scope}[xshift=4cm]
-            \node[circle,draw,fill=white] (A2) at (0,0) {a};
-            \node[circle,draw,fill=white] (B2) at (1,0) {b};
-            \node[circle,draw,fill=white] (C2) at (0.5,0.866) {c};
-            \node[circle,draw,fill=white] (D2) at (0.5,-0.866) {d};
-
-            \draw[xkcd] (A2) -- (B2);
-            \draw[xkcd] (B2) -- (C2);
-            \draw[xkcd] (C2) -- (A2);
-            \draw[xkcd] (A2) -- (D2);
-            \draw[xkcd] (C2) -- (D2);
-        \end{scope}
-
-    \end{tikzpicture}
-    \end{center}
-
-    Sorted color frequency list (the first graph): \underline{\hspace{5cm}} \\
-
-    \vspace{1em}
-
-    Sorted color frequency list (the second graph): \underline{\hspace{5cm}}
-
-
-\vspace{2em}
-
-\item Consider these two graphs. At first glance, they look similar. Apply one iteration of the WL test to see if they're actually the same:
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % First graph
-        \begin{scope}[xshift=0cm]
-            \node[circle,draw,fill=white] (n1) at (0,0) {1};
-            \node[circle,draw,fill=white] (n2) at (1,0) {2};
-            \node[circle,draw,fill=white] (n3) at (0,1) {3};
-            \node[circle,draw,fill=white] (n4) at (1,1) {4};
-            \node[circle,draw,fill=white] (n5) at (2,0.) {5};
-            \node[circle,draw,fill=white] (n6) at (3,0.5) {6};
-
-            \draw[xkcd] (n1) -- (n2);
-            \draw[xkcd] (n1) -- (n3);
-            \draw[xkcd] (n2) -- (n4);
-            \draw[xkcd] (n3) -- (n4);
-            \draw[xkcd] (n4) -- (n5);
-            \draw[xkcd] (n5) -- (n6);
-            \draw[xkcd] (n4) -- (n6);
-        \end{scope}
-
-        % Second graph with very different layout
-                % Second graph with very different layout
-                \begin{scope}[xshift=4cm]
-                    \node[circle,draw,fill=white] (m1) at (0.8,1.2) {A};
-                    \node[circle,draw,fill=white] (m2) at (0,0.6) {B};
-                    \node[circle,draw,fill=white] (m3) at (1.6,0.6) {C};
-                    \node[circle,draw,fill=white] (m4) at (0.8,0) {D};
-                    \node[circle,draw,fill=white] (m5) at (0,-0.6) {E};
-                    \node[circle,draw,fill=white] (m6) at (1.6,-0.6) {F};
-
-                    \draw[xkcd] (m1) -- (m2);
-                    \draw[xkcd] (m1) -- (m3);
-                    \draw[xkcd] (m2) -- (m4);
-                    \draw[xkcd] (m3) -- (m4);
-                    \draw[xkcd] (m4) -- (m5);
-                    \draw[xkcd] (m5) -- (m6);
-                    \draw[xkcd] (m4) -- (m6);
-                \end{scope}
-    \end{tikzpicture}
-    \end{center}
-
-\item Apply one iteration of the WL test to the two graphs above. And then apply the second iteration. Provide the colors of the nodes after the iteration, and the sorted color frequency list for each graph.
-
-First iteration:
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % First graph
-        \begin{scope}[xshift=0cm]
-            \node[circle,draw,fill=white] (n1) at (0,0) {1};
-            \node[circle,draw,fill=white] (n2) at (1,0) {2};
-            \node[circle,draw,fill=white] (n3) at (0,1) {3};
-            \node[circle,draw,fill=white] (n4) at (1,1) {4};
-            \node[circle,draw,fill=white] (n5) at (2,0.) {5};
-            \node[circle,draw,fill=white] (n6) at (3,0.5) {6};
-
-            \draw[xkcd] (n1) -- (n2);
-            \draw[xkcd] (n1) -- (n3);
-            \draw[xkcd] (n2) -- (n4);
-            \draw[xkcd] (n3) -- (n4);
-            \draw[xkcd] (n4) -- (n5);
-            \draw[xkcd] (n5) -- (n6);
-            \draw[xkcd] (n4) -- (n6);
-        \end{scope}
-
-        % Second graph with very different layout
-                % Second graph with very different layout
-                \begin{scope}[xshift=4cm]
-                    \node[circle,draw,fill=white] (m1) at (0.8,1.2) {A};
-                    \node[circle,draw,fill=white] (m2) at (0,0.6) {B};
-                    \node[circle,draw,fill=white] (m3) at (1.6,0.6) {C};
-                    \node[circle,draw,fill=white] (m4) at (0.8,0) {D};
-                    \node[circle,draw,fill=white] (m5) at (0,-0.6) {E};
-                    \node[circle,draw,fill=white] (m6) at (1.6,-0.6) {F};
-
-                    \draw[xkcd] (m1) -- (m2);
-                    \draw[xkcd] (m1) -- (m3);
-                    \draw[xkcd] (m2) -- (m4);
-                    \draw[xkcd] (m3) -- (m4);
-                    \draw[xkcd] (m4) -- (m5);
-                    \draw[xkcd] (m5) -- (m6);
-                    \draw[xkcd] (m4) -- (m6);
-                \end{scope}
-    \end{tikzpicture}
-    \end{center}
-
-Second iteration:
-\begin{center}
-    \begin{tikzpicture}[scale=1.5]
-        % First graph
-        \begin{scope}[xshift=0cm]
-            \node[circle,draw,fill=white] (n1) at (0,0) {1};
-            \node[circle,draw,fill=white] (n2) at (1,0) {2};
-            \node[circle,draw,fill=white] (n3) at (0,1) {3};
-            \node[circle,draw,fill=white] (n4) at (1,1) {4};
-            \node[circle,draw,fill=white] (n5) at (2,0.) {5};
-            \node[circle,draw,fill=white] (n6) at (3,0.5) {6};
-
-            \draw[xkcd] (n1) -- (n2);
-            \draw[xkcd] (n1) -- (n3);
-            \draw[xkcd] (n2) -- (n4);
-            \draw[xkcd] (n3) -- (n4);
-            \draw[xkcd] (n4) -- (n5);
-            \draw[xkcd] (n5) -- (n6);
-            \draw[xkcd] (n4) -- (n6);
-        \end{scope}
-
-        % Second graph with very different layout
-                % Second graph with very different layout
-                \begin{scope}[xshift=4cm]
-                    \node[circle,draw,fill=white] (m1) at (0.8,1.2) {A};
-                    \node[circle,draw,fill=white] (m2) at (0,0.6) {B};
-                    \node[circle,draw,fill=white] (m3) at (1.6,0.6) {C};
-                    \node[circle,draw,fill=white] (m4) at (0.8,0) {D};
-                    \node[circle,draw,fill=white] (m5) at (0,-0.6) {E};
-                    \node[circle,draw,fill=white] (m6) at (1.6,-0.6) {F};
-
-                    \draw[xkcd] (m1) -- (m2);
-                    \draw[xkcd] (m1) -- (m3);
-                    \draw[xkcd] (m2) -- (m4);
-                    \draw[xkcd] (m3) -- (m4);
-                    \draw[xkcd] (m4) -- (m5);
-                    \draw[xkcd] (m5) -- (m6);
-                    \draw[xkcd] (m4) -- (m6);
-                \end{scope}
-    \end{tikzpicture}
-    \end{center}
-
-\item The WL test is heuristic and not always correct. Consider a graph of six nodes forming a ring. Create another non-isomorphic graph with the same number of nodes, and edges that the WL test results in the same color frequency list.
-
-\begin{flushleft}
-    \begin{tikzpicture}[scale=1.2]
-        % Nodes in a regular hexagon
-        \node[circle,draw,fill=white] (n1) at (0:1) {1};
-        \node[circle,draw,fill=white] (n2) at (60:1) {2};
-        \node[circle,draw,fill=white] (n3) at (120:1) {3};
-        \node[circle,draw,fill=white] (n4) at (180:1) {4};
-        \node[circle,draw,fill=white] (n5) at (240:1) {5};
-        \node[circle,draw,fill=white] (n6) at (300:1) {6};
-
-        % Edges forming the ring
-        \draw[xkcd] (n1) -- (n2);
-        \draw[xkcd] (n2) -- (n3);
-        \draw[xkcd] (n3) -- (n4);
-        \draw[xkcd] (n4) -- (n5);
-        \draw[xkcd] (n5) -- (n6);
-        \draw[xkcd] (n6) -- (n1);
-    \end{tikzpicture}
-\end{flushleft}
-
-
-\item What is the difference between the WL test and the color spreading process we studied in the previous section?
-
+    \item \textbf{The ``Color'' Step:} While the WL test spit out new integer colors (like 3, 7, or 11), GCNs make continuous vectors. The final step is deciding when a neuron ``lights up'' for a certain pattern---which we do with a nonlinear activation! \\
+    \vspace{0.5cm}
+    \textbf{Answer:} \underline{\hspace{8cm}}
 \end{enumerate}
-\end{document}
+
+\section*{Final Reflection}
+If a standard GCN is kind of a ``continuous'' version of the WL test, what does your finding in Part 3 (about the limitations) suggest about what GCNs can and can't distinguish?
+\vspace{1.5cm}
 
 \end{document}
