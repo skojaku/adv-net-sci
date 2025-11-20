@@ -809,7 +809,7 @@ window.Quarto = {
 <section id="simulating-random-walks" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="simulating-random-walks"><span class="header-section-number">1</span> Simulating Random Walks</h2>
 <p>We will simulate random walks on a simple graph of five nodes as follows.</p>
-<div id="35eb22f8" class="cell">
+<div id="81ea0a69" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -824,7 +824,7 @@ window.Quarto = {
 P_{ij} = \frac{A_{ij}}{k_i}
 </span></p>
 <p>Let us first compute the transition probabilities and store them in a matrix, <span class="math inline">\mathbf{P}</span>.</p>
-<div id="90615794" class="cell">
+<div id="037075a3" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
@@ -844,10 +844,10 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># or even more efficiently</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="4c5e7697" class="cell">
+<div id="accd3f61" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="b7c7f0bd" class="cell">
+<div id="4cf37c8e" class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -856,7 +856,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </div>
 <p>Each row and column of <span class="math inline">\mathbf{P}</span> corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</p>
 <p>Now, let us simulate a random walk on this graph. We represent a position of the walker by a vector, <span class="math inline">\mathbf{x}</span>, with five elements, each of which represents a node. We mark the node that the walker is currently at by <code>1</code> and others as <code>0</code>.</p>
-<div id="74b91436" class="cell">
+<div id="69350982" class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial position of the walker:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -866,12 +866,12 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbf{x} \mathbf{P}
 </span></p>
 <p>which is translated into the following code:</p>
-<div id="eb93e7d3" class="cell">
+<div id="9ea04a73" class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Position of the walker after one step:</span><span class="ch">\n</span><span class="st">"</span>, probs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then draw the next node based on the probabilities</p>
-<div id="102a33f8" class="cell">
+<div id="916a1043" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>x[:] <span class="op">=</span> <span class="dv">0</span> <span class="co"># zero out the vector</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x[next_node] <span class="op">=</span> <span class="dv">1</span> <span class="co"># set the next node to 1</span></span>
@@ -881,7 +881,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <section id="exercise-01" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-01">Exercise 01</h3>
 <p>Write the following function to simulate the random walk for a given number of steps and return the <span class="math inline">x</span> for each step.</p>
-<div id="b4e7f3e1" class="cell">
+<div id="e74ec6c1" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
@@ -906,7 +906,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbb{E}[x(1)] = x(0) P
 </span></p>
 <p>where <span class="math inline">x(t)</span> is the probability distribution of the walker at time <span class="math inline">t</span>. In Python, the expected position of the walker at time <span class="math inline">t=1</span> is given by</p>
-<div id="070ae5c3" class="cell">
+<div id="b5a490fb" class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x_1 <span class="op">=</span> x_0 <span class="op">@</span> P</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position of the walker after one step:</span><span class="ch">\n</span><span class="st">"</span>, x_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -916,7 +916,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 \mathbb{E}[x(2)] = \mathbb{E}[x(1) P] = \mathbb{E}[x(0) P] P = x(0) P^2
 </span></p>
 <p>In other words,</p>
-<div id="320b6da6" class="cell">
+<div id="145c36e5" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position of the walker after two steps:</span><span class="ch">\n</span><span class="st">"</span>, x_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -927,7 +927,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <section id="exercise-02" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-02">Exercise 02</h3>
 <p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span> using the above formula:</p>
-<div id="812b9657" class="cell">
+<div id="e44f5a1a" class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
@@ -950,7 +950,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <section id="community-structure" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="community-structure"><span class="header-section-number">3</span> Community structure</h2>
 <p>Random walks can capture community structure of a network. To see this, let us consider a network of a ring of cliques.</p>
-<div id="a7b403f7" class="cell">
+<div id="cabeecc4" class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -969,7 +969,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 </div>
 <p>Let us compute the expected position of the walker after 1 to 10 steps.</p>
 <p><strong>Compute the transition matrix</strong>:</p>
-<div id="c69bb105" class="cell">
+<div id="c84e5f7f" class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -982,7 +982,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> sparse.diags(<span class="dv">1</span> <span class="op">/</span> k) <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Compute the expected position of the walker after 1 to 300 steps</strong>:</p>
-<div id="c73a0998" class="cell">
+<div id="61ce4a6d" class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span>cell]</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>x_t <span class="op">=</span> np.zeros(g.vcount())</span>
@@ -994,7 +994,7 @@ P_{ij} = \frac{A_{ij}}{k_i}
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> np.array(x_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Plot the expected position of the walker at each step</strong>:</p>
-<div id="ace0b691" class="cell">
+<div id="85d5de0f" class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>:tags: [hide<span class="op">-</span><span class="bu">input</span>]</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette(<span class="st">"viridis"</span>, as_cmap<span class="op">=</span><span class="va">True</span>)</span>
