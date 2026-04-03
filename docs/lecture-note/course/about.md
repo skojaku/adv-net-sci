@@ -12,7 +12,7 @@ Networks are everywhere—from the Internet connecting billions of devices to th
 :::: {layout-ncol=2}
 
 ::: {#first-column}
-Welcome! My name is Sadamori Kojaku, the instructor of this course.
+Welcome! My name is [Sadamori Kojaku](https://skojaku.github.io), the instructor of this course.
 I started my career as a computer scientist but couldn't resist to fall in love with Network Science right after I got Ph.D.
 Network Science is about a science on networks, and networks appear in many different forms in our daily lives.
 The internet, social media, and biological networks, power grid, and you name it.
@@ -22,6 +22,11 @@ Sounds fun, right 😉?
 
 This course will guide you through the fascinating world of networks, from foundational theory to hands-on coding and real-world applications.
 I hope you will enjoy and find the course useful in your future endeavors.
+
+- [Research](https://skojaku.github.io/research)
+- [Teaching](https://skojaku.github.io/teaching)
+- [Publications](https://scholar.google.com/citations?user=IyWt4R4AAAAJ&hl=en)
+- [Lab 🧪](https://contexturelab.github.io/)
 
 :::
 
