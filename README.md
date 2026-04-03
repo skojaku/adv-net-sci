@@ -1,6 +1,6 @@
 # SSIE 641 Advanced Topics on Network Science
 
-- [Lecture note](skojaku.github.io/adv-net-sci)
+- [Lecture note](https://skojaku.github.io/adv-net-sci)
 - [Syllabus](docs/syllabus/syllabus.pdf)
 - [Slide](docs/slide)
 - [Exercise](notebooks)
