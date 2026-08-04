@@ -120,13 +120,63 @@ lecture_note_gaps:
       There is no evaluation section at all - reconstruction, link prediction,
       t-SNE/UMAP, dimension choice, instability and preservation trade-offs are
       posed as questions in 03-exercises.md but never taught.
-  m09:
-    ids: [m09.c23]
+  m05:
+    ids: [m05.c18, m05.c19, m05.c20, m05.c24, m05.c25, m05.c34, m05.c35, m05.c36, m05.c37]
     detail: >-
-      The section headed 'Deep GCNs can suffer from over-smoothing' actually
-      explains gradient vanishing/exploding and the renormalization trick;
-      over-smoothing itself is never defined. See the note on m09.c23.
-  pending_audit: [m05, m06]
+      The Q range and the 0.3 rule of thumb, NP-hardness of modularity
+      maximization, greedy optimization, Girvan-Newman, the 'three algorithm
+      families' framing, conductance, NMI, ARI and the applications list are
+      absent from 01-concepts.qmd. Louvain, Leiden, label propagation and the
+      degree-corrected SBM appear only in 02-coding.qmd.
+  m06:
+    ids: [m06.c10, m06.c14, m06.c17, m06.c18, m06.c24, m06.c25, m06.c26, m06.c27]
+    detail: >-
+      Bridges/brokers, the mechanism of power iteration (the term is
+      name-dropped once), the walk-counting reading of Katz, the Katz
+      convergence condition (a Python comment only), the goal-to-centrality
+      table, computational cost, the star/path correlation examples and the
+      applications list are all absent from the prose.
+  m09:
+    ids: [m09.c04, m09.c13, m09.c15, m09.c23, m09.c24, m09.c25, m09.c26, m09.c27, m09.c28, m09.c29, m09.c30, m09.c31, m09.c32]
+    detail: >-
+      Permutation invariance/equivariance and - more surprisingly - the
+      MESSAGE/AGGREGATE/UPDATE message-passing formalism itself are never
+      spelled out ('Message Passing' appears only as an exercise topic name).
+      The task taxonomy (node/edge/graph level), readout and pooling,
+      mini-batching, Graph Transformer, over-smoothing remedies and open
+      challenges are also absent. On over-smoothing itself see m09.c23.
+
+# Places where the lecture note disagrees with itself. Each was confirmed by
+# reading the surrounding text; none is a curriculum.yml error. Marked FIXED
+# where the note has already been corrected.
+lecture_note_defects:
+  - where: "m03-robustness/01-concepts.qmd (homogeneous network)"
+    problem: "Justified f_c = 1 - 1/<k> with '<k^2> = <k>^2 and thus kappa = <k>', the zero-variance regular-graph case, contradicting the f_c formula printed above it."
+    status: FIXED
+  - where: "m05-clustering/01-concepts.qmd (end of Modularity section)"
+    problem: "'There is \"free lunch\" in community detection [@peel2017ground]' - a missing 'no' inverted the meaning of the cited paper and of the next sentence."
+    status: FIXED
+  - where: "m08-embedding/01-concepts.qmd (Two Exploration Strategies)"
+    problem: "BFS/DFS bullets contradicted the q-direction lines three lines above and swapped homophily with structural equivalence."
+    status: FIXED
+  - where: "m06-centrality/01-concepts.qmd and eigencentrality.qmd (HITS)"
+    problem: "Hub and authority formulas are swapped relative to the note's own prose and to the edge direction its PageRank formula establishes (A_ji with d_j^out implies A_ab = 1 is a -> b). It also assigns A^T A to hubs; the standard result is A A^T. See the note on m06.c20."
+    status: OPEN
+  - where: "m09-graph-neural-networks/01-concepts.qmd (First-order Approximation)"
+    problem: "L means the unnormalized D - A earlier on the page but must mean the normalized Laplacian here for the equality to hold; the switch is never flagged. See the note on m09.c10."
+    status: OPEN
+  - where: "m09-graph-neural-networks/01-concepts.qmd (GAT attention)"
+    problem: "Prose says both node features are transformed by the shared W, but the equation transforms only h_j, and the aggregation step then introduces a third matrix W_feature. See the note on m09.c51."
+    status: OPEN
+  - where: "m09-graph-neural-networks/01-concepts.qmd (Deep GCNs section)"
+    problem: "Heading promises over-smoothing; the body explains gradient vanishing/exploding. Over-smoothing is never defined anywhere in the module."
+    status: OPEN
+  - where: "m05-clustering/01-concepts.qmd (Cut into more than two communities)"
+    problem: "Lowercase k is introduced as the total number of communities, then reused as the summation index with an unintroduced K as the upper bound."
+    status: OPEN
+  - where: "m03-robustness/04-appendix.md"
+    problem: "01-concepts.qmd says 'See the Appendix for the proof of the Molloy-Reed criterion', but this file contains the M02 small-world assignment instead. The proof exists nowhere."
+    status: OPEN
 
 course:
   code: "SSIE 641"
@@ -1448,7 +1498,12 @@ modules:
         name: "Resolution limit"
         type: limitation
         level: core
-        statement: "Modularity cannot resolve communities smaller than about sqrt(2m), merging well-defined small groups no matter how clear they are."
+        statement: "Modularity merges well-defined small communities no matter how clear they are: two cliques joined by a single edge get merged once a third, larger community is added, because the threshold size depends on the total number of edges m in the whole network."
+        note: >-
+          The lecture note states the threshold loosely as 'O(m)'. The standard
+          result (Fortunato and Barthelemy 2007) is that communities with fewer
+          than about sqrt(2m) internal edges can be absorbed; decide which form
+          to teach before writing exam items on it.
         prereq: [m05.c17]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1480,7 +1535,7 @@ modules:
         name: "Block preference matrix"
         type: definition
         level: core
-        statement: "The matrix of inter-block connection probabilities; its pattern - diagonal, off-diagonal, or one dense row/column - is what makes structure assortative, bipartite-like or core-periphery."
+        statement: "The matrix of inter-block connection probabilities. The simplest form uses p_in on the diagonal and p_out off it; setting p_in > p_out gives ordinary assortative communities."
         prereq: [m05.c29]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1644,6 +1699,14 @@ modules:
         prereq: [m05.c49]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m05.c52
+        name: "Special cases of the block matrix"
+        type: model
+        level: core
+        statement: "p_in > p_out gives assortative communities; p_in < p_out gives disassortative ones, where nodes prefer to connect ACROSS groups; p_in = p_out collapses the SBM to an Erdos-Renyi random graph."
+        prereq: [m05.c30]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
       - id: m05.c51
         name: "Closed-form block probabilities"
         type: theorem
@@ -1785,7 +1848,7 @@ modules:
         name: "Localization failure of eigenvector centrality"
         type: limitation
         level: core
-        statement: "Score can concentrate on one dense region and leave the rest of the network at nearly zero, and it collapses on disconnected or directed acyclic graphs."
+        statement: "Score concentrates on a small number of well-connected nodes and under-emphasizes everyone else - the limitation Katz centrality was introduced to fix."
         prereq: [m06.c13]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1822,10 +1885,16 @@ modules:
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m06.c20
-        name: "HITS via A^T A and A A^T"
+        name: "HITS via A A^T and A^T A"
         type: theorem
         level: core
-        statement: "Hub scores are the leading eigenvector of A^T A and authority scores that of A A^T."
+        statement: "With A_ij = 1 meaning i points to j: hubs satisfy x = A y and authorities y = A^T x, so hub scores are the leading eigenvector of A A^T and authority scores that of A^T A."
+        note: >-
+          The lecture note (01-concepts.qmd and eigencentrality.qmd) has these
+          swapped - it writes x_i = sum_j A_ji y_j for hubs and assigns A^T A to
+          hubs - which contradicts its own prose definition and the edge
+          direction its PageRank formula establishes (A_ji with d_j^out means
+          A_ab = 1 is a -> b). This entry follows the standard convention.
         prereq: [m06.c19]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1841,7 +1910,7 @@ modules:
         name: "Teleportation and dangling nodes"
         type: principle
         level: core
-        statement: "With probability beta the walker jumps to a random node, which keeps it from being trapped in dead ends and guarantees a unique solution."
+        statement: "With probability beta the walker jumps to a random node instead of following a link; the walker's long-run position is the PageRank score. (Dead ends in directed networks are treated in M07.)"
         prereq: [m06.c21]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2712,7 +2781,7 @@ modules:
         name: "Cost and non-locality of spectral convolution"
         type: limitation
         level: core
-        statement: "A free-form filter needs the full eigendecomposition (O(n^3)), has O(n) parameters and is not spatially localized - three reasons it is unusable at scale."
+        statement: "Two limitations: computing the Laplacian spectrum costs O(N^3), and the learned filters are not spatially localized, so one node can influence every other."
         prereq: [m09.c06]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2736,7 +2805,12 @@ modules:
         name: "First-order approximation"
         type: method
         level: core
-        statement: "Truncate ChebNet at K = 1 and tie the coefficients: one hop per layer, depth supplying the rest of the receptive field."
+        statement: "Truncate ChebNet at K = 1, giving theta_0 x - theta_1 D^-1/2 A D^-1/2 x, then tie the two coefficients (theta_0 = theta, theta_1 = -theta) to leave a single parameter: theta (I + D^-1/2 A D^-1/2) x. One hop per layer, with depth supplying the rest of the receptive field."
+        note: >-
+          This step only works if L denotes the NORMALIZED Laplacian
+          I - D^-1/2 A D^-1/2. The lecture note defines L as the unnormalized
+          D - A earlier on the same page (for the total-variation argument) and
+          silently switches meaning here; worth making the switch explicit.
         prereq: [m09.c09]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2744,7 +2818,7 @@ modules:
         name: "Renormalization trick"
         type: method
         level: core
-        statement: "Replace the resulting operator with D~^-1/2 (A + I) D~^-1/2, adding self-loops and rescaling to keep eigenvalues in range and training stable."
+        statement: "Add self-connections, A~ = A + I, and renormalize with the corresponding degree matrix D~. The lecture note motivates it as what makes deep GCNs trainable at all, since repeated application of the un-renormalized operator drives gradients to vanish or explode."
         prereq: [m09.c10]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2816,7 +2890,7 @@ modules:
         name: "Weisfeiler-Lehman test"
         type: algorithm
         level: core
-        statement: "Iteratively hash each node's label together with the multiset of its neighbors' labels - a classical heuristic for graph isomorphism that message passing exactly mimics."
+        statement: "Iteratively hash each node's label together with the multiset of its neighbors' labels - a classical heuristic for graph isomorphism whose structure message passing parallels, though ordinary mean or max aggregation does not reproduce the hash's discriminating power."
         prereq: [m09.c13]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2934,7 +3008,7 @@ modules:
         name: "Edge detection as differencing"
         type: method
         level: core
-        statement: "An edge is a sudden brightness change, so subtracting a pixel's left neighbor from its right neighbor gives a large value exactly at edges and zero on flat regions."
+        statement: "An edge is a sudden brightness change, so the horizontal derivative at a pixel is its LEFT neighbor minus its RIGHT neighbor (Z_2,1 - Z_2,3), which is large at edges and zero on flat regions."
         prereq: [m09.c33]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -3071,6 +3145,12 @@ modules:
         type: method
         level: core
         statement: "e_ij = LeakyReLU(a^T [W h_i || W h_j]) scored per edge, then softmax-normalized over the neighborhood so the weights sum to 1."
+        note: >-
+          Follows the original GAT paper, where BOTH endpoints are transformed
+          by the shared W. The lecture note's prose says the same ('transform
+          the features of node i and j') but the equation printed under it
+          leaves h_i untransformed and then introduces a separate W_feature in
+          the aggregation step. The note's equation needs fixing.
         prereq: [m09.c18]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -3088,6 +3168,22 @@ modules:
         level: core
         statement: "If all neighbors share a feature value, mean and max return the same number regardless of how many neighbors there are; the WL hash still separates them because it keeps the count."
         prereq: [m09.c52, m09.c14]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c55
+        name: "Gradient vanishing and exploding in deep GCNs"
+        type: limitation
+        level: core
+        statement: "Stacking many convolution layers makes the loss gradients shrink toward zero or blow up, so the parameters stop updating usefully - the problem the renormalization trick is introduced to solve."
+        prereq: [m09.c12]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c56
+        name: "Zero-padding and boundary truncation"
+        type: method
+        level: extension
+        statement: "The convolution theorem needs both signals at equal length, so the kernel is zero-padded first; the transform then returns extra partial-overlap positions at the boundary that must be truncated to match direct convolution."
+        prereq: [m09.c40]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m09.c54
