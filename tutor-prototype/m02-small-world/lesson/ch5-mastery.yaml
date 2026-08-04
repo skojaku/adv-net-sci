@@ -1,0 +1,54 @@
+# Chapter 5 of 5 — Mastery Check (cp7-cp8). FINAL chapter.
+# Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
+# "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
+# After cp8, chapter_done will tell you to run the Ending protocol (AGENTS.md).
+
+chapter:
+  id: ch5
+  title: "Mastery Check"
+  goal: Student can catch a flawed small-world claim and explain the
+        phenomenon end to end.
+
+checkpoints:
+
+  - id: cp7_redteam
+    goal: Student can catch a plausible-but-wrong small-world claim.
+    build: none
+    ask: |
+      Quote this as a message from an AI assistant:
+        "I analyzed your network. Its average clustering coefficient is 0.61,
+         far higher than a random network's (0.01). Therefore this is a
+         small-world network."
+      "You're the reviewer who has to sign off on this. Do you? What would
+      you check before signing?"
+    accept: |
+      Must notice that path length was never measured — high clustering alone
+      is not enough. Gold answer cites the counterexample they already met:
+      the p=0 ring (high clustering, LONG paths). Bonus: mentions comparing
+      against a random baseline (the small-world index σ in the lecture notes).
+    hints:
+      - "Small-world needs TWO properties. The assistant measured how many?"
+      - "You built a network in an earlier chapter with very high clustering and terrible distances. Which one?"
+    reveal_after: |
+      Terminal: verifying an AI's analysis requires knowing what the concept
+      demands — exactly the skill this course grades. Point to the small-world
+      index σ (clustering AND path length, both vs a random baseline) in the
+      lecture notes as the proper check.
+
+  - id: cp8_wrapup
+    goal: Consolidation — student explains the phenomenon end to end.
+    build: none
+    ask: |
+      "Last one. A friend asks: 'How can a letter cross a whole country in
+      about six steps?' Explain it in about three sentences, your own words,
+      no jargon required."
+    accept: |
+      Mentions (any wording): local links create clusters; a few long-range
+      shortcuts exist; those shortcuts make everyone close. All three ->
+      full pass. Two of three -> one gentle follow-up, then pass.
+    reveal_after: |
+      This is the final checkpoint — call chapter_done, which will hand you
+      the Ending protocol (session summary, congratulations, what's next:
+      module m03 robustness and the σ index in the lecture notes). Remind
+      them the notebook — the wave explorer, the cable comparison, the
+      rewiring slider — is theirs to keep playing with.

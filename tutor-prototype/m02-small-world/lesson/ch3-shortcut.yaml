@@ -1,0 +1,63 @@
+# Chapter 3 of 5 — The Power of One Cable (cp4-cp5).
+# Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
+# "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
+# After logging the last checkpoint, call chapter_done with short handoff notes.
+
+chapter:
+  id: ch3
+  title: "The Power of One Cable"
+  goal: Student discovers that WHERE a link goes matters more than HOW MANY,
+        and can articulate the clustering-vs-distance tension.
+
+checkpoints:
+
+  - id: cp4_shortcut_drawing
+    goal: Student discovers, with pen and paper, that WHERE a link goes matters
+          more than HOW MANY links there are.
+    build: |
+      nb_add_template("cp4_upload", done_signal="cp4_shortcut_drawing") —
+      the photo upload area plus the Done button.
+    ask: |
+      "Pen and paper time! 📝
+      1. Draw 8 dots in a circle. Connect each dot to its neighbor on each
+         side, so you get a ring.
+      2. The two dots straight across from each other are 4 steps apart.
+      3. You get ONE extra cable. Draw it where you think it shrinks travel
+         distances across the whole ring the most.
+      Photograph your drawing and upload it in the notebook, then click the
+      Done button — or just tell me here which two dots you connected and why."
+    accept: |
+      A long-range chord (opposite or near-opposite dots), with any reasoning
+      about "connecting the far sides". The classic miss — connecting two dots
+      that are already close — is NOT a fail: it is the perfect teaching
+      moment (see reveal_after). Judge the reasoning, not the artwork.
+    hints:
+      - "Try your cable between two dots that are already close. Who benefits? Now try it between dots that are far apart. Who benefits now?"
+    reveal_after: |
+      nb_add_template("cp4_compare") — a radio-driven comparison: choosing
+      "no cable / short cable / long cable" redraws the 8-ring and updates
+      the average distance in the title.
+      Terminal — the punchline, referencing THEIR cable: a SHORT extra link
+      creates a triangle (clustering up, distances barely move); a LONG one is
+      a SHORTCUT (distances drop for everyone). One cable, two very different
+      effects.
+
+  - id: cp5_tension
+    goal: Student articulates the tension that makes small-world non-trivial.
+    build: none
+    ask: |
+      ONE world at a time: "Imagine a RING world — everyone knows only their
+      neighbors. What's good about living there, and what's bad?" After they
+      answer, the RANDOM world (friends scattered completely at random) the
+      same way.
+    accept: |
+      Ring: high clustering / tight communities (good), long distances (bad).
+      Random: short distances (good), no clustering (bad). Any phrasing that
+      captures both trade-offs passes.
+    hints:
+      - "In the RING world, do your friends know each other? And how long does a letter take to cross the ring?"
+      - "In the RANDOM world, how fast can a letter travel? And do your friends know each other?"
+    reveal_after: |
+      Terminal, sharply: real social networks have BOTH high clustering AND
+      short paths. Neither extreme world explains that. So how does nature
+      do it?

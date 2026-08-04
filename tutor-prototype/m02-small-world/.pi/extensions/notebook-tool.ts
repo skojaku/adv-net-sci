@@ -146,6 +146,85 @@ const STATUS_PARAM = Type.String({
     "Short student-facing status in plain, friendly words, e.g. 'Preparing our next step…'. No technical terms, no cell/code/error talk.",
 });
 
+// ── Chapter orchestration (the deterministic "lead agent") ──────────────────
+// The lesson is split into chapters (lesson/index.json). The tutor holds only
+// the CURRENT chapter's script in context; chapter_done builds a handoff
+// brief, injects the next script, and trims the old conversation via
+// compaction — same session, same visible transcript, fresh LLM context.
+type Chapter = { id: string; file: string; title: string; checkpoints: string[] };
+
+function loadChapters(): Chapter[] {
+  try {
+    const raw = fs.readFileSync(path.join(process.cwd(), "lesson", "index.json"), "utf-8");
+    return (JSON.parse(raw).chapters ?? []) as Chapter[];
+  } catch {
+    return [];
+  }
+}
+
+function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
+  const src = fs.readFileSync(path.join(process.cwd(), "lesson", ch.file), "utf-8");
+  const last = ch.checkpoints[ch.checkpoints.length - 1];
+  return (
+    `CHAPTER SCRIPT ${num}/${total} — "${ch.title}" (invisible to the student). ` +
+    `This is your curriculum right now:\n\n${src}\n\n` +
+    `Work its checkpoints in order. After logging the final checkpoint (${last}), ` +
+    `call chapter_done with short handoff notes.`
+  );
+}
+
+function chapterStatePath(): string {
+  return path.join(process.cwd(), "session_artifacts", "chapter_state.json");
+}
+
+function currentChapterId(): string | null {
+  try {
+    return JSON.parse(fs.readFileSync(chapterStatePath(), "utf-8")).current ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function writeChapterState(id: string) {
+  try {
+    fs.mkdirSync(path.dirname(chapterStatePath()), { recursive: true });
+    fs.writeFileSync(chapterStatePath(), JSON.stringify({ current: id }));
+  } catch {
+    // best-effort
+  }
+}
+
+function readSessionLog(): any[] {
+  try {
+    return fs
+      .readFileSync(path.join(process.cwd(), "session_artifacts", "session_log.jsonl"), "utf-8")
+      .split("\n")
+      .filter((l) => l.trim())
+      .map((l) => {
+        try {
+          return JSON.parse(l);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function progressBrief(entries: any[]): string {
+  const cps = entries.filter((e) => e?.type === "checkpoint" && e.id);
+  if (cps.length === 0) return "(no checkpoints logged yet)";
+  return cps
+    .map(
+      (e) =>
+        `${e.id}: ${e.judgment ?? "?"}` +
+        (e.student_response ? ` — "${String(e.student_response).slice(0, 120)}"` : ""),
+    )
+    .join("\n");
+}
+
 const MARIMO_CELL_RULES =
   "Cell code rules (marimo is reactive): " +
   "(1) NEVER read a widget's .value in the cell that creates it — marimo forbids it. " +
@@ -191,59 +270,160 @@ export default function (pi: ExtensionAPI) {
       // watcher is best-effort; the student can always type "done" instead
     }
 
-    // ── Resume brief ──────────────────────────────────────────────────────
-    // With TUTOR_RESUME=1 the previous session_log.jsonl survives; turn it
-    // into an invisible progress brief so the tutor greets the student back
-    // and continues at the right checkpoint instead of restarting at cp0.
-    // (Fresh sessions rotate the log, so no brief appears.)
+    // ── Chapter start + resume brief ──────────────────────────────────────
+    // Determine the current chapter (from progress or saved state), inject
+    // its script, and — when previous progress exists — a resume brief that
+    // asks the student continue-or-fresh.
     try {
-      const logPath = path.join(process.cwd(), "session_artifacts", "session_log.jsonl");
-      if (fs.existsSync(logPath)) {
-        const entries = fs
-          .readFileSync(logPath, "utf-8")
-          .split("\n")
-          .filter((l) => l.trim())
-          .map((l) => {
-            try {
-              return JSON.parse(l);
-            } catch {
-              return null;
-            }
-          })
-          .filter(Boolean) as any[];
-        const cps = entries.filter((e) => e.type === "checkpoint" && e.id);
+      const chapters = loadChapters();
+      if (chapters.length > 0) {
+        const entries = readSessionLog();
+        const cps = entries.filter((e: any) => e.type === "checkpoint" && e.id);
+        let chapter =
+          chapters.find((c) => c.id === currentChapterId()) ?? chapters[0];
         if (cps.length > 0) {
-          const lessonSrc = fs.readFileSync(path.join(process.cwd(), "lesson.yaml"), "utf-8");
-          const order = [...lessonSrc.matchAll(/^  - id: (\w+)/gm)].map((m) => m[1]);
+          const order = chapters.flatMap((c) => c.checkpoints);
           const lastId = cps[cps.length - 1].id;
-          const nextId = order[order.indexOf(lastId) + 1] ?? "cp8_wrapup";
-          const brief = cps
-            .map(
-              (e) =>
-                `${e.id}: ${e.judgment ?? "?"}` +
-                (e.student_response ? ` — "${String(e.student_response).slice(0, 120)}"` : ""),
-            )
-            .join("\n");
+          const nextId = order[order.indexOf(lastId) + 1] ?? order[order.length - 1];
+          chapter = chapters.find((c) => c.checkpoints.includes(nextId)) ?? chapter;
           pi.sendMessage(
             {
               customType: "resume-brief",
               content:
                 `RESUME CONTEXT (invisible to the student — never mention this message): ` +
-                `a previous session exists. Progress so far:\n${brief}\n` +
+                `a previous session exists. Progress so far:\n${progressBrief(entries)}\n` +
                 `FIRST, greet the student and ask with ask_student: continue where you left ` +
                 `off, or start fresh? If they choose fresh: call nb_fresh_start, then begin ` +
                 `at cp0_welcome. If they continue: do NOT rebuild existing notebook cells ` +
                 `(nb_add_template skips duplicates automatically), remind them in one ` +
-                `sentence where you two left off, and continue at checkpoint ${nextId}.`,
+                `sentence where you two left off, and continue at checkpoint ${nextId} ` +
+                `(chapter "${chapter.title}").`,
               display: false,
             },
             { deliverAs: "nextTurn" },
           );
         }
+        writeChapterState(chapter.id);
+        const num = chapters.findIndex((c) => c.id === chapter.id) + 1;
+        pi.sendMessage(
+          {
+            customType: "chapter-script",
+            content: chapterScriptMessage(chapter, num, chapters.length),
+            display: false,
+          },
+          { deliverAs: "nextTurn" },
+        );
       }
     } catch {
-      // resume brief is best-effort; worst case the tutor starts at cp0
+      // chapter injection is best-effort; AGENTS.md tells the tutor how to cope
     }
+  });
+
+  // Chapter dividers render as a single accent line in the transcript.
+  pi.registerMessageRenderer("chapter-divider", (message: any, _opts: any, theme: any) => {
+    return new Text(theme.fg("accent", String(message.content ?? "")), 0, 0);
+  });
+
+  // Custom compaction at chapter boundaries: the handoff brief IS the summary
+  // (deterministic, no extra LLM call).
+  let pendingHandoffBrief: string | null = null;
+  pi.on("session_before_compact", async (event: any) => {
+    if (!pendingHandoffBrief) return;
+    const summary = pendingHandoffBrief;
+    pendingHandoffBrief = null;
+    return {
+      compaction: {
+        summary,
+        firstKeptEntryId: event.preparation.firstKeptEntryId,
+        tokensBefore: event.preparation.tokensBefore,
+      },
+    };
+  });
+
+  // ── chapter_done ──────────────────────────────────────────────────────────
+  pi.registerTool({
+    name: "chapter_done",
+    label: "Chapter done",
+    description:
+      "Call when the current chapter's FINAL checkpoint has been logged. Pass short handoff " +
+      "notes for the next part of the lesson (student's style, anchors worth reusing like " +
+      "'their cable was the long one', anything to watch). The next chapter script loads " +
+      "automatically — after calling, say ONE short bridge sentence and wait.",
+    promptSnippet: "Finish the current chapter and load the next (with handoff notes)",
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      handoff: Type.String({
+        description: "2-4 sentences: student profile updates, anchors, watch-outs.",
+      }),
+    }),
+    async execute(_id, params, _signal, _onUpdate, ctx: any) {
+      const chapters = loadChapters();
+      const curId = currentChapterId() ?? chapters[0]?.id;
+      const idx = chapters.findIndex((c) => c.id === curId);
+      const next = chapters[idx + 1];
+      if (!next) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text:
+                "That was the FINAL chapter. Run the Ending protocol now: write " +
+                "session_artifacts/session_summary.md via nb_run (per checkpoint: judgment, " +
+                "hints used, one verbatim quote), then tell the student plainly what they can " +
+                "now do, and that their answers — not code — are what gets reviewed.",
+            },
+          ],
+          details: {},
+        };
+      }
+      writeChapterState(next.id);
+      const brief =
+        `=== TUTORING HANDOFF (chapter transition, invisible to the student) ===\n` +
+        `You are the SAME tutor, mid-session. Conversation so far, summarized:\n` +
+        `Progress:\n${progressBrief(readSessionLog())}\n` +
+        `Tutor's notes: ${params.handoff}\n` +
+        `The notebook already contains every cell built so far — never rebuild them. ` +
+        `Continue warmly with the same voice; your new CHAPTER SCRIPT message has the curriculum.`;
+      pendingHandoffBrief = brief;
+      pi.sendMessage(
+        {
+          customType: "chapter-divider",
+          content: `── Chapter ${idx + 2} · ${next.title} ──`,
+          display: true,
+        },
+        { deliverAs: "followUp" },
+      );
+      pi.sendMessage(
+        {
+          customType: "chapter-script",
+          content: chapterScriptMessage(next, idx + 2, chapters.length),
+          display: false,
+        },
+        { deliverAs: "followUp", triggerTurn: true },
+      );
+      try {
+        ctx?.compact?.({
+          customInstructions: "chapter handoff",
+          onError: () => {
+            pendingHandoffBrief = null;
+          },
+        });
+      } catch {
+        pendingHandoffBrief = null;
+      }
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text:
+              `Handoff recorded. Say ONE short, warm bridge sentence to the student ` +
+              `(no new questions) and END YOUR TURN — chapter "${next.title}" loads automatically.`,
+          },
+        ],
+        details: {},
+      };
+    },
+    ...quietRender,
   });
 
   // ── Runaway guard ─────────────────────────────────────────────────────────
@@ -533,6 +713,23 @@ export default function (pi: ExtensionAPI) {
         if (fs.existsSync(sig)) fs.writeFileSync(sig, "");
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
+      }
+      // Back to chapter 1 with a fresh script in context.
+      try {
+        const chapters = loadChapters();
+        if (chapters.length > 0) {
+          writeChapterState(chapters[0].id);
+          pi.sendMessage(
+            {
+              customType: "chapter-script",
+              content: chapterScriptMessage(chapters[0], 1, chapters.length),
+              display: false,
+            },
+            { deliverAs: "followUp" },
+          );
+        }
+      } catch {
+        // best-effort
       }
       const code =
         `import marimo._code_mode as cm\n` +

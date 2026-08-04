@@ -1,0 +1,71 @@
+# Chapter 2 of 5 — Measuring Smallness (cp2-cp3).
+# Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
+# "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
+# If an answer slips out, re-check with the SAME question on fresh_variants data.
+# After logging the last checkpoint, call chapter_done with short handoff notes.
+
+chapter:
+  id: ch2
+  title: "Measuring Smallness"
+  goal: The student can compute distance, average path length, and local clustering.
+
+checkpoints:
+
+  - id: cp2_distance
+    goal: Student can compute distance and average path length on a small graph.
+    build: |
+      nb_add_template("cp2_ripple") — a slider-driven "wave from A" explorer
+      on the 4-node graph (edges: A-B, A-C, B-C, B-D, C-D): nodes reachable
+      within cp2_steps edges light up, animating what "distance" means.
+    ask: |
+      ONE question at a time:
+      1. "Play with the slider — watch the wave spread from A. What's the
+         distance from A to D — the number of EDGES on the shortest route?"
+      2. Only after they answer: "Now the average distance over all 6 pairs —
+         a fraction or decimal is fine."
+    accept: |
+      distance A-D = 2.  average = 7/6 ≈ 1.17 (accept 1.16-1.17 or "7/6").
+    hints:
+      - "Set the slider to 1 — who lights up? Now 2 — when does D light up?"
+      - "There are 6 pairs: AB, AC, AD, BC, BD, CD. Five are directly connected (distance 1). Make a little table and average."
+    fresh_variants: |
+      If the answer slips out, re-check on new data (draw it with
+      nb_add_cell, student computes everything):
+      - 4-person star, A in the middle: AB=AC=AD=1, BC=BD=CD=2 -> avg 9/6 = 1.5
+      - square A-B-C-D-A: AB=BC=CD=AD=1, AC=BD=2 -> avg 8/6 ≈ 1.33
+    reveal_after: |
+      nb_add_template("cp2_pairs_table") — the six pairs drawn as circle
+      pairs with their distances, average in the title. Then one beat in the
+      terminal: average path length = the average shortest-path distance over
+      all pairs — this number is what "six degrees" measures for the whole
+      USA.
+
+  - id: cp3_clustering
+    goal: Student understands local clustering as "do my friends know each other?"
+    build: |
+      nb_add_template("cp3_clustering") (only AFTER the idea question below
+      is answered) — A with five friends; the two friendships among the
+      friends (B-F, C-E) are highlighted in orange.
+    ask: |
+      ONE question at a time:
+      1. "In your own words: what would it mean, in numbers, to say 'Alice's
+         friends tend to know each other'?" (typed answer)
+      2. Then build the figure and ask: "A has 5 friends, so up to 10
+         friendships could exist among them. How many actually exist?"
+      3. After they answer: "So what fraction is that?"
+    accept: |
+      Idea: any mention of counting friend-pairs that are themselves
+      connected, out of possible pairs (triangles = bonus, not required).
+      Calculation: 2 of 10 exist -> C_A = 2/10 = 0.2.
+    hints:
+      - "Look only at A's friends: B, C, D, E, F. Ignore A. How many lines run BETWEEN them?"
+      - "2 friendships exist out of 10 possible. So the fraction is...?"
+    fresh_variants: |
+      If the answer slips out, re-check on new data: Alice with 4 friends
+      and exactly one friendship among them -> 1 of 6 possible pairs = 1/6;
+      or 4 friends where everyone knows everyone -> 6 of 6 = 1.
+    reveal_after: |
+      Terminal: name it — local clustering coefficient C_i = (edges among
+      neighbors) / (possible edges among neighbors); averaging over nodes
+      gives the network's clustering. Social networks: typically high. One
+      sentence: a 'global clustering' variant exists in the lecture notes.
