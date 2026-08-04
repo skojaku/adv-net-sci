@@ -40,13 +40,12 @@ Two windows appear:
 
 | Window | What it is |
 |---|---|
-| **Browser** (notebook) | Your shared whiteboard. Questions and experiments appear here. |
-| **Terminal** (tutor) | Where you and your tutor talk. |
+| **Terminal** (tutor) | Where you and your tutor talk — questions and answers happen here. |
+| **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. When a step shows a **✅ Done button**, click it when you're finished — your tutor will notice. |
 
-Say hello in the terminal and follow along. You can answer questions in the
-notebook **or** type them in the terminal — both always work. Have **pen and
-paper** ready: one checkpoint asks you to draw (you photograph it with your
-phone, or just describe it in words).
+Say hello in the terminal and follow along. Have **pen and paper** ready: one
+step asks you to draw (you photograph it with your phone, or just describe it
+in words).
 
 A session takes about 45–60 minutes. You can stop anytime and pick up later —
 your progress is saved.
@@ -75,7 +74,7 @@ detours counts in your favor — it's the whole point.
 | `AGENTS.md` | The tutor's behavior contract (auto-loaded by pi; Claude Code loads it via `CLAUDE.md`). Pedagogy, logging schema, hard rules. Lesson-independent. |
 | `notebook.py` | Starter notebook: title + instructions only. The tutor builds the rest live. |
 | `run_tutor.sh` | Launcher: installs the marimo-pair skill, starts marimo (`--no-token`), starts the agent (pi runs with bash disabled). |
-| `.pi/extensions/notebook-tool.ts` | Custom pi tool wrapping the skill's `execute-code.sh`. The student's terminal shows only a friendly one-line status ("📝 Setting up your first question…") instead of raw commands; full output stays available to the LLM and via the expand keybinding. |
+| `.pi/extensions/notebook-tool.ts` | pi extension providing the `nb_*` notebook toolkit (`nb_add_cell`, `nb_edit_cell`, `nb_delete_cell`, `nb_read`, `nb_run`): the extension generates all marimo code-mode plumbing, so the model sends only cell bodies (fewer tokens, fewer failure modes, auto-recovery from a cold kernel). Each call renders as one friendly status line ("📝 Setting up your first question…") — full output stays available to the LLM and via the expand keybinding. Also watches the notebook's ✅ Done buttons (`notify_tutor` → `session_artifacts/student_signal.txt`) and pings the tutor when clicked. |
 
 ### Design decisions
 
@@ -84,9 +83,14 @@ detours counts in your favor — it's the whole point.
   the answers. Here the notebook starts blank and `lesson.yaml` is the source
   of truth. (For a graded deployment, serve `lesson.yaml` from the API proxy
   instead of shipping it in the repo.)
+- **Channel discipline:** words live in the terminal (stories, questions,
+  typed answers); the notebook is reserved for what the terminal can't do —
+  figures, *interactive/animated* widgets (preferred over static images),
+  photo uploads. Notebook-input steps get an auto-wired ✅ Done button that
+  pings the terminal tutor when clicked.
 - **Interaction modalities on purpose:** prediction (cp1, cp6), calculation
   (cp2, cp3), pen-and-paper drawing with photo upload (cp4), concept
-  articulation (cp3, cp5, cp8), exploration with a widget (cp6), and a
+  articulation (cp3, cp5, cp8), exploration with a widget (cp2, cp6), and a
   red-team critique of a flawed AI analysis (cp7) — the last one previews the
   course's process-over-product grading philosophy.
 - **Hints are logged, never penalized** — stated to the student up front, and
