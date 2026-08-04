@@ -11,7 +11,7 @@
 import marimo
 
 __generated_with = "0.23.16"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", css_file="lecture-hall.css")
 
 
 @app.cell(hide_code=True)
@@ -19,27 +19,6 @@ def _():
     import marimo as mo
 
     return (mo,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""
-    # 🌍 The Small-World Puzzle
-
-    *Advanced Network Science — Module 02*
-
-    This notebook starts almost empty — **that's on purpose.**
-
-    - 💬 Your tutor talks with you in the **terminal**. Questions and answers
-      happen there.
-    - 📓 This notebook is the **whiteboard**: pictures, interactive
-      experiments, and photo uploads will appear here when they're needed.
-    - ✅ When a step here shows a **Done button**, click it when you're
-      finished — your tutor will notice and pick it up from there.
-
-    No programming experience needed. Say hello in the terminal to begin!
-    """)
-    return
 
 
 @app.cell(hide_code=True)
