@@ -21,11 +21,11 @@ _extra_edges = [e for e in _G.edges() if abs(e[0] - e[1]) not in (1, 7)]
 
 _fig, _ax = plt.subplots(figsize=(5, 4))
 nx.draw_networkx_nodes(
-    _G, _pos, ax=_ax, node_color="#35577F", node_size=900, edgecolors="#24211C", linewidths=1
+    _G, _pos, ax=_ax, node_color="#35577F", node_size=900, edgecolors="#1D1E21", linewidths=1
 )
-nx.draw_networkx_edges(_G, _pos, ax=_ax, edgelist=_ring_edges, width=2, edge_color="#6B6459")
+nx.draw_networkx_edges(_G, _pos, ax=_ax, edgelist=_ring_edges, width=2, edge_color="#6A6D75")
 nx.draw_networkx_edges(_G, _pos, ax=_ax, edgelist=_extra_edges, width=3.5, edge_color="#B4552D")
-nx.draw_networkx_labels(_G, _pos, ax=_ax, font_size=12, font_color="#FBF7F0", font_weight="bold")
+nx.draw_networkx_labels(_G, _pos, ax=_ax, font_size=12, font_color="#FFFFFF", font_weight="bold")
 _ax.set_title(f"Average distance: {_L:.2f}", fontsize=15)
 _ax.axis("off")
 _fig

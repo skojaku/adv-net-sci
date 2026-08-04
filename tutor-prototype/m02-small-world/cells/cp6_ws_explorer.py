@@ -39,8 +39,8 @@ _ringe = [e for e in _D.edges() if min(abs(e[0] - e[1]), 60 - abs(e[0] - e[1])) 
 _short = [e for e in _D.edges() if min(abs(e[0] - e[1]), 60 - abs(e[0] - e[1])) > 2]
 
 _fig, _ax = plt.subplots(figsize=(6, 5))
-nx.draw_networkx_nodes(_D, _posd, ax=_ax, node_color="#DED4C2", node_size=60, edgecolors="none")
-nx.draw_networkx_edges(_D, _posd, ax=_ax, edgelist=_ringe, width=1, edge_color="#DED4C2")
+nx.draw_networkx_nodes(_D, _posd, ax=_ax, node_color="#E4E6EA", node_size=60, edgecolors="none")
+nx.draw_networkx_edges(_D, _posd, ax=_ax, edgelist=_ringe, width=1, edge_color="#E4E6EA")
 nx.draw_networkx_edges(_D, _posd, ax=_ax, edgelist=_short, width=1.8, edge_color="#B4552D")
 _ax.set_title(
     f"p = {_p}    distance L/L₀ = {_Lr:.2f}    clustering C/C₀ = {_Cr:.2f}",

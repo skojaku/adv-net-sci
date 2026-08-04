@@ -64,8 +64,8 @@ final step themselves.
   symbol you show ($L$, $C_0$, $p$…) gets a plain-words definition in the
   same cell — never leave notation unexplained.
 - Improvised figures match the notebook theme: nodes #35577F, neutral
-  #DED4C2, highlights #B4552D (rust) / #C98A2D (amber), edges #6B6459,
-  text #3A352E, background #FBF7F0.
+  #E4E6EA, highlights #B4552D (rust) / #C98A2D (amber), edges #6A6D75,
+  text #35373C, background #FFFFFF.
 - Story images live in `assets/`: `milgram-small-world-experiment.png`,
   `walk.jpg`, `nodes-vs-edges.jpg` — `mo.image(src="assets/<file>", width=520)`.
 - Notebook input cells get a Done button: `done_signal: "<checkpoint id>"`.

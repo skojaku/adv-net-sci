@@ -20,15 +20,15 @@ for _ in range(cp2_steps.value):
     _frontier = _nxt
 
 _colors = [
-    "#B4552D" if _n == "A" else ("#C98A2D" if _n in _reached else "#DED4C2")
+    "#B4552D" if _n == "A" else ("#C98A2D" if _n in _reached else "#E4E6EA")
     for _n in _G.nodes()
 ]
 _fig, _ax = plt.subplots(figsize=(5, 4))
 nx.draw_networkx_nodes(
-    _G, _pos, ax=_ax, node_color=_colors, node_size=1400, edgecolors="#24211C", linewidths=1
+    _G, _pos, ax=_ax, node_color=_colors, node_size=1400, edgecolors="#1D1E21", linewidths=1
 )
-nx.draw_networkx_edges(_G, _pos, ax=_ax, width=2, edge_color="#6B6459")
-nx.draw_networkx_labels(_G, _pos, ax=_ax, font_size=14, font_color="#FBF7F0", font_weight="bold")
+nx.draw_networkx_edges(_G, _pos, ax=_ax, width=2, edge_color="#6A6D75")
+nx.draw_networkx_labels(_G, _pos, ax=_ax, font_size=14, font_color="#FFFFFF", font_weight="bold")
 _ax.set_title(f"Wave from A — {cp2_steps.value} step(s)", fontsize=15)
 _ax.axis("off")
 _fig
