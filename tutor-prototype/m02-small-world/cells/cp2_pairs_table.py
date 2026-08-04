@@ -8,13 +8,13 @@ for _i, (_u, _v, _d) in enumerate(_pairs):
     _y = len(_pairs) - _i
     _hl = _d > 1
     _node_color = "#B4552D" if _hl else "#35577F"
-    _ax.plot([1, 3], [_y, _y], color="#6B6459", lw=2, zorder=1)
+    _ax.plot([1, 3], [_y, _y], color="#6A6D75", lw=2, zorder=1)
     for _x, _lab in ((1, _u), (3, _v)):
-        _ax.scatter([_x], [_y], s=950, c=_node_color, edgecolors="#24211C", zorder=2)
+        _ax.scatter([_x], [_y], s=950, c=_node_color, edgecolors="#1D1E21", zorder=2)
         _ax.text(_x, _y, _lab, ha="center", va="center", color="white",
                  fontsize=13, fontweight="bold", zorder=3)
     _ax.text(2, _y + 0.16, str(_d), ha="center", va="bottom", fontsize=15,
-             fontweight="bold", color="#B4552D" if _hl else "#3A352E")
+             fontweight="bold", color="#B4552D" if _hl else "#35373C")
 _ax.set_xlim(0.3, 3.7)
 _ax.set_ylim(0.3, len(_pairs) + 0.9)
 _ax.set_title("All 6 pairs, distance on top — average 7/6 ≈ 1.17", fontsize=12)

@@ -22,7 +22,7 @@ app = marimo.App(width="medium", css_file="lecture-hall.css")
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        '<p style="text-align:right; color:#6B6459; font-size:12px; margin:0;">'
+        '<p style="text-align:right; color:#6A6D75; font-size:12px; margin:0;">'
         "🐛 Something broken or odd? Email Prof. Sadamori Kojaku &middot; "
         '<a href="mailto:skojaku@binghamton.edu" style="color:#35577F;">'
         "skojaku@binghamton.edu</a></p>"
@@ -49,23 +49,23 @@ def _():
     sns.set_theme(style="ticks")
     plt.rcParams.update(
         {
-            "figure.facecolor": "#FBF7F0",
-            "axes.facecolor": "#FBF7F0",
-            "savefig.facecolor": "#FBF7F0",
-            "text.color": "#3A352E",
-            "axes.edgecolor": "#6B6459",
-            "axes.labelcolor": "#3A352E",
-            "axes.titlecolor": "#24211C",
-            "xtick.color": "#6B6459",
-            "ytick.color": "#6B6459",
+            "figure.facecolor": "#FFFFFF",
+            "axes.facecolor": "#FFFFFF",
+            "savefig.facecolor": "#FFFFFF",
+            "text.color": "#35373C",
+            "axes.edgecolor": "#6A6D75",
+            "axes.labelcolor": "#35373C",
+            "axes.titlecolor": "#1D1E21",
+            "xtick.color": "#6A6D75",
+            "ytick.color": "#6A6D75",
             "font.family": "sans-serif",
             "font.sans-serif": ["IBM Plex Sans", "DejaVu Sans"],
             "axes.prop_cycle": plt.cycler(
-                color=["#1F3A5F", "#B4552D", "#35577F", "#C98A2D", "#6B6459"]
+                color=["#1F3A5F", "#B4552D", "#35577F", "#C98A2D", "#6A6D75"]
             ),
         }
     )
-    sns.set_palette(["#1F3A5F", "#B4552D", "#35577F", "#C98A2D", "#6B6459"])
+    sns.set_palette(["#1F3A5F", "#B4552D", "#35577F", "#C98A2D", "#6A6D75"])
     return nx, np, plt, sns
 
 
@@ -99,7 +99,7 @@ function render({ model, el }) {
   links.forEach(l => { l.source = byId.get(l.source); l.target = byId.get(l.target); });
 
   const link = svg.append("g").selectAll("line").data(links).join("line")
-    .attr("stroke", d => d.color || "#6B6459")
+    .attr("stroke", d => d.color || "#6A6D75")
     .attr("stroke-width", d => d.width || 2)
     .attr("stroke-linecap", "round");
 
@@ -108,11 +108,11 @@ function render({ model, el }) {
   node.append("circle")
     .attr("r", d => d.r || 16)
     .attr("fill", d => d.color || "#35577F")
-    .attr("stroke", "#24211C").attr("stroke-width", 1);
+    .attr("stroke", "#1D1E21").attr("stroke-width", 1);
   node.append("text")
     .text(d => d.label ?? d.id)
     .attr("text-anchor", "middle").attr("dy", "0.35em")
-    .attr("fill", "#FBF7F0")
+    .attr("fill", "#FFFFFF")
     .style("font", "600 12px 'IBM Plex Sans', sans-serif")
     .style("pointer-events", "none");
 
