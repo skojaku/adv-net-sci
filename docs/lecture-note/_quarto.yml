@@ -5,6 +5,8 @@ project:
     - "*.qmd"
     - "*.md"
     - "!tmp/"
+    - "!_book/"   # old Jupyter Book output, kept only for reference
+    - "!figs/src/"  # figure generators, not pages
 
 title: "Advanced Topics in Network Science"
 author: Sadamori Kojaku
@@ -124,16 +126,16 @@ website:
           - text: "─── M01: Euler Path ───"
           - text: "Concepts"
             file: m01-euler_tour/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m01-euler_tour/02-coding.qmd
           - text: "Exercises"
             file: m01-euler_tour/03-exercises.qmd
-          - text: "Advanced"
+          - text: "Hands-on: Sparse matrices"
             file: m01-euler_tour/04-advanced.qmd
           - text: "─── M02: Small World ───"
           - text: "Concepts"
             file: m02-small-world/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m02-small-world/02-coding.qmd
           - text: "Exercises"
             file: m02-small-world/03-exercises.md
@@ -142,7 +144,7 @@ website:
           - text: "─── M03: Robustness ───"
           - text: "Concepts"
             file: m03-robustness/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m03-robustness/02-coding.qmd
           - text: "Exercises"
             file: m03-robustness/03-exercises.qmd
@@ -153,21 +155,21 @@ website:
           - text: "─── M04: Friendship Paradox ───"
           - text: "Concepts"
             file: m04-node-degree/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m04-node-degree/02-coding.qmd
           - text: "Exercises"
             file: m04-node-degree/03-exercises.md
           - text: "─── M05: Clustering ───"
           - text: "Concepts"
             file: m05-clustering/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m05-clustering/02-coding.qmd
           - text: "Exercises"
             file: m05-clustering/03-exercises.qmd
           - text: "─── M06: Centrality ───"
           - text: "Concepts"
             file: m06-centrality/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m06-centrality/02-coding.qmd
           - text: "Exercises"
             file: m06-centrality/03-exercises.md
@@ -176,14 +178,14 @@ website:
           - text: "─── M07: Random Walks ───"
           - text: "Concepts"
             file: m07-random-walks/01-concepts.qmd
-          - text: "Coding"
+          - text: "Hands-on"
             file: m07-random-walks/02-coding.qmd
           - text: "Exercises"
             file: m07-random-walks/03-exercises.qmd
           - text: "─── M08: Embedding ───"
           - text: "Concepts"
-            file: m08-embedding/01-concepts.md
-          - text: "Coding"
+            file: m08-embedding/01-concepts.qmd
+          - text: "Hands-on"
             file: m08-embedding/02-coding.qmd
           - text: "Exercises"
             file: m08-embedding/03-exercises.md
@@ -191,17 +193,26 @@ website:
             file: m08-embedding/04-appendix.md
           - text: "─── M09: Graph Neural Networks ───"
           - text: "Concepts"
-            file: m09-graph-neural-networks/01-concepts.md
-          - text: "Coding"
+            file: m09-graph-neural-networks/01-concepts.qmd
+          - text: "Hands-on"
             file: m09-graph-neural-networks/02-coding.qmd
           - text: "Exercises"
             file: m09-graph-neural-networks/03-exercises.qmd
           - text: "Appendix"
             file: m09-graph-neural-networks/04-appendix.qmd
 
+# The lecture note is prose, mathematics and static figures only. Nothing here
+# executes, so a render is fast and needs no Python environment.
+#
+#   - Runnable code lives in marimo notebooks under notebooks/, linked from each
+#     module's "Hands-on" page. Link ids are kept in _variables.yml.
+#   - The figures that used to be generated inline are now committed SVGs under
+#     figs/. Regenerate them with:  bash tools/build_figures.sh
+#   - Graphviz (```{dot}```) blocks are rendered by Quarto itself, not by a
+#     Jupyter kernel, so they are unaffected by `enabled: false` and stay inline.
 execute:
-  enabled: false  # Disable execution for initial migration
-  freeze: auto
+  enabled: false
+  freeze: true
 
 format:
   html:

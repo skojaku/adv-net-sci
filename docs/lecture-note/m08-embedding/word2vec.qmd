@@ -12,12 +12,11 @@ word2vec identifies a word's context by examining the words within a fixed windo
 
 The context of the word *fox* includes *quick*, *brown*, *jumps*, *over*, and *lazy*. word2vec is trained to predict which words are likely to appear as the context of an input word.
 
-```{note}
+::: {.callout-note}
 There are two main architectures for word2vec:
 1. **Continuous Bag of Words (CBOW)**: Predicts the target word (center word) from the context words (surrounding words).
 2. **Skip-gram**: Predicts the context words (surrounding words) from the target word (center word).
-```
-
+:::
 So how are word embeddings learned? word2vec is a neural network model that looks like a bow tie. It has two layers of the vocabulary size coupled with a much smaller hidden layer.
 
 ![](../figs/word2vec.png)
@@ -130,6 +129,5 @@ ax.set_axis_off()
 
 We can see that word2vec places the words representing countries close to each other and so do the words representing their capitals. The country-capital relationship is also roughly preserved, e.g., *Germany*-*Berlin* vector is roughly parallel to *France*-*Paris* vector.
 
-```{footbibliography}
-
-```
+::: {#refs}
+:::

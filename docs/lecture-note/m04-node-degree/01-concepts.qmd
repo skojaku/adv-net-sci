@@ -1,8 +1,5 @@
 ---
 title: "Core Concepts"
-jupyter: advnetsci
-execute:
-    enabled: true
 ---
 
 ::: {.callout-note title="What you'll learn in this module"}
@@ -192,65 +189,15 @@ The acquaintance immunization does not require the knowledge of the entire netwo
 
 The very first step to understand degree distribution is to visualize it. But visualizing degree distribution is not as simple as it seems. Take for example, the following histogram of a degree distribution.
 
-```{python}
-#| echo: false
-#| fig-cap: "A histogram of a scale-free degree distribution on a linear scale. It's nearly impossible to see the structure of the tail."
-#| label: fig-linear-hist
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import powerlaw
+![A histogram of a scale-free degree distribution on a linear scale. It's nearly impossible to see the structure of the tail.](../figs/linear-hist.svg){#fig-linear-hist width="6"}
 
-# Generate synthetic data from a power-law distribution
-np.random.seed(42)
-fit = powerlaw.Fit(np.random.zipf(2.5, 1000), discrete=True)
-degrees = fit.power_law.generate_random(1000)
-degrees = [int(d) for d in degrees if d > 0]
-
-# Plotting with seaborn
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.histplot(degrees, bins=int(np.max(degrees)), stat="probability", edgecolor='black', ax=ax)
-ax.set_xlabel("Degree (k)")
-ax.set_ylabel("Fraction of Nodes, P(k)")
-plt.tight_layout()
-sns.despine()
-plt.show()
-```
 
 This is a plot you would often see for a real-world network. Most nodes have a very small degree, so they are all crammed into the first few bins on the left. The long tail of high-degree nodes---which hold most edges in the network---is invisible because there are very few of them. This is a **fat-tailed distribution**, which is a common characteristics of real-world networks.
 
 To solve this, we can plot the same histogram but with both axes on a logarithmic scale. This is called a **log–log plot**.
 
-```{python}
-#| echo: false
-#| fig-cap: "The same degree histogram on a log-log scale. The structure becomes much clearer, revealing a roughly linear relationship."
-#| label: fig-loglog-hist
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
+![The same degree histogram on a log-log scale. The structure becomes much clearer, revealing a roughly linear relationship.](../figs/loglog-hist.svg){#fig-loglog-hist width="6"}
 
-# Prepare the data for plotting: get histogram bins and densities
-counts, bins = np.histogram(degrees, bins=int(np.max(degrees)))
-bins = bins[:-1]
-non_zero_indices = counts > 0
-counts = counts[non_zero_indices]
-bins = bins[non_zero_indices]
-density = counts / len(degrees)
-
-# Plotting with seaborn
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.scatterplot(x=bins, y=density, color='dodgerblue', ax=ax, s = 30)
-ax.set_xscale('log')
-ax.set_yscale('log')
-ax.set_xlabel("Degree (k)")
-ax.set_ylabel("Fraction of Nodes, P(k)")
-sns.despine()
-plt.tight_layout()
-plt.show()
-```
 
 A log–log plot (@fig-loglog-hist) makes both low- and high-degree nodes visible, revealing heavy-tailed patterns. If the tail is roughly linear, it suggests a power-law degree distribution: the probability a node has degree $k$ falls off as $k^{-\gamma}$. The slope of the line shows how quickly high-degree nodes become rare. A steeper slope (higher $\gamma$) means fewer hubs; a shallower slope means more.
 Interestingly, many real-world networks exhibit power-law(-like) degree distributions, whether they are biological, technical, or social. This universality of power-law degree distributions is one of the foundational insights of Network Science.
@@ -283,23 +230,8 @@ $$
 
 CCDF represents the fraction of nodes with degree greater than $k$, or equivalently, the fraction of nodes that survive the degree cutoff $k$. It is also known as the *survival function* of the degree distribution.
 
-```{python}
-#| echo: false
-#| fig-cap: "The CCDF of the degree distribution on a log-log scale. "
-#| label: fig-ccdf-hist
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
+![The CCDF of the degree distribution on a log-log scale. ](../figs/ccdf-hist.svg){#fig-ccdf-hist width="6"}
 
-# Plotting the CCDF using seaborn's ecdfplot (complementary CDF)
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.ecdfplot(degrees, ax=ax, complementary=True, color=sns.color_palette()[1], linewidth=2, log_scale=(True, True))
-ax.set_xlabel("Degree (k)")
-ax.set_ylabel("CCDF (P(k' > k))")
-sns.despine()
-plt.tight_layout()
-plt.show()
-```
 
 A nice feature of the CCDF compared to the PDF is that it does not require any binning of the data. When calculating the PDF, we need to bin the data into a finite number of bins, which is subject to the choice of bin size. CCDF does not require any binning of the data.
 
@@ -310,23 +242,9 @@ There is a related function called the *cumulative distribution function* (CDF),
 
 For degree-heterogenous networks, the CCDF is preferred over the CDF because the CDF does not show the tail of the distribution clearly.
 
-```{python}
-#| echo: false
-#| fig-cap: "The CDF of the degree distribution on a log-log scale. "
-#| label: fig-cdf-hist
-#| fig-width: 4
-#| fig-height: 4
-#| fig-align: center
+![The CDF of the degree distribution on a log-log scale. ](../figs/cdf-hist.svg){#fig-cdf-hist width="4"}
 
-# Plotting the CCDF using seaborn's ecdfplot (complementary CDF)
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.ecdfplot(degrees, ax=ax, color=sns.color_palette()[3], linewidth=2, log_scale=(True, True))
-ax.set_xlabel("Degree (k)")
-ax.set_ylabel("CDF (P(k' ≤ k))")
-sns.despine()
-plt.tight_layout()
-plt.show()
-```
+
 :::
 
 ### Interpreting the CCDF for Power-Law Distributions

@@ -27,7 +27,7 @@ This matrix $P$ encapsulates the entire random walk process. We can use it to ca
 - After two steps: $\left(\mathbf{P}^{2}\right)_{ij} = \sum_{k} P_{ik} P_{kj}$
 - After $T$ steps: $\left(\mathbf{P}^{T}\right)_{ij}$
 
-```{note}
+::: {.callout-note}
 Let's explore why $\mathbf{P}^2$ represents the transition probabilities after two steps.
 
 First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:
@@ -55,8 +55,7 @@ And we can extend this reasoning for any number of steps $t$.
 
 In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.
 
-```
-
+:::
 As $T$ becomes very large, the probability distribution of being at each node, $\mathbf{x}(t)$, approaches a constant value:
 
 $$
@@ -186,7 +185,7 @@ $$
 
 And it is easy to find ${\bf Q}$ and ${\bf \Lambda}$ by using eigenvalue decomposition if ${\bf S}$ is symmetric and consists only of real values. Namely, the eigenvectors form ${\cal Q}$ and the eigenvalues form the diagonal matrix ${\cal \Lambda}$.
 
-```{note}
+::: {.callout-note}
 Let us demonstrate the above relation by calculating $\mathbf{S}^2$.
 $$
 \begin{align}
@@ -198,9 +197,7 @@ $$
 
 ![](../figs/diagonalizable-squared.jpg)
 
-```
-
-
+:::
 $\mathbf{P}$ is also diagonalizable but not symmetric like $\mathbf{\overline A}$ so that we cannot use the above relation directly. So we do a trick by rewriteing $\mathbf{P}$ as:
 
 $$
@@ -218,7 +215,7 @@ $$
 where $\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}$ and $\mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}$.
 
 
-```{note}
+::: {.callout-note}
 Let us demonstrate the above relation by calculating $\mathbf{P}^2$.
 
 $$
@@ -227,8 +224,7 @@ $$
 &=  \mathbf{D}^{-\frac{1}{2}} \overline{\bf A} ^2 \mathbf{D}^{\frac{1}{2}}\\
 &= \mathbf{Q}_L \mathbf{\Lambda}^2 \mathbf{Q}_R ^\top
 \end{align}
-```
-
+:::
 The probability distribution after $t$ steps is then:
 
 $$
@@ -258,13 +254,12 @@ x_N(t)
  \right]
 $$
 
-```{note}
+::: {.callout-note}
 Visualize the above equation by using the following figure.
 
 ![](../figs/diagonalizable-sum.jpg)
 
-```
-
+:::
 The term $\lambda_\ell^t$ represents the contribution of each eigenvalue to the stationary distribution over time. As $t$ increases, all terms decay exponentially except for the largest eigenvalue ($\lambda_1 = 1$). This explains how the random walk converges to the stationary distribution:
 
 $$
@@ -309,14 +304,12 @@ Next, let us compute the eigenvalues and eigenvectors of the normalized adjacenc
 evals, evecs = np.linalg.eigh(A_norm.toarray())
 ```
 
-```{note}
+::: {.callout-note}
 `evals` and `evecs` are sorted in descending order of the eigenvalues. `evecs[:, 0]` is the eigenvector corresponding to the largest eigenvalue, which is always 1.
-```
-
-```{warning}
+:::
+::: {.callout-warning}
 There is a similar function called `np.linalg.eig` which returns the eigenvalues and eigenvectors. It can be used for any matrices, while `np.linalg.eigh` is specifically for symmetric matrices. `np.linalg.eigh` is faster and more stable and therefore preferred if your matrix is symmetric. `np.linalg.eig` is more susceptible to numerical errors and therefore less stable.
-```
-
+:::
 The eigenvalues and eigenvectors are shown below.
 ```{python}
 pd.DataFrame({
@@ -334,10 +327,9 @@ pd.DataFrame({
 Notice that the largest eigenvalue is 1, which is always true for a normalized adjacency matrix.
 The largest eigenvector (the leftmost one) is associated with the stationary distribution of the random walk.
 
-```{note}
+::: {.callout-note}
 The sign of the eigenvector is indeterminate, which means we can choose the sign of the eigenvector arbitrarily. In fact, `np.linalg.eigh` returns the eigenvector whose sign can vary for a different run.
-```
-
+:::
 We decompose $\overline{\bf A}$ as
 
 $$\overline {\bf A} = {\bf Q}{\bf \Lambda}{\bf Q}^\top$$
