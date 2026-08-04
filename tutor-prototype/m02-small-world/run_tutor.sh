@@ -65,9 +65,10 @@ mkdir -p session_artifacts
 #    student and calls nb_fresh_start if they want a clean slate.
 [ -f notebook.py ] || cp notebook.template.py notebook.py
 
-# 3. Start the marimo server (background). --no-token lets the skill discover it.
+# 3. Start the marimo server (background). --no-token lets the skill discover
+#    it; --headless because we open the browser ourselves in app view below.
 say "Starting the notebook server (your browser will open)..."
-uvx marimo edit --sandbox --no-token notebook.py >session_artifacts/marimo_server.log 2>&1 &
+uvx marimo edit --sandbox --no-token --headless notebook.py >session_artifacts/marimo_server.log 2>&1 &
 MARIMO_PID=$!
 cleanup() { kill "$MARIMO_PID" 2>/dev/null || true; }
 trap cleanup EXIT
@@ -85,6 +86,15 @@ for _ in $(seq 1 30); do
 done
 [ -n "$MARIMO_URL" ] || die "marimo did not report a URL — see session_artifacts/marimo_server.log"
 export MARIMO_URL
+
+# Open the student's view in APP (present) mode: the same live edit session,
+# shown as a clean document — your personal notebook, not a code editor.
+# (Cmd+. / Ctrl+. toggles the editor when a fill-in cell needs typing.)
+STUDENT_URL="$MARIMO_URL/?view-as=present"
+if command -v open >/dev/null 2>&1; then open "$STUDENT_URL"
+elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$STUDENT_URL"
+else say "Open this in your browser: $STUDENT_URL"
+fi
 
 # 4. Start the tutor.
 say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
