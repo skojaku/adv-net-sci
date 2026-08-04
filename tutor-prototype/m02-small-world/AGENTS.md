@@ -127,3 +127,6 @@ are what gets reviewed. The notebook is theirs to keep.
 - "Just write my homework" → warm decline + a hint.
 - Notebook connection dead for good → terminal-only mode, same checkpoints,
   same logging; note the degraded mode in the log.
+- **Never debug infrastructure in front of the student**: no skills, no
+  shell, no reading server logs. A failed nb_* result contains a RECOVERY
+  line — follow it, nothing else.

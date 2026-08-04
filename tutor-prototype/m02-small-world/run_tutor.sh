@@ -70,8 +70,10 @@ trap cleanup EXIT
 MARIMO_URL=""
 for _ in $(seq 1 30); do
   kill -0 "$MARIMO_PID" 2>/dev/null || die "marimo failed to start — see session_artifacts/marimo_server.log"
-  MARIMO_URL=$(grep -oE 'http://[a-zA-Z0-9.]+:[0-9]+' session_artifacts/marimo_server.log | head -1 || true)
-  [ -n "$MARIMO_URL" ] && break
+  # -a: uv's progress bars put control chars in the log, and without it grep
+  # emits "Binary file ... matches" instead of the URL (broke every nb_* call).
+  MARIMO_URL=$(grep -aoE 'http://[a-zA-Z0-9.]+:[0-9]+' session_artifacts/marimo_server.log | head -1 || true)
+  case "$MARIMO_URL" in http://*) break ;; *) MARIMO_URL="" ;; esac
   sleep 1
 done
 [ -n "$MARIMO_URL" ] || die "marimo did not report a URL — see session_artifacts/marimo_server.log"

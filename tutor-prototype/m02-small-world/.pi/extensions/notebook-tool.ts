@@ -70,7 +70,10 @@ function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; f
       failed: true,
     });
   }
-  const url = process.env.MARIMO_URL || "http://127.0.0.1:2718";
+  // Guard against a garbage env value (a broken grep once exported
+  // "Binary file ... matches" as the URL and every call failed).
+  const envUrl = process.env.MARIMO_URL ?? "";
+  const url = /^https?:\/\/\S+$/.test(envUrl) ? envUrl : "http://127.0.0.1:2718";
   return new Promise((resolve) => {
     const child = execFile(
       "bash",
@@ -104,10 +107,19 @@ async function ensureWarm(signal?: AbortSignal): Promise<{ out: string; failed: 
 }
 
 function toResult({ out, failed }: { out: string; failed: boolean }) {
+  let text = failed ? `NOTEBOOK ERROR:\n${out || "(no output)"}` : out || "(ok)";
+  if (failed) {
+    // Tell the model exactly what to do — otherwise it starts "debugging"
+    // with skills, shell, and log files in front of the student.
+    text += out.includes("No active sessions")
+      ? `\nRECOVERY: the notebook tab isn't open in the browser. Ask the student to open ` +
+        `or refresh the notebook page, wait for their reply, then retry this call.`
+      : `\nRECOVERY: retry this call ONCE. If it fails again, tell the student the ` +
+        `whiteboard is unavailable and continue in terminal-only mode (AGENTS.md) — ` +
+        `do NOT investigate with skills, shell, or log files.`;
+  }
   return {
-    content: [
-      { type: "text" as const, text: failed ? `NOTEBOOK ERROR:\n${out || "(no output)"}` : out || "(ok)" },
-    ],
+    content: [{ type: "text" as const, text }],
     details: { failed },
   };
 }
