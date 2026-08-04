@@ -22,7 +22,7 @@ import { execFile } from "node:child_process";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Type } from "typebox";
-import { Text } from "@earendil-works/pi-tui";
+import { Container, Text } from "@earendil-works/pi-tui";
 import { keyHint, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const SCRIPT_CANDIDATES = [
@@ -246,8 +246,104 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  // (Brevity/reveal enforcement lives in say-gate.ts: the say tool's reviewer
-  // gates every student-facing message, and plain assistant text is hidden.)
+  // ── Runaway guard ─────────────────────────────────────────────────────────
+  // Silent safety net only (style is steered by AGENTS.md, not enforced):
+  // flash-class models can fall into degenerate repetition loops. Abort the
+  // generation if a single message runs absurdly long, and nudge a restart.
+  const RUNAWAY_CHARS = 1600;
+  let runawayFired = false;
+  pi.on("message_update", async (event: any, ctx: any) => {
+    const msg = event?.message;
+    if (msg?.role !== "assistant" || runawayFired) return;
+    const raw = msg.content;
+    const t =
+      typeof raw === "string"
+        ? raw
+        : (Array.isArray(raw) ? raw : [])
+            .filter((c: any) => c?.type === "text")
+            .map((c: any) => c.text ?? "")
+            .join("\n");
+    if (t.length <= RUNAWAY_CHARS) return;
+    runawayFired = true;
+    try {
+      ctx.abort();
+    } catch {
+      // best-effort
+    }
+    pi.sendMessage(
+      {
+        customType: "runaway-guard",
+        content:
+          "NOTE (invisible to the student): your message ran away and was cut off. " +
+          "Continue with one short message.",
+        display: false,
+      },
+      { deliverAs: "followUp", triggerTurn: true },
+    );
+  });
+  pi.on("message_end", async () => {
+    runawayFired = false;
+  });
+
+  // ── ask_student ───────────────────────────────────────────────────────────
+  // Fixed-choice questions get an interactive picker (arrow keys + enter) —
+  // friendlier than asking a beginner to type an option verbatim.
+  pi.registerTool({
+    name: "ask_student",
+    label: "Ask (choices)",
+    description:
+      "Ask the student a multiple-choice question with an interactive picker. Use for ANY " +
+      "question with fixed options (predictions, comfort level, continue-or-fresh). The " +
+      "chosen option comes back as the tool result. Open-ended questions: just ask in plain text.",
+    promptSnippet: "Ask the student a fixed-choice question (interactive picker)",
+    parameters: Type.Object({
+      question: Type.String({ description: "Short spoken question (max 2 sentences)." }),
+      options: Type.Array(Type.String(), { description: "2-6 short options." }),
+    }),
+    async execute(_id, params, _signal, _onUpdate, ctx: any) {
+      const q = String(params.question ?? "").trim();
+      const opts = (Array.isArray(params.options) ? params.options : []).map((o: any) =>
+        String(o),
+      );
+      if (!ctx?.ui?.select || opts.length < 2) {
+        return {
+          content: [
+            { type: "text" as const, text: "(no interactive picker available — ask in plain text instead)" },
+          ],
+          details: { unavailable: true },
+        };
+      }
+      const choice = await ctx.ui.select(q, opts);
+      if (choice == null) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: "(the student dismissed the picker — ask in plain text, they may want to answer in their own words)",
+            },
+          ],
+          details: { dismissed: true, question: q },
+        };
+      }
+      return {
+        content: [{ type: "text" as const, text: `Student chose: ${choice}` }],
+        details: { question: q, choice: String(choice) },
+      };
+    },
+    renderShell: "self",
+    renderCall(args: any, _theme: any) {
+      const q = typeof args?.question === "string" ? args.question : "";
+      return q ? new Text(q, 0, 0) : new Container();
+    },
+    renderResult(result: any, { isPartial }: any, theme: any) {
+      if (isPartial) return new Container();
+      const choice = result?.details?.choice;
+      if (typeof choice === "string" && choice.length > 0) {
+        return new Text(theme.fg("accent", `→ ${choice}`), 0, 0);
+      }
+      return new Container();
+    },
+  });
 
   // ── nb_add_cell ───────────────────────────────────────────────────────────
   pi.registerTool({
