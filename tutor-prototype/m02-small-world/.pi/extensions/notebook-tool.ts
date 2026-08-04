@@ -147,6 +147,7 @@ function resolveVisionModel(ctx: any): any | null {
 async function describeImage(
   ctx: any,
   b64jpeg: string,
+  task: string,
   question: string,
 ): Promise<{ text: string; model?: string; failed: boolean }> {
   const noVisionAdvice =
@@ -164,12 +165,21 @@ async function describeImage(
   try {
     const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
     if (!auth?.ok) throw new Error(auth?.error ?? "no credentials for vision model");
+    // A bare "describe the image" fails on messy hand drawings (a chord two
+    // steps apart was reported as "already neighbors" in production). The
+    // model needs the TASK to know what to look for, and a forced
+    // shape-by-shape / line-by-line trace before answering.
     const prompt =
-      "You are the eyes of a text-only tutor. FIRST describe the student's photo " +
-      "factually: shapes, dots, lines and which dots each line connects, arrows, any " +
-      "written words or numbers. If it is a network drawing, count the dots. THEN " +
-      "answer the tutor's question. Describe only — never grade or judge. Under 150 " +
-      `words total.\nTutor's question: ${question}`;
+      "You are the eyes of a text-only tutor looking at a student's photo.\n" +
+      `What the student was asked to do: ${task}\n` +
+      "Work carefully:\n" +
+      "1. Count the main shapes (dots, boxes...) and name each by its position — " +
+      "clock positions work well for anything arranged in a circle.\n" +
+      "2. Trace EVERY line one at a time; for each, name the two things it connects.\n" +
+      "3. Then answer the tutor's question using those position names.\n" +
+      "If you are unsure about anything, say so explicitly instead of guessing.\n" +
+      "Describe only — never grade or judge. Under 150 words.\n" +
+      `Tutor's question: ${question}`;
     const response = await complete(
       model,
       {
@@ -188,6 +198,9 @@ async function describeImage(
         apiKey: auth.apiKey,
         headers: auth.headers,
         env: auth.env,
+        // Vision models that can think should: tracing lines in a wobbly
+        // hand drawing is exactly what fails without it.
+        ...(model.reasoning ? { reasoningEffort: "medium" as const } : {}),
         cacheRetention: "none",
         sessionId: uuidv7(),
       },
@@ -988,10 +1001,11 @@ export default function (pi: ExtensionAPI) {
     description:
       "Look at a student-uploaded image — you are text-only, so this is your ONLY way to " +
       "see one (never nb_read image bytes). Give the upload widget name (e.g. 'cp4_photo') " +
-      "or a file path, plus the question you need answered. It saves the original to " +
-      "session_artifacts/, shows the photo in the notebook for the student, and returns a " +
-      "factual description from a vision model — YOU judge that description against the " +
-      "checkpoint. If it reports no vision is available, follow its advice instead.",
+      "or a file path, what the task was, and the question you need answered. It saves the " +
+      "original to session_artifacts/, shows the photo in the notebook for the student, and " +
+      "returns a factual description from a vision model. The description is a machine's " +
+      "reading, not ground truth — confirm the key detail with the student before building " +
+      "on it. If it reports no vision is available, follow its advice instead.",
     promptSnippet: "See a student-uploaded image through a vision model (the tutor is text-only)",
     parameters: Type.Object({
       status: STATUS_PARAM,
@@ -999,6 +1013,11 @@ export default function (pi: ExtensionAPI) {
         Type.String({ description: "Upload widget name, e.g. 'cp4_photo'." }),
       ),
       file: Type.Optional(Type.String({ description: "Or: path to an image file." })),
+      task: Type.String({
+        description:
+          "What the student was asked to draw/do, in 1-2 sentences copied from the " +
+          "checkpoint — the vision model needs this to know what to look for.",
+      }),
       question: Type.String({
         description: "What you need to know, e.g. 'Which two dots does the extra line connect?'",
       }),
@@ -1081,7 +1100,12 @@ export default function (pi: ExtensionAPI) {
           failed: true,
         });
       }
-      const vision = await describeImage(ctx, b64, String(params.question ?? "").trim());
+      const vision = await describeImage(
+        ctx,
+        b64,
+        String(params.task ?? "").trim(),
+        String(params.question ?? "").trim(),
+      );
       if (vision.failed) return toResult({ out: `${fileLine}\n${vision.text}`, failed: false });
       return toResult({
         out:
