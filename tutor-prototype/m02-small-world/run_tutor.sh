@@ -53,7 +53,24 @@ fi
 
 mkdir -p session_artifacts
 
-# 2. Start the marimo server (background). --no-token lets the skill discover it.
+# 2. Fresh notebook per session: archive the previous one and start from the
+#    pristine template (visually blank). TUTOR_RESUME=1 keeps the previous
+#    notebook to continue where you left off.
+if [ "${TUTOR_RESUME:-0}" = "1" ] && [ -f notebook.py ]; then
+  say "Resuming your previous notebook (TUTOR_RESUME=1)."
+else
+  STAMP=$(date +%Y%m%d-%H%M%S)
+  if [ -f notebook.py ] && ! cmp -s notebook.py notebook.template.py; then
+    mv notebook.py "session_artifacts/notebook-$STAMP.py"
+    say "Previous notebook archived to session_artifacts/notebook-$STAMP.py"
+  fi
+  cp -f notebook.template.py notebook.py
+  if [ -f session_artifacts/session_log.jsonl ]; then
+    mv session_artifacts/session_log.jsonl "session_artifacts/session_log-$STAMP.jsonl"
+  fi
+fi
+
+# 3. Start the marimo server (background). --no-token lets the skill discover it.
 say "Starting the notebook server (your browser will open)..."
 uvx marimo edit --sandbox --no-token notebook.py >session_artifacts/marimo_server.log 2>&1 &
 MARIMO_PID=$!
@@ -72,7 +89,7 @@ done
 [ -n "$MARIMO_URL" ] || die "marimo did not report a URL — see session_artifacts/marimo_server.log"
 export MARIMO_URL
 
-# 3. Start the tutor.
+# 4. Start the tutor.
 say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
 KICKOFF="Please start the tutoring session: read lesson.yaml and begin at checkpoint cp0_welcome, as specified in AGENTS.md. Speak to the student ONLY through the say tool, use the nb_* notebook tools for all notebook work, and keep this terminal clean — the student is watching it."
 if [ "$AGENT" = "pi" ]; then
