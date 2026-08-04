@@ -75,6 +75,11 @@ export default function (pi: ExtensionAPI) {
   };
   let consecutiveRejections = 0;
   let strayTextNagged = false;
+  // Once a question is in the air, the tutor must shut up until the student
+  // replies (seen in production: three rephrasings of the same question in a
+  // row, then a stuck "Working…" — each one a wasted model round-trip).
+  let pendingQuestion = false;
+  let pendingBlocks = 0;
 
   // ── Runaway watchdog ──────────────────────────────────────────────────────
   // Flash-class models can fall into degenerate repetition loops in plain
@@ -119,6 +124,8 @@ export default function (pi: ExtensionAPI) {
     if (msg.role === "user") {
       remember("student", textOf(msg.content).trim());
       strayTextNagged = false;
+      pendingQuestion = false;
+      pendingBlocks = 0;
       return;
     }
     if (msg.role !== "assistant") return;
@@ -168,6 +175,17 @@ export default function (pi: ExtensionAPI) {
       thought: Type.String({ description: "Your short private note." }),
     }),
     async execute(_id, _params) {
+      if (pendingQuestion) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: "The student hasn't answered your question yet — END YOUR TURN and wait silently.",
+            },
+          ],
+          details: {},
+        };
+      }
       return { content: [{ type: "text" as const, text: "ok" }], details: {} };
     },
     renderShell: "self",
@@ -253,6 +271,27 @@ export default function (pi: ExtensionAPI) {
     async execute(_id, params, signal) {
       const draft = String(params.message ?? "").trim();
 
+      // 0. A question is already in the air — no more talking until the
+      // student replies (auto-clears after 2 blocks so a missed user event
+      // can't deadlock the session).
+      if (pendingQuestion && pendingBlocks < 2) {
+        pendingBlocks++;
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text:
+                "NOT DELIVERED — you already asked the student a question and they haven't " +
+                "replied. END YOUR TURN NOW and wait silently. Do not rephrase, do not add " +
+                "encouragement, do not think. Just stop.",
+            },
+          ],
+          details: { approved: false },
+        };
+      }
+      pendingQuestion = false;
+      pendingBlocks = 0;
+
       // 1. Instant local check — no latency, catches the mechanical rules.
       const local = localCheck(draft);
       if (!local.ok && consecutiveRejections < 2) {
@@ -311,8 +350,17 @@ export default function (pi: ExtensionAPI) {
 
       consecutiveRejections = 0;
       remember("tutor", draft);
+      const isQuestion = draft.includes("?");
+      if (isQuestion) pendingQuestion = true;
       return {
-        content: [{ type: "text" as const, text: "Delivered." }],
+        content: [
+          {
+            type: "text" as const,
+            text: isQuestion
+              ? "Delivered. You asked a question — END YOUR TURN NOW: no more tools, no text. Wait for the student's reply."
+              : "Delivered.",
+          },
+        ],
         details: { approved: true, message: draft },
       };
     },
@@ -367,6 +415,8 @@ export default function (pi: ExtensionAPI) {
         };
       }
       const choice = await ctx.ui.select(q, opts);
+      pendingQuestion = false;
+      pendingBlocks = 0;
       if (choice == null) {
         return {
           content: [
