@@ -21,7 +21,7 @@
 import * as fs from "node:fs";
 import path from "node:path";
 import { Type } from "typebox";
-import { Text } from "@earendil-works/pi-tui";
+import { Container, Text } from "@earendil-works/pi-tui";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const REVIEW_URL = process.env.TUTOR_REVIEW_URL || "https://api.deepseek.com/chat/completions";
@@ -175,7 +175,7 @@ export default function (pi: ExtensionAPI) {
       return new Text(theme.fg("dim", "·"), 0, 0);
     },
     renderResult(_result: any, _opts: any, _theme: any) {
-      return new Text("", 0, 0);
+      return new Container();
     },
   });
 
@@ -317,20 +317,21 @@ export default function (pi: ExtensionAPI) {
       };
     },
     // Self shell: no tool box / background — approved messages must read as
-    // ordinary tutor speech, not as tool output.
+    // ordinary tutor speech, not as tool output. Empty slots return an empty
+    // Container (zero lines); an empty Text would still render a blank line.
     renderShell: "self",
     renderCall(_args: any, _theme: any) {
       // Draft args stream here — never show them; the student only sees the
       // approved message in renderResult.
-      return new Text("", 0, 0);
+      return new Container();
     },
     renderResult(result: any, { isPartial }: any, theme: any) {
       if (isPartial) return new Text(theme.fg("muted", "…"), 0, 0);
       if (result?.details?.approved === true) {
         return new Text(String(result?.details?.message ?? ""), 0, 0);
       }
-      // Rejected draft: a quiet pencil, nothing readable.
-      return new Text(theme.fg("dim", "✎"), 0, 0);
+      // Rejected draft: nothing at all (the rewrite follows immediately).
+      return new Container();
     },
   });
 }

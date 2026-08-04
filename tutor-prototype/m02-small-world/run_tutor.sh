@@ -16,7 +16,7 @@ cd "$(dirname "$0")"
 MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
 
 # Course model: open-weights DeepSeek v4 Flash (override with TUTOR_MODEL).
-TUTOR_MODEL="${TUTOR_MODEL:-deepseek/deepseek-v4-flash}"
+TUTOR_MODEL="${TUTOR_MODEL:-deepseek/deepseek-v4-flash-0731}"
 
 say() { printf '\n\033[1;36m[tutor]\033[0m %s\n' "$*"; }
 die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
