@@ -1,0 +1,203 @@
+/**
+ * Say gate — every tutor utterance is reviewed BEFORE the student sees it.
+ *
+ * The tutor must speak through the `say` tool (enforced by AGENTS.md). Its
+ * execute() sends the draft to a reviewer model (same course API) that checks
+ * the iron rules: ≤3 short spoken sentences, never state what the student
+ * hasn't produced, at most one question. Rejected drafts are never rendered —
+ * the tutor gets the reason back and rewrites. Approved messages are rendered
+ * by renderResult, so nothing unreviewed ever reaches the terminal.
+ *
+ * Fail-open by design: if the reviewer is unreachable, the message is
+ * delivered (a tutoring session must not die on a gate). Every verdict is
+ * appended to session_artifacts/reviewer_log.jsonl for the instructor.
+ *
+ * Config (env): TUTOR_REVIEW_URL   (default https://api.deepseek.com/chat/completions)
+ *               TUTOR_REVIEW_MODEL (default deepseek-v4-flash)
+ *               TUTOR_REVIEW_KEY   (default $DEEPSEEK_API_KEY)
+ */
+import * as fs from "node:fs";
+import path from "node:path";
+import { Type } from "typebox";
+import { Text } from "@earendil-works/pi-tui";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+const REVIEW_URL = process.env.TUTOR_REVIEW_URL || "https://api.deepseek.com/chat/completions";
+const REVIEW_MODEL = process.env.TUTOR_REVIEW_MODEL || "deepseek-v4-flash";
+const REVIEW_KEY = process.env.TUTOR_REVIEW_KEY || process.env.DEEPSEEK_API_KEY || "";
+
+const REVIEWER_PROMPT =
+  "You review one outgoing message from a Socratic tutor to a beginner student. " +
+  "Reject ONLY if a rule is clearly broken:\n" +
+  "1. BREVITY: more than 3 sentences, or clearly not how a human speaks out loud.\n" +
+  "2. REVEALING: it states a number, distance, sum, average, list of results, or a " +
+  "conclusion that the student has not already said in the transcript. Asking for the " +
+  "next small piece is always fine; confirming a piece the student just said is fine.\n" +
+  "3. It asks more than one question.\n" +
+  'Reply with ONLY JSON: {"approved": true} or {"approved": false, "reason": "<one short sentence naming the rule>"}';
+
+const textOf = (raw: unknown): string =>
+  typeof raw === "string"
+    ? raw
+    : (Array.isArray(raw) ? raw : [])
+        .filter((c: any) => c?.type === "text")
+        .map((c: any) => c.text ?? "")
+        .join("\n");
+
+export default function (pi: ExtensionAPI) {
+  /** Rolling transcript so the reviewer can judge "already said by student". */
+  const transcript: Array<{ role: string; text: string }> = [];
+  const remember = (role: string, text: string) => {
+    if (!text) return;
+    transcript.push({ role, text });
+    if (transcript.length > 14) transcript.shift();
+  };
+  let consecutiveRejections = 0;
+  let strayTextNagged = false;
+
+  pi.on("message_end", async (event: any) => {
+    const msg = event?.message;
+    if (!msg) return;
+    if (msg.role === "user") {
+      remember("student", textOf(msg.content).trim());
+      strayTextNagged = false;
+    } else if (msg.role === "assistant") {
+      const t = textOf(msg.content).trim();
+      if (!t) return;
+      remember("tutor (unreviewed plain text)", t);
+      // The student saw this without review — remind the model once per turn.
+      if (t.length > 40 && !strayTextNagged) {
+        strayTextNagged = true;
+        pi.sendMessage(
+          {
+            customType: "say-gate-coach",
+            content:
+              "COACH (invisible to the student — never mention this): you wrote plain text, " +
+              "which reached the student WITHOUT review. Every student-facing message must go " +
+              "through the say tool; keep your plain text empty.",
+            display: false,
+          },
+          { deliverAs: "nextTurn" },
+        );
+      }
+    }
+  });
+
+  function logReview(entry: Record<string, unknown>) {
+    try {
+      const dir = path.join(process.cwd(), "session_artifacts");
+      fs.mkdirSync(dir, { recursive: true });
+      fs.appendFileSync(path.join(dir, "reviewer_log.jsonl"), JSON.stringify(entry) + "\n");
+    } catch {
+      // logging is best-effort
+    }
+  }
+
+  async function review(
+    draft: string,
+    signal?: AbortSignal,
+  ): Promise<{ approved: boolean; reason?: string; error?: string }> {
+    if (!REVIEW_KEY) return { approved: true, error: "no reviewer api key" };
+    const tail = transcript
+      .slice(-8)
+      .map((t) => `${t.role}: ${t.text}`)
+      .join("\n");
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 20_000);
+      signal?.addEventListener("abort", () => controller.abort());
+      const res = await fetch(REVIEW_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${REVIEW_KEY}` },
+        body: JSON.stringify({
+          model: REVIEW_MODEL,
+          temperature: 0,
+          max_tokens: 120,
+          messages: [
+            { role: "system", content: REVIEWER_PROMPT },
+            {
+              role: "user",
+              content:
+                `Transcript (most recent last):\n${tail || "(session start)"}\n\n` +
+                `Tutor's DRAFT message:\n${draft}`,
+            },
+          ],
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) return { approved: true, error: `reviewer http ${res.status}` };
+      const data: any = await res.json();
+      const content = data?.choices?.[0]?.message?.content ?? "";
+      const m = /\{[\s\S]*\}/.exec(content);
+      if (!m) return { approved: true, error: "unparseable reviewer output" };
+      const verdict = JSON.parse(m[0]);
+      return { approved: verdict.approved !== false, reason: verdict.reason };
+    } catch (e: any) {
+      return { approved: true, error: String(e?.message ?? e) };
+    }
+  }
+
+  pi.registerTool({
+    name: "say",
+    label: "Say to student",
+    description:
+      "The ONLY way to speak to the student. Write the message exactly as you want the " +
+      "student to read it (max 3 short spoken sentences, one question). A reviewer checks it " +
+      "first: if the result says NOT DELIVERED, the student saw nothing — rewrite following " +
+      "the reason and call say again.",
+    promptSnippet: "Speak to the student (reviewed before display)",
+    promptGuidelines: [
+      "ALL student-facing prose goes through say — keep your plain assistant text empty.",
+      "If say returns NOT DELIVERED, rewrite (shorter, next small piece only) and call say again; never give up and never paste the draft as plain text.",
+    ],
+    parameters: Type.Object({
+      message: Type.String({ description: "The message for the student, ready to display." }),
+    }),
+    async execute(_id, params, signal) {
+      const draft = String(params.message ?? "").trim();
+      const verdict = await review(draft, signal);
+      logReview({ ts: new Date().toISOString(), draft, ...verdict });
+      if (!verdict.approved && consecutiveRejections < 2) {
+        consecutiveRejections++;
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text:
+                `NOT DELIVERED — reviewer rejected: ${verdict.reason ?? "rule violation"}. ` +
+                `Rewrite (shorter; ask only for the next small piece; never state what the ` +
+                `student hasn't said) and call say again.`,
+            },
+          ],
+          details: { approved: false },
+        };
+      }
+      // Approved — or fail-open / anti-loop delivery.
+      const note = !verdict.approved
+        ? " (delivered despite rejection to avoid a loop — tighten your style)"
+        : verdict.error
+          ? ` (reviewer unavailable: ${verdict.error} — self-check before sending)`
+          : "";
+      consecutiveRejections = 0;
+      remember("tutor", draft);
+      return {
+        content: [{ type: "text" as const, text: `Delivered.${note}` }],
+        details: { approved: true, message: draft },
+      };
+    },
+    renderCall(_args: any, theme: any) {
+      // Draft args stream here — never show them; the student only sees the
+      // approved message in renderResult.
+      return new Text(theme.fg("muted", "💬"), 0, 0);
+    },
+    renderResult(result: any, { isPartial }: any, theme: any) {
+      if (isPartial) return new Text(theme.fg("muted", "…"), 0, 0);
+      if (result?.details?.approved === true) {
+        return new Text(String(result?.details?.message ?? ""), 0, 0);
+      }
+      // Rejected draft: a quiet pencil, nothing readable.
+      return new Text(theme.fg("dim", "✎"), 0, 0);
+    },
+  });
+}
