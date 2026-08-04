@@ -60,17 +60,28 @@ MARIMO_PID=$!
 cleanup() { kill "$MARIMO_PID" 2>/dev/null || true; }
 trap cleanup EXIT
 
-# Give the server a moment; bail out early if it crashed.
-sleep 3
-kill -0 "$MARIMO_PID" 2>/dev/null || die "marimo failed to start — see session_artifacts/marimo_server.log"
+# Wait for the server URL (marimo may pick a different port if 2718 is busy),
+# then export it for the notebook tool (.pi/extensions/notebook-tool.ts).
+MARIMO_URL=""
+for _ in $(seq 1 30); do
+  kill -0 "$MARIMO_PID" 2>/dev/null || die "marimo failed to start — see session_artifacts/marimo_server.log"
+  MARIMO_URL=$(grep -oE 'http://[a-zA-Z0-9.]+:[0-9]+' session_artifacts/marimo_server.log | head -1 || true)
+  [ -n "$MARIMO_URL" ] && break
+  sleep 1
+done
+[ -n "$MARIMO_URL" ] || die "marimo did not report a URL — see session_artifacts/marimo_server.log"
+export MARIMO_URL
 
 # 3. Start the tutor.
 say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
-KICKOFF="Please start the tutoring session: read lesson.yaml, connect to the running marimo notebook with the marimo-pair skill, and begin at checkpoint cp0_welcome, as specified in AGENTS.md."
+KICKOFF="Please start the tutoring session: read lesson.yaml and begin at checkpoint cp0_welcome, as specified in AGENTS.md. Use the notebook tool for all notebook work and keep this terminal clean — the student is watching it."
 if [ "$AGENT" = "pi" ]; then
-  pi --model "$TUTOR_MODEL" "$KICKOFF"
+  # bash is disabled on purpose: every notebook/log operation goes through the
+  # quiet `notebook` tool, so no raw commands ever scroll past the student.
+  pi --model "$TUTOR_MODEL" --exclude-tools bash "$KICKOFF"
 else
-  # Claude Code fallback uses its own default model (TUTOR_MODEL is pi-only).
+  # Claude Code fallback uses its own default model (TUTOR_MODEL is pi-only)
+  # and the marimo-pair skill directly (no custom notebook tool).
   claude "$KICKOFF"
 fi
 
