@@ -385,31 +385,47 @@ export default function (pi: ExtensionAPI) {
         `The notebook already contains every cell built so far — never rebuild them. ` +
         `Continue warmly with the same voice; your new CHAPTER SCRIPT message has the curriculum.`;
       pendingHandoffBrief = brief;
-      pi.sendMessage(
-        {
-          customType: "chapter-divider",
-          content: `── Chapter ${idx + 2} · ${next.title} ──`,
-          display: true,
-        },
-        { deliverAs: "followUp" },
-      );
-      pi.sendMessage(
-        {
-          customType: "chapter-script",
-          content: chapterScriptMessage(next, idx + 2, chapters.length),
-          display: false,
-        },
-        { deliverAs: "followUp", triggerTurn: true },
-      );
+      // The next chapter must load AFTER compaction: injecting before it
+      // races the session reload (the fresh turn gets aborted and nothing
+      // restarts — seen in production) and the script could be summarized
+      // away. loadOnce also serves as the fallback when compaction errors
+      // (e.g. nothing to compact) or never calls back.
+      const num = idx + 2;
+      let loaded = false;
+      const loadOnce = () => {
+        if (loaded) return;
+        loaded = true;
+        pi.sendMessage(
+          {
+            customType: "chapter-divider",
+            content: `── Chapter ${num} · ${next.title} ──`,
+            display: true,
+          },
+          { deliverAs: "followUp" },
+        );
+        pi.sendMessage(
+          {
+            customType: "chapter-script",
+            content: chapterScriptMessage(next, num, chapters.length),
+            display: false,
+          },
+          { deliverAs: "followUp", triggerTurn: true },
+        );
+      };
       try {
         ctx?.compact?.({
           customInstructions: "chapter handoff",
+          onComplete: loadOnce,
           onError: () => {
             pendingHandoffBrief = null;
+            loadOnce();
           },
         });
+        const timer = setTimeout(loadOnce, 20_000);
+        (timer as any).unref?.();
       } catch {
         pendingHandoffBrief = null;
+        loadOnce();
       }
       return {
         content: [
