@@ -33,7 +33,7 @@ $$
 J = \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2 = {\bf x}^\top {\bf L} {\bf x},
 $$
 
-where ${\bf L}$ is the Laplacian matrix of the graph given by
+where ${\bf L}$ is the **(unnormalized) Laplacian matrix** of the graph given by
 
 $$
 L_{ij} = \begin{cases}
@@ -43,7 +43,17 @@ k_i & \text{if } i = j \\
 \end{cases}.
 $$
 
-and ${\bf x} = [x_1,x_2,\ldots, x_N]^\top$ is a column vector of feature variables.
+and ${\bf x} = [x_1,x_2,\ldots, x_N]^\top$ is a column vector of feature variables. Equivalently, ${\bf L} = {\bf D} - {\bf A}$, where ${\bf D}$ is the diagonal degree matrix with $D_{ii} = k_i$.
+
+::: {.callout-important title="Notation: two Laplacians"}
+We will need **two** Laplacians in this module, and mixing them up breaks every formula that follows. Keep them distinct:
+
+$$
+\underbrace{{\bf L} = {\bf D} - {\bf A}}_{\text{unnormalized}}, \qquad \underbrace{{\bf L}_{\text{sym}} = {\bf D}^{-\frac{1}{2}} {\bf L} {\bf D}^{-\frac{1}{2}} = {\bf I} - {\bf D}^{-\frac{1}{2}} {\bf A} {\bf D}^{-\frac{1}{2}}}_{\text{symmetric normalized}}
+$$
+
+${\bf L}$ is what appears in the total-variation identity ${\bf x}^\top {\bf L} {\bf x}$ above, because that identity counts raw squared differences across edges. ${\bf L}_{\text{sym}}$ is what the convolution machinery below uses, because its eigenvalues are confined to $[0, 2]$ regardless of the network — which is what lets us rescale them into a fixed range. Both are symmetric and positive semi-definite, and both have smallest eigenvalue $0$ with a constant-like eigenvector.
+:::
 
 
 ::: {.callout-note title="Detailed derivation"}
@@ -180,10 +190,10 @@ ChebNet [@defferrard2016convolutional] is one of the earliest spatial GCNs that 
 The key idea is to leverage Chebyshev polynomials to approximate ${\bf L}_{\text{learn}}$ by
 
 $$
-{\bf L}_{\text{learn}} \approx \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}), \quad \text{where} \quad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L} - {\bf I},
+{\bf L}_{\text{learn}} \approx \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}), \quad \text{where} \quad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I},
 $$
 
-where $\tilde{{\bf L}}$ is the scaled and normalized Laplacian matrix in order to have eigenvalues in the range of $[-1,1]$. The Chebyshev polynomials $T_k(\tilde{{\bf L}})$ transforms the eigenvalues $\tilde{{\bf L}}$ to the following recursively:
+where ${\bf L}_{\text{sym}} = {\bf I} - {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ is the **symmetric normalized** Laplacian from the notation box above, $\lambda_{\text{max}}$ is its largest eigenvalue, and $\tilde{{\bf L}}$ is that matrix rescaled so its eigenvalues lie in $[-1,1]$ — the interval on which Chebyshev polynomials are well behaved. The Chebyshev polynomials $T_k(\tilde{{\bf L}})$ transforms the eigenvalues $\tilde{{\bf L}}$ to the following recursively:
 
 $$
 \begin{aligned}
@@ -211,13 +221,17 @@ While ChebNet offers a principled way to approximate spectral convolutions, Kipf
 
 ### First-order Approximation
 
-The key departure is to use the first-order approximation of the Chebyshev polynomials.
+The key departure is to use the first-order approximation of the Chebyshev polynomials, i.e., to keep only $T_0$ and $T_1$. Two simplifications make this collapse neatly. First, we take $\lambda_{\text{max}} \approx 2$, which is exactly the upper bound on the spectrum of ${\bf L}_{\text{sym}}$ noted earlier, so $\tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I} \approx {\bf L}_{\text{sym}} - {\bf I}_N$. Second, ${\bf L}_{\text{sym}} - {\bf I}_N = -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ by definition. Putting the two together:
 
 $$
-g_{\theta'} * x \approx \theta'_0x + \theta'_1(L - I_N)x = \theta'_0x - \theta'_1D^{-\frac{1}{2}}AD^{-\frac{1}{2}}x
+g_{\theta'} * x \approx \theta'_0x + \theta'_1({\bf L}_{\text{sym}} - {\bf I}_N)x = \theta'_0x - \theta'_1{\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}x
 $$
 
 This is crude approximation but it leads to a much simpler form, leaving only two learnable parameters, instead of $K$ parameters in the original ChebNet.
+
+::: {.column-margin}
+Note that ${\bf L}_{\text{sym}}$, not the unnormalized ${\bf L} = {\bf D} - {\bf A}$, is what appears here. With the unnormalized Laplacian the second equality would be false, since ${\bf L} - {\bf I}_N = {\bf D} - {\bf A} - {\bf I}_N \neq -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$.
+:::
 
 Additionally, they further simplify the formula by using the same $\theta$ for both remaining parameters (i.e., $\theta_0 = \theta$ and $\theta_1 = -\theta$). The result is the following convolutional filter:
 
@@ -227,9 +241,11 @@ $$
 
 While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.
 
-### Deep GCNs can suffer from over-smoothing
+### Deep GCNs can suffer from vanishing and exploding gradients
 
 GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called *gradient vanishing/exploding*, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.
+
+The graph convolution has its own version of this. The operator ${\bf I}_N + {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ has eigenvalues in $[0, 2]$. Applying it once is harmless, but a deep model applies it over and over: a mode with eigenvalue near $0$ is crushed toward nothing, while a mode with eigenvalue near $2$ is amplified as $2^\ell$ over $\ell$ layers. Repeated multiplication therefore drives the signal — and with it the gradient — either to zero or to infinity.
 
 To facilitate the training of deep GCNs, the authors introduce a very simple trick called *renormalization*. The idea is to add self-connections to the graph:
 
@@ -253,6 +269,28 @@ These simplifications offer several advantages:
 - **Localization**: Each layer only aggregates information from immediate neighbors
 - **Depth**: Fewer parameters allow building deeper models
 - **Performance**: Despite (or perhaps due to) its simplicity, it often outperforms more complex models
+
+### Deep GCNs can also suffer from over-smoothing
+
+Renormalization fixes the gradients, but it does not fix a second, more conceptual problem with depth: **over-smoothing**.
+
+Look again at what one GCN layer does, ignoring the weights and the nonlinearity. It replaces each node's feature with an average over its closed neighborhood. That is a *low-pass filter* — exactly the $h_{\text{low}}(\lambda)$ we designed at the start of this module. Applying a low-pass filter once removes some high-frequency variation; applying it $\ell$ times removes $\ell$ rounds of it.
+
+In the spectral picture the effect is precise. Write the node signal in the Laplacian eigenbasis. Each layer multiplies the component along ${\bf u}_i$ by a factor that shrinks with the eigenvalue $\lambda_i$. Only the smoothest mode — the one with $\lambda = 0$, which is constant within each connected component — survives untouched. As $\ell \rightarrow \infty$ every other mode is suppressed, and every node in a component converges to the *same* representation.
+
+::: {.callout-warning title="Over-smoothing"}
+**Over-smoothing** is the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. This is why most GCNs in practice are only 2-3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
+:::
+
+Note that this is a different failure from vanishing gradients. Vanishing gradients are an *optimization* problem: the model cannot be trained. Over-smoothing is a *representational* problem: even trained perfectly, the model has thrown away what distinguishes one node from another.
+
+Several remedies are used in practice:
+
+- **Skip (residual) connections**: add the previous layer's representation back, ${\bf H}^{(\ell+1)} \leftarrow {\bf H}^{(\ell+1)} + {\bf H}^{(\ell)}$, so a node always retains some of its own earlier signal.
+- **Jumping knowledge**: keep the representations from *all* layers and let the model choose among them, instead of using only the last.
+- **Dropout and DropEdge**: randomly drop units, or randomly drop edges each epoch, which slows the averaging.
+- **Normalization**: PairNorm and related graph-specific normalizations explicitly prevent node representations from collapsing onto each other.
+- **Just stay shallow**: often the most effective option.
 
 ::: {.callout-note title="Exercise"}
 
@@ -330,25 +368,29 @@ where $e_{ij}$ represents the importance of the edge between node $i$ and node $
 How to compute $e_{ij}$? One simple choice is to use a neural network with a shared weight matrix $W$ and a LeakyReLU activation function. Specifically:
 
 1. Let's focus on computing $e_{ij}$ for node $i$ and its neighbor $j$.
-2. We use a shared weight matrix $W$ to transform the features of node $i$ and $j$.
+2. We use a **single** shared weight matrix ${\bf W}$ to transform the features of **both** node $i$ and node $j$. The same ${\bf W}$ is reused in the update step below — there is no second weight matrix.
    $$
-   \mathbf{\tilde h}_i  = \mathbf{h}_i, \quad \mathbf{\tilde h}_j  = W\mathbf{h}_j
+   \mathbf{\tilde h}_i  = {\bf W}\mathbf{h}_i, \quad \mathbf{\tilde h}_j  = {\bf W}\mathbf{h}_j
    $$
 3. We concatenate the transformed features and apply a LeakyReLU activation function.
 
 $$
-e_{ij} = \text{LeakyReLU}(\mathbf{a}^T[\mathbf{\tilde h}_i, \mathbf{\tilde h}_j])
+e_{ij} = \text{LeakyReLU}\left(\mathbf{a}^T[\mathbf{\tilde h}_i \, \| \, \mathbf{\tilde h}_j]\right) = \text{LeakyReLU}\left(\mathbf{a}^T[{\bf W}\mathbf{h}_i \, \| \, {\bf W}\mathbf{h}_j]\right)
 $$
 
-where $\mathbf{a}$ is a trainable parameter vector that sums the two transformed features.
+where $\|$ denotes concatenation and $\mathbf{a}$ is a trainable parameter vector that scores the concatenated pair.
 
-Once we have these attention weights, the node update is straightforward - just a weighted sum of neighbor features:
+Once we have these attention weights, the node update is straightforward - just a weighted sum of neighbor features, using the same ${\bf W}$:
 
-$$\mathbf{h}'_i = \sigma\left(\sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}{\bf W}_{\text{feature}}\mathbf{h}_j\right)$$
+$$\mathbf{h}'_i = \sigma\left(\sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}{\bf W}\mathbf{h}_j\right)$$
 
-where ${\bf W}_{\text{feature}}$ is a trainable weight matrix. To stabilize training, GAT uses multiple attention heads and concatenates their outputs:
+To stabilize training, GAT uses $K$ independent attention heads, each with its own ${\bf W}^k$ and $\mathbf{a}^k$. In intermediate layers their outputs are concatenated:
 
-$$\mathbf{h}'_i = \parallel_{k=1}^K \sigma\left(\sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k_{\text{feature}}\mathbf{h}_j\right)$$
+$$\mathbf{h}'_i = \parallel_{k=1}^K \sigma\left(\sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k\mathbf{h}_j\right)$$
+
+In the **final** layer concatenation no longer makes sense (the output dimension is fixed by the task), so the heads are averaged instead:
+
+$$\mathbf{h}'_i = \sigma\left(\frac{1}{K}\sum_{k=1}^K \sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k\mathbf{h}_j\right)$$
 
 ## Graph Isomorphism Network (GIN): Differentiate the Aggregation
 

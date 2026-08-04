@@ -317,14 +317,16 @@ $$
 
 #### Cut into more than two communities
 
-Ratio cut and Normalized cut can be extended to cut into more than two communities. Specifically, we can extend them to cut into $k$ communities, i.e., $V_1, V_2, \dots, V_k$ by defining
+Ratio cut and Normalized cut can be extended to cut into more than two communities. Let $K$ denote **the number of communities**, and let $V_1, V_2, \dots, V_K$ be the communities themselves. We use the index $c \in \{1, \dots, K\}$ to run over them, $|V_c|$ for the number of nodes in community $c$, and $|E_c|$ for the number of edges inside community $c$. Then
 
 $$
 \begin{align}
-\text{Ratio cut}(V_1, V_2, \dots, V_k) &= \sum_{k=1}^K \frac{1}{|V_k|} \left(\sum_{i \in V_k} \sum_{j \notin V_{k}} A_{ij} \right) \\
-\text{Normalized cut}(V_1, V_2, \dots, V_k) &= \sum_{k=1}^K \frac{1}{|E_k|} \left(\sum_{i \in V_k} \sum_{j \notin V_{k}} A_{ij} \right)
+\text{Ratio cut}(V_1, V_2, \dots, V_K) &= \sum_{c=1}^K \frac{1}{|V_c|} \left(\sum_{i \in V_c} \sum_{j \notin V_{c}} A_{ij} \right) \\
+\text{Normalized cut}(V_1, V_2, \dots, V_K) &= \sum_{c=1}^K \frac{1}{|E_c|} \left(\sum_{i \in V_c} \sum_{j \notin V_{c}} A_{ij} \right)
 \end{align}
 $$
+
+The inner double sum counts the edges leaving community $c$, and dividing by $|V_c|$ (or $|E_c|$) penalizes the objective for making any one community tiny. Setting $K = 2$ recovers the two-community definitions above, up to the choice of writing the normalizer as a product or as a sum of reciprocals.
 
 
 ::: {.column-margin}

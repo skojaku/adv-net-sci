@@ -56,26 +56,28 @@ Eigenvector centrality has several problems. One is that it does not handle dire
 A natural extension of eigenvector centrality to directed networks is the HITS centrality.
 It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
 
+Throughout, $A_{ij} = 1$ means there is an edge **from $i$ to $j$**. So $\sum_j A_{ij}(\cdot)_j$ sums over the nodes $i$ points to, and $\sum_j A_{ji}(\cdot)_j$ over the nodes that point to $i$.
+
 Let's put on a math hat to concretely define the hub and authority centralities.
-We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, we can define the hub and authority centralities as follows:
+We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, node $i$ is a good hub when the nodes it points to are good authorities, and a good authority when the nodes pointing to it are good hubs:
 
 $$
-x_i = \lambda_x \sum_j A_{ji} y_j, \quad y_i = \lambda_y \sum_j A_{ij} x_j
+x_i = \lambda_x \sum_j A_{ij} y_j, \quad y_i = \lambda_y \sum_j A_{ji} x_j
 $$
 
 Or equivalently,
 
 $$
-\mathbf{x} = \lambda_x \mathbf{A}^T \mathbf{y}, \quad \mathbf{y} = \lambda_y \mathbf{A} \mathbf{x}
+\mathbf{x} = \lambda_x \mathbf{A} \mathbf{y}, \quad \mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}
 $$
 
-Substituting $\mathbf{y} = \lambda_y \mathbf{A} \mathbf{x}$ into the first equation and similar for $\mathbf{x}$, we get
+Substituting $\mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}$ into the first equation, and $\mathbf{x} = \lambda_x \mathbf{A}\mathbf{y}$ into the second, we get
 
 $$
-\mathbf{x} = \lambda_x \mathbf{A}^T \mathbf{A} \mathbf{x}, \quad \mathbf{y} = \lambda_y \mathbf{A} \mathbf{A}^T \mathbf{y}
+\mathbf{x} = \lambda_x \lambda_y \mathbf{A} \mathbf{A}^T \mathbf{x}, \quad \mathbf{y} = \lambda_x \lambda_y \mathbf{A}^T \mathbf{A} \mathbf{y}
 $$
 
-Again, we obtain the eigenvector equations whose solutions are the eigenvectors of $\mathbf{A}^T \mathbf{A}$ and $\mathbf{A} \mathbf{A}^T$ for $\mathbf{x}$ and $\mathbf{y}$, respectively.
+Again, we obtain eigenvector equations. The hub centrality $\mathbf{x}$ is the principal eigenvector of $\mathbf{A} \mathbf{A}^T$, and the authority centrality $\mathbf{y}$ is the principal eigenvector of $\mathbf{A}^T \mathbf{A}$.
 
 ::: {.callout-note title="Exercise"}
 :class: tip
