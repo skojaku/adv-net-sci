@@ -1,0 +1,57 @@
+# Chapter 4 of 5 — The Small-World Recipe (cp6, + optional stretch).
+# Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
+# "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
+# After logging the last checkpoint, call chapter_done with short handoff notes.
+
+chapter:
+  id: ch4
+  title: "The Small-World Recipe"
+  goal: Student sees that a tiny fraction of rewired links collapses distance
+        while clustering survives (Watts-Strogatz).
+
+checkpoints:
+
+  - id: cp6_watts_strogatz
+    goal: Student sees that a tiny fraction of rewired links collapses distance
+          while clustering survives.
+    build: |
+      nb_add_template("cp6_ws_explorer", done_signal="cp6_watts_strogatz")
+      (only AFTER the prediction below is committed) — slider over p; the
+      network drawing highlights rewired shortcut edges in red, and the
+      title shows L(p)/L₀ and C(p)/C₀ live.
+    ask: |
+      FIRST, before any widget exists, ask_student: "Rewire just 1% of the
+      ring's links to random targets. What happens?" Options:
+      "both distance and clustering drop a lot" /
+      "distance drops a lot, clustering barely changes" /
+      "clustering drops a lot, distance barely changes" /
+      "both barely change".
+      Then build the explorer and: "Play with the slider. Around which p does
+      distance collapse — and what is clustering doing there? Click Done when
+      you've got it."
+    accept: |
+      Report notices that L collapses at small p (~0.01, i.e. ~1% of links)
+      while C is still high, and honestly compares to their prediction.
+      A wrong prediction + honest reconciliation is a FULL PASS — say so.
+    hints:
+      - "Set p = 0.01 exactly. Read the two numbers. Which one moved?"
+    reveal_after: |
+      Terminal: name the model (Watts & Strogatz, 1998). The mechanism: a few
+      random rewires are the long cables from the student's drawing — rare
+      enough that clustering survives, but they shortcut the whole ring. This
+      resolves ch3's puzzle and explains ch1's six degrees.
+
+# Optional stretch — offer ONLY if cp0 said "comfortable with Python", after
+# cp6, if time and energy allow. Never required, never logged as a fail.
+stretch:
+  - id: cs1_code
+    goal: Student writes a real check with networkx.
+    ask: |
+      "Load Zachary's karate club (nx.karate_club_graph()) and decide with
+      code: is it a small world? Compute average path length and average
+      clustering, and compare each against an Erdős–Rényi graph with the
+      same number of nodes and edges. You write it (in the notebook — ask me
+      to open you a scratch cell); I'll only rescue you if you ask."
+    accept: |
+      Working comparison + a verdict in words. Style does not matter;
+      the interpretation does.

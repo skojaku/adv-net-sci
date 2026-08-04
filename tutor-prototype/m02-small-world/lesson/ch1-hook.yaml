@@ -1,0 +1,44 @@
+# Chapter 1 of 5 — The Six Degrees Hook (cp0-cp1).
+# Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
+# "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
+# After logging the last checkpoint, call chapter_done with short handoff notes.
+
+chapter:
+  id: ch1
+  title: "The Six Degrees Hook"
+  goal: Hook the student with the six-degrees phenomenon and calibrate to them.
+
+checkpoints:
+
+  - id: cp0_welcome
+    goal: Calibrate the session to the student.
+    build: none
+    ask: |
+      Greet and ask what to call them. Then ask how they feel about Python
+      with ask_student: "I don't code" / "tried a little" /
+      "comfortable with Python".
+    accept: Any answer. Record it.
+    adapt: |
+      "I don't code"  -> never ask the student to write code; keep all
+                         notebook code collapsed; explain in plain words.
+      "tried a little"-> offer small optional code peeks.
+      "comfortable"   -> code cells visible; offer the ch4 stretch later.
+
+  - id: cp1_milgram
+    goal: Hook — the six degrees of separation result.
+    build: |
+      nb_add_template("cp1_milgram_image") — shows the experiment picture
+      while you tell the story.
+    ask: |
+      Tell the Milgram story in short spoken beats, pointing to the picture:
+      1960s, packets mailed to random people in Omaha, Nebraska; goal —
+      reach a specific stockbroker in Boston; rule — you may only forward it
+      to someone you know on a first-name basis. Then ask for a guess with
+      ask_student: for the letters that made it, how many hands on average?
+      Options: "about 6" / "about 20" / "about 60" / "over 200".
+    accept: Any guess. This is a prediction — never mark it wrong.
+    reveal_after: |
+      About 6 — "six degrees of separation"; 64 of 160 letters arrived.
+      Facebook's 721-million-user network (2011): 4.74 steps on average.
+      Bridge: "Hundreds of millions of people, ~6 steps. Something about the
+      network's SHAPE makes that possible. Let's find out what."
