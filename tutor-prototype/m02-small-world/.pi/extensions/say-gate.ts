@@ -334,4 +334,68 @@ export default function (pi: ExtensionAPI) {
       return new Container();
     },
   });
+
+  // Fixed-choice questions get an interactive picker (arrow keys + enter) —
+  // friendlier than asking a beginner to type an option verbatim.
+  pi.registerTool({
+    name: "ask_student",
+    label: "Ask (choices)",
+    description:
+      "Ask the student a multiple-choice question with an interactive picker. Use for ANY " +
+      "question with fixed options (predictions, comfort level, continue-or-fresh). The " +
+      "chosen option comes back as the tool result. Open-ended questions go through say.",
+    promptSnippet: "Ask the student a fixed-choice question (interactive picker)",
+    promptGuidelines: [
+      "Use ask_student whenever the question has fixed options; use say only for open-ended questions.",
+    ],
+    parameters: Type.Object({
+      question: Type.String({ description: "Short spoken question (max 2 sentences)." }),
+      options: Type.Array(Type.String(), { description: "2-6 short options." }),
+    }),
+    async execute(_id, params, _signal, _onUpdate, ctx: any) {
+      const q = String(params.question ?? "").trim();
+      const opts = (Array.isArray(params.options) ? params.options : []).map((o: any) =>
+        String(o),
+      );
+      remember("tutor", `${q} [${opts.join(" / ")}]`);
+      if (!ctx?.ui?.select || opts.length < 2) {
+        return {
+          content: [
+            { type: "text" as const, text: "(no interactive picker available — ask via say instead)" },
+          ],
+          details: { unavailable: true },
+        };
+      }
+      const choice = await ctx.ui.select(q, opts);
+      if (choice == null) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: "(the student dismissed the picker — ask via say instead, they may want to answer in their own words)",
+            },
+          ],
+          details: { dismissed: true, question: q },
+        };
+      }
+      remember("student", String(choice));
+      return {
+        content: [{ type: "text" as const, text: `Student chose: ${choice}` }],
+        details: { question: q, choice: String(choice) },
+      };
+    },
+    renderShell: "self",
+    renderCall(args: any, _theme: any) {
+      const q = typeof args?.question === "string" ? args.question : "";
+      return q ? new Text(q, 0, 0) : new Container();
+    },
+    renderResult(result: any, { isPartial }: any, theme: any) {
+      if (isPartial) return new Container();
+      const choice = result?.details?.choice;
+      if (typeof choice === "string" && choice.length > 0) {
+        return new Text(theme.fg("accent", `→ ${choice}`), 0, 0);
+      }
+      return new Container();
+    },
+  });
 }

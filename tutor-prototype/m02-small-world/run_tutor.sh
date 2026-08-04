@@ -53,22 +53,10 @@ fi
 
 mkdir -p session_artifacts
 
-# 2. Fresh notebook per session: archive the previous one and start from the
-#    pristine template (visually blank). TUTOR_RESUME=1 keeps the previous
-#    notebook to continue where you left off.
-if [ "${TUTOR_RESUME:-0}" = "1" ] && [ -f notebook.py ]; then
-  say "Resuming your previous notebook (TUTOR_RESUME=1)."
-else
-  STAMP=$(date +%Y%m%d-%H%M%S)
-  if [ -f notebook.py ] && ! cmp -s notebook.py notebook.template.py; then
-    mv notebook.py "session_artifacts/notebook-$STAMP.py"
-    say "Previous notebook archived to session_artifacts/notebook-$STAMP.py"
-  fi
-  cp -f notebook.template.py notebook.py
-  if [ -f session_artifacts/session_log.jsonl ]; then
-    mv session_artifacts/session_log.jsonl "session_artifacts/session_log-$STAMP.jsonl"
-  fi
-fi
+# 2. Make sure a notebook exists (first run). Continue-or-fresh is decided IN
+#    the session: when a previous session log exists, the tutor asks the
+#    student and calls nb_fresh_start if they want a clean slate.
+[ -f notebook.py ] || cp notebook.template.py notebook.py
 
 # 3. Start the marimo server (background). --no-token lets the skill discover it.
 say "Starting the notebook server (your browser will open)..."

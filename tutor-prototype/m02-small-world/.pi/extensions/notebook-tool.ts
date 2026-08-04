@@ -230,10 +230,11 @@ export default function (pi: ExtensionAPI) {
               content:
                 `RESUME CONTEXT (invisible to the student — never mention this message): ` +
                 `a previous session exists. Progress so far:\n${brief}\n` +
-                `Do NOT restart at cp0 and do NOT rebuild existing notebook cells ` +
-                `(nb_add_template skips duplicates automatically). Greet the student back ` +
-                `warmly by name, remind them in one sentence where you two left off, and ` +
-                `continue at checkpoint ${nextId}.`,
+                `FIRST, greet the student and ask with ask_student: continue where you left ` +
+                `off, or start fresh? If they choose fresh: call nb_fresh_start, then begin ` +
+                `at cp0_welcome. If they continue: do NOT rebuild existing notebook cells ` +
+                `(nb_add_template skips duplicates automatically), remind them in one ` +
+                `sentence where you two left off, and continue at checkpoint ${nextId}.`,
               display: false,
             },
             { deliverAs: "nextTurn" },
@@ -387,6 +388,50 @@ export default function (pi: ExtensionAPI) {
           `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(params.template + "_done_sig")}, hide_code=True, after=_cid)\n` +
           `        ctx.run_cell(_cid)\n`;
       }
+      return toResult(await runKernel(code, signal));
+    },
+    ...quietRender,
+  });
+
+  // ── nb_fresh_start ────────────────────────────────────────────────────────
+  // Conversational reset: archives the previous notebook + session log, then
+  // deletes every tutor-made cell from the LIVE notebook (template cells are
+  // unnamed and survive). Called when the student chooses "start fresh".
+  pi.registerTool({
+    name: "nb_fresh_start",
+    label: "Fresh start",
+    description:
+      "Reset the session at the student's request: archives the previous notebook and " +
+      "session log to session_artifacts/, then clears all tutor-made cells from the live " +
+      "notebook. Call ONLY after the student chose to start fresh (ask_student).",
+    promptSnippet: "Archive the previous session and clear the notebook (student chose fresh start)",
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+    }),
+    async execute(_id, params, signal) {
+      const stamp = new Date()
+        .toISOString()
+        .replace(/[-:]/g, "")
+        .replace(/\..*/, "")
+        .replace("T", "-");
+      const dir = path.join(process.cwd(), "session_artifacts");
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+        const nb = path.join(process.cwd(), "notebook.py");
+        if (fs.existsSync(nb)) fs.copyFileSync(nb, path.join(dir, `notebook-${stamp}.py`));
+        const log = path.join(dir, "session_log.jsonl");
+        if (fs.existsSync(log)) fs.renameSync(log, path.join(dir, `session_log-${stamp}.jsonl`));
+        const sig = path.join(dir, "student_signal.txt");
+        if (fs.existsSync(sig)) fs.writeFileSync(sig, "");
+      } catch {
+        // archiving is best-effort; clearing the notebook is what matters
+      }
+      const code =
+        `import marimo._code_mode as cm\n` +
+        `async with cm.get_context() as ctx:\n` +
+        `    for _c in list(ctx.cells):\n` +
+        `        if _c.name and _c.name != "_":\n` +
+        `            ctx.delete_cell(_c.id)\n`;
       return toResult(await runKernel(code, signal));
     },
     ...quietRender,
