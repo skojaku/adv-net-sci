@@ -103,14 +103,22 @@ detours counts in your favor — it's the whole point.
 - **Hints are logged, never penalized** — stated to the student up front, and
   binding on the grader. Otherwise students stop asking, and the log stops
   reflecting reality.
-- **Grading artifact = verbatim log**, not the notebook. The tutor is required
-  to record student answers word for word and never fake a pass.
+- **Grading artifact = the notebook itself** (plus the verbatim
+  `session_log.jsonl` as the machine copy). Note cells quote the student's
+  answers word for word, and a closing `session_record` cell summarizes every
+  checkpoint. The tutor is required to record answers verbatim and never fake
+  a pass.
+
+The full set of notebook design principles — structure, note-cell rhythm,
+naming conventions, theming — is in **[DESIGN.md](DESIGN.md)**.
 
 ### Adapting to another module
 
-Copy the folder, rewrite `lesson.yaml` (the checkpoint schema is documented in
-its header comment), and update the title cell of `notebook.py`. `AGENTS.md`
-and `run_tutor.sh` carry over unchanged.
+Copy the folder, rewrite the chapter scripts in `lesson/` (the checkpoint
+schema is documented in each file's header comment) and `lesson/index.json`,
+swap the premade cells in `cells/`, and update `notebook.template.py`'s
+dependencies if needed. `AGENTS.md`, `DESIGN.md`, and `run_tutor.sh` carry
+over unchanged.
 
 ### Known limitations (prototype)
 
