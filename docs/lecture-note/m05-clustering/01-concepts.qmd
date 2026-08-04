@@ -1,8 +1,5 @@
 ---
 title: "Core Concepts"
-jupyter: advnetsci
-execute:
-    enabled: true
 ---
 
 ## What to learn in this module
@@ -579,47 +576,8 @@ where $p_{c_i,c_j}$ is the probability of an edge between nodes in community $c_
 Importantly, the probability $p_{c_i,c_j}$ is specified by the community membership of the nodes, $c_i$ and $c_j$.
 As a result, when plotting the adjacency matrix of one realization of SBM, we observe "blocks" of different edge densities, which is why we say that SBM is a "block model".
 
-```{python}
-#| echo: false
-#| fig-cap: "Adjacency Matrix of Stochastic Block Model"
-#| label: fig-sbm-adjacency-matrix
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
-import numpy as np
-import matplotlib.pyplot as plt
+![Adjacency Matrix of Stochastic Block Model](../figs/sbm-adjacency-matrix.svg){#fig-sbm-adjacency-matrix width="6"}
 
-import igraph
-
-# Generate SBM
-n, k = 900, 3
-
-# Create block sizes (equal for simplicity)
-block_sizes = [n // k] * k
-
-# Create diverse pref matrix
-pref_matrix = [
-    [0.3, 0.05, 0.1],
-    [0.05, 0.4, 0.02],
-    [0.1, 0.02, 0.35]
-]
-
-# Generate SBM using igraph
-g = igraph.Graph.SBM(n, pref_matrix, block_sizes)
-
-# Convert to adjacency matrix for visualization
-A = np.array(g.get_adjacency().data)
-
-# Plot
-plt.figure(figsize=(8, 8))
-plt.imshow(A, cmap='binary')
-plt.title("Adjacency Matrix of Stochastic Block Model")
-plt.xlabel("Node Index")
-plt.ylabel("Node Index")
-plt.tight_layout()
-plt.show()
-
-```
 
 ### Characterizing network structures with the SBM
 
@@ -679,34 +637,8 @@ We call this the **likelihood function**. It tells us how likely we are to see t
 
 Our likelihood function has a special shape - it is a concave function with respect to $p_{c,c'}$. This means that the likelihood function is a hill with only one peak when we look at it in terms of edge probability $p_{c,c'}$.
 
-```{python}
-#| echo: false
-#| fig-cap: "Schematic of Likelihood Function (Concave)"
-#| label: fig-likelihood-function
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
-import numpy as np
-import matplotlib.pyplot as plt
+![Schematic of Likelihood Function (Concave)](../figs/likelihood-function.svg){#fig-likelihood-function width="6"}
 
-def concave_function(x):
-    return -(x - 0.5)**2 + 0.25
-
-x = np.linspace(0, 1, 100)
-y = concave_function(x)
-
-plt.figure(figsize=(10, 6))
-plt.plot(x, y, 'b-', linewidth=2)
-plt.title('Schematic of Likelihood Function (Concave)')
-plt.xlabel('Edge Probability p_c,c\'')
-plt.ylabel('Likelihood')
-plt.axvline(x=0.5, color='r', linestyle='--', label='Maximum')
-plt.annotate('Global Maximum', xy=(0.5, 0.25), xytext=(0.6, 0.2),
-             arrowprops=dict(facecolor='black', shrink=0.05))
-plt.legend()
-plt.grid(True)
-plt.show()
-```
 
 So, what does this mean for us? The top of this hill (our maximum value) is flat, and there's only one flat spot on the whole hill. So if we can find a spot where the hill isn't sloping at all (that's what we mean by "zero gradient"), we've found the very top of the hill.;
 
@@ -739,52 +671,8 @@ $$
 
 Why do we have two different equations for $p_{c,c'}$? It's because we are counting each pair of nodes only by once. It is easy to verify when looking at the adjacency matrix:
 
-```{python}
-#| echo: false
-#| fig-cap: "Adjacency Matrix of Stochastic Block Model"
-#| label: fig-adjacency-matrix
-#| fig-width: 6
-#| fig-height: 4
-#| fig-align: center
-import numpy as np
-import matplotlib.pyplot as plt
-import igraph
+![Adjacency Matrix of Stochastic Block Model](../figs/adjacency-matrix.svg){#fig-adjacency-matrix width="6"}
 
-# Generate SBM
-n, k = 900, 3
-
-# Create block sizes (equal for simplicity)
-block_sizes = [n // k] * k
-
-# Create diverse pref matrix
-pref_matrix = [
-    [0.3, 0.05, 0.1],
-    [0.05, 0.4, 0.02],
-    [0.1, 0.02, 0.35]
-]
-
-# Generate SBM using igraph
-g = igraph.Graph.SBM(n, pref_matrix, block_sizes)
-
-# Convert to adjacency matrix for visualization
-A = np.array(g.get_adjacency().data)
-
-# Create the plot
-fig, ax = plt.subplots(figsize=(6, 6))
-
-# Plot the adjacency matrix
-ax.matshow(A, cmap='binary')
-mask = np.triu(np.ones_like(A, dtype=bool), k=1)
-
-# Highlight the upper triangle with yellow overlay
-ax.matshow(np.ma.masked_array(np.ones_like(A), ~mask), cmap='Reds_r', alpha=0.3)
-
-# Add a title
-plt.title("Adjacency Matrix with Highlighted Upper Triangle")
-
-plt.show()
-
-```
 
 The upper triangle of the adjacency matrix represents $i < j$ over which we take the sum.
 When $c=c'$ (the diagonal block), we count only the upper half of the block, resulting in $\frac{n_c (n_c - 1)}{2}$. When $c \neq c'$ (different communities), we count all connections between them, resulting in $n_cn_{c'}$.
@@ -854,5 +742,5 @@ Community detection is one of the most widely applied ideas in network science:
 
 In every one of these, remember the caveat that runs through the whole module: the algorithm will return communities whether or not any exist.
 
-```{bibliography}
-```
+::: {#refs}
+:::

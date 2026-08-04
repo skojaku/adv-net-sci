@@ -1,8 +1,5 @@
 ---
 title: "Concepts - From image to graph"
-jupyter: advnetsci
-execute:
-    enabled: true
 ---
 
 ## Analogy between image and graph data
@@ -124,31 +121,7 @@ Eigenvalues $\lambda_i$ can be thought of as a *filter* that controls which freq
    - Suppresses low frequencies
    - Emphasizes differences between neighbors
 
-```{python}
-#| echo: false
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_context("talk")
-
-alpha = 1
-lambdas = np.linspace(0, 10, 100)
-h_low = 1 / (1 + alpha * lambdas)
-h_high = (alpha * lambdas) / (1 + alpha * lambdas)
-
-fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-sns.lineplot(x=lambdas, y=h_low, label="Low-pass filter", ax=axes[0])
-axes[0].legend(frameon=False).remove()
-sns.lineplot(x=lambdas, y=h_high, label="High-pass filter", ax=axes[1])
-axes[1].legend(frameon=False).remove()
-axes[0].set_title("Low-pass filter")
-axes[1].set_title("High-pass filter")
-fig.text(0.5, 0.01, "Eigenvalue $\lambda$", ha="center")
-axes[0].set_ylabel("Filter response $h(\lambda)$")
-sns.despine()
-plt.tight_layout()
-```
-
+![](../figs/m09-fig-00.svg){#fig-m09-fig-00}
 
 
 # Graph Convolutional Networks

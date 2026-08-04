@@ -26,7 +26,7 @@ $$
 
 and $P_{ij}$ is the transition probability between nodes $i$ and $j$.
 
-```{note}
+::: {.callout-note}
 Let's break down this derivation step by step:
 
 1. We start with the original modularity formula:
@@ -49,8 +49,7 @@ Let's break down this derivation step by step:
 
    $$Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)$$
 
-```
-
+:::
 The expression suggests that:
 
 1. The first term, $\pi_i P_{ij} \delta(c_i, c_j)$, represents the probability that a walker is at node $i$ and moves to node $j$ within the same community **by one step**.
@@ -58,11 +57,9 @@ The expression suggests that:
 
 In summary, modularity compares short-term and long-term random walk probabilities. High modularity indicates that a random walker is more likely to stay within the same community after one step than after many steps.
 
-```{note}
+::: {.callout-note}
 Building on this perspective from random walks, Delvenne et al. {footcite}`delvenne2010stability` extends the modularity by comparing multi-step and long-step transition probabilities of a random walk. This approach, known as "Markov stability", shows that the number of steps acts as a "resolution parameter" that determines the scale of detectable communities.
-```
-
-
+:::
 ## PageRank: Interpretation from random walk perspective
 
 PageRank can be interpreted from a random walk perspective:
@@ -83,7 +80,6 @@ This equation represents a random walk where:
 
 The PageRank $c_i$ is the stationary distribution of this random walk, representing the long-term probability of finding the walker at node $i$.
 
-```{note}
+::: {.callout-note}
 This sounds odd at first glance. But it makes sense when you think about what PageRank was invented for, i.e., Web search. It characterizes a web surfer as a random walker that chooses the next page by randomly jumping to a random page with probability $\beta$ or by following a link to a page with probability $1-\beta$. The web page with the largest PageRank means that the page is most likely to be visited by this random web surfer.
-```
-
+:::
