@@ -260,6 +260,30 @@ plot_centrality(g, scores, "Eigenvector Centrality")
 
 Thus, the eigenvector centrality is the eigenvector of the adjacency matrix associated with the largest eigenvalue.
 
+#### How is it computed? Power iteration
+
+You do not need a full eigendecomposition to get the leading eigenvector, and the algorithm that gets it is worth knowing because it *is* the intuition.
+
+Start with any positive vector — say, give every node a score of 1. Then repeat:
+
+$$
+{\bf c} \leftarrow \frac{{\bf A}{\bf c}}{\|{\bf A}{\bf c}\|}
+$$
+
+Each multiplication by ${\bf A}$ replaces every node's score with the sum of its neighbors' scores; the normalization just stops the numbers from exploding. This is called **power iteration**, and it converges to the leading eigenvector.
+
+Why does it work? Write the starting vector in the eigenvector basis, ${\bf c}^{(0)} = \sum_i a_i {\bf v}_i$. Applying ${\bf A}$ $t$ times gives
+
+$$
+{\bf A}^t {\bf c}^{(0)} = \sum_i a_i \lambda_i^t {\bf v}_i = \lambda_1^t \left( a_1 {\bf v}_1 + \sum_{i \geq 2} a_i \left(\frac{\lambda_i}{\lambda_1}\right)^t {\bf v}_i \right).
+$$
+
+Since $|\lambda_i / \lambda_1| < 1$ for every $i \geq 2$, every term except the first decays geometrically. After enough iterations only ${\bf v}_1$ survives. The convergence rate is governed by the ratio $|\lambda_2|/|\lambda_1|$ — the closer those two eigenvalues, the slower it converges.
+
+::: {.column-margin}
+Read this in terms of Module 1: ${\bf A}^t$ counts walks of length $t$. So power iteration is literally saying "a node is important if many walks of length $t$ end there", and eigenvector centrality is the limit of that statement as $t \rightarrow \infty$. In Module 7 the same iteration reappears as a random walk converging to its stationary distribution.
+:::
+
 ### Hyperlink-Induced Topic Search (HITS) centrality
 
 **HITS centrality** extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
@@ -347,9 +371,41 @@ $$
 
 By taking the inverse of $\mathbf{I} - \lambda \mathbf{A}$, we get
 
-$
+$$
 \mathbf{c} = \beta \left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} \mathbf{1}
 $$
+
+#### What Katz centrality is really counting
+
+That matrix inverse has a revealing expansion. For a scalar, $1/(1-x) = 1 + x + x^2 + \cdots$; the same identity holds for matrices when the series converges:
+
+$$
+\left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} = \mathbf{I} + \lambda \mathbf{A} + \lambda^2 \mathbf{A}^2 + \lambda^3 \mathbf{A}^3 + \cdots
+$$
+
+Recall from Module 1 that $\left(\mathbf{A}^t\right)_{ij}$ is the number of walks of length $t$ from $i$ to $j$. So Katz centrality is
+
+$$
+c_i = \beta \sum_{t=0}^{\infty} \lambda^t \left(\text{number of walks of length } t \text{ ending at } i\right).
+$$
+
+**Katz centrality counts every walk arriving at a node, discounting a walk of length $t$ by $\lambda^t$.** Short walks — close neighbors — count heavily; long walks contribute progressively less. The parameter $\lambda$ sets how far influence travels: small $\lambda$ makes the measure behave almost like degree centrality, large $\lambda$ pushes it toward eigenvector centrality.
+
+#### The condition on $\lambda$
+
+The geometric series converges only when its terms shrink, which for matrices means
+
+$$
+\lambda < \frac{1}{\lambda_{\max}(\mathbf{A})}
+$$
+
+where $\lambda_{\max}(\mathbf{A})$ is the largest eigenvalue of the adjacency matrix — the same eigenvalue that appeared in eigenvector centrality.
+
+::: {.callout-warning title="This is not a technicality"}
+Choose $\lambda$ above $1/\lambda_{\max}$ and the walk counts grow faster than the discount shrinks. The sum diverges, $\mathbf{I} - \lambda \mathbf{A}$ stops being invertible in a useful way, and you get meaningless (often negative) scores. In practice one computes $\lambda_{\max}$ first and then picks $\lambda$ as a fraction of $1/\lambda_{\max}$, such as $0.9/\lambda_{\max}$.
+
+Note what happens at the boundary: as $\lambda \rightarrow 1/\lambda_{\max}$ the longest walks come to dominate and Katz centrality converges to eigenvector centrality. The two measures are the two ends of a single dial.
+:::
 
 ```{python}
 #| echo: false
@@ -472,5 +528,65 @@ where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree o
 
 Degree centrality is a no brainer measure of centrality. Interestingly, degree centralities are often strongly correlated with other centrality measures, such as the eigenvector centrality, pagerank, along with distance-based centralities (e.g., closeness centrality). Of course, degree centrality is a crude importance measure as it only focuses on the direct connections of a node and ignores who these connections are to.
 
-to.
+## Bridges and brokers
+
+The centralities above mostly reward being *well connected*. Betweenness rewards something different, and the difference is worth dwelling on.
+
+Picture two dense friend groups joined by a single person who has one friend in each. That person has degree 2 — nearly the lowest in the network. By degree, eigenvector or PageRank they are a nobody. By betweenness they are the single most important node in the network, because *every* path between the two groups runs through them.
+
+Such nodes are called **bridges** or **brokers**, and they are the reason betweenness earns its keep:
+
+- **Remove a broker and the network splits.** This is precisely the vulnerability Module 3 studies, and it is invisible to degree-based attack strategies.
+- **Brokers control flow.** Information, resources, or a disease passing between groups must go through them, which is leverage — in sociology this is the source of Ronald Burt's "structural holes" theory of social capital.
+- **Brokers are structurally uncomfortable.** They belong to two worlds without being central in either. High betweenness with low degree is a distinctive and informative signature.
+
+This is also why Girvan-Newman (Module 5) detects communities by deleting *edges* with the highest betweenness: the edges that bridge groups carry the most shortest paths, so removing them peels the communities apart.
+
+## Choosing a centrality
+
+There is no best centrality, only a centrality that matches the question. Decide what "important" means for your problem first, then pick.
+
+| If you want to find...            | Ask...                                        | Use                          |
+| --------------------------------- | --------------------------------------------- | ---------------------------- |
+| **Popular** nodes                 | Who has the most direct connections?          | Degree                       |
+| **Efficient** nodes               | Who can reach everyone else quickly?          | Closeness, Harmonic          |
+| **Fair** locations                | Who is not too far from *anyone*?             | Eccentricity                 |
+| **Critical** nodes                | Who, if removed, breaks the flow?             | Betweenness                  |
+| **Influential** nodes             | Who is connected to other influential nodes?  | Eigenvector, Katz, PageRank  |
+| Nodes relevant to a **specific** node | Who is close to *this* node in particular? | Personalized PageRank        |
+
+A worked example: to place a new hospital you want eccentricity or closeness (nobody should be far from care). To decide which substation to armor you want betweenness (which failure severs the grid). To decide whom to vaccinate you want degree or PageRank (who spreads fastest). Three different "most important" nodes in the same network.
+
+### What does it cost to compute?
+
+Practical choice is also constrained by computation. For a network with $N$ nodes and $M$ edges:
+
+| Centrality             | Time complexity     | Notes                                                        |
+| ---------------------- | ------------------- | ------------------------------------------------------------ |
+| Degree                 | $O(M)$              | One pass over the edges. Essentially free.                    |
+| Closeness / Harmonic   | $O(NM)$             | A BFS from every node. Expensive but parallel.                |
+| Betweenness            | $O(NM)$             | Brandes' algorithm. The practical bottleneck on large graphs. |
+| Eigenvector / PageRank | $O(M)$ per iteration | Power iteration; iterations needed depend on the spectral gap. |
+
+The pattern is that shortest-path measures scale badly because they need all-pairs information, while walk-based measures scale well because they only ever need one matrix-vector product at a time. On a million-node network, PageRank is routine and exact betweenness is not — which is why approximate betweenness by sampling source nodes is common practice.
+
+### Centralities usually agree — until they don't
+
+In most real networks the various centralities correlate strongly, and degree correlates with almost everything. That is genuinely useful: if a cheap measure gives nearly the same ranking as an expensive one, use the cheap one.
+
+But the correlation is a property of the network, not a law. Two extreme cases make the point:
+
+- **A star graph.** The center has the maximum possible degree, closeness *and* betweenness — every measure agrees it is the most important node, and every leaf is equally unimportant. Total agreement.
+- **A path graph.** Every internal node has degree 2, so degree centrality is flat and uninformative. Betweenness, however, peaks sharply in the middle and falls to zero at the ends. Total disagreement.
+
+The lesson is that centralities diverge precisely where the structure is interesting — around bridges, bottlenecks and peripheries. When two measures disagree strongly on a real network, that disagreement is telling you about its structure.
+
+## Where centrality gets used
+
+- **Robustness and infrastructure**: identifying which nodes to protect, or which an adversary would attack (Module 3).
+- **Epidemiology**: finding super-spreaders and choosing vaccination targets. Note that the friendship paradox (Module 4) gives a way to find high-centrality nodes *without* mapping the network.
+- **Social dynamics**: locating leaders, influencers, and the brokers who connect otherwise separate communities.
+- **Web search**: PageRank and HITS were built for exactly this, and ranking is still where walk-based centrality is most visible.
+- **Economics and finance**: detecting systemically important institutions, and finding chokepoints in supply chains.
+- **Neuroscience and biology**: hub regions in brain connectomes; essential proteins in interaction networks, which tend to be high-degree.
 
