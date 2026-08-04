@@ -19,10 +19,11 @@ MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
 TUTOR_MODEL="${TUTOR_MODEL:-deepseek/deepseek-v4-flash-0731}"
 
 # The tutor model is TEXT-ONLY — photo uploads (chapter 3) are described to it
-# by a separate vision-capable model. Default: MiniMax-M3 via OpenRouter
-# (needs OPENROUTER_API_KEY). Without credentials the session still works:
-# the tutor asks the student to describe the drawing in words instead.
-export TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-openrouter/minimax/minimax-m3}"
+# by a separate vision-capable model. Default: Gemini 3.6 Flash via OpenRouter
+# (needs OPENROUTER_API_KEY; MiniMax-M3 misread hand-drawn chord endpoints).
+# Without credentials the session still works: the tutor asks the student to
+# describe the drawing in words instead.
+export TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-openrouter/google/gemini-3.6-flash}"
 
 say() { printf '\n\033[1;36m[tutor]\033[0m %s\n' "$*"; }
 die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
