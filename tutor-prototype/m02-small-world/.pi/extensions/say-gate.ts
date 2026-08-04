@@ -61,26 +61,59 @@ export default function (pi: ExtensionAPI) {
     if (msg.role === "user") {
       remember("student", textOf(msg.content).trim());
       strayTextNagged = false;
-    } else if (msg.role === "assistant") {
-      const t = textOf(msg.content).trim();
-      if (!t) return;
-      remember("tutor (unreviewed plain text)", t);
-      // The student saw this without review — remind the model once per turn.
-      if (t.length > 40 && !strayTextNagged) {
-        strayTextNagged = true;
-        pi.sendMessage(
-          {
-            customType: "say-gate-coach",
-            content:
-              "COACH (invisible to the student — never mention this): you wrote plain text, " +
-              "which reached the student WITHOUT review. Every student-facing message must go " +
-              "through the say tool; keep your plain text empty.",
-            display: false,
-          },
-          { deliverAs: "nextTurn" },
-        );
-      }
+      return;
     }
+    if (msg.role !== "assistant") return;
+    const t = textOf(msg.content).trim();
+    if (!t) return;
+    remember("tutor (private note)", t);
+    // Plain assistant text is a wall of deliberation the student shouldn't
+    // read (seen in production). Nag once per turn to use think()/say() …
+    if (t.length > 150 && !strayTextNagged) {
+      strayTextNagged = true;
+      pi.sendMessage(
+        {
+          customType: "say-gate-coach",
+          content:
+            "COACH (invisible to the student — never mention this): you wrote a wall of plain " +
+            "text; it was hidden from the student. Reason with the think tool (short notes), " +
+            "speak with say. Keep plain text empty.",
+          display: false,
+        },
+        { deliverAs: "nextTurn" },
+      );
+    }
+    // … and collapse the finalized message so the transcript stays clean.
+    const kept = (Array.isArray(msg.content) ? msg.content : []).filter(
+      (c: any) => c?.type !== "text",
+    );
+    return {
+      message: { ...msg, content: [...kept, { type: "text", text: "(thought privately)" }] },
+    };
+  });
+
+  // Sanctioned private-reasoning channel: renders as a single dim dot.
+  pi.registerTool({
+    name: "think",
+    label: "Think",
+    description:
+      "Private reasoning scratchpad — the student never sees it. Use a SHORT note (1–3 " +
+      "sentences) when you need to decide something, then act. Not for messages to the " +
+      "student (use say).",
+    promptSnippet: "Jot a private reasoning note (hidden from the student)",
+    parameters: Type.Object({
+      thought: Type.String({ description: "Your short private note." }),
+    }),
+    async execute(_id, _params) {
+      return { content: [{ type: "text" as const, text: "ok" }], details: {} };
+    },
+    renderShell: "self",
+    renderCall(_args: any, theme: any) {
+      return new Text(theme.fg("dim", "·"), 0, 0);
+    },
+    renderResult(_result: any, _opts: any, _theme: any) {
+      return new Text("", 0, 0);
+    },
   });
 
   function logReview(entry: Record<string, unknown>) {
@@ -186,10 +219,13 @@ export default function (pi: ExtensionAPI) {
         details: { approved: true, message: draft },
       };
     },
-    renderCall(_args: any, theme: any) {
+    // Self shell: no tool box / background — approved messages must read as
+    // ordinary tutor speech, not as tool output.
+    renderShell: "self",
+    renderCall(_args: any, _theme: any) {
       // Draft args stream here — never show them; the student only sees the
       // approved message in renderResult.
-      return new Text(theme.fg("muted", "💬"), 0, 0);
+      return new Text("", 0, 0);
     },
     renderResult(result: any, { isPartial }: any, theme: any) {
       if (isPartial) return new Text(theme.fg("muted", "…"), 0, 0);
