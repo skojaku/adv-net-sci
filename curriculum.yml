@@ -71,80 +71,48 @@ meta:
         assessment: "quiz item / exam item / project rubric row"
 
 # =============================================================================
-# LECTURE-NOTE GAPS
+# LECTURE-NOTE COVERAGE
 # =============================================================================
-# Concepts listed here are in this inventory but are NOT taught anywhere in the
-# lecture note; they come from docs/tutor-references/ or were added to complete
-# a derivation. Each is a decision for the instructor: either write it into the
-# lecture note, or drop the concept and stop assessing it.
-# Found by a read-only audit of every lecture-note page on 2026-08-04.
-lecture_note_gaps:
-  m01:
-    ids: [m01.c03, m01.c04, m01.c06, m01.c16, m01.c23, m01.c30]
-    detail: >-
-      The formal (V,E) definition, multigraph/parallel edges, self-loops,
-      'giant component' and DFS/BFS traversal are never stated in
-      m01/01-concepts.qmd. Notable because Konigsberg IS a multigraph and the
-      module's whole argument runs on degree counting. Matrix powers (c30)
-      appear only inside code comments.
-  m03:
-    ids: [m03.c16, m03.c19]
-    detail: >-
-      Adaptive (recomputed) attack ordering is never mentioned. The neighbor
-      degree distribution q(k) = k p(k) / <k> is absent even though
-      01-concepts.qmd promises 'See the Appendix for the proof of the
-      Molloy-Reed criterion' - and m03/04-appendix.md holds the M02 small-world
-      assignment instead of that proof.
-  m04:
-    ids: [m04.c02, m04.c03, m04.c07, m04.c21, m04.c23]
-    detail: >-
-      The degree sum formula and handshaking lemma are never stated; the
-      friendship paradox is shown only through one 4-node example, never as
-      <k^2>/<k> = <k> + Var(k)/<k>. 'assortativity' appears in the module
-      keyword list but nowhere in the text. Preferential attachment is deferred
-      to 'a separate module' that does not exist in the table of contents.
-  m07:
-    ids: [m07.c08, m07.c09, m07.c10, m07.c11, m07.c12, m07.c13, m07.c14, m07.c18, m07.c19, m07.c20, m07.c22, m07.c23, m07.c27, m07.c29]
-    detail: >-
-      The lecture note covers the transition matrix, stationary distribution,
-      spectral analysis, mixing time, modularity and Infomap thoroughly, but
-      never defines hitting/commute/cover time, resistance distance, ergodicity
-      conditions, reversibility, biased walks, restart walks, self-avoiding
-      walks, walk-based centralities, or Walktrap.
-  m08:
-    ids: [m08.c08, m08.c11, m08.c12, m08.c23, m08.c24, m08.c28, m08.c29, m08.c30, m08.c31, m08.c32, m08.c33, m08.c34]
-    detail: >-
-      The normalized Laplacian, Fiedler vector and the spectral-clustering link
-      to normalized cut are absent, as is the implicit-PMI-factorization result
-      (only a generic 'equivalences to spectral methods' citation exists).
-      There is no evaluation section at all - reconstruction, link prediction,
-      t-SNE/UMAP, dimension choice, instability and preservation trade-offs are
-      posed as questions in 03-exercises.md but never taught.
-  m05:
-    ids: [m05.c18, m05.c19, m05.c20, m05.c24, m05.c25, m05.c34, m05.c35, m05.c36, m05.c37]
-    detail: >-
-      The Q range and the 0.3 rule of thumb, NP-hardness of modularity
-      maximization, greedy optimization, Girvan-Newman, the 'three algorithm
-      families' framing, conductance, NMI, ARI and the applications list are
-      absent from 01-concepts.qmd. Louvain, Leiden, label propagation and the
-      degree-corrected SBM appear only in 02-coding.qmd.
-  m06:
-    ids: [m06.c10, m06.c14, m06.c17, m06.c18, m06.c24, m06.c25, m06.c26, m06.c27]
-    detail: >-
-      Bridges/brokers, the mechanism of power iteration (the term is
-      name-dropped once), the walk-counting reading of Katz, the Katz
-      convergence condition (a Python comment only), the goal-to-centrality
-      table, computational cost, the star/path correlation examples and the
-      applications list are all absent from the prose.
-  m09:
-    ids: [m09.c04, m09.c13, m09.c15, m09.c23, m09.c24, m09.c25, m09.c26, m09.c27, m09.c28, m09.c29, m09.c30, m09.c31, m09.c32]
-    detail: >-
-      Permutation invariance/equivariance and - more surprisingly - the
-      MESSAGE/AGGREGATE/UPDATE message-passing formalism itself are never
-      spelled out ('Message Passing' appears only as an exercise topic name).
-      The task taxonomy (node/edge/graph level), readout and pooling,
-      mini-batching, Graph Transformer, over-smoothing remedies and open
-      challenges are also absent. On over-smoothing itself see m09.c23.
+# An audit on 2026-08-04 found 69 concepts that this inventory assessed but the
+# lecture note never taught. All of them have since been written into the
+# lecture note, so the note is now the union of itself and this inventory.
+# Sections added, by module:
+#   m01  G = (V,E); multigraph and parallel edges; self-loops and the +2 rule;
+#        the giant component; finding components by DFS/BFS; (A^k)_ij counts
+#        walks of length k
+#   m03  fixed vs adaptive attack ordering; and the Molloy-Reed proof, which
+#        01-concepts.qmd had always promised but 04-appendix.md never held
+#   m04  degree sum formula; handshaking lemma; the exact friendship paradox
+#        <k>_friend = <k> + Var(k)/<k>; Barabasi-Albert preferential attachment;
+#        degree correlations and assortativity
+#   m05  reading a modularity score and NP-hardness; the algorithms themselves
+#        (greedy, Louvain, Leiden, label propagation, Girvan-Newman); evaluation
+#        (conductance, NMI, ARI, why metadata is not ground truth); applications
+#   m06  power iteration; Katz as discounted walk counting and its convergence
+#        condition; bridges and brokers; centrality selection table; complexity;
+#        star vs path correlation; applications
+#   m07  ergodicity (irreducibility, aperiodicity); reversibility and detailed
+#        balance; return, hitting, commute and cover times; resistance distance;
+#        walk variants (biased, restart, second-order, self-avoiding, directed);
+#        walk-based centralities; Walktrap; how structure shapes mixing
+#   m08  normalized Laplacian; Fiedler vector and algebraic connectivity;
+#        spectral clustering as the relaxation of normalized cut; neural
+#        embedding as implicit PMI factorization; spectral vs neural comparison;
+#        the entire evaluation section; dimension choice, instability under
+#        rotation, preservation trade-offs
+#   m09  permutation invariance and equivariance; the MESSAGE/AGGREGATE/UPDATE
+#        framework with all four architectures tabulated; node/edge/graph task
+#        levels; readout and hierarchical pooling; mini-batching and the
+#        neighborhood explosion; Graph Transformers and positional encodings;
+#        open challenges; and a closing synthesis tying the module to M4-M8
+lecture_note_coverage:
+  status: complete
+  verified: "2026-08-04"
+  note: >-
+    Re-run the audit after any substantial lecture-note edit. The check that
+    matters is not whether a term appears, but whether the note actually
+    explains it - several gaps found in the first audit were terms that appeared
+    only in a keyword list, a code comment, or an exercise prompt.
 
 # Places where the lecture note disagrees with itself. Each was confirmed by
 # reading the surrounding text; none is a curriculum.yml error. Marked FIXED
@@ -161,22 +129,22 @@ lecture_note_defects:
     status: FIXED
   - where: "m06-centrality/01-concepts.qmd and eigencentrality.qmd (HITS)"
     problem: "Hub and authority formulas are swapped relative to the note's own prose and to the edge direction its PageRank formula establishes (A_ji with d_j^out implies A_ab = 1 is a -> b). It also assigns A^T A to hubs; the standard result is A A^T. See the note on m06.c20."
-    status: OPEN
+    status: FIXED
   - where: "m09-graph-neural-networks/01-concepts.qmd (First-order Approximation)"
     problem: "L means the unnormalized D - A earlier on the page but must mean the normalized Laplacian here for the equality to hold; the switch is never flagged. See the note on m09.c10."
-    status: OPEN
+    status: FIXED
   - where: "m09-graph-neural-networks/01-concepts.qmd (GAT attention)"
     problem: "Prose says both node features are transformed by the shared W, but the equation transforms only h_j, and the aggregation step then introduces a third matrix W_feature. See the note on m09.c51."
-    status: OPEN
+    status: FIXED
   - where: "m09-graph-neural-networks/01-concepts.qmd (Deep GCNs section)"
     problem: "Heading promises over-smoothing; the body explains gradient vanishing/exploding. Over-smoothing is never defined anywhere in the module."
-    status: OPEN
+    status: FIXED
   - where: "m05-clustering/01-concepts.qmd (Cut into more than two communities)"
     problem: "Lowercase k is introduced as the total number of communities, then reused as the summation index with an unintroduced K as the upper bound."
-    status: OPEN
+    status: FIXED
   - where: "m03-robustness/04-appendix.md"
     problem: "01-concepts.qmd says 'See the Appendix for the proof of the Molloy-Reed criterion', but this file contains the M02 small-world assignment instead. The proof exists nowhere."
-    status: OPEN
+    status: FIXED
 
 course:
   code: "SSIE 641"

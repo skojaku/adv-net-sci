@@ -309,6 +309,34 @@ plt.show()
 
 The other eigenvalues are less than one in magnitude and describes the short-term behavior of random walks, which we will discuss in the next section.
 
+### When does a stationary distribution exist?
+
+We said "assuming a stationary distribution exists (which is always true for undirected networks)". That parenthetical hides two conditions worth stating, because both fail in networks you will actually meet.
+
+**Irreducibility.** The walker must be able to reach every node from every node. If the network is disconnected, a walker starting in one component never visits the others, and there is no single stationary distribution — there is one per component. This is why we usually extract the giant component (Module 1) before doing anything.
+
+**Aperiodicity.** The walker must not be trapped in a rigid rhythm. Consider a **bipartite** network — nodes split into two sides, edges only between sides. A walker starting on the left is on the right after one step, back on the left after two, and so on forever. The distribution oscillates with period 2 and never settles, even though the network is perfectly connected.
+
+::: {.callout-note title="Ergodicity"}
+A random walk with both properties is called **ergodic**, and only then are we guaranteed a unique stationary distribution reached from *any* starting point.
+
+The fix for periodicity is easy: add a small chance of staying put (a "lazy" walk), or add teleportation as PageRank does. Either one destroys the rigid alternation.
+:::
+
+You can see both conditions in the spectrum. Disconnection shows up as eigenvalue 1 appearing more than once — one copy per component. Periodicity shows up as an eigenvalue at exactly $-1$, the mode that flips sign at every step and therefore never decays.
+
+### Reversibility
+
+Undirected random walks have a symmetry that makes much of the theory work. In the stationary state, the probability of being at $i$ and stepping to $j$ equals the probability of being at $j$ and stepping to $i$:
+
+$$
+\pi_i P_{ij} = \frac{k_i}{2m}\cdot\frac{A_{ij}}{k_i} = \frac{A_{ij}}{2m} = \frac{k_j}{2m}\cdot\frac{A_{ji}}{k_j} = \pi_j P_{ji}
+$$
+
+This is called **detailed balance**, and a walk satisfying it is **reversible**: a recording of the walk played backwards is statistically indistinguishable from one played forwards.
+
+Reversibility is what lets us symmetrize $\mathbf{P}$ in the next section — the trick that makes the spectral analysis possible at all. Random walks on *directed* networks are generally not reversible, which is exactly why they are harder.
+
 ## Spectral Analysis and Mixing Time
 
 Now, let's turn our attention to the short-term dynamics of random walks. These are governed by the non-dominant (non-principal) eigenvectors of the transition probability matrix $P$. To analyze this behavior, we'll need to use some concepts from linear algebra.
@@ -430,6 +458,76 @@ where $\mu = 1-\lambda_2$.
 :::
 
 
+## How long does it take to get somewhere?
+
+The stationary distribution answers "where does the walker end up in the long run?" and mixing time answers "how long until we can stop caring where it started?". A third family of questions is about *specific* trips, and it gives us a set of distance-like quantities that are often more useful than shortest paths.
+
+### Return time
+
+Start at node $i$ and walk until you come back. How long does that take on average?
+
+The answer follows from the stationary distribution with no extra work. If the walker spends a fraction $\pi_i$ of its time at node $i$, then it visits $i$ once every $1/\pi_i$ steps on average:
+
+$$
+\mathbb{E}[\text{return time to } i] = \frac{1}{\pi_i} = \frac{2m}{k_i}
+$$
+
+A hub with $k_i = 100$ in a network with $m = 1000$ edges is revisited every 20 steps; a leaf with $k_i = 1$ waits 2000 steps.
+
+### Hitting time and commute time
+
+The **hitting time** $h_{ij}$ is the expected number of steps to reach $j$ for the first time, starting from $i$.
+
+The crucial and surprising property is that **hitting time is not symmetric**: $h_{ij} \neq h_{ji}$ in general. Walking from a leaf to a hub is quick — most steps lead toward well-connected regions. Walking from the hub back to that specific leaf takes far longer, because the hub has a hundred other places to go. Asymmetry is not a defect; it reflects a real feature of the network that shortest-path distance, which is always symmetric, cannot express.
+
+If you want symmetry, take the round trip. The **commute time** is
+
+$$
+C_{ij} = h_{ij} + h_{ji}
+$$
+
+which *is* symmetric and behaves much more like a distance. Two nodes have small commute time when they are connected by *many* short routes, not merely one — so unlike shortest-path distance, commute time rewards redundancy of connection.
+
+::: {.callout-note title="Random walks are electrical circuits"}
+Replace every edge with a 1-ohm resistor and the analogy is exact: commute time is proportional to the **effective resistance** between the two nodes,
+
+$$
+C_{ij} = 2m \cdot R_{ij}.
+$$
+
+Resistors in parallel reduce resistance, which is the electrical statement of "many routes make nodes close". This correspondence lets you import a century of circuit theory into network analysis, and it explains why commute time is a better similarity measure than shortest path for recommendation and link prediction.
+:::
+
+### Cover time
+
+The **cover time** is the expected number of steps to visit *every* node at least once. It matters whenever a walk is being used to explore or sample an unknown network — crawling the web, sampling users of a social platform — because it bounds how long you must run before you can hope to have seen everything. Cover time grows roughly like $N \log N$ on well-connected networks and much worse on networks with bottlenecks.
+
+## Variants of the walk
+
+The simple random walk — uniform choice among neighbors — is a starting point, not the only option. Each variant below changes the transition probabilities and therefore changes what the walk reveals.
+
+**Biased random walks.** Instead of choosing uniformly, weight the choice. A degree-biased walk favors (or avoids) high-degree neighbors; the stationary distribution shifts accordingly, and you can even design a bias that makes it *uniform*, which is useful for unbiased sampling. An attribute-biased walk prefers neighbors similar to the current node.
+
+**Random walk with restart (teleportation).** At each step, with probability $\alpha$ jump back to the starting node instead of following an edge. This keeps the walk near its origin, and its stationary distribution is a measure of proximity to that origin. You have already seen this: it is personalized PageRank from Module 6, viewed as a process rather than an equation.
+
+**Second-order walks.** Let the next step depend on the *previous* node as well as the current one, so the walker can be discouraged from backtracking or encouraged to stay local. This breaks the Markov property in the node state, and it is exactly the machinery node2vec uses in Module 8.
+
+**Self-avoiding walks.** Forbid revisiting any node. This sounds like a small change but is a much harder object: the walker can get stuck with nowhere to go, and the process is not Markovian at all. Self-avoiding walks are important in polymer physics and in certain sampling algorithms.
+
+**Walks on directed networks.** Transition probabilities become asymmetric, $\pi_i \propto k_i$ no longer holds, and the walk can reach a **dead end** — a node with no outgoing edges — where it simply stops. Teleportation is the standard remedy, which is precisely why PageRank needs it.
+
+## Centrality from random walks
+
+If the stationary distribution ranks nodes by how often a walker visits them, it is already a centrality — and for undirected networks it is just degree centrality in disguise, since $\pi_i \propto k_i$. Walk-based thinking becomes genuinely new when we look at *trajectories* rather than the endpoint.
+
+**Random walk betweenness.** Shortest-path betweenness (Module 6) assumes that whatever flows through the network knows the optimal route. Rumors, money and infections do not. Random walk betweenness instead counts how often a random walk from $s$ to $t$ passes through node $i$, averaged over all pairs $(s,t)$. Nodes that lie on many *plausible* routes score highly, even when they are on no shortest path at all. It is also more stable: adding one edge can reroute many shortest paths at once, but it barely perturbs a diffusive flow.
+
+**Random walk closeness.** Replace shortest-path distance with expected hitting time and you get a closeness measure that accounts for the number of routes, not just the shortest one.
+
+::: {.column-margin}
+The pattern is general and worth remembering: for almost every shortest-path-based quantity there is a random-walk counterpart. The shortest-path version asks "what is the best route?"; the random-walk version asks "what happens if nobody knows the best route?" Which one you want depends entirely on what is flowing.
+:::
+
 ## Community Detection through Random Walks
 
 Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network's modular structure.
@@ -477,3 +575,32 @@ By compressing the trajectory of random walks, Infomap can find a community stru
 Infomap finds community detection by compressing the trajectory of random walks. (a) shows a random walker's trajectory through a network, while (d) demonstrates the hierarchical encoding scheme that minimizes description length by assigning short, reusable codewords to nodes within modules (colored regions) and special transition codes (pentagons/triangles) for movements between modules, with the optimal community structure being the partition that minimizes the average bits needed to describe the random walk
 
 :::
+
+### Walktrap
+
+Infomap compresses a trajectory. **Walktrap** [@pons2005computing] uses the same trapping intuition more directly, as a similarity measure.
+
+The idea: run short random walks of a fixed length $t$ from every node. If two nodes are in the same community, a walker starting at either one ends up in roughly the same places, so their $t$-step distributions look alike. Define the distance between nodes $i$ and $j$ as the difference between their $t$-step distributions (scaled by degree), then agglomerate nodes bottom-up, always merging the pair that increases this distance least.
+
+The choice of $t$ matters, and it sets the scale. Small $t$ sees only local structure; large $t$ washes everything out toward the stationary distribution, which knows nothing about communities. Somewhere in between the walk is long enough to explore a community but too short to escape it — and that is where communities become visible.
+
+## Structure shapes how a walk behaves
+
+Everything above depends on the network the walker is placed on. Four cases are worth having in mind:
+
+- **Regular networks** (a lattice, a ring): the stationary distribution is uniform, since all degrees are equal. Mixing is slow, because the walker can only diffuse outward one step at a time — it takes on the order of $N^2$ steps to cross a ring of $N$ nodes.
+- **Small-world networks**: the shortcuts from Module 2 dramatically speed up mixing. A few long-range edges let the walker jump across the network instead of crawling around it, which is the dynamical counterpart of the short path lengths we measured there.
+- **Scale-free networks**: hubs dominate the stationary distribution, since $\pi_i \propto k_i$. Mixing is fast — almost every walk passes through a hub within a couple of steps, and from a hub anywhere is reachable. Hitting times are strongly asymmetric, as discussed above.
+- **Networks with community structure**: mixing is slow, and slow for an informative reason. The walker is trapped inside its community for a long time before escaping, which shows up as a small spectral gap. This is the property Infomap and Walktrap exploit — the "defect" *is* the signal.
+
+## Why this module is the hinge of the course
+
+Random walks are worth this much attention because they unify things we developed separately:
+
+- **Centrality** (Module 6). PageRank *is* a random walk with teleportation; its stationary distribution is the ranking. Eigenvector centrality is what power iteration converges to, and power iteration is a walk. Degree centrality is the stationary distribution of the simple walk.
+- **Community structure** (Module 5). Modularity is the difference between one-step and long-run co-location probabilities. Infomap and Walktrap define communities purely as regions where walks linger.
+- **Distance**. Commute time and effective resistance give a notion of proximity that counts *all* routes rather than the shortest, often working better than shortest-path distance in practice.
+- **Embedding** (Module 8). DeepWalk and node2vec turn walks into "sentences" and feed them to a language model. The embedding you get is determined by what the walk explores.
+- **Spreading processes**. Diffusion and epidemic models are random walks with extra rules, so mixing time and spectral gap govern how fast a contagion spreads.
+
+One process, five chapters. That is the payoff.

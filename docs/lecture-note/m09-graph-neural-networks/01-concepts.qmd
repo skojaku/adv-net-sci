@@ -16,6 +16,17 @@ Each node has a pixel value(s) (e.g., feature vector), which is convolved with t
 This is the key idea of graph convolutional networks.
 But, there is a key difference: while the number of neighbors for an image is homogeneous, the number of neighbors for a node in a graph can be heterogeneous. Each pixel has the same number of neighbors (except for the boundary pixels), but nodes in a graph can have very different numbers of neighbors. This makes it non-trivial to define the "kernel" for graph convolution.
 
+There is a second difference, less obvious but just as constraining. In an image, "the pixel above" is a well-defined position, and the same kernel weight always applies to it. In a graph, a node's neighbors arrive as an unordered *set*. If we relabel the nodes — feed the same network in with the rows of ${\bf A}$ shuffled — nothing about the network has changed, so nothing about our answer should change either.
+
+::: {.callout-important title="Key Concept: Permutation invariance and equivariance"}
+Let ${\bf P}$ be a permutation matrix that relabels nodes. A function $f$ on graphs is:
+
+- **Permutation invariant** if $f({\bf P}{\bf A}{\bf P}^\top, {\bf P}{\bf X}) = f({\bf A}, {\bf X})$. The output does not move at all. This is what we need for **graph-level** predictions — "is this molecule toxic?" cannot depend on the order we happened to list the atoms in.
+- **Permutation equivariant** if $f({\bf P}{\bf A}{\bf P}^\top, {\bf P}{\bf X}) = {\bf P} f({\bf A}, {\bf X})$. The output is relabeled the same way as the input. This is what we need for **node-level** predictions — if node 3 becomes node 7, its prediction should move with it.
+:::
+
+This is not a technicality; it dictates the architecture. It is why every layer we build below aggregates neighbors with an operation that ignores order — sum, mean, max — and never with anything that depends on which neighbor came "first". It is also why an MLP applied to a flattened adjacency matrix, which would in principle be more expressive, is useless in practice: it has to learn from data that all $N!$ relabelings mean the same thing.
+
 ## Spectral filter on graphs
 Just like we can define a convolution on images in the frequency domain, we can also define a ''frequency domain'' for graphs.
 
@@ -298,6 +309,37 @@ Let's implement a simple GCN model for node classification.
 [Coding Exercise](../../../notebooks/exercise-m09-graph-neural-net.ipynb)
 :::
 
+## The message passing framework
+
+Before meeting more architectures, it helps to name the pattern they all share. Look again at the GCN layer, ignoring the matrix notation: each node collects its neighbors' representations, combines them into one, and uses that to update itself. Every GNN in this module — and essentially every GNN in the literature — is a choice of how to do those three things.
+
+::: {.callout-important title="Key Concept: Message passing"}
+One layer of a GNN updates node $v$ as
+
+$$
+{\bf h}_v^{(\ell+1)} = \text{UPDATE}\left( {\bf h}_v^{(\ell)},\; \text{AGGREGATE}\left( \left\{ \text{MESSAGE}\left({\bf h}_v^{(\ell)}, {\bf h}_u^{(\ell)}, {\bf e}_{vu}\right) : u \in {\cal N}(v) \right\} \right) \right)
+$$
+
+- **MESSAGE** builds what each neighbor $u$ sends to $v$, optionally using the edge ${\bf e}_{vu}$.
+- **AGGREGATE** combines the incoming messages into a single vector. It takes a **multiset** as input and must be order-independent — this is where permutation equivariance is enforced.
+- **UPDATE** combines the aggregated message with the node's own current state.
+:::
+
+Reading the architectures through this lens:
+
+| | MESSAGE | AGGREGATE | UPDATE |
+|---|---|---|---|
+| **GCN** | ${\bf h}_u$ scaled by $1/\sqrt{\tilde k_v \tilde k_u}$ | sum | linear map, then $\sigma$ |
+| **GraphSAGE** | ${\bf h}_u$, from a *sample* of neighbors | mean / max / LSTM | concatenate with ${\bf h}_v$, linear, normalize |
+| **GAT** | ${\bf h}_u$ | attention-weighted sum, weights learned | linear map, then $\sigma$ |
+| **GIN** | ${\bf h}_u$ | sum | $(1+\epsilon){\bf h}_v + \text{sum}$, then MLP |
+
+Two consequences follow immediately from this form.
+
+**Depth equals reach.** After $\ell$ layers a node's representation depends on exactly its $\ell$-hop neighborhood, and nothing further. A 2-layer GNN cannot see anything 3 hops away. This is why the receptive field grows with depth — and, given over-smoothing, why the useful range of depths is so narrow.
+
+**Features and structure are learned jointly.** A GNN consumes two inputs: the graph ${\bf A}$ and the node features ${\bf X}$. If the features are informative the model can lean on them; if they are uninformative (all-ones, or a one-hot node ID) the model has nothing but topology and degenerates into a structural method. This is worth checking before blaming an architecture: on a network with no meaningful node attributes, a GNN often does no better than the embeddings of Module 8.
+
 # Popular Graph Neural Networks
 
 In this note, we will introduce three popular GNNs: GraphSAGE, Graph Attention Networks (GAT), and Graph Isomorphism Network (GIN).
@@ -441,3 +483,89 @@ h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_
 $$
 
 where $\text{MLP}^{(k)}$ is a multi-layer perceptron (MLP) with $k$ layers, and $\epsilon^{(k)}$ is a fixed or trainable parameter.
+# What are GNNs used for?
+
+So far we have built layers without saying what comes out the other end. Three task levels cover almost everything, and they differ in how node representations are turned into a prediction.
+
+## Node-level tasks
+
+Attach a classifier to each node's final representation.
+
+**Node classification** predicts a label per node: which topic a paper belongs to, whether an account is fraudulent, what function a protein performs. Training is usually **semi-supervised** — labels exist for a small fraction of nodes, the loss is computed only on those, but message passing lets unlabelled nodes contribute their features and structure anyway. This is a genuine advantage over methods that need labels everywhere.
+
+**Node regression** is the same with a continuous target.
+
+## Edge-level tasks
+
+Here the prediction concerns a *pair*, so we combine two node representations into an edge score:
+
+$$
+\hat{y}_{uv} = \text{score}({\bf h}_u, {\bf h}_v)
+$$
+
+where the score can be a dot product, a distance, or a small MLP on the concatenation.
+
+**Link prediction** asks whether an edge exists or will appear — friend recommendation, drug-target interaction, knowledge graph completion. Note the evaluation subtlety carried over from Module 8: real networks are sparse, so non-edges vastly outnumber edges, and a model predicting "no edge" everywhere scores well on accuracy. Use AUC or precision@k, and sample negatives deliberately.
+
+**Edge classification** predicts the *type* of a relationship rather than its existence.
+
+## Graph-level tasks
+
+Now the prediction concerns an entire graph — is this molecule soluble, is this program malicious — so we must compress $N$ node vectors into one graph vector. That step is called **readout** or **pooling**, and it must be permutation invariant:
+
+$$
+{\bf h}_G = \text{READOUT}\left(\left\{ {\bf h}_v : v \in V \right\}\right)
+$$
+
+**Global pooling** is the simple answer: sum, mean, or max over all nodes. Sum keeps size information (a bigger molecule gives a bigger vector); mean discards it and is more robust when graph sizes vary a lot. The choice matters more than it looks.
+
+**Hierarchical pooling** is the more ambitious answer: instead of collapsing everything at once, progressively coarsen the graph, merging clusters of nodes into super-nodes over several rounds, mirroring the pooling layers of a CNN. Methods like DiffPool learn which nodes to merge. This preserves multi-scale structure that global pooling destroys, at a substantial cost in complexity.
+
+# Training GNNs at scale
+
+One practical matter deserves attention because it has no analogue in ordinary deep learning.
+
+With images you build a mini-batch by picking 32 images; they are independent, so this is trivial. Nodes in a graph are *not* independent — computing one node's representation requires its neighbors, whose representations require *their* neighbors. With $\ell$ layers, a single node's prediction depends on its entire $\ell$-hop neighborhood.
+
+**Full-batch training** sidesteps the problem by loading the whole graph and updating all nodes at once. It is exact and simple, and it fails as soon as the graph exceeds memory.
+
+The alternatives all trade exactness for feasibility:
+
+- **Node-wise sampling** (GraphSAGE): sample a fixed number of neighbors per layer, capping the neighborhood explosion. This is the sampling we already met, seen from the training side.
+- **Layer-wise sampling**: sample a fixed set of nodes for each layer instead of per node, which avoids the exponential blow-up of independent per-node sampling.
+- **Subgraph sampling** (Cluster-GCN, GraphSAINT): partition the graph into subgraphs and treat each as a mini-batch. Cheap and effective, but it deletes the edges between partitions, which biases training.
+
+::: {.column-margin}
+This is why the "neighborhood explosion" is such a recurring phrase in the GNN literature. With average degree 10 and 3 layers, one node pulls in roughly 1,000 others. On a graph with hubs of degree 10,000, one unlucky node pulls in the entire network.
+:::
+
+# Beyond message passing: Graph Transformers
+
+Message passing has a built-in restriction: information moves one hop per layer, so distant nodes communicate only through depth — and depth brings over-smoothing. **Graph Transformers** attack this by letting every node attend to every other node directly, as in the Transformers used for text.
+
+That solves the distance problem and creates two new ones.
+
+**Where did the structure go?** If every node attends to every other, the model no longer knows which nodes are actually connected — we have thrown the graph away. The fix is **positional encodings**: give each node a feature vector describing where it sits in the graph. The standard choices are the leading Laplacian eigenvectors (the spectral embedding of Module 8) or random-walk return probabilities (Module 7). Both give a node a coordinate that reflects the topology, which attention can then use.
+
+**Cost.** All-pairs attention is $O(N^2)$, which is fine for molecules with 50 atoms and hopeless for a social network with millions of nodes. Practical variants restrict attention to a sampled or local subset.
+
+# What is still hard
+
+Four open problems, each an active research area:
+
+- **Scale.** Billion-node graphs strain memory and defeat exact training; sampling introduces bias whose effects are poorly understood.
+- **Theory.** We know message passing is bounded by 1-WL, but generalization is largely unexplained: why do 2-layer models with modest capacity work as well as they do?
+- **Dynamics.** Most models assume a fixed graph. Real networks add and remove nodes and edges continuously, and temporal GNNs are far less settled than static ones.
+- **Robustness, fairness and privacy.** GNN predictions can be flipped by a handful of adversarially added edges. Message passing propagates the majority group's signal into minority nodes, which can encode and amplify bias. And because a node's prediction depends on its neighbors' data, a GNN can leak information about people who never supplied their own.
+
+# Where this module sits in the course
+
+It is worth closing by noticing how little of this module was actually new.
+
+- The **GCN layer** is a low-pass filter on the graph Laplacian — the spectral machinery of Module 8, with the filter learned instead of designed.
+- **Message passing** is a learned diffusion process. Replace the learnable functions with fixed averaging and you have the random walk of Module 7.
+- **Node classification** works because connected nodes tend to share labels — which is homophily, the community structure of Module 5.
+- **Neighborhood sampling** is necessary because of hubs, whose existence is the degree heterogeneity of Module 4.
+- **Over-smoothing** is a statement about the spectral gap, the same quantity that controls mixing time in Module 7 and bottlenecks in Module 8.
+
+Graph neural networks are not a separate subject bolted onto the end of the course. They are what happens when the structures we spent eight modules measuring become the substrate for learning.
