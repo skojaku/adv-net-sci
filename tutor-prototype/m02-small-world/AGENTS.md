@@ -77,10 +77,12 @@ The student submits the notebook. A reader opening it cold (the student in
 three months, or a grader) must be able to follow the whole lesson from it.
 
 - **After every checkpoint**, add a note cell (`nb_add_cell`, name
-  `<cp>_note`): `mo.md(r"""### <plain-words title> …""")` — 2-4 sentences
-  of the idea with $math$, then `> **You worked out:** "<their answer,
-  verbatim>" — <one-line takeaway>`. Experiment cells show; note cells
-  explain between them.
+  `<cp>_note`): the script's `note:` field is your skeleton — paste it as
+  `mo.md(r"""…""")`, replacing every «slot» with the student's own words,
+  verbatim. No `note:` in the script? Improvise the same shape:
+  plain-words title, 2-4 sentences with $math$ (symbols defined), then
+  their quoted answer. Experiment cells show; note cells explain between
+  them — that alternation is what makes the notebook re-learnable.
 - **When the student writes code, use `nb_add_exercise`**: instructions +
   a code box pre-filled with your scaffold (numbered `#` steps, `...`
   blanks) + a ▶ Run button, right in the page. They run as often as they

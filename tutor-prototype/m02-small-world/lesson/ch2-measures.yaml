@@ -39,6 +39,16 @@ checkpoints:
       terminal: average path length = the average shortest-path distance over
       all pairs — this number is what "six degrees" measures for the whole
       USA.
+    note: |
+      ### 📏 Distance and average path length
+      The **distance** $d(u,v)$ between two people is the number of edges on
+      the shortest route between them. Averaging over every pair gives the
+      **average path length** $L$ — one number for how far apart a whole
+      network sits. Here five pairs sit at distance 1 and A–D at 2, so
+      $L = 7/6 \approx 1.17$. "Six degrees" is exactly this number, measured
+      on a whole country.
+
+      > **I worked out:** «their answers, verbatim»
 
   - id: cp3_clustering
     goal: Student understands local clustering as "do my friends know each other?"
@@ -69,3 +79,12 @@ checkpoints:
       neighbors) / (possible edges among neighbors); averaging over nodes
       gives the network's clustering. Social networks: typically high. One
       sentence: a 'global clustering' variant exists in the lecture notes.
+    note: |
+      ### 🤝 Local clustering — do my friends know each other?
+      The **local clustering coefficient** of a person $i$ is
+      $C_i = \frac{\text{friendships among } i\text{'s friends}}{\text{possible ones}}$.
+      A has 5 friends, so up to 10 friendships could exist among them; 2 do,
+      so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
+      network's clustering $C$ — typically HIGH in social networks.
+
+      > **I worked out:** «their answers, verbatim»

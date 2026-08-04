@@ -316,6 +316,37 @@ function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
   );
 }
 
+/**
+ * Deterministic notebook structure: a "## Chapter N — Title" markdown cell
+ * at every chapter start, so the finished notebook reads as a document the
+ * student can re-learn from. Skip-if-exists; cosmetic — never blocks.
+ */
+async function insertChapterHeader(
+  ch: Chapter,
+  num: number,
+  total: number,
+  signal?: AbortSignal,
+): Promise<void> {
+  try {
+    const warm = await ensureWarm(signal);
+    if (warm) return;
+    const name = `${ch.id}_header`;
+    const body = `mo.md(${JSON.stringify(`## Chapter ${num} of ${total} — ${ch.title}`)})`;
+    await runKernel(
+      `import marimo._code_mode as cm\n` +
+        `async with cm.get_context() as ctx:\n` +
+        `    _names = [c.name for c in ctx.cells]\n` +
+        `    if ${py(name)} not in _names:\n` +
+        `        _cid = ctx.create_cell(${py(body)}, name=${py(name)}, hide_code=True)\n` +
+        `        ctx.run_cell(_cid)\n` +
+        focusCellCode("_cid", "        "),
+      signal,
+    );
+  } catch {
+    // headers are cosmetic — never block the lesson
+  }
+}
+
 function chapterStatePath(): string {
   return path.join(process.cwd(), "session_artifacts", "chapter_state.json");
 }
@@ -463,6 +494,11 @@ export default function (pi: ExtensionAPI) {
           },
           { deliverAs: "nextTurn" },
         );
+        // Delayed: the kernel is likely still booting at session start.
+        const headerTimer = setTimeout(() => {
+          void insertChapterHeader(chapter, num, chapters.length);
+        }, 15_000);
+        (headerTimer as any).unref?.();
       }
     } catch {
       // chapter injection is best-effort; AGENTS.md tells the tutor how to cope
@@ -517,10 +553,11 @@ export default function (pi: ExtensionAPI) {
             {
               type: "text" as const,
               text:
-                "That was the FINAL chapter. Run the Ending protocol now: write " +
-                "session_artifacts/session_summary.md via nb_run (per checkpoint: judgment, " +
-                "hints used, one verbatim quote), then tell the student plainly what they can " +
-                "now do, and that their answers — not code — are what gets reviewed.",
+                "That was the FINAL chapter. Run the Ending protocol now (AGENTS.md): add the " +
+                "closing session_record notebook cell (per checkpoint: question, verbatim " +
+                "answer, judgment, hints), write session_artifacts/session_summary.md via " +
+                "nb_run, then tell the student plainly what they can now do, and that their " +
+                "answers — not code — are what gets reviewed.",
             },
           ],
           details: {},
@@ -545,6 +582,7 @@ export default function (pi: ExtensionAPI) {
       const loadOnce = () => {
         if (loaded) return;
         loaded = true;
+        void insertChapterHeader(next, num, chapters.length);
         pi.sendMessage(
           {
             customType: "chapter-divider",
@@ -998,12 +1036,26 @@ export default function (pi: ExtensionAPI) {
       } catch {
         // best-effort
       }
-      const code =
+      let code =
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
         `    for _c in list(ctx.cells):\n` +
         `        if _c.name and _c.name != "_":\n` +
         `            ctx.delete_cell(_c.id)\n`;
+      // Same kernel call as the wipe so the chapter header lands first,
+      // before any cp0/cp1 build cells.
+      try {
+        const chapters = loadChapters();
+        if (chapters.length > 0) {
+          const h = `${chapters[0].id}_header`;
+          const body = `mo.md(${JSON.stringify(`## Chapter 1 of ${chapters.length} — ${chapters[0].title}`)})`;
+          code +=
+            `    _cid = ctx.create_cell(${py(body)}, name=${py(h)}, hide_code=True)\n` +
+            `    ctx.run_cell(_cid)\n`;
+        }
+      } catch {
+        // header is cosmetic
+      }
       const result = await runKernel(code, signal);
       if (!result.failed) {
         result.out =
