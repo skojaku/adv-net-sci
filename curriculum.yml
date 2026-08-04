@@ -15,17 +15,32 @@
 #   3. Any concept whose `coverage` is still empty is not yet taught/assessed.
 #
 # Scope note:
-#   Theory/concepts only. Computational skills (igraph API, CSR format,
-#   PyTorch Geometric, plotting) are tracked separately, not here.
+#   Theory/concepts only. Library usage (igraph API calls, PyTorch Geometric,
+#   plotting recipes) is tracked separately, not here. The one exception is the
+#   CSR format (m01.c27-c29): the lecture note teaches it as a representation
+#   and a memory-scaling argument, not as an API, so it is included.
 # =============================================================================
 
 meta:
-  version: "1.0"
+  version: "2.0"
   updated: "2026-08-04"
   source_of_truth:
-    - docs/lecture-note/m0*/01-concepts.qmd
-    - docs/tutor-references/m0*-concept.md
+    # Primary: the lecture note. Every concept below was checked against these.
     - docs/lecture-note/intro/why-networks.qmd
+    - docs/lecture-note/m01-euler_tour/{01-concepts,04-advanced}.qmd
+    - docs/lecture-note/m02-small-world/{01-concepts,appendix,04-appendix}.qmd
+    - docs/lecture-note/m03-robustness/01-concepts.qmd
+    - docs/lecture-note/m04-node-degree/{01-concepts,03-exercises}
+    - docs/lecture-note/m05-clustering/{01-concepts.qmd,04-appendix.md}
+    - docs/lecture-note/m06-centrality/{01-concepts,eigencentrality,degree-distance-based-centrality}.qmd
+    - docs/lecture-note/m07-random-walks/{01-concepts,random-walks-math,appendix-unifying-centrality-and-communities,amida-kuji}.qmd
+    - docs/lecture-note/m08-embedding/{01-concepts.qmd,04-appendix.md}
+    - docs/lecture-note/m09-graph-neural-networks/{00-preparation,01-concepts}.qmd
+    # Secondary: condensed references used by the AI tutor.
+    - docs/tutor-references/m0*-concept.md
+  not_covered_here:
+    - "docs/lecture-note/m0*/02-coding.qmd (library usage)"
+    - "docs/lecture-note/m09-graph-neural-networks/04-appendix.qmd (PyTorch implementations)"
   schema:
     module:
       id: "m00-m09"
@@ -144,7 +159,8 @@ modules:
       - "State and apply Euler's condition for Eulerian paths and circuits"
       - "Use the vocabulary of walks, trails, paths, cycles, circuits and connectivity precisely"
       - "Describe the three standard network representations and what each makes easy"
-    keywords: [node, edge, degree, Eulerian path, Eulerian circuit, walk, trail, path, cycle, circuit, connected component, giant component]
+      - "Explain why real networks are stored sparsely and how CSR encodes a network"
+    keywords: [node, edge, degree, Eulerian path, Eulerian circuit, walk, trail, path, cycle, circuit, connected component, giant component, sparse matrix, compressed sparse row]
     concepts:
       - id: m01.c01
         name: "Konigsberg bridge problem"
@@ -338,6 +354,46 @@ modules:
         prereq: [m01.c02]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m01.c25
+        name: "Konigsberg after the bombing"
+        type: context
+        level: extension
+        statement: "WWII destroyed two of the seven bridges, leaving only two odd-degree landmasses - the 200-year-old impossible puzzle became possible by accident of war."
+        prereq: [m01.c09]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m01.c26
+        name: "Real networks are sparse"
+        type: principle
+        level: core
+        statement: "Most node pairs are not connected, so a dense n-by-n matrix is hopeless at scale - Earth's 8 billion people would need 512 exabytes."
+        prereq: [m01.c21]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m01.c27
+        name: "Compressed Sparse Row (CSR)"
+        type: representation
+        level: core
+        statement: "Store only non-zero entries in three arrays - data, indices, indptr - where row i occupies data[indptr[i]:indptr[i+1]]; memory drops from O(n^2) to O(m+n)."
+        prereq: [m01.c26, m01.c20]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m01.c28
+        name: "Reading structure off CSR"
+        type: method
+        level: core
+        statement: "Degree of node i is indptr[i+1] - indptr[i] and its neighbors are indices[indptr[i]:indptr[i+1]] - the semantics of the arrays are what make the format fast, not the storage alone."
+        prereq: [m01.c27]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m01.c29
+        name: "When dense beats sparse"
+        type: principle
+        level: extension
+        statement: "Sparse formats win for row-based operations and matrix-vector products on large sparse networks; dense arrays win for small or dense networks and random single-entry access."
+        prereq: [m01.c27]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M02: Small World
 # =============================================================================
@@ -405,8 +461,8 @@ modules:
       - id: m02.c07
         name: "Diameter"
         type: metric
-        level: extension
-        statement: "The largest shortest-path distance in the network - the worst case rather than the average case."
+        level: core
+        statement: "The largest shortest-path distance in the network - the worst case rather than the average case; a lattice has a large diameter, a small-world network does not."
         prereq: [m02.c05]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -520,6 +576,46 @@ modules:
         level: extension
         statement: "Neural wiring, Internet topology, road and airline networks, citation and collaboration networks all show the same signature."
         prereq: [m02.c15]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m02.c22
+        name: "G(n,m) vs G(n,p)"
+        type: model
+        level: core
+        statement: "The two Erdos-Renyi variants: fix the number of edges m, or connect each pair independently with probability p. G(n,p) is preferred because edge independence makes it analytically tractable."
+        prereq: [m02.c13]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m02.c23
+        name: "Why ER clustering equals p"
+        type: theorem
+        level: core
+        statement: "Among a node's k neighbors there are k(k-1)/2 possible edges, each present with probability p independently, so E[C_i] = p regardless of degree - hence C_rand = <k>/(n-1)."
+        prereq: [m02.c22, m02.c09]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m02.c24
+        name: "Tree-expansion argument for path length"
+        type: theorem
+        level: core
+        statement: "Breadth-first growth from any node reaches about k^h nodes in h steps (few cycles in a sparse random graph); setting k^h = n gives L ~ ln n / ln <k>, i.e. logarithmic scaling."
+        prereq: [m02.c22, m02.c06]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m02.c25
+        name: "Which clustering coefficient goes into sigma"
+        type: limitation
+        level: core
+        statement: "Watts and Strogatz used average local clustering while Humphries used global clustering; the same network can get different sigma values depending on the choice."
+        prereq: [m02.c15, m02.c11]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m02.c26
+        name: "Generative models as explanation"
+        type: principle
+        level: core
+        statement: "'What I cannot create, I do not understand' - building a mechanism that reproduces an observed property is how network science explains that property, not merely measures it."
+        prereq: [m02.c18]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
@@ -763,6 +859,30 @@ modules:
         prereq: [m03.c27, m03.c10]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m03.c29
+        name: "Boruvka's algorithm"
+        type: algorithm
+        level: extension
+        statement: "The original 1926 MST algorithm: every component simultaneously picks its cheapest outgoing edge, and components merge - naturally parallel, unlike Kruskal and Prim."
+        prereq: [m03.c04]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m03.c30
+        name: "Only the fraction matters"
+        type: principle
+        level: core
+        statement: "In the puddle-grid percolation demo the giant cluster appears at a critical probability p_c; the exact order in which cells filled is irrelevant - only the fraction present determines connectivity."
+        prereq: [m03.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m03.c31
+        name: "Efficiency vs security trade-off"
+        type: principle
+        level: core
+        statement: "No single structure is optimal against all failure types: efficiency favors hubs for cheap distribution, security demands redundancy and distributed connectivity."
+        prereq: [m03.c27, m03.c09]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M04: Node Degree and the Friendship Paradox
 # =============================================================================
@@ -971,6 +1091,30 @@ modules:
         prereq: [m04.c17, m03.c24, m02.c20]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m04.c25
+        name: "Universality of power laws"
+        type: phenomenon
+        level: core
+        statement: "Biological, technological and social networks alike show power-law-like degree distributions; Barabasi and Albert (1999) made this universality a foundational claim of network science."
+        prereq: [m04.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m04.c26
+        name: "A straight line is not a proof"
+        type: limitation
+        level: core
+        statement: "A line on a log-log plot is not a unique signature of a power law - a mixture of Poisson distributions can produce one too. Whether real networks are truly scale-free is actively debated and requires statistical testing, not eyeballing."
+        prereq: [m04.c25, m04.c18]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m04.c27
+        name: "CDF vs CCDF"
+        type: definition
+        level: extension
+        statement: "CDF(k) = 1 - CCDF(k) is the fraction of nodes with degree at most k; for heavy-tailed data the CCDF is preferred because the CDF flattens out and hides the tail."
+        prereq: [m04.c16]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M05: Clustering / Community Detection
 # =============================================================================
@@ -1088,7 +1232,7 @@ modules:
         name: "Ratio cut"
         type: metric
         level: core
-        statement: "Divide the cut by the number of nodes in each group so that lopsided partitions are penalized."
+        statement: "Cut(V1,V2) / (|V1| |V2|): the node-count normalizer is smallest for equal halves and largest when one side holds a single node, so lopsided partitions are penalized."
         prereq: [m05.c12]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1096,7 +1240,7 @@ modules:
         name: "Normalized cut"
         type: metric
         level: core
-        statement: "Divide the cut by the total degree (volume) of each group, which balances by edges rather than by node count."
+        statement: "Cut(V1,V2) / (|E1| |E2|): the same idea balanced by the number of edges inside each group rather than the number of nodes."
         prereq: [m05.c13]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1282,6 +1426,118 @@ modules:
         level: core
         statement: "Echo chambers and polarization, protein complexes and disease modules, autonomous systems on the Internet, research fields in citation data."
         prereq: [m05.c01]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c38
+        name: "Dense core (hybrid relaxation)"
+        type: definition
+        level: extension
+        statement: "A group required to be dense inside *and* sparsely connected outside, so that cohesion and clear boundaries are demanded at once."
+        prereq: [m05.c09]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c39
+        name: "k-way cut"
+        type: metric
+        level: core
+        statement: "Ratio and normalized cut extend to K groups by summing, over each group, its outgoing edges divided by its own size (or edge count)."
+        prereq: [m05.c13, m05.c14]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c40
+        name: "Cuts need K in advance"
+        type: limitation
+        level: core
+        statement: "Ratio and normalized cut require the number of communities as an input, which is exactly what is unknown in real data - the gap modularity was invented to close."
+        prereq: [m05.c39]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c41
+        name: "Cuts favor equal-sized groups"
+        type: limitation
+        level: core
+        statement: "The balancing normalizer biases toward communities of similar size, while real community sizes are broadly distributed; modularity inherits the same bias."
+        prereq: [m05.c39]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c42
+        name: "Cut optimization is NP-hard"
+        type: theorem
+        level: extension
+        statement: "Finding the optimal ratio or normalized cut is NP-hard, which is why spectral relaxation (M08) is used in practice."
+        prereq: [m05.c39]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c43
+        name: "Balls-and-strings game"
+        type: principle
+        level: core
+        statement: "Each edge is two colored balls on a string. Draw strings and count color matches; then cut the strings, draw balls at random with replacement, and count matches again. Modularity is the difference between the two counts."
+        prereq: [m05.c15]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c44
+        name: "Why degree enters the null model"
+        type: theorem
+        level: core
+        statement: "After cutting the strings there are 2m balls and a node of degree k contributes k of them, so the chance of drawing its color is k/2m - which is where the k_i k_j / 2m term comes from."
+        prereq: [m05.c43, m05.c16]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c45
+        name: "The two forms of Q are the same"
+        type: theorem
+        level: core
+        statement: "Expanding the squared community term and using delta(c,c_i) delta(c,c_j) = delta(c_i,c_j) turns the game formulation into the standard sum over node pairs."
+        prereq: [m05.c44, m05.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c46
+        name: "Modularity chooses K by itself"
+        type: principle
+        level: core
+        statement: "Unlike the cut objectives, Q can be compared across partitions with different numbers of communities, so the number of communities falls out of the optimization."
+        prereq: [m05.c17, m05.c40]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c47
+        name: "Q is not comparable across networks"
+        type: limitation
+        level: core
+        statement: "A random graph can score higher Q than a network with two obvious cliques, so a high value proves nothing on its own and cross-network comparison is meaningless."
+        prereq: [m05.c28]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c48
+        name: "No free lunch in community detection"
+        type: theorem
+        level: core
+        statement: "No method is best on all networks; each encodes assumptions, and modularity is in fact optimal for a specific class of networks - the job is to know when the assumptions hold."
+        prereq: [m05.c47, m05.c03]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c49
+        name: "SBM likelihood function"
+        type: method
+        level: core
+        statement: "L = sum over pairs of A_ij log p + (1-A_ij) log(1-p): the log-probability of seeing the observed network given a community assignment and block probabilities."
+        prereq: [m05.c29]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c50
+        name: "Concavity in the block probabilities"
+        type: theorem
+        level: core
+        statement: "L is concave in p_cc', so setting the gradient to zero finds the global maximum - a single hill with one flat top."
+        prereq: [m05.c49]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m05.c51
+        name: "Closed-form block probabilities"
+        type: theorem
+        level: core
+        statement: "p_cc' = m_cc' / (number of pairs), with n_c n_c' pairs off-diagonal and n_c(n_c-1)/2 on the diagonal - so only the community assignment is left to optimize."
+        prereq: [m05.c50]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
@@ -1517,6 +1773,30 @@ modules:
         prereq: [m06.c24]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m06.c28
+        name: "The (N-1) normalizer"
+        type: definition
+        level: core
+        statement: "Closeness is normalized by N-1 so its maximum is 1, attained by the center of a star graph where every other node is one step away."
+        prereq: [m06.c04]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m06.c29
+        name: "HITS reduces to eigenvector centrality"
+        type: theorem
+        level: core
+        statement: "For an undirected network A is symmetric, so A^T A c = lambda^2 c: hub and authority scores coincide with eigenvector centrality and only the eigenvalue is squared."
+        prereq: [m06.c20, m06.c12]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m06.c30
+        name: "Personalized PageRank as discounted reachability"
+        type: theorem
+        level: extension
+        statement: "c_i = sum_k beta (1-beta)^k p_i^(k): the score is the probability of reaching i in k steps, weighted by a factor that decays exponentially with distance from the focal node."
+        prereq: [m06.c23]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M07: Random Walks
 # =============================================================================
@@ -1545,7 +1825,7 @@ modules:
         name: "Amida-kuji as a stochastic process"
         type: context
         level: core
-        statement: "The ladder lottery makes randomness on a structure tangible: the rungs you meet decide where you end up, and the map from start to finish is always a permutation."
+        statement: "The ladder lottery makes randomness on a structure tangible: vertical lines are states, horizontal rungs are transitions, the randomness comes from not seeing the rungs in advance, and your win probability is the long-term behavior."
         prereq: [m07.c01]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1729,7 +2009,7 @@ modules:
         name: "Random-walk reading of modularity"
         type: theorem
         level: core
-        statement: "Modularity can be rewritten as the excess probability that a walker stays inside its community relative to the stationary baseline, linking M05 and M07."
+        statement: "Q = sum_ij (pi_i P_ij - pi_i pi_j) delta(c_i,c_j): the probability a walker is still in its own community after ONE step minus the probability after MANY steps."
         prereq: [m07.c24, m05.c17]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1737,7 +2017,7 @@ modules:
         name: "Infomap and the map equation"
         type: algorithm
         level: core
-        statement: "Encode a walker's trajectory with a two-level codebook; the partition that compresses the description best is the community structure."
+        statement: "Encode a walker's trajectory with a two-level codebook - module codes, exit codes and node codes - and take the partition that minimizes the average bits per step."
         prereq: [m07.c24]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -1771,6 +2051,62 @@ modules:
         level: core
         statement: "One process reproduces centrality (M06), community structure (M05), network distance and spreading dynamics - the conceptual payoff of the module."
         prereq: [m07.c21, m07.c25, m07.c12]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c31
+        name: "Multi-step transition via matrix powers"
+        type: theorem
+        level: core
+        statement: "(P^2)_ij = sum_k P_ik P_kj because a two-step trip must pass through some intermediate node; by induction (P^t)_ij is the t-step probability."
+        prereq: [m07.c04]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c32
+        name: "Why the leading eigenvalue is 1"
+        type: theorem
+        level: core
+        statement: "Rows of P sum to 1, so the number of walkers is conserved and no rescaling occurs; pi is the left eigenvector of P for eigenvalue 1 - parallel to, not equal to, the unit-norm eigenvector."
+        prereq: [m07.c06, m06.c13]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c33
+        name: "Symmetrizing the transition matrix"
+        type: method
+        level: core
+        statement: "P = D^-1 A = D^-1/2 Abar D^1/2 with Abar = D^-1/2 A D^-1/2 symmetric, so the non-symmetric P inherits a clean eigendecomposition from Abar."
+        prereq: [m07.c04]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c34
+        name: "Spectral decomposition of the walk"
+        type: theorem
+        level: core
+        statement: "x(t) = sum_l lambda_l^t q_l^(L) <q_l^(R), x(0)>: every mode decays as lambda_l^t except lambda_1 = 1, which is why the walk converges to pi and why lambda_2 governs the approach."
+        prereq: [m07.c33, m07.c31]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c35
+        name: "Distance to stationarity"
+        type: definition
+        level: core
+        statement: "t_mix is the first t at which the L1 distance ||x(t) - pi||_1 falls below epsilon from the worst possible starting point; epsilon is chosen by convention."
+        prereq: [m07.c15]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c36
+        name: "Relaxation time and the mixing bound"
+        type: theorem
+        level: core
+        statement: "With relaxation time tau = 1/(1-lambda_2), the Levin-Peres-Wilmer bound gives t_mix < tau log(1/(epsilon min_i pi_i)); equivalently t_mix <= 1/mu for the normalized Laplacian's second-smallest eigenvalue mu = 1 - lambda_2."
+        prereq: [m07.c34, m07.c35]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m07.c37
+        name: "Multi-scale communities from multi-step walks"
+        type: model
+        level: extension
+        statement: "Replacing the one-step P with a t-step walk turns modularity into a family of objectives indexed by t, exposing community structure at different resolution scales."
+        prereq: [m07.c25, m05.c26]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
@@ -1951,19 +2287,19 @@ modules:
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m08.c21
-        name: "Homophily vs structural equivalence"
+        name: "Community structure vs structural roles"
         type: principle
         level: core
-        statement: "BFS-like walks capture nodes that play the same *role*, DFS-like walks capture nodes in the same *region* - two different notions of node similarity."
+        statement: "BFS-like walks (low q) stay in the immediate neighborhood and capture community structure; DFS-like walks (high q) run deep and capture structural roles."
         prereq: [m08.c20]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m08.c22
         name: "LINE"
         type: model
-        level: extension
-        statement: "Optimize first-order proximity (connected nodes are close) and second-order proximity (nodes with shared neighbors are close) directly, without walks."
-        prereq: [m08.c02]
+        level: core
+        statement: "A direct optimization of graph structure, equivalent to node2vec with p = 1, q = 1 and window size 1 - i.e. plain neighbor prediction."
+        prereq: [m08.c20]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m08.c23
@@ -2062,6 +2398,118 @@ modules:
         prereq: [m08.c32]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m08.c35
+        name: "Frobenius reconstruction objective"
+        type: method
+        level: core
+        statement: "min_U ||A - U U^T||_F^2: find the N-by-d matrix whose outer product best reconstructs the adjacency matrix. Setting the derivative to zero gives A U = U U^T U, satisfied by eigenvectors of A."
+        prereq: [m08.c03]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c36
+        name: "Rank-one decomposition view"
+        type: theorem
+        level: core
+        statement: "A = sum_i lambda_i u_i u_i^T decomposes the network into rank-one pieces; keeping the d largest |lambda_i| keeps the pieces that describe the most structure."
+        prereq: [m08.c35]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c37
+        name: "Modularity matrix and sign bipartition"
+        type: method
+        level: core
+        statement: "With Q_ij = A_ij/2m - k_i k_j/4m^2, embedding by the eigenvectors of Q and splitting nodes by the sign of the second eigenvector gives a two-community partition."
+        prereq: [m08.c06]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c38
+        name: "word2vec network architecture"
+        type: model
+        level: core
+        statement: "A three-layer network: one-hot input of size N, a hidden layer of size d << N, and a softmax output of size N. The hidden-layer activations ARE the embedding."
+        prereq: [m08.c14]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c39
+        name: "Skip-gram vs CBOW"
+        type: model
+        level: core
+        statement: "Skip-gram predicts context from the target and works better for small corpora and rare words; CBOW predicts the target from context and trains faster."
+        prereq: [m08.c14]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c40
+        name: "Hierarchical softmax"
+        type: method
+        level: core
+        statement: "Arrange the vocabulary as a binary tree with words at the leaves so that a probability is a root-to-leaf path, cutting cost from O(|V|) to O(log|V|)."
+        prereq: [m08.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c41
+        name: "Semantic arithmetic in embedding space"
+        type: phenomenon
+        level: core
+        statement: "Dense vectors let relationships be read with linear algebra - man:woman as king:queen, countries and capitals forming parallel vectors - which discrete bag-of-words representations cannot do."
+        prereq: [m08.c38]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c42
+        name: "node2vec is a second-order walk"
+        type: model
+        level: core
+        statement: "The next step depends on the PREVIOUS node t: weight 1/p if returning to t, 1 if the candidate is adjacent to t, 1/q if it is two steps from t. The walk is no longer memoryless."
+        prereq: [m08.c20, m07.c05]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c43
+        name: "The training objective changes the embedding"
+        type: limitation
+        level: extension
+        statement: "DeepWalk uses hierarchical softmax while node2vec uses negative sampling; this implementation choice alone changes the characteristics of the resulting vectors."
+        prereq: [m08.c40, m08.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c44
+        name: "Neural embeddings are optimal for the SBM"
+        type: theorem
+        level: extension
+        statement: "DeepWalk, node2vec and LINE are provably equivalent to spectral methods under conditions, and provably optimal for recovering stochastic block model communities."
+        prereq: [m08.c23, m05.c29]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c45
+        name: "Preferential attachment is emergent, not primitive"
+        type: theorem
+        level: core
+        statement: "Popularity-similarity optimization reproduces Pi(k) ~ k, so preferential attachment is a *consequence* of local geometric optimization rather than a mechanism in its own right."
+        prereq: [m08.c25, m04.c21]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c46
+        name: "Radial and angular coordinates"
+        type: model
+        level: core
+        statement: "In the hyperbolic map, radius encodes popularity (birth time: older is more central) and angle encodes similarity; new nodes connect to the hyperbolically closest existing nodes."
+        prereq: [m08.c26]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c47
+        name: "Hidden hyperbolic geometry of complex networks"
+        type: theorem
+        level: core
+        statement: "Networks with heterogeneous degrees and strong clustering have an effective underlying hyperbolic geometry, from which scale-free degrees, clustering, short paths, self-similarity and navigability all follow."
+        prereq: [m08.c26]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c48
+        name: "Poincare vs Lorentzian models"
+        type: model
+        level: extension
+        statement: "The two models are isometric but differ computationally: the Poincare ball is intuitive yet needs Riemannian optimization, while the hyperboloid allows gradients in the ambient Euclidean space."
+        prereq: [m08.c27]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M09: Graph Neural Networks
 # =============================================================================
@@ -2070,14 +2518,15 @@ modules:
     slug: m09-graph-neural-networks
     sessions: ["11/18", "11/20"]
     big_question: "A CNN slides the same filter over every pixel - what do you slide over a network where no two nodes have the same neighborhood?"
-    hook: "An image is a grid graph; blur it, sharpen it, then ask what those filters mean when the grid is replaced by an arbitrary network."
+    hook: "Detect edges in a 6x6 image by hand, discover that the operation is a kernel, then ask what a kernel means when the grid is replaced by an arbitrary network."
     objectives:
+      - "Derive edge detection, kernels and the convolution theorem in the image domain first"
       - "Explain the analogy and the disanalogy between images and graphs"
       - "Derive spectral graph convolution from the Laplacian eigenbasis and explain why it must be localized"
       - "Trace the path from ChebNet to the GCN layer, including the renormalization trick"
       - "Express GCN, GraphSAGE, GAT and GIN in the message-passing framework and state what distinguishes each"
       - "Identify over-smoothing and the expressive-power limits of message passing"
-    keywords: [graph convolution, spectral filter, ChebNet, GCN, message passing, aggregation, GraphSAGE, GAT, attention, GIN, Weisfeiler-Lehman, over-smoothing, node classification, link prediction, graph classification]
+    keywords: [edge detection, kernel, convolution, Fourier transform, convolution theorem, total variation, graph convolution, spectral filter, ChebNet, GCN, message passing, aggregation, GraphSAGE, GAT, attention, GIN, Weisfeiler-Lehman, over-smoothing, node classification, link prediction, graph classification]
     concepts:
       - id: m09.c01
         name: "Image as a grid graph"
@@ -2333,4 +2782,180 @@ modules:
         level: core
         statement: "Scalability to billion-node graphs, weak theoretical understanding of generalization, dynamic and temporal graphs, adversarial robustness, fairness and privacy."
         prereq: [m09.c21, m09.c29]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c33
+        name: "Image as a matrix"
+        type: representation
+        level: core
+        statement: "A grayscale image is a 2D matrix of brightness values - the data structure that makes convolution a matrix operation."
+        prereq: []
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c34
+        name: "Edge detection as differencing"
+        type: method
+        level: core
+        statement: "An edge is a sudden brightness change, so subtracting a pixel's left neighbor from its right neighbor gives a large value exactly at edges and zero on flat regions."
+        prereq: [m09.c33]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c35
+        name: "Directional derivative operators"
+        type: method
+        level: core
+        statement: "Horizontal and vertical differencing detect different edges: on an image with a vertical stripe the horizontal derivative fires and the vertical one is identically zero."
+        prereq: [m09.c34]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c36
+        name: "Kernel and convolution"
+        type: definition
+        level: core
+        statement: "Generalizing the differencing pattern gives a kernel K applied over each neighborhood; sliding K across the image is convolution. The Prewitt operator is the differencing kernel written out."
+        prereq: [m09.c35]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c37
+        name: "Kernel as a pattern detector"
+        type: principle
+        level: core
+        statement: "Convolution at a pixel is the inner product of the reversed kernel with the local patch, so the response is maximized where the patch most resembles the kernel - a kernel is the pattern you are looking for."
+        prereq: [m09.c36]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c38
+        name: "Why the kernel is reversed"
+        type: definition
+        level: extension
+        statement: "The index reversal exists to match the mathematical definition of convolution (as opposed to correlation), which is what makes the convolution theorem hold."
+        prereq: [m09.c36]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c39
+        name: "Discrete Fourier transform"
+        type: method
+        level: core
+        statement: "F(x)[k] = sum_n x[n] e^{-2 pi i nk/N} decomposes a signal into sine and cosine waves; each coefficient says how much of frequency k the signal contains."
+        prereq: [m09.c33]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c40
+        name: "Convolution theorem"
+        type: theorem
+        level: core
+        statement: "Convolution in the signal domain equals element-wise multiplication in the frequency domain: X * K = F^-1(F(X) F(K)). The messy sliding sum becomes a product."
+        prereq: [m09.c39, m09.c36]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c41
+        name: "2D Fourier transform of images"
+        type: method
+        level: core
+        statement: "The same transform with two frequency indices decomposes an image into 2D sine and cosine basis waves."
+        prereq: [m09.c39]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c42
+        name: "The kernel spectrum is a filter"
+        type: principle
+        level: core
+        statement: "F(K) reweights each basis wave: the Prewitt operator has near-zero response at low frequencies, so multiplying suppresses smooth regions and keeps edges - it is a high-pass filter."
+        prereq: [m09.c41, m09.c40]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c43
+        name: "JPEG as frequency thresholding"
+        type: application
+        level: extension
+        statement: "JPEG splits an image into 8x8 blocks, transforms each with the discrete cosine transform, and discards high frequencies the eye barely registers."
+        prereq: [m09.c41]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c44
+        name: "The lesson to carry to graphs"
+        type: principle
+        level: core
+        statement: "A signal is a sum of basis waves and a kernel is a filter over them; to convolve on a graph, all we need is the graph's own set of basis waves."
+        prereq: [m09.c42]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c45
+        name: "Total variation as graph frequency"
+        type: theorem
+        level: core
+        statement: "J = (1/2) sum_ij A_ij (x_i - x_j)^2 = x^T L x measures how much a node signal changes across edges: small J is low frequency, large J is high frequency."
+        prereq: [m09.c44, m08.c07]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c46
+        name: "Eigenvalue equals the variation of its eigenvector"
+        type: theorem
+        level: core
+        statement: "For eigenvector u_i, u_i^T L u_i = lambda_i, so the eigenvalue IS the total variation of that mode - small eigenvalues are smooth modes, large ones are oscillating modes."
+        prereq: [m09.c45]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c47
+        name: "Explicit low-pass and high-pass filters"
+        type: method
+        level: core
+        statement: "h_low(lambda) = 1/(1 + alpha lambda) smooths a node signal; h_high(lambda) = alpha lambda/(1 + alpha lambda) emphasizes differences between neighbors."
+        prereq: [m09.c46, m09.c06]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c48
+        name: "Learnable spectral filter"
+        type: model
+        level: core
+        statement: "L_learn = sum_k theta_k u_k u_k^T with theta learned from data; adding a nonlinearity gives Bruna's spectral GCN, x^(l+1) = h(L_learn x^(l)), with one filter per input-output feature pair."
+        prereq: [m09.c47]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c49
+        name: "GraphSAGE separates self from neighbors"
+        type: model
+        level: core
+        statement: "Z_v = CONCAT(X_v, X_N(v)) keeps a node's own features distinct from its aggregated neighborhood, then L2-normalizes before the linear layer - unlike GCN, which blends them."
+        prereq: [m09.c16]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c50
+        name: "Sampling handles growing networks"
+        type: principle
+        level: core
+        statement: "A new node gets an embedding by sampling its neighbors, with no retraining or refiltering of the whole graph - which a spectral GCN cannot do."
+        prereq: [m09.c49, m09.c17]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c51
+        name: "Computing attention coefficients"
+        type: method
+        level: core
+        statement: "e_ij = LeakyReLU(a^T [W h_i || W h_j]) scored per edge, then softmax-normalized over the neighborhood so the weights sum to 1."
+        prereq: [m09.c18]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c52
+        name: "WL test procedure and its blind spot"
+        type: algorithm
+        level: core
+        statement: "Start with identical labels, then repeatedly hash each node's label together with the multiset of its neighbors' labels. 1-WL cannot distinguish regular graphs with the same node and edge counts."
+        prereq: [m09.c20]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c53
+        name: "Why mean and max aggregation lose information"
+        type: principle
+        level: core
+        statement: "If all neighbors share a feature value, mean and max return the same number regardless of how many neighbors there are; the WL hash still separates them because it keeps the count."
+        prereq: [m09.c52, m09.c14]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m09.c54
+        name: "GIN update rule"
+        type: model
+        level: core
+        statement: "h_v = MLP((1 + eps) h_v + sum_u h_u): summation preserves multiset counts and the MLP supplies injectivity, making the layer as discriminative as the WL hash."
+        prereq: [m09.c53, m09.c22]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
