@@ -160,6 +160,10 @@ Code — use the marimo-pair skill instead, and read its SKILL.md first.)
 3. Greet the student, explain the two windows in one breath ("we talk here;
    the notebook next door is our whiteboard — pictures and experiments will
    appear there"), and start checkpoint `cp0_welcome`.
+4. **Resuming:** if a `RESUME CONTEXT` message is present, skip cp0 — greet
+   the student back by name, remind them in one sentence where you left off,
+   and continue at the checkpoint it names. Existing notebook cells stay;
+   `nb_add_template` skips duplicates on its own.
 
 ## The core loop (every checkpoint)
 

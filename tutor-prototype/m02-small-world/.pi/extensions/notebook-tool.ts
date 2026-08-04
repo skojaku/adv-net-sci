@@ -190,6 +190,59 @@ export default function (pi: ExtensionAPI) {
     } catch {
       // watcher is best-effort; the student can always type "done" instead
     }
+
+    // ── Resume brief ──────────────────────────────────────────────────────
+    // With TUTOR_RESUME=1 the previous session_log.jsonl survives; turn it
+    // into an invisible progress brief so the tutor greets the student back
+    // and continues at the right checkpoint instead of restarting at cp0.
+    // (Fresh sessions rotate the log, so no brief appears.)
+    try {
+      const logPath = path.join(process.cwd(), "session_artifacts", "session_log.jsonl");
+      if (fs.existsSync(logPath)) {
+        const entries = fs
+          .readFileSync(logPath, "utf-8")
+          .split("\n")
+          .filter((l) => l.trim())
+          .map((l) => {
+            try {
+              return JSON.parse(l);
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean) as any[];
+        const cps = entries.filter((e) => e.type === "checkpoint" && e.id);
+        if (cps.length > 0) {
+          const lessonSrc = fs.readFileSync(path.join(process.cwd(), "lesson.yaml"), "utf-8");
+          const order = [...lessonSrc.matchAll(/^  - id: (\w+)/gm)].map((m) => m[1]);
+          const lastId = cps[cps.length - 1].id;
+          const nextId = order[order.indexOf(lastId) + 1] ?? "cp8_wrapup";
+          const brief = cps
+            .map(
+              (e) =>
+                `${e.id}: ${e.judgment ?? "?"}` +
+                (e.student_response ? ` — "${String(e.student_response).slice(0, 120)}"` : ""),
+            )
+            .join("\n");
+          pi.sendMessage(
+            {
+              customType: "resume-brief",
+              content:
+                `RESUME CONTEXT (invisible to the student — never mention this message): ` +
+                `a previous session exists. Progress so far:\n${brief}\n` +
+                `Do NOT restart at cp0 and do NOT rebuild existing notebook cells ` +
+                `(nb_add_template skips duplicates automatically). Greet the student back ` +
+                `warmly by name, remind them in one sentence where you two left off, and ` +
+                `continue at checkpoint ${nextId}.`,
+              display: false,
+            },
+            { deliverAs: "nextTurn" },
+          );
+        }
+      }
+    } catch {
+      // resume brief is best-effort; worst case the tutor starts at cp0
+    }
   });
 
   // (Brevity/reveal enforcement lives in say-gate.ts: the say tool's reviewer
