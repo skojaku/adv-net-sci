@@ -21,12 +21,14 @@ No programming experience is required.
    - pi: `npm install -g @mariozechner/pi-coding-agent`
    - Claude Code: `npm install -g @anthropic-ai/claude-code`
 3. **Set up your API key** (provided by the course — check the syllabus page).
-   For pi, set the environment variables from the course instructions, e.g.:
+   The tutor runs on the open-weights **DeepSeek v4 Flash** model through the
+   course's API. Set the environment variables from the course instructions, e.g.:
    ```bash
-   export ANTHROPIC_API_KEY="<your course key>"
-   export ANTHROPIC_BASE_URL="<course endpoint, if given>"
+   export DEEPSEEK_API_KEY="<your course key>"
    ```
-   Put these lines in your `~/.zshrc` so you only do this once.
+   Put this line in your `~/.zshrc` so you only do this once.
+   (Advanced: `TUTOR_MODEL` overrides the model, e.g.
+   `TUTOR_MODEL="provider/model" ./run_tutor.sh`.)
 
 ### Every session
 

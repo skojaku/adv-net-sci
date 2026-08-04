@@ -15,6 +15,9 @@ cd "$(dirname "$0")"
 
 MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
 
+# Course model: open-weights DeepSeek v4 Flash (override with TUTOR_MODEL).
+TUTOR_MODEL="${TUTOR_MODEL:-deepseek/deepseek-v4-flash}"
+
 say() { printf '\n\033[1;36m[tutor]\033[0m %s\n' "$*"; }
 die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -62,8 +65,13 @@ sleep 3
 kill -0 "$MARIMO_PID" 2>/dev/null || die "marimo failed to start — see session_artifacts/marimo_server.log"
 
 # 3. Start the tutor.
-say "Notebook is up. Starting your tutor ($AGENT) — say hello!"
+say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
 KICKOFF="Please start the tutoring session: read lesson.yaml, connect to the running marimo notebook with the marimo-pair skill, and begin at checkpoint cp0_welcome, as specified in AGENTS.md."
-"$AGENT" "$KICKOFF"
+if [ "$AGENT" = "pi" ]; then
+  pi --model "$TUTOR_MODEL" "$KICKOFF"
+else
+  # Claude Code fallback uses its own default model (TUTOR_MODEL is pi-only).
+  claude "$KICKOFF"
+fi
 
 say "Session ended. Your work is saved in notebook.py and session_artifacts/."
