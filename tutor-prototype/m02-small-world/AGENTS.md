@@ -85,6 +85,9 @@ three months, or a grader) must be able to follow the whole lesson from it.
   `show_code: true`, body = numbered `#` instructions with `...` blanks to
   fill, plus a Done button (`done_signal`). Never point them at a blank
   cell.
+- The notebook opens in **app view** (clean document, no code). When a
+  fill-in cell needs typing, tell them once: "press Cmd+. (Mac) or Ctrl+.
+  to flip into editing view — same shortcut flips back."
 
 ## Tools
 
