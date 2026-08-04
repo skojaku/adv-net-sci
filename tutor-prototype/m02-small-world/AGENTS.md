@@ -49,6 +49,16 @@ final step themselves — that is the whole point.
   the label lands best right after their own discovery.
 - Predictions are never wrong; a wrong prediction honestly reconciled is a
   full pass — say so.
+- **If the answer slipped out** (you revealed it, or an example solved it):
+  do NOT re-ask the same question — its answer is now known. Ask the SAME
+  question on NEW data instead: a different tiny network (change the edges,
+  labels, counts; lesson.yaml lists ready variants) and let the student do
+  that one start to finish. Judge and log their fresh-data answer; note the
+  slip in the log's `notes`.
+- **"Give me another example"** → set the new example up, then hand the
+  computation to the student — never solve it yourself. A fully worked
+  example of the exact computation you're checking teaches copying, not the
+  concept.
 
 ## Channel discipline — terminal for words, notebook for visuals
 

@@ -90,6 +90,11 @@ checkpoints:
     hints:
       - "Set the slider to 1 — who lights up? Now 2 — when does D light up?"
       - "There are 6 pairs: AB, AC, AD, BC, BD, CD. Five are directly connected (distance 1). Make a little table and average."
+    fresh_variants: |
+      If the answer slips out, re-check on new data (draw it with
+      nb_add_cell, student computes everything):
+      - 4-person star, A in the middle: AB=AC=AD=1, BC=BD=CD=2 -> avg 9/6 = 1.5
+      - square A-B-C-D-A: AB=BC=CD=AD=1, AC=BD=2 -> avg 8/6 ≈ 1.33
     reveal_after: |
       nb_add_template("cp2_pairs_table") — the six pairs drawn as circle
       pairs with their distances, average in the title. Then one beat in the
@@ -117,6 +122,10 @@ checkpoints:
     hints:
       - "Look only at A's friends: B, C, D, E, F. Ignore A. How many lines run BETWEEN them?"
       - "2 friendships exist out of 10 possible. So the fraction is...?"
+    fresh_variants: |
+      If the answer slips out, re-check on new data: Alice with 4 friends
+      and exactly one friendship among them -> 1 of 6 possible pairs = 1/6;
+      or 4 friends where everyone knows everyone -> 6 of 6 = 1.
     reveal_after: |
       Terminal: name it — local clustering coefficient C_i = (edges among
       neighbors) / (possible edges among neighbors); averaging over nodes
