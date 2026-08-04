@@ -264,26 +264,39 @@ Thus, the eigenvector centrality is the eigenvector of the adjacency matrix asso
 
 **HITS centrality** extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
 
+::: {.callout-important title="Notation: edge direction"}
+In a directed network we write $A_{ij} = 1$ when there is an edge **from $i$ to $j$**, and $A_{ij} = 0$ otherwise. Consequently:
+
+- $\sum_j A_{ij} (\cdot)_j$ sums over the nodes that $i$ **points to**. This is $i$'s out-degree, $d^{\text{out}}_i = \sum_j A_{ij}$.
+- $\sum_j A_{ji} (\cdot)_j$ sums over the nodes that **point to** $i$. This is $i$'s in-degree, $d^{\text{in}}_i = \sum_j A_{ji}$.
+
+Getting this convention right is the whole game in HITS and PageRank, so keep it in view.
+:::
+
 Let's put on a math hat to concretely define the hub and authority centralities.
-We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, we can define the hub and authority centralities as follows:
+We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, node $i$ is a good hub when the nodes **it points to** are good authorities, and a good authority when the nodes **pointing to it** are good hubs:
 
 $$
-x_i = \lambda_x \sum_j A_{ji} y_j, \quad y_i = \lambda_y \sum_j A_{ij} x_j
+\underbrace{x_i = \lambda_x \sum_j A_{ij} y_j}_{\text{hub: sum over what } i \text{ points to}}, \quad \underbrace{y_i = \lambda_y \sum_j A_{ji} x_j}_{\text{authority: sum over what points to } i}
 $$
 
 Or equivalently,
 
 $$
-\mathbf{x} = \lambda_x \mathbf{A}^T \mathbf{y}, \quad \mathbf{y} = \lambda_y \mathbf{A} \mathbf{x}
+\mathbf{x} = \lambda_x \mathbf{A} \mathbf{y}, \quad \mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}
 $$
 
-Substituting $\mathbf{y} = \lambda_y \mathbf{A} \mathbf{x}$ into the first equation and similar for $\mathbf{x}$, we get
+Substituting $\mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}$ into the first equation, and $\mathbf{x} = \lambda_x \mathbf{A}\mathbf{y}$ into the second, we get
 
 $$
-\mathbf{x} = \lambda_x \mathbf{A}^T \mathbf{A} \mathbf{x}, \quad \mathbf{y} = \lambda_y \mathbf{A} \mathbf{A}^T \mathbf{y}
+\mathbf{x} = \lambda_x \lambda_y \mathbf{A} \mathbf{A}^T \mathbf{x}, \quad \mathbf{y} = \lambda_x \lambda_y \mathbf{A}^T \mathbf{A} \mathbf{y}
 $$
 
-Again, we obtain the eigenvector equations whose solutions are the eigenvectors of $\mathbf{A}^T \mathbf{A}$ and $\mathbf{A} \mathbf{A}^T$ for $\mathbf{x}$ and $\mathbf{y}$, respectively.
+Again, we obtain eigenvector equations. The hub centrality $\mathbf{x}$ is the principal eigenvector of $\mathbf{A} \mathbf{A}^T$, and the authority centrality $\mathbf{y}$ is the principal eigenvector of $\mathbf{A}^T \mathbf{A}$.
+
+::: {.column-margin}
+A useful sanity check: $(\mathbf{A}\mathbf{A}^T)_{ij}$ counts how many nodes **both** $i$ and $j$ point to, so hubs are similar when they cite the same sources. $(\mathbf{A}^T\mathbf{A})_{ij}$ counts how many nodes point to **both** $i$ and $j$, so authorities are similar when they are cited together. This is co-citation and bibliographic coupling, respectively.
+:::
 
 ::: {.column-margin}
 
