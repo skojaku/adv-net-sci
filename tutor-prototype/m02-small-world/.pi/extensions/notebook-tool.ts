@@ -1138,4 +1138,60 @@ export default function (pi: ExtensionAPI) {
     },
     ...quietRender,
   });
+
+  // ── waiting-time trivia ───────────────────────────────────────────────────
+  // The student stares at "Working…" during model calls, notebook round-trips
+  // and chapter handoffs. Replace it with a rotating network-science tidbit —
+  // dead air becomes a tiny extra lesson.
+  const TRIVIA = [
+    "Euler invented network theory in 1736 to settle a stroll — the 7 bridges of Königsberg.",
+    "The 'six degrees' idea first appeared in a 1929 short story by Frigyes Karinthy.",
+    "Milgram's packets reached the Boston stockbroker in about 6 hops — 64 of 160 made it.",
+    "In 2011 Facebook measured 721 million users: average distance, just 4.74 friendships.",
+    "A 2003 email rerun of Milgram's experiment landed on the same answer: about 6 steps.",
+    "Your friends have more friends than you do, on average — the friendship paradox.",
+    "Watts & Strogatz, 1998: a few random rewires make a big world small.",
+    "The original three small worlds of 1998: film actors, the power grid, and a worm's brain.",
+    "The C. elegans worm's entire nervous system is mapped — 302 neurons, and it's a small world.",
+    "Zachary's karate club split in two in 1977 — and became network science's favorite dataset.",
+    "Find the karate-club split at a network conference and you can win an actual trophy.",
+    "Erdős number: your coauthor distance to Paul Erdős. Most mathematicians sit within 5.",
+    "Erdős number + Bacon number = the Erdős–Bacon number. Natalie Portman's is 6.",
+    "Kevin Bacon isn't Hollywood's center — hundreds of actors are better connected.",
+    "Granovetter, 1973: people find jobs through acquaintances, not close friends. Weak ties win.",
+    "Triadic closure: your friend's friend tends to become your friend. That's where triangles come from.",
+    "High clustering AND short paths = small world. Neither a ring nor a random graph has both.",
+    "Airlines fly hub-and-spoke because a few long shortcuts shrink every route.",
+    "Diseases ride shortcuts too: one flight can outrun a thousand local contacts.",
+    "The web, citation networks, and Hollywood all share one shape: a few superstar hubs.",
+    "Hub networks shrug off random failures — but fall fast to targeted attacks on hubs.",
+    "Dunbar's number: human brains manage roughly 150 stable relationships.",
+    "PageRank is network centrality: where an endlessly clicking web surfer ends up.",
+    "You know about 0.000002% of humanity — yet you can reach anyone in about 6 steps.",
+    "Your brain is a small-world network too: tight local clusters, short paths between regions.",
+  ];
+  let triviaIdx = Math.floor(Math.random() * TRIVIA.length);
+  let triviaTimer: ReturnType<typeof setInterval> | null = null;
+  const showTrivia = (ctx: any) => {
+    try {
+      const line = `🕸 ${TRIVIA[triviaIdx++ % TRIVIA.length]}`;
+      ctx.ui.setWorkingMessage(ctx.ui.theme.fg("dim", line));
+    } catch {
+      // cosmetic only — never let trivia break a turn
+    }
+  };
+  pi.on("turn_start", async (_event, ctx: any) => {
+    if (!ctx.hasUI) return;
+    showTrivia(ctx);
+    if (triviaTimer) clearInterval(triviaTimer);
+    // Long waits (vision calls, compaction) get a new tidbit mid-spin.
+    triviaTimer = setInterval(() => showTrivia(ctx), 12_000);
+    (triviaTimer as any).unref?.(); // never keep the process alive (print mode)
+  });
+  pi.on("turn_end", async () => {
+    if (triviaTimer) {
+      clearInterval(triviaTimer);
+      triviaTimer = null;
+    }
+  });
 }
