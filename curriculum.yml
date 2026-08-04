@@ -100,11 +100,12 @@ modules:
     slug: intro
     sessions: ["08/21"]
     big_question: "Why do we need a science of networks instead of ordinary statistics?"
-    hook: "A zoo of networks - brains, proteins, penguins in the Kyoto Aquarium, the Internet - all drawn with the same dots and lines."
+    hook: "H1N1 in 2009: geography barely predicts when a country gets infected, but distance measured through the air-travel network predicts it almost perfectly."
     objectives:
+      - "Explain why network distance beats geographic distance for predicting spread"
       - "Recognize networks across domains and articulate what the abstraction keeps and discards"
       - "Explain why a network is more than a table of pairs"
-    keywords: [network, node, edge, edge table, emergence, reductionism]
+    keywords: [network, node, edge, edge table, effective distance, emergence, reductionism]
     concepts:
       - id: m00.c01
         name: "Networks are everywhere"
@@ -144,6 +145,40 @@ modules:
         level: core
         statement: "Scale overwhelms intuition and effects are wildly non-uniform - removing one edge can shatter a network while another removal changes nothing - so tabular/statistical tools alone miss system-level behavior."
         prereq: [m00.c03, m00.c04]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      # The H1N1 story opens the module and motivates the whole course;
+      # it precedes m00.c01 in the lecture note.
+      - id: m00.c06
+        name: "The H1N1 arrival-time puzzle"
+        type: context
+        level: core
+        statement: "H1N1 started in Mexico in 2009; the natural guess is that it reaches nearby countries first, in expanding circles on a world map."
+        prereq: []
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m00.c07
+        name: "Geography explains arrival time only weakly"
+        type: phenomenon
+        level: core
+        statement: "The data show a rough trend - farther is later - but cities at the same geographic distance were hit at wildly different times, so distance alone cannot be the mechanism."
+        prereq: [m00.c06]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m00.c08
+        name: "Effective distance"
+        type: theorem
+        level: core
+        statement: "Brockmann and Helbing measured distance through the air-travel mobility network instead of across the map; arrival times then line up on a straight line with R^2 = 0.973 for H1N1 2009 and SARS 2003."
+        prereq: [m00.c07]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m00.c09
+        name: "Network structure determines how things spread"
+        type: principle
+        level: core
+        statement: "Once the underlying mobility network is known, geographic distance becomes irrelevant - the thesis the rest of the course builds on."
+        prereq: [m00.c08]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
@@ -395,6 +430,19 @@ modules:
         prereq: [m01.c27]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
+      - id: m01.c30
+        name: "Matrix powers count walks"
+        type: theorem
+        level: extension
+        statement: "(A^k)_ij is the number of walks of length k from i to j, because matrix multiplication sums over every intermediate node - the identity that later makes Katz centrality and random walks computable."
+        note: >-
+          The lecture note demonstrates this only in code comments
+          (04-advanced.qmd, 'Matrix powers for path counting'); it is never
+          stated as prose. Worth promoting to explicit teaching, since m06 and
+          m07 both depend on it.
+        prereq: [m01.c21, m01.c10]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
 # =============================================================================
 # M02: Small World
 # =============================================================================
@@ -503,7 +551,7 @@ modules:
         name: "Why the naive ratio fails"
         type: limitation
         level: core
-        statement: "The ratio C/L is large for trivial networks such as a complete graph, so raw values cannot certify small-worldness."
+        statement: "A complete graph has C = 1 and L = 1, so s_naive = 1 - the largest value the ratio can take - even though it is trivially not a small world. Raw values cannot certify small-worldness."
         prereq: [m02.c06, m02.c10]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -704,7 +752,7 @@ modules:
         name: "Why the MST is not enough"
         type: limitation
         level: core
-        statement: "A tree has no redundant path: every single edge is a cut edge, so one failure disconnects the grid. Cost efficiency and resilience pull in opposite directions."
+        statement: "A tree has no redundant path, so losing a single node - especially one near the center - disconnects the grid. Cost efficiency and resilience pull in opposite directions."
         prereq: [m03.c03, m03.c04]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -816,7 +864,12 @@ modules:
         name: "f_c for a degree-homogeneous network"
         type: theorem
         level: core
-        statement: "For a Poisson network kappa = <k> + 1, so f_c = 1 - 1/<k>: robustness is set purely by the average degree."
+        statement: "A Poisson degree distribution has <k^2> = <k>^2 + <k>, so kappa = <k> + 1 and kappa - 1 = <k>, giving f_c = 1 - 1/<k>: robustness is set purely by the average degree."
+        note: >-
+          The lecture note originally justified this with '<k^2> = <k>^2 and
+          thus kappa = <k>', which is the zero-variance (regular graph) case and
+          contradicts the f_c formula printed directly above it. Corrected in
+          the lecture note on 2026-08-04.
         prereq: [m03.c22]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2152,10 +2205,10 @@ modules:
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m08.c04
-        name: "Low-rank approximation and SVD"
+        name: "Why eigenvectors solve the compression problem"
         type: theorem
         level: core
-        statement: "The best rank-d approximation of a matrix is given by its top d singular vectors (Eckart-Young), which turns the compression problem into an eigenproblem."
+        statement: "Setting the derivative of ||A - U U^T||_F^2 to zero gives A U = U U^T U, satisfied when U holds eigenvectors of A; the objective then reduces to Tr(AA^T) - sum of the chosen eigenvalues, so the d LARGEST eigenvalues (signed, not by absolute value) minimize it."
         prereq: [m08.c03]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2163,7 +2216,7 @@ modules:
         name: "Spectral embedding of the adjacency matrix"
         type: method
         level: core
-        statement: "Eigendecompose A and keep the leading eigenvectors, scaled by their eigenvalues, as node coordinates."
+        statement: "Eigendecompose A and take the eigenvectors of the d largest eigenvalues directly as node coordinates."
         prereq: [m08.c04]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2415,7 +2468,7 @@ modules:
         name: "Rank-one decomposition view"
         type: theorem
         level: core
-        statement: "A = sum_i lambda_i u_i u_i^T decomposes the network into rank-one pieces; keeping the d largest |lambda_i| keeps the pieces that describe the most structure."
+        statement: "A = sum_i lambda_i u_i u_i^T decomposes the network into rank-one pieces, each weighted by lambda_i; keeping the d largest lambda_i keeps the pieces that describe the most structure."
         prereq: [m08.c35]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
@@ -2513,6 +2566,22 @@ modules:
         level: extension
         statement: "The two models are isometric but differ computationally: the Poincare ball is intuitive yet needs Riemannian optimization, while the hyperboloid allows gradients in the ambient Euclidean space."
         prereq: [m08.c27]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c49
+        name: "Hyperbolic distance formulas"
+        type: definition
+        level: extension
+        statement: "Poincare ball: d(u,v) = arcosh(1 + 2||u-v||^2 / ((1-||u||^2)(1-||v||^2))), which blows up as points approach the boundary. Hyperboloid: d(u,v) = arcosh(-<u,v>_L) under the Lorentzian inner product -u_0 v_0 + sum_i u_i v_i."
+        prereq: [m08.c27]
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+
+      - id: m08.c50
+        name: "Popularity-similarity distance"
+        type: definition
+        level: extension
+        statement: "x_ij is approximately r_i + r_j + ln(theta_ij / 2): radial coordinates add (popularity) and the angular gap enters logarithmically (similarity). A new node links to the m hyperbolically closest nodes."
+        prereq: [m08.c46]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
