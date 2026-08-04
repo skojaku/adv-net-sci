@@ -1,5 +1,6 @@
 # Premade cell for checkpoint cp3_clustering — A and A's five friends.
 # Friendships among the friends (B-F, C-E) are highlighted.
+# describe: A in the middle with five friends B, C, D, E, F; the two friendships among the friends (B-F and C-E) are drawn in orange.
 # --- cell: cp3_fig ---
 _G = nx.Graph()
 _G.add_edges_from(

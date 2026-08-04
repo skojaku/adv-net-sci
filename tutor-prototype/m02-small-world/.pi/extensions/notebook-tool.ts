@@ -350,7 +350,12 @@ export default function (pi: ExtensionAPI) {
       if (!fs.existsSync(file)) {
         return toResult({ out: `No template named '${params.template}'.`, failed: true });
       }
-      const parts = fs.readFileSync(file, "utf-8").split(/^# --- cell: (\w+) ---[ \t]*$/m);
+      const src = fs.readFileSync(file, "utf-8");
+      // Factual description the tutor can safely echo — prevents the model
+      // from misdescribing the artifact (e.g. calling a 4-person network
+      // "5-person", seen in production).
+      const describe = /^# describe: (.+)$/m.exec(src)?.[1] ?? "";
+      const parts = src.split(/^# --- cell: (\w+) ---[ \t]*$/m);
       const cells: Array<{ name: string; code: string }> = [];
       for (let i = 1; i < parts.length; i += 2) {
         cells.push({ name: parts[i], code: parts[i + 1].trim() });
@@ -388,7 +393,14 @@ export default function (pi: ExtensionAPI) {
           `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(params.template + "_done_sig")}, hide_code=True, after=_cid)\n` +
           `        ctx.run_cell(_cid)\n`;
       }
-      return toResult(await runKernel(code, signal));
+      const result = await runKernel(code, signal);
+      if (!result.failed && describe) {
+        result.out =
+          `Inserted. The student now sees: ${describe}\n` +
+          `(Describe it to the student ONLY from this line — never guess counts or details.)\n` +
+          result.out;
+      }
+      return toResult(result);
     },
     ...quietRender,
   });

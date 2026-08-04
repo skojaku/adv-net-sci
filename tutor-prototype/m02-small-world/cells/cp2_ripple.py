@@ -1,4 +1,5 @@
 # Premade cells for checkpoint cp2_distance — the "wave from A" explorer.
+# describe: A 4-person network - A, B, C, D - with a 'steps from A' slider (0-3); people reachable within that many steps light up orange, like a wave from A.
 # --- cell: cp2_steps ---
 cp2_steps = mo.ui.slider(0, 3, value=0, step=1, label="steps from A")
 cp2_steps

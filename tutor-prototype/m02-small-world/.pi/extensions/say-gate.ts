@@ -43,7 +43,7 @@ function localCheck(draft: string): { ok: boolean; reason?: string } {
   const sentences = draft.split(/[.!?…](?:\s|$)/).filter((s) => s.trim().length > 0).length;
   if (sentences > 3) return { ok: false, reason: `${sentences} sentences — max 3` };
   const questions = (draft.match(/\?/g) ?? []).length;
-  if (questions > 2) return { ok: false, reason: "more than one question at a time" };
+  if (questions > 1) return { ok: false, reason: "more than one question at a time — ask only the first one" };
   return { ok: true };
 }
 

@@ -1,5 +1,6 @@
 # Premade cells for cp4's reveal — one cable, three worlds.
 # Switching the radio redraws the ring and updates the average distance.
+# describe: A choice - no extra cable / short cable (2 apart) / long cable (opposite) - that redraws an 8-dot ring; the chosen cable is red and the title shows the average distance.
 # --- cell: cp4_choice ---
 cp4_choice = mo.ui.radio(
     options=["no extra cable", "short cable (2 apart)", "long cable (opposite)"],
