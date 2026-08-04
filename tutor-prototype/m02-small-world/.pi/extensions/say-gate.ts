@@ -76,9 +76,46 @@ export default function (pi: ExtensionAPI) {
   let consecutiveRejections = 0;
   let strayTextNagged = false;
 
+  // ── Runaway watchdog ──────────────────────────────────────────────────────
+  // Flash-class models can fall into degenerate repetition loops in plain
+  // text (seen in production: the same sentence streamed 50+ times). Abort
+  // the generation as soon as plain text exceeds the budget, then restart
+  // the turn with an invisible corrective instruction.
+  const RUNAWAY_CHARS = 800;
+  let runawayAborts = 0;
+  let runawayFiredForThisMessage = false;
+  pi.on("message_update", async (event: any, ctx: any) => {
+    const msg = event?.message;
+    if (msg?.role !== "assistant") return;
+    if (runawayFiredForThisMessage) return;
+    const t = textOf(msg.content);
+    if (t.length <= RUNAWAY_CHARS) return;
+    runawayFiredForThisMessage = true;
+    runawayAborts++;
+    try {
+      ctx.abort();
+    } catch {
+      // abort unavailable — the message_end collapse still hides the text
+    }
+    if (runawayAborts <= 3) {
+      pi.sendMessage(
+        {
+          customType: "say-gate-coach",
+          content:
+            "COACH (invisible to the student — never mention this): your plain-text output " +
+            "ran away and was cut off. NEVER write plain text — reason with one short think " +
+            "note, speak with say. Now continue the lesson exactly where you left off.",
+          display: false,
+        },
+        { deliverAs: "followUp", triggerTurn: true },
+      );
+    }
+  });
+
   pi.on("message_end", async (event: any) => {
     const msg = event?.message;
     if (!msg) return;
+    runawayFiredForThisMessage = false;
     if (msg.role === "user") {
       remember("student", textOf(msg.content).trim());
       strayTextNagged = false;
