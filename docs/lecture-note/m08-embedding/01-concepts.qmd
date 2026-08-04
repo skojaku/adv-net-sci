@@ -120,6 +120,49 @@ $$
 
 **Solution**: The $d$ eigenvectors associated with the $d$ smallest eigenvalues of the Laplacian matrix $\mathbf{L}$.
 
+### The normalized Laplacian
+
+The Laplacian $\mathbf{L} = \mathbf{D} - \mathbf{A}$ has a bias: its entries scale with degree, so hubs dominate the objective $\sum_{ij} A_{ij}\|u_i - u_j\|^2$ simply by having many terms. A hub is pulled toward the average of a hundred neighbors while a leaf is pulled by one, and the embedding ends up describing the hubs.
+
+The standard remedy is the **symmetric normalized Laplacian**:
+
+$$
+\mathbf{L}_{\text{sym}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}} = \mathbf{I} - \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}
+$$
+
+Dividing by $\sqrt{k_i k_j}$ discounts each edge by the degrees at its ends, so a connection to a hub counts for less than a connection to a leaf. A useful side effect is that the eigenvalues of $\mathbf{L}_{\text{sym}}$ always lie in $[0, 2]$ regardless of the network, which makes them comparable across networks and, in Module 9, makes it possible to design filters on them.
+
+::: {.column-margin}
+There is a third variant, the random-walk Laplacian $\mathbf{L}_{\text{rw}} = \mathbf{D}^{-1}\mathbf{L} = \mathbf{I} - \mathbf{P}$, where $\mathbf{P}$ is the transition matrix from Module 7. Its eigenvectors are those of $\mathbf{L}_{\text{sym}}$ rescaled by $\mathbf{D}^{-1/2}$, so the three Laplacians are three views of the same object — which is why spectral embedding, spectral clustering and random walks keep turning out to be the same theory.
+:::
+
+### The Fiedler vector and what the eigenvalues mean
+
+Both Laplacians have smallest eigenvalue $\lambda_1 = 0$, with the constant vector as its eigenvector — the trivial solution we discard. The interesting one is the **second** smallest.
+
+$\lambda_2$ is called the **algebraic connectivity** of the network, and its eigenvector is the **Fiedler vector**. Two facts make them important:
+
+- $\lambda_2 = 0$ exactly when the network is disconnected. More generally, the multiplicity of the eigenvalue 0 equals the number of connected components.
+- When $\lambda_2$ is small but nonzero, the network is *nearly* disconnected — there is a bottleneck. The Fiedler vector tells you where: nodes on one side of the bottleneck get positive entries, nodes on the other side negative ones.
+
+So the simplest possible spectral algorithm is: compute the Fiedler vector, split nodes by sign, done. That is a bipartition of the network into two well-separated groups.
+
+::: {.column-margin}
+$\lambda_2$ also fixes the mixing time of a random walk (Module 7): a small $\lambda_2$ means a bottleneck, a bottleneck means slow mixing, and slow mixing means the walker gets trapped in communities. The same number governs geometry, dynamics and clustering.
+:::
+
+### Spectral clustering
+
+Generalizing beyond two groups gives **spectral clustering**, one of the most used clustering algorithms anywhere:
+
+1. Compute the $d$ eigenvectors of $\mathbf{L}_{\text{sym}}$ with the smallest nonzero eigenvalues.
+2. Give each node the $d$-dimensional coordinate formed by its entries in those eigenvectors.
+3. Run $k$-means on those coordinates.
+
+Step 3 is ordinary clustering in Euclidean space — which is the whole point of embedding. The hard part, turning the graph into geometry, was done in steps 1 and 2.
+
+This also closes a loop back to Module 5. The normalized cut objective there was NP-hard as stated. If you relax it — allow the community indicator vector to take continuous values instead of just $\{0,1\}$ — the resulting optimization is exactly the Laplacian eigenproblem above. **Spectral clustering is the relaxation of normalized cut**, and the eigenvectors are the relaxed solution that $k$-means then rounds back into discrete groups.
+
 ::: {.column-margin}
 The smallest eigenvalue is always zero (with eigenvector of all ones). In practice, compute $d+1$ smallest eigenvectors and discard the trivial one.
 :::
@@ -377,3 +420,63 @@ Hyperbolic embedding of wordnet nouns [@nickel2018learning]. Abstract terms like
 
 :::
 
+
+## Are spectral and neural embeddings really different?
+
+We have now seen two families that look nothing alike: one solves an eigenproblem in closed form, the other runs stochastic gradient descent on random walks. It is natural to assume they compute different things. They mostly do not.
+
+The bridge is a result of Levy and Goldberg, extended to graphs by Qiu et al. [@qiu2018network]: **skip-gram with negative sampling is implicitly factorizing a matrix.** Specifically, the optimum of the word2vec objective is reached when the dot product of two embeddings equals the shifted pointwise mutual information of the corresponding pair:
+
+$$
+{\bf u}_i^\top {\bf v}_j = \log \frac{P(i,j)}{P(i)P(j)} - \log b
+$$
+
+where $P(i,j)$ is the probability that $i$ and $j$ co-occur in a window, $P(i)$ and $P(j)$ are their marginals, and $b$ is the number of negative samples. So DeepWalk and node2vec are performing a matrix factorization after all — just of a walk-derived PMI matrix rather than of $\mathbf{A}$ or $\mathbf{L}$.
+
+That does not make the two families interchangeable in practice:
+
+| | Spectral | Neural |
+|---|---|---|
+| **Solution** | Closed form, globally optimal, deterministic | Stochastic, local optimum, different every run |
+| **What it captures** | The proximity written into the matrix you chose | Higher-order proximity, set by walk length and window |
+| **Scale** | Eigendecomposition is costly on very large networks | Trains by sampling; scales to millions of nodes |
+| **Tuning** | Essentially just $d$ | $d$, walk length, window, $p$, $q$, negative samples, epochs |
+| **Interpretability** | Eigenvalues say how much structure each dimension carries | Little direct interpretation |
+
+There is one more result worth knowing: for networks generated by a stochastic block model, DeepWalk, node2vec and LINE are provably *optimal* at recovering the communities [@kojaku2024network]. When the assumptions hold, the neural methods are not heuristics — they are the right answer.
+
+## How do you know an embedding is good?
+
+An embedding is a means, not an end, so "good" has to be defined by what you do with it. There are two ways to ask.
+
+### Intrinsic: does it preserve the network?
+
+Compare the embedding against the network it came from.
+
+- **Reconstruction error.** How close is $\mathbf{U}\mathbf{U}^\top$ to $\mathbf{A}$? This is literally the objective spectral embedding minimizes, so it is most useful for comparing methods that did *not* optimize it.
+- **Edge recovery.** Rank all node pairs by embedding similarity and check whether the true edges come out on top. Report precision@k or AUC.
+
+### Extrinsic: does it help with the task?
+
+Usually more informative — embed once, then measure downstream performance.
+
+- **Link prediction.** Hide a random 10% of edges, embed the remainder, and score the hidden edges against an equal number of non-edges. This is the standard benchmark, and the right one to run first: it directly tests whether the embedding learned the structure rather than memorizing it.
+- **Node classification.** Use the vectors as features for a simple classifier predicting node labels. Keep the classifier simple (logistic regression) — a powerful classifier can compensate for a poor embedding and hide the difference you are trying to measure.
+- **Clustering.** Run $k$-means in the embedding space and compare against known communities with NMI or ARI (Module 5).
+- **Visualization.** Project to 2D and look. **t-SNE** and **UMAP** are the standard tools, and both preserve *neighborhoods*, not distances. Do not read meaning into the size of clusters or the gaps between them; those are artifacts of the projection.
+
+## What embeddings cannot do
+
+Four limitations to keep in view.
+
+**Choosing $d$ is a real decision.** Too small and structure is destroyed; too large and the embedding starts fitting noise and stops generalizing. There is no formula. Typical values are 64 to 256, chosen by downstream validation.
+
+**Embeddings are not unique or stable.** Neural methods use random initialization and random walks, so two runs give different vectors. Worse, *every* embedding is defined only up to rotation: if $\mathbf{U}$ is optimal, so is $\mathbf{U}\mathbf{R}$ for any orthogonal $\mathbf{R}$, since $\mathbf{U}\mathbf{R}(\mathbf{U}\mathbf{R})^\top = \mathbf{U}\mathbf{U}^\top$.
+
+::: {.callout-warning title="A practical consequence"}
+You cannot compare individual coordinates across two runs, and you cannot compare embeddings of two networks trained separately. Only *relative* quantities within a single embedding — distances, angles, rankings — carry meaning. This trips people up constantly when they try to track how a node "moved" between two snapshots of an evolving network.
+:::
+
+**You cannot preserve everything at once.** Local structure (who is adjacent to whom) and global structure (the large-scale shape) compete for the same $d$ dimensions. Methods differ mainly in which they sacrifice: Laplacian eigenmaps favor local, node2vec with long walks favors global.
+
+**Most methods assume the network is static and undirected.** A new node requires retraining from scratch under DeepWalk or node2vec, since its vector never existed. Handling that — generating embeddings for unseen nodes — is the *inductive* problem, and it is one of the motivations for the graph neural networks of Module 9.
