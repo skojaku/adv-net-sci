@@ -508,7 +508,10 @@ export default function (pi: ExtensionAPI) {
     description:
       "Ask the student a multiple-choice question with an interactive picker. Use for ANY " +
       "question with fixed options (predictions, comfort level, continue-or-fresh). The " +
-      "chosen option comes back as the tool result. Open-ended questions: just ask in plain text.",
+      "chosen option comes back as the tool result. Open-ended questions: just ask in plain text. " +
+      "WARNING: the picker takes over the keyboard — if you just asked a typed question " +
+      "(a name, a guess), the student loses their chance to answer it. Never call this " +
+      "while a typed question is unanswered; wait for their reply first.",
     promptSnippet: "Ask the student a fixed-choice question (interactive picker)",
     parameters: Type.Object({
       question: Type.String({ description: "Short spoken question (max 2 sentences)." }),
