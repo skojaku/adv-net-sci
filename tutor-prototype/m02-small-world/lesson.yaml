@@ -1,0 +1,256 @@
+# Lesson script for the AI-guided notebook: Module 02 — Small-World Networks
+#
+# This file is the tutor's curriculum. The tutor agent (see AGENTS.md) follows
+# these checkpoints IN ORDER, building the notebook cell by cell. The agent
+# adapts wording, pacing, and hints to the student, but it must NOT skip,
+# reorder, or invent checkpoints. Detour cells (student questions) are allowed
+# anywhere and do not count as checkpoints.
+#
+# Question types:
+#   choice     -> mo.ui.radio in the notebook (or answered in the terminal)
+#   number     -> mo.ui.number / mo.ui.text (or terminal)
+#   free_text  -> mo.ui.text_area (or terminal)
+#   drawing    -> pen & paper photo uploaded via mo.ui.file (or described in words)
+#   explore    -> student interacts with a widget, then reports what they saw
+#
+# "accept" describes what a passing answer must contain. The agent judges
+# meaning, not wording. Numeric answers accept small rounding differences.
+
+meta:
+  module: m02-small-world
+  title: "The Small-World Puzzle"
+  expected_duration_min: 45-60
+  concepts:
+    - Milgram's small-world experiment / six degrees of separation
+    - Shortest path, distance, average path length
+    - Local clustering coefficient
+    - Why small-world is non-trivial (high clustering AND short paths)
+    - Watts-Strogatz model: ring lattice + random rewiring
+    - Critique: high clustering alone does not imply small-world
+
+checkpoints:
+
+  - id: cp0_welcome
+    goal: Calibrate the session to the student.
+    build: |
+      Title cell already exists in the starter notebook. Add a short welcome
+      cell below it with two UI elements:
+        cp0_name    = mo.ui.text(label="What should I call you?")
+        cp0_python  = mo.ui.radio(
+            options=["I don't code", "I've tried a little Python", "I'm comfortable with Python"],
+            label="How do you feel about Python?")
+    ask: "Tell me your name and how you feel about Python — answer in the notebook or right here."
+    type: choice
+    accept: Any answer. Record it.
+    adapt: |
+      "I don't code"  -> never ask the student to write code; all code cells are
+                         read-and-predict; explain every snippet in plain words.
+      "tried a little"-> offer small fill-in-the-blank code moments, always optional.
+      "comfortable"   -> offer the stretch checkpoint (cs1) later.
+
+  - id: cp1_milgram
+    goal: Hook — the six degrees of separation result.
+    build: |
+      A markdown cell telling the story (keep it vivid, ~6 sentences):
+      1960s, Stanley Milgram mails packets to random people in Omaha, Nebraska.
+      Instruction: get this to a specific stockbroker in Boston, but you may
+      only forward it to someone you know on a first-name basis.
+      Then add: cp1_answer = mo.ui.radio(options=["about 6", "about 20", "about 60", "over 200"],
+                                         label="For the letters that made it, how many hands did they pass through on average?")
+    ask: "Before I tell you — guess. How many steps did a successful letter take?"
+    type: choice
+    accept: Any guess. This is a prediction, not a test — never mark it wrong.
+    reveal_after: |
+      About 6 ("six degrees of separation"). 64 of 160 letters arrived.
+      Modern replications: Facebook's 721-million-user network in 2011 measured
+      an average of 4.74 steps. Add these facts to the notebook after the guess.
+      Ask a rhetorical bridge question: "Hundreds of millions of people, and
+      yet ~6 steps. Something about the network's SHAPE makes this possible.
+      Let's find out what."
+
+  - id: cp2_distance
+    goal: Student can compute distance and average path length on a small graph.
+    build: |
+      Add a code cell that draws this 4-node graph with networkx + matplotlib
+      (node A highlighted; circular layout; big labels):
+        edges: A-B, A-C, B-C, B-D, C-D
+      Then two inputs:
+        cp2_dist = mo.ui.text(label="Distance (shortest path length) from A to D?")
+        cp2_avg  = mo.ui.text(label="Average path length over all 6 pairs? (fraction or decimal ok)")
+    ask: "Count edges, not nodes. What's the distance from A to D, and the average over all 6 pairs?"
+    type: number
+    accept: |
+      distance A-D = 2.  average = 7/6 ≈ 1.17 (accept 1.16–1.17, or "7/6").
+    hints:
+      - "For A→D: list every route from A to D and count the EDGES on each. Which route is shortest?"
+      - "There are 6 pairs: AB, AC, AD, BC, BD, CD. Five of them are directly connected (distance 1). Make a little table and average."
+    reveal_after: |
+      Show the worked table of all 6 pairs in a markdown cell. Define
+      'average path length' as the average of shortest-path distances over all
+      pairs — this number is what 'six degrees' measures for the whole USA.
+
+  - id: cp3_clustering
+    goal: Student understands local clustering as "do my friends know each other?"
+    build: |
+      First ask the concept question (terminal or text_area):
+        cp3_idea = mo.ui.text_area(label="In your own words: what would it mean, in numbers, to say 'Alice's friends tend to know each other'?")
+      After they answer, add a code cell drawing this graph:
+        A connected to B, C, D, E, F;  extra edges: B-F, C-E
+      and: cp3_calc = mo.ui.text(label="A has 5 friends → up to 10 possible friendships among them. How many actually exist? So C_A = ?")
+    ask: "First say the idea in your own words. Then compute it for A in this picture."
+    type: free_text
+    accept: |
+      Idea: any mention of counting pairs-of-friends who are themselves
+      connected, out of possible pairs (triangles is a bonus, not required).
+      Calculation: 2 friendships exist (B-F, C-E), C_A = 2/10 = 0.2.
+    hints:
+      - "Look only at A's friends: B, C, D, E, F. Ignore A. How many lines run BETWEEN them?"
+      - "2 friendships exist out of 10 possible. So the fraction is...?"
+    reveal_after: |
+      Name it: local clustering coefficient C_i = (edges among neighbors) /
+      (possible edges among neighbors). Averaging C_i over all nodes gives the
+      network's clustering C̄. Social networks: typically high. Mention (one
+      sentence, no formula) that a 'global clustering' variant also exists in
+      the lecture notes.
+
+  - id: cp4_shortcut_drawing
+    goal: Student discovers, with pen and paper, that WHERE a link goes matters
+          more than HOW MANY links there are.
+    build: |
+      Markdown cell with the instructions below, plus an upload widget:
+        cp4_photo = mo.ui.file(kind="area", filetypes=[".jpg", ".jpeg", ".png", ".webp"],
+                               label="Photo of your drawing (or describe your answer in words)")
+    ask: |
+      Pen and paper time! 📝
+      1. Draw 8 dots in a circle. Connect each dot to its neighbor on each
+         side, so you get a ring.
+      2. The two dots directly across from each other are 4 steps apart.
+      3. You're given ONE extra cable. Draw it where you think it shrinks
+         travel distances across the whole ring the most.
+      Upload a photo, or just tell me which two dots you connected and why.
+    type: drawing
+    accept: |
+      A long-range chord (connecting opposite or near-opposite dots), with any
+      reasoning about "connecting the far sides". The classic miss — connecting
+      two dots that are already close — is NOT a fail: it is the perfect
+      teaching moment (see reveal_after). Judge the reasoning, not the artwork.
+    hints:
+      - "Try your cable between two dots that are already close. Who benefits? Now try it between dots that are far apart. Who benefits now?"
+    reveal_after: |
+      Add a code cell that builds the 8-ring in networkx and computes average
+      path length for: (a) plain ring, (b) ring + short chord (neighbors two
+      apart), (c) ring + long chord (opposite dots). Show the three numbers.
+      The punchline to state explicitly:
+        - a SHORT extra link creates a triangle → clustering goes up, distances barely move;
+        - a LONG extra link is a SHORTCUT → distances drop for everyone.
+      One cable, two totally different effects. Keep the student's own choice
+      visible in the story ("your cable was of type ...").
+
+  - id: cp5_tension
+    goal: Student articulates the tension that makes small-world non-trivial.
+    build: |
+      cp5_answer = mo.ui.text_area(label="Pure ring vs pure random — what's good and bad about each?")
+    ask: |
+      Two extreme worlds:
+      - RING world: everyone knows only their neighbors.
+      - RANDOM world: everyone's friends are scattered completely at random.
+      For each: what's good, what's bad? (Think: clustering, and distance.)
+    type: free_text
+    accept: |
+      Ring: high clustering / tight communities (good), long distances (bad).
+      Random: short distances (good), no clustering / no tight friend groups (bad).
+      Any phrasing that captures both trade-offs passes.
+    hints:
+      - "In the RING world, do your friends know each other? And how long does a letter take to cross the ring?"
+      - "In the RANDOM world, how fast can a letter travel? And do your friends know each other?"
+    reveal_after: |
+      State the puzzle sharply in a markdown cell: real social networks have
+      BOTH high clustering AND short paths. Neither extreme world explains
+      that. So how does nature do it?
+
+  - id: cp6_watts_strogatz
+    goal: Student sees that a tiny fraction of rewired links collapses distance
+          while clustering survives.
+    build: |
+      FIRST the prediction (before any widget exists!):
+        cp6_predict = mo.ui.radio(options=[
+          "both distance and clustering drop a lot",
+          "distance drops a lot, clustering barely changes",
+          "clustering drops a lot, distance barely changes",
+          "both barely change"],
+          label="Rewire just 1% of the ring's links to random targets. What happens?")
+      AFTER they commit, add the Watts-Strogatz explorer cell:
+        - slider: cp6_p = mo.ui.slider(steps over [0.0001 ... 1], log-ish, label="rewiring probability p")
+        - build nx.connected_watts_strogatz_graph(n=200, k=4, p) (average a few seeds)
+        - display L(p)/L(0) and C(p)/C(0) side by side, and the network drawing
+      Then: cp6_seen = mo.ui.text_area(label="What did you find? Around which p did distance collapse — and what was clustering doing there?")
+    ask: "Commit to a prediction first. Then play with the slider and tell me what you actually saw."
+    type: explore
+    accept: |
+      Report notices that L collapses at small p (around p ≈ 0.01, i.e. ~1% of
+      links) while C is still high, and compares to their prediction honestly.
+      A wrong prediction + honest reconciliation is a FULL PASS — say so.
+    hints:
+      - "Set p = 0.01 exactly. Read the two numbers. Which one moved?"
+    reveal_after: |
+      Name the model (Watts & Strogatz, 1998). The mechanism: a few random
+      rewires act as the long cables from your drawing — they are rare enough
+      that clustering survives, but they shortcut the whole ring. This is the
+      resolution of the puzzle from cp5, and the explanation behind cp1's six
+      degrees.
+
+  - id: cp7_redteam
+    goal: Student can catch a plausible-but-wrong small-world claim.
+    build: |
+      Markdown cell, styled as a quote from an AI assistant:
+        "I analyzed your network. Its average clustering coefficient is 0.61,
+         which is far higher than a random network's (0.01). Therefore this is
+         a small-world network."
+      cp7_answer = mo.ui.text_area(label="You're the reviewer. Is this conclusion justified? What would you check before signing off?")
+    ask: "An AI assistant wrote this analysis. You're the human who has to sign off on it. Do you?"
+    type: free_text
+    accept: |
+      Must notice that path length was never measured — high clustering alone
+      is not enough. Gold answer cites the counterexample they already met: the
+      p=0 ring lattice (high clustering, LONG paths). Bonus: mentions comparing
+      L against a random baseline (the small-world index σ in the lecture notes).
+    hints:
+      - "Small-world needs TWO properties. The assistant measured how many?"
+      - "You built a network today with very high clustering and terrible distances. Which one?"
+    reveal_after: |
+      Reinforce: verifying an AI's analysis requires knowing what the concept
+      demands — that is exactly the skill this course grades. Point to the
+      small-world index σ (clustering AND path length, both vs random baseline)
+      in the lecture notes as the proper check.
+
+  - id: cp8_wrapup
+    goal: Consolidation — student explains the phenomenon end to end.
+    build: |
+      cp8_answer = mo.ui.text_area(label="Your 3 sentences:")
+    ask: |
+      Last one. A friend asks: "How can a letter cross a whole country in
+      about six steps?" Explain it in about three sentences, your own words,
+      no jargon required.
+    type: free_text
+    accept: |
+      Mentions (in any wording): local links create clusters; a few long-range
+      shortcuts exist; those shortcuts make everyone close. All three elements
+      → full pass. Two of three → one gentle follow-up question, then pass.
+    reveal_after: |
+      Close the session following the "Ending the session" protocol in
+      AGENTS.md (write session log summary, congratulate, point to what's next:
+      module m03 robustness, and the σ index in the lecture notes).
+
+# Optional stretch — offer ONLY if cp0 said "comfortable with Python",
+# after cp6, if time and energy allow. Never required, never logged as a fail.
+stretch:
+  - id: cs1_code
+    goal: Student writes a real check with networkx.
+    ask: |
+      Load Zachary's karate club (nx.karate_club_graph()) and decide with code:
+      is it a small world? Compute average path length and average clustering,
+      and compare each against an Erdős–Rényi graph with the same number of
+      nodes and edges. You write it — I'll only rescue you if you ask.
+    accept: |
+      Working comparison + a verdict in words. Style does not matter;
+      the interpretation does.
