@@ -5,14 +5,18 @@
  * nb_delete_cell, nb_read, nb_run) instead of raw bash + marimo code-mode
  * boilerplate. The extension generates the `cm` ceremony itself, which:
  *   - cuts token usage (the model sends only the cell body),
- *   - removes a whole class of errors (quoting, async ceremony, unrun cells),
+ *   - removes a whole class of errors observed in real sessions:
+ *       cold kernel (cells never run)      -> warm-up call before every op
+ *       redundant mo/nx/np/plt imports     -> stripped automatically
+ *       editing a nonexistent cell         -> pre-check, returns cell list
  *   - keeps the student's terminal quiet: each call renders as one friendly
  *     status line ("📝 Setting up your first question…") with output hidden
  *     behind the expand keybinding. The LLM still receives full output.
  *
- * Also bridges the notebook's ✅ Done buttons to the conversation: the starter
- * notebook's notify_tutor() writes session_artifacts/student_signal.txt, we
- * watch it and inject a message so the tutor reads the answers right away.
+ * Also bridges the notebook's ✅ Done buttons to the conversation: the button
+ * follower cell (self-contained, no notebook helper needed) writes
+ * session_artifacts/student_signal.txt; we watch it and inject a message so
+ * the tutor reads the answers right away.
  */
 import { execFile } from "node:child_process";
 import * as fs from "node:fs";
@@ -31,11 +35,31 @@ const py = (s: string) => JSON.stringify(s);
 const pyList = (xs: string[]) => JSON.stringify(xs);
 const sanitize = (s: string) => s.replace(/\W/g, "_");
 
-/** Queued inside a cm context: run every cell once if the kernel is cold. */
-const COLD_KERNEL_GUARD = `    if "mo" not in ctx.globals:
-        for _c in list(ctx.cells):
-            ctx.run_cell(_c.id)
-`;
+/**
+ * The starter notebook already owns mo/nx/np/plt. Models add these imports
+ * anyway, which triggers marimo's multiply-defined-name rejection (seen in
+ * production) — strip them from submitted cell bodies.
+ */
+function stripRedundantImports(code: string): string {
+  const redundant = [
+    /^\s*import marimo as mo\s*$/,
+    /^\s*import marimo\s*$/,
+    /^\s*import networkx as nx\s*$/,
+    /^\s*import numpy as np\s*$/,
+    /^\s*import matplotlib\.pyplot as plt\s*$/,
+    /^\s*from matplotlib import pyplot as plt\s*$/,
+  ];
+  return code
+    .split("\n")
+    .filter((line) => !redundant.some((re) => re.test(line)))
+    .join("\n");
+}
+
+const BOOTSTRAP =
+  `import marimo._code_mode as cm\n` +
+  `async with cm.get_context() as ctx:\n` +
+  `    for _c in list(ctx.cells):\n` +
+  `        ctx.run_cell(_c.id)\n`;
 
 function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; failed: boolean }> {
   const cwd = process.cwd();
@@ -61,6 +85,22 @@ function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; f
     child.stdin?.write(code);
     child.stdin?.end();
   });
+}
+
+/**
+ * Run all notebook cells if the kernel hasn't executed them yet. Must be a
+ * SEPARATE kernel call from any cell create/edit: queued runs inside one
+ * code-mode context do not reliably execute before a newly created cell
+ * (observed in production: new cell ran first and hit NameError on `mo`).
+ */
+async function ensureWarm(signal?: AbortSignal): Promise<{ out: string; failed: boolean } | null> {
+  const probe = await runKernel(`print("OK" if "mo" in globals() else "COLD")`, signal);
+  if (probe.failed) return probe;
+  if (probe.out.includes("COLD")) {
+    const boot = await runKernel(BOOTSTRAP, signal);
+    if (boot.failed) return boot;
+  }
+  return null;
 }
 
 function toResult({ out, failed }: { out: string; failed: boolean }) {
@@ -107,10 +147,13 @@ const STATUS_PARAM = Type.String({
 });
 
 const MARIMO_CELL_RULES =
-  "Cell code rules (marimo is reactive): each public variable is owned by exactly ONE cell; " +
-  "prefix throwaway names with _ ; the cell's LAST expression is what gets displayed; " +
-  "markdown via mo.md(r'''…'''); a widget must be displayed to work (w = mo.ui.slider(…) then w on the last line) " +
-  "and its value read later with nb_read('w.value'). Already imported for you: mo, nx (networkx), np, plt (matplotlib).";
+  "Cell code rules (marimo is reactive): " +
+  "(1) NEVER read a widget's .value in the cell that creates it — marimo forbids it. " +
+  "Pattern: one cell makes and displays the widget (w = mo.ui.slider(…) then w as last line), " +
+  "a SECOND cell uses w.value. " +
+  "(2) Do NOT import mo/nx/np/plt — they already exist (redundant imports are stripped). " +
+  "(3) Each public variable is owned by exactly ONE cell; prefix throwaway names with _ . " +
+  "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…''').";
 
 export default function (pi: ExtensionAPI) {
   // ── Done-button bridge ────────────────────────────────────────────────────
@@ -179,18 +222,25 @@ export default function (pi: ExtensionAPI) {
       ),
     }),
     async execute(_id, params, signal) {
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
       const hide = params.show_code === true ? "False" : "True";
       let code =
         `import marimo._code_mode as cm\n` +
-        `_code = ${py(params.code)}\n` +
+        `_code = ${py(stripRedundantImports(params.code))}\n` +
         `async with cm.get_context() as ctx:\n` +
-        COLD_KERNEL_GUARD +
         `    _cid = ctx.create_cell(_code, name=${py(params.name)}, hide_code=${hide})\n` +
         `    ctx.run_cell(_cid)\n`;
       if (params.done_signal) {
         const v = `done_${sanitize(params.done_signal)}`;
         const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
-        const sigBody = `if ${v}.value:\n    notify_tutor(${py(params.done_signal)})`;
+        // Self-contained on purpose: no dependency on notebook helpers, which
+        // students (or session saves) can break.
+        const sigBody =
+          `if ${v}.value:\n` +
+          `    from pathlib import Path as _P\n` +
+          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
+          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
         code +=
           `    _btn = ctx.create_cell(${py(btnBody)}, name=${py(params.name + "_done_btn")}, hide_code=True, after=_cid)\n` +
           `    ctx.run_cell(_btn)\n` +
@@ -216,12 +266,18 @@ export default function (pi: ExtensionAPI) {
       code: Type.String({ description: "The full replacement cell body (Python)." }),
     }),
     async execute(_id, params, signal) {
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
       const code =
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
-        COLD_KERNEL_GUARD +
-        `    ctx.edit_cell(${py(params.name)}, ${py(params.code)})\n` +
-        `    ctx.run_cell(${py(params.name)})\n`;
+        `    _names = [c.name for c in ctx.cells]\n` +
+        `    if ${py(params.name)} not in _names:\n` +
+        `        print("EDIT FAILED: no cell named", ${py(params.name)})\n` +
+        `        print("Existing cells:", [n for n in _names if n and n != "_"])\n` +
+        `    else:\n` +
+        `        ctx.edit_cell(${py(params.name)}, ${py(stripRedundantImports(params.code))})\n` +
+        `        ctx.run_cell(${py(params.name)})\n`;
       return toResult(await runKernel(code, signal));
     },
     ...quietRender,
@@ -243,8 +299,12 @@ export default function (pi: ExtensionAPI) {
       const code =
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
+        `    _names = [c.name for c in ctx.cells]\n` +
         `    for _n in ${pyList(params.names)}:\n` +
-        `        ctx.delete_cell(_n)\n`;
+        `        if _n in _names:\n` +
+        `            ctx.delete_cell(_n)\n` +
+        `        else:\n` +
+        `            print("skip: no cell named", _n)\n`;
       return toResult(await runKernel(code, signal));
     },
     ...quietRender,
@@ -263,17 +323,8 @@ export default function (pi: ExtensionAPI) {
       expressions: Type.Array(Type.String(), { description: "Python expressions to evaluate." }),
     }),
     async execute(_id, params, signal) {
-      // Cold kernel? Run all cells first (separate call: scratchpad copies
-      // globals before queued cells execute, so probe+read can't share a call).
-      const probe = await runKernel(`print("OK" if "mo" in globals() else "COLD")`, signal);
-      if (probe.failed) return toResult(probe);
-      if (probe.out.includes("COLD")) {
-        const boot = await runKernel(
-          `import marimo._code_mode as cm\nasync with cm.get_context() as ctx:\n` + COLD_KERNEL_GUARD,
-          signal,
-        );
-        if (boot.failed) return toResult(boot);
-      }
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
       const code =
         `for _e in ${pyList(params.expressions)}:\n` +
         `    try:\n` +

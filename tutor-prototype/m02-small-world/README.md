@@ -70,7 +70,7 @@ detours counts in your favor — it's the whole point.
 
 | File | Role |
 |---|---|
-| `lesson.yaml` | The curriculum: 9 checkpoints + 1 optional stretch, each with build spec, question, accept criteria, and a 2-hint escalation ladder. **Edit this to change the lesson.** |
+| `lesson.yaml` | The curriculum: 9 checkpoints + 1 optional stretch, each with build spec, question, accept criteria, and starter hints (the tutor extends the ladder but never reveals answers — guided discovery, unlimited patience). **Edit this to change the lesson.** |
 | `AGENTS.md` | The tutor's behavior contract (auto-loaded by pi; Claude Code loads it via `CLAUDE.md`). Pedagogy, logging schema, hard rules. Lesson-independent. |
 | `notebook.py` | Starter notebook: title + instructions only. The tutor builds the rest live. |
 | `run_tutor.sh` | Launcher: installs the marimo-pair skill, starts marimo (`--no-token`), starts the agent (pi runs with bash disabled). |
