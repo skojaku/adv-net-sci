@@ -1,12 +1,14 @@
 /**
- * Say gate — every tutor utterance is reviewed BEFORE the student sees it.
+ * Say gate — every tutor utterance passes checks; tempo comes first.
  *
- * The tutor must speak through the `say` tool (enforced by AGENTS.md). Its
- * execute() sends the draft to a reviewer model (same course API) that checks
- * the iron rules: ≤3 short spoken sentences, never state what the student
- * hasn't produced, at most one question. Rejected drafts are never rendered —
- * the tutor gets the reason back and rewrites. Approved messages are rendered
- * by renderResult, so nothing unreviewed ever reaches the terminal.
+ * The tutor must speak through the `say` tool (enforced by AGENTS.md).
+ * Mechanical rules (length, sentence count, one question) are checked
+ * locally with zero latency and block delivery. The LLM reviewer (iron
+ * rules: never state what the student hasn't produced, etc.) runs in the
+ * BACKGROUND by default — messages display instantly, and a violation
+ * becomes an invisible coach note before the next turn. Set
+ * TUTOR_REVIEW_MODE=strict to block on the reviewer (slow), or =off to
+ * disable the LLM review entirely.
  *
  * Fail-open by design: if the reviewer is unreachable, the message is
  * delivered (a tutoring session must not die on a gate). Every verdict is
@@ -25,6 +27,25 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const REVIEW_URL = process.env.TUTOR_REVIEW_URL || "https://api.deepseek.com/chat/completions";
 const REVIEW_MODEL = process.env.TUTOR_REVIEW_MODEL || "deepseek-v4-flash";
 const REVIEW_KEY = process.env.TUTOR_REVIEW_KEY || process.env.DEEPSEEK_API_KEY || "";
+/**
+ * Review mode — blocking review killed the conversational tempo, so the
+ * default is now non-blocking:
+ *   "async"  (default) deliver instantly; LLM review runs in the background
+ *            and violations become an invisible coach note before the next turn
+ *   "strict" block until the reviewer approves (old behavior)
+ *   "off"    no LLM review (instant local checks still apply)
+ */
+const REVIEW_MODE = process.env.TUTOR_REVIEW_MODE || "async";
+
+/** 0-latency checks for the mechanical iron rules. */
+function localCheck(draft: string): { ok: boolean; reason?: string } {
+  if (draft.length > 450) return { ok: false, reason: "over 450 characters — speak in short breaths" };
+  const sentences = draft.split(/[.!?…](?:\s|$)/).filter((s) => s.trim().length > 0).length;
+  if (sentences > 3) return { ok: false, reason: `${sentences} sentences — max 3` };
+  const questions = (draft.match(/\?/g) ?? []).length;
+  if (questions > 2) return { ok: false, reason: "more than one question at a time" };
+  return { ok: true };
+}
 
 const REVIEWER_PROMPT =
   "You review one outgoing message from a Socratic tutor to a beginner student. " +
@@ -194,33 +215,67 @@ export default function (pi: ExtensionAPI) {
     }),
     async execute(_id, params, signal) {
       const draft = String(params.message ?? "").trim();
-      const verdict = await review(draft, signal);
-      logReview({ ts: new Date().toISOString(), draft, ...verdict });
-      if (!verdict.approved && consecutiveRejections < 2) {
+
+      // 1. Instant local check — no latency, catches the mechanical rules.
+      const local = localCheck(draft);
+      if (!local.ok && consecutiveRejections < 2) {
         consecutiveRejections++;
+        logReview({ ts: new Date().toISOString(), draft, approved: false, reason: local.reason, mode: "local" });
         return {
           content: [
             {
               type: "text" as const,
-              text:
-                `NOT DELIVERED — reviewer rejected: ${verdict.reason ?? "rule violation"}. ` +
-                `Rewrite (shorter; ask only for the next small piece; never state what the ` +
-                `student hasn't said) and call say again.`,
+              text: `NOT DELIVERED — ${local.reason}. Rewrite (shorter; only the next small piece) and call say again.`,
             },
           ],
           details: { approved: false },
         };
       }
-      // Approved — or fail-open / anti-loop delivery.
-      const note = !verdict.approved
-        ? " (delivered despite rejection to avoid a loop — tighten your style)"
-        : verdict.error
-          ? ` (reviewer unavailable: ${verdict.error} — self-check before sending)`
-          : "";
+
+      // 2. Strict mode: block until the reviewer approves (slow — opt-in).
+      if (REVIEW_MODE === "strict") {
+        const verdict = await review(draft, signal);
+        logReview({ ts: new Date().toISOString(), draft, mode: "strict", ...verdict });
+        if (!verdict.approved && consecutiveRejections < 2) {
+          consecutiveRejections++;
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text:
+                  `NOT DELIVERED — reviewer rejected: ${verdict.reason ?? "rule violation"}. ` +
+                  `Rewrite (shorter; ask only for the next small piece; never state what the ` +
+                  `student hasn't said) and call say again.`,
+              },
+            ],
+            details: { approved: false },
+          };
+        }
+      } else if (REVIEW_MODE !== "off" && REVIEW_KEY) {
+        // 3. Async mode (default): deliver NOW, review in the background —
+        // violations arrive as an invisible coach note before the next turn.
+        void review(draft).then((verdict) => {
+          logReview({ ts: new Date().toISOString(), draft, mode: "async", ...verdict });
+          if (!verdict.approved) {
+            pi.sendMessage(
+              {
+                customType: "say-gate-coach",
+                content:
+                  `COACH (invisible to the student — never mention this): the reviewer flagged ` +
+                  `your last message: ${verdict.reason}. Tighten the next one — shorter, and ` +
+                  `never state what the student hasn't said.`,
+                display: false,
+              },
+              { deliverAs: "nextTurn" },
+            );
+          }
+        });
+      }
+
       consecutiveRejections = 0;
       remember("tutor", draft);
       return {
-        content: [{ type: "text" as const, text: `Delivered.${note}` }],
+        content: [{ type: "text" as const, text: "Delivered." }],
         details: { approved: true, message: draft },
       };
     },
