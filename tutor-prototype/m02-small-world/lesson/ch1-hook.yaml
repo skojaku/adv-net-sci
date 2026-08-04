@@ -14,11 +14,9 @@ checkpoints:
     goal: Calibrate the session to the student.
     build: none
     ask: |
-      Greet and ask what to call them — then STOP and wait for their typed
-      reply (do NOT open a picker yet; it would steal the keyboard).
-      Only after they give a name, ask how they feel about Python
-      with ask_student: "I don't code" / "tried a little" /
-      "comfortable with Python".
+      Greet warmly in one breath — do NOT ask their name. Then ask how they
+      feel about Python with ask_student: "I don't code" /
+      "tried a little" / "comfortable with Python".
     accept: Any answer. Record it.
     adapt: |
       "I don't code"  -> never ask the student to write code; keep all

@@ -50,12 +50,27 @@ function stripRedundantImports(code: string): string {
     /^\s*import numpy as np\s*$/,
     /^\s*import matplotlib\.pyplot as plt\s*$/,
     /^\s*from matplotlib import pyplot as plt\s*$/,
+    /^\s*import igraph as ig\s*$/,
+    /^\s*import seaborn as sns\s*$/,
+    /^\s*import altair as alt\s*$/,
   ];
   return code
     .split("\n")
     .filter((line) => !redundant.some((re) => re.test(line)))
     .join("\n");
 }
+
+/**
+ * Ask the browser to bring a cell into view (marimo's focus-cell op) — new
+ * content should greet the student, not hide below the fold. Wrapped in
+ * try/except so a marimo-internals change can never fail the operation.
+ */
+const focusCellCode = (cellIdExpr: string, indent: string) =>
+  `${indent}try:\n` +
+  `${indent}    from marimo._messaging.notification import FocusCellNotification as _FCN\n` +
+  `${indent}    ctx.broadcast_raw_notification(_FCN(cell_id=${cellIdExpr}))\n` +
+  `${indent}except Exception:\n` +
+  `${indent}    pass\n`;
 
 const BOOTSTRAP =
   `import marimo._code_mode as cm\n` +
@@ -358,7 +373,8 @@ const MARIMO_CELL_RULES =
   "(1) NEVER read a widget's .value in the cell that creates it — marimo forbids it. " +
   "Pattern: one cell makes and displays the widget (w = mo.ui.slider(…) then w as last line), " +
   "a SECOND cell uses w.value. " +
-  "(2) Do NOT import mo/nx/np/plt — they already exist (redundant imports are stripped). " +
+  "(2) Do NOT import mo/nx/np/plt/ig/sns/alt — they already exist (redundant imports are " +
+  "stripped); netviz(edges, highlight=[...]) is also predefined for themed D3 network drawings. " +
   "(3) Each public variable is owned by exactly ONE cell; prefix throwaway names with _ . " +
   "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…'''). " +
   "(5) A matplotlib figure renders ONLY as the cell's last expression — NEVER interpolate a " +
@@ -736,6 +752,7 @@ export default function (pi: ExtensionAPI) {
           `    _sig = ctx.create_cell(${py(sigBody)}, name=${py(params.name + "_done_sig")}, hide_code=True, after=_btn)\n` +
           `    ctx.run_cell(_sig)\n`;
       }
+      code += focusCellCode("_cid", "    ");
       return toResult(await runKernel(code, signal));
     },
     ...quietRender,
@@ -802,7 +819,8 @@ export default function (pi: ExtensionAPI) {
         `        print("template already in the notebook — skipped duplicate insert")\n` +
         `    else:\n` +
         `        _cid = ctx.create_cell(${py(cells[0].code)}, name=${py(cells[0].name)}, hide_code=True)\n` +
-        `        ctx.run_cell(_cid)\n`;
+        `        ctx.run_cell(_cid)\n` +
+        `        _first = _cid\n`;
       for (const c of cells.slice(1)) {
         code +=
           `        _cid = ctx.create_cell(${py(c.code)}, name=${py(c.name)}, hide_code=True, after=_cid)\n` +
@@ -822,6 +840,7 @@ export default function (pi: ExtensionAPI) {
           `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(params.template + "_done_sig")}, hide_code=True, after=_cid)\n` +
           `        ctx.run_cell(_cid)\n`;
       }
+      code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
       if (!result.failed && describe) {
         result.out =
@@ -1078,6 +1097,7 @@ export default function (pi: ExtensionAPI) {
         `        else:\n` +
         `            ctx.create_cell(${py(cellBody)}, name=${py(viewCell)}, hide_code=True)\n` +
         `        ctx.run_cell(${py(viewCell)})\n` +
+        focusCellCode(`ctx.cells[${py(viewCell)}].id`, "        ") +
         `    print("B64:" + _b64.b64encode(_out.getvalue()).decode())\n`;
       const result = await runKernel(code, signal);
       if (result.failed) return toResult(result);
