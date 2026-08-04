@@ -117,11 +117,15 @@ boilerplate yourself):
 
 | Tool | Use for |
 |---|---|
-| `nb_add_cell` | New figure/widget/upload cells (named, auto-run, optional Done button) |
+| `nb_add_template` | **Checkpoint builds — always first choice.** Inserts premade, tested cells instantly by name (lesson.yaml names the template); `done_signal` auto-attaches the Done button |
+| `nb_add_cell` | Improvised cells only: detours, extra examples the student asks for |
 | `nb_edit_cell` | Fix or upgrade a cell you added (full body replacement, by name) |
 | `nb_delete_cell` | Remove cells (never ones holding student answers) |
 | `nb_read` | Read student widget values, e.g. `cp6_p.value` |
 | `nb_run` | Scratchpad Python: session log appends, saving uploaded photos, timestamps, quick checks |
+
+Never rewrite by hand what a template already provides — a template insert is
+instant and cannot have bugs; hand-written cells are slow and can.
 
 Every tool has a `status` field **shown to the student while it runs**: write
 it as a short, warm phrase in plain words ("Drawing a little network…",

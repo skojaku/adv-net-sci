@@ -153,7 +153,10 @@ const MARIMO_CELL_RULES =
   "a SECOND cell uses w.value. " +
   "(2) Do NOT import mo/nx/np/plt — they already exist (redundant imports are stripped). " +
   "(3) Each public variable is owned by exactly ONE cell; prefix throwaway names with _ . " +
-  "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…''').";
+  "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…'''). " +
+  "(5) A matplotlib figure renders ONLY as the cell's last expression — NEVER interpolate a " +
+  "figure into an mo.md f-string (it prints object gibberish, not an image). UI widgets may " +
+  "be embedded in mo.md f-strings; figures may not.";
 
 export default function (pi: ExtensionAPI) {
   // ── Done-button bridge ────────────────────────────────────────────────────
@@ -249,6 +252,87 @@ export default function (pi: ExtensionAPI) {
           `    ctx.run_cell(_btn)\n` +
           `    _sig = ctx.create_cell(${py(sigBody)}, name=${py(params.name + "_done_sig")}, hide_code=True, after=_btn)\n` +
           `    ctx.run_cell(_sig)\n`;
+      }
+      return toResult(await runKernel(code, signal));
+    },
+    ...quietRender,
+  });
+
+  // ── nb_add_template ───────────────────────────────────────────────────────
+  // Premade, tested cell groups shipped in cells/*.py — the model sends only
+  // a template name, so scripted checkpoint builds are instant and bug-free.
+  pi.registerTool({
+    name: "nb_add_template",
+    label: "Insert premade cells",
+    description: (() => {
+      const dir = path.join(process.cwd(), "cells");
+      const names = fs.existsSync(dir)
+        ? fs
+            .readdirSync(dir)
+            .filter((f) => f.endsWith(".py"))
+            .map((f) => f.slice(0, -3))
+        : [];
+      return (
+        "Insert a PREMADE, tested group of cells into the notebook instantly — no code to " +
+        "write. ALWAYS prefer this over nb_add_cell when a template exists for the " +
+        "checkpoint. Available templates: " +
+        (names.join(", ") || "(none found)") +
+        ". Set done_signal to auto-attach the Done button after the last cell."
+      );
+    })(),
+    promptSnippet: "Insert premade, tested notebook cells by template name (instant)",
+    promptGuidelines: [
+      "For checkpoint builds use nb_add_template with the template named in lesson.yaml; nb_add_cell is only for detours and improvised cells.",
+    ],
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      template: Type.String({ description: "Template name, e.g. 'cp2_ripple'." }),
+      done_signal: Type.Optional(
+        Type.String({ description: "Checkpoint id for the auto-attached Done button." }),
+      ),
+    }),
+    async execute(_id, params, signal) {
+      const file = path.join(process.cwd(), "cells", `${params.template}.py`);
+      if (!fs.existsSync(file)) {
+        return toResult({ out: `No template named '${params.template}'.`, failed: true });
+      }
+      const parts = fs.readFileSync(file, "utf-8").split(/^# --- cell: (\w+) ---[ \t]*$/m);
+      const cells: Array<{ name: string; code: string }> = [];
+      for (let i = 1; i < parts.length; i += 2) {
+        cells.push({ name: parts[i], code: parts[i + 1].trim() });
+      }
+      if (cells.length === 0) {
+        return toResult({ out: `Template '${params.template}' has no cells.`, failed: true });
+      }
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
+      let code =
+        `import marimo._code_mode as cm\n` +
+        `async with cm.get_context() as ctx:\n` +
+        `    _names = [c.name for c in ctx.cells]\n` +
+        `    if ${py(cells[0].name)} in _names:\n` +
+        `        print("template already in the notebook — skipped duplicate insert")\n` +
+        `    else:\n` +
+        `        _cid = ctx.create_cell(${py(cells[0].code)}, name=${py(cells[0].name)}, hide_code=True)\n` +
+        `        ctx.run_cell(_cid)\n`;
+      for (const c of cells.slice(1)) {
+        code +=
+          `        _cid = ctx.create_cell(${py(c.code)}, name=${py(c.name)}, hide_code=True, after=_cid)\n` +
+          `        ctx.run_cell(_cid)\n`;
+      }
+      if (params.done_signal) {
+        const v = `done_${sanitize(params.done_signal)}`;
+        const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
+        const sigBody =
+          `if ${v}.value:\n` +
+          `    from pathlib import Path as _P\n` +
+          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
+          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
+        code +=
+          `        _cid = ctx.create_cell(${py(btnBody)}, name=${py(params.template + "_done_btn")}, hide_code=True, after=_cid)\n` +
+          `        ctx.run_cell(_cid)\n` +
+          `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(params.template + "_done_sig")}, hide_code=True, after=_cid)\n` +
+          `        ctx.run_cell(_cid)\n`;
       }
       return toResult(await runKernel(code, signal));
     },

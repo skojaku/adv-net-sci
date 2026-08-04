@@ -56,9 +56,8 @@ checkpoints:
   - id: cp1_milgram
     goal: Hook — the six degrees of separation result.
     build: |
-      Notebook — the experiment picture, shown while you tell the story:
-        mo.image(src="assets/milgram-small-world-experiment.png", width=520,
-                 caption="Milgram's letter experiment (1960s)")
+      nb_add_template("cp1_milgram_image") — shows the experiment picture
+      while you tell the story.
     ask: |
       Tell the Milgram story in the terminal — in your short spoken beats,
       pointing the student to the picture: 1960s, packets mailed to random
@@ -77,13 +76,9 @@ checkpoints:
   - id: cp2_distance
     goal: Student can compute distance and average path length on a small graph.
     build: |
-      Notebook — an interactive "ripple" explorer for this 4-node graph
-      (edges: A-B, A-C, B-C, B-D, C-D):
-        cp2_steps = mo.ui.slider(0, 3, value=0, label="steps from A")
-        A figure cell that draws the graph (networkx + matplotlib, circular
-        layout, big labels) and colors every node reachable from A within
-        cp2_steps edges — the wave spreading one step at a time.
-      This animates the meaning of "distance" as the student scrubs.
+      nb_add_template("cp2_ripple") — a slider-driven "wave from A" explorer
+      on the 4-node graph (edges: A-B, A-C, B-C, B-D, C-D): nodes reachable
+      within cp2_steps edges light up, animating what "distance" means.
     ask: |
       In the terminal: "Play with the slider — watch the wave spread from A.
       Two questions: (1) What is the distance from A to D — the number of
@@ -102,11 +97,9 @@ checkpoints:
   - id: cp3_clustering
     goal: Student understands local clustering as "do my friends know each other?"
     build: |
-      Notebook (only AFTER the idea question below is answered) — figure of:
-        A connected to B, C, D, E, F;  extra edges: B-F, C-E
-      Make it interactive if quick: e.g. cp3_pair = mo.ui.dropdown of friend
-      pairs, highlighting the selected pair and whether that edge exists.
-      A static clear figure is acceptable here if the widget gets fiddly.
+      nb_add_template("cp3_clustering") (only AFTER the idea question below
+      is answered) — A with five friends; the two friendships among the
+      friends (B-F, C-E) are highlighted in orange.
     ask: |
       Terminal, in two beats:
       1. "In your own words: what would it mean, in numbers, to say 'Alice's
@@ -131,9 +124,8 @@ checkpoints:
     goal: Student discovers, with pen and paper, that WHERE a link goes matters
           more than HOW MANY links there are.
     build: |
-      Notebook — upload area (nb_add_cell with done_signal: "cp4_shortcut_drawing"):
-        cp4_photo = mo.ui.file(kind="area", filetypes=[".jpg", ".jpeg", ".png", ".webp"],
-                               label="Photo of your drawing")
+      nb_add_template("cp4_upload", done_signal="cp4_shortcut_drawing") —
+      the photo upload area plus the Done button.
     ask: |
       Terminal: "Pen and paper time! 📝
       1. Draw 8 dots in a circle. Connect each dot to its neighbor on each
@@ -151,11 +143,9 @@ checkpoints:
     hints:
       - "Try your cable between two dots that are already close. Who benefits? Now try it between dots that are far apart. Who benefits now?"
     reveal_after: |
-      Notebook — an interactive comparison the student can play with:
-        cp4_choice = mo.ui.radio(["no extra cable", "short cable (2 apart)", "long cable (opposite)"])
-        A figure that draws the chosen 8-ring variant and shows its average
-        path length in the title, so switching options makes the numbers and
-        picture change together.
+      nb_add_template("cp4_compare") — a radio-driven comparison: choosing
+      "no cable / short cable / long cable" redraws the 8-ring and updates
+      the average distance in the title.
       Terminal — the punchline, referencing THEIR cable: a SHORT extra link
       creates a triangle (clustering up, distances barely move); a LONG one is
       a SHORTCUT (distances drop for everyone). One cable, two very different
@@ -185,15 +175,10 @@ checkpoints:
     goal: Student sees that a tiny fraction of rewired links collapses distance
           while clustering survives.
     build: |
-      Notebook (only AFTER the prediction below is committed) — the star of
-      the session, make it feel alive:
-        cp6_p    = mo.ui.slider over p in [0.0001 ... 1] (log-ish steps),
-                   label="rewiring probability p"
-        A cell drawing the Watts-Strogatz network (n=60 for drawing; rewired
-        edges highlighted in a different color so shortcuts pop out) and
-        showing L(p)/L(0) and C(p)/C(0) as two big readouts (computed on
-        n=200, k=4, a few seeds of nx.connected_watts_strogatz_graph).
-        Add with done_signal: "cp6_watts_strogatz" for the Done button.
+      nb_add_template("cp6_ws_explorer", done_signal="cp6_watts_strogatz")
+      (only AFTER the prediction below is committed) — slider over p; the
+      network drawing highlights rewired shortcut edges in red, and the
+      title shows L(p)/L₀ and C(p)/C₀ live.
     ask: |
       Terminal FIRST, before any widget exists: "Rewire just 1% of the ring's
       links to random targets. What happens? (a) both distance and clustering
