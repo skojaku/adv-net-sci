@@ -70,6 +70,64 @@ meta:
         out_class: "assignment / notebook / reading id"
         assessment: "quiz item / exam item / project rubric row"
 
+# =============================================================================
+# LECTURE-NOTE GAPS
+# =============================================================================
+# Concepts listed here are in this inventory but are NOT taught anywhere in the
+# lecture note; they come from docs/tutor-references/ or were added to complete
+# a derivation. Each is a decision for the instructor: either write it into the
+# lecture note, or drop the concept and stop assessing it.
+# Found by a read-only audit of every lecture-note page on 2026-08-04.
+lecture_note_gaps:
+  m01:
+    ids: [m01.c03, m01.c04, m01.c06, m01.c16, m01.c23, m01.c30]
+    detail: >-
+      The formal (V,E) definition, multigraph/parallel edges, self-loops,
+      'giant component' and DFS/BFS traversal are never stated in
+      m01/01-concepts.qmd. Notable because Konigsberg IS a multigraph and the
+      module's whole argument runs on degree counting. Matrix powers (c30)
+      appear only inside code comments.
+  m03:
+    ids: [m03.c16, m03.c19]
+    detail: >-
+      Adaptive (recomputed) attack ordering is never mentioned. The neighbor
+      degree distribution q(k) = k p(k) / <k> is absent even though
+      01-concepts.qmd promises 'See the Appendix for the proof of the
+      Molloy-Reed criterion' - and m03/04-appendix.md holds the M02 small-world
+      assignment instead of that proof.
+  m04:
+    ids: [m04.c02, m04.c03, m04.c07, m04.c21, m04.c23]
+    detail: >-
+      The degree sum formula and handshaking lemma are never stated; the
+      friendship paradox is shown only through one 4-node example, never as
+      <k^2>/<k> = <k> + Var(k)/<k>. 'assortativity' appears in the module
+      keyword list but nowhere in the text. Preferential attachment is deferred
+      to 'a separate module' that does not exist in the table of contents.
+  m07:
+    ids: [m07.c08, m07.c09, m07.c10, m07.c11, m07.c12, m07.c13, m07.c14, m07.c18, m07.c19, m07.c20, m07.c22, m07.c23, m07.c27, m07.c29]
+    detail: >-
+      The lecture note covers the transition matrix, stationary distribution,
+      spectral analysis, mixing time, modularity and Infomap thoroughly, but
+      never defines hitting/commute/cover time, resistance distance, ergodicity
+      conditions, reversibility, biased walks, restart walks, self-avoiding
+      walks, walk-based centralities, or Walktrap.
+  m08:
+    ids: [m08.c08, m08.c11, m08.c12, m08.c23, m08.c24, m08.c28, m08.c29, m08.c30, m08.c31, m08.c32, m08.c33, m08.c34]
+    detail: >-
+      The normalized Laplacian, Fiedler vector and the spectral-clustering link
+      to normalized cut are absent, as is the implicit-PMI-factorization result
+      (only a generic 'equivalences to spectral methods' citation exists).
+      There is no evaluation section at all - reconstruction, link prediction,
+      t-SNE/UMAP, dimension choice, instability and preservation trade-offs are
+      posed as questions in 03-exercises.md but never taught.
+  m09:
+    ids: [m09.c23]
+    detail: >-
+      The section headed 'Deep GCNs can suffer from over-smoothing' actually
+      explains gradient vanishing/exploding and the renormalization trick;
+      over-smoothing itself is never defined. See the note on m09.c23.
+  pending_audit: [m05, m06]
+
 course:
   code: "SSIE 641"
   title: "Advanced Topics in Network Science"
@@ -2783,6 +2841,12 @@ modules:
         type: limitation
         level: core
         statement: "Stacking many layers repeatedly averages neighborhoods until every node representation converges to the same vector, so deep GNNs get worse, not better."
+        note: >-
+          NOT ACTUALLY TAUGHT in the lecture note. The section headed 'Deep GCNs
+          can suffer from over-smoothing' (01-concepts.qmd) describes gradient
+          vanishing/exploding and the renormalization trick instead; the heading
+          promises a topic the body never delivers. Either add an over-smoothing
+          explanation there or rename the heading to match the gradient argument.
         prereq: [m09.c12]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
