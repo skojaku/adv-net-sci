@@ -83,12 +83,17 @@ export default function (pi: ExtensionAPI) {
         { deliverAs: "nextTurn" },
       );
     }
-    // … and collapse the finalized message so the transcript stays clean.
+    // … and strip the text entirely so the transcript shows nothing at all.
+    // (An empty text block stands in when the message had no tool calls, so
+    // provider serialization still sees valid content.)
     const kept = (Array.isArray(msg.content) ? msg.content : []).filter(
       (c: any) => c?.type !== "text",
     );
     return {
-      message: { ...msg, content: [...kept, { type: "text", text: "(thought privately)" }] },
+      message: {
+        ...msg,
+        content: kept.length > 0 ? kept : [{ type: "text", text: "" }],
+      },
     };
   });
 
