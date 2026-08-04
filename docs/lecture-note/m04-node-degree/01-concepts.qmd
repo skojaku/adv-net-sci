@@ -45,6 +45,31 @@ graph G {
 The tiny graph above makes the point visually: node A has degree 3 (it connects to three nodes) while B, C, and D each have degree 1. That asymmetry — a mix of hubs and leaves — is common in real networks and underlies many of the phenomena we study.
 
 
+### Two facts you get for free
+
+Before moving on, two counting facts fall straight out of the definition of degree. They look like trivia and are used constantly.
+
+Count the degrees of every node and add them up. Each edge has two endpoints, so each edge gets counted exactly twice — once from each end. Therefore:
+
+::: {.callout-important title="Degree sum formula"}
+$$
+\sum_{i=1}^N k_i = 2M
+$$
+where $M$ is the number of edges. Equivalently, the average degree is $\langle k \rangle = 2M/N$.
+:::
+
+This is why $2m$ keeps appearing in formulas throughout the course (modularity in Module 5, the stationary distribution of a random walk in Module 7): it is just "the total number of edge endpoints."
+
+A second fact follows immediately. The left side, $\sum_i k_i$, equals $2M$ and is therefore **even**. Split the sum into even-degree nodes and odd-degree nodes. The even-degree part is even. So the odd-degree part must be even too — and a sum of odd numbers is even only when there is an even *number* of them:
+
+::: {.callout-important title="Handshaking lemma"}
+In any network, the number of nodes with odd degree is even.
+:::
+
+::: {.column-margin}
+The name comes from the party version: if everyone reports how many hands they shook, the number of people reporting an odd count must be even. This is also the hidden reason Euler's condition in Module 1 allows *zero or two* odd-degree nodes and never one — one is arithmetically impossible.
+:::
+
 ### Degree distribution
 
 Shift your attention from single nodes to the whole network by asking: how common is each degree? The **degree distribution** answers that question — it lists the fraction of nodes with degree 1, degree 2, degree 3, and so on. Reading this distribution quickly tells you whether connectivity is evenly spread or concentrated in a few nodes.
@@ -105,6 +130,36 @@ which confirms the friendship paradox, i.e., a someone's friend tends to have mo
 
 Why this produces the paradox? Notice that high-degree nodes like Bob are referenced multiple times when computing the average degree of a friend. This is because Bob are a friend of many friends! On the other hand, low-degree nodes are referenced less often.
 This bias towards high-degree nodes is what makes the friendship paradox a paradox.
+
+#### Why it is guaranteed, not a coincidence
+
+The four-node example is suggestive, but is the paradox *always* true? We can settle it in three lines.
+
+Picking a random *friend* means picking a random edge endpoint. A node with degree $k$ owns $k$ of the $2M$ endpoints, so it is chosen with probability proportional to $k \cdot p(k)$, not $p(k)$. The average degree of a randomly chosen friend is therefore
+
+$$
+\langle k \rangle_{\text{friend}} = \sum_k k \cdot \frac{k\, p(k)}{\langle k \rangle} = \frac{\langle k^2 \rangle}{\langle k \rangle}.
+$$
+
+Now use the definition of variance, $\text{Var}(k) = \langle k^2 \rangle - \langle k \rangle^2$, to rewrite it:
+
+$$
+\langle k \rangle_{\text{friend}} = \frac{\langle k \rangle^2 + \text{Var}(k)}{\langle k \rangle} = \underbrace{\langle k \rangle}_{\text{your degree, on average}} + \underbrace{\frac{\text{Var}(k)}{\langle k \rangle}}_{\text{the paradox}}
+$$
+
+::: {.callout-important title="The friendship paradox, exactly"}
+Your friends have, on average, $\text{Var}(k)/\langle k \rangle$ more friends than you do.
+
+Since a variance is never negative, the gap is **never negative**: the paradox holds in *every* network. It vanishes only when $\text{Var}(k) = 0$, i.e. when everyone has exactly the same degree. And the more unequal the degrees, the larger the gap — which is why it is so dramatic in social networks and invisible in a lattice.
+:::
+
+::: {.column-margin}
+The quantity $\langle k^2 \rangle / \langle k \rangle$ has a name, $\kappa$, and you have already met it: it is the degree heterogeneity that decides whether a network survives random failure in Module 3. The friendship paradox and network robustness are the same piece of mathematics wearing different clothes.
+:::
+
+::: {.callout-tip title="Check your understanding"}
+Can you build a network in which the paradox is *absent* — where your friends have exactly as many friends as you? The formula tells you the answer before you draw anything: you need $\text{Var}(k) = 0$, so every node must have identical degree. A ring, a complete graph, or any regular lattice will do. Try it in the [Friendship Paradox Game 🎮](../assets/vis/friendship-paradox-game.html).
+:::
 
 Beyond a fun trivia, the friendship paradox has practical implications. In social networks, most people will find that their friends have more friends than they do, not because they're unpopular, but because of this statistical bias. The same principle applies to many other networks: in scientific collaboration networks, your coauthors tend to have more collaborators than you do; in the internet, the websites you link to tend to have more incoming links than your website.
 
@@ -314,3 +369,46 @@ This equation is in the form of a straight line, $y = b + mx$, where:
 
 This is a crucial point for accurately estimating the scaling exponent from empirical data. For example, if you measure the slope of the CCDF plot to be -1.3, the estimated power-law exponent $\gamma$ is $2.3$, not $1.3$ (since $-1.3 = 1 - 2.3$).
 :::
+
+## Where do hubs come from?
+
+We have described heavy-tailed degree distributions but not explained them. Why should any network develop hubs at all? A random network does not: wire $N$ nodes at random and you get a Poisson degree distribution, tightly concentrated around its mean, with no hubs worth the name.
+
+The classic answer is the **Barabási-Albert model** [@barabasi1999emergence], which needs only two ingredients.
+
+1. **Growth.** The network is not fixed. Nodes arrive one at a time, each bringing $m$ edges.
+2. **Preferential attachment.** A new node does not choose its neighbors uniformly. It attaches to an existing node $i$ with probability proportional to that node's current degree:
+
+$$
+\Pi(k_i) = \frac{k_i}{\sum_j k_j}.
+$$
+
+That is the whole model: *the rich get richer*. A node that is already well connected is more likely to gain the next edge, which makes it still more attractive, and so on. Nodes that arrive early have more time to accumulate edges, so age and degree end up correlated.
+
+The consequence — which you can verify by simulation before believing any derivation — is a power-law degree distribution with $\gamma = 3$.
+
+::: {.column-margin}
+Neither ingredient suffices alone. Growth with *uniform* attachment gives an exponential degree distribution, not a power law. Preferential attachment on a *fixed* set of nodes eventually connects everything to everything. It is the combination that produces hubs.
+:::
+
+::: {.callout-note title="Is 'rich get richer' the real mechanism?"}
+Preferential attachment is the most famous explanation, not the only one, and probably not the right one everywhere. Copying models (a new paper cites the references of a paper it read), fitness models (some nodes are intrinsically more attractive regardless of degree), and optimization models all produce heavy tails too. In Module 8 we will meet another: nodes trading off **popularity against similarity** in an underlying hyperbolic geometry, where preferential attachment turns out to be an *emergent consequence* rather than a primitive rule.
+:::
+
+## Degree correlations: who connects to whom?
+
+The degree distribution says how many hubs there are. It says nothing about **where they sit relative to each other** — and two networks with identical degree distributions can behave completely differently depending on the answer.
+
+Ask: when you follow an edge, does a high-degree node tend to find another high-degree node on the other end, or a low-degree one?
+
+- **Assortative**: hubs connect to hubs. The high-degree nodes form a densely connected core. Social networks are typically assortative — popular people know popular people.
+- **Disassortative**: hubs connect to peripheral nodes. Technological and biological networks are typically disassortative — a big router serves many small ones, a hub protein binds many specific partners.
+- **Neutral**: no preference either way. The configuration model, which rewires edges at random while preserving degrees, is neutral by construction.
+
+This is measured by the **degree assortativity coefficient** $r$, defined as the Pearson correlation between the degrees at the two ends of an edge. It runs from $-1$ to $+1$, with $r > 0$ assortative, $r < 0$ disassortative and $r \approx 0$ neutral.
+
+Why care? Because degree correlations change everything downstream:
+
+- **Robustness.** An assortative network has a hub core that holds together under attack; a disassortative one fragments faster once its hubs go, since the periphery hangs off them and nothing else.
+- **Spreading.** Assortativity concentrates an epidemic in the hub core, giving a lower epidemic threshold but slower escape to the periphery.
+- **Our theory's assumptions.** The Molloy-Reed derivation in the appendix assumes a node reached by an edge has $\kappa - 1$ onward edges on average. That is a *neutral*-network statement. When degrees are correlated, the branching factor changes and the predicted threshold shifts.

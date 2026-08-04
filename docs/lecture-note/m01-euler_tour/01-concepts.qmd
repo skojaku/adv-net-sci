@@ -44,6 +44,24 @@ Euler's abstraction of the Königsberg bridge problem. The complex city map is r
 
 This wasn't just a sketch; it was a new mathematical object. Euler had invented the **graph** (or **network**). He had created a new language to talk not about numbers or shapes, but about pure **relationships and connectivity**.
 
+::: {.callout-important title="Key Concept: A graph, written down"}
+Formally, a graph is a pair
+
+$$
+G = (V, E)
+$$
+
+where $V$ is the set of **nodes** (also called vertices) and $E$ is the set of **edges**, each edge being a pair of nodes. For Königsberg, $V$ has four elements — the two shores and the two islands — and $E$ has seven.
+
+Everything else in this course is built on those two sets. Notice what the definition does *not* contain: no coordinates, no distances, no shapes.
+:::
+
+Two features of Königsberg are worth naming now, because the definition above quietly permits both.
+
+**Parallel edges.** Two of the bridges connect the same pair of landmasses. So $E$ contains that pair *twice*, and both copies count. A graph that allows repeated edges like this is a **multigraph**. If we collapsed the two bridges into one, we would be solving a different puzzle and would get a different answer — which is precisely why the multiplicity matters.
+
+**Self-loops.** An edge may also join a node to itself; such an edge is a **self-loop**. Königsberg has none, but they appear all the time in real data (a paper citing itself, a bank lending to itself). A self-loop contributes **2** to the degree of its node, since both of its endpoints attach there. This is the convention that keeps the counting rules below consistent.
+
 ::: {.column-margin}
 **Leonhard Euler (1707-1783)**
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/200px-Leonhard_Euler.jpg)
@@ -127,17 +145,68 @@ With this vocabulary, we can be more precise about the Königsberg problem.
 
 The citizens were looking for an Eulerian circuit. Euler proved that to have one, all nodes must have an even degree.
 
+### Counting walks with the adjacency matrix
+
+There is one more piece of vocabulary that pays off repeatedly later in the course, so it is worth meeting here.
+
+Write the network as an **adjacency matrix** ${\bf A}$: an $N \times N$ table where $A_{ij} = 1$ if nodes $i$ and $j$ are connected and $0$ otherwise. (For a multigraph, $A_{ij}$ is the *number* of edges between $i$ and $j$ — the two Königsberg bridges give an entry of 2.)
+
+Now ask: how many walks of length 2 run from $i$ to $j$? Such a walk must pass through some intermediate node $\ell$, using an edge $i \rightarrow \ell$ and then $\ell \rightarrow j$. The number of ways to do that through a particular $\ell$ is $A_{i\ell}A_{\ell j}$, so summing over all possibilities:
+
+$$
+\#\{\text{walks of length } 2 \text{ from } i \text{ to } j\} = \sum_{\ell} A_{i\ell} A_{\ell j} = \left({\bf A}^2\right)_{ij}.
+$$
+
+That is exactly the definition of matrix multiplication. Repeating the argument gives the general statement:
+
+::: {.callout-important title="Key Concept: Matrix powers count walks"}
+$$
+\left({\bf A}^k\right)_{ij} = \text{the number of walks of length } k \text{ from } i \text{ to } j.
+$$
+:::
+
+Note that it counts **walks**, not paths or trails — nodes and edges may repeat, which is why the formula is so simple. Counting paths, where repetition is forbidden, is vastly harder.
+
+::: {.column-margin}
+Two immediate consequences: $\left({\bf A}^2\right)_{ii}$ is the degree of node $i$ (go out along an edge, come straight back), and $\left({\bf A}^3\right)_{ii}$ counts closed walks of length 3 through $i$ — that is, twice the number of triangles containing $i$. We will use that in Module 2 to compute clustering, and matrix powers again in Module 6, where centrality turns out to be a weighted count of walks of every length.
+:::
+
 ### Network Connectivity
 
 Euler's theorem only applies if the graph is **connected**. If you can't get from one part of the network to another, then a single walk can't possibly cover all the edges.
 
 -   A graph is **connected** if there is a path between any two nodes.
--   A **disconnected** graph is made of two or more separate "islands" of nodes, called **connected components**.
+-   A **disconnected** graph is made of two or more separate "islands" of nodes, called **connected components**. More precisely, a connected component is a *maximal* set of mutually reachable nodes — maximal meaning you cannot add another node to it without breaking that property.
 
 ::: {#fig-connected-components}
 ![](../figs/connected-component.jpg){width="50%"}
 
 A graph with three distinct connected components, highlighted in different colors.
+:::
+
+#### The giant component
+
+Real networks are almost never neatly connected, but they are rarely evenly broken either. What you typically find is one enormous component holding most of the nodes, surrounded by a scatter of tiny fragments and isolated nodes. That one dominant piece is called the **giant component**.
+
+::: {.column-margin}
+"Giant" is a statement about *fractions*, not counts: a component is giant when it contains a finite fraction of all nodes even as the network grows. A component of 1,000 nodes is giant in a network of 1,200 and negligible in a network of 10 million.
+:::
+
+The giant component matters practically because it is usually the object we analyze. Average path length is undefined across disconnected pieces; centrality on an isolated pair of nodes tells you nothing. In practice one extracts the giant component and works there — and asking *when a giant component exists at all*, and *what it takes to destroy it*, is the entire subject of Module 3.
+
+#### How components are actually found
+
+Reading components off a picture is easy; doing it on a million nodes needs an algorithm. The idea is simple enough to run by hand:
+
+1. Pick any unvisited node and mark it as visited.
+2. Look at its neighbors. Any that are unvisited, visit them too.
+3. Repeat until nothing new can be reached. Everything you touched is one component.
+4. If unvisited nodes remain, pick one and start again — that is the next component.
+
+Whether you always extend the most recently discovered node (**depth-first search**, DFS) or sweep outward one layer at a time (**breadth-first search**, BFS) changes the order of visits but not the resulting component. Each node and edge is examined a constant number of times, so the whole partition costs $O(N + M)$ for $N$ nodes and $M$ edges — linear, and therefore practical at any scale you are likely to meet.
+
+::: {.column-margin}
+BFS gives you something extra for free: because it explores layer by layer, the layer at which it reaches a node is the *shortest path length* to that node. We will lean on this in Module 2 when we measure how small the world is.
 :::
 
 #### Connectivity in Directed Networks
