@@ -91,7 +91,7 @@ export MARIMO_URL
 
 # 4. Start the tutor.
 say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
-KICKOFF="Please start the tutoring session: read lesson.yaml and begin at checkpoint cp0_welcome, as specified in AGENTS.md. Speak to the student ONLY through the say tool, use the nb_* notebook tools for all notebook work, and keep this terminal clean — the student is watching it."
+KICKOFF="Please start the tutoring session: read lesson.yaml and begin at checkpoint cp0_welcome — unless a RESUME CONTEXT message is present, in which case greet the student back and continue where it says. Speak to the student ONLY through the say tool, use the nb_* notebook tools for all notebook work, and keep this terminal clean — the student is watching it."
 if [ "$AGENT" = "pi" ]; then
   # bash is disabled on purpose: every notebook/log operation goes through the
   # quiet `notebook` tool, so no raw commands ever scroll past the student.
