@@ -83,7 +83,7 @@ KICKOFF="Please start the tutoring session. Your CHAPTER SCRIPT message contains
 if [ "$AGENT" = "pi" ]; then
   # bash is disabled on purpose: every notebook/log operation goes through the
   # quiet `notebook` tool, so no raw commands ever scroll past the student.
-  pi --model "$TUTOR_MODEL" --exclude-tools bash "$KICKOFF"
+  pi --model "$TUTOR_MODEL" --thinking off --exclude-tools bash "$KICKOFF"
 else
   # Claude Code fallback uses its own default model (TUTOR_MODEL is pi-only)
   # and the marimo-pair skill directly (no custom notebook tool).
