@@ -261,16 +261,21 @@ export default function (pi: ExtensionAPI) {
           const checkpoint = fs.readFileSync(signalPath, "utf-8").trim();
           if (!checkpoint) return; // our own clear-write below
           fs.writeFileSync(signalPath, "");
+          // deliverAs "followUp" is load-bearing: the default ("steer")
+          // waits for the NEXT llm call, which never comes if the turn
+          // already ended — the event then sat queued until the student
+          // pressed Enter, hijacking their input (seen in production).
           pi.sendMessage(
             {
               customType: "notebook-done-button",
               content:
                 `The student clicked the ✅ Done button in the notebook ` +
                 `(checkpoint: ${checkpoint}). Read the relevant notebook values ` +
-                `now with nb_read and continue the lesson.`,
+                `now with nb_read and continue the lesson. If the student also ` +
+                `typed a message, respond to both together.`,
               display: true,
             },
-            { triggerTurn: true },
+            { deliverAs: "followUp", triggerTurn: true },
           );
         } catch {
           // signal file transiently unavailable — ignore
