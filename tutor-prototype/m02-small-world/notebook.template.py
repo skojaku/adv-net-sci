@@ -216,6 +216,65 @@ export default { render };
 
 
 @app.cell(hide_code=True)
+def _(alt, ig, mo, netviz, np, nx, plt):
+    def run_student_code(code, env=None):
+        """Run code from a fill-in exercise box; show stdout + last expression.
+
+        Errors come back as one friendly line, not a wall of traceback."""
+        import ast
+        import contextlib
+        import io
+
+        ns = {
+            "mo": mo, "ig": ig, "nx": nx, "np": np,
+            "plt": plt, "alt": alt, "netviz": netviz,
+        }
+        ns.update(env or {})
+        buf = io.StringIO()
+        try:
+            tree = ast.parse(code or "", mode="exec")
+            last = None
+            if tree.body and isinstance(tree.body[-1], ast.Expr):
+                last = ast.Expression(tree.body[-1].value)
+                tree.body = tree.body[:-1]
+            with contextlib.redirect_stdout(buf):
+                exec(compile(tree, "<your code>", "exec"), ns)
+                result = (
+                    eval(compile(last, "<your code>", "eval"), ns)
+                    if last is not None
+                    else None
+                )
+        except Exception as e:
+            line = getattr(e, "lineno", None)
+            tb = getattr(e, "__traceback__", None)
+            while tb is not None:
+                if tb.tb_frame.f_code.co_filename == "<your code>":
+                    line = tb.tb_lineno
+                tb = tb.tb_next
+            where = f" on line {line}" if line else ""
+            return mo.md(
+                f"🤔 **Python hiccup{where}:** `{type(e).__name__}: {e}`\n\n"
+                "*Read it slowly — it usually names the problem. "
+                "Fix it and press ▶ Run again.*"
+            )
+        parts = []
+        if buf.getvalue():
+            parts.append(mo.md(f"```\n{buf.getvalue()}\n```"))
+        if result is not None:
+            parts.append(result)
+        if not parts:
+            parts.append(
+                mo.md(
+                    "✅ *Ran without errors — nothing to display yet. "
+                    "End with a bare value (like `my_L`) to show it.*"
+                )
+            )
+        return mo.vstack(parts)
+
+    return (run_student_code,)
+
+
+@app.cell(hide_code=True)
 def _():
     from pathlib import Path as _Path
 

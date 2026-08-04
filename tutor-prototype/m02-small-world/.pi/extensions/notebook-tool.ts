@@ -758,6 +758,99 @@ export default function (pi: ExtensionAPI) {
     ...quietRender,
   });
 
+  // ── nb_add_exercise ───────────────────────────────────────────────────────
+  // Fill-in coding, app-view friendly: instructions + a pre-filled code box
+  // (mo.ui.code_editor) + a ▶ Run button that executes via the notebook's
+  // run_student_code helper (stdout + last expression, friendly errors).
+  // The student never needs the cell editor.
+  pi.registerTool({
+    name: "nb_add_exercise",
+    label: "Add coding exercise",
+    description:
+      "Give the student a fill-in coding exercise INSIDE the notebook page: instructions, " +
+      "a code box pre-filled with your scaffold (numbered # steps with ... blanks), and a " +
+      "▶ Run button that executes it and shows output or a friendly error. They can run as " +
+      "often as they like. Read their attempt with nb_read('<name>_ed.value'). env_vars " +
+      "lists notebook variables their code may use (e.g. a graph G you set up earlier). " +
+      "Set done_signal for the usual Done button. ALWAYS use this instead of asking the " +
+      "student to edit cells.",
+    promptSnippet: "Insert a fill-in coding exercise (code box + Run button) into the notebook",
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      name: Type.String({ description: "Base name, e.g. 'cs1_code'." }),
+      instructions: Type.String({
+        description: "1-3 sentences shown above the code box (markdown, $math$ ok).",
+      }),
+      scaffold: Type.String({
+        description: "Pre-filled Python: numbered # instructions + ... blanks to fill.",
+      }),
+      env_vars: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Notebook variable names the student's code may use.",
+        }),
+      ),
+      done_signal: Type.Optional(
+        Type.String({ description: "Checkpoint id for the auto-attached Done button." }),
+      ),
+    }),
+    async execute(_id, params, signal) {
+      const name = String(params.name ?? "").trim();
+      if (!/^[A-Za-z_]\w*$/.test(name)) {
+        return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
+      }
+      const envVars = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
+      const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
+      const edBody =
+        `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
+        `${name}_run = mo.ui.run_button(label="▶ Run my code")\n` +
+        `mo.vstack([mo.md(${py(params.instructions)}), ${name}_ed, ${name}_run])`;
+      const outBody =
+        `if ${name}_run.value:\n` +
+        `    _res = run_student_code(${name}_ed.value, ${envDict})\n` +
+        `else:\n` +
+        `    _res = mo.md("*Press ▶ Run when you're ready.*")\n` +
+        `_res`;
+      let code =
+        `import marimo._code_mode as cm\n` +
+        `async with cm.get_context() as ctx:\n` +
+        `    _names = [c.name for c in ctx.cells]\n` +
+        `    if ${py(name)} in _names:\n` +
+        `        print("exercise already in the notebook — skipped duplicate insert")\n` +
+        `    else:\n` +
+        `        _cid = ctx.create_cell(${py(edBody)}, name=${py(name)}, hide_code=True)\n` +
+        `        ctx.run_cell(_cid)\n` +
+        `        _first = _cid\n` +
+        `        _cid = ctx.create_cell(${py(outBody)}, name=${py(name + "_out")}, hide_code=True, after=_cid)\n` +
+        `        ctx.run_cell(_cid)\n`;
+      if (params.done_signal) {
+        const v = `done_${sanitize(params.done_signal)}`;
+        const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
+        const sigBody =
+          `if ${v}.value:\n` +
+          `    from pathlib import Path as _P\n` +
+          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
+          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
+        code +=
+          `        _cid = ctx.create_cell(${py(btnBody)}, name=${py(name + "_done_btn")}, hide_code=True, after=_cid)\n` +
+          `        ctx.run_cell(_cid)\n` +
+          `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(name + "_done_sig")}, hide_code=True, after=_cid)\n` +
+          `        ctx.run_cell(_cid)\n`;
+      }
+      code += focusCellCode("_first", "        ");
+      const result = await runKernel(code, signal);
+      if (!result.failed) {
+        result.out =
+          `Exercise inserted. The student sees your instructions, a runnable code box, and ` +
+          `a ▶ Run button; results appear right below it. Read their attempt with ` +
+          `nb_read(['${name}_ed.value']).\n` + result.out;
+      }
+      return toResult(result);
+    },
+    ...quietRender,
+  });
+
   // ── nb_add_template ───────────────────────────────────────────────────────
   // Premade, tested cell groups shipped in cells/*.py — the model sends only
   // a template name, so scripted checkpoint builds are instant and bug-free.
