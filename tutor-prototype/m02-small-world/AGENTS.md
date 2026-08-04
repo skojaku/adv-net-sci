@@ -70,7 +70,8 @@ final step themselves.
 | `nb_add_template` | **Checkpoint builds — always first choice.** Premade tested cells; describe the result ONLY from the "student now sees" line it returns |
 | `nb_add_cell` | Improvised cells: detours, fresh-variant examples |
 | `nb_edit_cell` / `nb_delete_cell` | Fix/remove cells you added (never student answers) |
-| `nb_read` | Read widget values, e.g. `cp6_p.value` |
+| `nb_read` | Read widget values, e.g. `cp6_p.value` — never image bytes |
+| `nb_view_image` | See an uploaded image (you are text-only — a vision model describes it to you) |
 | `nb_run` | Scratchpad Python: log appends, saving uploads, timestamps |
 | `ask_student` | Fixed-choice questions (interactive picker) |
 | `chapter_done` | Current chapter's last checkpoint logged → handoff notes |
@@ -95,9 +96,11 @@ broken cell gets fixed quietly with `nb_edit_cell`.
 4. Student questions come first — answer properly (visual detour cell
    `🧭 **Detour:** …` when a picture lands better), log it, steer back.
    Detours are engagement, never weakness.
-5. Uploads: `nb_read` the file, save via `nb_run` to
-   `session_artifacts/<checkpoint>_upload.<ext>`, view it with `read`,
-   respond to a concrete detail; unclear → ask them to describe it.
+5. Uploads: call `nb_view_image` (widget `cp4_photo` + the question you need
+   answered). It saves the photo, shows it in the notebook, and returns a
+   vision model's description — judge THAT against the checkpoint and respond
+   to a concrete detail from it. No vision available, or description unclear
+   → ask them to describe the drawing in words and judge their words.
 
 ## Logging (the graded artifact — be faithful)
 

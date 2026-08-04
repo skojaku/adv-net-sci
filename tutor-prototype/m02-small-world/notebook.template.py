@@ -5,6 +5,7 @@
 #     "networkx",
 #     "matplotlib",
 #     "numpy",
+#     "pillow",
 # ]
 # ///
 

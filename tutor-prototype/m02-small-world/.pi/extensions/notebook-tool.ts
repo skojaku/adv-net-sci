@@ -22,6 +22,8 @@ import { execFile } from "node:child_process";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Type } from "typebox";
+import { uuidv7 } from "@earendil-works/pi-ai";
+import { complete } from "@earendil-works/pi-ai/compat";
 import { Container, Text } from "@earendil-works/pi-tui";
 import { keyHint, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -78,7 +80,9 @@ function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; f
     const child = execFile(
       "bash",
       [script, "--url", url, "-"],
-      { cwd, timeout: 180_000 },
+      // maxBuffer: nb_view_image pipes a base64 JPEG (~0.5MB) through stdout;
+      // node's 1MB default would kill the call mid-stream.
+      { cwd, timeout: 180_000, maxBuffer: 16 * 1024 * 1024 },
       (err, stdout, stderr) => {
         const combined = [stdout, stderr].filter(Boolean).join("\n").trim();
         resolve({ out: combined, failed: err != null });
@@ -104,6 +108,97 @@ async function ensureWarm(signal?: AbortSignal): Promise<{ out: string; failed: 
     if (boot.failed) return boot;
   }
   return null;
+}
+
+/**
+ * The tutor model (deepseek v4 flash) is text-only — nb_view_image delegates
+ * "seeing" to a separate vision-capable model. Resolution order:
+ *   1. TUTOR_VISION_MODEL env ("provider/model-id", as pi knows it)
+ *   2. an image-capable model on the tutor's own provider (same billing)
+ *   3. any zero-cost image-capable model (local servers are safe to auto-pick)
+ * None found -> the tool tells the tutor to ask for a verbal description.
+ */
+function resolveVisionModel(ctx: any): any | null {
+  const reg = ctx?.modelRegistry;
+  if (!reg) return null;
+  const pinned = (process.env.TUTOR_VISION_MODEL ?? "").trim();
+  if (pinned.includes("/")) {
+    const i = pinned.indexOf("/");
+    const m = reg.find?.(pinned.slice(0, i), pinned.slice(i + 1));
+    if (m) return m;
+  }
+  const canSee = (m: any) => Array.isArray(m?.input) && m.input.includes("image");
+  const all: any[] = reg.getAvailable?.() ?? [];
+  const sameProvider = all.find((m) => canSee(m) && m.provider === ctx?.model?.provider);
+  if (sameProvider) return sameProvider;
+  return (
+    all.find((m) => canSee(m) && m?.cost && m.cost.input === 0 && m.cost.output === 0) ?? null
+  );
+}
+
+async function describeImage(
+  ctx: any,
+  b64jpeg: string,
+  question: string,
+): Promise<{ text: string; model?: string; failed: boolean }> {
+  const noVisionAdvice =
+    "Ask the student to describe their drawing in words instead (e.g. which dots " +
+    "they connected and why), then judge their words — that is a perfectly valid pass.";
+  const model = resolveVisionModel(ctx);
+  if (!model) {
+    return {
+      failed: true,
+      text:
+        `NO VISION MODEL: you are text-only and no vision-capable model is configured ` +
+        `(instructor: set TUTOR_VISION_MODEL=provider/model-id). ${noVisionAdvice}`,
+    };
+  }
+  try {
+    const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
+    if (!auth?.ok) throw new Error(auth?.error ?? "no credentials for vision model");
+    const prompt =
+      "You are the eyes of a text-only tutor. FIRST describe the student's photo " +
+      "factually: shapes, dots, lines and which dots each line connects, arrows, any " +
+      "written words or numbers. If it is a network drawing, count the dots. THEN " +
+      "answer the tutor's question. Describe only — never grade or judge. Under 150 " +
+      `words total.\nTutor's question: ${question}`;
+    const response = await complete(
+      model,
+      {
+        messages: [
+          {
+            role: "user" as const,
+            content: [
+              { type: "text" as const, text: prompt },
+              { type: "image" as const, data: b64jpeg, mimeType: "image/jpeg" },
+            ],
+            timestamp: Date.now(),
+          },
+        ],
+      },
+      {
+        apiKey: auth.apiKey,
+        headers: auth.headers,
+        env: auth.env,
+        cacheRetention: "none",
+        sessionId: uuidv7(),
+      },
+    );
+    const text = (response?.content ?? [])
+      .filter((c: any) => c.type === "text")
+      .map((c: any) => c.text)
+      .join("\n")
+      .trim();
+    if (!text) throw new Error("vision model returned no text");
+    return { failed: false, model: `${model.provider}/${model.id}`, text };
+  } catch (e: any) {
+    return {
+      failed: true,
+      text:
+        `VISION FAILED (${e?.message ?? e}): you cannot see the image this time. ` +
+        `Do not retry more than once and do not debug. ${noVisionAdvice}`,
+    };
+  }
 }
 
 function toResult({ out, failed }: { out: string; failed: boolean }) {
@@ -869,6 +964,125 @@ export default function (pi: ExtensionAPI) {
         `    except Exception as _ex:\n` +
         `        print(_e, "!", type(_ex).__name__, str(_ex))\n`;
       return toResult(await runKernel(code, signal));
+    },
+    ...quietRender,
+  });
+
+  // ── nb_view_image ─────────────────────────────────────────────────────────
+  // The tutor model is text-only; this tool is its eyes. Kernel side: pull the
+  // upload bytes, save the original (graded artifact), EXIF-rotate + downscale
+  // (phone photos are huge and often sideways), show the photo back in the
+  // notebook. Extension side: send the small JPEG to a vision model and hand
+  // the tutor a factual description to judge.
+  pi.registerTool({
+    name: "nb_view_image",
+    label: "View student image",
+    description:
+      "Look at a student-uploaded image — you are text-only, so this is your ONLY way to " +
+      "see one (never nb_read image bytes). Give the upload widget name (e.g. 'cp4_photo') " +
+      "or a file path, plus the question you need answered. It saves the original to " +
+      "session_artifacts/, shows the photo in the notebook for the student, and returns a " +
+      "factual description from a vision model — YOU judge that description against the " +
+      "checkpoint. If it reports no vision is available, follow its advice instead.",
+    promptSnippet: "See a student-uploaded image through a vision model (the tutor is text-only)",
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      widget: Type.Optional(
+        Type.String({ description: "Upload widget name, e.g. 'cp4_photo'." }),
+      ),
+      file: Type.Optional(Type.String({ description: "Or: path to an image file." })),
+      question: Type.String({
+        description: "What you need to know, e.g. 'Which two dots does the extra line connect?'",
+      }),
+    }),
+    async execute(_id, params, signal, _onUpdate, ctx: any) {
+      const widget = String(params.widget ?? "").trim();
+      const file = String(params.file ?? "").trim();
+      if (!widget && !file) {
+        return toResult({ out: "Pass widget (e.g. 'cp4_photo') or file.", failed: true });
+      }
+      if (widget && !/^[A-Za-z_]\w*$/.test(widget)) {
+        return toResult({ out: `'${widget}' is not a widget name.`, failed: true });
+      }
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
+
+      const base = sanitize(widget || path.basename(file).replace(/\.[^.]*$/, ""));
+      const viewRel = `session_artifacts/${base}_view.jpg`;
+      const viewCell = `${base}_view`;
+      // Self-contained display cell: the student sees exactly what the vision
+      // model was sent (survives notebook reloads; deleted by fresh_start).
+      const cellBody =
+        `from pathlib import Path as _P\n` +
+        `mo.image(_P(${py(viewRel)}).read_bytes(), width=420)`;
+      const source = widget
+        ? `_files = list(${widget}.value or [])\n` +
+          `if not _files:\n` +
+          `    print("NO_IMAGE: nothing uploaded yet")\n` +
+          `else:\n` +
+          `    _name, _raw = _files[0].name, _files[0].contents\n`
+        : `_p = _P(${py(file)})\n` +
+          `if not _p.exists():\n` +
+          `    print("NO_IMAGE: no such file:", ${py(file)})\n` +
+          `else:\n` +
+          `    _name, _raw = _p.name, _p.read_bytes()\n`;
+      const code =
+        `import base64 as _b64, io as _io\n` +
+        `from pathlib import Path as _P\n` +
+        `_P("session_artifacts").mkdir(exist_ok=True)\n` +
+        `_raw = None\n` +
+        source +
+        `if _raw is not None:\n` +
+        `    from PIL import Image as _Image, ImageOps as _ImageOps\n` +
+        `    _ext = _P(_name).suffix.lower() or ".png"\n` +
+        `    (_P("session_artifacts") / (${py(base + "_upload")} + _ext)).write_bytes(_raw)\n` +
+        `    _img = _Image.open(_io.BytesIO(_raw))\n` +
+        `    _img = (_ImageOps.exif_transpose(_img) or _img).convert("RGB")\n` +
+        `    _img.thumbnail((1280, 1280))\n` +
+        `    _out = _io.BytesIO()\n` +
+        `    _img.save(_out, "JPEG", quality=80)\n` +
+        `    _P(${py(viewRel)}).write_bytes(_out.getvalue())\n` +
+        `    print("FILE:", _name, "->", str(_img.size[0]) + "x" + str(_img.size[1]))\n` +
+        `    import marimo._code_mode as cm\n` +
+        `    async with cm.get_context() as ctx:\n` +
+        `        _names = [c.name for c in ctx.cells]\n` +
+        `        if ${py(viewCell)} in _names:\n` +
+        `            ctx.edit_cell(${py(viewCell)}, ${py(cellBody)})\n` +
+        `        else:\n` +
+        `            ctx.create_cell(${py(cellBody)}, name=${py(viewCell)}, hide_code=True)\n` +
+        `        ctx.run_cell(${py(viewCell)})\n` +
+        `    print("B64:" + _b64.b64encode(_out.getvalue()).decode())\n`;
+      const result = await runKernel(code, signal);
+      if (result.failed) return toResult(result);
+      if (result.out.includes("NO_IMAGE")) {
+        return toResult({
+          out:
+            result.out +
+            `\nAsk the student to upload their photo in the notebook first (then the ` +
+            `Done button), or to describe the drawing in words here.`,
+          failed: false,
+        });
+      }
+      const b64 = /^B64:([A-Za-z0-9+/=]+)\s*$/m.exec(result.out)?.[1];
+      const fileLine = /^FILE:.*$/m.exec(result.out)?.[0] ?? "";
+      if (!b64) {
+        return toResult({
+          out:
+            `Could not extract the image. Ask the student to describe their drawing ` +
+            `in words instead and judge that.\n${result.out.slice(0, 500)}`,
+          failed: true,
+        });
+      }
+      const vision = await describeImage(ctx, b64, String(params.question ?? "").trim());
+      if (vision.failed) return toResult({ out: `${fileLine}\n${vision.text}`, failed: false });
+      return toResult({
+        out:
+          `${fileLine} — saved, and the student now sees their photo in the notebook.\n` +
+          `VISION REPORT from ${vision.model} (a machine description — judge it against ` +
+          `the checkpoint yourself; respond to a concrete detail from it, don't echo it ` +
+          `wholesale):\n${vision.text}`,
+        failed: false,
+      });
     },
     ...quietRender,
   });
