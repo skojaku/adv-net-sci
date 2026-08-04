@@ -62,6 +62,7 @@ meta:
         core = every student must master it (fair game on exam);
         extension = enrichment, assessed only as bonus
       statement: "the thing to be learned, in one sentence"
+      note: "optional; used to record where this entry departs from an earlier version of the lecture note, and why"
       prereq: "list of concept ids that must come first"
       coverage:
         slide: "slide file / section that teaches it"
@@ -2282,15 +2283,19 @@ modules:
         name: "node2vec biased walks"
         type: model
         level: core
-        statement: "Bias the walk with a return parameter p and an in-out parameter q, so the walk can be tuned between staying local and wandering outward."
+        statement: "Bias the walk with a return parameter p and an in-out parameter q: q > 1 gives an inward (BFS-like) bias that keeps the walk local, q < 1 gives an outward (DFS-like) bias that pushes it away."
         prereq: [m08.c19, m07.c18]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m08.c21
-        name: "Community structure vs structural roles"
+        name: "Homophily vs structural equivalence"
         type: principle
         level: core
-        statement: "BFS-like walks (low q) stay in the immediate neighborhood and capture community structure; DFS-like walks (high q) run deep and capture structural roles."
+        statement: "Per Grover and Leskovec (2016): outward DFS-like walks (q < 1) give a macro view and capture homophily, i.e. community structure; inward BFS-like walks (q > 1) resample the local neighborhood and capture structural equivalence, i.e. roles."
+        note: >-
+          The lecture note's bullet list had these two swapped (and inconsistent
+          with its own q-direction lines just above); both were corrected on
+          2026-08-04 to follow the original paper.
         prereq: [m08.c20]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
