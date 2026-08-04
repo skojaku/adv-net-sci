@@ -189,6 +189,47 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
+  // ── Brevity coach ─────────────────────────────────────────────────────────
+  // The tutor keeps lapsing into lectures (seen in production). Measure every
+  // assistant message mechanically; when it's too long, queue an INVISIBLE
+  // reminder that lands right before the model's next generation (nextTurn:
+  // no extra visible message, no interruption).
+  const COACH_MAX_CHARS = 450;
+  let coachQueued = false;
+  pi.on("message_end", async (event: any, _ctx: any) => {
+    const msg = event?.message;
+    if (msg?.role !== "assistant") return;
+    const raw = msg.content;
+    const text = (
+      typeof raw === "string"
+        ? raw
+        : (Array.isArray(raw) ? raw : [])
+            .filter((c: any) => c?.type === "text")
+            .map((c: any) => c.text ?? "")
+            .join("\n")
+    ).trim();
+    if (!text) return;
+    if (text.length <= COACH_MAX_CHARS) {
+      coachQueued = false;
+      return;
+    }
+    if (coachQueued) return;
+    coachQueued = true;
+    pi.sendMessage(
+      {
+        customType: "tutor-coach",
+        content:
+          `COACH (invisible to the student — never mention this): your last message was ` +
+          `${text.length} characters — far over the limit. Hard rules: 1–3 short sentences ` +
+          `per message; never state a number, sum, or conclusion the student hasn't produced ` +
+          `themselves — ask for the next small piece instead. ` +
+          `Your next message: ONE short question only.`,
+        display: false,
+      },
+      { deliverAs: "nextTurn" },
+    );
+  });
+
   // ── nb_add_cell ───────────────────────────────────────────────────────────
   pi.registerTool({
     name: "nb_add_cell",
