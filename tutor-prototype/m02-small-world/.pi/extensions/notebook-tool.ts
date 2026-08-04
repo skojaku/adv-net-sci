@@ -293,8 +293,9 @@ export default function (pi: ExtensionAPI) {
                 `RESUME CONTEXT (invisible to the student — never mention this message): ` +
                 `a previous session exists. Progress so far:\n${progressBrief(entries)}\n` +
                 `FIRST, greet the student and ask with ask_student: continue where you left ` +
-                `off, or start fresh? If they choose fresh: call nb_fresh_start, then begin ` +
-                `at cp0_welcome. If they continue: do NOT rebuild existing notebook cells ` +
+                `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
+                `its instructions (chapter 1 reloads automatically — do not improvise). ` +
+                `If they continue: do NOT rebuild existing notebook cells ` +
                 `(nb_add_template skips duplicates automatically), remind them in one ` +
                 `sentence where you two left off, and continue at checkpoint ${nextId} ` +
                 `(chapter "${chapter.title}").`,
@@ -730,7 +731,9 @@ export default function (pi: ExtensionAPI) {
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
       }
-      // Back to chapter 1 with a fresh script in context.
+      // Back to chapter 1 with a fresh script in context. triggerTurn so the
+      // tutor starts cp0 from the script once it arrives — without this, the
+      // model improvises checkpoints from memory (seen in production).
       try {
         const chapters = loadChapters();
         if (chapters.length > 0) {
@@ -741,7 +744,7 @@ export default function (pi: ExtensionAPI) {
               content: chapterScriptMessage(chapters[0], 1, chapters.length),
               display: false,
             },
-            { deliverAs: "followUp" },
+            { deliverAs: "followUp", triggerTurn: true },
           );
         }
       } catch {
@@ -753,7 +756,15 @@ export default function (pi: ExtensionAPI) {
         `    for _c in list(ctx.cells):\n` +
         `        if _c.name and _c.name != "_":\n` +
         `            ctx.delete_cell(_c.id)\n`;
-      return toResult(await runKernel(code, signal));
+      const result = await runKernel(code, signal);
+      if (!result.failed) {
+        result.out =
+          `Fresh start complete. The Chapter 1 script arrives next — END YOUR TURN NOW ` +
+          `(at most one short welcome line first). Treat this as a brand-new session: ` +
+          `begin at cp0_welcome FROM THE INCOMING SCRIPT; do not improvise checkpoints ` +
+          `from memory.\n` + result.out;
+      }
+      return toResult(result);
     },
     ...quietRender,
   });
