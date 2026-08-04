@@ -121,14 +121,22 @@ async function ensureWarm(signal?: AbortSignal): Promise<{ out: string; failed: 
 function resolveVisionModel(ctx: any): any | null {
   const reg = ctx?.modelRegistry;
   if (!reg) return null;
+  const all: any[] = reg.getAvailable?.() ?? [];
   const pinned = (process.env.TUTOR_VISION_MODEL ?? "").trim();
   if (pinned.includes("/")) {
     const i = pinned.indexOf("/");
     const m = reg.find?.(pinned.slice(0, i), pinned.slice(i + 1));
     if (m) return m;
+    // Router model ids contain slashes themselves ("openrouter/minimax/minimax-m3");
+    // accept the full provider/id form or the bare router slug, case-insensitively.
+    const want = pinned.toLowerCase();
+    const byId = all.find(
+      (c) =>
+        `${c.provider}/${c.id}`.toLowerCase() === want || String(c.id).toLowerCase() === want,
+    );
+    if (byId) return byId;
   }
   const canSee = (m: any) => Array.isArray(m?.input) && m.input.includes("image");
-  const all: any[] = reg.getAvailable?.() ?? [];
   const sameProvider = all.find((m) => canSee(m) && m.provider === ctx?.model?.provider);
   if (sameProvider) return sameProvider;
   return (
