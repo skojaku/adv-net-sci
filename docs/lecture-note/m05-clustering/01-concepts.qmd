@@ -444,6 +444,45 @@ $$
 
 See the Appendix for the derivations.
 
+### Reading a modularity score
+
+Two practical facts about $Q$ before we start optimizing it.
+
+**Its range is $[-1, 1]$.** $Q = 0$ means the partition captures exactly what the null model already predicts — no structure found. Negative values mean the groups have *fewer* internal edges than chance, which is what you get if you deliberately split a community down the middle. In practice, partitions of real networks with genuine community structure land somewhere around $0.3$ to $0.7$, and $Q > 0.3$ is often quoted as a rule of thumb for "meaningful" structure.
+
+Treat that threshold with suspicion. As we will see shortly, a random graph with no structure whatsoever routinely scores above it.
+
+**Maximizing it is NP-hard.** There are exponentially many ways to partition $N$ nodes, and no algorithm is known that finds the maximum-$Q$ partition in polynomial time. Every method below is therefore a *heuristic*: it returns a good partition, never a certified best one. This has a practical consequence you will notice immediately — run the same algorithm twice and you may get two different answers.
+
+### How to actually find high-modularity partitions
+
+**Greedy agglomeration.** Start with every node in its own community. Repeatedly merge the pair of communities that increases $Q$ the most, and stop when no merge helps. Simple, deterministic, and prone to getting stuck in mediocre local optima.
+
+**The Louvain algorithm** [@blondel2008fast] is the workhorse. It alternates two phases:
+
+1. *Local moving*: visit each node and move it to whichever neighboring community increases $Q$ the most, repeating until no single move helps.
+2. *Aggregation*: collapse each community into a single super-node, with edge weights summing the edges between communities (and self-loops carrying the internal edges). Then go back to phase 1 on this smaller network.
+
+Each round shrinks the network, so Louvain runs on millions of nodes and produces a *hierarchy* of partitions as a by-product — one per level of aggregation.
+
+**The Leiden algorithm** [@traag2019louvain] fixes a genuine defect in Louvain. Because Louvain moves nodes one at a time, it can leave a community internally *disconnected*: the node that linked two halves gets moved away, and nothing checks the damage. Leiden adds a refinement step that guarantees every returned community is connected, and is usually faster as well. If you have a choice, use Leiden.
+
+**Label propagation** takes a completely different tack: give every node a unique label, then repeatedly have each node adopt whichever label is most common among its neighbors. It converges in near-linear time with no objective function at all. The price is instability — different random visit orders give different partitions.
+
+**Girvan-Newman** [@girvan2002community] works by deletion instead. Compute the *edge betweenness* of every edge (how many shortest paths run through it — see Module 6), remove the highest one, and repeat. Edges bridging communities carry the most shortest paths, so they go first, and the network splits into a dendrogram of nested communities. It is beautifully interpretable and far too slow for large networks, since betweenness must be recomputed after every removal.
+
+::: {.callout-note title="Four different answers to 'what is a community?'"}
+It is worth noticing that these methods do not merely differ in speed. They encode different definitions:
+
+- **Modularity methods** (greedy, Louvain, Leiden): a community is a group with more internal edges than a degree-preserving null model predicts.
+- **Cut methods** (ratio, normalized): a community is a group that is cheap to separate from the rest.
+- **Spectral methods** (Module 8): a community is a cluster in the eigenvector coordinates of the Laplacian.
+- **Random-walk methods** (Module 7: Infomap, Walktrap): a community is a region where a random walker gets trapped.
+- **Generative methods** (the stochastic block model, below): a community is a latent label that explains the observed edges.
+
+They frequently disagree on the same network. That disagreement is information, not noise.
+:::
+
 ### Modularity Demo
 
 Let's learn how the modularity works by playing with a community detection game!
@@ -751,6 +790,69 @@ The upper triangle of the adjacency matrix represents $i < j$ over which we take
 When $c=c'$ (the diagonal block), we count only the upper half of the block, resulting in $\frac{n_c (n_c - 1)}{2}$. When $c \neq c'$ (different communities), we count all connections between them, resulting in $n_cn_{c'}$.
 
 We have now obtaind the likelihood function based only on the community assignment. Maximizing ${\cal L}$ with respect to the community assignment gives us the most likely community assignment for the network.
+
+## How do we know if the communities are any good?
+
+You have run three algorithms and gotten three different partitions. Which one is right? The honest answer depends on whether you have something to compare against.
+
+### Without ground truth
+
+When there is no known answer — the usual situation — all you can do is score a partition against some notion of what a community *should* look like.
+
+**Modularity** is the obvious candidate, and we have already met it. But using $Q$ to evaluate a partition that was produced by maximizing $Q$ is circular, and comparing $Q$ across different networks is meaningless (see the spurious-communities section above).
+
+**Conductance** measures how well a single community is separated from the rest:
+
+$$
+\phi(V_c) = \frac{\text{number of edges leaving } V_c}{\min\left(\text{vol}(V_c),\; \text{vol}(\overline{V_c})\right)}
+$$
+
+where $\text{vol}(V_c) = \sum_{i \in V_c} k_i$ is the total degree of the community. Low conductance means few edges escape relative to the community's size — a well-isolated group. Unlike modularity, conductance scores communities one at a time, which makes it useful when you care about a particular group rather than the whole partition.
+
+**Internal versus external density** is the crudest version of the same idea: compare the edge density inside a group to the density of its connections outward.
+
+::: {.callout-warning title="These are definitions, not verdicts"}
+Every one of these scores *is* a definition of community written as a number. A partition scoring well on conductance and badly on modularity has not failed a test; it has satisfied one definition and not another. There is no measurement here that adjudicates between the definitions.
+:::
+
+### With ground truth
+
+Sometimes we do know the answer — on synthetic benchmarks generated from an SBM, or on real networks with meaningful metadata. Then we can ask directly how close a detected partition is to the true one. Two nodes are the unit of comparison: do the two partitions agree about whether a given pair belongs together?
+
+**Normalized Mutual Information (NMI)** takes an information-theoretic view. Treat the true label and the detected label as two random variables. Their mutual information $I(X;Y)$ measures how much knowing one tells you about the other, and normalizing by the entropies puts it on a $[0,1]$ scale:
+
+$$
+\text{NMI}(X, Y) = \frac{2\, I(X;Y)}{H(X) + H(Y)}
+$$
+
+$1$ means the partitions are identical up to relabeling; $0$ means knowing one tells you nothing about the other.
+
+**Adjusted Rand Index (ARI)** counts pairs of nodes instead. The Rand index is the fraction of node pairs the two partitions agree about (both put them together, or both put them apart). The problem is that even random partitions agree on many pairs by chance, so the raw index is inflated. ARI subtracts the expected agreement:
+
+$$
+\text{ARI} = \frac{\text{Rand index} - \mathbb{E}[\text{Rand index}]}{\max(\text{Rand index}) - \mathbb{E}[\text{Rand index}]}
+$$
+
+This makes $0$ mean "no better than chance" and $1$ mean "identical". ARI can go slightly negative, which means a partition agrees with the truth *less* than random guessing would.
+
+::: {.column-margin}
+The two measures disagree in a characteristic way: NMI is biased toward partitions with many small communities (more communities means more information, mechanically), while ARI is more conservative. Reporting both is standard practice.
+:::
+
+::: {.callout-caution title="Metadata is not ground truth"}
+It is tempting to treat node attributes — a user's country, a protein's function — as the true communities and score algorithms against them. Peel, Larremore and Clauset (2017) [@peel2017ground] show why this is a mistake: metadata may be unrelated to the network structure, or related to a *different* structure than the one an algorithm finds. A low NMI against metadata can mean the algorithm failed, or that the metadata simply does not describe how this network is wired. The two cannot be distinguished by the score alone.
+:::
+
+## Where this gets used
+
+Community detection is one of the most widely applied ideas in network science:
+
+- **Social networks**: friend groups and interest communities; echo chambers and political polarization; seeding viral marketing within rather than across communities.
+- **Biological networks**: protein complexes and functional modules; disease modules in gene interaction networks; modules in brain connectomes.
+- **Infrastructure**: autonomous systems on the Internet; clusters of airports or stations in transportation networks; control areas in power grids.
+- **Information networks**: research fields in citation data; topic clusters among web pages; user segments in recommendation systems.
+
+In every one of these, remember the caveat that runs through the whole module: the algorithm will return communities whether or not any exist.
 
 ```{bibliography}
 ```
