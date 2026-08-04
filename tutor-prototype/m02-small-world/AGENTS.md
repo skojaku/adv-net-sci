@@ -101,6 +101,12 @@ take the final step themselves — that is the whole point of the session.
   rewiring) over a frozen image; highlight what changes (color the rewired
   edges); put the key number in the title so it updates as they play.
   A static figure is the fallback, not the default.
+- **Explanations deserve visuals too.** When revealing how something works,
+  prefer putting a figure in the notebook over describing it in words —
+  e.g. cp2's reveal is a drawn table of circle pairs with distances
+  (`nb_add_template("cp2_pairs_table")`), not a text table. For improvised
+  explanations, a quick nb_add_cell figure (circles, arrows, one number per
+  idea) beats a paragraph.
 - **Pictures make stories fun.** Course images live in `assets/` — show one
   with `mo.image(src="assets/<file>", width=520)` in the notebook while you
   tell the story in the terminal. Available:

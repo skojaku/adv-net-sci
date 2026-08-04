@@ -80,19 +80,22 @@ checkpoints:
       on the 4-node graph (edges: A-B, A-C, B-C, B-D, C-D): nodes reachable
       within cp2_steps edges light up, animating what "distance" means.
     ask: |
-      In the terminal: "Play with the slider — watch the wave spread from A.
-      Two questions: (1) What is the distance from A to D — the number of
-      EDGES on the shortest route? (2) The average over all 6 pairs?
-      (fraction or decimal is fine)"
+      ONE question at a time:
+      1. "Play with the slider — watch the wave spread from A. What's the
+         distance from A to D — the number of EDGES on the shortest route?"
+      2. Only after they answer: "Now the average distance over all 6 pairs —
+         a fraction or decimal is fine."
     accept: |
       distance A-D = 2.  average = 7/6 ≈ 1.17 (accept 1.16-1.17 or "7/6").
     hints:
       - "Set the slider to 1 — who lights up? Now 2 — when does D light up?"
       - "There are 6 pairs: AB, AC, AD, BC, BD, CD. Five are directly connected (distance 1). Make a little table and average."
     reveal_after: |
-      Terminal: show the worked 6-pair table (plain text). Define average path
-      length as the average shortest-path distance over all pairs — this
-      number is what "six degrees" measures for the whole USA.
+      nb_add_template("cp2_pairs_table") — the six pairs drawn as circle
+      pairs with their distances, average in the title. Then one beat in the
+      terminal: average path length = the average shortest-path distance over
+      all pairs — this number is what "six degrees" measures for the whole
+      USA.
 
   - id: cp3_clustering
     goal: Student understands local clustering as "do my friends know each other?"
@@ -101,12 +104,12 @@ checkpoints:
       is answered) — A with five friends; the two friendships among the
       friends (B-F, C-E) are highlighted in orange.
     ask: |
-      Terminal, in two beats:
+      ONE question at a time:
       1. "In your own words: what would it mean, in numbers, to say 'Alice's
          friends tend to know each other'?" (typed answer)
       2. Then build the figure and ask: "A has 5 friends, so up to 10
-         friendships could exist among them. How many actually do? So what
-         fraction is that?"
+         friendships could exist among them. How many actually exist?"
+      3. After they answer: "So what fraction is that?"
     accept: |
       Idea: any mention of counting friend-pairs that are themselves
       connected, out of possible pairs (triangles = bonus, not required).
@@ -155,10 +158,10 @@ checkpoints:
     goal: Student articulates the tension that makes small-world non-trivial.
     build: none
     ask: |
-      Terminal: "Two extreme worlds. RING world: everyone knows only their
-      neighbors. RANDOM world: everyone's friends are scattered completely at
-      random. For each — what's good, what's bad? (Think: clustering, and
-      distance.)"
+      ONE world at a time: "Imagine a RING world — everyone knows only their
+      neighbors. What's good about living there, and what's bad?" After they
+      answer, the RANDOM world (friends scattered completely at random) the
+      same way.
     accept: |
       Ring: high clustering / tight communities (good), long distances (bad).
       Random: short distances (good), no clustering (bad). Any phrasing that

@@ -94,6 +94,13 @@ detours counts in your favor — it's the whole point.
   articulation (cp3, cp5, cp8), exploration with a widget (cp2, cp6), and a
   red-team critique of a flawed AI analysis (cp7) — the last one previews the
   course's process-over-product grading philosophy.
+- **Templates are self-describing (notebook design principle).** Every
+  template in `cells/` carries a `# describe:` line — one factual sentence
+  about what the student sees. `nb_add_template` returns it on insert, and
+  the tutor is told to describe the artifact *only* from that line (a tutor
+  once called the 4-person network "5-person"). When authoring a new
+  template, write the describe line first; keep titles/captions in the
+  figures self-explanatory so the notebook stays truthful without the tutor.
 - **Hints are logged, never penalized** — stated to the student up front, and
   binding on the grader. Otherwise students stop asking, and the log stops
   reflecting reality.

@@ -1,6 +1,7 @@
 # Premade cells for checkpoint cp6_watts_strogatz — the rewiring explorer.
 # Insert AFTER the student commits a prediction, with
 # done_signal="cp6_watts_strogatz" for the Done button.
+# describe: A rewiring-probability slider p; rewired shortcut edges are red, and the title shows distance L/L0 and clustering C/C0 live.
 # --- cell: cp6_p ---
 cp6_p = mo.ui.slider(
     steps=[0.0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0],
