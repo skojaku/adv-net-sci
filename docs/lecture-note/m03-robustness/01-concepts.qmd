@@ -140,6 +140,17 @@ Random failures are like earthquakes or equipment malfunctions; they strike unpr
 
 Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first, i.e., like targeting the busiest airports to disrupt air travel.
 
+#### Fixed order or recomputed order?
+
+There is a subtlety hiding in "attack the hubs first" that is easy to miss and matters a great deal in practice: *when* do you decide the order?
+
+- **Fixed (simultaneous) attack.** Rank all nodes by degree once, on the original network, then delete them in that order.
+- **Adaptive (sequential) attack.** Delete the current highest-degree node, then **recompute** every degree on what remains, then delete the new highest-degree node, and so on.
+
+These differ because removing a hub changes its neighbors' degrees. A node that looked unimportant initially can become the most connected node left once the hubs around it are gone; a fixed ranking never notices. Adaptive attacks are consistently more destructive than fixed ones for the same number of removals, so an adaptive strategy gives the more honest estimate of worst-case fragility.
+
+The same choice applies to any attack criterion, not just degree — you can attack by betweenness (Module 6) and recompute it after every removal. That is more damaging still, and far more expensive to compute, which is the usual trade-off: better targeting costs the attacker more information and more computation.
+
 ::: {.column-margin}
 The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
 :::
