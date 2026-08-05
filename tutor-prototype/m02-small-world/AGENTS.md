@@ -178,8 +178,12 @@ the note cell from the script's `note:` skeleton, and asks the student
 what's next. You supply only what a model can:
 
 - `student_response` — their answer **VERBATIM**, their words not yours.
-  Their typed messages are captured from the transcript anyway, so a
-  paraphrase only makes you look careless.
+  Their typed messages are captured from the transcript and the closing
+  record quotes that capture, so a paraphrase only makes you look
+  careless — and `checkpoint_done` checks this field against what they
+  actually typed. When the answer was a drawing or a picker choice, put
+  **their spoken words** here and your reading of the picture (or the
+  numbers a widget showed) in `notes`.
 - `judgment` — `pass` | `pass_with_hints` | `guided` | `prediction`
 - `hints_used`, `notes` (one line: what their answer showed)
 - `note_slots` — the «slot» fills for the script's note skeleton, in

@@ -1,6 +1,11 @@
 # Premade cells for checkpoint cp6_watts_strogatz — the rewiring explorer.
 # Insert AFTER the student commits a prediction.
-# describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a 60-dot ring on a drag-able network widget where rewired shortcut edges are rust lines; the title shows L/L0 and C/C0 live.
+# The numbers are averaged over a 200-person ring (3 seeds) because a
+# 60-node graph is too noisy to read; the picture is a 60-dot sketch of the
+# same rewiring, since 200 dots is unreadable. The caption says so — a
+# student who counts rust lines in the drawing must not think they are
+# counting the graph the dials describe.
+# describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a drag-able 60-dot ring sketch where rewired shortcut edges are rust lines; the caption shows live L/L0 and C/C0 measured on a 200-person ring rewired the same way, and says so.
 # --- cell: cp6_legend ---
 mo.md(
     r"""**Reading the dials:** $L$ = average distance — how many steps apart a
@@ -50,6 +55,12 @@ _pos60 = {
     for _i in range(60)
 }
 mo.vstack([
-    mo.md(f"**p = {_p} &nbsp;&nbsp; distance L/L₀ = {_Lr:.2f} &nbsp;&nbsp; clustering C/C₀ = {_Cr:.2f}**"),
+    mo.md(
+        f"**p = {_p} &nbsp;&nbsp; distance L/L₀ = {_Lr:.2f} &nbsp;&nbsp; "
+        f"clustering C/C₀ = {_Cr:.2f}**\n\n"
+        f"<span style='color:#6A6D75;font-size:13px'>The two numbers are measured "
+        f"on a {_n}-person ring (averaged over 3 tries). The picture below is a "
+        f"60-dot sketch of the same rewiring, small enough to see.</span>"
+    ),
     netviz(_ringe + _short, highlight=_short, layout=_pos60, width=820, height=820),
 ])
