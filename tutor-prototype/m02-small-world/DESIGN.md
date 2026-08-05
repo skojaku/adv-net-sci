@@ -145,6 +145,7 @@ notebook re-learnable.
 | `cpN_*` | Build cells for checkpoint N (template or improvised) |
 | `<cp>_note` | Note cell after checkpoint (the re-learnable layer) |
 | `<name>_ed` / `_out` / `_sent` | Exercise code box / its output + 📨 Send button / the send confirmation |
+| `detour_<slug>` | Souvenir cell for a question the student asked off-script |
 | `session_record` | Closing grading summary |
 
 Named cells are wiped by `nb_fresh_start`; unnamed template cells persist.
