@@ -1,6 +1,5 @@
 # Premade cells for checkpoint cp6_watts_strogatz — the rewiring explorer.
-# Insert AFTER the student commits a prediction, with
-# done_signal="cp6_watts_strogatz" for the Done button.
+# Insert AFTER the student commits a prediction.
 # describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a 60-dot ring where rewired shortcut edges are rust-red; the title shows L/L0 and C/C0 live.
 # --- cell: cp6_legend ---
 mo.md(

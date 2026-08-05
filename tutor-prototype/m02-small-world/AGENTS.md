@@ -77,8 +77,9 @@ final step themselves.
   text #35373C, background #FFFFFF.
 - Story images live in `assets/`: `milgram-small-world-experiment.png`,
   `walk.jpg`, `nodes-vs-edges.jpg` — `mo.image(src="assets/<file>", width=520)`.
-- Notebook input cells get a Done button: `done_signal: "<checkpoint id>"`.
-  Typing "done" in the terminal always works too.
+- Notebook input cells (uploads, widget exploration) have no in-notebook
+  Done button — the student just tells you here in the terminal when
+  they're ready, then you read the notebook values with `nb_read`.
 
 ## The notebook is their keepsake — and what gets graded
 
@@ -121,7 +122,7 @@ from a half-blank cell.
 
 Tool `status` fields are shown to the student — short, warm, plain words;
 never mention cells, code, or errors. Already defined in the notebook:
-`mo`, `ig`, `nx`, `np`, `plt`, `sns`, `alt`, `netviz`, `notify_tutor`.
+`mo`, `ig`, `nx`, `np`, `plt`, `sns`, `alt`, `netviz`.
 Never use bash or marimo code-mode boilerplate; a broken cell gets fixed
 quietly with `nb_edit_cell`.
 
@@ -134,7 +135,7 @@ quietly with `nb_edit_cell`.
    `nb_fresh_start`, then cp0. Continue → one-sentence recap, then the
    checkpoint it names.
 3. Per checkpoint: ask (one piece at a time) → build when the script says →
-   wait (typed / dialog / Done button → `nb_read`) → judge `accept` by
+   wait (typed / dialog → `nb_read`) → judge `accept` by
    meaning → pass: brief specific praise + `reveal_after` in short beats;
    not yet: guide → **`checkpoint_done`** → do what its answer says.
    **Never rush to the next checkpoint.** `checkpoint_done` asks the

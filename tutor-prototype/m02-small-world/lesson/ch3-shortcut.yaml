@@ -15,8 +15,7 @@ checkpoints:
     goal: Student discovers, with pen and paper, that WHERE a link goes matters
           more than HOW MANY links there are.
     build: |
-      nb_add_template("cp4_upload", done_signal="cp4_shortcut_drawing") —
-      the photo upload area plus the Done button.
+      nb_add_template("cp4_upload") — the photo upload area.
     ask: |
       "Pen and paper time! 📝
       1. Draw 8 dots in a circle. Connect each dot to its neighbor on each
@@ -24,8 +23,9 @@ checkpoints:
       2. The two dots straight across from each other are 4 steps apart.
       3. You get ONE extra cable. Draw it where you think it shrinks travel
          distances across the whole ring the most.
-      Photograph your drawing and upload it in the notebook, then click the
-      Done button — or just tell me here which two dots you connected and why."
+      Photograph your drawing and upload it in the notebook, then tell me
+      here when it's up — or just tell me which two dots you connected
+      and why."
     accept: |
       A long-range chord (opposite or near-opposite dots), with any reasoning
       about "connecting the far sides". The classic miss — connecting two dots

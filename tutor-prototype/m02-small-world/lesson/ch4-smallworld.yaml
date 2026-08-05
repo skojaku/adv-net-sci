@@ -15,7 +15,7 @@ checkpoints:
     goal: Student sees that a tiny fraction of rewired links collapses distance
           while clustering survives.
     build: |
-      nb_add_template("cp6_ws_explorer", done_signal="cp6_watts_strogatz")
+      nb_add_template("cp6_ws_explorer")
       (only AFTER the prediction below is committed) — slider over p; the
       network drawing highlights rewired shortcut edges in red, and the
       title shows L(p)/L₀ and C(p)/C₀ live.
@@ -27,8 +27,8 @@ checkpoints:
       "clustering drops a lot, distance barely changes" /
       "both barely change".
       Then build the explorer and: "Play with the slider. Around which p does
-      distance collapse — and what is clustering doing there? Click Done when
-      you've got it."
+      distance collapse — and what is clustering doing there? Tell me here
+      when you've got it."
     accept: |
       Report notices that L collapses at small p (~0.01, i.e. ~1% of links)
       while C is still high, and honestly compares to their prediction.
