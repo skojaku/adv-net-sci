@@ -2371,8 +2371,8 @@ export default function (pi: ExtensionAPI) {
         fs.rmSync(chapterStatePath(), { force: true });
         // The student's saved exercise code goes with it. Left behind, the
         // next run of the coding checkpoint opens showing the PREVIOUS
-        // student's code under "The code I wrote and ran, saved from my
-        // session" — someone else's work, in this student's voice.
+        // student's code under "The code I wrote and ran" — someone else's
+        // work, in this student's voice.
         const ex = path.join(process.cwd(), "assets", "exercises");
         if (fs.existsSync(ex)) {
           fs.renameSync(ex, path.join(dir, `exercises-${stamp}`));
