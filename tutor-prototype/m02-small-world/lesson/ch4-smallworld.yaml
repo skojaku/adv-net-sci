@@ -1,11 +1,14 @@
-# Chapter 4 of 5 — The Small-World Recipe (cp6, cp6_large_n_experiment, + optional stretch).
+# Chapter 4 of 5 — Turning One Dial (cp6, cp6_large_n_experiment, + optional stretch).
+# The chapter title is deliberately vague: it is rendered as a visible
+# notebook header and a terminal divider BEFORE cp6's prediction, so it must
+# not name the answer ("The Small-World Recipe" gave the prediction away).
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
 # "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
 # After logging the last checkpoint, call chapter_done with short handoff notes.
 
 chapter:
   id: ch4
-  title: "The Small-World Recipe"
+  title: "Turning One Dial"
   goal: Student sees that a tiny fraction of rewired links collapses distance
         while clustering survives (Watts-Strogatz), then proves it themselves
         with a real coded experiment at large N.
@@ -79,9 +82,11 @@ checkpoints:
       collapses while C survives — and sees the effect get more dramatic (a
       smaller critical p) as N grows past the N=200 toy from cp6.
     build: |
-      nb_add_exercise with name "cp6_large_n", adapted to the student's cp0
-      comfort level (carried in your handoff notes — same mechanism the
-      cs1_code stretch already relies on):
+      nb_add_exercise with name "cp6_large_n" and
+      checkpoint="cp6_large_n_experiment" (pass it, or the previous
+      checkpoint's note cell can land after this box), adapted to the
+      student's cp0 comfort level (carried in your handoff notes — same
+      mechanism the cs1_code stretch already relies on):
 
       COMFORTABLE WITH PYTHON — scaffold with a few `...` blanks:
       ```
@@ -126,6 +131,12 @@ checkpoints:
     hints:
       - "Same reading as before: find where the L/L0 line drops sharply. What p is that, roughly?"
       - "At that p, has C/C0 moved much?"
+    fresh_variants: |
+      If the answer slips out, re-run the same sweep on NEW settings — the
+      student edits one line in their own code box and presses ▶ Run again:
+      N=5000 with k=4 (the collapse moves to an even smaller p), or N=2000
+      with k=10 (more friends each, so the ring starts closer together and
+      the whole curve shifts). Ask the same question of the new chart.
     reveal_after: |
       Terminal: this is the real Watts-Strogatz result at scale, not a toy
       — the effect you found on 200 dots holds (and sharpens) on thousands.

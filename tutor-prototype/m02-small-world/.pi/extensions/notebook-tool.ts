@@ -540,6 +540,12 @@ const SLOT_GLUE = new Set([
   "it", "its", "i", "my", "me", "we", "our", "you", "your", "that", "this", "these",
   "those", "so", "then", "for", "with", "as", "but", "or", "if", "not", "be", "been",
   "there", "here", "each", "every", "both", "than", "when", "because", "about",
+  // Structural labels a tutor puts around a multi-part answer — the note
+  // skeletons say «their answers, verbatim» (plural) for the 3-6 part
+  // checkpoints, so "Idea: … Count: … Fraction: …" is the natural shape and
+  // must not read as invented content.
+  "idea", "answer", "answers", "count", "counts", "fraction", "result", "work",
+  "note", "first", "second", "third", "final", "total", "corrected", "then",
 ]);
 
 function slotTokens(s: string): string[] {
@@ -791,11 +797,14 @@ export default function (pi: ExtensionAPI) {
             .reverse()
             .map((e: any) => baseCheckpointId(String(e.id ?? "")))
             .find((id: string) => order.includes(id));
-          const nextId = lastScripted
-            ? (order[order.indexOf(lastScripted) + 1] ?? order[order.length - 1])
-            : order[0];
-          chapter = chapters.find((c) => c.checkpoints.includes(nextId)) ?? chapter;
-          pendingCheckpoint = nextId;
+          // No next id means the module is already finished. Do NOT fall back
+          // to the last checkpoint: that tells the tutor to re-run cp8, whose
+          // re-close silently skips the existing session_record while
+          // overwriting session_summary.md — the two then disagree.
+          const nextId = lastScripted ? order[order.indexOf(lastScripted) + 1] : order[0];
+          const finished = !nextId;
+          chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
+          pendingCheckpoint = nextId ?? null;
           pi.sendMessage(
             {
               customType: "resume-brief",
@@ -805,10 +814,15 @@ export default function (pi: ExtensionAPI) {
                 `FIRST, greet the student and ask with ask_user_question: continue where you left ` +
                 `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
                 `its instructions (chapter 1 reloads automatically — do not improvise). ` +
-                `If they continue: do NOT rebuild existing notebook cells ` +
-                `(nb_add_template skips duplicates automatically), remind them in one ` +
-                `sentence where you two left off, and continue at checkpoint ${nextId} ` +
-                `(chapter "${chapter.title}").`,
+                (finished
+                  ? `If they continue: they already FINISHED this module — do not re-run any ` +
+                    `checkpoint and do not call chapter_done. Say so warmly, offer to answer ` +
+                    `questions or replay any experiment in the notebook, and log anything you ` +
+                    `answer with log_detour.`
+                  : `If they continue: do NOT rebuild existing notebook cells ` +
+                    `(nb_add_template skips duplicates automatically), remind them in one ` +
+                    `sentence where you two left off, and continue at checkpoint ${nextId} ` +
+                    `(chapter "${chapter.title}").`),
               display: false,
             },
             { deliverAs: "nextTurn" },
@@ -1905,8 +1919,8 @@ export default function (pi: ExtensionAPI) {
     "The C. elegans worm's entire nervous system is mapped — all 302 neurons of it.",
     "Zachary's karate club split in two in 1977 — and became network science's favorite dataset.",
     "Find the karate-club split at a network conference and you can win an actual trophy.",
-    "Erdős number: your coauthor distance to Paul Erdős. Most mathematicians sit within 5.",
-    "Erdős number + Bacon number = the Erdős–Bacon number. Natalie Portman's is 6.",
+    "Erdős number: your coauthor distance to Paul Erdős, who has number 0 and 500-odd coauthors.",
+    "Erdős number + Bacon number = the Erdős–Bacon number. Natalie Portman has one.",
     "Kevin Bacon isn't Hollywood's center — hundreds of actors are better connected.",
     "Granovetter, 1973: people find jobs through acquaintances, not close friends. Weak ties win.",
     "Triadic closure: your friend's friend tends to become your friend. That's where triangles come from.",
