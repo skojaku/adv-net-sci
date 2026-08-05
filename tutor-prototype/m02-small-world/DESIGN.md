@@ -66,7 +66,14 @@ notebook re-learnable.
      author;
    - **chapter header cells** inserted deterministically by the extension;
    - templates are **self-describing** (`# describe:` line) — the tutor
-     describes artifacts only from it, never from guesswork.
+     describes artifacts only from it, never from guesswork;
+   - improvised cells pass a **deterministic review** before insertion
+     (`.pi/extensions/nb_review.py`, run inside the kernel): marimo shows
+     only a cell's last expression, so a cell ending in
+     `netviz(...)` + `mo.md(...)` loses the picture — the review wraps
+     those displays in one `mo.vstack`, refuses cells whose display can't
+     be rescued safely, and flags ASCII-art diagrams. Static analysis, not
+     an LLM reviewer: no latency, no tempo cost.
 
 4. **Every symbol gets words.** $L$, $C_0$, $p$ — any notation shown in the
    notebook or terminal is defined in plain language in the same cell
@@ -100,13 +107,15 @@ notebook re-learnable.
    grader. And the tutor never writes answers into the notebook: guided
    discovery ends with the student taking the last step.
 
-10. **The student controls the pace.** Clearing a checkpoint never
-    auto-advances. After every note cell the tutor opens an
-    `ask_user_question` dialog — "Next, please!" / "I have a question" /
-    "Give me another one like that" (plus free-text "Other") — and only an
-    explicit "next" moves the lesson forward. Extra rounds are improvised
-    on fresh data and logged as practice, never as failure.
-    *(AGENTS.md, @juicesharp/rpiv-ask-user-question in .pi/settings.json)*
+10. **The student controls the pace**, and chapter boundaries enforce it.
+    After every checkpoint the tutor opens an `ask_user_question` dialog —
+    "Next, please!" / "I have a question" / "Give me another one like
+    that" — and only an explicit "next" advances (prompt guidance, plus an
+    in-band reminder attached to every checkpoint log write). At a chapter
+    boundary this is not left to the model: `chapter_done` asks the
+    student itself and **refuses to transition** unless they choose to
+    move on. Extra rounds are improvised on fresh data, reusing the
+    module's canonical objects, and logged as practice — never as failure.
 
 ## Cell naming conventions
 
