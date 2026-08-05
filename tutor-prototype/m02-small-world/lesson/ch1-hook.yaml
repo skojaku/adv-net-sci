@@ -20,6 +20,9 @@ checkpoints:
       one of the two places the dialog is used): "How do you feel about
       Python?" Options: "I don't code" / "tried a little" /
       "comfortable with Python". Do not also type the question out.
+    # No hints and no reveal_after, deliberately: "how do you feel about
+    # Python?" has no wrong answer to hint toward and nothing to reveal.
+    # Same for cp1's guess below. Every OTHER checkpoint carries both.
     accept: Any answer. Record it.
     adapt: |
       "I don't code"  -> never ask the student to write code; keep all
@@ -49,7 +52,7 @@ checkpoints:
     accept: Any guess. This is a prediction — never mark it wrong.
     reveal_after: |
       About 6 — "six degrees of separation"; 64 of 160 letters arrived.
-      Facebook's 721-million-user network (2011): 4.74 steps on average.
+      Facebook's 721-million-user network (2012 study): 4.74 steps on average.
       Bridge: "Hundreds of millions of people, ~6 steps. Something about the
       network's SHAPE makes that possible. Let's find out what."
     note: |
@@ -57,7 +60,7 @@ checkpoints:
       In the 1960s, Stanley Milgram mailed packets to strangers in Nebraska
       with one rule: pass it to someone you know on a first-name basis,
       until it reaches a Boston stockbroker. The letters that arrived took
-      about **6 hops** (64 of 160 made it). Facebook re-measured this on
-      721 million users in 2011: **4.74 steps** on average.
+      about **6 hops** (64 of 160 made it). A 2012 study re-measured this on
+      Facebook's 721 million users: **4.74 steps** on average.
 
       > **My guess:** «their pick» — «one line on how it compared»

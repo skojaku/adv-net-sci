@@ -310,19 +310,12 @@ def _(alt, ig, mo, netviz, np, nx, pd, plt):
 def ch1_header(mo):
     mo.md("""
     ## Chapter 1 of 5 — A Letter Across a Country
-    """)
-    return
 
-
-@app.cell(hide_code=True)
-def cp0_welcome_note(mo):
-    mo.md(r"""
-    ### 👋 Where I'm starting from
-    This notebook is my own — it grows one experiment and one note at a
-    time as we talk, and everything in it is pitched at the answer below.
-    Nothing technical arrives without plain words first.
-
-    > **How I feel about writing code today:** comfortable with Python
+    It begins with an experiment. In the 1960s, letters were mailed to
+    strangers in Nebraska with one rule — pass it only to someone you know
+    on a first-name basis — and one target: a stockbroker in Boston. How
+    many hands does a letter like that need? My guess is below, next to
+    what actually happened.
     """)
     return
 
@@ -344,8 +337,8 @@ def cp1_milgram_note(mo):
     In the 1960s, Stanley Milgram mailed packets to strangers in Nebraska
     with one rule: pass it to someone you know on a first-name basis,
     until it reaches a Boston stockbroker. The letters that arrived took
-    about **6 hops** (64 of 160 made it). Facebook re-measured this on
-    721 million users in 2011: **4.74 steps** on average.
+    about **6 hops** (64 of 160 made it). A 2012 study re-measured this on
+    Facebook's 721 million users: **4.74 steps** on average.
 
     > **My guess:** about 20 — the country is huge — but the real number was far smaller.
     """)
@@ -353,21 +346,43 @@ def cp1_milgram_note(mo):
 
 
 @app.cell(hide_code=True)
-def detour_lost_letters(mo):
-    mo.md(r"""
-    ### 🧭 **Detour:** What about the letters that got lost?
-    > *"Only 64 of the 160 letters arrived. Doesn't that make the 6 unfair?"*
+def detour_lost_letters(alt, mo, pd):
+    _lost = pd.DataFrame({
+        "outcome": ["arrived — counted", "lost — never counted"],
+        "letters": [64, 96],
+    })
+    mo.vstack([
+        mo.md(r"""
+        ### 🧭 **Detour:** What about the letters that got lost?
+        > *"Only 64 of the 160 letters arrived. Doesn't that make the 6 unfair?"*
 
-    Milgram's "about 6" is an average over the **letters that arrived** —
-    the 96 that got lost don't count. This is **survivorship bias**: judging
-    a whole group by the members who made it to the end. The lost letters
-    were probably on *longer* chains, so 6 is likely an under-estimate.
+        Milgram's "about 6" is an average over the **letters that arrived** —
+        the 96 that got lost don't count. This is **survivorship bias**:
+        judging a whole group by the members who made it to the end. The
+        lost letters were probably on *longer* chains, so 6 is likely an
+        under-estimate.
 
-    **The honest takeaway:** the result doesn't rest on Milgram alone.
-    Facebook's 2011 measurement covered *every* pair — nothing lost — and
-    still found 4.74 steps. However you count, a whole country sits only a
-    handful of steps apart, and that is the puzzle this notebook cracks.
-    """)
+        **The honest takeaway:** the result doesn't rest on Milgram alone. A
+        2012 study covered *every* pair of Facebook's 721 million users —
+        nothing lost — and still found 4.74 steps.
+        """),
+        alt.Chart(_lost)
+        .mark_bar()
+        .encode(
+            x=alt.X("letters:Q", title="letters"),
+            y=alt.Y("outcome:N", title=None, sort=None),
+            color=alt.Color(
+                "outcome:N",
+                legend=None,
+                scale=alt.Scale(range=["#35577F", "#B4552D"]),
+            ),
+        )
+        .properties(
+            width=420,
+            height=90,
+            title="160 letters mailed — the famous average rests on the blue bar",
+        ),
+    ])
     return
 
 
@@ -375,6 +390,12 @@ def detour_lost_letters(mo):
 def ch2_header(mo):
     mo.md("""
     ## Chapter 2 of 5 — Measuring Smallness
+
+    "Small" needs a number before it means anything. This chapter builds
+    the module's two measuring sticks. First **distance** — how many steps
+    separate two people — on a four-person network, and then again by hand
+    on paper. Then a second measure that distance cannot see at all, about
+    the shape of one person's own circle of friends.
     """)
     return
 
@@ -504,6 +525,11 @@ def cp3_clustering_note(mo):
 def ch3_header(mo):
     mo.md("""
     ## Chapter 3 of 5 — One Extra Line
+
+    A ring of dots, and one extra cable to spend anywhere. Where should it
+    go? That one choice opens this chapter's real question — what a single
+    link can do to a whole network — and leads to the formulas for how a
+    ring's clustering and distances behave as it grows.
     """)
     return
 
@@ -682,6 +708,13 @@ def cp5_tension_note(mo):
 def ch4_header(mo):
     mo.md("""
     ## Chapter 4 of 5 — Turning One Dial
+
+    Chapter 3 ended in a tension: the ring world is clustered but
+    far-flung, the random world is close but has no community. This
+    chapter puts a dial between the two worlds — rewire a fraction $p$ of
+    the ring's links to random targets — and watches what each measure
+    does as the dial turns: first on a slider, then with real code at
+    N=2000.
     """)
     return
 
@@ -846,6 +879,11 @@ def cp6_large_n_experiment_note(mo):
 def ch5_header(mo):
     mo.md("""
     ## Chapter 5 of 5 — Mastery Check
+
+    No new machinery in this final chapter — just two tests of whether the
+    story holds. First an AI hands me its analysis of a network and asks
+    me to sign off on it. Then a friend asks the question this module
+    opened with, and I have to answer it in my own words.
     """)
     return
 

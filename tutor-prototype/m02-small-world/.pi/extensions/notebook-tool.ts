@@ -696,6 +696,46 @@ function isFigure(token: string): boolean {
   return /^\d+([./:,-]\d+)+$|^\d{2,}$/.test(token);
 }
 
+/**
+ * Character-bigram overlap (Dice), 0–1. Used to spot a RETYPED answer: a
+ * live session logged "becuase tirangles are ipormtat" for a student who
+ * typed "becuase tirangles are ipmortat" — the model copied their sentence
+ * out by hand and re-scrambled their own typo along the way. Word-level
+ * drift cannot see that (one odd token), and it is exactly the kind of
+ * silent edit the graded record must not carry.
+ */
+function bigramDice(a: string, b: string): number {
+  const grams = (s: string) => {
+    const t = s.toLowerCase().replace(/\s+/g, " ").trim();
+    const out = new Set<string>();
+    for (let i = 0; i + 1 < t.length; i += 1) out.add(t.slice(i, i + 2));
+    return out;
+  };
+  const A = grams(a);
+  const B = grams(b);
+  if (A.size === 0 || B.size === 0) return 0;
+  let hits = 0;
+  for (const g of A) if (B.has(g)) hits += 1;
+  return (2 * hits) / (A.size + B.size);
+}
+
+/**
+ * If `response` is a near-copy of one of the student's own messages, return
+ * that message instead — their words, character for character. Below the
+ * threshold nothing is touched: a response built out of several short
+ * answers ("2", then "7/6") is a legitimate join, not a retype.
+ */
+function snapToTranscript(response: string, said: string[]): string | null {
+  const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
+  if (said.some((s) => flat(s) === flat(response) || flat(s).includes(flat(response)))) return null;
+  let best: { score: number; text: string } | null = null;
+  for (const s of said) {
+    const score = bigramDice(s, response);
+    if (!best || score > best.score) best = { score, text: s };
+  }
+  return best && best.score >= 0.75 ? best.text : null;
+}
+
 /** Content tokens in `fill` that the student never produced. */
 function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; words: string[] } {
   const pool = new Set(studentPool.flatMap(slotTokens));
@@ -808,6 +848,27 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
     i += 1;
     return v;
   });
+}
+
+/**
+ * A souvenir cell opens with the student's own question, quoted. Every live
+ * session so far produced detour cells that answered a question the notebook
+ * never states — unreadable months later, and the personalization is the
+ * whole point of a souvenir. So the extension puts the quote there itself
+ * rather than trusting the model to remember, and skips it when the markdown
+ * already carries the question. The line goes under a leading heading if
+ * there is one, so "### 🧭 Detour: …" stays first.
+ */
+function withQuotedQuestion(markdown: string, question: string): string {
+  if (!question) return markdown;
+  const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
+  if (flat(markdown).includes(flat(question))) return markdown;
+  const quote = `> 🧭 **You asked:** “${question}”`;
+  const lines = markdown.split("\n");
+  if (/^\s*#{1,6}\s/.test(lines[0] ?? "")) {
+    return [lines[0], "", quote, ...lines.slice(1)].join("\n");
+  }
+  return `${quote}\n\n${markdown}`;
 }
 
 /** Insert (or skip, if present) a markdown cell and scroll the page to it. */
@@ -961,6 +1022,10 @@ export default function (pi: ExtensionAPI) {
   // A slot-drift refusal fires at most once per checkpoint, so a model that
   // cannot satisfy it can never trap the student in a retry loop.
   const slotDriftWarned = new Map<string, number>();
+  // Same idea for the souvenir contract: a text-only detour cell is bounced
+  // once, then accepted, so a detour that genuinely has no picture in it can
+  // still be recorded.
+  const detourTextOnlyWarned = new Set<string>();
 
   pi.on("tool_result", async (event: any) => {
     recordPickedAnswer(event);
@@ -1423,7 +1488,7 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      const response = String(params.student_response ?? "").trim();
+      let response = String(params.student_response ?? "").trim();
       if (!response) {
         return toResult({
           out: `NOT LOGGED — student_response is empty. Log their actual words (or "(no answer — moved on)") and call again.`,
@@ -1458,6 +1523,27 @@ export default function (pi: ExtensionAPI) {
       const pool = [...said, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
+      // student_response is the headline quote of the graded record, so it
+      // gets the same treatment as a «verbatim» slot — plus a repair the
+      // slots do not need. A near-copy is snapped back to the transcript
+      // silently (the correction is recorded in the log, not paraded at the
+      // student), and only real invention — a figure or three content words
+      // they never produced — is bounced back to the model.
+      let responseSnappedFrom: string | null = null;
+      if (said.length > 0) {
+        const snapped = snapToTranscript(response, said);
+        if (snapped) {
+          responseSnappedFrom = response;
+          response = snapped;
+        }
+        const d = slotDrift(response, pool);
+        if (d.numbers.length > 0 || d.words.length >= 3) {
+          problems.push(
+            `student_response ("${response.slice(0, 80)}") adds ` +
+              [...d.numbers, ...d.words].map((t) => `"${t}"`).join(", "),
+          );
+        }
+      }
       // When the answer came ONLY from a picker, student_response must be the
       // option they actually chose. This is the one case the transcript can't
       // police and the one a live run got backwards.
@@ -1490,8 +1576,9 @@ export default function (pi: ExtensionAPI) {
         slotDriftWarned.set(id, strikes + 1);
         return toResult({
           out:
-            `NOT LOGGED — a «verbatim» note slot is the student's own words, and these ` +
-            `are not in anything they said: ${problems.join("; ")}.\n` +
+            `NOT LOGGED — student_response and every «verbatim» note slot are the ` +
+            `student's own words, and these are not in anything they said: ` +
+            `${problems.join("; ")}.\n` +
             `What they actually typed: ${said.map((s) => `"${s}"`).join(", ")}.\n` +
             `Quote them, don't polish — no figure they didn't give, no sentence built out ` +
             `of your own summary. Your reading of a drawing, or a number a widget showed, ` +
@@ -1521,6 +1608,7 @@ export default function (pi: ExtensionAPI) {
         notes: String(params.notes ?? ""),
         student_said_verbatim: said,
         ...(picked.length > 0 ? { student_picked: picked } : {}),
+        ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 
@@ -1609,16 +1697,20 @@ export default function (pi: ExtensionAPI) {
     label: "Log detour",
     description:
       "Record a student question you answered off-script (their curiosity is graded as " +
-      "engagement) and leave the souvenir in their notebook. Pass souvenir_markdown for a " +
-      "text-only souvenir; if you already built a richer cell with nb_add_cell, pass its " +
-      "cell_name instead.",
+      "engagement) and leave the souvenir in their notebook. Build the souvenir with " +
+      "nb_add_cell first — text AND a picture in one mo.vstack, or a playable demo — and " +
+      "pass its cell_name. souvenir_markdown is the fallback for an idea no picture helps.",
     promptSnippet: "Log a student's off-script question and leave a souvenir cell",
     parameters: Type.Object({
       status: STATUS_PARAM,
       question: Type.String({ description: "Their question VERBATIM." }),
       what_you_did: Type.String({ description: "One line: how you answered it." }),
       souvenir_markdown: Type.Optional(
-        Type.String({ description: "Markdown for a 🧭 Detour note cell (quote their question)." }),
+        Type.String({
+          description:
+            "Fallback only: markdown for a text-only 🧭 Detour cell. Prefer nb_add_cell " +
+            "+ cell_name, so the souvenir has something to look at or play with.",
+        }),
       ),
       cell_name: Type.Optional(
         Type.String({ description: "Name of the souvenir cell you already added." }),
@@ -1626,6 +1718,27 @@ export default function (pi: ExtensionAPI) {
     }),
     async execute(_id, params, signal, _onUpdate, ctx: any) {
       const question = String(params.question ?? "").trim();
+      const md0 = String(params.souvenir_markdown ?? "").trim();
+      const cellName = String(params.cell_name ?? "").trim();
+      // A souvenir is a keepsake, not a log line: the notebook's whole promise
+      // is that a curious student's copy looks different from everyone else's,
+      // and four text-only blobs in one live session is what that failure
+      // looks like. Bounced ONCE, with both ways out spelled out, then
+      // accepted — some ideas really are just words.
+      if (!cellName && md0 && !detourTextOnlyWarned.has(question)) {
+        detourTextOnlyWarned.add(question);
+        return toResult({
+          out:
+            `NOT LOGGED YET — a text-only souvenir is the weakest kind of keepsake. Build ` +
+            `the cell first with nb_add_cell (name "detour_<topic>"), text and picture in ` +
+            `ONE cell: mo.vstack([mo.md(r"""…"""), netviz(edges, highlight=[…])]) — or an ` +
+            `nb_add_exercise box if the idea is something they can try. Then call ` +
+            `log_detour again with cell_name.\n` +
+            `If a picture genuinely adds nothing to this one, call log_detour again with ` +
+            `the same souvenir_markdown and it will be accepted as it is.`,
+          failed: false,
+        });
+      }
       appendLog({
         type: "detour",
         question,
@@ -1637,17 +1750,18 @@ export default function (pi: ExtensionAPI) {
         // student_said_verbatim and a drift check with nothing to match.
         student_said_verbatim: studentSaidSince(ctx, false),
       });
-      const md = String(params.souvenir_markdown ?? "").trim();
-      if (!md) {
+      if (!md0) {
         return toResult({
-          out: params.cell_name
-            ? `Logged. Souvenir cell "${params.cell_name}" noted.`
+          out: cellName
+            ? `Logged. Souvenir cell "${cellName}" noted — check it quotes their question ` +
+              `("${question.slice(0, 60)}") and shows something, not just tells.`
             : `Logged — but NO souvenir cell yet. Add one now (nb_add_cell, name ` +
-              `"detour_<topic>"): their question quoted plus the idea, with a picture ` +
-              `(mo.vstack + netviz) when one helps.`,
+              `"detour_<topic>"): their question quoted plus the idea, text and picture ` +
+              `together in ONE cell (mo.vstack + netviz).`,
           failed: false,
         });
       }
+      const md = withQuotedQuestion(md0, question);
       const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(0, 40);
       const r = await insertMarkdownCell(`detour_${slug || "note"}`, md, signal);
       return toResult({
@@ -1970,6 +2084,7 @@ export default function (pi: ExtensionAPI) {
           // the script, so a stale pending id would refuse cp1's build.
           pendingCheckpoint = chapters[0].checkpoints[0] ?? null;
           slotDriftWarned.clear();
+          detourTextOnlyWarned.clear();
           pi.sendMessage(
             {
               customType: "chapter-script",
@@ -2161,9 +2276,24 @@ export default function (pi: ExtensionAPI) {
       const viewCell = `${base}_view`;
       // Self-contained display cell: the student sees exactly what the vision
       // model was sent (survives notebook reloads; deleted by fresh_start).
+      // The caption is not decoration — an uncaptioned phone photo in the
+      // middle of a lecture note is a mystery to anyone reading it cold,
+      // including the student in three months. `task` already holds the ask
+      // in the tutor's own words, so the cell states what the page shows.
+      const taskLine = String(params.task ?? "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/["']/g, "");
+      const caption =
+        `<span style='color:#6A6D75;font-size:13px'>📷 My own work on paper` +
+        (taskLine ? ` — the task: ${taskLine}` : "") +
+        `</span>`;
       const cellBody =
         `from pathlib import Path as _P\n` +
-        `mo.image(_P(${py(viewRel)}).read_bytes(), width=420)`;
+        `mo.vstack([\n` +
+        `    mo.image(_P(${py(viewRel)}).read_bytes(), width=420),\n` +
+        `    mo.md(${py(caption)}),\n` +
+        `])`;
       const source = widget
         ? `_files = list(${widget}.value or [])\n` +
           `if not _files:\n` +

@@ -161,22 +161,19 @@ checkpoints:
       the next checkpoint names.
     note: |
       ### 🔺 Clustering and path length on a ring — as formulas
-      Three letters, in plain words: $N$ is how many people are in the ring,
-      $k$ is how many friends each person has, $C$ is clustering — how often
-      two of your friends know each other — and $L$ is the average distance,
-      the typical number of steps between two people.
+      Four letters: $N$ = people in the ring, $k$ = friends each person
+      has, $C$ = clustering (how often two of your friends know each
+      other), $L$ = average distance (typical steps between two people).
 
       On a ring where everyone has $k$ friends ($k/2$ per side), clustering
       is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-      $k=2$ gives $C=0$ (no triangles possible — the plain ring I drew) and
-      $k=4$ gives $C=0.5$, the value I counted out. On a ring everybody sits
-      in an identical neighbourhood, so one node's clustering $C_0$ — node
-      0's, the one I counted — is also the whole network's $C$.
+      $k=2$ gives $C=0$ (the plain ring I drew: no triangles possible),
+      $k=4$ gives $C=0.5$, the value I counted out. Everybody on a ring has
+      an identical neighbourhood, so node 0's $C_0$ is the whole ring's $C$.
 
-      Path length is different: it grows with the crowd. The farthest trip
-      is about $N/k$ hops — half a ring at $k/2$ places per hop — and the
-      average over all pairs is about half of that, $L \approx N/(2k)$.
-      More people, more hops, even though $k$ stays fixed.
+      Path length grows with the crowd instead: the farthest trip is about
+      $N/k$ hops — half a ring at $k/2$ places per hop — and the average
+      over all pairs is about half that, $L \approx N/(2k)$.
 
       > **My work:** «their answers in their own words, plus what their photo
       of the derivation shows — a photographed answer never reaches the
@@ -211,6 +208,16 @@ checkpoints:
     hints:
       - "In the RING world, do your friends know each other? And per your own formula, what happens to L as the ring grows to country size?"
       - "In the RANDOM world, how fast can a letter travel? And do your friends know each other?"
+    fresh_variants: |
+      If the answer slips out, ask for the same two-world comparison on a
+      world they have not been handed: a 2000-person school where everyone
+      knows the 30 people in their own year and nobody else. "Which of the
+      two worlds is that closer to — and what does each of your formulas
+      say about it?" (Ring-like: $C$ high, because a year is a tight
+      circle; $L$ large or worse, because nothing crosses between years.)
+      Or, simpler: ask them to name one real network for EACH extreme —
+      one that is clustered but slow to cross, one that is quick to cross
+      with no communities at all.
     reveal_after: |
       Terminal, sharply: real social networks have BOTH high clustering AND
       short paths. Neither extreme world explains that. So how does nature
