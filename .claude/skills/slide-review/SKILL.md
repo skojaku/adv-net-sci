@@ -5,9 +5,11 @@ description: Validate a Marp lecture deck against the course slide rubric (one p
 
 # Slide review
 
-All substance lives in `docs/slide/new/SLIDE_RUBRIC.md` (repo root relative) so
-that any agent — not just Claude — can run the same review. This skill is only a
-dispatcher:
+All substance lives in `docs/slide/new/SLIDE_RUBRIC.md` (how to review) and
+`docs/slide/new/FIGURE_GUIDE.md` (how to author figures — tool choice, sizing,
+palette, and the traps that cost eight rounds on Module 01), both repo-root
+relative, so that any agent — not just Claude — can run the same review. This
+skill is only a dispatcher:
 
 1. Resolve the target deck: the argument if given; otherwise the `.md` file with
    `marp: true` front matter in the current directory. If ambiguous, ask.
