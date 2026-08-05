@@ -12,7 +12,7 @@ section {
   color: #000000;
   font-family: 'Libre Baskerville', Georgia, serif;
   font-weight: 400;
-  font-size: 25px;
+  font-size: 30px;
   line-height: 1.42;
   letter-spacing: 0;
   display: flex;
@@ -128,6 +128,12 @@ section.part p {
   max-width: 900px;
 }
 
+/* Shallow slides: put the slack above and below the content rather than all
+   below it, so a three-line slide sits in the middle of the frame instead of
+   hanging from the rule. Add `<!-- _class: mid -->` to the slide. */
+section.mid { justify-content: center; }
+section.mid h2 { margin-top: -0.5em; }
+
 /* ---------- body ---------- */
 
 section p {
@@ -148,7 +154,10 @@ section ul:last-child, section ol:last-child { margin-bottom: 0; }
 section li { line-height: 1.42; }
 section li::marker { color: #3959A6; }
 
-strong { font-weight: 700; color: #000000; }
+/* Key terms. The deck already bolds exactly the terms worth colouring, so
+   `strong` carries the highlight. Blue is structural (rules, part bands, list
+   markers), gold is auxiliary, so the accent that reads as emphasis is the red. */
+strong { font-weight: 700; color: #B14434; }
 em { font-style: italic; }
 a { color: #3959A6; text-decoration: none; }
 a:hover { color: #22336b; }
@@ -156,7 +165,7 @@ a:hover { color: #22336b; }
 /* annotations / secondary copy — slightly gray */
 section .note,
 section blockquote {
-  font-size: 23px;
+  font-size: 27px;
   line-height: 1.45;
   color: #6b6b6b;
   margin: 14px 0 26px;
@@ -184,7 +193,7 @@ section .cue li::marker { color: #d2d2d2; }
 section .hand,
 section figcaption {
   font-family: 'Caveat', cursive;
-  font-size: 26px;
+  font-size: 30px;
   color: #6b6b6b;
 }
 
@@ -194,7 +203,7 @@ section .formula {
   background: #f7f4f1;
   padding: 22px 28px;
   margin: 0 0 22px;
-  font-size: 26px;
+  font-size: 30px;
 }
 section .formula:last-child { margin-bottom: 0; }
 section .katex { color: #000000; }
@@ -239,13 +248,18 @@ section td {
 
 section .cols {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr), not 1fr: a `1fr` track is minmax(auto, 1fr), so an
+     unbreakable element in one column -- a wide LaTeX formula, say -- widens
+     its own track and steals room from the figure beside it. That made the
+     figure column 370px on one slide and 537px on every other. Pinning the
+     minimum to 0 keeps both columns at (1120 - 46) / 2 = 537px always. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 46px;
   align-items: start;
 }
 section .cols3 {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 36px;
   align-items: start;
 }

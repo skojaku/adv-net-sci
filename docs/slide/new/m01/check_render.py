@@ -44,6 +44,15 @@ INK_FRACTION_WANT = 0.35
 
 MAX_FIG_H = 380  # network-science.css: section .fig img { max-height }
 
+# The `w:NNN` directive in the deck is INERT. The theme sets
+# `section .fig img { width: auto !important }`, and an author !important
+# declaration beats a non-important inline style, so Marp's inline width never
+# applies. What actually bounds a figure is its container and the height cap:
+#   content area  = 1280 - 2*80 padding          = 1120px
+#   .cols column  = (1120 - 46 gap) / 2          =  537px
+# Confirmed against getComputedStyle in a real browser: 536.98px measured.
+COL_W, FULL_W = 537, 1120
+
 DARK = 60      # node fill / heavy ink
 INK = 200      # any mark
 
@@ -86,7 +95,7 @@ def node_discs(gray):
     return out
 
 
-def drawing_extent(src_path, w_directive):
+def drawing_extent(src_path, container_w):
     """How big the drawing lands on the slide, and what share of its box it fills.
 
     Measured on the *source* PNG, not the render. The ink fraction is invariant
@@ -106,7 +115,7 @@ def drawing_extent(src_path, w_directive):
     ink_h = ys.max() - ys.min() + 1
     sh, sw = im.shape
     # Whichever of the width directive and the CSS max-height binds first.
-    scale = min(w_directive / sw, MAX_FIG_H / sh, 1.0)
+    scale = min(container_w / sw, MAX_FIG_H / sh, 1.0)
     frac = (ink_w * ink_h) / float(sw * sh)
     return ink_w * scale, ink_h * scale, sw * scale, sh * scale, frac
 
@@ -157,8 +166,8 @@ def main():
                 )
 
         if n in figs:
-            src, w_directive, _ = figs[n]
-            ext = drawing_extent(src, w_directive)
+            src, _, in_cols = figs[n]
+            ext = drawing_extent(src, COL_W if in_cols else FULL_W)
             if ext is None:
                 fails.append(f"slide {n:03d}: {src} is blank")
                 continue
