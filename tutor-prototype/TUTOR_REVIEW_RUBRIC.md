@@ -258,7 +258,8 @@ the student or the past session (see Fix targets).
   failure.
 - **P10 Failures stay backstage.** nb_* errors handled via their RECOVERY
   line; no infrastructure debugging, cell talk, or error jargon shown to
-  the student.
+  the student. Scoped to what the module controls — see "Known deviations"
+  for the two pi-level lines that are out of scope.
 - **P11 Photo-first discipline.** At paper checkpoints the tutor asks for
   the upload and waits; it never volunteers the typed alternative (C11).
   Typed work is accepted when the student offers it unprompted, and the
@@ -271,6 +272,29 @@ the student or the past session (see Fix targets).
   what do you think?". Failure signatures in transcripts/E2E: the student
   asks what is being asked, answers a different question than the one
   posed, or stalls right after an abstract or feelings-based prompt.
+
+## Known deviations — accepted, do NOT file
+
+Instructor decision (2026-08-05, deliberate): the following reach the
+student's terminal, are outside the module's control, and are **not
+findings**. Note them in a run if you like; never file them, and never
+spend a fix round on them.
+
+- **pi's compaction notices** at chapter transitions — `[compaction]
+  Compacted from 26,012 tokens (ctrl+o to expand)`, and occasionally
+  `Error: Compaction failed: Nothing to compact (session too small)`.
+  Compaction is what keeps a 60-90 minute session inside the context
+  window; the notice is pi's UI, not the tutor's speech, and the module's
+  `.pi/settings.json` exposes no switch for it.
+- **pi's startup banner** listing the machine's global skills and slash
+  commands. It prints before the tutor's first word, survives
+  `--no-extensions`, and belongs to the CLI.
+
+Both are grey one-liners that leak no answer and precede or sit between
+teaching turns. They would be worth revisiting only if pi grows a quiet
+flag. Everything else P10 covers — the tutor narrating process, naming a
+tool or a cell, showing an error or a skill invocation mid-hint — is still
+a finding.
 
 ## Part D — Dynamic E2E gate
 
