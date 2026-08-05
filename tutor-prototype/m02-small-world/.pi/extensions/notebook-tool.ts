@@ -2943,18 +2943,16 @@ export default function (pi: ExtensionAPI) {
           // tried first and was worse: the next reset overwrote it, and
           // session 1's keepsake then rendered session 2's photograph as that
           // student's own hand-worked page.
-          if (rel === "uploads") {
-            try {
-              const archived = path.join(dir, `notebook-${stamp}.py`);
-              if (fs.existsSync(archived)) {
-                fs.writeFileSync(
-                  archived,
-                  fs.readFileSync(archived, "utf-8").split("assets/uploads/").join(`${label}/`),
-                );
-              }
-            } catch {
-              // the archive is best-effort; the live notebook is what matters
+          try {
+            const archived = path.join(dir, `notebook-${stamp}.py`);
+            if (fs.existsSync(archived)) {
+              fs.writeFileSync(
+                archived,
+                fs.readFileSync(archived, "utf-8").split(`assets/${rel}/`).join(`${label}/`),
+              );
             }
+          } catch {
+            // the archive is best-effort; the live notebook is what matters
           }
         }
       } catch {

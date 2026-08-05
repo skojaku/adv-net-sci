@@ -89,9 +89,10 @@ detours counts in your favor — it's the whole point.
 - **Channel discipline:** words live in the terminal (stories, questions,
   typed answers); the notebook is reserved for what the terminal can't do —
   figures, *interactive/animated* widgets (preferred over static images),
-  photo uploads. When the student finishes an interactive step they say so in
-  the terminal and the tutor reads the widget values — no in-notebook button
-  (an earlier Done button competed with the terminal for keyboard focus).
+  photo uploads. A drop box or a code box carries a 📨 Send button whose press
+  starts the tutor's turn; a slider or a radio has none — the student says so
+  in the terminal and the tutor reads the values (an earlier Done button on
+  every cell competed with the terminal for keyboard focus).
 - **Interaction modalities on purpose:** prediction (cp1, cp6), calculation
   (cp2, cp3), three off-screen pen-and-paper steps with photo upload
   (cp2_paperwork, cp4, cp5_ring_formula), a real coded experiment at large N
