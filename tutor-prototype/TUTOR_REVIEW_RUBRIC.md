@@ -74,9 +74,18 @@ The intended use: a **reviewer subagent** runs this rubric and reports; the
 3. Static pass clean → caller (or a subagent) runs the Part D E2E gate.
    Findings → fix → back to step 2.
 4. PASS → report to the user: PASS, iterations used, remaining Minors.
-5. Guards: max 5 iterations; if the same finding survives two fixes, or a fix
-   requires a curriculum/content decision, stop and surface it to the user
-   instead of iterating. Never weaken a rubric item to make a review pass.
+5. **Keep going until a round comes back with zero Blockers and zero
+   Majors.** There is no iteration cap: a Major left in place is a broken
+   graded artifact or a student who cannot finish, and "we ran out of
+   rounds" does not make it smaller. Expect the count to fall round over
+   round; a fix that introduces a new defect (it happens — a guard that
+   over-refuses, a rewrite that misses a path) just means another round.
+   Never weaken a rubric item to make a review pass.
+6. Stop and surface to the user, mid-loop, only when: the same finding
+   survives two fixes at the same target (the fix target is wrong — say
+   so), a fix needs a curriculum/content decision that is the
+   instructor's to make, or the round's findings contradict an earlier
+   round's. Surface it, get the call, then resume the loop.
 
 **Runner portability.** The reviewer role needs only file reading and a
 shell — any agent can run it (Claude Code, pi, Cursor, a human). What
@@ -267,7 +276,18 @@ the student or the past session (see Fix targets).
 
 Drive a **live tutor session** with the harness in `tutor-prototype/review/`
 (herdr-based; see `review/README.md` for the exact commands). The reviewer
-plays the student. Fidelity requirements: course model
+plays the student.
+
+**Run Part D in a subagent on a fast model (Sonnet, or Haiku for a rerun of
+an already-clean gate) — never from the main loop.** A full run is dozens of
+blocking waits on a live model, most of them 30-120 s of nothing; done
+inline it eats an hour of wall-clock and the caller's context for transcript
+text it will not reuse. The subagent plays the student, collects the Part P
+violations, and returns only the findings. The *tutor's* model is a separate
+thing and must stay at the course model (`TUTOR_MODEL`) — fidelity is about
+what the student meets, not about who types the student's lines.
+
+Fidelity requirements: course model
 (`TUTOR_MODEL`, default `deepseek/deepseek-v4-flash-0731`), global agent
 extensions disabled (`--no-extensions -e <module>/.pi/extensions/notebook-tool.ts`),
 a browser page connected **before** the tutor's first nb_* call (the marimo

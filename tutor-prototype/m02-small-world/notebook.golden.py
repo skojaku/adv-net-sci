@@ -1089,8 +1089,8 @@ def cp6_watts_strogatz_note(mo):
 @app.cell(hide_code=True)
 def cp6_large_n_ed(mo):
     cp6_large_n_ed = mo.ui.code_editor(
-        value='''# 1. Set a LARGE network size — much bigger than the N=200 you played with.
-N = 2000  # try 2000
+        value="""# 1. Set a LARGE network size — much bigger than the N=200 you played with.
+N = ...  # try 2000
 k = 4
 p_values = [0.0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0]
 
@@ -1099,9 +1099,9 @@ rows = []
 for p in p_values:
     G = nx.connected_watts_strogatz_graph(N, k, p, seed=1) if p > 0 else nx.watts_strogatz_graph(N, k, 0)
     # 2. Measure the average distance of G — nx.average_shortest_path_length
-    L = nx.average_shortest_path_length(G)
+    L = ...
     # 3. Measure the average clustering of G — nx.average_clustering
-    C = nx.average_clustering(G)
+    C = ...
     if p == 0.0:
         L0, C0 = L, C
     rows.append({"p": str(p), "L/L0": L / L0, "C/C0": C / C0})
@@ -1112,24 +1112,72 @@ alt.Chart(df).mark_line(point=True).encode(
     y=alt.Y("ratio:Q", title="ratio to p=0 baseline"),
     color=alt.Color("measure:N", scale=alt.Scale(range=["#B4552D", "#35577F"])),
 ).properties(title=f"N={N}, k={k}")
-''',
+""",
         language="python",
-        label="Your experiment — fill the ... blanks, then press ▶ Run below",
+        min_height=140,
     )
-    cp6_large_n_ed
-    return (cp6_large_n_ed,)
+    cp6_large_n_run = mo.ui.run_button(label="▶ Run my code")
+    mo.vstack([
+        mo.md(
+            "Fill the three `...` blanks, then press ▶ Run. Run it as often as "
+            "you like — nothing breaks."
+        ),
+        cp6_large_n_ed,
+        cp6_large_n_run,
+    ])
+    return cp6_large_n_ed, cp6_large_n_run
 
 
 @app.cell(hide_code=True)
-def cp6_large_n_out(cp6_large_n_ed, mo, run_student_code):
-    mo.vstack([
-        mo.md(
-            "<span style='color:#6A6D75;font-size:13px'>▶ Run — output below is "
-            "as it appeared after the student ran their filled-in code. It takes "
-            "a minute on a network this size.</span>"
-        ),
-        run_student_code(cp6_large_n_ed.value),
-    ])
+def cp6_large_n_out(cp6_large_n_ed, cp6_large_n_run, mo, run_student_code):
+    from pathlib import Path as _P
+
+    _saved = _P("assets/exercises/cp6_large_n.py")
+    cp6_large_n_send = mo.ui.run_button(
+        label="📨 Send my code to my tutor",
+        disabled=not (cp6_large_n_run.value or _saved.exists()),
+    )
+    if cp6_large_n_run.value:
+        _saved.parent.mkdir(parents=True, exist_ok=True)
+        _saved.write_text(cp6_large_n_ed.value)
+        _res = mo.vstack([
+            run_student_code(cp6_large_n_ed.value),
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>Run it as many times "
+                "as you like. When it does what you want, press 📨 — that is what "
+                "hands it in and tells your tutor to look.</span>"
+            ),
+            cp6_large_n_send,
+        ])
+    elif _saved.exists():
+        _res = mo.vstack([
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>The code I wrote and ran, "
+                "saved from my session:</span>\n\n```python\n"
+                + _saved.read_text()
+                + "\n```"
+            ),
+            run_student_code(_saved.read_text()),
+            cp6_large_n_send,
+        ])
+    else:
+        _res = mo.md("*Press ▶ Run when you're ready.*")
+    _res
+    return (cp6_large_n_send,)
+
+
+@app.cell(hide_code=True)
+def cp6_large_n_sent(cp6_large_n_send, mo):
+    if cp6_large_n_send.value:
+        from pathlib import Path as _P
+
+        _P("session_artifacts").mkdir(exist_ok=True)
+        with open("session_artifacts/student_signal.txt", "a") as _f:
+            _f.write("cp6_large_n_ed\n")
+        _sent = mo.md("✅ **Handed in.** Your tutor is reading your code now.")
+    else:
+        _sent = mo.md("")
+    _sent
     return
 
 

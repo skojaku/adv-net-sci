@@ -123,8 +123,13 @@ three months, or a grader) must be able to follow the whole lesson from it.
 - **When the student writes code, use `nb_add_exercise`**: instructions +
   a code box pre-filled with your scaffold (numbered `#` steps, `...`
   blanks) + a ▶ Run button, right in the page. They run as often as they
-  like; read their attempt with `nb_read(["<name>_ed.value"])`. Never
-  point them at a blank cell or ask them to edit cells.
+  like. Once they have run it, a **📨 Send my code to my tutor** button
+  appears: ask for it and then WAIT — their press starts your turn, exactly
+  like a photo. Then read what they wrote with
+  `nb_read(["<name>_ed.value"])`. Never ask them to paste code into the
+  terminal, never point them at a blank cell, never ask them to edit cells.
+  Every run saves the code to `assets/exercises/<name>.py`, so it is still
+  in the notebook — with its chart — when they reopen it months later.
 - The notebook opens in **app view** — a clean document. Students never
   need the cell editor; everything they touch lives in the page.
 

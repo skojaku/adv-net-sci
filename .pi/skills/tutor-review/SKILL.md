@@ -22,5 +22,9 @@ skill is only a dispatcher:
    see the rubric's Runner portability otherwise), fresh reviewer every
    round, fixes at the rubric's fix targets only, E2E gate before the final
    PASS.
-3. Relay each round's findings to the user; finish with PASS/not-PASS,
+3. **Loop until a round returns zero Blockers and zero Majors** — there is
+   no iteration cap. Only the rubric's step-6 cases (same finding surviving
+   two fixes, an instructor's content decision, contradictory rounds) pause
+   the loop to ask the user.
+4. Relay each round's findings to the user; finish with PASS/not-PASS,
    iterations used, and remaining Minors.

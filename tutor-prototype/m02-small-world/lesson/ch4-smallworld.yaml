@@ -128,11 +128,15 @@ checkpoints:
       `C = nx.average_clustering(G)` already written) — they press ▶ Run
       and read the chart rather than writing anything.
     ask: |
-      "Run it — it takes a few seconds on a network this size. Same reading
-      as before, now on your own chart: at which p does the L/L₀ line make
-      its steepest drop, and what is C/C₀ doing at that p? Then the
-      comparison: is that p bigger, smaller, or about the same as the one
-      you found on the 200-person ring?"
+      "Press ▶ Run — it takes a few seconds on a network this size. Run it as
+      many times as you like; when the chart looks right, press 📨 Send my
+      code to my tutor under it and I'll read what you wrote."
+      Then WAIT. Their press starts your turn and hands you the code — never
+      ask whether they have run it yet, and never ask them to paste it.
+      When it arrives, read it with nb_read(["cp6_large_n_ed.value"]) and ask:
+      "At which p does the L/L₀ line make its steepest drop, and what is C/C₀
+      doing at that p? Then: is that p bigger, smaller, or about the same as
+      the one you found on the 200-person ring?"
     accept: |
       Reads the steepest drop off their own chart, and compares it to the
       200-person ring. At N=2000, seed 1, the drops are unambiguous:
