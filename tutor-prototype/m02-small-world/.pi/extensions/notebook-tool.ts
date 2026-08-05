@@ -911,6 +911,34 @@ function hasFreshVariants(cpId: string): boolean {
   return checkpointBlock(cpId, "fresh_variants").trim().length > 0;
 }
 
+/**
+ * The cell names a checkpoint's `build:` promises — every
+ * `nb_add_template("X")` in it, resolved through `cells/X.py`'s
+ * `# --- cell: NAME ---` markers.
+ *
+ * Used to catch a build the tutor simply never did. cp5_ring_formula asks
+ * seven things in sequence and the seventh is "photograph that page"; in a
+ * live run the model reached the end of the reasoning, decided the answer
+ * was complete, and closed the checkpoint — the upload area was never
+ * inserted and the student was never asked for the photo at all. The
+ * hand-worked page is the point of those checkpoints, so a promise in the
+ * script is checked rather than trusted.
+ */
+function scriptedBuildCells(cpId: string): string[] {
+  const build = checkpointBlock(cpId, "build");
+  if (!build.trim() || /^\s*none\s*$/i.test(build)) return [];
+  const out: string[] = [];
+  for (const m of build.matchAll(/nb_add_template\(\s*["']([\w-]+)["']\s*\)/g)) {
+    try {
+      const src = fs.readFileSync(path.join(process.cwd(), "cells", `${m[1]}.py`), "utf-8");
+      for (const c of src.matchAll(/^#\s*---\s*cell:\s*(\w+)\s*---/gm)) out.push(c[1]);
+    } catch {
+      // an unknown template name is nb_add_template's problem, not ours
+    }
+  }
+  return out;
+}
+
 /** The «…» markers of a note skeleton, in order. */
 function slotMarkers(skeleton: string): string[] {
   return skeleton.match(/«[^»]*»/g) ?? [];
@@ -944,6 +972,19 @@ function withQuotedQuestion(markdown: string, question: string): string {
     return [lines[0], "", quote, ...lines.slice(1)].join("\n");
   }
   return `${quote}\n\n${markdown}`;
+}
+
+/** Names of every cell currently in the notebook, or null if unreadable. */
+async function notebookCellNames(signal?: AbortSignal): Promise<string[] | null> {
+  const r = await runKernel(
+    `import marimo._code_mode as cm\n` +
+      `async with cm.get_context() as ctx:\n` +
+      `    print("CELLS<<" + ",".join(str(getattr(c, "name", "")) for c in ctx.cells) + ">>")\n`,
+    signal,
+  );
+  if (r.failed) return null;
+  const m = /CELLS<<(.*)>>/.exec(r.out);
+  return m ? m[1].split(",").filter(Boolean) : null;
 }
 
 /**
@@ -994,11 +1035,15 @@ function souvenirGap(src: string, question: string): string {
   // or drops the trailing "?", and a byte-exact match then bounced a
   // souvenir that plainly does quote the question — and stamped it
   // `souvenir_gap` in the log afterwards.
+  // Apostrophes are DELETED, not turned into spaces: a student types "cant"
+  // and the souvenir quotes "can't", which is the same word and the right
+  // thing for the model to have written. Collapsing the apostrophe to a
+  // space made it two tokens against the student's one, and the honest
+  // souvenir was bounced and then stamped `souvenir_gap` in the log.
   const flat = (s: string) =>
     s
       .toLowerCase()
-      .replace(/[‘’ʼ]/g, "'")
-      .replace(/[“”]/g, '"')
+      .replace(/['‘’ʼ"“”]/g, "")
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
   // Strip the word the 40-char slice cut in half — but ONLY when it did cut
@@ -1656,6 +1701,34 @@ export default function (pi: ExtensionAPI) {
       if (!response) {
         return toResult({
           out: `NOT LOGGED — student_response is empty. Log their actual words (or "(no answer — moved on)") and call again.`,
+          failed: false,
+        });
+      }
+      // A checkpoint whose script promises a build cannot be closed while
+      // that build is missing. cp5_ring_formula asks seven things and the
+      // seventh is "photograph that page"; a live run answered the first
+      // six, decided the reasoning was complete, and closed — the upload
+      // area was never inserted and the photo never asked for, on a
+      // checkpoint whose whole point is the page in the student's own hand.
+      // Capped like the rest, so a dead notebook cannot strand anyone.
+      const wantCells = scriptedBuildCells(baseCheckpointId(id));
+      let missingBuild: string[] = [];
+      if (wantCells.length > 0) {
+        const have = await notebookCellNames(signal);
+        if (have) missingBuild = wantCells.filter((c) => !have.includes(c));
+      }
+      const buildStrikes = slotDriftWarned.get(`${id}:build`) ?? 0;
+      if (missingBuild.length > 0 && buildStrikes < 2) {
+        slotDriftWarned.set(`${id}:build`, buildStrikes + 1);
+        return toResult({
+          out:
+            `NOT LOGGED — this checkpoint's build never happened: ${missingBuild
+              .map((c) => `"${c}"`)
+              .join(", ")} ${missingBuild.length > 1 ? "are" : "is"} missing from the ` +
+            `notebook. Read your script's build: line for "${baseCheckpointId(id)}", run ` +
+            `the nb_add_template it names, and work the part of the ask that goes with it ` +
+            `— on a paper checkpoint that means asking for the photo and WAITING for the ` +
+            `📨 Send press. Then call checkpoint_done again.`,
           failed: false,
         });
       }
