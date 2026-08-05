@@ -13,10 +13,9 @@
  *     status line ("📝 Setting up your first question…") with output hidden
  *     behind the expand keybinding. The LLM still receives full output.
  *
- * Also bridges the notebook's ✅ Done buttons to the conversation: the button
- * follower cell (self-contained, no notebook helper needed) writes
- * session_artifacts/student_signal.txt; we watch it and inject a message so
- * the tutor reads the answers right away.
+ * The student signals "ready" by typing in the terminal — there is no
+ * in-notebook Done button; the tutor just reads notebook values with
+ * nb_read once the student says they're done.
  */
 import { execFile } from "node:child_process";
 import * as fs from "node:fs";
@@ -336,8 +335,9 @@ function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
   return (
     `CHAPTER SCRIPT ${num}/${total} — "${ch.title}" (invisible to the student). ` +
     `This is your curriculum right now:\n\n${src}\n\n` +
-    `Work its checkpoints in order. After logging the final checkpoint (${last}), ` +
-    `call chapter_done with short handoff notes.`
+    `Work its checkpoints in order, ending each one with checkpoint_done. ` +
+    `After checkpoint_done for the final checkpoint (${last}), call chapter_done ` +
+    `with short handoff notes.`
   );
 }
 
@@ -424,6 +424,205 @@ function progressBrief(entries: any[]): string {
     .join("\n");
 }
 
+function sessionLogPath(): string {
+  return path.join(process.cwd(), "session_artifacts", "session_log.jsonl");
+}
+
+/** The tutor no longer hand-writes JSON: the extension owns the graded log. */
+function appendLog(entry: Record<string, unknown>): boolean {
+  try {
+    fs.mkdirSync(path.dirname(sessionLogPath()), { recursive: true });
+    fs.appendFileSync(
+      sessionLogPath(),
+      JSON.stringify({ ts: new Date().toISOString(), ...entry }) + "\n",
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Ground truth for the graded artifact: the student's own messages, read
+ * straight from the transcript, so a logged answer can never drift into
+ * paraphrase. Returns what they typed since the previous checkpoint.
+ */
+let studentSaidMark = 0;
+const INJECTED_PREFIX =
+  /^(CHAPTER SCRIPT|RESUME CONTEXT|=== TUTORING HANDOFF|The student clicked|Please start the tutoring session|── Chapter )/;
+
+function allStudentMessages(ctx: any): string[] {
+  const entries: any[] = ctx?.sessionManager?.getBranch?.() ?? [];
+  const out: string[] = [];
+  for (const e of entries) {
+    if (e?.type !== "message" || e?.message?.role !== "user") continue;
+    const c = e.message.content;
+    const text =
+      typeof c === "string"
+        ? c
+        : Array.isArray(c)
+          ? c
+              .filter((p: any) => p?.type === "text" && typeof p.text === "string")
+              .map((p: any) => p.text)
+              .join("\n")
+          : "";
+    const s = text.trim();
+    if (!s || INJECTED_PREFIX.test(s)) continue;
+    out.push(s);
+  }
+  return out;
+}
+
+function studentSaidSince(ctx: any): string[] {
+  try {
+    const all = allStudentMessages(ctx);
+    const fresh = all.slice(studentSaidMark);
+    studentSaidMark = all.length;
+    return fresh;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Pull a checkpoint's instructor-authored `note:` block out of its chapter
+ * YAML (block scalar, dedented). The tutor fills «slots», not prose.
+ */
+function noteSkeleton(cpId: string): string {
+  try {
+    const chapter = loadChapters().find((c) => c.checkpoints.includes(cpId));
+    if (!chapter) return "";
+    const lines = fs
+      .readFileSync(path.join(process.cwd(), "lesson", chapter.file), "utf-8")
+      .split("\n");
+    const idRe = new RegExp(`^\\s*-\\s+id:\\s*${cpId}\\s*$`);
+    const start = lines.findIndex((l) => idRe.test(l));
+    if (start < 0) return "";
+    let end = lines.length;
+    for (let i = start + 1; i < lines.length; i++) {
+      if (/^\s*-\s+id:\s/.test(lines[i])) {
+        end = i;
+        break;
+      }
+    }
+    for (let i = start; i < end; i++) {
+      const m = /^(\s*)note:\s*\|/.exec(lines[i]);
+      if (!m) continue;
+      const keyIndent = m[1].length;
+      const block: string[] = [];
+      for (let j = i + 1; j < end; j++) {
+        const l = lines[j];
+        if (!l.trim()) {
+          block.push("");
+          continue;
+        }
+        if (l.length - l.trimStart().length <= keyIndent) break;
+        block.push(l);
+      }
+      const indents = block.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length);
+      const base = indents.length ? Math.min(...indents) : 0;
+      return block.map((l) => l.slice(base)).join("\n").trim();
+    }
+    return "";
+  } catch {
+    return "";
+  }
+}
+
+function fillSlots(skeleton: string, slots: string[], fallback: string): string {
+  let i = 0;
+  return skeleton.replace(/«[^»]*»/g, () => {
+    const v = slots[i] ?? fallback;
+    i += 1;
+    return v;
+  });
+}
+
+/** Insert (or skip, if present) a markdown cell and scroll the page to it. */
+async function insertMarkdownCell(
+  name: string,
+  markdown: string,
+  signal?: AbortSignal,
+): Promise<{ out: string; failed: boolean }> {
+  const warm = await ensureWarm(signal);
+  if (warm) return warm;
+  const body = `mo.md(${py(markdown)})`;
+  return runKernel(
+    `import marimo._code_mode as cm\n` +
+      `async with cm.get_context() as ctx:\n` +
+      `    _names = [c.name for c in ctx.cells]\n` +
+      `    if ${py(name)} in _names:\n` +
+      `        print("note cell already there — skipped")\n` +
+      `    else:\n` +
+      `        _cid = ctx.create_cell(${py(body)}, name=${py(name)}, hide_code=True)\n` +
+      `        ctx.run_cell(_cid)\n` +
+      focusCellCode("_cid", "        "),
+    signal,
+  );
+}
+
+/** The closing record + summary are DERIVED from the log, never retyped. */
+function buildSessionRecord(entries: any[]): string {
+  const cps = entries.filter((e) => e?.type === "checkpoint" && e.id);
+  const detours = entries.filter((e) => e?.type === "detour");
+  const lines = [
+    "## 📋 Session record",
+    "",
+    "*Your own words, exactly as you said them — this is what gets reviewed,*",
+    "*not the code. Hints are never held against you.*",
+    "",
+  ];
+  for (const e of cps) {
+    const hints = Number(e.hints_used ?? 0);
+    lines.push(
+      `**${e.id}** · ${e.judgment ?? "?"}${hints ? ` · ${hints} hint${hints > 1 ? "s" : ""}` : ""}`,
+      "",
+      `*${String(e.question ?? "").trim()}*`,
+      "",
+      `> ${String(e.student_response ?? "").trim().replace(/\n+/g, " ")}`,
+      "",
+    );
+    if (e.notes) lines.push(`${String(e.notes).trim()}`, "");
+  }
+  if (detours.length) {
+    lines.push(`### 🧭 Your own questions (${detours.length})`, "");
+    for (const d of detours) lines.push(`- *${String(d.question ?? "").trim()}*`);
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+
+function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
+  const cps = entries.filter((e) => e?.type === "checkpoint" && e.id);
+  const done = new Set(cps.map((e) => e.id));
+  const missing = allCheckpoints.filter((id) => !done.has(id));
+  const out = [
+    "# Session summary",
+    "",
+    `Checkpoints completed: ${done.size} of ${allCheckpoints.length}`,
+    `Detours (student's own questions): ${entries.filter((e) => e?.type === "detour").length}`,
+    "",
+  ];
+  for (const e of cps) {
+    out.push(
+      `## ${e.id} — ${e.judgment ?? "?"} (${Number(e.hints_used ?? 0)} hints)`,
+      `Question: ${String(e.question ?? "").trim()}`,
+      `Answer (verbatim): ${String(e.student_response ?? "").trim()}`,
+    );
+    if (Array.isArray(e.student_said_verbatim) && e.student_said_verbatim.length) {
+      out.push(`Typed by the student: ${JSON.stringify(e.student_said_verbatim)}`);
+    }
+    if (e.notes) out.push(`Tutor's note: ${String(e.notes).trim()}`);
+    out.push("");
+  }
+  if (missing.length) {
+    out.push(`## Where to pick up`, `Next checkpoint: ${missing[0]}`, "");
+  }
+  return out.join("\n");
+}
+
+const JUDGMENTS = ["pass", "pass_with_hints", "guided", "prediction"];
+
 const MARIMO_CELL_RULES =
   "Cell code rules (marimo is reactive): " +
   "(1) NEVER read a widget's .value in the cell that creates it — marimo forbids it. " +
@@ -441,43 +640,7 @@ const MARIMO_CELL_RULES =
   "(it even draws self-loops) or matplotlib figure always looks better.";
 
 export default function (pi: ExtensionAPI) {
-  // ── Done-button bridge ────────────────────────────────────────────────────
   pi.on("session_start", async (_event, _ctx) => {
-    const signalPath = path.join(process.cwd(), "session_artifacts", "student_signal.txt");
-    try {
-      fs.mkdirSync(path.dirname(signalPath), { recursive: true });
-      if (!fs.existsSync(signalPath)) fs.writeFileSync(signalPath, "");
-      const watcher = fs.watch(signalPath, () => {
-        try {
-          const checkpoint = fs.readFileSync(signalPath, "utf-8").trim();
-          if (!checkpoint) return; // our own clear-write below
-          fs.writeFileSync(signalPath, "");
-          // deliverAs "followUp" is load-bearing: the default ("steer")
-          // waits for the NEXT llm call, which never comes if the turn
-          // already ended — the event then sat queued until the student
-          // pressed Enter, hijacking their input (seen in production).
-          pi.sendMessage(
-            {
-              customType: "notebook-done-button",
-              content:
-                `The student clicked the ✅ Done button in the notebook ` +
-                `(checkpoint: ${checkpoint}). Read the relevant notebook values ` +
-                `now with nb_read and continue the lesson. If the student also ` +
-                `typed a message, respond to both together.`,
-              display: true,
-            },
-            { deliverAs: "followUp", triggerTurn: true },
-          );
-        } catch {
-          // signal file transiently unavailable — ignore
-        }
-      });
-      // Don't keep the process alive on exit (print mode would hang otherwise).
-      watcher.unref();
-    } catch {
-      // watcher is best-effort; the student can always type "done" instead
-    }
-
     // ── Chapter start + resume brief ──────────────────────────────────────
     // Determine the current chapter (from progress or saved state), inject
     // its script, and — when previous progress exists — a resume brief that
@@ -609,16 +772,31 @@ export default function (pi: ExtensionAPI) {
       }
 
       if (!next) {
+        // The closing artifacts are DERIVED from the log — never retyped from
+        // the model's memory of the session (that is the graded record).
+        const entries = readSessionLog();
+        const allCps = chapters.flatMap((c) => c.checkpoints);
+        let done = "";
+        const rec = await insertMarkdownCell("session_record", buildSessionRecord(entries), _signal);
+        done += rec.failed ? "session_record cell FAILED. " : "Closing record added to their notebook. ";
+        try {
+          fs.writeFileSync(
+            path.join(process.cwd(), "session_artifacts", "session_summary.md"),
+            buildSessionSummary(entries, allCps),
+          );
+          done += "Summary written. ";
+        } catch {
+          done += "Summary write failed. ";
+        }
         return {
           content: [
             {
               type: "text" as const,
               text:
-                "That was the FINAL chapter. Run the Ending protocol now (AGENTS.md): add the " +
-                "closing session_record notebook cell (per checkpoint: question, verbatim " +
-                "answer, judgment, hints), write session_artifacts/session_summary.md via " +
-                "nb_run, then tell the student plainly what they can now do, and that their " +
-                "answers — not code — are what gets reviewed.",
+                `That was the FINAL chapter. ${done}Nothing to write yourself — just say ` +
+                `goodbye: tell them plainly what they can now do, that their answers (not ` +
+                `code) are what gets reviewed, and that the notebook is theirs to keep and ` +
+                `keep playing with.`,
             },
           ],
           details: {},
@@ -732,6 +910,181 @@ export default function (pi: ExtensionAPI) {
 
   // Fixed-choice questions go through the ask_user_question tool
   // (@juicesharp/rpiv-ask-user-question package, declared in .pi/settings.json).
+
+  // ── checkpoint_done ───────────────────────────────────────────────────────
+  // One call replaces the whole per-checkpoint ceremony: the extension writes
+  // the graded log (with the student's own messages captured from the
+  // transcript), renders the note cell from the chapter script's `note:`
+  // skeleton, and runs the transition ask itself. The tutor supplies only
+  // what a model can: the verbatim answer and the judgment.
+  pi.registerTool({
+    name: "checkpoint_done",
+    label: "Checkpoint done",
+    description:
+      "Finish a checkpoint: this ONE call logs it (graded artifact), adds the notebook note " +
+      "cell from the chapter script's note: skeleton, and asks the student whether to move " +
+      "on. Call it right after you judge their answer — never hand-write log JSON, never " +
+      "hand-write the note cell. The result tells you what the student chose: only 'ready' " +
+      "means you may start the next checkpoint.",
+    promptSnippet: "Log a checkpoint, add its note cell, and ask the student what's next",
+    promptGuidelines: [
+      "End EVERY checkpoint with checkpoint_done — it replaces hand-written log JSON, the note cell, and the transition question.",
+    ],
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      id: Type.String({ description: "Checkpoint id from the script, e.g. 'cp2_distance'." }),
+      question: Type.String({ description: "The question as you actually asked it." }),
+      student_response: Type.String({
+        description: "Their answer VERBATIM — their words, not your summary.",
+      }),
+      judgment: Type.String({
+        description: "One of: pass | pass_with_hints | guided | prediction.",
+      }),
+      hints_used: Type.Number({ description: "How many hints you gave (0 is fine and normal)." }),
+      notes: Type.String({ description: "One line: what their answer showed." }),
+      note_slots: Type.Optional(
+        Type.Array(Type.String(), {
+          description:
+            "Fills for the «slots» in the script's note: skeleton, in order (usually the " +
+            "student's own words). Missing ones default to student_response.",
+        }),
+      ),
+      note_markdown: Type.Optional(
+        Type.String({
+          description:
+            "Only when the script has no note: skeleton — the full note cell markdown " +
+            "(plain-words title, 2-4 sentences with $math$, then their quoted answer).",
+        }),
+      ),
+    }),
+    async execute(_id, params, signal, _onUpdate, ctx: any) {
+      const id = String(params.id ?? "").trim();
+      const judgment = String(params.judgment ?? "").trim();
+      if (!JUDGMENTS.includes(judgment)) {
+        return toResult({
+          out: `NOT LOGGED — judgment must be one of ${JUDGMENTS.join(" | ")}, got "${judgment}". Call again.`,
+          failed: false,
+        });
+      }
+      const response = String(params.student_response ?? "").trim();
+      if (!response) {
+        return toResult({
+          out: `NOT LOGGED — student_response is empty. Log their actual words (or "(no answer — moved on)") and call again.`,
+          failed: false,
+        });
+      }
+
+      const said = studentSaidSince(ctx);
+      const logged = appendLog({
+        type: "checkpoint",
+        id,
+        question: String(params.question ?? ""),
+        student_response: response,
+        judgment,
+        hints_used: Number(params.hints_used ?? 0),
+        notes: String(params.notes ?? ""),
+        student_said_verbatim: said,
+      });
+
+      const skeleton = noteSkeleton(id);
+      const md = skeleton
+        ? fillSlots(skeleton, params.note_slots ?? [], response)
+        : String(params.note_markdown ?? "").trim();
+      let noteLine: string;
+      if (!md) {
+        noteLine =
+          `NO NOTE CELL: this checkpoint has no note: skeleton and you passed no ` +
+          `note_markdown — add one now with nb_add_cell (name "${id}_note").`;
+      } else {
+        const r = await insertMarkdownCell(`${id}_note`, md, signal);
+        noteLine = r.failed
+          ? `Note cell FAILED — retry once with nb_add_cell (name "${id}_note").`
+          : `Note cell added.`;
+      }
+
+      const READY = "Ready for the next question";
+      const ASK_Q = "I have a question first";
+      const MORE = "Give me another one like that";
+      let nextLine =
+        `No picker available — ask the student in plain text whether to move on, ` +
+        `and wait for their answer.`;
+      if (ctx?.ui?.select) {
+        const choice = await ctx.ui.select("Where to next?", [READY, ASK_Q, MORE]);
+        nextLine =
+          choice === READY
+            ? `The student is READY — start the next checkpoint from your script.`
+            : choice === ASK_Q
+              ? `The student has a QUESTION. Do NOT advance: ask what it is, answer it ` +
+                `properly, leave a souvenir cell, call log_detour, then ask them again ` +
+                `in plain text whether to move on.`
+              : choice === MORE
+                ? `The student wants MORE PRACTICE. Do NOT advance: improvise ONE problem ` +
+                  `of the same kind on NEW data, reusing this module's objects (the 4-person ` +
+                  `network, the 8-dot ring) so the numbers stay comparable. Guide, then ` +
+                  `checkpoint_done again with id "${id}_extra" (never a fail).`
+                : `The student closed the picker — ask in plain text what they'd like to do.`;
+      }
+
+      return toResult({
+        out:
+          `Logged${logged ? "" : " (LOG WRITE FAILED — tell no one, keep teaching)"}. ` +
+          `${noteLine}\n${nextLine}`,
+        failed: false,
+      });
+    },
+    ...quietRender,
+  });
+
+  // ── log_detour ────────────────────────────────────────────────────────────
+  pi.registerTool({
+    name: "log_detour",
+    label: "Log detour",
+    description:
+      "Record a student question you answered off-script (their curiosity is graded as " +
+      "engagement) and leave the souvenir in their notebook. Pass souvenir_markdown for a " +
+      "text-only souvenir; if you already built a richer cell with nb_add_cell, pass its " +
+      "cell_name instead.",
+    promptSnippet: "Log a student's off-script question and leave a souvenir cell",
+    parameters: Type.Object({
+      status: STATUS_PARAM,
+      question: Type.String({ description: "Their question VERBATIM." }),
+      what_you_did: Type.String({ description: "One line: how you answered it." }),
+      souvenir_markdown: Type.Optional(
+        Type.String({ description: "Markdown for a 🧭 Detour note cell (quote their question)." }),
+      ),
+      cell_name: Type.Optional(
+        Type.String({ description: "Name of the souvenir cell you already added." }),
+      ),
+    }),
+    async execute(_id, params, signal, _onUpdate, ctx: any) {
+      const question = String(params.question ?? "").trim();
+      appendLog({
+        type: "detour",
+        question,
+        what_you_did: String(params.what_you_did ?? ""),
+        cell: String(params.cell_name ?? ""),
+        student_said_verbatim: studentSaidSince(ctx),
+      });
+      const md = String(params.souvenir_markdown ?? "").trim();
+      if (!md) {
+        return toResult({
+          out: params.cell_name
+            ? `Logged. Souvenir cell "${params.cell_name}" noted.`
+            : `Logged — but NO souvenir cell yet. Add one now (nb_add_cell, name ` +
+              `"detour_<topic>"): their question quoted plus the idea, with a picture ` +
+              `(mo.vstack + netviz) when one helps.`,
+          failed: false,
+        });
+      }
+      const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(0, 40);
+      const r = await insertMarkdownCell(`detour_${slug || "note"}`, md, signal);
+      return toResult({
+        out: r.failed ? `Logged. Souvenir cell FAILED — add it with nb_add_cell.` : `Logged and the souvenir is in their notebook.`,
+        failed: false,
+      });
+    },
+    ...quietRender,
+  });
 
   // ── nb_add_cell ───────────────────────────────────────────────────────────
   pi.registerTool({
@@ -1316,20 +1669,14 @@ export default function (pi: ExtensionAPI) {
     }),
     async execute(_id, params, signal) {
       const result = await runKernel(params.code, signal);
-      // In-band nudge: a checkpoint log write is the moment flash tends to
-      // rush ahead — remind it of the transition ritual exactly once, right
-      // where it reads next. No watchers, no double-fire.
-      if (
-        !result.failed &&
-        /session_log/.test(params.code) &&
-        /checkpoint/.test(params.code)
-      ) {
+      // Hand-written log JSON is obsolete and drifts (schema, timestamps,
+      // paraphrased answers) — redirect to the tool that owns the record.
+      if (/session_log|session_summary/.test(params.code)) {
         result.out =
           (result.out ? result.out + "\n" : "") +
-          `Checkpoint logged. Before moving on: add the note cell (script's note: ` +
-          `skeleton) if you haven't, then ALWAYS the transition ask_user_question ` +
-          `("Next, please!" / "I have a question" / "Give me another one like that"). ` +
-          `Never advance without it.`;
+          `NOTE: do NOT write the session log or summary by hand — checkpoint_done ` +
+          `logs checkpoints (and adds the note cell and the transition ask), ` +
+          `log_detour logs questions, and chapter_done writes the closing summary.`;
       }
       return toResult(result);
     },

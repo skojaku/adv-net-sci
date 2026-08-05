@@ -52,10 +52,12 @@ notebook re-learnable.
    curious student's notebook ends up visibly their own. *(AGENTS.md)*
 
 2. **The student's verbatim words are the centerpiece.** Every note cell
-   quotes their answer word for word (`> **You worked out:** "…"`), and the
-   closing `session_record` cell repeats question / verbatim answer /
-   judgment / hints for every checkpoint. Paraphrasing is falsifying the
-   graded artifact. *(AGENTS.md, lesson note skeletons)*
+   quotes their answer word for word, and the closing `session_record`
+   cell repeats question / verbatim answer / judgment / hints for every
+   checkpoint. Paraphrasing is falsifying the graded artifact — so the
+   extension also captures the student's own messages straight from the
+   transcript (`student_said_verbatim`), making the record independent of
+   the model's summary. *(checkpoint_done, lesson note skeletons)*
 
 3. **Quality by structure, not by model effort.** The tutor model is small
    and fast; nothing important is left to its improvisation:
