@@ -1132,7 +1132,12 @@ alt.Chart(df).mark_line(point=True).encode(
 def cp6_large_n_out(cp6_large_n_ed, cp6_large_n_run, mo, run_student_code):
     from pathlib import Path as _P
 
-    _saved = _P("assets/exercises/cp6_large_n.py")
+    # The reference notebook reads its saved code from assets/golden/, NOT
+    # from assets/exercises/ where a live session writes: a solved file
+    # sitting in the live path would be rendered — solution and chart — the
+    # moment the tutor inserts the box, handing the student every blank
+    # before they write a line. Only the path differs from the emitted cell.
+    _saved = _P("assets/golden/cp6_large_n.py")
     cp6_large_n_send = mo.ui.run_button(
         label="📨 Send my code to my tutor",
         disabled=not (cp6_large_n_run.value or _saved.exists()),
@@ -1152,8 +1157,9 @@ def cp6_large_n_out(cp6_large_n_ed, cp6_large_n_run, mo, run_student_code):
     elif _saved.exists():
         _res = mo.vstack([
             mo.md(
-                "<span style='color:#6A6D75;font-size:13px'>The code I wrote and ran, "
-                "saved from my session:</span>\n\n```python\n"
+                "<span style='color:#6A6D75;font-size:13px'>The code I wrote and "
+                "ran — press ▶ Run again after an edit to refresh this:</span>"
+                "\n\n```python\n"
                 + _saved.read_text()
                 + "\n```"
             ),

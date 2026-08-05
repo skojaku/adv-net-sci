@@ -2159,8 +2159,9 @@ export default function (pi: ExtensionAPI) {
         `elif _saved.exists():\n` +
         `    _res = mo.vstack([\n` +
         `        mo.md(\n` +
-        `            "<span style='color:#6A6D75;font-size:13px'>The code I wrote and ran, "\n` +
-        `            "saved from my session:</span>\\n\\n\`\`\`python\\n"\n` +
+        `            "<span style='color:#6A6D75;font-size:13px'>The code I wrote and "\n` +
+        `            "ran — press ▶ Run again after an edit to refresh this:</span>"\n` +
+        `            "\\n\\n\`\`\`python\\n"\n` +
         `            + _saved.read_text()\n` +
         `            + "\\n\`\`\`"\n` +
         `        ),\n` +
@@ -2183,11 +2184,18 @@ export default function (pi: ExtensionAPI) {
         `_sent`;
       let code =
         `import marimo._code_mode as cm\n` +
+        `from pathlib import Path as _P\n` +
         `async with cm.get_context() as ctx:\n` +
         `    _names = [c.name for c in ctx.cells]\n` +
         `    if ${py(name + "_ed")} in _names:\n` +
         `        print("exercise already in the notebook — skipped duplicate insert")\n` +
         `    else:\n` +
+        // Handing out the box means starting it. Any saved file here belongs
+        // to someone else's session (or, once, to a solved copy committed by
+        // mistake), and the out cell renders whatever it finds under "The
+        // code I wrote and ran" — which would show this student the answer
+        // before they typed a character, in their own voice.
+        `        _P(${py(savedPath)}).unlink(missing_ok=True)\n` +
         `        _cid = ctx.create_cell(${py(edBody)}, name=${py(name + "_ed")}, hide_code=True)\n` +
         `        ctx.run_cell(_cid)\n` +
         `        _first = _cid\n` +
@@ -2361,6 +2369,14 @@ export default function (pi: ExtensionAPI) {
         // was just archived, and anything left in that file would be read
         // back as progress this session never made.
         fs.rmSync(chapterStatePath(), { force: true });
+        // The student's saved exercise code goes with it. Left behind, the
+        // next run of the coding checkpoint opens showing the PREVIOUS
+        // student's code under "The code I wrote and ran, saved from my
+        // session" — someone else's work, in this student's voice.
+        const ex = path.join(process.cwd(), "assets", "exercises");
+        if (fs.existsSync(ex)) {
+          fs.renameSync(ex, path.join(dir, `exercises-${stamp}`));
+        }
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
       }
