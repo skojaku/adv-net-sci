@@ -94,7 +94,16 @@ checkpoints:
       nb_add_template("cp5_ring_paperwork") — the photo upload area for their
       by-hand work (upload widget: cp5_ring_paperwork_photo).
     ask: |
-      ONE piece at a time:
+      FIRST, before question 1, say what the whole checkpoint is: "Pen and
+      paper out — everything you work out here goes on one page, and at the
+      end you'll photograph it for me." Build BOTH templates now, so the
+      upload area is waiting while they work. This is a photo checkpoint,
+      not a conversation with a photo bolted on: a live run answered all six
+      questions, decided the reasoning was complete and closed without ever
+      asking for the page. (checkpoint_done now refuses that — it checks the
+      upload area exists — but do not make it have to.)
+
+      THEN, ONE piece at a time:
       1. "Set k to 2 — everyone knows only their 1 nearest neighbor each
          side, just like the ring you drew on paper. Can two of node 0's friends ever know
          each other here? Why or why not?"
