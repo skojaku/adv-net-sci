@@ -78,6 +78,14 @@ move assets/exercises "exercises-${STAMP}"
 repoint_archive uploads
 repoint_archive exercises
 
+# A note that could not be written belongs to the session just archived — and
+# it is flushed at the first build of whatever session comes next, so left
+# here it lands in the NEXT student's notebook quoting the previous student's
+# answers in the first person.
+if [ -d "$ART/parked_notes" ]; then
+  move "$ART/parked_notes" "parked_notes-${STAMP}"
+fi
+
 # The saved chapter belongs to the log just archived. Left behind, it is read
 # back as progress the new session never made.
 if [ -f "$ART/chapter_state.json" ]; then
