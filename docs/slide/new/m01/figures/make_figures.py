@@ -793,6 +793,13 @@ def clean(ax, equal=True):
 GRAPH5_POS = {0: (0, 1), 1: (1, 1), 2: (0, 0), 3: (1, 0), 4: (0.5, -0.9)}
 GRAPH5_EDGES = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4), (3, 4)]
 
+# R9 fix ("the one cause", FIXES_R9.md) -- same reasoning as KONIGSBERG_R (see its own
+# module note): GRAPH5_POS's own node spread (min spacing 1.0 data units) fixes the
+# on-slide diameter for every graph5-based figure independent of target_in, and it measured
+# 21.9-29.5px against the 34-40px target. r boosted, relative to spacing, well under the
+# ~0.25 crowding ceiling.
+GRAPH5_R = 0.17
+
 
 def draw_graph5(ax, edge_color=MUTED, highlight_edges=(), highlight_color=ACCENT2,
                  node_colors=None, highlight_nodes=(), r=NODE_R, label_fs=LABEL_FS):
@@ -869,6 +876,34 @@ def draw_matrix(ax, M, row_highlight=None, row_highlight_color=ACCENT2,
 # ---------------------------------------------------------------------------
 # shared: Königsberg multigraph layout (rule 2, exact positions)
 # ---------------------------------------------------------------------------
+# R9 fix ("The one cause", FIXES_R9.md): the deck-wide NODE_R (0.12 data units) sizes every
+# node to the SAME target_in physical inches (NODE_DIAM_IN), but that scales the whole
+# figure -- canvas included -- so the on-slide result (after the deck's CSS shrinks each PNG
+# to fit its column) depends only on the ratio of node radius to this layout's OWN node
+# spread, never on target_in (a uniform figure rescale cancels exactly against the CSS's own
+# scale-to-fit -- verified against real marp renders, see FIXES_R9.md). KPOS's nodes sit
+# 1.0-2.0 data units apart, giving every Konigsberg-family figure the SAME measured on-slide
+# diameter regardless of target_in: 23.4-24.0px against the 34-40px target. The only real
+# lever is the node radius ITSELF, relative to that fixed spread -- so this family gets its
+# own, larger r, threaded through draw_knodes/k_obstacles/fit_node_scale everywhere it's
+# used. 0.19 clears the family's own tightest spacing (N-A etc., 1.41 units) with enormous
+# margin (ratio 0.135, versus the ~0.25 ceiling the band/ladder figures need to respect).
+KONIGSBERG_R = 0.19
+
+# Fixed point sizes (LABEL_FS/ANNOT_FS are the deck-wide 18/17pt defaults) are NOT
+# automatically fixed by KONIGSBERG_R alone -- on-slide text size still depends on this
+# family's own canvas-to-container ratio, which the r-boost only partly closes. Measured
+# after the r-boost: node letters at LABEL_FS landed ~12px on-slide, degree numerals at
+# ANNOT_FS ~15.6px -- both still under the 16px page-number floor. Bumped on top of the
+# boost, not instead of it.
+KONIGSBERG_LABEL_FS = 28
+KONIGSBERG_DEGREE_FS = ANNOT_FS + 11
+# recap.png's own xlim/ylim is wider than the rest of the family (it has to fit the dashed
+# "one component" bracket around the whole diamond), so the same KONIGSBERG_R lands a
+# smaller on-slide disc there (measured: 31.7px vs 36.5-37.5px for the rest) -- a bigger r,
+# scoped to that one figure, closes the gap the same way KONIGSBERG_R itself was derived.
+KONIGSBERG_R_RECAP = 0.22
+
 KPOS = {"N": (0.0, 1.0), "S": (0.0, -1.0), "A": (-1.0, 0.0), "B": (1.0, 0.0)}
 KEDGES = [
     ("NA1", "N", "A", 0.30),
@@ -943,14 +978,14 @@ def draw_kedges(ax, removed=(), removed_color=MUTED, color=MUTED, width=EDGE_W):
                                           arrowstyle="-", color=color, linewidth=width, zorder=1))
 
 
-def draw_knodes(ax, colors=None, labels_inside=None, r=NODE_R):
+def draw_knodes(ax, colors=None, labels_inside=None, r=NODE_R, label_fs=LABEL_FS):
     order = ["N", "S", "A", "B"]
     cs = [(colors or {}).get(n, INK) for n in order]
     draw_nodes(ax, [KPOS[n] for n in order], colors=cs, r=r, zorder=3)
     for n in order:
         x, y = KPOS[n]
         txt = (labels_inside or {}).get(n, n)
-        ax.text(x, y, txt, ha="center", va="center", color="white", fontsize=LABEL_FS,
+        ax.text(x, y, txt, ha="center", va="center", color="white", fontsize=label_fs,
                 zorder=4, fontfamily="serif")
 
 
@@ -1044,28 +1079,43 @@ CITY_YLIM = (-2.65, 2.65)
 CITY_WATER_COLOR = "#dbe6ee"
 
 
-def draw_city_sketch(ax, bridge_color=INK, bridge_width=6.5):
+def draw_city_sketch(ax, bridge_color=INK, bridge_width=6.5, fade=False):
     # R4 fix (Minor, slides 007/008): the sketch had no water at all -- four landmass
     # blobs floating in plain white, connected by bridges, with nothing distinguishing
     # "gap between landmasses" from "edge of the page." Slide 007 asks "river width?" and
     # slide 008's build claims "geography, distance... about to go" over a picture that
     # never showed either. A pale band behind the two long N/S banks and around the A/B
     # islands reads as the Pregel without competing with the bridges or landmass fills.
+    #
+    # R9 fix (Blocker 3): `fade=True` is the actual first cut for slide 008 -- see
+    # fig_abstraction_1_map. Every geographic element (water, coastlines, bridges) fades
+    # toward white; only the N/A/B/S labels hold full strength (bigger, INK not MUTED) --
+    # so the render matches the caption ("the labels are all that survive the cut") instead
+    # of being byte-identical to konigsberg-sketch.png's full-strength sketch.
+    water_color = "#eef3f7" if fade else CITY_WATER_COLOR
+    land_fill = "#fbfbfa" if fade else PANEL
+    land_edge = "#c9c9c9" if fade else MUTED
+    land_lw = 1.1 if fade else 1.8
+    b_color = "#c9c9c9" if fade else bridge_color
+    b_width = 3.5 if fade else bridge_width
+    label_color = INK if fade else MUTED
+    label_fs = LABEL_FS * 1.4 if fade else LABEL_FS
     ax.add_patch(mpatches.Rectangle((CITY_XLIM[0], -1.45), CITY_XLIM[1] - CITY_XLIM[0], 2.9,
-                                     facecolor=CITY_WATER_COLOR, edgecolor="none", zorder=0))
+                                     facecolor=water_color, edgecolor="none", zorder=0))
     # Bridges connect landmass CENTRES and sit at zorder=1, under the landmass polygons
     # (zorder=2) -- each line's middle segment is covered by the shapes it starts/ends
     # inside, leaving only the water-crossing stretch visible, same trick as the old boxes.
     for u, v, rad in CITY_BRIDGES:
         ax.add_patch(FancyArrowPatch(CITY_CENTERS[u], CITY_CENTERS[v], connectionstyle=f"arc3,rad={rad}",
-                                      arrowstyle="-", color=bridge_color, linewidth=bridge_width,
+                                      arrowstyle="-", color=b_color, linewidth=b_width,
                                       capstyle="round", zorder=1))
     for n, (x, y) in CITY_CENTERS.items():
         rx, ry, seed = CITY_SHAPE[n]
         pts = _irregular_blob(x, y, rx, ry, seed)
-        ax.add_patch(mpatches.Polygon(pts, closed=True, facecolor=PANEL, edgecolor=MUTED,
-                                       linewidth=1.8, joinstyle="round", zorder=2))
-        ax.text(x, y, n, ha="center", va="center", fontsize=LABEL_FS, color=MUTED, zorder=3)
+        ax.add_patch(mpatches.Polygon(pts, closed=True, facecolor=land_fill, edgecolor=land_edge,
+                                       linewidth=land_lw, joinstyle="round", zorder=2))
+        ax.text(x, y, n, ha="center", va="center", fontsize=label_fs, color=label_color,
+                fontweight="bold" if fade else "normal", zorder=3)
     ax.set_xlim(*CITY_XLIM)
     ax.set_ylim(*CITY_YLIM)
     clean(ax)
@@ -1081,10 +1131,13 @@ def fig_konigsberg_sketch():
 # Part 2 -- abstraction (3-step build)
 # ===========================================================================
 def fig_abstraction_1_map():
-    # Frame 1: identical geometry to konigsberg-sketch.png -- the build has to start
-    # from the actual city sketch, not from an already-abstracted node-link diagram.
+    # R9 fix (Blocker 3, "the build's first step is a null step"): this used to call
+    # draw_city_sketch() with no arguments -- byte-identical to konigsberg-sketch.png, so
+    # slides 005/007/008 showed the same picture three slides running while 008's caption
+    # ("N, A, B, S -- the labels are all that survive the cut") described a cut this render
+    # never made. fade=True makes it a real first cut: see draw_city_sketch's own note.
     fig, ax = plt.subplots(figsize=(6.9, 5.6))
-    draw_city_sketch(ax)
+    draw_city_sketch(ax, fade=True)
     save(fig, "abstraction-1-map.png")
 
 
@@ -1093,8 +1146,8 @@ def fig_abstraction_2_nodes():
     # Drawing all seven bridges here (as before) made 009->010 a no-op except edge colour.
     fig, ax = plt.subplots(figsize=(5.4, 5.4))
     k_limits(ax, xpad=1.1)
-    fit_node_scale(fig, ax)
-    draw_knodes(ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R)
+    draw_knodes(ax, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     save(fig, "abstraction-2-nodes.png")
 
 
@@ -1103,15 +1156,53 @@ def fig_abstraction_3_graph():
     # that earns the slide title "each bridge becomes an edge".
     fig, ax = plt.subplots(figsize=(5.4, 5.4))
     k_limits(ax, xpad=1.1)
-    fit_node_scale(fig, ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R)
     draw_kedges(ax, color=MUTED, width=EDGE_W)
-    draw_knodes(ax)
+    draw_knodes(ax, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     save(fig, "abstraction-3-graph.png")
 
 
-def fig_multigraph():
+MULTI_P, MULTI_Q = (-0.6, 0.0), (0.6, 0.0)
+
+
+def _draw_multigraph_pair(ax, r=NODE_R):
+    # Shared by fig_multigraph_bridges (matrix-free) and fig_multigraph (matrix) -- the two
+    # must never draw the N-A pair differently (R9 fix, Blocker 2's own point: two slides
+    # that explain a figure differently need two FILES, not one file quietly diverging).
+    #
     # Minor fix: nodes were labelled P/Q, but the slide text says "Konigsberg has two
     # bridges between the same pair of landmasses" -- relabel to the deck's own N/A.
+    for rad in (0.30, -0.30):
+        ax.add_patch(FancyArrowPatch(MULTI_P, MULTI_Q, connectionstyle=f"arc3,rad={rad}",
+                                      arrowstyle="-", color=MUTED, linewidth=EDGE_W, zorder=1))
+    draw_nodes(ax, [MULTI_P, MULTI_Q], colors=INK, r=r, zorder=3)
+    for (x, y), t in zip([MULTI_P, MULTI_Q], ["N", "A"]):
+        ax.text(x, y, t, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
+    # "two bridges, two edges" not baked in -- it is the figcaption verbatim (duplicated-caption fix).
+
+
+def fig_multigraph_bridges():
+    # R9 fix (Blocker 2): matrix-free variant for slide 012 ("Two bridges, one pair"). That
+    # slide never names a matrix, a row, a column or either colour, and the adjacency matrix
+    # isn't defined until slide 054 -- sharing fig_multigraph()'s file (which carries a 2x2
+    # blue-filled, red-outlined matrix) taught an unexplained grid 41 slides early
+    # (FIGURE_GUIDE.md: "never share a figure between slides that explain it differently").
+    # This is exactly fig_multigraph()'s left panel, alone, at its own natural crop.
+    fig, ax = plt.subplots(figsize=(3.4, 2.6))
+    ax.set_xlim(-1.15, 1.15)
+    ax.set_ylim(-0.85, 0.85)
+    clean(ax)
+    fit_node_scale(fig, ax)
+    _draw_multigraph_pair(ax)
+    # A lone N-A pair is nearly all of this figure's content (like selfloop/edge-single-node
+    # -- see SELFLOOP_PAD_IN's note), so it needs the same large absolute margin to land the
+    # deck-wide on-slide target once the CSS scales it, not the deck's usual 0.08 fraction.
+    save_fit(fig, ax, "multigraph-bridges.png", pad_frac=0.08, pad_min_in=3.0)
+
+
+def fig_multigraph():
+    # R9 fix (Blocker 2): matrix version, now exclusive to slide 054 -- slide 012 uses
+    # fig_multigraph_bridges() (matrix-free) instead. See that function's own note.
     #
     # R7 fix (Major 21): the slide's own claim is about a MATRIX ENTRY (a multigraph's cell
     # counts parallel edges, not just 0/1), but the figure used to draw only the two discs
@@ -1124,15 +1215,12 @@ def fig_multigraph():
     ax.set_xlim(-1.15, 1.15)
     ax.set_ylim(-0.85, 0.85)
     clean(ax)
-    W = fit_node_scale(fig, ax)
-    P, Q = (-0.6, 0.0), (0.6, 0.0)
-    for rad in (0.30, -0.30):
-        ax.add_patch(FancyArrowPatch(P, Q, connectionstyle=f"arc3,rad={rad}", arrowstyle="-",
-                                      color=MUTED, linewidth=EDGE_W, zorder=1))
-    draw_nodes(ax, [P, Q], colors=INK, zorder=3)
-    for (x, y), t in zip([P, Q], ["N", "A"]):
-        ax.text(x, y, t, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
-    # "two bridges, two edges" removed -- it is the figcaption verbatim (duplicated-caption fix).
+    # R9 fix ("the one cause", FIXES_R9.md): this pair's own spacing (1.2 data units) fixed
+    # the on-slide diameter at 28.8px independent of target_in -- see KONIGSBERG_R's module
+    # note. 0.16 (ratio 0.133) stays well under the ~0.25 crowding ceiling.
+    R = 0.16
+    W = fit_node_scale(fig, ax, r=R)
+    _draw_multigraph_pair(ax, r=R)
 
     ax2 = axes[1]
     M = np.array([[0, 2], [2, 0]])
@@ -1148,22 +1236,32 @@ def fig_multigraph():
 # doesn't do this on its own (Axes.get_tightbbox() still reports close to the full
 # declared xlim/ylim). Was 23% x 40% ink.
 SELFLOOP_W = 3.0
-# This whole figure is saved at out_dpi=1200 (see _build_selfloop_fig below), six times the
-# 200dpi every OTHER figure in this file uses -- the true content here (one node plus its
-# loop) is still physically small even at the deck's now-uniform NODE_DIAM_IN, so the extra
-# native resolution keeps the crop crisp once the deck displays it at its usual on-slide
-# width. R8 fix: this used to also need a SEPARATE, scaled-down edge width
-# (SELFLOOP_EDGE_W = EDGE_W * 200/1200) because the node itself was physically tiny at the
-# OLD, scatter-derived radius (~0.04 data units at this figsize) -- a stroke declared in
-# POINTS (a physical unit) read as disproportionately thick next to a disproportionately
-# small node. Now that every node in the deck (this one included, via fit_node_scale) shares
-# the same PHYSICAL diameter (NODE_DIAM_IN), a stroke declared in points is automatically the
-# same proportion of the node everywhere -- plain EDGE_W is correct here with no rescaling,
-# and out_dpi is free to stay high purely for crispness, decoupled from that proportion.
-SELFLOOP_OUT_DPI = 1200
+# R9 fix (FIXES_R9.md "The one cause"): this used to save at out_dpi=1200, six times the
+# 200dpi every other figure uses, on the theory (written right where SELFLOOP_OUT_DPI was
+# consumed, below) that "the deck displays it at the same ~520px column width as every other
+# figure regardless of source size" -- FALSE. The deck's CSS (`width:auto !important;
+# max-width:100%; max-height:380px`) scales each image by its OWN native pixel size, so a
+# tight crop (pad_frac=0.10 -- content barely bigger than the node+loop) at ANY dpi renders
+# HUGE on the slide: measured on the actual rendered slide, 178.5px (question) / 137.5px
+# (answer) against a 34-40px deck target, independent of out_dpi (out_dpi inflates the disc
+# AND the canvas by the same factor, so the on-slide ratio -- and thus the bug -- survives
+# it unchanged; the "six times everything else" was purely a wasted-resolution symptom, not
+# the cause of the oversized on-slide render).
+#
+# Fix: drop the dpi override (plain 200dpi, like every other figure) and pad the SAVED crop
+# out to SELFLOOP_PAD_IN of absolute margin -- large relative to the node because this
+# figure's content (one node + one loop) is otherwise almost the whole canvas. Solved from
+# the deck's own CSS constants (empirically confirmed against real marp renders, see
+# FIXES_R9.md and review/): target on-slide diameter T, container caps (520, 380), native
+# disc NODE_DIAM_IN*200=150px, content h before padding ~266px (loop extends above/below the
+# node) -- pad_min_in = (380/(T/150) - 266) / (2*200). At T=37 (mid of the 34-40 target):
+# pad_min_in ~= 3.25in per side. Verified empirically below (see review/ measurements) and
+# adjusted to land the *rendered slide* diameter in range -- not the source PNG (FIXES_R9's
+# central point: "assert on the rendered slide, not the source PNG").
+SELFLOOP_PAD_IN = 3.05
 
 
-def _draw_selfloop(ax, r=NODE_R, number_badges=False, badge_fs=11.5):
+def _draw_selfloop(ax, r=NODE_R, number_badges=False, badge_fs=21.0):
     # r: NODE_R, the deck-wide canonical node radius in DATA units -- exact by construction
     # (Circle patches, not a scatter marker's guessed radius; see the module note above
     # NODE_R). R5 fix (Blocker 2/3, historical): the previous version hard-coded r=0.135
@@ -1267,12 +1365,13 @@ def _build_selfloop_fig(name, number_badges, show_k=False):
     fit_node_scale(fig, ax)
     _draw_selfloop(ax, NODE_R, number_badges=number_badges)
     if show_k:
-        ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED, fontsize=13, zorder=6)
-    # out_dpi bumped well above the file default: this crop is physically small (well under
-    # 1.5in across) and the deck displays it at the same ~520px column width as every other
-    # figure regardless of source size, so a low native pixel count here would upscale and
-    # go soft on-slide in a way none of the wider figures do.
-    save_fit(fig, ax, name, pad_frac=0.10, pad_min_in=0.05, out_dpi=SELFLOOP_OUT_DPI)
+        # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+        # 13pt, ~9px on-slide -- under the 16px page-number floor.
+        ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED, fontsize=24, zorder=6)
+    # R9 fix: plain 200dpi (see SELFLOOP_PAD_IN's note above for why out_dpi never controlled
+    # the on-slide size) with a large absolute margin so the saved canvas is big enough,
+    # relative to the node, to land in the deck-wide on-slide target once the CSS scales it.
+    save_fit(fig, ax, name, pad_frac=0.10, pad_min_in=SELFLOOP_PAD_IN)
 
 
 def fig_selfloop():
@@ -1318,10 +1417,15 @@ def fig_degree_definition():
     ax.set_xlim(-1.35, 1.35)
     ax.set_ylim(-1.72, 1.3)
     clean(ax)  # finalize limits BEFORE measuring the hub's true rendered radius
-    fit_node_scale(fig, ax)
+    # R9 fix ("the one cause", FIXES_R9.md): _star_positions(4)'s own spacing (hub-to-leaf
+    # 1.0 data units) fixes the on-slide diameter independent of target_in, and it measured
+    # 29.3px against the 34-40px target -- see KONIGSBERG_R's module note for the mechanism.
+    # 0.15 clears this spacing with room to spare (ratio 0.15, vs the ~0.25 ceiling).
+    R = 0.15
+    fit_node_scale(fig, ax, r=R)
     leaf_xy = [pos[i] for i in range(1, 5)]
-    draw_nodes(ax, leaf_xy, colors=INK, zorder=3)
-    draw_node(ax, pos[0], color=INK, zorder=3)
+    draw_nodes(ax, leaf_xy, colors=INK, r=R, zorder=3)
+    draw_node(ax, pos[0], color=INK, r=R, zorder=3)
     # R7 fix (item 1 of the fix-first table, slide 015): the old bare ax.annotate aimed its
     # leader at (0, -0.16) -- 13.7px INSIDE the hub's own disc, not at its rim -- and drew at
     # 4px against 7px edges (57% of edge weight), both because nothing ever measured the
@@ -1331,13 +1435,16 @@ def fig_degree_definition():
     # the label (clear of the bottom/right leaf edges, which the corridor was always meant to
     # dodge), and the assertion -- not a hand-picked (x, y) -- is what guarantees it.
     ang = np.deg2rad(-55)  # lower-right bearing toward the label, between the bottom (-90) and
-    tip = (NODE_R * 1.18 * np.cos(ang), NODE_R * 1.18 * np.sin(ang))  # right (0) leaf edges
-    node_r_pt = node_radius_pt(ax)
+    tip = (R * 1.18 * np.cos(ang), R * 1.18 * np.sin(ang))  # right (0) leaf edges
+    node_r_pt = node_radius_pt(ax, R)
     hub_obstacle = [circle_obstacle(pos[0], node_r_pt, color=INK)]
     leaf_edges = [line_obstacle([pos[0], pos[i]], EDGE_W, color=MUTED) for i in range(1, 5)]
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+    # ANNOT_FS (17pt), ~11.4px on-slide -- under the 16px page-number floor.
+    # place_annotation's own obstacle-clearance loop absorbs the larger footprint safely.
     place_annotation(ax, tip, "k = 4", xytext=(0.85, -1.25), obstacles=hub_obstacle,
                       node_obstacles=hub_obstacle, edge_obstacles=leaf_edges,
-                      color=MUTED, fontsize=ANNOT_FS, ha="center", va="center",
+                      color=MUTED, fontsize=24, ha="center", va="center",
                       clearance_pt=4.0, lw=1.2, name="degree-definition:k=4")
     save(fig, "degree-definition.png")
 
@@ -1427,13 +1534,18 @@ def fig_parity_even():
     # frame's top/bottom edge with a node in between -- bring the label to the mark it names.
     top_peak = tuple(top_pts[len(top_pts) // 2])
     bot_peak = tuple(bot_pts[len(bot_pts) // 2])
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): ANNOT_FS
+    # (17pt) on this figure's own canvas measured ~11px on-slide, under the 16px page-number
+    # floor -- these are free-standing (not node-interior), so they don't inherit the r-boost
+    # fix's benefit the way fixed-size node labels do. Bumped directly.
+    PARITY_ANNOT_FS = 26
     place_label(ax, (top_peak[0], top_peak[1] + 0.22), "in–out",
                 obstacles=obstacles + [line_obstacle(top_pts, bracket_lw, color=MUTED)],
-                color=MUTED, fontsize=ANNOT_FS, ha="center", va="bottom", clearance_pt=3.0,
+                color=MUTED, fontsize=PARITY_ANNOT_FS, ha="center", va="bottom", clearance_pt=3.0,
                 zorder=6, name="parity-even:in-out-top")
     place_label(ax, (bot_peak[0], bot_peak[1] - 0.22), "in–out",
                 obstacles=obstacles + [line_obstacle(bot_pts, bracket_lw, color=MUTED)],
-                color=MUTED, fontsize=ANNOT_FS, ha="center", va="top", clearance_pt=3.0,
+                color=MUTED, fontsize=PARITY_ANNOT_FS, ha="center", va="top", clearance_pt=3.0,
                 zorder=6, name="parity-even:in-out-bot")
     draw_nodes(ax, [pos[i] for i in range(5)], colors=INK, zorder=3)
     # title removed -- duplicated the figcaption verbatim
@@ -1468,9 +1580,12 @@ def fig_parity_odd():
     _bracket(ax, pos[0], near[1], near[2], node_obstacles=odd_node_obs,
              edge_obstacles=[odd_leftover_edge], name="parity-odd:bracket")
     # label sits on the bisector of the bracketed pair, clear of every node
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): see
+    # parity-even's PARITY_ANNOT_FS note -- same fix, same reason.
+    PARITY_ANNOT_FS = 26
     bisector = np.deg2rad((60 + 180) / 2)
     lx, ly = 1.05 * np.cos(bisector), 1.05 * np.sin(bisector)
-    ax.text(lx, ly, "in–out", ha="center", va="center", color=MUTED, fontsize=ANNOT_FS, zorder=6)
+    ax.text(lx, ly, "in–out", ha="center", va="center", color=MUTED, fontsize=PARITY_ANNOT_FS, zorder=6)
     draw_nodes(ax, [pos[0], pos[1], pos[2], pos[3]], colors=INK, zorder=3)
     # R3 fix (Blocker 2): anchored just past leaf 3 (not at the edge midpoint) with
     # ha="left", va="top" so the text grows away from both the centre disc and the
@@ -1486,7 +1601,7 @@ def fig_parity_odd():
                      line_obstacle([pos[0], pos[2]], EDGE_W, color=MUTED),
                      odd_leftover_edge]
     place_label(ax, (pos[3][0] + 0.22, pos[3][1] - 0.19), "left over",
-                obstacles=node_obs_odd + edge_obs_odd, color=MUTED, fontsize=ANNOT_FS,
+                obstacles=node_obs_odd + edge_obs_odd, color=MUTED, fontsize=PARITY_ANNOT_FS,
                 ha="left", va="top", clearance_pt=3.0, zorder=6, name="parity-odd:left-over")
     save(fig, "parity-odd.png")
 
@@ -1514,7 +1629,16 @@ def fig_parity_bound():
     ax.set_xlim(-0.55, 4.8)
     ax.set_ylim(-1.15, 1.35)
     clean(ax)
-    fit_node_scale(fig, ax)
+    # R9 fix ("the one cause", FIXES_R9.md): this chain's own spacing (~1.01 data units)
+    # fixes the on-slide diameter independent of target_in -- measured 21.2px against the
+    # 34-40px target, the worst offender in the deck (see KONIGSBERG_R's module note for the
+    # mechanism). The next block's bracket arcs (near1/near2 at a FIXED 0.62 fraction of each
+    # ~1.01-unit edge, i.e. ~0.63 data units from the hub) were tuned against the old,
+    # smaller disc -- 0.19 (ratio 0.188, still under the ~0.25 crowding ceiling, and well
+    # under the 0.63 the brackets sit at) leaves them real daylight, verified by
+    # draw_annotation_stroke's own node-clearance assertion below, not just asserted here.
+    R = 0.19
+    fit_node_scale(fig, ax, r=R)
     for u, v in edges:
         ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
                  linewidth=EDGE_W, zorder=1, solid_capstyle="round")
@@ -1526,13 +1650,19 @@ def fig_parity_bound():
     # it) was picked with exactly this chain's spacing as one of its constraints, so it
     # already leaves real daylight here with no per-figure scale-down.
     colors = {n: (ACCENT2 if n in ("S", "E") else INK) for n in pos}
-    draw_nodes(ax, pos, colors=colors, zorder=3)
+    draw_nodes(ax, pos, colors=colors, r=R, zorder=3)
 
-    node_r_pt = node_radius_pt(ax)
+    node_r_pt = node_radius_pt(ax, R)
     obstacles = [circle_obstacle(pos[n], node_r_pt, color=colors[n]) for n in pos]
     for u, v in edges:
         obstacles.append(line_obstacle([pos[u], pos[v]], EDGE_W, color=MUTED))
 
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): the old
+    # ANNOT_FS-2/-5 sizes measured ~9px/7px on-slide, under the 16px page-number floor --
+    # these are free-standing, so they don't inherit the r-boost fix's benefit the way
+    # node-interior labels do. Bumped directly, same size for both so "odd" doesn't read as
+    # a lesser afterthought under "start"/"end".
+    PARITY_ANNOT_FS = 26
     # R5 fix (Major 10): "start"/"end" were clipped by their own accent-2 discs -- a fixed
     # 0.34 offset stopped clearing once the node's true rendered radius (see node_r_pt) grew
     # past it. Routed through place_label so it can't happen again.
@@ -1540,14 +1670,14 @@ def fig_parity_bound():
         x, y = pos[n]
         dy, va = (-0.34, "top") if n == "S" else (0.34, "bottom")
         label_t = place_label(ax, (x, y + dy), txt, obstacles=obstacles, color=ACCENT2,
-                               fontsize=ANNOT_FS - 2, ha="center", va=va, clearance_pt=3.0,
+                               fontsize=PARITY_ANNOT_FS, ha="center", va=va, clearance_pt=3.0,
                                zorder=5, name=f"parity-bound:{txt}")
         # "odd" stacks under/over "start"/"end" -- once THOSE are pushed clear of the disc
         # (above), a fixed offset from the node can no longer be trusted to also clear
         # them; checked against the settled label itself via text_obstacle.
         dy2 = dy - 0.30 if n == "S" else dy + 0.30
         place_label(ax, (x, y + dy2), "odd", obstacles=obstacles + [text_obstacle(label_t, color=ACCENT2)],
-                    color=ACCENT2, fontsize=ANNOT_FS - 5, ha="center", va=va, clearance_pt=3.0,
+                    color=ACCENT2, fontsize=PARITY_ANNOT_FS, ha="center", va=va, clearance_pt=3.0,
                     zorder=5, name=f"parity-bound:odd-{n}")
 
     # R5 fix (Major 11): near1/near2 sat at 0.4 of the way along a ~1-unit edge -- close
@@ -1597,7 +1727,7 @@ def fig_parity_bound():
         anchor = (hx + d[0] * 1.0, hy + d[1] * 1.0)
         place_label(ax, anchor, "even",
                     obstacles=obstacles + [line_obstacle(arc_pts, EDGE_W * 0.4, color=MUTED)],
-                    color=MUTED, fontsize=ANNOT_FS - 4, ha="center", va=va, clearance_pt=4.0,
+                    color=MUTED, fontsize=PARITY_ANNOT_FS, ha="center", va=va, clearance_pt=4.0,
                     zorder=6, name=f"parity-bound:even-{node}")
     save(fig, "parity-bound.png")
 
@@ -1605,9 +1735,9 @@ def fig_parity_bound():
 def fig_konigsberg_blank():
     fig, ax = plt.subplots(figsize=(5.2, 5.2))
     k_limits(ax, xpad=1.1)
-    fit_node_scale(fig, ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R)
     draw_kedges(ax)
-    draw_knodes(ax)
+    draw_knodes(ax, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     save(fig, "konigsberg-blank.png")
 
 
@@ -1629,7 +1759,7 @@ def fig_konigsberg_degrees():
     ax.set_xlim(-2.15, 2.15)
     ax.set_ylim(-1.95, 1.85)
     clean(ax)
-    fit_node_scale(fig, ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R)
     draw_kedges(ax)
     # R3 fix (Major 12/13): keep the N/A/B/S letters INSIDE each node (every other
     # Konigsberg figure -- 008-011, 021 -- uses those letters, and slide 021 has students
@@ -1638,18 +1768,28 @@ def fig_konigsberg_degrees():
     # to match the node fill. The old bottom "all four odd" annotation is dropped -- it
     # repeated the figcaption, which repeats the bullet list (duplicate-caption fix).
     node_colors = {n: ACCENT2 for n in "NSAB"}
-    draw_knodes(ax, colors=node_colors)
+    draw_knodes(ax, colors=node_colors, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     # R5 fix (Major 9): these degree numerals are ACCENT2 sitting right outside an ACCENT2
     # disc -- exactly the "recurring failure" pattern the review flagged five times. Routed
     # through place_label: it starts at the same 0.34-out offset as before, but is now
     # measured against the disc's TRUE rendered radius and nudged/raises rather than
     # trusting the hand-picked 0.34 to still clear it.
-    obstacles = k_obstacles(ax, node_colors=node_colors)
+    #
+    # R9 fix (Blocker 7 + "the one cause"): KONIGSBERG_R replaces the deck-wide NODE_R for
+    # this whole family (see its own module-level note) -- the outward offset scales with it
+    # (0.34 was picked for the old, smaller radius) so the numeral starts the same fraction
+    # of a node-radius clear of the bigger disc, and DEGREE_FS replaces ANNOT_FS so the
+    # numeral itself is legible: measured on the rendered slide, the old ANNOT_FS=17
+    # numerals were 5-6px against a 16px page number; this figure's on-slide scale roughly
+    # tracks the KONIGSBERG_R boost (see the module note), so a fixed point bump on top of
+    # that -- not relying on the boost alone -- is what clears the floor with margin.
+    obstacles = k_obstacles(ax, node_colors=node_colors, r=KONIGSBERG_R)
+    off = 0.34 * (KONIGSBERG_R / NODE_R)
     for n, d in labels.items():
         ox, oy = K_OUTWARD[n]
         ha, va = K_OUTWARD_ALIGN[n]
-        place_label(ax, (KPOS[n][0] + 0.34 * ox, KPOS[n][1] + 0.34 * oy), d, obstacles=obstacles,
-                    color=ACCENT2, fontsize=ANNOT_FS, ha=ha, va=va, fontweight="bold", zorder=5,
+        place_label(ax, (KPOS[n][0] + off * ox, KPOS[n][1] + off * oy), d, obstacles=obstacles,
+                    color=ACCENT2, fontsize=KONIGSBERG_DEGREE_FS, ha=ha, va=va, fontweight="bold", zorder=5,
                     clearance_pt=3.0, name=f"konigsberg-degrees:{n}")
     save(fig, "konigsberg-degrees.png")
 
@@ -1671,7 +1811,7 @@ def fig_konigsberg_bombed():
     ax.set_xlim(-2.15, 2.15)
     ax.set_ylim(-1.85, 1.85)
     clean(ax)
-    fit_node_scale(fig, ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R)
     draw_kedges(ax, removed=removed)
     # R4 fix (Blocker 4): this used to swap the N/A/B/S letters for the bare degree VALUES
     # inside the disc -- but slide 026 (the question this slide answers, konigsberg-degrees
@@ -1683,14 +1823,15 @@ def fig_konigsberg_bombed():
     # A/B, MUTED (now even) for N/S -- accent-2 keeps its one meaning in this figure,
     # "still odd after the bombing."
     node_colors = {"N": INK, "S": INK, "A": ACCENT2, "B": ACCENT2}
-    draw_knodes(ax, colors=node_colors)
-    obstacles = k_obstacles(ax, node_colors=node_colors)
+    draw_knodes(ax, colors=node_colors, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
+    obstacles = k_obstacles(ax, node_colors=node_colors, r=KONIGSBERG_R)
+    off = 0.34 * (KONIGSBERG_R / NODE_R)
     for n, d in labels.items():
         ox, oy = K_OUTWARD[n]
         ha, va = K_OUTWARD_ALIGN[n]
         color = ACCENT2 if n in odd else MUTED
-        place_label(ax, (KPOS[n][0] + 0.34 * ox, KPOS[n][1] + 0.34 * oy), d, obstacles=obstacles,
-                    color=color, fontsize=ANNOT_FS, ha=ha, va=va, fontweight="bold", zorder=5,
+        place_label(ax, (KPOS[n][0] + off * ox, KPOS[n][1] + off * oy), d, obstacles=obstacles,
+                    color=color, fontsize=KONIGSBERG_DEGREE_FS, ha=ha, va=va, fontweight="bold", zorder=5,
                     clearance_pt=3.0, name=f"konigsberg-bombed:degree-{n}")
     # R5 fix (Blocker 1): "destroyed" now gets ONE label PER removed bridge (there are two).
     #
@@ -1707,8 +1848,19 @@ def fig_konigsberg_bombed():
     # can't drift onto anything else instead.
     na2_xy = tuple(_arc3_points(KPOS["N"], KPOS["A"], -0.30, n=101)[50])
     sa2_xy = tuple(_arc3_points(KPOS["S"], KPOS["A"], -0.30, n=101)[50])
-    place_label(ax, (na2_xy[0] - 0.27, na2_xy[1] + 0.27), "destroyed", obstacles=obstacles,
-                color=MUTED, fontsize=ANNOT_FS, ha="right", va="center", clearance_pt=4.0,
+    # R9 fix (Blocker 4): NA2 and SA2 are NOT symmetric the way the R7 comment above assumed
+    # -- measured directly (distance from the diamond's centre): NA2 sits at 0.49 (the INNER
+    # arc of its pair, curving toward the centre) while SA2 sits at 0.92 (the OUTER arc,
+    # curving away) -- NA1/SA1 are the mirror image (0.92 / 0.49). The old "-0.27, +-0.27"
+    # offset for both assumed they curved the same way: for SA2 (genuinely outer) it pushed
+    # further outward, clear of the inner SA1 (74px away, fine); for NA2 (actually inner) the
+    # SAME outward-pointing offset pushed it toward the diamond's exterior margin -- straight
+    # at NA1, the outer live bridge -- landing 2.8px from it. NA2's offset is flipped here to
+    # continue INWARD (the concave side its own arc already bulges toward), symmetric with
+    # how SA2's offset continues OUTWARD -- both now move away from their respective live
+    # neighbour instead of toward it.
+    place_label(ax, (na2_xy[0] + 0.16, na2_xy[1] - 0.08), "destroyed", obstacles=obstacles,
+                color=MUTED, fontsize=ANNOT_FS, ha="left", va="center", clearance_pt=9.0,
                 name="konigsberg-bombed:destroyed-NA2")
     place_label(ax, (sa2_xy[0] - 0.27, sa2_xy[1] - 0.27), "destroyed", obstacles=obstacles,
                 color=MUTED, fontsize=ANNOT_FS, ha="right", va="center", clearance_pt=4.0,
@@ -1873,13 +2025,18 @@ def fig_campus_base():
 
 
 def fig_campus_walk():
-    # R4 fix (Policy 1): the walk doubles back over Cafe-Gym (there and back), so this
-    # frame drew that pair as THREE parallel strokes -- the base graph's gray straight
-    # edge plus the two accent-2 curves -- reading as three edges where the graph has one.
-    # The two accent-2 curves already show "this edge, twice"; the underlying gray edge
-    # only needs to be hidden on this one frame (campus-trail/path/base still draw it).
+    # R4 fix (Policy 1), REVERSED by R9 (Blocker 5): R4 hid the base Cafe-Gym edge on this
+    # frame so the doubled crossing wouldn't read as three parallel strokes. It overshot --
+    # sampled along the straight Gym-Cafe chord, the base edge is gone entirely, and two
+    # accent-2 arcs bowing apart with nothing between them is the EXACT glyph slides
+    # 026/027 use for Konigsberg's two parallel bridges (a multigraph): read with the
+    # encoding this deck itself taught, "no edge, two arcs" says two DIFFERENT edges, the
+    # opposite of "one edge, walked twice." Restoring the gray base edge underneath the two
+    # arcs (which already bow symmetrically apart -- see `rad` below) fixes the reading: one
+    # real edge, two accent-2 passes over it, visibly distinct from a multigraph's two-arcs-
+    # no-chord glyph.
     fig, ax = plt.subplots(figsize=CAMPUS_FIGSIZE)
-    draw_campus_base(ax, skip_edges=[("Cafe", "Gym")])
+    draw_campus_base(ax)
     cx, cy = CAMPUS_POS["Cafe"]
     gx, gy = CAMPUS_POS["Gym"]
     dx, dy = CAMPUS_POS["Dorm"]
@@ -1906,8 +2063,8 @@ def fig_campus_walk():
     node_r_pt = node_radius_pt(ax)
     obstacles = [circle_obstacle(CAMPUS_POS[n], node_r_pt, color=INK) for n in CAMPUS_POS]
     for u, v in CAMPUS_EDGES:
-        if frozenset((u, v)) == frozenset(("Cafe", "Gym")):
-            continue  # hidden on this frame -- see skip_edges above
+        # R9 fix (Blocker 5): Cafe-Gym is drawn again now (see draw_campus_base(ax) above,
+        # no more skip_edges) -- it needs to be an obstacle like every other base edge.
         obstacles.append(line_obstacle([CAMPUS_POS[u], CAMPUS_POS[v]], EDGE_W, color=MUTED))
     for i, (x0, y0, x1, y1) in enumerate(route):
         rad = 0.18 if i in (1, 2) else 0.0
@@ -1926,8 +2083,11 @@ def fig_campus_walk():
     # Per the spec's second option: no leader. Anchored below Gym -- the node the doubled
     # Cafe<->Gym crossing actually returns to -- settled by place_label against every node,
     # base edge, and route arrow; nothing to cross because there is no leader to cross with.
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+    # ANNOT_FS-2 (15pt), ~11.5px on-slide -- under the 16px page-number floor. place_label's
+    # own obstacle-clearance loop absorbs the larger footprint safely.
     place_label(ax, (0.5, -0.32), "same edge, twice", obstacles=obstacles, color=MUTED,
-                fontsize=ANNOT_FS - 2, ha="center", va="center", clearance_pt=4.0, zorder=5,
+                fontsize=21, ha="center", va="center", clearance_pt=4.0, zorder=5,
                 name="campus-walk:same-edge-twice")
     # title removed -- duplicated the figcaption verbatim
     save_fixed(fig, "campus-walk.png")
@@ -2074,8 +2234,8 @@ def fig_graph_labeled():
     ax.set_xlim(-0.35, 1.35)
     ax.set_ylim(-1.15, 1.2)
     clean(ax)
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax)
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)
+    draw_graph5(ax, r=GRAPH5_R)
     save(fig, "graph-labeled.png")
 
 
@@ -2093,8 +2253,8 @@ def fig_adjacency_matrix():
     # it is exact for a multi-panel figure without needing to guess the panel's share of W
     # the way node_s(W/2) used to (a guess that happened to be right for a 1:1 layout and
     # would have been wrong for any other width_ratios).
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax, highlight_edges=[hi_edge])
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
+    draw_graph5(ax, highlight_edges=[hi_edge], r=GRAPH5_R)
 
     ax = axes[1]
     A = graph5_adjacency()
@@ -2116,8 +2276,8 @@ def fig_adjacency_squared():
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
     # fit_node_scale measures this panel's own axes box directly -- see fig_adjacency_matrix.
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax)
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
+    draw_graph5(ax, r=GRAPH5_R)
     route_a = [(1, 2), (2, 4)]
     route_b = [(1, 3), (3, 4)]
     for u, v in route_a:
@@ -2174,13 +2334,17 @@ def fig_connected_vs_not():
         ax.set_xlim(-1.5, 2.1)
         ax.set_ylim(-0.9, 0.95)
         clean(ax)
-    fit_node_scale(fig, axes[0])  # both panels share the same pos/xlim/ylim -- one probe suffices
+    # R9 fix ("the one cause", FIXES_R9.md): this layout's own spacing (min ~0.9 data units,
+    # 0-1/0-2/2-3) fixed the on-slide diameter at 22.8px independent of target_in -- see
+    # KONIGSBERG_R's module note. 0.19 (ratio 0.211) stays under the ~0.25 crowding ceiling.
+    R = 0.19
+    fit_node_scale(fig, axes[0], r=R)  # both panels share the same pos/xlim/ylim -- one probe suffices
 
     def panel(ax, edges, title):
         for u, v in edges:
             ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1, solid_capstyle="round")
-        draw_nodes(ax, pos, colors=INK, zorder=3)
+        draw_nodes(ax, pos, colors=INK, r=R, zorder=3)
         # Minor fix (slide 039): fs(TITLE_FS, W) scales by the FULL 10in figure width, but
         # each panel is only half of it -- same over-scale circuit-vs-cycle already avoids
         # with a fixed panel_fs. The literal fs() scale rendered these titles ~50px against
@@ -2210,22 +2374,33 @@ BAND_POS = {**LADDER_POS, **TRI_POS, **PAIR_POS}
 BAND_EDGES = LADDER_EDGES + TRI_EDGES + PAIR_EDGES
 
 
-def draw_band(ax, node_colors=None, default_color=INK):
+# R9 fix ("the one cause", FIXES_R9.md): BAND_POS's own spread (ladder rungs 0.8 data units
+# apart, the tightest spacing this family uses) fixed the on-slide diameter for
+# components-band/bare and sweep-1/2/3 at 23.7-22.8px, independent of target_in -- see
+# KONIGSBERG_R's module note for the mechanism. 0.17 (ratio 0.2125) stays under the ~0.25
+# crowding ceiling the ladder rungs need.
+BAND_R = 0.17
+# TEACH_BAND_POS's tightest spacing (T4-T5-T6, 0.6 apart) is tighter than BAND_POS's own
+# 0.8 -- a smaller, separate r keeps the same ~0.25 ceiling.
+TEACH_BAND_R = 0.145
+
+
+def draw_band(ax, node_colors=None, default_color=INK, r=NODE_R):
     for u, v in BAND_EDGES:
         ax.plot([BAND_POS[u][0], BAND_POS[v][0]], [BAND_POS[u][1], BAND_POS[v][1]],
                  color=MUTED, linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     colors = {n: (node_colors or {}).get(n, default_color) for n in BAND_POS}
-    draw_nodes(ax, BAND_POS, colors=colors, zorder=3)
+    draw_nodes(ax, BAND_POS, colors=colors, r=r, zorder=3)
 
 
 BAND_W = 10.4
 
 
-def band_axes(ax, with_labels=True):
+def band_axes(ax, with_labels=True, r=NODE_R):
     ax.set_xlim(-0.4, 7.2)
     ax.set_ylim(-0.85, 1.3)
     clean(ax)
-    fit_node_scale(ax.figure, ax)
+    fit_node_scale(ax.figure, ax, r=r)
     if with_labels:
         # NOT a literal fs() scale: the three labels sit at fixed x-positions only ~3.2
         # units apart, so the full ~36pt scale (correct for this figure's 10.4in width in
@@ -2251,18 +2426,18 @@ TEACH_BAND_EDGES = [("T0", "T1"), ("T1", "T2"), ("T2", "T3"), ("T3", "T0"),
                      ("T4", "T5"), ("T5", "T6")]
 
 
-def draw_teach_band(ax):
+def draw_teach_band(ax, r=NODE_R):
     for u, v in TEACH_BAND_EDGES:
         ax.plot([TEACH_BAND_POS[u][0], TEACH_BAND_POS[v][0]],
                  [TEACH_BAND_POS[u][1], TEACH_BAND_POS[v][1]],
                  color=MUTED, linewidth=EDGE_W, zorder=1, solid_capstyle="round")
-    draw_nodes(ax, TEACH_BAND_POS, colors=INK, zorder=3)
+    draw_nodes(ax, TEACH_BAND_POS, colors=INK, r=r, zorder=3)
 
 
 def fig_components_band():
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
-    draw_teach_band(ax)
-    band_axes(ax)
+    draw_teach_band(ax, r=TEACH_BAND_R)
+    band_axes(ax, r=TEACH_BAND_R)
     save(fig, "components-band.png")
 
 
@@ -2273,8 +2448,8 @@ def fig_components_band():
 # the "component 1/2/3" captions baked in.
 def fig_components_intro():
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
-    draw_teach_band(ax)
-    band_axes(ax, with_labels=False)
+    draw_teach_band(ax, r=TEACH_BAND_R)
+    band_axes(ax, with_labels=False, r=TEACH_BAND_R)
     save(fig, "components-intro.png")
 
 
@@ -2283,23 +2458,23 @@ def fig_components_bare():
     # exercise asks students how many components there are, so the labelled
     # version would answer its own question before the thinking beat starts.
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
-    draw_band(ax)
-    band_axes(ax, with_labels=False)
+    draw_band(ax, r=BAND_R)
+    band_axes(ax, with_labels=False, r=BAND_R)
     save(fig, "components-bare.png")
 
 
 def fig_sweep_1():
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
-    draw_band(ax, node_colors={"L0": ACCENT2})
-    band_axes(ax)
+    draw_band(ax, node_colors={"L0": ACCENT2}, r=BAND_R)
+    band_axes(ax, r=BAND_R)
     save(fig, "sweep-1.png")
 
 
 def fig_sweep_2():
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
     colors = {n: ACCENT2 for n in LADDER_POS}
-    draw_band(ax, node_colors=colors)
-    band_axes(ax)
+    draw_band(ax, node_colors=colors, r=BAND_R)
+    band_axes(ax, r=BAND_R)
     save(fig, "sweep-2.png")
 
 
@@ -2355,8 +2530,8 @@ def fig_sweep_3():
     ax.set_xlim(-0.6, 7.3)
     ax.set_ylim(-1.25, 1.65)
     clean(ax)
-    fit_node_scale(fig, ax)
-    draw_band(ax)
+    fit_node_scale(fig, ax, r=BAND_R)  # R9 fix ("the one cause") -- see BAND_R's module note
+    draw_band(ax, r=BAND_R)
 
     ladder_order = ["L0", "L1", "L2", "L3", "L7", "L6", "L5", "L4"]
     tri_order = ["M0", "M1", "M2"]
@@ -2563,7 +2738,7 @@ DIR_POS = {"A": (0.0, 0.75), "B": (0.87, -0.375), "C": (-0.87, -0.375)}
 ARROW_MSCALE = 28
 
 
-def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95)):
+def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95), r=NODE_R):
     # R3 fix (Major 23): DIR_POS is not quite equilateral (B-C is longer than A-B/C-A), so
     # networkx's node_size-based arrow shrink -- a single heuristic shared across all edges
     # of a call -- landed inconsistently (A->B arrowhead ~10px short of B, C->A flush).
@@ -2582,11 +2757,11 @@ def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95)):
     ax.set_xlim(*xlim)
     ax.set_ylim(*ylim)
     clean(ax)
-    fit_node_scale(ax.figure, ax)
+    fit_node_scale(ax.figure, ax, r=r)
     for u, v in edges:
         draw_arrow_edge(ax, DIR_POS[u], DIR_POS[v], mutation_scale=ARROW_MSCALE, rad=0.12,
-                         color=MUTED, lw=EDGE_W, zorder=1, name=f"directed:{u}-{v}")
-    draw_nodes(ax, [DIR_POS[n] for n in "ABC"], colors=INK, zorder=3)
+                         color=MUTED, lw=EDGE_W, zorder=1, r=r, name=f"directed:{u}-{v}")
+    draw_nodes(ax, [DIR_POS[n] for n in "ABC"], colors=INK, r=r, zorder=3)
     for n in "ABC":
         ax.text(*DIR_POS[n], n, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
     # no title -- see fig_directed_strong/fig_directed_weak: baked-in titles were stripped
@@ -2644,16 +2819,26 @@ def fig_directed_indegree():
     assert all(indeg[n] == 1 and outdeg[n] == 1 for n in "ABC"), \
         f"3-cycle should be in=out=1 everywhere; got in={indeg} out={outdeg}"
     fig, ax = plt.subplots(figsize=(5.4, 4.7))
-    _draw_directed(ax, edges, xlim=(-2.05, 2.05), ylim=(-1.15, 1.5))
+    # R9 fix ("the one cause", FIXES_R9.md): the wider xlim/ylim this figure needs (for its
+    # "in 1 / out 1" labels) gives it a bigger canvas than directed-arrows/strong/weak share,
+    # so the SAME DIR_POS spacing (side 1.42) still measured only 29.7px on-slide against
+    # their 34.9px. A locally bigger r (DIR_POS's own spacing gives huge headroom under the
+    # ~0.25 crowding ceiling) closes the gap without changing the other three, which share
+    # _draw_directed's default r and are already in range.
+    _draw_directed(ax, edges, xlim=(-2.05, 2.05), ylim=(-1.15, 1.5), r=0.145)
     # R3 fix (Major 23): node A's disc overlapped the baseline of its own label (raised
     # further here) and the "in 1 / out 1" strings weren't yet clear of the discs.
     offsets = {"A": (0.0, 0.44), "B": (0.55, -0.16), "C": (-0.55, -0.16)}
     ha = {"A": "center", "B": "left", "C": "right"}
+    # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+    # ANNOT_FS (17pt), ~11.3px on-slide -- under the 16px page-number floor. Modest bump
+    # (not routed through place_label's auto-clearance -- these are plain, hand-offset
+    # text): verified by eye against the render, not just computed here.
     for n in "ABC":
         x, y = DIR_POS[n]
         dx, dy = offsets[n]
         ax.text(x + dx, y + dy, "in 1 / out 1", ha=ha[n], va="center", color=MUTED,
-                fontsize=ANNOT_FS, zorder=5)
+                fontsize=26, zorder=5)
     save(fig, "directed-indegree.png")
 
 
@@ -2716,8 +2901,8 @@ def fig_store_edgelist():
     clean(ax)
     # fit_node_scale measures this panel's own axes box directly -- correct regardless of
     # the gridspec's width_ratios -- see fig_adjacency_matrix.
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax, highlight_edges=node1_edges, highlight_nodes={1})
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
+    draw_graph5(ax, highlight_edges=node1_edges, highlight_nodes={1}, r=GRAPH5_R)
 
     ax = fig.add_subplot(gs[0, 1])
     y0 = 5
@@ -2730,7 +2915,11 @@ def fig_store_edgelist():
                                      boxstyle="round,pad=0.02,rounding_size=0.3",
                                      facecolor=PANEL, edgecolor=edgecolor, linewidth=lw, zorder=2))
         # Fixed size, not fs()-scaled: "0 -- 1" must stay clear of a 1.9-unit-wide box.
-        ax.text(0.95, y, f"{u} — {v}", ha="center", va="center", fontsize=20, color=INK, zorder=3)
+        # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+        # 20pt, ~15.3px on-slide -- just under the 16px page-number floor. Checked against
+        # the box width directly (get_window_extent): the longest row ("0 -- 1") uses under
+        # a quarter of the box's own rendered width even at this size, real room to spare.
+        ax.text(0.95, y, f"{u} — {v}", ha="center", va="center", fontsize=22, color=INK, zorder=3)
     ax.set_xlim(-0.3, 2.2)
     ax.set_ylim(-0.55, 5.7)
     # title removed -- duplicated the figcaption verbatim
@@ -2745,8 +2934,8 @@ def fig_store_adjlist():
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1})
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R)
 
     ax = axes[1]
     y0 = 5
@@ -2764,7 +2953,11 @@ def fig_store_adjlist():
                                      facecolor=PANEL, edgecolor=edgecolor, linewidth=lw, zorder=2))
         # Fixed size, not fs()-scaled: rows like "1 -> 0, 2, 3" must stay inside a
         # 2.6-unit-wide box -- the literal fs() scale (~37pt) overflowed it.
-        ax.text(1.3, y, text, ha="center", va="center", fontsize=18, color=INK, zorder=3)
+        # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
+        # 18pt, ~11.4px on-slide -- under the 16px page-number floor. Checked against the box
+        # width directly (get_window_extent): the longest row ("1: 0, 2, 3") uses under a
+        # quarter of the box's own rendered width even at this size, real room to spare.
+        ax.text(1.3, y, text, ha="center", va="center", fontsize=26, color=INK, zorder=3)
     ax.set_xlim(-0.3, 2.9)
     ax.set_ylim(0.2, 5.7)
     # title removed -- duplicated the figcaption verbatim
@@ -2778,8 +2971,8 @@ def fig_store_matrix():
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
-    W = fit_node_scale(fig, ax)
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1})
+    W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R)
 
     ax = axes[1]
     A = graph5_adjacency()
@@ -2922,254 +3115,75 @@ def _csr_vs_dense_counts(n, avg_degree):
 
 
 def fig_memory_payoff():
-    # NEW (Major 8): slide 055 ("The payoff: memory") split off from csr-payoff.png with
-    # only the asymptotic O(n^2)-vs-O(nnz) claim -- the CONCRETE evidence stayed behind on
-    # 054's figure (see fig_csr_payoff's R5 fix, Blocker 7: that line is deleted from
-    # there). This is that evidence, with its own figure.
+    # R9 fix (Blocker 6, "bar charts are now out"): FIGURE_GUIDE.md bans bars outright --
+    # "Bars encode one number as a length and then need a scale to decode it" -- and this
+    # figure's own n=100,000 pair was the guide's worked example of exactly that failure:
+    # measured, dense drew at 85px / CSR at 11px (a drawn ratio of 7.7:1) under a label
+    # reading "7,700x", a thousandfold gap with no axis, no break-mark scale note, and a
+    # SECOND bar pair two rows up sharing the same frame at a completely different implied
+    # scale (1px =~ 0.39 units there vs 1px =~ 118M units here). No amount of "clearer
+    # labeling" fixes that -- the fix is to stop encoding the numbers as lengths at all.
     #
-    # R6 fix (Blocker 8, "the figure asserts something false, and it is my error"): the R5
-    # spec asked for a "12 vs 25" count, but 12 is only the `data` array -- CSR is THREE
-    # arrays (data, indices, indptr), and this figure's own dense grid was never compared
-    # against their combined size. Computed directly from the actual graph: data has nnz=12
-    # entries, indices has nnz=12, indptr has n+1=6 -- CSR stores 30 numbers here, MORE than
-    # dense's 25. The old figure (and the slide body) asserted the opposite. Fixed honestly:
-    # draw all three CSR arrays (matching what slide 057's own figure already shows, so the
-    # two no longer contradict each other), total them truthfully, and show WHERE the
-    # crossover actually falls instead of implying it happens at any size.
-    A = graph5_adjacency()
-    n = A.shape[0]
-    dense = A.size
+    # Also dropped per the same fix: the n=5 dense-matrix + CSR-array top half, which was
+    # slides 052/053's own figure (_fig_csr) shown a third time, and the baked-in sentence
+    # underneath it, which duplicated the slide body.
+    #
+    # What is left is the numbers themselves, annotated -- the actual claim this slide makes
+    # ("the payoff: memory" is about n=100,000, not the small honest counterexample) -- with
+    # the ratio computed and stated once, and the assumption behind it (average degree 6)
+    # printed beside it so the claim is checkable against the two numbers above it.
+    dense, csr = _csr_vs_dense_counts(100_000, 6)
+    assert (dense, csr) == (10_000_000_000, 1_300_001), (dense, csr)
+    ratio = dense / csr
 
-    # CSR arrays derived directly from A (row-major scan), not a separately hand-typed
-    # adjacency list -- the R6 spec's own error (an uncaught "12" that quietly excluded two
-    # of the three arrays) was exactly this kind of number nobody re-derived from the data.
-    indptr = [0]
-    indices = []
-    data = []
-    for i in range(n):
-        row = [j for j in range(n) if A[i, j]]
-        indices.extend(row)
-        data.extend([1] * len(row))
-        indptr.append(len(indices))
-    nnz = len(data)
-    csr_total = len(data) + len(indices) + len(indptr)
-    assert nnz == 12 and dense == 25, f"expected 12 nonzeros of 25 dense cells, got {nnz}/{dense}"
-    assert csr_total == 30, f"expected CSR to store 12+12+6=30 numbers, got {csr_total}"
-    assert csr_total > dense, "this example is supposed to be the counterexample -- CSR should lose here"
+    # Fixed point sizes, not fs()-scaled: fs() scales by the FINAL figure width, but that
+    # width is exactly what this layout has to SOLVE for (wide enough to clear the two
+    # numbers, "10,000,000,000" vs "1,300,001", without them overlapping) -- scaling the
+    # font by the answer to that question is a feedback loop with no fixed point. A fixed
+    # size plus a generous xlim, cropped tight by save_fit regardless of the final width,
+    # sidesteps it (same reasoning fig_csr_build/_payoff already documented for their own
+    # two-panels-of-different-widths layout).
+    num_fs = 30
+    tag_fs = 20
+    ratio_fs = 22
+    note_fs = 20
 
-    W = 8.6
-    # R6 fix (Blocker 8, layout): height bumped 3.4 -> 5.0 to fit the crossover table added
-    # below (see the R6 fix comment near the table itself). With clean(ax)'s aspect="equal"
-    # and the OLD, shorter 3.4in height, the much-taller y-range this content now needs
-    # forced matplotlib to letterbox the axes box down to ~4.8in of the figure's 8.6in width
-    # (confirmed directly: get_window_extent() measured 4.81in used, not the ~6.67in a
-    # non-letterboxed equal-aspect axes gets at this figsize) -- every x-position compressed
-    # into that narrower box, which is what made the two titles overlap and the CSR row
-    # labels bleed into the matrix panel. 5.0in is the height at which this content's data
-    # aspect ratio stops forcing any letterboxing (measured the same way).
-    fig, ax = plt.subplots(figsize=(W, 5.0))
-    cell = 0.92
-    gap = 2.6
-    x0 = n * cell + gap
-    # R7 fix (found alongside Blocker 3): xlim/ylim/aspect finalized HERE, before a single
-    # artist is placed -- previously they were only set at the very end (right before
-    # save_fit), so every get_window_extent measurement in this function (the panel-title
-    # overlap assertion, the caption's own place_label call) ran against matplotlib's
-    # autoscaled DEFAULT view, not the view actually saved. That mismatch is exactly how the
-    # title-overlap assertion kept passing in a render where the titles visibly collided --
-    # it was checking a different zoom level than the one on disk. The y-range here is
-    # deliberately generous (real content bottoms out well above -4.6) rather than tightened
-    # to the bars below: save_fit crops to the true rendered CONTENT extent regardless of
-    # ylim (see its own docstring), and x already sets the binding constraint under equal
-    # aspect at this figsize (measured: x needs ~0.457in/unit, y even at its tightest
-    # plausible range needs less), so a generous ylim costs nothing and never needs a second,
-    # later call that could reopen this exact bug.
-    ax.set_xlim(-0.3, x0 + nnz * cell + 0.3)
-    ax.set_ylim(-5.4, n * cell + 1.0)
+    fig, ax = plt.subplots(figsize=(9.5, 3.35))
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 4.55)
     clean(ax)
-    # Fixed, not fs()-scaled: fs() scales by the FULL figure width, correct for a single
-    # panel filling that width, but this figure is two panels of very different widths (the
-    # 5-wide dense grid vs. the 12-wide CSR strip) sharing one figure -- the literal fs()
-    # scale (title_fs ~28pt) sized the titles for the WIDE strip and overran the narrow
-    # dense panel so hard the two titles physically overlapped (same failure the deck
-    # already documents in fig_connected_vs_not / fig_circuit_vs_cycle's panel_fs).
-    cell_fs = 20
-    title_fs = 17
 
-    for i in range(n):
-        for j in range(n):
-            v = int(A[i, j])
-            fc = ACCENT if v else PANEL
-            tc = "white" if v else INK
-            x, y = j, n - 1 - i
-            ax.add_patch(mpatches.Rectangle((x, y), cell, cell, facecolor=fc,
-                                             edgecolor=RULE, linewidth=0.8, zorder=1))
-            ax.text(x + cell / 2, y + cell / 2, str(v), ha="center", va="center",
-                    color=tc, fontsize=cell_fs, zorder=2)
-    # R6 fix (layout): shortened from "dense: 25 numbers stored" -- measured directly (see
-    # the R6 fix on `gap` below), the two titles' bboxes overlapped by ~2 data units at the
-    # old wording's width, regardless of panel spacing. Dropping the redundant "stored" (the
-    # caption below already says "numbers stored") buys back the width instead.
-    t_dense = ax.text(n * cell / 2, n + 0.55, f"dense: {dense} numbers", ha="center", va="bottom",
-                       color=INK, fontsize=title_fs, fontweight="bold", zorder=2)
+    t_dense = ax.text(3.6, 3.55, f"{dense:,}", ha="center", va="center", color=INK,
+                       fontsize=num_fs, fontweight="bold", zorder=2)
+    ax.text(3.6, 2.7, "dense", ha="center", va="center", color=MUTED, fontsize=tag_fs, zorder=2)
 
-    # CSR block: all THREE arrays, stacked (indptr is shorter -- n+1, not nnz -- so its row
-    # is visibly narrower; that width difference IS part of the honest picture). Real values,
-    # same order fig_csr_build/_payoff already draw, so this matches slide 057's own figure.
-    #
-    # R6 fix (layout): gap widened 1.4 -> 2.6 and the row-label anchor pulled in -- measured
-    # directly (get_window_extent on "indices", the widest label, at label_fs=12): its own
-    # rendered width is ~1.76 data units, more than the old 0.55pt anchor offset left before
-    # hitting the matrix's right edge at x=n*cell -- it was rendering ON TOP of the matrix's
-    # last column, not beside it. This gap/offset/font combination is verified below (not
-    # just chosen by eye) via the same renderer-measurement the label-placement guard uses.
-    # (gap/x0 already set above, alongside xlim/ylim, so every measurement in this function
-    # uses the SAME finalized transform.)
-    box_w, box_h = cell, 0.68
-    row_fs = 15
-    label_fs = 12
-    label_dx = 0.5
-    row_ys = {"indptr": 2.94, "data": 1.64, "indices": 0.34}
+    t_csr = ax.text(12.4, 3.55, f"{csr:,}", ha="center", va="center", color=ACCENT3,
+                     fontsize=num_fs, fontweight="bold", zorder=2)
+    ax.text(12.4, 2.7, "CSR", ha="center", va="center", color=MUTED, fontsize=tag_fs, zorder=2)
 
-    def csr_row(values, y, label):
-        for k, v in enumerate(values):
-            x = x0 + k * cell
-            ax.add_patch(FancyBboxPatch((x - box_w * 0.02, y - box_h / 2), box_w * 0.96, box_h,
-                                         boxstyle="round,pad=0.02,rounding_size=0.08",
-                                         facecolor=ACCENT3, edgecolor=RULE, linewidth=0.8, zorder=1))
-            ax.text(x + box_w / 2 - box_w * 0.02, y, str(v), ha="center", va="center",
-                    color=INK, fontsize=row_fs, zorder=2)
-        label_t = ax.text(x0 - label_dx, y, label, ha="right", va="center", color=ACCENT,
-                           fontsize=label_fs, fontweight="bold", zorder=2)
-        renderer = _finalize(ax)
-        lb = label_t.get_window_extent(renderer)
-        matrix_right_px = ax.transData.transform((n * cell, 0))[0]
-        assert lb.x0 >= matrix_right_px, (
-            f"fig_memory_payoff: row label {label!r} (left edge {lb.x0:.0f}px) overlaps the "
-            f"dense matrix (right edge {matrix_right_px:.0f}px) -- widen `gap` or shrink "
-            f"label_fs/label_dx."
-        )
-
-    csr_row(indptr, row_ys["indptr"], "indptr")
-    csr_row(data, row_ys["data"], "data")
-    csr_row(indices, row_ys["indices"], "indices")
-    t_csr = ax.text(x0 + nnz * cell / 2, n + 0.55,
-                     f"CSR: {csr_total} numbers ({len(data)} + {len(indices)} + {len(indptr)})",
-                     ha="center", va="bottom", color=INK, fontsize=title_fs, fontweight="bold", zorder=2)
-
-    # Caption sits below both blocks -- checked against the lower of the matrix's own bottom
-    # row and the CSR block's bottom (indices) row.
-    bottom_y = min(0.0, row_ys["indices"] - box_h / 2)
-    obstacles = [line_obstacle([(0, bottom_y), (x0 + nnz * cell, bottom_y)], EDGE_W, color=None)]
-    caption_t = place_label(ax, ((n * cell + x0 + nnz * cell) / 2, bottom_y - 0.25),
-                             f"CSR pays for indices + indptr on top of data -- {csr_total} numbers here, "
-                             f"more than dense's {dense}",
-                             obstacles=obstacles, color=MUTED, fontsize=14, ha="center", va="top",
-                             clearance_pt=4.0, name="memory-payoff:caption")
-
-    # R7 fix (found alongside Blocker 3): both this assertion and the caption's placement
-    # above USED to run before xlim/ylim/aspect were finalized (they're set only at the very
-    # end, right before save_fit) -- so both were measured against matplotlib's autoscaled
-    # default view, not the view actually saved. That mismatch is exactly what let the two
-    # panel titles visibly collide in a real render while this same assertion kept passing
-    # (confirmed: it passed at both W=8.6 and W=7.8, even though only one of those renders
-    # was actually free of the overlap) and let the bars below land right on top of the
-    # caption's own true (larger, wrapped) bbox. `_finalize` here now runs AFTER every
-    # artist above is placed but BEFORE xlim/ylim are touched further, so `get_window_extent`
-    # reflects what a later `ax.set_xlim/ylim` call cannot retroactively change (aspect is
-    # already locked in by `clean(ax)` at the top of this function) -- it is safe to measure
-    # now and stays valid through save_fit.
+    # Assert the two numbers actually clear each other -- this is a two-column figure with
+    # no axis/legend to catch an overlap the way a plot's own ticks would.
     renderer = _finalize(ax)
     b_dense = t_dense.get_window_extent(renderer)
     b_csr = t_csr.get_window_extent(renderer)
-    assert b_dense.x1 <= b_csr.x0, (
-        f"fig_memory_payoff: panel titles overlap ({b_dense.x1:.0f}px vs {b_csr.x0:.0f}px) -- "
-        f"shorten the wording, shrink title_fs, or widen the panel gap."
+    assert b_dense.x1 < b_csr.x0, (
+        f"fig_memory_payoff: the two numbers overlap ({b_dense.x1:.0f}px vs {b_csr.x0:.0f}px) "
+        f"-- widen the xlim gap between them."
     )
-    cap_bbox = mtext.Text.get_window_extent(caption_t, renderer)
-    caption_bottom_data = ax.transData.inverted().transform((0, cap_bbox.y0))[1]
 
-    # R7 fix (Blocker 3): this used to be a 3-row monospace table -- L2 bans tables outright,
-    # and putting one inside a PNG doesn't exempt it. Worse, the table's wide strings (up to
-    # ~70 characters, in a monospace font, regardless of what xlim declared) rendered well
-    # past the intended data window -- save_fit crops to the TRUE rendered content extent
-    # (see its own docstring), not to xlim, so that unclipped text is what silently inflated
-    # this PNG to 4544px native against ~1600-1700px for the neighbouring CSR figures, an
-    # 8.7x downscale at the deck's usual w:520 display width that made the table (and the
-    # line above it) render at ~7px.
-    #
-    # Replaced with a two-bar comparison -- same "shorter bar wins" reading, at both real
-    # ends of the crossover this slide is about: n=5 (dense wins, barely) and n=100,000
-    # (CSR wins by ~7,700x). Every bar's DRAWN width is explicitly capped at `frame_w` (the
-    # dense bar at n=100,000 is truncated with a visible break-mark, never rendered past
-    # what's shown) so a patch's own get_window_extent() -- unclipped by design, the exact
-    # mechanism that inflated the old table's crop -- can never blow this crop out either.
-    dense_100k, csr_100k = _csr_vs_dense_counts(100_000, 6)
-    assert (dense_100k, csr_100k) == (10_000_000_000, 1_300_001), (dense_100k, csr_100k)
+    arrow = FancyArrowPatch((6.0, 3.55), (10.0, 3.55), arrowstyle="-|>", mutation_scale=16,
+                             color=MUTED, linewidth=1.6, zorder=1,
+                             connectionstyle="arc3,rad=-0.25")
+    ax.add_patch(arrow)
 
-    bars_x0 = 0.0
-    frame_w = 4.4
-    bar_h = 0.40
-    pair_gap = 0.12
-    group_gap = 0.62
-    group_label_fs = 16
-    val_fs = 13
+    # Ratio stated once, computed from the two numbers above -- never hardcoded (the guide's
+    # own rule: "Compute every number a figure prints from the data").
+    ax.text(8.0, 1.55, f"CSR is {ratio:,.0f}× smaller", ha="center", va="center",
+            color=INK, fontsize=ratio_fs, fontweight="bold", zorder=2)
+    ax.text(8.0, 0.75, "n = 100,000, average degree 6", ha="center", va="center",
+            color=MUTED, fontsize=note_fs, zorder=2)
 
-    def bar(y, length, color, text, truncated=False, bold=False):
-        w = min(max(length, 0.05), frame_w)
-        ax.add_patch(mpatches.Rectangle((bars_x0, y), w, bar_h, facecolor=color,
-                                         edgecolor="none", zorder=2))
-        if truncated:
-            bx = bars_x0 + frame_w
-            for off in (-0.05, 0.05):
-                ax.plot([bx + off, bx + off], [y - 0.05, y + bar_h + 0.05], color="white",
-                         linewidth=2.4, zorder=3, solid_capstyle="butt")
-            label = f"{text} →"
-        else:
-            label = text
-        ax.text(bars_x0 + w + 0.14, y + bar_h / 2, label, ha="left", va="center", color=MUTED,
-                fontsize=val_fs, fontweight="bold" if bold else "normal", zorder=2)
-
-    def group_label(y_above, text):
-        # R7 fix (found alongside Blocker 3): "n = 5"'s own vertical gap from the caption
-        # above it used to be a flat hand-picked offset from bottom_y, which ignored how tall
-        # the caption's wrapped text actually rendered and left the two overlapping. Routed
-        # through place_label (against the caption's real bbox) and then measured itself, so
-        # the bars below start from THIS label's true rendered bottom edge, not a guess.
-        t = place_label(ax, (bars_x0, y_above), text, obstacles=[text_obstacle(caption_t)],
-                         color=INK, fontsize=group_label_fs, ha="left", va="top",
-                         clearance_pt=5.0, zorder=2, name=f"memory-payoff:{text}",
-                         fontweight="bold")
-        renderer = _finalize(ax)
-        bb = mtext.Text.get_window_extent(t, renderer)
-        return ax.transData.inverted().transform((0, bb.y0))[1]
-
-    # Group 1: n = 5 -- the honest counterexample; dense wins (fewer numbers stored).
-    y = group_label(caption_bottom_data - 0.15, "n = 5") - 0.12
-    scale5 = frame_w / (max(dense, csr_total) * 1.12)
-    y -= bar_h
-    bar(y, dense * scale5, INK, f"dense: {dense}", bold=True)
-    y -= bar_h + pair_gap
-    bar(y, csr_total * scale5, ACCENT3, f"CSR: {csr_total} (loses here)")
-    y -= group_gap
-
-    # Group 2: n = 100,000 -- CSR wins by ~7,700x; at any scale that keeps the CSR bar
-    # visible, dense cannot fit, so it is drawn capped at the frame and marked truncated.
-    y = group_label(y + 0.16, "n = 100,000") - 0.12
-    scale100k = (frame_w * 0.14) / csr_100k
-    y -= bar_h
-    bar(y, dense_100k * scale100k, INK, f"dense: {dense_100k:,}", truncated=True, bold=True)
-    y -= bar_h + pair_gap
-    bar(y, csr_100k * scale100k, ACCENT3, f"CSR: {csr_100k:,} (wins)")
-    bars_bottom = y
-    assert bars_bottom - 0.3 >= ax.get_ylim()[0], (
-        f"fig_memory_payoff: bars_bottom {bars_bottom:.2f} runs past the generous ylim set "
-        f"at the top of this function ({ax.get_ylim()[0]:.2f}) -- widen it there, not here "
-        f"(xlim/ylim/aspect must stay fixed for every measurement above to stay valid)."
-    )
-    # xlim/ylim are NOT re-set here -- see the comment where they were finalized, at the top
-    # of this function. save_fit crops to the true rendered content extent regardless.
-    save_fit(fig, ax, "csr-memory.png", pad_frac=0.05, pad_min_in=0.08)
+    save_fit(fig, ax, "csr-memory.png", pad_frac=0.08, pad_min_in=0.06)
 
 
 def fig_format_regimes():
@@ -3242,14 +3256,22 @@ def fig_format_regimes():
 # footprint -- Axes.get_tightbbox() still reports (close to) the full declared xlim/ylim
 # extent even with the axis off, confirmed by an isolated repro. save_fit (see fig_selfloop's
 # R5 fix) replaces that guess with a crop measured directly off the real rendered content.
-# out_dpi bumped for the same reason as the self-loop family: the true content here is tiny
-# in inches, so a low native pixel count would go soft once the deck scales it back up to its
-# usual on-slide width.
 #
 # R8 fix: figsize is square now (was 1.48x1.3, landscape) -- a lone node is Circle-drawn now
 # (see the module note above NODE_R), and a Circle needs equal aspect to render round; the
 # old landscape figsize relied on ax.scatter's aspect-independence, which no longer applies.
 EDGE_SINGLE_FIGSIZE = (1.4, 1.4)
+
+# R9 fix (FIXES_R9.md): the old out_dpi=1200 + pad_min_in=0.05 combo was the OTHER figure
+# that "bypasses the machinery" -- one lone node is nearly the whole canvas (content ~150px
+# square at 200dpi, whatever the out_dpi), so the CSS scale-to-fit (`max-height:380px`,
+# `width:auto`) barely shrinks it: measured on the real rendered slide, 296px against a
+# 34-40px target -- 41% of slide height, under a caption reading "the smallest possible
+# graph". Same fix as selfloop: plain 200dpi, large absolute pad so the saved canvas is big
+# enough, relative to the 150px disc, that the CSS downscale lands on target. Solved the same
+# way: content is ~150x150px (just the disc); height (380) always binds for square content;
+# pad_min_in = (150*380/T - 150) / 400 for target on-slide diameter T.
+EDGE_SINGLE_PAD_IN = 3.25
 
 
 def fig_edge_single_node():
@@ -3259,7 +3281,7 @@ def fig_edge_single_node():
     clean(ax)
     fit_node_scale(fig, ax)
     draw_node(ax, (0, 0), color=INK, zorder=2)
-    save_fit(fig, ax, "edge-single-node.png", pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
+    save_fit(fig, ax, "edge-single-node.png", pad_frac=0.14, pad_min_in=EDGE_SINGLE_PAD_IN)
 
 
 def fig_edge_single_node_answer():
@@ -3277,7 +3299,7 @@ def fig_edge_single_node_answer():
               node_obstacles=[circle_obstacle((0, 0), node_r_pt_es)],
               name="edge-single-node-answer:ring")
     draw_node(ax, (0, 0), color=INK, zorder=2)
-    save_fit(fig, ax, "edge-single-node-answer.png", pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
+    save_fit(fig, ax, "edge-single-node-answer.png", pad_frac=0.14, pad_min_in=EDGE_SINGLE_PAD_IN)
 
 
 def fig_edge_disconnected():
@@ -3292,7 +3314,11 @@ def fig_edge_disconnected():
     ax.set_xlim(-2.42, 2.42)
     ax.set_ylim(-0.87, 0.97)
     clean(ax)
-    fit_node_scale(fig, ax)
+    # R9 fix ("the one cause", FIXES_R9.md): this layout's own spacing (min 1.15 data units)
+    # fixed the on-slide diameter at 25.3px independent of target_in -- see KONIGSBERG_R's
+    # module note. 0.18 (ratio 0.157) stays well under the ~0.25 crowding ceiling.
+    R = 0.18
+    fit_node_scale(fig, ax, r=R)
     for tri in (t1, t2):
         keys = list(tri.keys())
         for i in range(3):
@@ -3300,7 +3326,7 @@ def fig_edge_disconnected():
             ax.plot([tri[u][0], tri[v][0]], [tri[u][1], tri[v][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     allpos = {**t1, **t2}
-    draw_nodes(ax, allpos, colors=INK, zorder=3)
+    draw_nodes(ax, allpos, colors=INK, r=R, zorder=3)
     # "every degree even" removed -- it is the figcaption verbatim on this slide's first use.
     save(fig, "edge-disconnected.png")
 
@@ -3318,7 +3344,11 @@ def fig_edge_disconnected_2():
     ax.set_xlim(-2.3, 2.3)
     ax.set_ylim(-0.9, 0.9)
     clean(ax)
-    fit_node_scale(fig, ax)
+    # R9 fix ("the one cause", FIXES_R9.md): this layout's own spacing (min 0.9 data units)
+    # fixed the on-slide diameter at 26.6px independent of target_in -- see KONIGSBERG_R's
+    # module note. 0.165 (ratio 0.183) stays under the ~0.25 crowding ceiling.
+    R = 0.165
+    fit_node_scale(fig, ax, r=R)
     for sq in (sq1, sq2):
         keys = list(sq.keys())
         for i in range(4):
@@ -3326,7 +3356,7 @@ def fig_edge_disconnected_2():
             ax.plot([sq[u][0], sq[v][0]], [sq[u][1], sq[v][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     allpos = {**sq1, **sq2}
-    draw_nodes(ax, allpos, colors=INK, zorder=3)
+    draw_nodes(ax, allpos, colors=INK, r=R, zorder=3)
     save(fig, "edge-disconnected-2.png")
 
 
@@ -3338,7 +3368,7 @@ def fig_recap():
     ax.set_xlim(-2.85, 2.15)
     ax.set_ylim(-2.15, 2.25)
     clean(ax)  # xlim/ylim/aspect finalized before any place_label call below
-    fit_node_scale(fig, ax)
+    fit_node_scale(fig, ax, r=KONIGSBERG_R_RECAP)  # R9 fix ("the one cause") -- see module note
     draw_kedges(ax)
     # R7 fix (Major 15, slide 069): "degree -> parity" pointed at bare node A with no degree
     # anywhere on the figure -- the label had no visible referent, and its leader overlapped
@@ -3348,35 +3378,32 @@ def fig_recap():
     # Konigsberg's four degrees (3, 3, 5, 3) are ALL odd, so all four nodes colour accent-2
     # here too, same as konigsberg-degrees.png.
     node_colors = {n: ACCENT2 for n in "NSAB"}
-    draw_knodes(ax, colors=node_colors)
-    obstacles = k_obstacles(ax, node_colors=node_colors)
+    draw_knodes(ax, colors=node_colors, r=KONIGSBERG_R_RECAP, label_fs=KONIGSBERG_LABEL_FS)
+    obstacles = k_obstacles(ax, node_colors=node_colors, r=KONIGSBERG_R_RECAP)
+    off = 0.34 * (KONIGSBERG_R_RECAP / NODE_R)
     deg = kedge_degrees()
     for n, d in deg.items():
         ox, oy = K_OUTWARD[n]
         ha, va = K_OUTWARD_ALIGN[n]
-        place_label(ax, (KPOS[n][0] + 0.34 * ox, KPOS[n][1] + 0.34 * oy), str(d),
-                    obstacles=obstacles, color=ACCENT2, fontsize=ANNOT_FS, ha=ha, va=va,
+        place_label(ax, (KPOS[n][0] + off * ox, KPOS[n][1] + off * oy), str(d),
+                    obstacles=obstacles, color=ACCENT2, fontsize=KONIGSBERG_DEGREE_FS, ha=ha, va=va,
                     fontweight="bold", zorder=5, clearance_pt=3.0, name=f"recap:degree-{n}")
-    # "degree -> parity" now sits beside the degree numerals it names, no leader (the spec's
-    # documented fallback -- see campus-walk/konigsberg-bombed for the same move) rather than
-    # a leader that would have to cross the dashed bracket to reach them.
-    place_label(ax, (-1.55, 1.55), "degree → parity", obstacles=obstacles, color=MUTED,
-                fontsize=ANNOT_FS, ha="center", va="center", clearance_pt=4.0,
-                name="recap:degree-parity-label")
-    # "one component" and "adjacency matrix, 4 x 4" are both global facts about the whole
-    # graph, not facts about any single node or edge -- the old leaders crossed the N-B edge
-    # and landed on node B respectively (F2 fix). A dashed bracket enclosing all four nodes
-    # replaces the "one component" leader; the matrix label is a plain floating label.
+    # R9 fix (Blocker 8): "degree -> parity" deleted outright. It never had a working leader
+    # (R7's own fallback, "beside the numerals" with no line, still doesn't read as pointing
+    # at anything in particular), and it never had a working REFERENT either: Konigsberg's
+    # four degrees are (3, 3, 5, 3) -- every one of them odd -- so "parity" has exactly one
+    # value on this graph and nothing to contrast it against; colouring all four nodes the
+    # same accent-2 is the honest picture, not a broken attempt at a two-colour key. The
+    # degree numerals above already carry the fact this label duplicated.
+    #
+    # "adjacency matrix, 4 x 4" deleted outright too -- no matrix is drawn anywhere in this
+    # figure (FIXES_R9.md, Blocker 8). "one component" is the only one of the original three
+    # annotations with a real referent (the dashed bracket below); it is the only one kept.
     bracket = mpatches.Ellipse((0, 0), 3.0, 3.0, fill=False, edgecolor=MUTED, linewidth=1.4,
                                 linestyle=(0, (5, 4)), zorder=1)
     ax.add_patch(bracket)
-    ax.text(0, 1.72, "one component", ha="center", va="bottom", color=MUTED, fontsize=ANNOT_FS)
-    # R7 fix (Major 15): "A:" doubled as both the node-A letter (drawn inside node A, 3cm
-    # away) and a prefix here meaning "the adjacency matrix" -- one glyph, two meanings on the
-    # same figure. Renamed to name the thing directly instead of abbreviating it onto a letter
-    # that already means something else on this slide.
-    ax.text(0, -1.72, "adjacency matrix, 4 × 4", ha="center", va="top", color=MUTED,
-            fontsize=ANNOT_FS)
+    ax.text(0, 1.72, "one component", ha="center", va="bottom", color=MUTED,
+            fontsize=KONIGSBERG_DEGREE_FS)
     save(fig, "recap.png")
 
 
@@ -3432,6 +3459,7 @@ if __name__ == "__main__":
     fig_abstraction_1_map()
     fig_abstraction_2_nodes()
     fig_abstraction_3_graph()
+    fig_multigraph_bridges()
     fig_multigraph()
     fig_selfloop()
     fig_selfloop_answer()

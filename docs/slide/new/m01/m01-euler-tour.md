@@ -251,7 +251,7 @@ For Königsberg: four landmasses, seven bridges.
 <div class="cols">
 <div>
 
-Königsberg has two bridges between island A and bank N — and two more between A and bank S, so A touches five bridges in all (the other three you counted on the previous slide). Count each one, or collapse the pair?
+Königsberg has two bridges between island A and bank N — and two more between A and bank S. Add the single bridge to bank B and island A touches five bridges in all. Count each one, or collapse the pair?
 
 * Both count. Each bridge is its own edge.
 * Collapse them into one and you are solving a **different** puzzle — one with fewer crossings to make.
@@ -259,7 +259,7 @@ Königsberg has two bridges between island A and bank N — and two more between
 </div>
 <div class="fig">
 
-![w:520](figures/multigraph.png)
+![w:520](figures/multigraph-bridges.png)
 <figcaption>N–A, doubled — two bridges, one pair</figcaption>
 
 </div>
@@ -442,7 +442,7 @@ Hands up when you have an answer — possible, or impossible?
 <div class="fig">
 
 ![w:520](figures/konigsberg-blank.png)
-<figcaption>same map, no counts shown</figcaption>
+<figcaption>same graph, no counts shown</figcaption>
 
 </div>
 </div>
@@ -465,7 +465,7 @@ Hands up when you have an answer — possible, or impossible?
 <div class="fig">
 
 ![w:520](figures/konigsberg-degrees.png)
-<figcaption>the same map you just counted, now labelled</figcaption>
+<figcaption>the same graph you just counted, now labelled — red = odd degree</figcaption>
 
 </div>
 </div>
@@ -479,13 +479,11 @@ Hands up when you have an answer — possible, or impossible?
 <div class="cols">
 <div>
 
-An **Eulerian path** is a route that uses every edge exactly once.
-
-On a graph you can get around — every node reachable from every other — one exists exactly when **0 or 2** nodes have odd degree.
+An **Eulerian path** uses every edge exactly once. On a graph you can get around, one exists exactly when **0 or 2** nodes have odd degree.
 
 <div class="note">
 
-We've only shown the "more than two odd" direction breaks it. That the condition is also *enough* — a path always exists when it holds — we'll use without proving.
+We've shown only that more than two odd nodes breaks it. That the condition is also *enough* — a path always exists whenever it holds — we use without proving.
 
 </div>
 
@@ -802,6 +800,7 @@ No components marked yet — trace your own below. How many sweeps until every n
 <div class="fig tight">
 
 ![w:760](figures/components-bare.png)
+<figcaption>trace it yourself — no components marked yet</figcaption>
 
 </div>
 
@@ -929,29 +928,6 @@ Each node now has two counts: **in-degree**, edges arriving, and **out-degree**,
 
 ---
 
-## The directed Euler condition
-
-<hr>
-
-<div class="cols">
-<div>
-
-On a graph that's **strongly connected** — every node reachable from every other, direction respected — Euler's condition splits into two cases. Below, both nodes total 2 — yet neither balances.
-
-* **Closed tour:** in-degree equals out-degree, at every node.
-* **Trail:** exactly one node has out − in = 1 (the start), one has in − out = 1 (the end), every other node balances.
-
-</div>
-<div class="fig">
-
-![w:520](figures/directed-parity-counterexample.png)
-<figcaption>A: in 0, out 2 — B: in 2, out 0 — both "even," neither balanced</figcaption>
-
-</div>
-</div>
-
----
-
 ## Strongly connected
 
 <hr>
@@ -998,6 +974,67 @@ One-way streets get you out, not necessarily back.
 
 ---
 
+## What replaces "odd" once edges point?
+
+<hr>
+
+<div class="formula">
+
+Königsberg's rule was about odd degrees. What replaces "odd" once edges point?
+
+</div>
+
+*30 seconds.*
+
+---
+
+## The directed Euler condition
+
+<hr>
+
+<div class="cols">
+<div>
+
+Euler's condition splits into two cases by how in-degree and out-degree balance. Below, both nodes total 2 — yet neither balances.
+
+* **Closed tour:** connected once you ignore direction, and in-degree equals out-degree at every node.
+* **Trail:** connected once you ignore direction, and exactly one node has out − in = 1 (the start), one has in − out = 1 (the end), every other node balances.
+
+</div>
+<div class="fig">
+
+![w:520](figures/directed-parity-counterexample.png)
+<figcaption>A: in 0, out 2 — B: in 2, out 0 — both "even," neither balanced</figcaption>
+
+</div>
+</div>
+
+---
+
+## Your turn: does a closed tour survive?
+
+<hr>
+
+<div class="cols">
+<div>
+
+Add one more arc to this triangle — anywhere to anywhere, your choice.
+
+Does the closed tour still exist? Does a trail?
+
+*Turn to your neighbor — 30 seconds.*
+
+</div>
+<div class="fig">
+
+![w:520](figures/directed-strong.png)
+<figcaption>A→B→C→A — add one arc and re-check</figcaption>
+
+</div>
+</div>
+
+---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Seven</span><span class="count">07 / 08</span></div>
@@ -1031,7 +1068,7 @@ How would you lay this out in memory?
 <div class="cols">
 <div>
 
-The simplest option: a list of pairs, one per edge. Compact on disk — but finding node 1's neighbors (highlighted) means scanning every pair, since its edges are scattered through the list rather than grouped together.
+The simplest option: a list of pairs, one per edge. Compact on disk — but finding node 1's neighbors (highlighted) means scanning every pair, since edges aren't grouped by node.
 
 </div>
 <div class="fig">
@@ -1081,21 +1118,35 @@ $$
 
 An $n \times n$ grid of 0s and 1s. This opens the door to linear algebra — but storing it costs $O(n^2)$, even when almost every entry is 0.
 
-<div class="note">
+</div>
+<div class="fig">
 
-Degree is the same quantity, three ways:
+![w:520](figures/store-matrix.png)
+<figcaption>row 1 (red): 1s at columns 0, 2, 3 — node 1's three neighbors</figcaption>
+
+</div>
+</div>
+
+---
+
+## Degree, three ways
+
+<hr>
+
+<div class="cols">
+<div>
+
+The same quantity, seen in every representation so far:
 
 * Count incidences in the edge list.
 * Read a row's length in the adjacency list.
 * Sum a row in the matrix.
 
 </div>
-
-</div>
 <div class="fig">
 
 ![w:520](figures/store-matrix.png)
-<figcaption>row 1 (red): 1s at columns 0, 2, 3 — node 1's three neighbors</figcaption>
+<figcaption>row 1 sums to 3 — the same degree as the edge list and adjacency list</figcaption>
 
 </div>
 </div>
@@ -1211,7 +1262,7 @@ Almost every entry in that grid is a wasted zero. That waste is exactly what CSR
 <div class="cols">
 <div>
 
-Most pairs of people are not linked, so store only what is actually there, in three arrays:
+Most pairs of people are not linked, so store only what is actually there. The **Compressed Sparse Row (CSR)** format keeps three arrays:
 
 * **data** — the values
 * **indices** — the column of each nonzero
@@ -1295,7 +1346,7 @@ Rule of thumb: edge list on disk, sparse matrices for analysis.
 <div class="fig tight">
 
 ![w:760](figures/format-regimes.png)
-<figcaption>axes: node count vs. density, log scale</figcaption>
+<figcaption>axes: node count vs. density</figcaption>
 
 </div>
 
@@ -1461,7 +1512,7 @@ One condition holds, one fails. That single failure is enough: no Eulerian circu
 <div class="fig">
 
 ![w:520](figures/konigsberg-degrees.png)
-<figcaption>both hypotheses, checked against the same graph</figcaption>
+<figcaption>both conditions, checked against the same graph</figcaption>
 
 </div>
 </div>
@@ -1514,7 +1565,7 @@ Short paths. High clustering. One rewiring model that delivers both at once.
 <div class="fig">
 
 ![w:520](figures/smallworld-teaser.png)
-<figcaption>a few shortcuts change everything</figcaption>
+<figcaption>a few shortcuts (red) change everything</figcaption>
 
 </div>
 </div>
