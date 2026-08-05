@@ -700,11 +700,28 @@ function recordPickedAnswer(event: any): void {
   try {
     if (!/ask.?user.?question/i.test(String(event?.toolName ?? ""))) return;
 
+    // The package supplies the answers structured on the tool result; the
+    // envelope sentence is only a fallback. Parsing prose truncated an
+    // answer that contained its own quotation marks.
+    const structured = (event?.details?.answers ?? [])
+      .map((a: any) => String(a?.answer ?? a?.value ?? "").trim())
+      .filter((v: string) => v && !isDialogSentinel(v));
     const text = (event?.content ?? [])
       .filter((c: any) => c?.type === "text" && typeof c.text === "string")
       .map((c: any) => c.text)
       .join("\n")
       .trim();
+    if (structured.length) {
+      const fromDetails = structured.join(" · ");
+      if (
+        !(awaitingResumeChoice && /continue|fresh|left off|pick (things )?up/i.test(fromDetails))
+      ) {
+        pickedAnswers.push(fromDetails.slice(0, 300));
+      } else {
+        awaitingResumeChoice = false;
+      }
+      return;
+    }
     if (!text) return;
     let picked = text;
     try {
@@ -2920,17 +2937,23 @@ export default function (pi: ExtensionAPI) {
           const src = path.join(process.cwd(), "assets", rel);
           if (!fs.existsSync(src)) continue;
           fs.renameSync(src, path.join(dir, label));
-          // The archived notebook sits in session_artifacts/ and still
-          // points at assets/uploads/<w>_view.jpg, so leave a copy there —
-          // otherwise every archived keepsake opens with a broken image
-          // where the student's own page should be.
+          // The archived notebook still points at assets/uploads/<w>_view.jpg,
+          // which no longer exists — so repoint the archived COPY at its own
+          // stamped directory. A shared session_artifacts/assets/uploads/ was
+          // tried first and was worse: the next reset overwrote it, and
+          // session 1's keepsake then rendered session 2's photograph as that
+          // student's own hand-worked page.
           if (rel === "uploads") {
             try {
-              fs.cpSync(path.join(dir, label), path.join(dir, "assets", "uploads"), {
-                recursive: true,
-              });
+              const archived = path.join(dir, `notebook-${stamp}.py`);
+              if (fs.existsSync(archived)) {
+                fs.writeFileSync(
+                  archived,
+                  fs.readFileSync(archived, "utf-8").split("assets/uploads/").join(`${label}/`),
+                );
+              }
             } catch {
-              // convenience only
+              // the archive is best-effort; the live notebook is what matters
             }
           }
         }
