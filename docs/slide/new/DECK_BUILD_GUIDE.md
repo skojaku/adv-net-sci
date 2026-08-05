@@ -105,6 +105,22 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
 - **PNG, not SVG:** an `<img>` pointing at `.svg` tends to render blank inside Marp's
   `foreignObject`. **GIF animates** (referenced by relative path); inline `<svg>` is
   stripped by the sanitizer, and so are `style` attributes — style lives in the theme.
+- **Scripting works, in the `--html` export.** A `<script>` runs and an
+  `<input type="range">` fires its listener — tested in a real browser, not read off the
+  HTML source. So a slider the lecturer can drag while talking is a real option, not a
+  closed door.
+
+  Two conditions. It needs `--html` (or `html: true` in the front matter), and **that flag
+  matters for the whole deck**: without it the HTML export escapes *all* raw HTML to
+  literal text, including the existing `<div class="cols">` layout. And the `--images png`
+  path parses raw HTML either way, so `check_render.py` never exercises the export the
+  lecture is actually given from — if you add scripted content, open the HTML and check it,
+  because nothing in the pipeline will.
+
+  A caution worth carrying, since it cost this deck a round: "Marp restricts scripting" was
+  my own over-generalisation of an SVG-specific finding, repeated in three briefs before
+  anyone tested `<script>` separately. **One negative result about one tag is not a result
+  about the sanitizer.** Test the thing you are about to rule out.
 - KaTeX does not process `<figcaption>` — no math there.
 - `## Title` + `<hr>` stay on the same slide as their content; `---` after a title
   splits the slide.
@@ -115,6 +131,23 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
   panels and figcaptions 30px. In-figure text must land at least body-size **on the
   slide** — he raised this four times on m01; it is now an assertion in the figure
   generator and a `check_render.py` failure, not a review finding.
+
+## Density from motion, not from more text
+
+The lecturer's framing: the slides are an aid for teaching through dialogue, so a slide
+should carry one point and the *build* should carry the rest. Where a static figure would
+need a legend or three panels, animate it instead — the m01 vocabulary slides draw the
+walk, trail and path one edge at a time, and the CSR slide constructs its three arrays row
+by row.
+
+Two things that make an animation teach rather than decorate:
+
+- **Loop back to what the deck shows next.** The CSR animation settles on the exact frame
+  its neighbouring static figure uses, so the loop hands off instead of resting somewhere
+  arbitrary.
+- **Generate it from the same data as the static figure, and assert they agree.** Duplicating
+  geometry between an animation and its still is how the two drift; compute both from the
+  one source and check.
 
 ## Keeping this current
 
