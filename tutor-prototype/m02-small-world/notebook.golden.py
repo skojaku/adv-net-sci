@@ -322,11 +322,22 @@ def ch1_header(mo):
 
 @app.cell(hide_code=True)
 def cp1_milgram_img(mo):
-    mo.image(
-        src="assets/milgram-small-world-experiment.png",
-        width=520,
-        caption="Milgram's letter experiment (1960s)",
-    )
+    mo.vstack([
+        mo.image(
+            src="assets/milgram-small-world-experiment.png",
+            width=520,
+            caption="Milgram's letter experiment (1960s)",
+        ),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Read the picture as a "
+            "relay. A packet starts with a randomly chosen person in Omaha, "
+            "Nebraska, and has to reach one named stockbroker near Boston. Nobody "
+            "may post it directly: each holder passes it to a single person they "
+            "know on a first-name basis and who they think sits closer to the "
+            "target. Each arrow is one such hand-off. The experiment counts the "
+            "arrows.</span>"
+        ),
+    ])
     return
 
 
@@ -430,27 +441,55 @@ def cp2_ripple_fig(cp2_steps, mo, netviz, nx):
     }
     mo.vstack([
         mo.md(f"**Wave from A — {cp2_steps.value} step(s)**"),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Four people, five "
+            "friendships. **A** is rust; **amber** dots are everyone A can reach "
+            "in that many steps or fewer; **grey** dots are still out of range. "
+            "Drag the slider up one notch at a time and watch who joins — the "
+            "step at which someone first turns amber IS their distance from A. "
+            "You can drag the dots too; moving them changes nothing but the "
+            "picture.</span>"
+        ),
         netviz(_edges, node_colors=_colors),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def cp2_pairs_fig(alt, pd):
+def cp2_pairs_fig(alt, mo, pd):
     _pairs = [("A", "B", 1), ("A", "C", 1), ("A", "D", 2), ("B", "C", 1), ("B", "D", 1), ("C", "D", 1)]
     _df = pd.DataFrame(_pairs, columns=["u", "v", "distance"])
     _df["pair"] = _df["u"] + "–" + _df["v"]
     _df["highlight"] = _df["distance"] > 1
 
-    alt.Chart(_df).mark_bar(size=22, cornerRadiusEnd=4).encode(
-        y=alt.Y("pair:N", sort=_df["pair"].tolist(), title=None),
-        x=alt.X("distance:Q", title="shortest-path distance", scale=alt.Scale(domain=[0, 2.4])),
-        color=alt.condition("datum.highlight", alt.value("#B4552D"), alt.value("#35577F")),
-        tooltip=["pair", "distance"],
-    ).properties(
-        title="All 6 pairs, distance — average 7/6 ≈ 1.17",
-        height=220,
-    )
+    mo.vstack([
+        alt.Chart(_df)
+        .mark_bar(size=22, cornerRadiusEnd=4)
+        .encode(
+            y=alt.Y("pair:N", sort=_df["pair"].tolist(), title=None),
+            x=alt.X(
+                "distance:Q",
+                title="shortest-path distance",
+                scale=alt.Scale(domain=[0, 2.4]),
+            ),
+            color=alt.condition(
+                "datum.highlight", alt.value("#B4552D"), alt.value("#35577F")
+            ),
+            tooltip=["pair", "distance"],
+        )
+        .properties(
+            title="All 6 pairs, distance — average 7/6 ≈ 1.17",
+            height=220,
+        ),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>One bar per pair of "
+            "people — with four people there are exactly six pairs, and every "
+            "pair gets counted once. Bar length is that pair's distance, so a "
+            "one-step bar means they are directly connected; the **rust bar is "
+            "the only pair that needs a detour**. Average path length is just "
+            "the mean of these six bars — the single number in the title.</span>"
+        ),
+    ])
     return
 
 
@@ -528,7 +567,10 @@ def cp2_paperwork_photo_sent(cp2_paperwork_photo, cp2_paperwork_photo_send, mo):
             _f.write("cp2_paperwork_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md("")
+        _sent = mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        )
     _sent
     return
 
@@ -554,6 +596,14 @@ def cp3_fig(mo, netviz):
     _friend_edges = [("B", "F"), ("C", "E")]
     mo.vstack([
         mo.md("**A and A's five friends — rust lines = a friendship between two of A's friends**"),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>**A** is the rust dot in "
+            "the middle; B, C, D, E and F are its five friends. The grey lines "
+            "from A are A's own friendships — ignore those. The **rust lines run "
+            "between two of A's friends**: those are the ones that say "
+            '"my friends know each other". Find them and count them yourself. '
+            "Dots are drag-able if the picture gets tangled.</span>"
+        ),
         netviz(_edges, highlight=_friend_edges, node_colors={"A": "#B4552D"}),
     ])
     return
@@ -643,7 +693,10 @@ def cp4_photo_sent(cp4_photo, cp4_photo_send, mo):
             _f.write("cp4_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md("")
+        _sent = mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        )
     _sent
     return
 
@@ -675,6 +728,14 @@ def cp4_compare_fig(cp4_choice, mo, netviz, nx):
 
     mo.vstack([
         mo.md(f"**Average distance: {_L:.2f}**"),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>The same 8-dot ring three "
+            "times over. The **rust line is the one extra cable**; the number "
+            "above is the average trip length over all 28 pairs, recomputed every "
+            "time you switch. Flip between the three options and watch only that "
+            "number: same ring, same single extra line, and the only thing that "
+            "changed is where it was put.</span>"
+        ),
         netviz(_edges, highlight=[_extra] if _extra else [], layout="circle"),
     ])
     return
@@ -812,7 +873,10 @@ def cp5_ring_paperwork_photo_sent(
             _f.write("cp5_ring_paperwork_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md("")
+        _sent = mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        )
     _sent
     return
 

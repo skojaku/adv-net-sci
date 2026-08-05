@@ -53,5 +53,8 @@ if cp2_paperwork_photo_send.value and (cp2_paperwork_photo.value or []):
         _f.write("cp2_paperwork_photo\n")
     _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
 else:
-    _sent = mo.md("")
+    _sent = mo.md(
+        "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+        "when the photo looks right — that is what tells your tutor to look.*</span>"
+    )
 _sent

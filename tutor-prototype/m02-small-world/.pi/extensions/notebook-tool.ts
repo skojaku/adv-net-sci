@@ -13,9 +13,11 @@
  *     status line ("📝 Setting up your first question…") with output hidden
  *     behind the expand keybinding. The LLM still receives full output.
  *
- * The student signals "ready" by typing in the terminal — there is no
- * in-notebook Done button; the tutor just reads notebook values with
- * nb_read once the student says they're done.
+ * Upload boxes carry a 📨 Send to my tutor button: pressing it appends to
+ * session_artifacts/student_signal.txt, which the watcher below turns into a
+ * turn, so the tutor never has to ask whether the photo is up. Everything
+ * else the student explores (sliders, widgets) has no button — they say so
+ * in the terminal and the tutor reads the values with nb_read.
  */
 import { execFile } from "node:child_process";
 import * as fs from "node:fs";
@@ -50,6 +52,12 @@ const py = (s: string) => JSON.stringify(s);
  * text is split into raw chunks glued together with ordinary literals. In
  * the normal case (no triple quote anywhere) that is exactly the
  * `r"""…"""` marimo writes for itself.
+ *
+ * The prefix marimo copies is the LAST string token's, so that token must be
+ * raw no matter what the text ends with — and a note ends with the student's
+ * own words, which can perfectly well end in a quotation mark. Padding the
+ * final chunk with one newline (invisible in markdown) keeps it raw instead
+ * of peeling it into an ordinary literal and losing the prefix again.
  */
 function pyMd(markdown: string): string {
   const chunk = (s: string): string => {
@@ -61,11 +69,10 @@ function pyMd(markdown: string): string {
     const head = s.slice(0, s.length - tail[0].length);
     return head ? `r"""${head}""" ${py(tail[0])}` : py(tail[0]);
   };
-  return markdown
-    .replace(/\r\n/g, "\n")
-    .split('"""')
-    .map(chunk)
-    .join(` '"""' `);
+  const parts = markdown.replace(/\r\n/g, "\n").split('"""');
+  const last = parts.length - 1;
+  if (parts[last] === "" || /["\\]$/.test(parts[last])) parts[last] += "\n";
+  return parts.map(chunk).join(` '"""' `);
 }
 const pyList = (xs: string[]) => JSON.stringify(xs);
 const sanitize = (s: string) => s.replace(/\W/g, "_");
@@ -762,9 +769,15 @@ function bigramDice(a: string, b: string): number {
 
 /**
  * If `response` is a near-copy of one of the student's own messages, return
- * that message instead — their words, character for character. Below the
- * threshold nothing is touched: a response built out of several short
- * answers ("2", then "7/6") is a legitimate join, not a retype.
+ * that message instead — their words, character for character.
+ *
+ * Similarity alone is not enough to act on. Joining several short answers
+ * into one ("A–D is 2, and the average is 7/6 over all six pairs") is the
+ * sanctioned shape — the skeletons say «their answers, verbatim», plural —
+ * and it scores nearly as high against its longest fragment as a retype
+ * does against the whole message. Snapping there would delete half the
+ * student's answer from the graded record, so a candidate must also be
+ * about the same LENGTH: a retype is, a swallowed fragment is not.
  */
 function snapToTranscript(response: string, said: string[]): string | null {
   const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
@@ -774,7 +787,9 @@ function snapToTranscript(response: string, said: string[]): string | null {
     const score = bigramDice(s, response);
     if (!best || score > best.score) best = { score, text: s };
   }
-  return best && best.score >= 0.75 ? best.text : null;
+  if (!best || best.score < 0.8) return null;
+  const longest = Math.max(best.text.length, response.length);
+  return Math.abs(best.text.length - response.length) <= 0.15 * longest ? best.text : null;
 }
 
 /** Content tokens in `fill` that the student never produced. */
@@ -1613,7 +1628,12 @@ export default function (pi: ExtensionAPI) {
       // «verbatim», because the tutor legitimately writes what the picture
       // shows there, and holding that to the transcript refused honest
       // records (it did, for every photo checkpoint).
-      const pool = [...said, String(params.question ?? "")];
+      // `picked` belongs in the pool as much as `said` does: a dialog choice
+      // IS the student's own answer. Leaving it out refused cp1's honest
+      // record twice ("about 20" — the figure 20 appears in neither the
+      // typed follow-up nor the question) and then stamped a false quoting
+      // warning on it in the submitted notebook.
+      const pool = [...said, ...picked, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
       // student_response is the headline quote of the graded record, so it
@@ -2020,10 +2040,10 @@ export default function (pi: ExtensionAPI) {
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
         `    _names = [c.name for c in ctx.cells]\n` +
-        `    if ${py(name)} in _names:\n` +
+        `    if ${py(name + "_ed")} in _names:\n` +
         `        print("exercise already in the notebook — skipped duplicate insert")\n` +
         `    else:\n` +
-        `        _cid = ctx.create_cell(${py(edBody)}, name=${py(name)}, hide_code=True)\n` +
+        `        _cid = ctx.create_cell(${py(edBody)}, name=${py(name + "_ed")}, hide_code=True)\n` +
         `        ctx.run_cell(_cid)\n` +
         `        _first = _cid\n` +
         `        _cid = ctx.create_cell(${py(outBody)}, name=${py(name + "_out")}, hide_code=True, after=_cid)\n` +
@@ -2141,7 +2161,9 @@ export default function (pi: ExtensionAPI) {
           .filter((c) => /\bmo\.ui\.file\s*\(/.test(c.code))
           .map((c) => c.name);
         const uploadLine = uploads.length
-          ? `When they say the photo is up, call nb_view_image(widget="${uploads[0]}", …).\n`
+          ? `Ask for the photo, then WAIT — never ask whether it is up. Their 📨 Send ` +
+            `to my tutor press starts your turn; then call ` +
+            `nb_view_image(widget="${uploads[0]}", …).\n`
           : "";
         result.out =
           `Inserted. The student now sees: ${describe}\n` +
@@ -2355,7 +2377,8 @@ export default function (pi: ExtensionAPI) {
       "Look at a student-uploaded image — you are text-only, so this is your ONLY way to " +
       "see one (never nb_read image bytes). Give the upload widget name (e.g. 'cp4_photo') " +
       "or a file path, what the task was, and the question you need answered. It saves the " +
-      "original to session_artifacts/, shows the photo in the notebook for the student, and " +
+      "original to assets/uploads/ so it travels with the notebook, shows the photo in the " +
+      "notebook for the student, and " +
       "returns a factual description from a vision model. The description is a machine's " +
       "reading, not ground truth — confirm the key detail with the student before building " +
       "on it. If it reports no vision is available, follow its advice instead.",
@@ -2445,13 +2468,14 @@ export default function (pi: ExtensionAPI) {
         `    import marimo._code_mode as cm\n` +
         `    async with cm.get_context() as ctx:\n` +
         `        _names = [c.name for c in ctx.cells]\n` +
-        // The upload templates already show a LIVE preview of whatever is in
-        // the box, and it updates on every re-upload. Adding a second,
-        // frozen copy of the same photo below it just makes the notebook
-        // repeat itself — and after a redo the two would disagree.
-        `        if ${py(base + "_preview")} in _names:\n` +
-        `            print("preview cell already shows this photo — no extra cell added")\n` +
-        `        elif ${py(viewCell)} in _names:\n` +
+        // The upload box's live preview reads mo.ui.file.value, which marimo
+        // does NOT serialise — reopen the keepsake and the student's own
+        // hand-worked page is gone, replaced by "your photo appears here".
+        // So the saved file gets its own cell after all. The two do not
+        // disagree after a redo: this cell is EDITED on every nb_view_image
+        // call, so the preview shows what is in the box and this shows the
+        // page the tutor actually read and graded.
+        `        if ${py(viewCell)} in _names:\n` +
         `            ctx.edit_cell(${py(viewCell)}, ${py(cellBody)})\n` +
         `            ctx.run_cell(${py(viewCell)})\n` +
         focusCellCode(`ctx.cells[${py(viewCell)}].id`, "            ") +
@@ -2466,8 +2490,9 @@ export default function (pi: ExtensionAPI) {
         return toResult({
           out:
             result.out +
-            `\nAsk the student to upload their photo in the notebook first (then tell you ` +
-            `here when it's up), or to describe the drawing in words here.`,
+            `\nNothing is in the drop box yet. Say nothing about it and WAIT — pressing ` +
+            `📨 Send to my tutor starts your turn by itself. Only if they say they ` +
+            `cannot photograph, ask them to describe the drawing in words here.`,
           failed: false,
         });
       }
