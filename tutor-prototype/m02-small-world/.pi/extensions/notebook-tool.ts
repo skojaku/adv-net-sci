@@ -24,7 +24,7 @@ import path from "node:path";
 import { Type } from "typebox";
 import { uuidv7 } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
-import { Container, Text } from "@earendil-works/pi-tui";
+import { Text } from "@earendil-works/pi-tui";
 import { keyHint, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const SCRIPT_CANDIDATES = [
@@ -472,7 +472,7 @@ export default function (pi: ExtensionAPI) {
               content:
                 `RESUME CONTEXT (invisible to the student — never mention this message): ` +
                 `a previous session exists. Progress so far:\n${progressBrief(entries)}\n` +
-                `FIRST, greet the student and ask with ask_student: continue where you left ` +
+                `FIRST, greet the student and ask with ask_user_question: continue where you left ` +
                 `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
                 `its instructions (chapter 1 reloads automatically — do not improvise). ` +
                 `If they continue: do NOT rebuild existing notebook cells ` +
@@ -669,68 +669,8 @@ export default function (pi: ExtensionAPI) {
     runawayFired = false;
   });
 
-  // ── ask_student ───────────────────────────────────────────────────────────
-  // Fixed-choice questions get an interactive picker (arrow keys + enter) —
-  // friendlier than asking a beginner to type an option verbatim.
-  pi.registerTool({
-    name: "ask_student",
-    label: "Ask (choices)",
-    description:
-      "Ask the student a multiple-choice question with an interactive picker. Use for ANY " +
-      "question with fixed options (predictions, comfort level, continue-or-fresh). The " +
-      "chosen option comes back as the tool result. Open-ended questions: just ask in plain text. " +
-      "WARNING: the picker takes over the keyboard — if you just asked a typed question " +
-      "(a name, a guess), the student loses their chance to answer it. Never call this " +
-      "while a typed question is unanswered; wait for their reply first.",
-    promptSnippet: "Ask the student a fixed-choice question (interactive picker)",
-    parameters: Type.Object({
-      question: Type.String({ description: "Short spoken question (max 2 sentences)." }),
-      options: Type.Array(Type.String(), { description: "2-6 short options." }),
-    }),
-    async execute(_id, params, _signal, _onUpdate, ctx: any) {
-      const q = String(params.question ?? "").trim();
-      const opts = (Array.isArray(params.options) ? params.options : []).map((o: any) =>
-        String(o),
-      );
-      if (!ctx?.ui?.select || opts.length < 2) {
-        return {
-          content: [
-            { type: "text" as const, text: "(no interactive picker available — ask in plain text instead)" },
-          ],
-          details: { unavailable: true },
-        };
-      }
-      const choice = await ctx.ui.select(q, opts);
-      if (choice == null) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: "(the student dismissed the picker — ask in plain text, they may want to answer in their own words)",
-            },
-          ],
-          details: { dismissed: true, question: q },
-        };
-      }
-      return {
-        content: [{ type: "text" as const, text: `Student chose: ${choice}` }],
-        details: { question: q, choice: String(choice) },
-      };
-    },
-    renderShell: "self",
-    renderCall(args: any, _theme: any) {
-      const q = typeof args?.question === "string" ? args.question : "";
-      return q ? new Text(q, 0, 0) : new Container();
-    },
-    renderResult(result: any, { isPartial }: any, theme: any) {
-      if (isPartial) return new Container();
-      const choice = result?.details?.choice;
-      if (typeof choice === "string" && choice.length > 0) {
-        return new Text(theme.fg("accent", `→ ${choice}`), 0, 0);
-      }
-      return new Container();
-    },
-  });
+  // Fixed-choice questions go through the ask_user_question tool
+  // (@juicesharp/rpiv-ask-user-question package, declared in .pi/settings.json).
 
   // ── nb_add_cell ───────────────────────────────────────────────────────────
   pi.registerTool({
@@ -994,7 +934,7 @@ export default function (pi: ExtensionAPI) {
     description:
       "Reset the session at the student's request: archives the previous notebook and " +
       "session log to session_artifacts/, then clears all tutor-made cells from the live " +
-      "notebook. Call ONLY after the student chose to start fresh (ask_student).",
+      "notebook. Call ONLY after the student chose to start fresh (ask_user_question).",
     promptSnippet: "Archive the previous session and clear the notebook (student chose fresh start)",
     parameters: Type.Object({
       status: STATUS_PARAM,

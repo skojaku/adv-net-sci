@@ -97,6 +97,14 @@ notebook re-learnable.
    grader. And the tutor never writes answers into the notebook: guided
    discovery ends with the student taking the last step.
 
+10. **The student controls the pace.** Clearing a checkpoint never
+    auto-advances. After every note cell the tutor opens an
+    `ask_user_question` dialog — "Next, please!" / "I have a question" /
+    "Give me another one like that" (plus free-text "Other") — and only an
+    explicit "next" moves the lesson forward. Extra rounds are improvised
+    on fresh data and logged as practice, never as failure.
+    *(AGENTS.md, @juicesharp/rpiv-ask-user-question in .pi/settings.json)*
+
 ## Cell naming conventions
 
 | Name | Meaning |
