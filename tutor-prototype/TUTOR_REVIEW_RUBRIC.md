@@ -103,10 +103,18 @@ of these can simply be told to read this file and follow it.
 
 Review the most recent complete session notebook (`session_artifacts/
 notebook-*.py`, newest) *and* `notebook.template.py`. **Render before judging
-figures**: `cd <module> && uvx marimo export html notebook.py -o /tmp/nb-render.html`
-executes every cell; confirm each build cell emitted a non-empty output node,
+figures**: `cd <module> && uvx marimo export html --sandbox notebook.py -o /tmp/nb-render.html`
+executes every cell (`--sandbox` builds the venv from the notebook's own
+PEP 723 header — without it every import fails); confirm each build cell
+emitted a non-empty output node,
 and open the HTML in a browser when one is available. Never judge a figure
 from source alone.
+
+The shape target is `<module>/notebook.golden.py` — a reference finished
+notebook assembled from the templates and note skeletons with a *fictional*
+student's answers (its banner says so). Compare session notebooks against
+it for structure (S7, S10, S12); never treat it as a session artifact, and
+skip S9's verbatim cross-check on it (there is no transcript behind it).
 
 - **S1 Every figure renders.** No cell whose display is silently dropped
   (marimo shows only the last expression — multi-display cells need
