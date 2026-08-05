@@ -88,11 +88,21 @@ notebook re-learnable.
    lives *in* the page. New cells scroll into view automatically
    (marimo `focus-cell`). *(run_tutor.sh, extension)*
 
-6. **Coding happens in the page.** Fill-in exercises are a
-   `mo.ui.code_editor` box pre-filled with a scaffold (numbered steps,
-   `...` blanks) plus a ▶ Run button; output — or a friendly one-line
-   error — appears right below. Never a blank cell, never "open the
-   editor". *(nb_add_exercise, run_student_code in the template)*
+6. **Coding happens in the page — and survives the page being closed.**
+   Fill-in exercises are a `mo.ui.code_editor` box pre-filled with a
+   scaffold (numbered steps, `...` blanks) plus a ▶ Run button; output — or
+   a friendly one-line error — appears right below. Never a blank cell,
+   never "open the editor". marimo does not serialise a code editor's
+   value, so every run writes the code to `assets/exercises/<name>.py` and
+   the output cell renders it back from there: reopen the notebook in a
+   year and the student's own code and its chart are still the thing on
+   screen, not the blanks they started from. Under it sits a **📨 Send my
+   code to my tutor** button — the same hand-in gesture as a photo drop
+   box, and the same watcher turns the press into the tutor's turn. The
+   saved file is session data: `nb_fresh_start` and `reset_session.sh`
+   archive it with the log, and inserting the box deletes any stale one, or
+   the next student would meet someone else's solution captioned in their
+   own voice. *(nb_add_exercise, run_student_code in the template)*
 
 7. **Interactive over static, themed over default.** Prefer the drag-able
    D3 widget (`netviz`) and widget-driven figures over static plots; charts
@@ -134,7 +144,7 @@ notebook re-learnable.
 | `chN_header` | Auto-inserted chapter heading |
 | `cpN_*` | Build cells for checkpoint N (template or improvised) |
 | `<cp>_note` | Note cell after checkpoint (the re-learnable layer) |
-| `<name>_ed` / `_out` | Exercise code box / its output cell |
+| `<name>_ed` / `_out` / `_sent` | Exercise code box / its output + 📨 Send button / the send confirmation |
 | `session_record` | Closing grading summary |
 
 Named cells are wiped by `nb_fresh_start`; unnamed template cells persist.

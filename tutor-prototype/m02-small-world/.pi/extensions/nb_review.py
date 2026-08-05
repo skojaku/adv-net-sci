@@ -50,7 +50,12 @@ _LATEX_CMD = re.compile(
     r"|omega|Gamma|Delta|Theta|Lambda|Sigma|Phi|Psi|Omega"
     r"|sum|prod|int|sqrt|binom|log|ln|exp|min|max|langle|rangle|lvert|rvert"
     r"|bar|hat|tilde|vec|dot|underline|overline|left|right|quad|qquad"
-    r"|begin|end|ldots|cdots|dots|forall|exists|in|notin|subset|cup|cap)\b"
+    r"|begin|end|ldots|cdots|dots|forall|exists|in|notin|subset|cup|cap)"
+    # NOT \b: a subscript follows a command constantly ($\tau_i$, $\rho_{ij}$),
+    # and \b treats `_` as a word character, so every subscripted greek letter
+    # slipped through — and \t, \r, \n leave no control character for the
+    # backstop below to catch.
+    r"(?![A-Za-z])"
 )
 # Characters no markdown ever wants, and the unmistakable fingerprint of a
 # swallowed backslash: \a \b \f \v \0. A LaTeX command outside the list
