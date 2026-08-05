@@ -497,7 +497,11 @@ def fig_milgram_map():
     s = f"\\draw[line width=1.6bp,draw=annot] {pts} -- cycle;\n"
     om, wi, bo = (f(*CITIES[c]) for c in ("Omaha", "Wichita", "Boston"))
     for p in (om, wi):
-        s += seg(p, bo, color="annot", w=2.2, dash="dashed", arrow="-{Stealth[length=9bp]}")
+        vx, vy = bo[0] - p[0], bo[1] - p[1]
+        L = math.hypot(vx, vy)
+        tip = (bo[0] - vx / L * (DOT / 2 + 4), bo[1] - vy / L * (DOT / 2 + 4))
+        s += seg(p, tip, color="annot", w=2.2, dash="dashed",
+                 arrow="-{Stealth[length=9bp]}")
         s += dot(round(p[0], 1), round(p[1], 1), "accent")
     s += dot(round(bo[0], 1), round(bo[1], 1), "accenttwo")   # size encodes nothing here
     s += text(om[0] - 22, om[1] + 6, "Omaha", anchor="east")
@@ -953,7 +957,8 @@ def _walk_loop(order, t, color, w):
     stop = tuple(pts[-2][k] + 0.55 * (pts[-1][k] - pts[-2][k]) for k in (0, 1))
     path = " -- ".join("(%.1f,%.1f)" % q for q in pts[:-1] + [stop])
     return (f"\\draw[line width={w}bp,draw={color},rounded corners=16bp,"
-            f"-{{Stealth[length=13bp]}}] {path};\n")
+            f"-{{Stealth[length=13bp]}},postaction={{decorate,decoration={{markings,"
+            f"mark=at position 0.42 with {{\\arrow{{Stealth[length=13bp]}}}}}}}}] {path};\n")
 
 
 def fig_a3_walks():
@@ -1457,11 +1462,11 @@ def fig_ws_rewire_step():
 def _sweep_data():
     """C(p)/C(0) and L(p)/L(0) for the Watts-Strogatz sweep -- measured, not remembered.
 
-    The first three p values expect 0.16 / 0.34 / 0.74 rewirings out of 1600 edges, so at
-    6 runs the sampling noise ran L/L(0) 0.964 -> 0.928 -> 0.960 and the curve read as
-    "L rises with p".  Those three points get 24 runs."""
+    The low-p end expects 0.16 / 0.34 / 0.74 / 1.6 / 3.4 / 7.4 rewirings out of 1600 edges,
+    so at 6 runs the sampling noise ran L/L(0) 0.964 -> 0.928 -> 0.960 and the curve read
+    as "L rises with p".  Everything below p = 0.01 gets 24 runs."""
     import json
-    cfg = dict(n=400, k=8, runs=6, quiet_runs=24, quiet=3,
+    cfg = dict(n=400, k=8, runs=6, quiet_runs=24, quiet=6,
                ps=[round(10 ** (-4 + 4 * i / 12), 6) for i in range(13)])
     cache = OUT / "_sweep.json"
     if cache.exists():
@@ -1572,13 +1577,13 @@ def _sweep_frame(band=False):
         s += text(x0 - 16, Y(v), lab, color="annot", anchor="east")
     s += text(x0, y1 + 20, "fraction of the lattice value", color="annot",
               anchor="south west")
-    for key, col, lab, ly in (("C", "accenttwo", "$C(p)/C(0)$", 0.86),
-                              ("L", "accent", "$L(p)/L(0)$", 0.30)):
+    for key, col, lab, ly, lx in (("C", "accenttwo", "$C(p)/C(0)$", 0.84, 360),
+                                  ("L", "accent", "$L(p)/L(0)$", 0.30, 30)):
         base = SWEEP[key + "0"]
         pts = [(X(p), Y(v / base)) for p, v in zip(SWEEP["p"], SWEEP[key])]
         s += "\\draw[line width=3.4bp,draw=%s] %s;\n" % (
             col, " -- ".join("(%.1f,%.1f)" % q for q in pts))
-        s += text(x0 + 30, Y(ly), lab, color=col, anchor="west")
+        s += text(x0 + lx, Y(ly), lab, color=col, anchor="west")
     return s
 
 
@@ -1602,7 +1607,7 @@ def fig_ws_widget():
         new = (a, b) not in lattice
         s += curve_edge(a, b, RING_POS, color="accenttwo" if new else "black",
                         w=HEAVY_W if new else EDGE_W, centroid=RING_C,
-                        clear=EDGE_W if new else RING_CLEAR)
+                        clear=NODE / 2 + 3 if new else RING_CLEAR)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
     s += text(260, 8, "drag $p$: the red shortcuts appear",
@@ -1776,7 +1781,8 @@ def fig_universality():
     s += text(690, 42, "small-world index", color="annot", anchor="north")
     s += seg((x0, 96), (x0, 296), color="annot", w=3.0,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(x0, 300, "$\\sigma = 1$", color="annot", anchor="south")
+    # right of the line, or it lands on the "social" row label
+    s += text(x0 + 12, 300, "$\\sigma = 1$", color="annot", anchor="south west")
     for r, (dom, (_, _, _, sg)) in enumerate(zip(["social", "technological", "biological"],
                                                  WS98_R)):
         y = 160 + (2 - r) * 65
@@ -1842,26 +1848,35 @@ def fig_m03_teaser():
     """The X goes on the edge it removes.  Both used to land near where the two chords
     crossed, so the render X-ed out the crossing rather than either edge -- and the cut
     edges are dashed as well, so "removed" reads without the marker at all."""
-    shortcuts = [(0, 7), (3, 12), (5, 11)]
-    cut = shortcuts[:2]
+    # spread round the ring: the old three all ran close to the centre, so their midpoints
+    # -- and therefore both X marks -- landed in the same 70bp of the drawing
+    shortcuts = [(1, 6), (3, 13), (9, 14)]
+    assert all(e not in RING_EDGES for e in shortcuts)
+    mids = {}
+    for e in shortcuts:
+        paths = []
+        curve_edge(*e, RING_POS, centroid=RING_C, paths=paths)
+        q = paths[0][2]
+        mids[e] = q.mean(axis=0) if len(q) == 2 else q[len(q) // 2]
+    # which two get cut is arbitrary, so let the drawing choose: the pair whose marks are
+    # furthest apart.  Picking the first two put both X's on the chords' crossing point.
+    cut = max(itertools.combinations(shortcuts, 2),
+              key=lambda pr: math.dist(mids[pr[0]], mids[pr[1]]))
+    sep = math.dist(mids[cut[0]], mids[cut[1]])
+    assert sep >= 80, f"the two X marks are {sep:.0f}bp apart -- they will read as one"
+
     s = ""
     for a, b in RING_EDGES:
         s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
-    mids = {}
-    for a, b in shortcuts:
-        gone = (a, b) in cut
-        paths = []
-        s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C,
-                        dash="dash pattern=on 13bp off 10bp" if gone else "", paths=paths)
-        mids[(a, b)] = paths[0][2][len(paths[0][2]) // 2]
-    sep = math.dist(mids[cut[0]], mids[cut[1]])
-    assert sep >= 80, f"the two X marks are {sep:.0f}bp apart -- they will read as one"
-    for e in cut:
+    for e in shortcuts:
+        s += curve_edge(*e, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C,
+                        dash="dash pattern=on 13bp off 10bp" if e in cut else "")
+    for i2 in RING_POS:
+        s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
+    for e in cut:                       # after the discs: a marker under a node is no marker
         mx, my = mids[e]
         s += seg((mx - 16, my - 16), (mx + 16, my + 16), color="black", w=5.0)
         s += seg((mx - 16, my + 16), (mx + 16, my - 16), color="black", w=5.0)
-    for i2 in RING_POS:
-        s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
     s += text(260, 8, "cut two shortcuts --- then what?",
               color="accenttwo", anchor="south")
     return s
