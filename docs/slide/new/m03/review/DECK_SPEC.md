@@ -424,3 +424,40 @@ Every numbered slide above names a figure except: 1 (title), 2 (question), 3 (ro
 part dividers (4, 16, 33, 50, 58, 72, 82), and the question slides marked `[mid]` that
 deliberately carry no drawing (26, 30, 40, 43, 46, 49, 55, 59, 70, 73). Question slides
 that *do* carry a figure show only the setup, never the answer.
+
+
+---
+
+# Post-build corrections (recorded after the review rounds)
+
+The deck as shipped differs from the slide list above in these ways. Recorded here so the
+spec and the deck cannot drift apart silently.
+
+- **Slide 61** (`qk-bias`) and **slides 60, 83, 85, 89** changed layout, not content: a
+  figure authored for one container was used in the other, rendering at 48 % or 209 % of
+  its intended scale. Each slide now uses the layout its figure was authored for.
+- **`design-principles` is no longer the Moravian map.** A full-width map cannot share a
+  slide with the five-item principle list without overflowing the frame, so the figure is
+  a column-width dot plot of cables per town, before and after the two extra cables. The
+  claim it carries is checked in the generator: the degree variance falls, and the number
+  of towns on a single cable falls from five to two.
+- **`spanning-count` numbers its cables left to right**, not in Kruskal's order. The
+  original numbering meant the same badges carried two meanings three slides apart, and
+  introduced an algorithm's order four slides before the algorithm.
+- **`betweenness-a` shows one scenario**, the bridge removed, with each surviving piece's
+  size printed. It previously drew the bridge result while asserting the hub result in its
+  caption.
+- **In-figure prose was cut deck-wide.** Notes inside a drawing carry numbers only; the
+  sentence lives in the `figcaption`, once. Three slides had shipped the same sentence in
+  the body, the drawing and the caption.
+- **The US power-grid photograph is not used** (see FIGURE_SPEC): the slide draws its own
+  meshed network instead of the lecture note's copyrighted image.
+
+## Process note for the next module
+
+Four parallel reviewer agents were launched for round 1 and none returned a report. The
+rounds that followed were driven by `check_render.py` plus a single slide-by-slide read.
+That is weaker coverage than the playbook intends, and it is why the strengthened checker
+mattered so much: every defect it could measure, it found, and the two defect classes it
+could **not** originally measure — node size on this palette, and a label lying across a
+cable — are exactly the two that survived the whole first build.

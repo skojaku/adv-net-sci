@@ -1044,7 +1044,7 @@ def fig_boruvka_rounds():
     return moravia(edges=MST_PAIRS,
                    heavy={**{e: "accenttwo" for e in r1},
                           **{e: "accentthree" for e in r2}},
-                   extra_text=note(f"round 1: {len(r1)}\\\\round 2: {len(r2)}"))
+                   )
 
 
 # ===========================================================================
@@ -1360,10 +1360,10 @@ def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
     s += (f"\\draw[line width=2bp,draw=annot] ({x0 - 4:.1f},{y0 - 4:.1f}) rectangle "
           f"({x0 + cols * cell - 2:.1f},{y0 + rows * cell - 2:.1f});\n")
     frac = sizes.get(big, 0) / (rows * cols)
-    s += text(x0, y0 - 24, label or f"$p = {p:.2f}$", color="black",
-              anchor="north west")
-    s += text(x0 + cols * cell - 2, y0 - 24,
-              "largest puddle " + pct(frac), color="accenttwo", anchor="north east")
+    top = y0 + rows * cell + 6
+    s += text(x0, top, label or f"$p = {p:.2f}$", color="black", anchor="south west")
+    s += text(x0 + cols * cell - 2, top, "largest puddle " + pct(frac),
+              color="accenttwo", anchor="south east")
     return s, frac
 
 
@@ -1372,8 +1372,8 @@ def fig_puddle_low():
 
 
 def fig_puddle_widget():
-    s, _ = puddle_body(0.60, PUD_FIELD[:10], 118)
-    x0, x1, y = 300, 800, 46
+    s, _ = puddle_body(0.60, PUD_FIELD[:9], 96)
+    x0, x1, y = 300, 800, 44
     s += seg((x0, y), (x1, y), color="annot", w=3.0)
     s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=28)
     s += text(x1 + 20, y, "drag $p$", color="accenttwo", anchor="west")
@@ -1388,8 +1388,8 @@ FIELD_B = np.random.default_rng(23).random(_SMALL)
 def fig_order_irrelevant():
     """Two different yards, the same fraction wet -- the same answer."""
     p = 0.65
-    a, fa = puddle_body(p, FIELD_A, 225, label="one yard")
-    b, fb = puddle_body(p, FIELD_B, 80, label="another yard")
+    a, fa = puddle_body(p, FIELD_A, 248, label="one yard")
+    b, fb = puddle_body(p, FIELD_B, 66, label="another yard")
     assert abs(fa - fb) < 0.20, (fa, fb)
     return a + b
 
@@ -1643,7 +1643,9 @@ def _kappa_row(show):
         # only the threshold case is accent-2; the deck's text says why, and an
         # extra sentence here pushed the drawing past the height budget
         col = ("accenttwo" if kv == 2 else "black") if show else "annot"
-        s += text(cx, 40, f"$\\kappa = {kv}$" if show else "$\\kappa = ?$", color=col)
+        val = f"{float(kv):g}" if kv.denominator != 1 else str(kv)
+        s += text(cx, 40, f"$\\kappa = {val}$" if show else "$\\kappa = ?$",
+                  color=col)
     return s
 
 
@@ -1925,7 +1927,7 @@ assert BW_G.degree(BW_BRIDGE) == 2 and nx.is_connected(BW_G)
 assert BW_G.degree(BW_HUB) >= 6 and not clearance_bad(BW_EDGES, BW_POS)
 
 
-def _bw(removed=(), note_text=None):
+def _bw(removed=(), note_text=None, degrees=True):
     """Degrees are printed inside the discs: no external label, no spare height."""
     s = "".join(seg(BW_POS[a], BW_POS[b], color="black", w=EDGE_W)
                 for a, b in BW_EDGES if a not in removed and b not in removed)
@@ -1935,7 +1937,7 @@ def _bw(removed=(), note_text=None):
             s += seg((x - 12, y - 12), (x + 12, y + 12), color="accenttwo", w=3.6)
             s += seg((x - 12, y + 12), (x + 12, y - 12), color="accenttwo", w=3.6)
         else:
-            s += disc(x, y, str(BW_G.degree(n)), fill="accent")
+            s += disc(x, y, str(BW_G.degree(n)) if degrees else "", fill="accent")
     s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], color="accenttwo")
     if note_text:
         s += text(550, 30, note_text, color="accenttwo")
@@ -1947,14 +1949,23 @@ def fig_betweenness_q():
 
 
 def fig_betweenness_a():
-    after_bridge = len(max(nx.connected_components(
-        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_BRIDGE)), key=len))
+    """The bridge removed, and the two halves it was holding together.
+
+    The first version printed a degree in every disc and claimed the hub result in
+    a caption while drawing the bridge result -- so the slide showed one scenario
+    and asserted two, and the removed node's neighbour read as "the degree-2 node".
+    """
+    parts = sorted(nx.connected_components(
+        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_BRIDGE)), key=len,
+        reverse=True)
     after_hub = len(max(nx.connected_components(
         nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_HUB)), key=len))
-    assert after_bridge < after_hub, (after_bridge, after_hub)
-    return _bw(removed=[BW_BRIDGE],
-               note_text=f"cut the degree-2 node: {after_bridge} left. "
-                         f"Cut the hub: {after_hub}.")
+    assert len(parts) == 2 and len(parts[0]) < after_hub, (parts, after_hub)
+    s = _bw(removed=[BW_BRIDGE], degrees=False)
+    for part in parts:
+        xs = [BW_POS[n][0] for n in part]
+        s += text(sum(xs) / len(xs), 30, str(len(part)), color="accenttwo")
+    return s
 
 
 TRI_POS = {i: p for i, p in enumerate(

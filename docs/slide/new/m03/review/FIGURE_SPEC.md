@@ -28,9 +28,20 @@ Height must not bind, or everything shrinks: `H ≤ 0.7076 · W`. Enforced as an
 | thing | design | lands on slide | band |
 |---|---|---|---|
 | node disc | 40 bp diameter | 40.7–41.3 px | 26–52 px ✓ |
-| any text | 30 pt | cap height ≈ 21 px | ≥ 21 px ✓ |
+| any text | **36 pt** | x-height ≈ 15.8 px | ≥ 15 px ✓ |
+| any dot | ≥ 26 bp | ≥ 26 px | 26–52 px ✓ |
 | edge stroke | 2.6 bp | 2.7 px | — |
 | highlight stroke | 5 bp | 5.2 px | — |
+
+**The type floor is an x-height, not a cap height.** `check_render.py` measures
+x-height on the rendered slide; the generator originally asserted cap height, and for
+Latin Modern (x-height 0.431 em, cap 0.683 em) the two disagree by 60 %. 30 pt passed a
+21 px cap assertion and landed **13 px** x-height on forty slides. The generator now
+asserts the quantity the checker reads, which puts the floor at 36 pt.
+
+**A dot is a disc to the gate.** Anything round and filled is measured against the
+26–52 px band, so edge-end dots and slider handles are drawn at 26 bp or more. Squares
+and coloured glyphs are excluded by a corner test, not by size.
 
 Town names never go inside a disc — they are 5–9 characters long. Discs carry at most one
 character (a degree, a step number); names sit outside, on the side with room.
@@ -41,17 +52,29 @@ character (a degree, a step number); names sit outside, on the side with room.
 2. Ink fills ≥ 76 % of the canvas on **both** axes.
 3. Every disc drawn at `NODE = 40` bp; on-slide diameter recomputed from the actual file
    size and asserted inside 26–52 px.
-4. Every font size used is ≥ `FONT_MIN = 30` pt; on-slide cap height asserted ≥ 21 px.
+4. Every font size used is ≥ `FONT = 36` pt; on-slide **x-height** asserted ≥ 15.5 px.
 5. Palette membership: every colour emitted is one of the five tokens.
 6. Edge–disc clearance: no straight edge may pass through a disc it does not terminate at.
 7. **Planarity of the Moravian graph**: all 78 pairs of candidate cables tested for proper
    segment intersection; must be zero. This is the F2 criterion made a build gate.
+7b. **Label and chip placement are solved, not assigned.** Town names are placed by a
+   backtracking solver that clears every other name, every disc, **all thirteen** cables,
+   every edge-weight chip and a vertical band sized to the height budget. There is no
+   side-only solution, so the solver's last resort is a parked name with a thin dotted
+   leader; it never shrinks the type. Edge-weight chips are then solved against the
+   placed names. Constraining only the seven MST edges — the first attempt — let the
+   Znojmo–Hodonín cable run through the word "Znojmo" on every weighted figure.
+7c. **A drawing must fit its canvas.** `fan_tree` asserts its rightmost node is inside
+   the page: the first version put level 2 at x = 1300 on an 1100 bp canvas and half of
+   `molloy-reed` was drawn off the page.
 8. **Every printed number is computed, never typed.** The MST total, each algorithm's
    step order, the Borůvka rounds, every connectivity ratio, every R-index, every κ and
    f_c, and every simulated curve are produced in the generator and cross-checked against
    the verified table in `review/DECK_SPEC.md`. A mismatch fails the build.
-9. **Label collision**: no town label's bounding box may overlap another label or a disc
-   it does not belong to.
+9. **Label collision**: no label's bounding box may overlap another label, any disc
+   (including its own), any cable, or any weight chip. See 7b.
+10. **No unescaped `%` reaches TeX** — a bare `%` is a comment and silently swallowed the
+   rest of a `\node` line, killing the build with an error pointing at the wrong token.
 
 ## Palette — one meaning per figure, stated on the slide
 
@@ -63,6 +86,14 @@ character (a degree, a step number); names sit outside, on the side with room.
 - **accent-3** — the secondary comparison object (the random-failure curve, the second
   optimal tree, the alternative)
 - **gray** — annotation and discarded material only
+
+**Dashed means removed, and nothing else.** In the branching figures dashed initially
+marked both "the edge you arrived on" and "the branches failure took", which is two
+meanings for one visual inside a single drawing. The arrival edge is solid gray.
+
+**Prose lives in the figcaption, once.** In-figure notes carry numbers only — 292 km,
+3/8, +136 km, R values, round counts. Three slides shipped the same sentence in the body,
+in the drawing and in the caption.
 
 Deck-wide conventions, so a colour never changes meaning between consecutive slides:
 
@@ -110,7 +141,7 @@ slides — the m01 defect where the same network changed size slide to slide.
 
 | file | canvas | content | accent-2 means |
 |---|---|---|---|
-| `moravia-dark` | f 1100×470 | the eight towns as discs with names; no edges; caption "1919" | — |
+| `moravia-dark` | f 1100×470 | the eight towns as discs with names; no edges | — |
 | `boruvka-portrait` | c 520×— | the 1981 photograph, plus "Otakar Borůvka · 1899–1995" | — |
 | `abstract-1` | f 1100×470 | towns as plain discs, names outside | — |
 | `abstract-2` | f 1100×470 | + the 13 candidate routes, all thin gray | — |
@@ -148,7 +179,7 @@ slides — the m01 defect where the same network changed size slide to slide.
 | `mst-blank` | f 1100×470 | the same tree, no weights, no highlight — for the vote | — |
 | `brno-removed` | f 1100×470 | Brno drawn as an open ring with a cross; the three surviving pieces outlined | Brno, removed |
 | `tree-bridges` | c 520×340 | the tree with the unique Jihlava→Zlín route traced; "one route, no spare" | the only route |
-| `real-grid-mesh` | f 1100×420 | a drawn meshed grid, two independent routes between the same pair traced | the second route |
+| `real-grid-mesh` | f 1100×420 | a drawn meshed grid at full node size, two independent routes traced | the second route |
 | `connectivity-def` | f 1100×470 | the post-Brno grid with each piece's size printed; the largest ringed; "3 / 8" | the surviving largest piece |
 | `profile-build.gif` | f 1100×420 | 8 frames: the grid shrinking on the left, the profile point appearing on the right | the town removed this frame |
 | `r-index` | f 1100×420 | the targeted profile with the area under it filled accent-2; "R = 0.17" | the area |
@@ -205,7 +236,7 @@ must equal 2, 3 and 7/4; the Poisson curve is `1 − 1/⟨k⟩` evaluated, not s
 | `efficiency-security` | f 1100×420 | two networks with the same node count: a star (cheap, one point of failure) and a mesh (dearer, no single point) | the fragile one |
 | `mst-blank-design` | f 1100×470 | the MST with the six unused routes drawn faint dashed, for the discussion | — |
 | `redundant-answer` | f 1100×470 | the MST plus Zlín–Hodonín and Znojmo–Hodonín accent-3; the closed ring traced; "+136 km · R 0.17 → 0.27" | the two new cables |
-| `design-principles` | f 1100×470 | the improved grid with every town's degree printed, showing the degrees evened and no leaf left stranded | the protected hub |
+| `design-principles` | **c 520×400** | a dot plot: cables per town before (gray) and after (gold), one row per town | the improved degree |
 | `build-it-back` | f 1100×420 | two panels: 1926's tree and today's meshed grid, same eight towns | today's extra routes |
 
 Assertions: the simulated curves are measured on seeded `networkx` graphs at the sizes in
@@ -221,7 +252,7 @@ the redundant-answer R values are the exact fractions 11/64 and 17/64.
 | `er1-q` | c 520×340 | a random network at ⟨k⟩ = 1, κ blank |
 | `er1-a` | c 520×340 | the same, κ = 2, annotated "m02's giant component is born here" |
 | `betweenness-q` | f 1100×400 | two clusters joined by one degree-2 bridge node; a hub inside one cluster |
-| `betweenness-a` | f 1100×400 | the same, the bridge removed: two pieces; the hub removed: one piece |
+| `betweenness-a` | f 1100×420 | the same with the bridge removed and each surviving piece's size printed. It shows **one** scenario: the earlier version drew the bridge result and asserted the hub result in its caption |
 | `triangles-q` | c 520×340 | a patch dense in triangles |
 | `triangles-a` | c 520×340 | the same patch with a search fan drawn, returning into itself |
 

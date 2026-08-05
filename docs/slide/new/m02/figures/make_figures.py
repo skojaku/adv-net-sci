@@ -519,21 +519,21 @@ def fig_milgram_map():
     s += text(wi[0] - 22, wi[1] - 10, "Wichita", anchor="east")
     # clear of both the disc and the 45th-parallel stretch of coastline it used to cross
     s += text(bo[0] + 16, bo[1] + 42, "Boston", color="accenttwo", anchor="south east")
-    s += text(260, 30, "160 packets, one target: a stockbroker", color="annot")
+    s += text(260, 30, "160 packets, one stockbroker", color="annot")
     return s
 
 
 def fig_milgram_rule():
     ys = 150
-    xs = [60, 260, 460]
+    xs = [95, 260, 425]
     s = ""
     for i, x in enumerate(xs):
         s += disc(x, ys, "", fill="accent" if i != 1 else "accenttwo", name=f"p{i}")
     s += edge("p0", "p1", color="annot", w=EDGE_W, arrow="-{Stealth[length=10bp]}")
     s += edge("p1", "p2", color="accenttwo", w=HEAVY_W, arrow="-{Stealth[length=12bp]}")
-    s += text(260, 200, "you", color="accenttwo")
-    s += text(60, 200, "sender", color="annot")
-    s += text(460, 200, "next hop", color="annot")
+    s += text(xs[1], 200, "you", color="accenttwo")
+    s += text(xs[0], 200, "sender", color="annot")
+    s += text(xs[2], 200, "next hop", color="annot")
     return s
 
 
@@ -549,8 +549,8 @@ def fig_milgram_arrivals():
             s += dot(x, y, "accenttwo")
         else:
             s += f"\\draw[line width=2bp,draw=annot] ({x},{y}) circle (13bp);\n"
-    s += text(20, 12, "64 arrived", color="accenttwo", anchor="west")
-    s += text(1080, 12, "96 never did", color="annot", anchor="east")
+    s += text(20, 12, "64 arrived", color="accenttwo", anchor="south west")
+    s += text(1080, 12, "96 never did", color="annot", anchor="south east")
     return s
 
 
@@ -569,27 +569,30 @@ def fig_six_degrees_timeline():
     return s
 
 
-def _numberline(dots, x0=40, x1=490, y=150, lo=0, hi=8):
+def _numberline(dots, x0=40, x1=490, y=140, lo=0, hi=8):
+    """`dots` is ordered bottom-up; each label gets its own row.  One line each, stepped by
+    more than a line box -- two-line labels at a 62bp step overlapped one another."""
     s = seg((x0, y), (x1, y), color="annot", w=2.4)
     for v in range(lo, hi + 1, 2):
         x = x0 + (v - lo) / (hi - lo) * (x1 - x0)
         s += seg((x, y - 9), (x, y + 9), color="annot", w=2.0)
-        s += text(x, y - 20, str(v), color="annot", anchor="north")
-    s += text((x0 + x1) / 2, y - 62, "steps between two people", color="annot")
-    for v, lab, col, up in dots:
+        s += text(x, y - 24, str(v), color="annot", anchor="north")
+    s += text((x0 + x1) / 2, y - 66, "steps between two people", color="annot",
+              anchor="north")
+    for k, (v, lab, col) in enumerate(dots):
         x = x0 + (v - lo) / (hi - lo) * (x1 - x0)
         s += dot(round(x, 1), y, col)
-        s += text(x, y + 28 + up, lab, color=col, anchor="south")
+        s += text(x, y + 28 + k * 46, lab, color=col, anchor="south")
     return s
 
 
 def fig_replication_yahoo():
-    return _numberline([(6, "Milgram\\\\1967", "annot", 0), (4, "email\\\\2003", "accenttwo", 62)])
+    return _numberline([(6, "Milgram 1967", "annot"), (4, "email 2003", "accenttwo")])
 
 
 def fig_replication_facebook():
-    return _numberline([(6, "Milgram\\\\1967", "annot", 0), (4, "email\\\\2003", "annot", 62),
-                        (4.74, "Facebook\\\\2012", "accenttwo", 124)])
+    return _numberline([(6, "Milgram 1967", "annot"), (4, "email 2003", "annot"),
+                        (4.74, "Facebook 2012", "accenttwo")])
 
 
 def fig_wikirace():
@@ -713,8 +716,7 @@ def fig_distance_def():
         s += disc(p[i][0], p[i][1], lab, fill="accent")
     s += text(150, 205, "1", color="accenttwo", anchor="south east")
     s += text(372, 205, "2", color="accenttwo", anchor="south west")
-    s += text(260, 60, "$d(i,j)=2$: two edges, not two miles",
-              color="black", anchor="north")
+    s += text(260, 60, "$d(i,j)=2$: edges, not miles", color="black", anchor="north")
     return s
 
 
@@ -769,7 +771,7 @@ assert CNT_CHAIN == {1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}, CNT_CHAIN
 assert CNT_FULL == {1: 8, 2: 9, 3: 4}, CNT_FULL
 
 
-def _dotplot(counts, mean, caption):
+def _dotplot(counts, mean):
     """21 pairs, one dot each, laid out in rows by distance -- so the tallest column of
     the two plots (9 pairs at d=2) still fits inside a column figure.
 
@@ -787,16 +789,18 @@ def _dotplot(counts, mean, caption):
     ym = ytop - (float(mean) - 1) * dy
     s += seg((x0 - DOT / 2 - 12, ym), (xr + DOT / 2 + 12, ym), color="accenttwo", w=3.4,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(260, 12, caption, color="accenttwo", anchor="south")
+    s += text(260, 12, f"all {sum(counts.values())} pairs, mean "
+                        f"${mean.numerator}/{mean.denominator} = {float(mean):.2f}$",
+              color="accenttwo", anchor="south")
     return s
 
 
 def fig_apl_chain():
-    return _dotplot(CNT_CHAIN, apl(G_CHAIN), "average over all 21 pairs: $8/3 = 2.67$")
+    return _dotplot(CNT_CHAIN, apl(G_CHAIN))
 
 
 def fig_apl_shortcut():
-    return _dotplot(CNT_FULL, apl(G_FULL), "average over all 21 pairs: $38/21 = 1.81$")
+    return _dotplot(CNT_FULL, apl(G_FULL))
 
 
 def fig_chain_shortcut():
@@ -875,8 +879,8 @@ def fig_triangle_only():
     of `triangle-triplet`, centred and scaled so it is not a third of a canvas."""
     p = {0: (75, 105), 1: (260, 290), 2: (445, 105)}
     s = _closed_panel(p)
-    s += text(260, 320, "three nodes, all three edges: a triangle",
-              color="accenttwo", anchor="south")
+    s += text(260, 320, "all three edges: a triangle", color="accenttwo",
+              anchor="south")
     return s
 
 
@@ -888,8 +892,8 @@ def fig_triangle_triplet():
         s += disc(TRI_R[i][0], TRI_R[i][1], "", fill="accent")
     s += text(125, 55, "closed: a triangle", color="accenttwo", anchor="north")
     s += text(395, 55, "open", color="black", anchor="north")
-    s += text(260, 320, "three nodes, at least two edges: a triplet",
-              color="annot", anchor="south")
+    s += text(260, 320, "three nodes, two edges or three", color="annot",
+              anchor="south")
     return s
 
 
@@ -1238,7 +1242,7 @@ def fig_free_vs_not():
                         w=HEAVY_W if e in hot else EDGE_W, centroid=(260, 190))
     for i2 in RND12_POS:
         s += disc(RND12_POS[i2][0], RND12_POS[i2][1], "", fill="accent")
-    s += text(260, 12, f"{len(RND12_PATH)-1} hops across --- and not one triangle",
+    s += text(260, 12, f"{len(RND12_PATH)-1} hops across, and no triangle",
               color="accenttwo", anchor="south")
     return s
 
@@ -1421,7 +1425,7 @@ def fig_random_graph():
         s += curve_edge(a, b, RING_POS, centroid=RING_C, w=2.2)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "the same 16 nodes and 32 edges, shuffled",
+    s += text(260, 8, f"{RING_N} nodes, {len(RING_EDGES)} edges, shuffled",
               color="black", anchor="south")
     return s
 
@@ -1644,7 +1648,7 @@ def fig_shortcut_effect():
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "0" if i2 == 0 else "", fill="accent")
     for v in [0] + SHORTENED:
         s += ring(RING_POS[v][0], RING_POS[v][1], color="accentthree", w=4.0)
-    s += text(260, 8, f"gold: node 0 and the {len(SHORTENED)} now closer to it",
+    s += text(260, 8, f"gold: node 0 and the {len(SHORTENED)} now closer",
               color="accenttwo", anchor="south")
     return s
 
@@ -1668,8 +1672,8 @@ def _twocomp(answer=False):
 
 def fig_disconnected():
     s = _twocomp()
-    s += text(260, 40, "distance between the two red nodes?",
-              color="black", anchor="north")
+    s += text(260, 40, "distance between the red nodes?", color="black",
+              anchor="north")
     return s
 
 
@@ -1705,8 +1709,8 @@ def fig_degree_one():
 
 def fig_degree_one_answer():
     s = _degree_one()
-    s += text(260, 40, "$k(k-1)/2 = 0$: nothing to divide by",
-              color="accenttwo", anchor="north")
+    s += text(260, 40, "$k(k-1)/2 = 0$: nothing to divide", color="accenttwo",
+              anchor="north")
     return s
 
 
@@ -1732,8 +1736,8 @@ def fig_grid_no_triangles():
         s += disc(q[0], q[1], "", fill="accent")
     # below the grid, where every other figure in the deck puts its annotation -- at
     # y = 340 it sat on the top row of discs
-    s += text(260, 8, "a street grid: not one triangle, so $C = 0$",
-              color="accenttwo", anchor="south")
+    s += text(260, 8, "a street grid: no triangle, $C = 0$", color="accenttwo",
+              anchor="south")
     return s
 
 
@@ -1761,22 +1765,23 @@ def _gnm_gnp(mark=False):
     for p2 in (GNM_POS, GNP_POS):
         for i2 in p2:
             s += disc(p2[i2][0], p2[i2][1], "", fill="accent")
-    s += text(250, 44, "$G(n,m)$: deal exactly 5 edges", color="black", anchor="north")
-    s += text(840, 44, "$G(n,p)$: one coin per pair", color="black", anchor="north")
+    s += text(250, 52, f"$G(n,m)$: deal exactly {len(GNM_EDGES)} edges", color="black",
+              anchor="north")
+    s += text(840, 52, "$G(n,p)$: one coin per pair", color="black", anchor="north")
     return s
 
 
 def fig_gnm_gnp():
     s = _gnm_gnp()
-    s += text(545, 330, "same graphs? same mathematics?", color="accenttwo",
+    s += text(545, 324, "same graphs? same mathematics?", color="accenttwo",
               anchor="south")
     return s
 
 
 def fig_gnm_gnp_answer():
     s = _gnm_gnp()
-    s += text(250, 330, "edges are coupled", color="annot", anchor="south")
-    s += text(840, 330, "edges are independent", color="accenttwo", anchor="south")
+    s += text(250, 324, "edges are coupled", color="annot", anchor="south")
+    s += text(840, 324, "edges are independent", color="accenttwo", anchor="south")
     return s
 
 
@@ -1847,8 +1852,8 @@ def fig_recap():
         s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "triangles kept, routes short: a small world",
-              color="accenttwo", anchor="south")
+    s += text(260, 8, "triangles kept, routes short", color="accenttwo",
+              anchor="south")
     return s
 
 
