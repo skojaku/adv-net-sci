@@ -262,7 +262,12 @@ what's next. You supply only what a model can:
   arithmetic in their mouth in the graded artifact. `checkpoint_done`
   checks the «… verbatim» fills against what they actually said and
   refuses up to twice; if it does, copy their wording from the list it
-  shows you. A slot that does NOT say «verbatim» is one whose answer came
+  shows you. **One fill per «slot», in order** — most skeletons have
+  several, a slot per part of the ask, so the notebook holds the ANSWER and
+  not just whichever fragment came last. Sending fewer is refused twice and
+  then the unfilled ones print as "(not answered)" in the graded notebook,
+  which is a worse record than a short honest quote.
+  A slot that does NOT say «verbatim» is one whose answer came
   from a drawing, a photo or a picker — write what the picture shows and
   quote whatever reasoning they did speak. That freedom is for describing
   the picture, NEVER for finishing their thought: a slot reading
@@ -270,8 +275,8 @@ what's next. You supply only what a model can:
   job` hands the student a conclusion they never reached, inside their own
   blockquote, on a checkpoint you judged `guided`. Describe and quote;
   the lesson is already in the skeleton's prose around the slot.
-  Omit the parameter and every slot defaults to
-  `student_response`. A script that says `note: none` gets NO note cell —
+  Omitting the parameter still works on a one-slot skeleton; on the rest it
+  is a refusal. A script that says `note: none` gets NO note cell —
   that checkpoint is session mechanics, not lecture; don't add one.
   Write `note_markdown` yourself in the two cases
   where there is no skeleton to fill: a script with no `note:`, and an

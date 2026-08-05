@@ -414,8 +414,33 @@ function isScriptedCheckpoint(id: string): boolean {
 }
 
 /** The checkpoint the tutor is expected to work next, or null if unknown. */
+/**
+ * Where to go after closing `id`: the first scripted checkpoint with no log
+ * row, treating `id` as logged (checkpoint_done sets this before it appends).
+ *
+ * Positional "the next one in the list" was wrong once resume learned to
+ * pick up AT a gap. A log that reached cp8 with three checkpoints missing
+ * resumed correctly at the first gap and was then walked forward through six
+ * checkpoints it had already done — and could not skip them, because the
+ * build-ordering guard refuses a forward jump. Each re-close appended a
+ * second row while the note cell kept the first answer: 18 rows in a
+ * 12-checkpoint record, six of them contradicting their own note.
+ */
 function nextCheckpointId(id: string): string | null {
   const order = checkpointOrder();
+  const done = new Set<string>([baseCheckpointId(id)]);
+  try {
+    for (const e of readSessionLog()) {
+      if (e?.type === "checkpoint" && e.id) done.add(baseCheckpointId(String(e.id)));
+    }
+  } catch {
+    // No log to read — the positional answer below is the whole truth.
+  }
+  const gap = order.find((o) => !done.has(o));
+  if (gap) return gap;
+  // Everything is logged. Fall back to the positional answer so a normal
+  // session (where the row for `id` is written a moment later) still knows
+  // there is nothing after the last checkpoint.
   const i = order.indexOf(baseCheckpointId(id));
   return i >= 0 ? (order[i + 1] ?? null) : null;
 }
@@ -1203,7 +1228,7 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
   ];
   for (const e of cps) {
     out.push(
-      `## ${e.id} — ${e.judgment ?? "?"} (${Number(e.hints_used ?? 0)} hints)`,
+      `## ${e.id} — ${e.judgment ?? "?"} (${Number(e.hints_used ?? 0)} hint${Number(e.hints_used ?? 0) === 1 ? "" : "s"})`,
       `Question: ${String(e.question ?? "").trim()}`,
       `Answer (verbatim): ${String(e.student_response ?? "").trim()}`,
     );
@@ -1740,8 +1765,10 @@ export default function (pi: ExtensionAPI) {
       note_slots: Type.Optional(
         Type.Array(Type.String(), {
           description:
-            "Fills for the «slots» in the script's note: skeleton, in order (usually the " +
-            "student's own words). Missing ones default to student_response.",
+            "Fills for the «slots» in the script's note: skeleton — ONE per slot, in " +
+            "order, in the student's own words. Most skeletons have several (a slot per " +
+            "part of the ask); sending fewer is refused, and after two refusals the " +
+            "unfilled ones are printed as '(not answered)' in the graded notebook.",
         }),
       ),
       note_markdown: Type.Optional(
@@ -1872,17 +1899,18 @@ export default function (pi: ExtensionAPI) {
       // fragment came last — under-filling turns that back into one sentence
       // repeated under three labels.
       const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
-      if (
-        markers.length > 1 &&
-        !String(params.note_markdown ?? "").trim() &&
-        slots.length < markers.length &&
-        slotStrikes < 2
-      ) {
+      // No note_markdown exemption: the renderer ignores note_markdown
+      // whenever a skeleton exists, so taking that escape hatch discarded the
+      // tutor's note and printed "*(not answered)*" under slots the student
+      // had answered. Count NON-EMPTY fills — padding with "" satisfied a
+      // length check and produced the same placeholder.
+      const filled = slots.filter((f) => f.trim()).length;
+      if (markers.length > 1 && filled < markers.length && slotStrikes < 2) {
         slotDriftWarned.set(`${id}:slots`, slotStrikes + 1);
         return toResult({
           out:
             `NOT LOGGED — this checkpoint's note has ${markers.length} slots and you sent ` +
-            `${slots.length}. One fill each, in this order:\n` +
+            `${filled} filled. One fill each, in this order:\n` +
             markers
               .map(
                 (m, i) =>
@@ -2062,10 +2090,21 @@ export default function (pi: ExtensionAPI) {
       // cp0 at all. "Start the next checkpoint from your script" is not an
       // instruction a flash model can act on; "start cp1_milgram" is.
       const nextId = nextCheckpointId(id);
-      const goNext = nextId
-        ? `Start checkpoint "${nextId}" NOW: find it in your CHAPTER SCRIPT and ask its ` +
-          `first question. Do not revisit "${baseCheckpointId(id)}".`
-        : `That was the last checkpoint of this chapter — call chapter_done next.`;
+      // "Find it in your CHAPTER SCRIPT" is only true while the next id is in
+      // THIS chapter. At every chapter boundary it named a checkpoint the
+      // script in context does not contain, contradicting the script's own
+      // closing line ("call chapter_done") in the same turn — and the tool
+      // result is the instruction a flash model actually follows.
+      const thisChapter = loadChapters().find((c) => c.checkpoints.includes(baseCheckpointId(id)));
+      const nextIsHere = !!nextId && !!thisChapter && thisChapter.checkpoints.includes(nextId);
+      const goNext = !nextId
+        ? `That was the last checkpoint of the module — call chapter_done next.`
+        : nextIsHere
+          ? `Start checkpoint "${nextId}" NOW: find it in your CHAPTER SCRIPT and ask its ` +
+            `first question. Do not revisit "${baseCheckpointId(id)}".`
+          : `That was the last checkpoint of this chapter — call chapter_done next. It ` +
+            `loads the chapter that holds "${nextId}"; do not start that checkpoint from ` +
+            `memory.`;
       const READY = "Ready for the next question";
       const ASK_Q = "I have a question first";
       const MORE = "Give me another one like that";
@@ -2411,7 +2450,8 @@ export default function (pi: ExtensionAPI) {
         `        "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "\n` +
         `        "chart looks right — that is what hands your code in.*</span>"\n` +
         `        if _P(${py(savedPath)}).exists()\n` +
-        `        else ""\n` +
+        `        else "<span style='color:#6A6D75;font-size:13px'>*A 📨 hand-in button "\n` +
+        `        "appears here once you have pressed ▶ Run.*</span>"\n` +
         `    )\n` +
         `_sent`;
       let code =
