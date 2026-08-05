@@ -311,7 +311,9 @@ const quietRender = {
 
 const STATUS_PARAM = Type.String({
   description:
-    "Short student-facing status in plain, friendly words, e.g. 'Preparing our next step…'. No technical terms, no cell/code/error talk.",
+    "Short student-facing status in plain, friendly words, e.g. 'Preparing our next step…'. " +
+    "No technical terms, no cell/code/error talk — and NEVER a fact the checkpoint you are " +
+    "on is asking them to find (it is shown at the moment you build that checkpoint).",
 });
 
 // ── Chapter orchestration (the deterministic "lead agent") ──────────────────
@@ -420,6 +422,22 @@ async function insertChapterHeader(
  * or we give up after ~5 minutes. create_cell is skip-if-exists, so a late
  * success can never duplicate it.
  */
+/**
+ * No named cell may land before its chapter header. The scheduled attempt is
+ * on a timer, and cp0_welcome builds nothing — so its note cell (a greeting
+ * and one dialog later) could be created first and push "Chapter 1 of 5"
+ * below it. Called before every insert that creates a named cell; skip-if-
+ * exists makes it a no-op after the first success.
+ */
+async function ensureChapterHeader(signal?: AbortSignal): Promise<void> {
+  const chapters = loadChapters();
+  if (chapters.length === 0) return;
+  const id = currentChapterId() ?? chapters[0].id;
+  const idx = chapters.findIndex((c) => c.id === id);
+  if (idx < 0) return;
+  await insertChapterHeader(chapters[idx], idx + 1, chapters.length, signal);
+}
+
 function scheduleChapterHeader(ch: Chapter, num: number, total: number): void {
   let attempts = 0;
   const tick = async () => {
@@ -676,6 +694,7 @@ async function insertMarkdownCell(
 ): Promise<{ out: string; failed: boolean }> {
   const warm = await ensureWarm(signal);
   if (warm) return warm;
+  if (name !== "session_record") await ensureChapterHeader(signal);
   const body = `mo.md(${py(markdown)})`;
   return runKernel(
     `import marimo._code_mode as cm\n` +
@@ -730,6 +749,15 @@ function buildSessionRecord(entries: any[]): string {
       );
     }
     if (e.notes) lines.push(`*Tutor's note:* ${String(e.notes).trim()}`, "");
+    // A drift the tutor was warned about twice and logged anyway belongs in
+    // the submitted artifact, not only in the log the student never opens.
+    if (Array.isArray(e.verbatim_drift) && e.verbatim_drift.length) {
+      lines.push(
+        `*⚠ Quoting check: the wording above was flagged as not matching what you typed — ` +
+          `your own words are the line above it.*`,
+        "",
+      );
+    }
   }
   if (detours.length) {
     lines.push(`### 🧭 Your own questions (${detours.length})`, "");
@@ -817,6 +845,7 @@ export default function (pi: ExtensionAPI) {
         let chapter =
           chapters.find((c) => c.id === currentChapterId()) ?? chapters[0];
         pendingCheckpoint = chapter.checkpoints[0] ?? null;
+        let moduleFinished = false;
         if (cps.length > 0) {
           const order = chapters.flatMap((c) => c.checkpoints);
           // Scan BACKWARDS for the last id the script actually knows. The
@@ -833,6 +862,7 @@ export default function (pi: ExtensionAPI) {
           // overwriting session_summary.md — the two then disagree.
           const nextId = lastScripted ? order[order.indexOf(lastScripted) + 1] : order[0];
           const finished = !nextId;
+          moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
           pi.sendMessage(
@@ -860,14 +890,20 @@ export default function (pi: ExtensionAPI) {
         }
         writeChapterState(chapter.id);
         const num = chapters.findIndex((c) => c.id === chapter.id) + 1;
-        pi.sendMessage(
-          {
-            customType: "chapter-script",
-            content: chapterScriptMessage(chapter, num, chapters.length),
-            display: false,
-          },
-          { deliverAs: "nextTurn" },
-        );
+        // A finished module gets NO chapter script: it ends "work its
+        // checkpoints in order... then call chapter_done", which is the exact
+        // opposite of the resume brief above, and re-running cp8 appends a
+        // duplicate log row against a note cell that skips as already there.
+        if (!moduleFinished) {
+          pi.sendMessage(
+            {
+              customType: "chapter-script",
+              content: chapterScriptMessage(chapter, num, chapters.length),
+              display: false,
+            },
+            { deliverAs: "nextTurn" },
+          );
+        }
         // Delayed and retried: the kernel is still booting at session start,
         // and stays cold until a browser client connects. Each attempt
         // re-checks that this chapter is still current — if the student
@@ -1171,15 +1207,22 @@ export default function (pi: ExtensionAPI) {
       //
       // The pool is the transcript plus the QUESTION's own vocabulary —
       // echoing the words of the question ("distance", "average") is
-      // labelling, not fabrication. student_response is model-authored, so
-      // it counts only when the student typed nothing at all this round (a
-      // drawing, a picker choice): including it otherwise let the model
-      // whitelist its own paraphrase by writing the same text in both
-      // fields, which is exactly the failure the check exists to catch.
-      const pool = said.length > 0 ? [...said, String(params.question ?? "")] : [response];
+      // labelling, not fabrication. student_response is deliberately NOT in
+      // it: it is model-authored, so including it let the model whitelist
+      // its own paraphrase by writing the same text into both fields, which
+      // is exactly the failure the check exists to catch.
+      //
+      // With nothing typed there is nothing to check against, so the check
+      // stands down rather than guessing. Checkpoints answered by drawing or
+      // photograph are marked in the script instead: their slots do not say
+      // «verbatim», because the tutor legitimately writes what the picture
+      // shows there, and holding that to the transcript refused honest
+      // records (it did, for every photo checkpoint).
+      const pool = [...said, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
       for (const [i, fill] of slots.entries()) {
+        if (said.length === 0) break;
         if (!/verbatim/i.test(markers[i] ?? "")) continue;
         const d = slotDrift(fill, pool);
         if (d.numbers.length === 0 && d.words.length < 3) continue;
@@ -1356,6 +1399,7 @@ export default function (pi: ExtensionAPI) {
     async execute(_id, params, signal) {
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
+      await ensureChapterHeader(signal);
       const hide = params.show_code === true ? "False" : "True";
       let inner =
         `async with cm.get_context() as ctx:\n` +
@@ -1441,6 +1485,7 @@ export default function (pi: ExtensionAPI) {
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
+      await ensureChapterHeader(signal);
       const edBody =
         `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
         `${name}_run = mo.ui.run_button(label="▶ Run my code")\n` +
@@ -1549,6 +1594,7 @@ export default function (pi: ExtensionAPI) {
       }
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
+      await ensureChapterHeader(signal);
       let code =
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
