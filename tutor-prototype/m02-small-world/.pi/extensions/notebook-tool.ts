@@ -686,8 +686,15 @@ export default function (pi: ExtensionAPI) {
           },
           { deliverAs: "nextTurn" },
         );
-        // Delayed: the kernel is likely still booting at session start.
+        // Delayed: the kernel is likely still booting at session start. Guard
+        // against staleness — if the student chose "start fresh" (or a
+        // chapter transition otherwise happened) before this fires, the
+        // chapter this timer was scheduled for is no longer current, and
+        // inserting its header would land a stray "Chapter N" heading in
+        // the middle of a different chapter's cells (seen in production).
+        const scheduledForChapterId = chapter.id;
         const headerTimer = setTimeout(() => {
+          if (currentChapterId() !== scheduledForChapterId) return;
           void insertChapterHeader(chapter, num, chapters.length);
         }, 15_000);
         (headerTimer as any).unref?.();
@@ -912,6 +919,14 @@ export default function (pi: ExtensionAPI) {
   // Fixed-choice questions go through the ask_user_question tool
   // (@juicesharp/rpiv-ask-user-question package, declared in .pi/settings.json).
 
+  // Guards against a checkpoint's build landing in the wrong place: if the
+  // tutor starts building checkpoint B before closing checkpoint A with
+  // checkpoint_done, A's note cell gets created LATE and lands after B's
+  // build cells instead of before them (seen in production — a "welcome"
+  // note appeared after the next checkpoint's image). nb_add_template (and
+  // nb_add_exercise, when tagged) check this before inserting.
+  let pendingCheckpoint: string | null = null;
+
   // ── checkpoint_done ───────────────────────────────────────────────────────
   // One call replaces the whole per-checkpoint ceremony: the extension writes
   // the graded log (with the student's own messages captured from the
@@ -974,6 +989,7 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
+      pendingCheckpoint = null;
 
       const said = studentSaidSince(ctx);
       const logged = appendLog({
@@ -1156,7 +1172,9 @@ export default function (pi: ExtensionAPI) {
       "▶ Run button that executes it and shows output or a friendly error. They can run as " +
       "often as they like. Read their attempt with nb_read('<name>_ed.value'). env_vars " +
       "lists notebook variables their code may use (e.g. a graph G you set up earlier). " +
-      "ALWAYS use this instead of asking the student to edit cells.",
+      "ALWAYS use this instead of asking the student to edit cells. Pass checkpoint when this " +
+      "exercise IS a checkpoint's build (not a detour) — lets the tool catch a checkpoint you " +
+      "started but never closed with checkpoint_done.",
     promptSnippet: "Insert a fill-in coding exercise (code box + Run button) into the notebook",
     parameters: Type.Object({
       status: STATUS_PARAM,
@@ -1172,12 +1190,27 @@ export default function (pi: ExtensionAPI) {
           description: "Notebook variable names the student's code may use.",
         }),
       ),
+      checkpoint: Type.Optional(
+        Type.String({
+          description: "Checkpoint id this build is for, e.g. 'cp6_large_n_experiment'. Omit for detours.",
+        }),
+      ),
     }),
     async execute(_id, params, signal) {
       const name = String(params.name ?? "").trim();
       if (!/^[A-Za-z_]\w*$/.test(name)) {
         return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
       }
+      const exCpId = String(params.checkpoint ?? "").trim();
+      if (exCpId && pendingCheckpoint && pendingCheckpoint !== exCpId) {
+        return toResult({
+          out:
+            `NOT INSERTED — checkpoint '${pendingCheckpoint}' was started but never closed. ` +
+            `Call checkpoint_done for '${pendingCheckpoint}' first, then retry this insert.`,
+          failed: false,
+        });
+      }
+      if (exCpId) pendingCheckpoint = exCpId;
       const envVars = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
       const warm = await ensureWarm(signal);
@@ -1235,18 +1268,37 @@ export default function (pi: ExtensionAPI) {
         "Insert a PREMADE, tested group of cells into the notebook instantly — no code to " +
         "write. ALWAYS prefer this over nb_add_cell when a template exists for the " +
         "checkpoint. Available templates: " +
-        (names.join(", ") || "(none found)")
+        (names.join(", ") || "(none found)") +
+        ". REFUSES to insert if an earlier checkpoint was started but never closed with " +
+        "checkpoint_done — close it first, its note cell must land before this build."
       );
     })(),
     promptSnippet: "Insert premade, tested notebook cells by template name (instant)",
     promptGuidelines: [
       "For checkpoint builds use nb_add_template with the template named in lesson.yaml; nb_add_cell is only for detours and improvised cells.",
+      "Always pass checkpoint — the id of the checkpoint this build is for, from the script.",
     ],
     parameters: Type.Object({
       status: STATUS_PARAM,
       template: Type.String({ description: "Template name, e.g. 'cp2_ripple'." }),
+      checkpoint: Type.String({
+        description:
+          "Checkpoint id from the script this build is for, e.g. 'cp2_distance'. Required — " +
+          "lets the tool catch a checkpoint you started but never closed with checkpoint_done.",
+      }),
     }),
     async execute(_id, params, signal) {
+      const cpId = String(params.checkpoint ?? "").trim();
+      if (pendingCheckpoint && pendingCheckpoint !== cpId) {
+        return toResult({
+          out:
+            `NOT INSERTED — checkpoint '${pendingCheckpoint}' was started but never closed. ` +
+            `Call checkpoint_done for '${pendingCheckpoint}' first (its note cell must land ` +
+            `before this build), then retry this insert.`,
+          failed: false,
+        });
+      }
+      pendingCheckpoint = cpId || pendingCheckpoint;
       const file = path.join(process.cwd(), "cells", `${params.template}.py`);
       if (!fs.existsSync(file)) {
         return toResult({ out: `No template named '${params.template}'.`, failed: true });

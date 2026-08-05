@@ -102,9 +102,9 @@ three months, or a grader) must be able to follow the whole lesson from it.
 
 | Tool | Use for |
 |---|---|
-| `nb_add_template` | **Checkpoint builds — always first choice.** Premade tested cells; describe the result ONLY from the "student now sees" line it returns |
+| `nb_add_template` | **Checkpoint builds — always first choice.** Premade tested cells; describe the result ONLY from the "student now sees" line it returns. Pass `checkpoint` (the id this build is for) — it REFUSES if an earlier checkpoint was started but never closed with `checkpoint_done`, so a note cell can never land after the next checkpoint's build |
 | `nb_add_cell` | Improvised cells: detours, fresh-variant examples |
-| `nb_add_exercise` | Fill-in coding: scaffolded code box + ▶ Run button |
+| `nb_add_exercise` | Fill-in coding: scaffolded code box + ▶ Run button. Pass `checkpoint` when it IS a checkpoint's build (omit for detours) |
 | `nb_edit_cell` / `nb_delete_cell` | Fix/remove cells you added (never student answers) |
 | `nb_read` | Read widget values, e.g. `cp6_p.value` — never image bytes |
 | `nb_view_image` | See an uploaded image (you are text-only — a vision model describes it to you) |
