@@ -1356,7 +1356,7 @@ Most pairs aren't linked — store only what's there. The **Compressed Sparse Ro
 </div>
 <div class="fig">
 
-![w:520](figures/csr-build.png)
+![w:520](figures/csr-build-anim.gif)
 <figcaption>row 1: indptr 2→5 marks the slice — indices 0, 2, 3</figcaption>
 
 </div>
