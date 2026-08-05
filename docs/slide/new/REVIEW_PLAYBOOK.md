@@ -61,6 +61,17 @@ asserting instead of measuring it (see `FIGURE_GUIDE.md`, "Measure the render").
 them, two independent checks on in-figure type size both passed while every label in the
 deck was 17% under the floor.
 
+Module 03 inherited the same inert gate and it stayed inert for that whole build too. Once
+it was masking on colour it found 19px, 25px, 52px and 20px discs across five figures in
+one run. The line that proves it ran is the measurement, not the verdict:
+
+    node diameter: 26-42px (spread 1.6x) across 351 discs
+
+Corollary: a detector needs a discriminator, not just a filter. Aspect ratio and fill ratio
+alone cannot tell a 23px percolation cell or an accent-2 "o" from a small node disc —
+sampling the four bounding-box corners can, because a disc has empty corners and a square
+does not.
+
 ### Measure on the rendered slide, not the source PNG
 
 **Three consecutive rounds reported "node size is now uniform deck-wide" and were followed
@@ -140,23 +151,6 @@ The directed Euler condition was wrong in two consecutive rounds: the first fix 
 degree rule and moved the error into the connectivity clause, where the deck then falsified
 its own rule two slides later using its own figure. When a correctness fix lands, re-derive
 the whole statement, not the clause you touched.
-
-### A gate that cannot fire is worse than no gate
-
-`check_render.py` found node discs with `gray < 60`. On this palette accent converts to
-L = 88, so the mask was empty and `node_discs()` returned `[]` on every slide — the
-26–52px band went unenforced through an entire build of two modules while the run printed
-"all checks pass". When a check reports nothing, confirm it *can* report something: print
-what it measured, not just whether it failed. The line
-
-    node diameter: 26-42px (spread 1.6x) across 351 discs
-
-is the part of the output that proves the gate ran.
-
-Corollary: a detector needs a discriminator, not just a filter. Aspect ratio and fill
-ratio alone cannot tell a 23px percolation cell or an accent-2 "o" from a small node disc;
-sampling the four bounding-box corners can, because a disc has empty corners and a square
-does not.
 
 ### If a subagent review does not arrive, say so in the report
 
