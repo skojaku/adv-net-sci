@@ -54,6 +54,7 @@ move() { # move <path> <archive name>
 }
 
 move notebook.py "notebook-${STAMP}.py"
+move "$ART/student_signal.txt" "student_signal-${STAMP}.txt"
 move "$ART/session_log.jsonl" "session_log-${STAMP}.jsonl"
 move "$ART/session_summary.md" "session_summary-${STAMP}.md"
 move assets/uploads "uploads-${STAMP}"
