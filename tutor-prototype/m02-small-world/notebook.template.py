@@ -21,11 +21,11 @@ app = marimo.App(width="medium", css_file="lecture-hall.css")
 
 @app.cell(hide_code=True)
 def _(mo):
+    # One single string literal on purpose: marimo round-trips mo.md cells
+    # through its markdown serializer, and implicit string concatenation
+    # corrupts them (the code itself gets wrapped as markdown content).
     mo.md(
-        '<p style="text-align:right; color:#6A6D75; font-size:12px; margin:0;">'
-        "🐛 Something broken or odd? Email Prof. Sadamori Kojaku &middot; "
-        '<a href="mailto:skojaku@binghamton.edu" style="color:#35577F;">'
-        "skojaku@binghamton.edu</a></p>"
+        r"""<p style="text-align:right; color:#6A6D75; font-size:12px; margin:0;">🐛 Something broken or odd? Email Prof. Sadamori Kojaku &middot; <a href="mailto:skojaku@binghamton.edu" style="color:#35577F;">skojaku@binghamton.edu</a></p>"""
     )
     return
 
