@@ -38,6 +38,39 @@ def _renders(node):
     return False
 
 
+def _unraw_markdown(tree, src):
+    """An mo.md(...) literal holding LaTeX that is not a raw string.
+
+    `mo.md("$C_i = \\frac{a}{b}$")` is already wrong when Python parses it:
+    `\\f` is a formfeed, `\\a` a bell, `\\r` a carriage return. The cell
+    renders `C_i = rac{a}{b}` and nothing downstream can recover the text.
+    The extension's own note cells are emitted raw for exactly this reason;
+    an improvised cell has to ask for the same. Refuse rather than rewrite:
+    adding an `r` to a literal that meant `\\n` as a newline would change it.
+
+    Returns the line number of the first offender, or None.
+    """
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Call) and node.args):
+            continue
+        func = node.func
+        name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+        if name != "md":
+            continue
+        for arg in node.args:
+            if not isinstance(arg, (ast.Constant, ast.JoinedStr)):
+                continue
+            seg = ast.get_source_segment(src, arg) or ""
+            prefix = re.match(r"[A-Za-z]*", seg).group(0).lower()
+            if "r" in prefix:
+                continue
+            # A backslash before a letter is LaTeX here — markdown that wants
+            # a newline uses a real one.
+            if re.search(r"\\[a-zA-Z]", seg):
+                return arg.lineno
+    return None
+
+
 def _looks_like_ascii_art(lines):
     """Lines made only of drawing characters — a hand-built diagram.
 
@@ -58,6 +91,18 @@ def _nb_review(src):
             "",
             "CELL NOT INSERTED — Python syntax error on line "
             f"{e.lineno}: {e.msg}. Fix it and call nb_add_cell again.",
+        )
+
+    unraw = _unraw_markdown(tree, src)
+    if unraw is not None:
+        return (
+            src,
+            "",
+            "CELL NOT INSERTED — the mo.md(...) text on line "
+            f"{unraw} has a backslash command in a NON-raw string, so Python "
+            "eats it before marimo ever sees it (\\f, \\a, \\r, \\t) and the "
+            'formula renders as "rac{...}". Write it raw — mo.md(r\"\"\"...\"\"\"), '
+            'or rf\"\"\"...\"\"\" for an f-string — and call nb_add_cell again.',
         )
 
     lines = src.split("\n")

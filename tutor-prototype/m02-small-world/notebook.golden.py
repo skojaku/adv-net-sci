@@ -576,6 +576,24 @@ def cp2_paperwork_photo_sent(cp2_paperwork_photo, cp2_paperwork_photo_send, mo):
 
 
 @app.cell(hide_code=True)
+def cp2_paperwork_photo_view(mo):
+    mo.vstack([
+        mo.md(
+            "<span style='border:1px dashed #C98A2D; border-radius:6px; "
+            "display:block; padding:26px 12px; text-align:center; color:#6A6D75; "
+            "font-size:13px;'>📷 <strong>My photographed page sits here.</strong>"
+            "<br>In a real session this cell holds the saved photo; a reference "
+            "notebook has no photograph of its own to show.</span>"
+        ),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>📷 My own work on paper "
+            "— the task: draw a 5-dot ring, find the distance for all 10 pairs, then the average.</span>"
+        ),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
 def cp2_paperwork_note(mo):
     mo.md(r"""
     ### ✏️ By hand: distance on a 5-ring
@@ -698,6 +716,24 @@ def cp4_photo_sent(cp4_photo, cp4_photo_send, mo):
             "when the photo looks right — that is what tells your tutor to look.*</span>"
         )
     _sent
+    return
+
+
+@app.cell(hide_code=True)
+def cp4_photo_view(mo):
+    mo.vstack([
+        mo.md(
+            "<span style='border:1px dashed #C98A2D; border-radius:6px; "
+            "display:block; padding:26px 12px; text-align:center; color:#6A6D75; "
+            "font-size:13px;'>📷 <strong>My photographed page sits here.</strong>"
+            "<br>In a real session this cell holds the saved photo; a reference "
+            "notebook has no photograph of its own to show.</span>"
+        ),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>📷 My own work on paper "
+            "— the task: draw an 8-dot ring and add ONE extra cable where it shrinks travel the most.</span>"
+        ),
+    ])
     return
 
 
@@ -882,6 +918,24 @@ def cp5_ring_paperwork_photo_sent(
 
 
 @app.cell(hide_code=True)
+def cp5_ring_paperwork_photo_view(mo):
+    mo.vstack([
+        mo.md(
+            "<span style='border:1px dashed #C98A2D; border-radius:6px; "
+            "display:block; padding:26px 12px; text-align:center; color:#6A6D75; "
+            "font-size:13px;'>📷 <strong>My photographed page sits here.</strong>"
+            "<br>In a real session this cell holds the saved photo; a reference "
+            "notebook has no photograph of its own to show.</span>"
+        ),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>📷 My own work on paper "
+            "— the task: count the friendships among node 0's friends at k=4, then write down how C and L depend on N and k.</span>"
+        ),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
 def cp5_ring_formula_note(mo):
     mo.md(r"""
     ### 🔺 Clustering and path length on a ring — as formulas
@@ -889,15 +943,14 @@ def cp5_ring_formula_note(mo):
     has, $C$ = clustering (how often two of your friends know each
     other), $L$ = average distance (typical steps between two people).
 
-    On a ring where everyone has $k$ friends ($k/2$ per side), clustering
-    is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-    $k=2$ gives $C=0$ (the plain ring I drew: no triangles possible),
-    $k=4$ gives $C=0.5$, the value I counted out. Everybody on a ring has
-    an identical neighbourhood, so node 0's $C_0$ is the whole ring's $C$.
+    On a ring where everyone has $k$ friends ($k/2$ per side),
+    $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
+    $k=2$ gives $C=0$, $k=4$ gives $C=0.5$, the value I counted out. Every
+    neighbourhood is identical, so node 0's $C_0$ is the ring's $C$.
 
     Path length grows with the crowd instead: the farthest trip is about
-    $N/k$ hops — half a ring at $k/2$ places per hop — and the average
-    over all pairs is about half that, $L \approx N/(2k)$.
+    $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
+    about half that, $L \approx N/(2k)$.
 
     > **My work:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5. Swapping in 1000 people changes nothing near me — C stays 0.5. Farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
     """)
@@ -1014,18 +1067,18 @@ def cp6_ws_fig(cp6_p, mo, netviz, nx):
 def cp6_watts_strogatz_note(mo):
     mo.md(r"""
     ### 🎛️ The Watts–Strogatz recipe (1998)
-    What the dials say: $p$ is the fraction of links picked up and
-    reconnected to a random person. $L$ is the average distance (typical
-    steps between two people) and $C$ is clustering (how often two of your
-    friends know each other). $L_0$ and $C_0$ are those same two numbers on
-    the untouched ring, so $L/L_0$ and $C/C_0$ read "compared to before".
+    The dials: $p$ = the fraction of links picked up and reconnected to a
+    random person; $L$ = average distance (typical steps between two
+    people); $C$ = clustering (how often two of your friends know each
+    other). $L_0$ and $C_0$ are the same two on the untouched ring, so the
+    ratios read "compared to before".
 
     Rewiring only about 1% of a ring's links ($p \approx 0.01$) already
-    pulls distance down hard — on this 200-person ring $L/L_0$ falls to
-    about $0.6$ — while clustering barely moves ($C/C_0 \approx 1$).
-    Those few random rewires are the long cables from my drawing: rare
-    enough to keep the communities, long enough to shortcut the whole
-    ring. That's the small-world recipe, and it's why six degrees works.
+    pulls distance down hard — here $L/L_0$ falls to about $0.6$ — while
+    clustering barely moves ($C/C_0 \approx 1$). Those few rewires are the
+    long cables from my drawing: rare enough to keep the communities, long
+    enough to shortcut the whole ring. That's the small-world recipe, and
+    it's why six degrees works.
 
     > **My prediction:** distance drops a lot, clustering barely changes → **what I actually saw:**
     L/L₀ fell off a cliff around p ≈ 0.01 — down to 0.61 — while C/C₀ was still 0.97. Called it, but the cliff came earlier than I expected.

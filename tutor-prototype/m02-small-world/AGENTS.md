@@ -86,6 +86,10 @@ final step themselves.
 - **No `$math$` in the terminal.** KaTeX renders in the notebook, not in a
   terminal: a student who is told "we call it $L$" reads the dollar signs.
   Say "we call it L" out loud and let the note cell carry the notation.
+- **Markdown with a backslash in it goes in a RAW string**:
+  `mo.md(r"""$C_i = \frac{a}{b}$""")`. Without the `r`, Python eats `\f`,
+  `\a`, `\r` and `\t` before marimo ever sees them and the formula renders
+  as `rac{a}{b}`. `nb_add_cell` refuses the cell if you forget.
 - Math renders beautifully in `mo.md`: `$L/L_0$` (KaTeX built in). EVERY
   symbol you show ($L$, $C_0$, $p$…) gets a plain-words definition in the
   same cell — never leave notation unexplained. That includes the ones
