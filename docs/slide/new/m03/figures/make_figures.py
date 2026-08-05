@@ -1,0 +1,2018 @@
+#!/usr/bin/env python3
+"""Generate every Module 03 slide figure.
+
+Pipeline (see review/FIGURE_SPEC.md for the derivation):
+
+    TikZ body  ->  pdflatex (page fixed to the design canvas)  ->  pdftoppm -r 288
+
+Author at final size: **1 bp = 1 slide pixel**.  The page is pinned to the design
+canvas, so the deck's own scale factor is a constant per container:
+
+    cols column : 537 / 520  = 1.033 slide px per bp
+    full width  : 1120 / 1100 = 1.018 slide px per bp
+
+Only the *height* is cropped after rasterising (to the ink, plus a pad), which leaves
+the width -- and therefore the scale -- untouched.
+
+Everything a figure prints is computed here and cross-checked against the verified
+table in review/DECK_SPEC.md.  Nothing is typed in twice.
+
+    python3 figures/make_figures.py            # all figures
+    python3 figures/make_figures.py kruskal    # only figures whose name contains "kruskal"
+"""
+
+import itertools
+import math
+import re
+import subprocess
+import sys
+import tempfile
+from fractions import Fraction
+from pathlib import Path
+
+import networkx as nx
+import numpy as np
+from PIL import Image
+
+OUT = Path(__file__).resolve().parent
+
+# --------------------------------------------------------------------------- palette
+ACCENT = "3959A6"     # the object under discussion
+ACCENT2 = "B14434"    # what THIS slide is about
+ACCENT3 = "DAB167"    # the secondary / comparison object
+GRAY = "6b6b6b"       # annotation only
+INK = "000000"
+
+# --------------------------------------------------------------------------- geometry
+DPI = 288
+PXBP = DPI / 72              # 4 px per bp
+COL_W, FULL_W = 537, 1120    # containers, measured in a real browser render
+MAX_FIG_H = 380              # network-science.css: section .fig img { max-height }
+
+DESIGN = {"col": 520, "full": 1100}
+CONTAINER = {"col": COL_W, "full": FULL_W}
+
+NODE = 40          # disc diameter, bp  -> 40.7-41.3 px on the slide (band 26-52)
+SMALLNODE = 26     # only where a figure draws dozens of dots
+DOT = 14
+FONT = 30          # pt; cap height ~= 21 px on the slide, which is the floor
+CAP_RATIO = 0.70
+EDGE_W = 2.6
+HEAVY_W = 5.0
+PAD = 12           # bp of white kept around the ink when the height is cropped
+
+NODE_MIN_PX, NODE_MAX_PX = 26, 52
+TEXT_MIN_PX = 21
+INK_FILL_MIN = 0.76          # ink must span this share of the canvas width
+
+# A label's bounding box, estimated for the collision assertion.  The deck's serif
+# averages ~0.55 em per character at these sizes; measured against the rendered PNGs
+# it over-estimates slightly, which is the safe direction for a collision test.
+CHAR_W = 0.55
+LINE_H = 1.05
+
+_only = sys.argv[1:]
+_built = []
+
+
+# --------------------------------------------------------------------------- TeX
+PREAMBLE = r"""
+\documentclass{article}
+\usepackage[paperwidth=%(W)dbp,paperheight=%(H)dbp,margin=0bp]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usetikzlibrary{calc,positioning,arrows.meta,decorations.pathmorphing,decorations.markings,
+                backgrounds,fit,shapes.geometric,patterns}
+\definecolor{accent}{HTML}{%(ACCENT)s}
+\definecolor{accenttwo}{HTML}{%(ACCENT2)s}
+\definecolor{accentthree}{HTML}{%(ACCENT3)s}
+\definecolor{annot}{HTML}{%(GRAY)s}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\begin{document}%%
+\vbox to \paperheight{\vss\hbox to \paperwidth{\hss%%
+\begin{tikzpicture}[x=1bp,y=1bp,
+    every node/.style={inner sep=0pt,outer sep=0pt},
+    disc/.style={circle,draw=none,minimum size=%(NODE)dbp,inner sep=0pt,
+                 text=white,font=\fontsize{%(FONT)d}{%(FONT)d}\selectfont},
+    lab/.style={font=\fontsize{%(FONT)d}{%(LEAD)d}\selectfont,align=center},
+    ed/.style={line width=%(EDGE)sbp,draw=black},
+]
+\useasboundingbox (0,0) rectangle (%(W)d,%(H)d);
+"""
+
+POSTAMBLE = r"""
+\end{tikzpicture}%
+\hss}\vss}%
+\end{document}
+"""
+
+
+def _tex(body, w, h):
+    head = PREAMBLE % dict(W=w, H=h, ACCENT=ACCENT, ACCENT2=ACCENT2, ACCENT3=ACCENT3,
+                           GRAY=GRAY, NODE=NODE, FONT=FONT, LEAD=int(FONT * 1.15),
+                           EDGE=EDGE_W)
+    return head + body + POSTAMBLE
+
+
+def render(body, w, h):
+    """Compile one TikZ body and return the RGB image, uncropped."""
+    with tempfile.TemporaryDirectory() as td:
+        td = Path(td)
+        (td / "f.tex").write_text(_tex(body, w, h))
+        r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "f.tex"],
+                           cwd=td, capture_output=True, text=True)
+        if r.returncode:
+            tail = "\n".join(r.stdout.splitlines()[-25:])
+            raise SystemExit(f"pdflatex failed\n{tail}")
+        subprocess.run(["pdftoppm", "-png", "-r", str(DPI), "-singlefile", "f.pdf", "f"],
+                       cwd=td, check=True)
+        im = Image.open(td / "f.png").convert("RGB")
+        im.load()
+    return im
+
+
+def crop_and_check(name, im, container):
+    """Crop the height to the ink and assert what lands on the slide."""
+    w = DESIGN[container]
+    a = np.array(im.convert("L"))
+    exp = (int(round(w * PXBP)), a.shape[0])
+    assert im.size == exp, f"{name}: page is {im.size}, expected width {exp[0]}"
+
+    ys, xs = np.where(a < 200)
+    assert len(ys), f"{name}: blank figure"
+    lo = max(0, ys.min() - int(PAD * PXBP))
+    hi = min(a.shape[0], ys.max() + int(PAD * PXBP))
+    im = im.crop((0, lo, im.size[0], hi))
+
+    fw, fh = im.size
+    scale = min(CONTAINER[container] / fw, MAX_FIG_H / fh, 1.0)
+    factor = scale * PXBP                      # slide px per bp
+    want = CONTAINER[container] / w
+    assert abs(factor - want) < 1e-6, (
+        f"{name}: height binds the scale ({fh/PXBP:.0f}bp tall on a {w}bp canvas) -- "
+        f"the drawing must be shorter than {w * MAX_FIG_H / CONTAINER[container]:.0f}bp")
+
+    span = (xs.max() - xs.min() + 1) / fw
+    assert span >= INK_FILL_MIN, (
+        f"{name}: ink spans {span:.0%} of the canvas width (need {INK_FILL_MIN:.0%}) -- "
+        f"widen the drawing, do not shrink the canvas")
+
+    node_px = NODE * factor
+    assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
+    cap_px = FONT * CAP_RATIO * factor
+    assert cap_px >= TEXT_MIN_PX, f"{name}: text cap height {cap_px:.0f}px"
+    return im, fw, fh, node_px, cap_px, span
+
+
+def emit(name, body, container="col", h=None):
+    if _only and not any(k in name for k in _only):
+        return
+    w = DESIGN[container]
+    hmax = h or int(w * 0.70)
+    im = render(body, w, hmax)
+    im, fw, fh, node_px, cap_px, span = crop_and_check(name, im, container)
+    im.save(OUT / f"{name}.png")
+    _built.append(name)
+    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  cap {cap_px:.0f}px  "
+          f"ink {span:.0%}")
+
+
+# --------------------------------------------------------------------------- drawing
+def disc(x, y, label="", fill="accent", name=None, size=NODE, text_col="white"):
+    nm = f"({name})" if name else ""
+    opt = f"disc,fill={fill},minimum size={size}bp"
+    if text_col != "white":
+        opt += f",text={text_col}"
+    return f"\\node[{opt}] {nm} at ({x},{y}) {{{label}}};\n"
+
+
+def opendisc(x, y, color="accenttwo", size=NODE, w=4.0):
+    return (f"\\draw[line width={w}bp,draw={color},fill=white] ({x},{y}) "
+            f"circle ({size / 2}bp);\n")
+
+
+def ring(x, y, size=NODE, color="accenttwo", w=4.0, grow=11):
+    return (f"\\draw[line width={w}bp,draw={color}] ({x},{y}) "
+            f"circle ({(size + grow) / 2}bp);\n")
+
+
+def dot(x, y, color="accent", d=DOT):
+    return f"\\fill[{color}] ({x},{y}) circle ({d / 2}bp);\n"
+
+
+def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None):
+    o = [f"line width={w}bp", f"draw={color}"]
+    if dash:
+        o.append(dash)
+    if arrow:
+        o.append(arrow)
+    if opacity is not None:
+        o.append(f"opacity={opacity}")
+    return f"\\draw[{','.join(o)}] ({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f});\n"
+
+
+def polyline(pts, color="accent", w=3.4, dash=""):
+    o = [f"line width={w}bp", f"draw={color}"]
+    if dash:
+        o.append(dash)
+    return "\\draw[%s] %s;\n" % (",".join(o),
+                                 " -- ".join("(%.1f,%.1f)" % p for p in pts))
+
+
+DASH = "dash pattern=on 7bp off 6bp"
+DASH_LONG = "dash pattern=on 12bp off 8bp"
+
+_fontsizes = set()
+
+
+def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=None):
+    _fontsizes.add(size)
+    assert size >= FONT, f"font {size}pt is below the {FONT}pt floor"
+    # A bare % is a TeX comment: it swallowed the rest of a \node line and the
+    # build died with "Undefined control sequence" pointing at the wrong token.
+    assert not re.search(r"(?<!\\)%", s), f"unescaped % in {s!r} -- write \\%"
+    o = [f"font=\\fontsize{{{size}}}{{{int(size * 1.15)}}}\\selectfont",
+         f"text={color}", f"anchor={anchor}", "align=center"]
+    if width:
+        o.append(f"text width={width}bp")
+    if rot is not None:
+        o.append(f"rotate={rot}")
+    return f"\\node[{','.join(o)}] at ({x:.1f},{y:.1f}) {{{s}}};\n"
+
+
+def pct(x, d=0):
+    """A percentage with the % escaped -- a bare % is a TeX comment."""
+    return f"{x * 100:.{d}f}\\%"
+
+
+def fill_poly(pts, color="accenttwo", opacity=0.25):
+    return "\\fill[%s,opacity=%s] %s -- cycle;\n" % (
+        color, opacity, " -- ".join("(%.1f,%.1f)" % p for p in pts))
+
+
+def clearance_bad(edges, pos, r=NODE / 2 + 3):
+    """No straight edge may pass through a disc it does not end at."""
+    bad = []
+    for a, b in edges:
+        pa, pb = np.array(pos[a], float), np.array(pos[b], float)
+        d = pb - pa
+        L2 = float(d @ d)
+        for n, p in pos.items():
+            if n in (a, b):
+                continue
+            p = np.array(p, float)
+            t = max(0.0, min(1.0, float((p - pa) @ d) / L2))
+            if np.linalg.norm(pa + t * d - p) < r:
+                bad.append((a, b, n))
+    return bad
+
+
+def _seg_cross(p1, p2, p3, p4):
+    def o(a, b, c):
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+    d1, d2, d3, d4 = o(p3, p4, p1), o(p3, p4, p2), o(p1, p2, p3), o(p1, p2, p4)
+    return ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0))
+
+
+def crossings(edges, pos):
+    """F2 as a build gate: every pair of non-adjacent edges must not cross."""
+    bad = []
+    for (a, b), (c, d) in itertools.combinations(edges, 2):
+        if len({a, b, c, d}) < 4:
+            continue
+        if _seg_cross(pos[a], pos[b], pos[c], pos[d]):
+            bad.append(((a, b), (c, d)))
+    return bad
+
+
+def label_box(x, y, s, anchor, size=FONT, pad=6):
+    """Approximate bounding box of a text node, for the collision assertion."""
+    w = CHAR_W * size * max(len(line) for line in s.split("\\\\")) + 2 * pad
+    h = LINE_H * size * len(s.split("\\\\")) + 2 * pad
+    ax = {"center": 0.0, "west": 0.5, "east": -0.5,
+          "north": 0.0, "south": 0.0,
+          "north west": 0.5, "north east": -0.5,
+          "south west": 0.5, "south east": -0.5}[anchor]
+    ay = {"center": 0.0, "west": 0.0, "east": 0.0,
+          "north": -0.5, "south": 0.5,
+          "north west": -0.5, "north east": -0.5,
+          "south west": 0.5, "south east": 0.5}[anchor]
+    cx, cy = x + ax * w, y + ay * h
+    return (cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
+
+
+def boxes_overlap(a, b):
+    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+
+
+def box_hits_disc(b, x, y, r=NODE / 2):
+    d = (max(b[0] - x, 0, x - b[2]), max(b[1] - y, 0, y - b[3]))
+    return math.hypot(*d) < r
+
+
+def box_hits_segment(b, p, q, pad=4):
+    """Does the segment p--q enter the (padded) box?  Liang-Barsky clip."""
+    x0, y0, x1, y1 = b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    t0, t1 = 0.0, 1.0
+    for num, den in ((p[0] - x0, -dx), (x1 - p[0], dx), (p[1] - y0, -dy), (y1 - p[1], dy)):
+        if den == 0:
+            if num < 0:
+                return False
+            continue
+        t = num / den
+        if den < 0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 > t1:
+            return False
+    return True
+
+
+# Candidate sides for a town name, best first.  The placement solver below tries
+# them in order; hand-assigning these was tried and cost an afternoon of nudging
+# on a graph where two towns sit 17 km apart.
+SIDES = [
+    # (TikZ anchor, dx, dy).  The anchor names the side of the *text box* that sits
+    # at the point, so a label placed to the LEFT of a node anchors "east" at a
+    # point to its left.  Getting this pairing backwards put every label on top of
+    # its own disc, and the collision test did not catch it because it exempted a
+    # label's own node -- it no longer does.
+    ("east", -26, 0),          # label left of the node
+    ("west", 26, 0),           # label right of the node
+    ("south", 0, 26),          # label above the node
+    ("north", 0, -26),         # label below the node
+    ("south east", -20, 20), ("south west", 20, 20),
+    ("north east", -20, -20), ("north west", 20, -20),
+    # further-out variants, tried only when every close side is blocked
+    ("east", -44, 0), ("west", 44, 0), ("south", 0, 46), ("north", 0, -46),
+    ("south east", -34, 34), ("south west", 34, 34),
+    ("north east", -34, -34), ("north west", 34, -34),
+]
+
+
+def place_labels(names, pos, edges, blockers=(), bounds=None, gap=0.0):
+    """Choose a side per label so that nothing collides.  Returns {name: (anchor, dx, dy)}.
+
+    Checked against: every other label, every disc that is not the label's own,
+    every drawn edge, any extra blocker boxes (edge-weight chips), and the canvas
+    bounds.  Backtracking, best side first, so the usual answer is also the tidy one.
+    """
+    order = sorted(names, key=lambda n: -len(names[n]))
+    chosen, boxes = {}, {}
+
+    def ok(n, side):
+        anc, dx, dy = side
+        b = label_box(pos[n][0] + dx, pos[n][1] + dy, names[n], anc)
+        b = (b[0] - gap, b[1] - gap, b[2] + gap, b[3] + gap)
+        if bounds and not (bounds[0] <= b[0] and b[2] <= bounds[2]
+                           and bounds[1] <= b[1] and b[3] <= bounds[3]):
+            return None
+        for m, (x, y) in pos.items():
+            if box_hits_disc(b, x, y):
+                return None
+        for other in boxes.values():
+            if boxes_overlap(b, other):
+                return None
+        for blk in blockers:
+            if boxes_overlap(b, blk):
+                return None
+        for a, c in edges:
+            if box_hits_segment(b, pos[a], pos[c]):
+                return None
+        return b
+
+    def solve(i):
+        if i == len(order):
+            return True
+        n = order[i]
+        for side in SIDES:
+            b = ok(n, side)
+            if b is None:
+                continue
+            chosen[n], boxes[n] = side, b
+            if solve(i + 1):
+                return True
+            del chosen[n], boxes[n]
+        return False
+
+    if not solve(0):
+        raise SystemExit(
+            "label placement failed — no collision-free side assignment exists.\n"
+            "Move a node, shorten a name, or widen the canvas; do not shrink the type.")
+    return chosen, boxes
+
+
+# Where a weight chip may sit on its edge: a fraction along it, plus a perpendicular
+# offset.  Chips left at the plain midpoint collided with each other wherever two
+# edges converged on the same node -- "49" and "51" overlapped on the first render.
+CHIP_SLOTS = [(0.50, 0), (0.42, 0), (0.58, 0), (0.36, 0), (0.64, 0),
+              (0.50, 28), (0.50, -28), (0.40, 28), (0.60, -28),
+              (0.40, -28), (0.60, 28), (0.50, 40), (0.50, -40),
+              (0.30, 0), (0.70, 0), (0.35, 34), (0.65, -34),
+              (0.35, -34), (0.65, 34), (0.50, 52), (0.50, -52)]
+
+
+def place_chips(weights, pos, blockers=()):
+    """Choose a spot per edge-weight chip so no two chips (or a chip and a name) touch."""
+    items = sorted(weights, key=lambda e: math.dist(pos[e[0]], pos[e[1]]))
+    chosen, boxes = {}, {}
+
+    def slot_box(e, t, off):
+        (x1, y1), (x2, y2) = pos[e[0]], pos[e[1]]
+        L = math.hypot(x2 - x1, y2 - y1)
+        px, py = -(y2 - y1) / L, (x2 - x1) / L
+        x = x1 + t * (x2 - x1) + off * px
+        y = y1 + t * (y2 - y1) + off * py
+        return (x, y), label_box(x, y, str(weights[e]), "center", pad=5)
+
+    def solve(i):
+        if i == len(items):
+            return True
+        e = items[i]
+        for t, off in CHIP_SLOTS:
+            p, b = slot_box(e, t, off)
+            if any(box_hits_disc(b, x, y) for x, y in pos.values()):
+                continue
+            if any(boxes_overlap(b, o) for o in boxes.values()):
+                continue
+            if any(boxes_overlap(b, o) for o in blockers):
+                continue
+            chosen[e], boxes[e] = p, b
+            if solve(i + 1):
+                return True
+            del chosen[e], boxes[e]
+        return False
+
+    if not solve(0):
+        raise SystemExit("weight-chip placement failed — no collision-free layout exists.")
+    return chosen
+
+
+# ===========================================================================
+#                        the Moravian working graph
+# ===========================================================================
+# Eight real towns at their true relative positions (lat/lon projected to km about
+# the centroid).  Weights are the true inter-town distances, rounded and nudged to
+# thirteen DISTINCT integers so the MST is unique.
+
+TOWNS_LATLON = {
+    "Znojmo": (48.8555, 16.0488), "Trebic": (49.2149, 15.8815),
+    "Jihlava": (49.3961, 15.5912), "Brno": (49.1951, 16.6068),
+    "Hodonin": (48.8489, 17.1327), "Zlin": (49.2265, 17.6683),
+    "Prostejov": (49.4720, 17.1118), "Olomouc": (49.5938, 17.2509),
+}
+NAME = {"Znojmo": "Znojmo", "Trebic": "T\\v{r}eb\\'{\\i}\\v{c}",
+        "Jihlava": "Jihlava", "Brno": "Brno", "Hodonin": "Hodon\\'{\\i}n",
+        "Zlin": "Zl\\'{\\i}n", "Prostejov": "Prost\\v{e}jov", "Olomouc": "Olomouc"}
+PLAIN = {k: k for k in NAME}          # for the width estimate
+
+_lat0 = sum(v[0] for v in TOWNS_LATLON.values()) / 8
+_lon0 = sum(v[1] for v in TOWNS_LATLON.values()) / 8
+KM = {n: ((lo - _lon0) * 111.32 * math.cos(math.radians(_lat0)),
+          (la - _lat0) * 110.574) for n, (la, lo) in TOWNS_LATLON.items()}
+
+CABLES = {
+    ("Prostejov", "Olomouc"): 17, ("Jihlava", "Trebic"): 29,
+    ("Trebic", "Znojmo"): 42, ("Brno", "Prostejov"): 48,
+    ("Prostejov", "Zlin"): 49, ("Olomouc", "Zlin"): 51,
+    ("Trebic", "Brno"): 53, ("Brno", "Hodonin"): 54,
+    ("Znojmo", "Brno"): 55, ("Zlin", "Hodonin"): 57,
+    ("Jihlava", "Brno"): 77, ("Brno", "Zlin"): 78,
+    ("Znojmo", "Hodonin"): 79,
+}
+assert len(set(CABLES.values())) == len(CABLES), "cable weights are not distinct"
+
+G = nx.Graph()
+G.add_nodes_from(TOWNS_LATLON)
+for (a, b), w in CABLES.items():
+    G.add_edge(a, b, weight=w)
+assert G.number_of_nodes() == 8 and G.number_of_edges() == 13
+
+# --- canvas placement -------------------------------------------------------
+FULL_H = 470
+# The map is deliberately shorter than the canvas: town names stick out top and
+# bottom, and the *cropped* drawing must stay under 373bp or the height binds the
+# deck's scale and every Moravian figure shrinks.  Numbers that a slide claims are
+# annotated in the empty lower-left corner (NOTE_AT); prose captions live in the
+# deck's <figcaption>, not in the drawing.
+_X0, _X1, _Y0, _Y1 = 190, 930, 130, 322
+NOTE_AT = (24, 72)
+# Vertical budget for the solver: the cropped drawing must stay under
+# 1100 * 380 / 1120 = 373bp, pad included, or the height binds the scale.
+LABEL_BAND = (25, 374)
+_xs = [p[0] for p in KM.values()]
+_ys = [p[1] for p in KM.values()]
+_sx = (_X1 - _X0) / (max(_xs) - min(_xs))
+_sy = (_Y1 - _Y0) / (max(_ys) - min(_ys))
+POS = {n: (round(_X0 + (x - min(_xs)) * _sx, 1), round(_Y0 + (y - min(_ys)) * _sy, 1))
+       for n, (x, y) in KM.items()}
+
+assert not crossings(list(CABLES), POS), crossings(list(CABLES), POS)
+assert not clearance_bad(list(CABLES), POS), clearance_bad(list(CABLES), POS)
+
+# (the name placement is solved further down, once the MST is known)
+
+
+# --- the algorithms, traced -------------------------------------------------
+def kruskal_trace(g):
+    parent = {n: n for n in g}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    trace, mst = [], []
+    for a, b, w in sorted(g.edges(data="weight"), key=lambda e: e[2]):
+        ra, rb = find(a), find(b)
+        if ra == rb:
+            trace.append((a, b, w, "skip"))
+        else:
+            parent[ra] = rb
+            mst.append((a, b, w))
+            trace.append((a, b, w, "add"))
+        if len(mst) == g.number_of_nodes() - 1:
+            break
+    return mst, trace
+
+
+def prim_trace(g, start):
+    vis, tr = {start}, []
+    while len(vis) < g.number_of_nodes():
+        best = min(((u, v, g[u][v]["weight"]) for u in vis for v in g[u] if v not in vis),
+                   key=lambda e: (e[2], e[0], e[1]))
+        vis.add(best[1])
+        tr.append(best)
+    return tr
+
+
+def boruvka_rounds(g):
+    parent = {n: n for n in g}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    rounds, chosen = [], []
+    while len({find(n) for n in g}) > 1:
+        cheapest = {}
+        for a, b, w in g.edges(data="weight"):
+            ra, rb = find(a), find(b)
+            if ra == rb:
+                continue
+            for r in (ra, rb):
+                if r not in cheapest or w < cheapest[r][2]:
+                    cheapest[r] = (a, b, w)
+        rnd = sorted(set(cheapest.values()), key=lambda e: e[2])
+        rounds.append(rnd)
+        for a, b, w in rnd:
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[ra] = rb
+                chosen.append((a, b, w))
+    return rounds, chosen
+
+
+MST_EDGES, KRUSKAL = kruskal_trace(G)
+PRIM = prim_trace(G, "Brno")
+BORUVKA_ROUNDS, BORUVKA_EDGES = boruvka_rounds(G)
+MST_TOTAL = sum(w for _, _, w in MST_EDGES)
+
+MST = nx.Graph()
+MST.add_nodes_from(G)
+MST.add_weighted_edges_from(MST_EDGES)
+
+# --- assertions against review/DECK_SPEC.md ---------------------------------
+assert MST_TOTAL == 292, MST_TOTAL
+assert sum(d["weight"] for *_, d in nx.minimum_spanning_tree(G).edges(data=True)) == 292
+assert MST.number_of_edges() == 7 == G.number_of_nodes() - 1
+assert [w for _, _, w, _ in KRUSKAL] == [17, 29, 42, 48, 49, 51, 53, 54]
+assert [a for *_, a in KRUSKAL] == ["add"] * 5 + ["skip"] + ["add"] * 2
+assert [w for _, _, w in PRIM] == [48, 17, 49, 53, 29, 42, 54]
+assert sum(w for _, _, w in PRIM) == 292
+assert {frozenset((a, b)) for a, b, _ in PRIM} == {frozenset((a, b)) for a, b, _ in MST_EDGES}
+assert len(BORUVKA_ROUNDS) == 2 and len(BORUVKA_ROUNDS[0]) == 6
+assert sum(w for _, _, w in BORUVKA_EDGES) == 292
+assert sorted(d for _, d in MST.degree()) == [1, 1, 1, 1, 1, 3, 3, 3]
+assert {n for n, d in MST.degree() if d == 3} == {"Brno", "Prostejov", "Trebic"}
+
+# Which side each town's name sits on — solved, not hand-assigned.
+# Edges the solver must keep clear of are the MST's seven: those are drawn heavy on
+# most slides, and a name lying across one hides the thing under discussion.  The
+# six candidate routes are dashed gray and a name crossing one is not a defect --
+# constraining all thirteen has no solution at this type size, which the solver says
+# out loud rather than silently shrinking the type.
+LABEL_SIDE, LABEL_BOX = place_labels(
+    PLAIN, POS, [(a, b) for a, b, _ in MST_EDGES],
+    bounds=(0, LABEL_BAND[0], DESIGN["full"], LABEL_BAND[1]), gap=3.0)
+
+# ...then the weight chips, against the names that are now fixed.
+CHIP_AT = place_chips(CABLES, POS, blockers=list(LABEL_BOX.values()))
+
+KRUSKAL_STEP = {frozenset((a, b)): i for i, (a, b, _, act)
+                in enumerate([t for t in KRUSKAL if t[3] == "add"], 1)}
+PRIM_STEP = {frozenset((u, v)): i for i, (u, v, _) in enumerate(PRIM, 1)}
+SKIPPED = next((a, b, w) for a, b, w, act in KRUSKAL if act == "skip")
+assert SKIPPED[2] == 51
+
+
+# --- damage -----------------------------------------------------------------
+def connectivity(g, removed):
+    h = g.copy()
+    h.remove_nodes_from(removed)
+    if h.number_of_nodes() == 0:
+        return Fraction(0)
+    return Fraction(len(max(nx.connected_components(h), key=len)), 8)
+
+
+def profile(g, order):
+    return [connectivity(g, order[:k]) for k in range(1, 8)]
+
+
+def r_index(prof):
+    return Fraction(sum(prof), 8)
+
+
+def adaptive_order(g):
+    h = g.copy()
+    order = []
+    while h.number_of_nodes() > 1:
+        order.append(max(sorted(h.nodes()), key=lambda x: h.degree(x)))
+        h.remove_node(order[-1])
+    return order + list(h.nodes())
+
+
+ATTACK_ORDER = adaptive_order(MST)
+ATTACK_PROFILE = profile(MST, ATTACK_ORDER)
+R_ATTACK = r_index(ATTACK_PROFILE)
+RANDOM_ORDER = ["Zlin", "Znojmo", "Jihlava", "Hodonin", "Prostejov", "Trebic",
+                "Olomouc", "Brno"]
+RANDOM_PROFILE = profile(MST, RANDOM_ORDER)
+R_RANDOM = r_index(RANDOM_PROFILE)
+
+assert ATTACK_ORDER[:3] == ["Brno", "Prostejov", "Trebic"], ATTACK_ORDER
+assert R_ATTACK == Fraction(11, 64), R_ATTACK
+assert R_RANDOM == Fraction(13, 32), R_RANDOM
+assert connectivity(MST, ["Brno"]) == Fraction(3, 8)
+assert sorted(len(c) for c in nx.connected_components(
+    nx.subgraph_view(MST, filter_node=lambda n: n != "Brno"))) == [1, 3, 3]
+
+REDUNDANT = [("Zlin", "Hodonin", 57), ("Znojmo", "Hodonin", 79)]
+MST2 = MST.copy()
+MST2.add_weighted_edges_from(REDUNDANT)
+R_REDUNDANT = r_index(profile(MST2, adaptive_order(MST2)))
+EXTRA_KM = sum(w for *_, w in REDUNDANT)
+assert EXTRA_KM == 136
+assert R_REDUNDANT == Fraction(17, 64), R_REDUNDANT
+assert min(connectivity(MST2, [n]) for n in MST2) == Fraction(6, 8)
+
+# the exhaustive search that picked those two, re-run so the claim cannot rot
+_unused = [(a, b, w) for (a, b), w in CABLES.items() if not MST.has_edge(a, b)]
+_best = max(
+    (((r_index(profile(h, adaptive_order(h)))), -(e1[2] + e2[2]), (e1, e2))
+     for e1, e2 in itertools.combinations(_unused, 2)
+     for h in [nx.Graph(MST)] if not h.add_weighted_edges_from([e1, e2])),
+    key=lambda t: (t[0], t[1]))
+assert _best[0] == R_REDUNDANT and set(map(tuple, _best[2])) == set(REDUNDANT), _best
+
+
+# ===========================================================================
+#                         shared Moravian drawing
+# ===========================================================================
+def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
+            node_fill=None, node_label=None, rings=None, removed=(), badge=None,
+            struck=(), extra_text="", name_color=None, weight_override=None):
+    """One drawing routine for every Moravian figure, so the graph never moves.
+
+    edges       list of (a, b) drawn solid black          -- cables in the tree
+    faint       list of (a, b) drawn dashed gray          -- candidate routes
+    heavy       dict (a, b) -> colour                     -- what this slide is about
+    weights     iterable of (a, b) whose km is printed on the edge
+    badge       dict (a, b) -> str printed in a disc on the edge
+    struck      edges drawn with a cross through them
+    """
+    edges = list(edges or [])
+    faint = list(faint or [])
+    heavy = dict(heavy or {})
+    weights = set(frozenset(e) for e in (weights or []))
+    rings = dict(rings or {})
+    badge = dict(badge or {})
+    node_fill = dict(node_fill or {})
+    node_label = dict(node_label or {})
+    struck = set(frozenset(e) for e in struck)
+    s = ""
+
+    def draw(a, b, color, w, dash=""):
+        return seg(POS[a], POS[b], color=color, w=w, dash=dash)
+
+    for a, b in faint:
+        if a in removed or b in removed:
+            continue
+        s += draw(a, b, "annot", 2.2, DASH)
+    drawn = set()
+    for a, b in edges:
+        if a in removed or b in removed:
+            continue
+        col = heavy.get((a, b)) or heavy.get((b, a)) or "black"
+        s += draw(a, b, col, HEAVY_W if col != "black" else EDGE_W + 1.2)
+        drawn.add(frozenset((a, b)))
+    for (a, b), col in heavy.items():
+        if frozenset((a, b)) in drawn or a in removed or b in removed:
+            continue
+        s += draw(a, b, col, HEAVY_W, DASH if frozenset((a, b)) in struck else "")
+
+    for e in struck:
+        a, b = tuple(e)
+        mx, my = (POS[a][0] + POS[b][0]) / 2, (POS[a][1] + POS[b][1]) / 2
+        s += seg((mx - 15, my - 15), (mx + 15, my + 15), color="accenttwo", w=4.0)
+        s += seg((mx - 15, my + 15), (mx + 15, my - 15), color="accenttwo", w=4.0)
+
+    for e in weights:
+        a, b = tuple(e)
+        if a in removed or b in removed:
+            continue
+        key = (a, b) if (a, b) in CABLES else (b, a)
+        w = (weight_override or {}).get(key, CABLES[key])
+        mx, my = CHIP_AT[key]
+        col = (heavy.get((a, b)) or heavy.get((b, a))
+               or (weight_override or {}).get(key) and "accenttwo" or "black")
+        s += (f"\\node[fill=white,inner sep=1.5bp,"
+              f"font=\\fontsize{{{FONT}}}{{{FONT}}}\\selectfont,text={col}] "
+              f"at ({mx:.1f},{my:.1f}) {{{w}}};\n")
+
+    for e, tag in badge.items():
+        a, b = tuple(e)
+        key = (a, b) if (a, b) in CABLES else (b, a)
+        mx, my = CHIP_AT[key]
+        s += disc(mx, my, tag, fill="accenttwo", size=SMALLNODE + 8)
+
+    for n, (x, y) in POS.items():
+        if n in removed:
+            s += opendisc(x, y, "accenttwo")
+            s += seg((x - 12, y - 12), (x + 12, y + 12), color="accenttwo", w=3.6)
+            s += seg((x - 12, y + 12), (x + 12, y - 12), color="accenttwo", w=3.6)
+        else:
+            s += disc(x, y, node_label.get(n, ""), fill=node_fill.get(n, "accent"))
+        if n in rings:
+            s += ring(x, y, color=rings[n])
+
+    if labels:
+        for n, (anc, dx, dy) in LABEL_SIDE.items():
+            col = (name_color or {}).get(n, "black")
+            s += text(POS[n][0] + dx, POS[n][1] + dy, NAME[n], color=col, anchor=anc)
+    return s + extra_text
+
+
+# ===========================================================================
+#                                Part 1
+# ===========================================================================
+ALL_CABLES = list(CABLES)
+MST_PAIRS = [(a, b) for a, b, _ in MST_EDGES]
+
+
+def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
+    x, y = at or NOTE_AT
+    return text(x, y, s, color=color, anchor=anchor, size=size)
+
+
+def fig_moravia_dark():
+    return moravia(extra_text=note("1919", color="annot"))
+
+
+def fig_abstract_1():
+    return moravia(extra_text=note("8 towns", color="annot"))
+
+
+def fig_abstract_2():
+    return moravia(faint=ALL_CABLES, extra_text=note("13 routes", color="annot"))
+
+
+def fig_abstract_3():
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
+                   heavy={("Brno", "Prostejov"): "accenttwo"},
+                   extra_text=note("km of cable"))
+
+
+def fig_moravia_graph():
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
+                   rings={"Brno": "accenttwo"},
+                   extra_text=note("power plant"))
+
+
+def fig_loop_waste():
+    p = {"a": (110, 250), "b": (360, 250), "c": (360, 90), "d": (110, 90)}
+    e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "a")]
+    s = ""
+    for x, y in e[:-1]:
+        s += seg(p[x], p[y], w=EDGE_W + 1.2)
+    s += seg(p["d"], p["a"], color="accenttwo", w=HEAVY_W, dash=DASH)
+    mx, my = (p["d"][0] + p["a"][0]) / 2, (p["d"][1] + p["a"][1]) / 2
+    s += seg((mx - 15, my - 15), (mx + 15, my + 15), color="accenttwo", w=4.0)
+    s += seg((mx - 15, my + 15), (mx + 15, my - 15), color="accenttwo", w=4.0)
+    for k, (x, y) in p.items():
+        s += disc(x, y, fill="accent")
+    s += text(235, 20, "cut one cable of a loop --- still connected",
+              color="accenttwo", anchor="south")
+    return s
+
+
+def fig_tree_def():
+    p = {"r": (235, 280), "a": (110, 190), "b": (360, 190),
+         "c": (40, 90), "d": (180, 90), "e": (430, 90)}
+    e = [("r", "a"), ("r", "b"), ("a", "c"), ("a", "d"), ("b", "e")]
+    s = "".join(seg(p[x], p[y], w=EDGE_W + 1.2) for x, y in e)
+    for k, (x, y) in p.items():
+        s += disc(x, y, fill="accent")
+    s += text(235, 20, "no loop anywhere: one route between any two",
+              color="black", anchor="south")
+    return s
+
+
+def fig_spanning_count():
+    return moravia(edges=MST_PAIRS,
+                   badge={frozenset(e): str(i) for e, i in KRUSKAL_STEP.items()},
+                   extra_text=note(f"8 towns\\\\{MST.number_of_edges()} cables"))
+
+
+def fig_mst_def():
+    return moravia(faint=[e for e in ALL_CABLES if e not in MST_PAIRS],
+                   edges=MST_PAIRS,
+                   heavy={e: "accenttwo" for e in MST_PAIRS},
+                   weights=MST_PAIRS,
+                   extra_text=note(f"{MST_TOTAL} km"))
+
+
+# ===========================================================================
+#                                Part 2
+# ===========================================================================
+SORTED_CABLES = sorted(CABLES.items(), key=lambda kv: kv[1])
+
+
+def fig_kruskal_rule():
+    """The thirteen routes laid out cheapest-first: the rule, before the run."""
+    n = len(SORTED_CABLES)
+    x0, x1, y = 60, 1040, 170
+    step = (x1 - x0) / (n - 1)
+    s = seg((x0 - 34, y), (x1 + 34, y), color="annot", w=2.2,
+            arrow="-{Stealth[length=13bp,width=10bp]}")
+    for i, ((a, b), w) in enumerate(SORTED_CABLES):
+        x = x0 + i * step
+        col = "accenttwo" if i == 0 else "black"
+        s += disc(x, y, str(w), fill="white", size=SMALLNODE + 22, text_col=col)
+        s += text(x, y, str(w), color=col)
+    s += text(x0 - 34, 90, "cheapest", color="accenttwo", anchor="west")
+    s += text(x1 + 34, 90, "dearest", color="annot", anchor="east")
+    s += text(550, 250, "sort every route by price, then take them in turn",
+              color="black")
+    return s
+
+
+def _kruskal_state(step):
+    """Edges present after `step` decisions of Kruskal's trace."""
+    added = [(a, b) for a, b, _, act in KRUSKAL[:step] if act == "add"]
+    return added
+
+
+def fig_kruskal_skip():
+    added = _kruskal_state(5)
+    a, b, w = SKIPPED
+    cycle = [("Prostejov", "Olomouc"), ("Prostejov", "Zlin")]
+    return moravia(
+        faint=[e for e in ALL_CABLES if e not in added and e != (a, b)],
+        edges=added,
+        heavy={**{e: "accentthree" for e in cycle}, (a, b): "accenttwo"},
+        struck=[(a, b)],
+        weights=[(a, b)] + cycle,
+        extra_text=note(f"{w} km closes a loop"))
+
+
+def fig_kruskal_worksheet():
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES)
+
+
+def fig_kruskal_answer():
+    a, b, _ = SKIPPED
+    return moravia(faint=[(a, b)], edges=MST_PAIRS,
+                   heavy={(a, b): "accenttwo"}, struck=[(a, b)],
+                   badge={tuple(e): str(i) for e, i in KRUSKAL_STEP.items()},
+                   extra_text=note(f"{MST_TOTAL} km"))
+
+
+def fig_prim_rule():
+    out = [(u, v) for u, v in ALL_CABLES if "Brno" in (u, v)]
+    cheapest = min(out, key=lambda e: CABLES[e])
+    return moravia(faint=[e for e in ALL_CABLES if e not in out],
+                   heavy={**{e: "annot" for e in out}, cheapest: "accenttwo"},
+                   weights=out, rings={"Brno": "accenttwo"},
+                   extra_text=note("start here, buy the cheapest"))
+
+
+def fig_prim_worksheet():
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES, rings={"Brno": "accenttwo"})
+
+
+def fig_prim_vs_kruskal():
+    """Same seven cables, two orders — shown as two rows, not two graphs."""
+    kr = [w for _, _, w, act in KRUSKAL if act == "add"]
+    pr = [w for _, _, w in PRIM]
+    assert sorted(kr) == sorted(pr) and sum(kr) == sum(pr) == MST_TOTAL
+    x0, x1 = 250, 1020
+    step = (x1 - x0) / (len(kr) - 1)
+    ytop, ybot = 250, 90
+    s = ""
+    for i, w in enumerate(kr):
+        s += seg((x0 + i * step, ytop - 28),
+                 (x0 + pr.index(w) * step, ybot + 28), color="annot", w=1.8)
+    for row, (vals, col, lab) in enumerate(((kr, "annot", "Kruskal"),
+                                            (pr, "accenttwo", "Prim"))):
+        y = (ytop, ybot)[row]
+        s += text(x0 - 60, y, lab, color=col, anchor="east")
+        for i, w in enumerate(vals):
+            x = x0 + i * step
+            s += disc(x, y, "", fill="white", size=SMALLNODE + 22)
+            s += text(x, y, str(w), color=col)
+    s += text(635, 330, f"same seven cables, {MST_TOTAL} km either way", color="black")
+    return s
+
+
+def fig_cut_property():
+    p = {"a": (90, 250), "b": (90, 90), "c": (430, 250), "d": (430, 90),
+         "e": (260, 170)}
+    s = seg(p["a"], p["b"], w=EDGE_W + 1.2) + seg(p["c"], p["d"], w=EDGE_W + 1.2)
+    s += seg(p["a"], p["e"], color="annot", w=EDGE_W + 1.2)
+    s += seg(p["b"], p["e"], color="annot", w=EDGE_W + 1.2)
+    s += seg(p["e"], p["c"], color="accenttwo", w=HEAVY_W)
+    s += seg(p["e"], p["d"], color="annot", w=EDGE_W + 1.2)
+    s += seg((345, 300), (345, 40), color="annot", w=2.4, dash=DASH_LONG)
+    for k, (x, y) in p.items():
+        s += disc(x, y, fill="accent")
+    s += text(345, 330, "any cut", color="annot", anchor="south")
+    s += text(260, 20, "the cheapest cable across it is always in the tree",
+              color="accenttwo", anchor="south")
+    return s
+
+
+TIE_EDGE = ("Olomouc", "Zlin")
+TIE_WEIGHT = 49
+TIE_RIVAL = ("Prostejov", "Zlin")
+assert CABLES[TIE_RIVAL] == TIE_WEIGHT
+
+
+def _tie_optima():
+    """With the tie in place, brute-force every optimal spanning tree."""
+    w = dict(CABLES)
+    w[TIE_EDGE] = TIE_WEIGHT
+    best, opts = None, []
+    for combo in itertools.combinations(w.items(), 7):
+        h = nx.Graph()
+        h.add_nodes_from(G)
+        h.add_edges_from(e for e, _ in combo)
+        if not nx.is_connected(h):
+            continue
+        tot = sum(v for _, v in combo)
+        if best is None or tot < best:
+            best, opts = tot, [frozenset(e for e, _ in combo)]
+        elif tot == best:
+            opts.append(frozenset(e for e, _ in combo))
+    return best, opts
+
+
+TIE_TOTAL, TIE_OPTIMA = _tie_optima()
+assert TIE_TOTAL == MST_TOTAL and len(TIE_OPTIMA) == 2, (TIE_TOTAL, len(TIE_OPTIMA))
+TIE_SHARED = set.intersection(*(set(o) for o in TIE_OPTIMA))
+TIE_DIFFER = sorted(set.union(*(set(o) for o in TIE_OPTIMA)) - TIE_SHARED)
+assert len(TIE_SHARED) == 6 and set(TIE_DIFFER) == {TIE_EDGE, TIE_RIVAL}
+
+
+def fig_tie_graph():
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
+                   weight_override={TIE_EDGE: TIE_WEIGHT},
+                   heavy={TIE_EDGE: "accenttwo", TIE_RIVAL: "accenttwo"},
+                   extra_text=note(f"two routes at {TIE_WEIGHT} km"))
+
+
+def fig_tie_two_trees():
+    return moravia(faint=[e for e in ALL_CABLES if e not in TIE_SHARED
+                          and e not in TIE_DIFFER],
+                   edges=sorted(TIE_SHARED),
+                   heavy={TIE_DIFFER[0]: "accenttwo", TIE_DIFFER[1]: "accentthree"},
+                   weights=TIE_DIFFER,
+                   weight_override={TIE_EDGE: TIE_WEIGHT},
+                   extra_text=note(f"six shared, then either:\\\\both grids {TIE_TOTAL} km"))
+
+
+def fig_boruvka_rounds():
+    r1 = [(a, b) for a, b, _ in BORUVKA_ROUNDS[0]]
+    r2 = [(a, b) for a, b, _ in BORUVKA_ROUNDS[1]]
+    return moravia(edges=MST_PAIRS,
+                   heavy={**{e: "accenttwo" for e in r1},
+                          **{e: "accentthree" for e in r2}},
+                   extra_text=note(f"round 1: {len(r1)} cables at once\\\\"
+                                   f"round 2: {len(r2)}"))
+
+
+# ===========================================================================
+#                                Part 3
+# ===========================================================================
+def fig_mst_alone():
+    return moravia(edges=MST_PAIRS, weights=MST_PAIRS,
+                   extra_text=note(f"{MST_TOTAL} km"))
+
+
+def fig_mst_blank():
+    return moravia(edges=MST_PAIRS)
+
+
+def fig_brno_removed():
+    pieces = sorted(nx.connected_components(
+        nx.subgraph_view(MST, filter_node=lambda n: n != "Brno")), key=len, reverse=True)
+    assert [len(p) for p in pieces] == [3, 3, 1]
+    cols = ["accent", "accent", "accent"]
+    fill = {n: cols[i] for i, p in enumerate(pieces) for n in p}
+    return moravia(edges=MST_PAIRS, removed=["Brno"], node_fill=fill,
+                   extra_text=note("8 towns become 3 + 3 + 1"))
+
+
+def fig_tree_bridges():
+    route = nx.shortest_path(MST, "Jihlava", "Zlin")
+    pairs = list(zip(route, route[1:]))
+    return moravia(edges=MST_PAIRS,
+                   heavy={p: "accenttwo" for p in pairs},
+                   extra_text=note("one route, no spare"))
+
+
+def fig_real_grid_mesh():
+    """A drawn meshed grid: two independent routes between the same pair."""
+    cols_, rows = 7, 3
+    x0, y0, dx, dy = 110, 90, 145, 95
+    p = {(i, j): (x0 + i * dx, y0 + j * dy) for i in range(cols_) for j in range(rows)}
+    e = [((i, j), (i + 1, j)) for i in range(cols_ - 1) for j in range(rows)]
+    e += [((i, j), (i, j + 1)) for i in range(cols_) for j in range(rows - 1)]
+    s = "".join(seg(p[a], p[b], color="black", w=EDGE_W) for a, b in e)
+    top = [(0, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (6, 1)]
+    bot = [(0, 1), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (6, 1)]
+    for path, col in ((top, "accenttwo"), (bot, "accentthree")):
+        s += "".join(seg(p[a], p[b], color=col, w=HEAVY_W)
+                     for a, b in zip(path, path[1:]))
+    for k, (x, y) in p.items():
+        s += disc(x, y, fill="accent", size=SMALLNODE)
+    for k, col in (((0, 1), "accenttwo"), ((6, 1), "accenttwo")):
+        s += ring(p[k][0], p[k][1], size=SMALLNODE, color=col)
+    s += text(550, 20, "two independent routes: cut either, the other carries",
+              color="accenttwo", anchor="south")
+    return s
+
+
+def fig_connectivity_def():
+    pieces = sorted(nx.connected_components(
+        nx.subgraph_view(MST, filter_node=lambda n: n != "Brno")), key=len, reverse=True)
+    big = max(pieces, key=len)
+    frac = connectivity(MST, ["Brno"])
+    return moravia(edges=MST_PAIRS, removed=["Brno"],
+                   heavy={(a, b): "accenttwo" for a, b in MST_PAIRS
+                          if a in big and b in big},
+                   rings={n: "accenttwo" for n in big},
+                   extra_text=note(f"largest piece {len(big)}\\\\"
+                                   f"of 8 = {float(frac):.3f}"))
+
+
+# --- curve plotting ---------------------------------------------------------
+def axes(x0, x1, y0, y1, xlab, ylab, xticks, yticks, xfmt=str, yfmt=str):
+    s = seg((x0 - 14, y0), (x1 + 18, y0), color="annot", w=2.2)
+    s += seg((x0, y0 - 14), (x0, y1 + 18), color="annot", w=2.2)
+    for v, X in xticks:
+        s += seg((X, y0 - 9), (X, y0 + 9), color="annot", w=2.0)
+        s += text(X, y0 - 16, xfmt(v), color="annot", anchor="north")
+    for v, Y in yticks:
+        s += seg((x0 - 9, Y), (x0 + 9, Y), color="annot", w=2.0)
+        s += text(x0 - 16, Y, yfmt(v), color="annot", anchor="east")
+    s += text((x0 + x1) / 2, y0 - 62, xlab, color="annot", anchor="north")
+    s += text(x0 - 96, (y0 + y1) / 2, ylab, color="annot", anchor="south", rot=90)
+    return s
+
+
+# Curve labels live to the right of the plot box, inside the canvas: a label
+# hung off x=1030 ran past the 1100bp page and the crop silently lost it.
+PLOT = dict(x0=230, x1=850, y0=110, y1=330)
+LAB_X = 880
+
+
+def _XY():
+    def X(f):
+        return PLOT["x0"] + f * (PLOT["x1"] - PLOT["x0"])
+
+    def Y(v):
+        return PLOT["y0"] + v * (PLOT["y1"] - PLOT["y0"])
+    return X, Y
+
+
+def profile_axes():
+    X, Y = _XY()
+    return axes(PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"],
+                "fraction of towns removed", "connectivity",
+                [(v, X(v)) for v in (0, 0.25, 0.5, 0.75, 1.0)],
+                [(v, Y(v)) for v in (0, 0.5, 1.0)],
+                xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
+
+
+def profile_points(prof):
+    X, Y = _XY()
+    pts = [(X(0), Y(1.0))]
+    for k, v in enumerate(prof, 1):
+        pts.append((X(k / 8), Y(float(v))))
+    return pts
+
+
+def fig_r_index():
+    X, Y = _XY()
+    pts = profile_points(ATTACK_PROFILE)
+    s = fill_poly([(pts[0][0], Y(0))] + pts + [(pts[-1][0], Y(0))],
+                  color="accenttwo", opacity=0.22)
+    s += profile_axes()
+    s += polyline(pts, color="accenttwo", w=4.0)
+    s += "".join(dot(x, y, "accenttwo") for x, y in pts)
+    s += text(LAB_X, Y(0.55), f"targeted\\\\$R = {float(R_ATTACK):.2f}$",
+              color="accenttwo", anchor="west")
+    return s
+
+
+def fig_profile_random():
+    s = profile_axes()
+    pts = profile_points(RANDOM_PROFILE)
+    s += polyline(pts, color="accentthree", w=4.0)
+    s += "".join(dot(x, y, "accentthree") for x, y in pts)
+    X, Y = _XY()
+    s += text(LAB_X, Y(0.55), f"random\\\\$R = {float(R_RANDOM):.2f}$",
+              color="accentthree", anchor="west")
+    return s
+
+
+def fig_profile_both():
+    s = profile_axes()
+    X, Y = _XY()
+    for prof, col, lab, ly in ((RANDOM_PROFILE, "accentthree", "random", 0.72),
+                               (ATTACK_PROFILE, "accenttwo", "targeted", 0.22)):
+        pts = profile_points(prof)
+        s += polyline(pts, color=col, w=4.0)
+        s += "".join(dot(x, y, col) for x, y in pts)
+        s += text(LAB_X, Y(ly), f"{lab}\\\\$R = {float(r_index(prof)):.2f}$",
+                  color=col, anchor="west")
+    s += text(X(0.52), Y(0.36),
+              f"{float(R_RANDOM / R_ATTACK):.1f}$\\times$ the damage", color="black")
+    return s
+
+
+# ===========================================================================
+#           simulated networks (measured here, never drawn from memory)
+# ===========================================================================
+SIM_N, SIM_M, SIM_BA = 2000, 6000, 3
+ER = nx.gnm_random_graph(SIM_N, SIM_M, seed=7)
+SF = nx.barabasi_albert_graph(SIM_N, SIM_BA, seed=7)
+
+
+def kappa_of(degs):
+    d = np.asarray(list(degs), float)
+    return float((d ** 2).mean() / d.mean())
+
+
+ER_KAPPA = kappa_of(d for _, d in ER.degree())
+SF_KAPPA = kappa_of(d for _, d in SF.degree())
+ER_MEANK = 2 * ER.number_of_edges() / SIM_N
+assert abs(ER_MEANK - 6.0) < 0.01 and 6.9 < ER_KAPPA < 7.2, (ER_MEANK, ER_KAPPA)
+assert SF_KAPPA > 15, SF_KAPPA
+
+
+def removal_curve(g, mode, seed=11, steps=40):
+    n0 = g.number_of_nodes()
+    rng = np.random.default_rng(seed)
+    h = g.copy()
+    fixed = sorted(g.nodes(), key=lambda x: -g.degree(x))
+    xs, ys, removed, i = [0.0], [1.0], [], 0
+    per = max(1, n0 // steps)
+    while h.number_of_nodes() > per:
+        if mode == "random":
+            pick = list(rng.choice(list(h.nodes()), size=per, replace=False))
+        elif mode == "fixed":
+            pick, i = fixed[i:i + per], i + per
+        else:
+            pick = sorted(h.nodes(), key=lambda x: -h.degree(x))[:per]
+        removed += pick
+        h.remove_nodes_from(pick)
+        hh = g.copy()
+        hh.remove_nodes_from(removed)
+        xs.append(len(removed) / n0)
+        ys.append(len(max(nx.connected_components(hh), key=len)) / n0
+                  if hh.number_of_nodes() else 0.0)
+    return xs, ys
+
+
+CURVES = {(g, m): removal_curve(gr, m)
+          for g, gr in (("er", ER), ("sf", SF))
+          for m in ("random", "targeted", "fixed")}
+
+
+def collapse_at(key, thresh=0.05):
+    xs, ys = CURVES[key]
+    return next(x for x, y in zip(xs, ys) if y < thresh)
+
+
+ER_RAND_C = collapse_at(("er", "random"))
+SF_RAND_C = collapse_at(("sf", "random"))
+ER_TARG_C = collapse_at(("er", "targeted"))
+SF_TARG_C = collapse_at(("sf", "targeted"))
+ER_FIXED_C = collapse_at(("er", "fixed"))
+# the theory this deck teaches, checked against the measurement it shows
+assert abs(ER_RAND_C - (1 - 1 / ER_MEANK)) < 0.06, (ER_RAND_C, 1 - 1 / ER_MEANK)
+assert SF_TARG_C < 0.3 < ER_TARG_C, (SF_TARG_C, ER_TARG_C)
+assert SF_RAND_C > ER_RAND_C, (SF_RAND_C, ER_RAND_C)
+assert ER_FIXED_C > ER_TARG_C, (ER_FIXED_C, ER_TARG_C)
+
+
+def sim_axes(xlab="fraction of nodes removed", ylab="giant component"):
+    X, Y = _XY()
+    return axes(PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"], xlab, ylab,
+                [(v, X(v)) for v in (0, 0.25, 0.5, 0.75, 1.0)],
+                [(v, Y(v)) for v in (0, 0.5, 1.0)],
+                xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
+
+
+def sim_curve(key, col, w=4.0, dash=""):
+    X, Y = _XY()
+    xs, ys = CURVES[key]
+    return polyline([(X(x), Y(y)) for x, y in zip(xs, ys)], color=col, w=w, dash=dash)
+
+
+def fig_fixed_vs_adaptive():
+    X, Y = _XY()
+    s = sim_axes()
+    s += sim_curve(("er", "fixed"), "accentthree")
+    s += sim_curve(("er", "targeted"), "accenttwo")
+    s += text(LAB_X, Y(0.74), "fixed list\\\\gone at " + pct(ER_FIXED_C),
+              color="accentthree", anchor="west")
+    s += text(LAB_X, Y(0.26), "re-ranked\\\\gone at " + pct(ER_TARG_C),
+              color="accenttwo", anchor="west")
+    return s
+
+
+def fig_demo_still():
+    """A drawn stand-in for the web demo, captioned as such on the slide."""
+    p = {0: (70, 250), 1: (150, 170), 2: (70, 90), 3: (220, 250), 4: (220, 90),
+         5: (150, 320)}
+    e = [(0, 1), (1, 2), (1, 3), (1, 4), (3, 4), (0, 5), (5, 1)]
+    s = "".join(seg(p[a], p[b], w=EDGE_W) for a, b in e)
+    for k, (x, y) in p.items():
+        s += disc(x, y, fill="accent", size=SMALLNODE)
+    s += ring(p[1][0], p[1][1], size=SMALLNODE, color="accenttwo")
+    x0, x1, y0, y1 = 320, 470, 110, 300
+    s += seg((x0, y0), (x1, y0), color="annot", w=2.0)
+    s += seg((x0, y0), (x0, y1), color="annot", w=2.0)
+    s += polyline([(x0, y1), (x0 + 40, y1 - 90), (x0 + 80, y0 + 40), (x1, y0 + 6)],
+                  color="accenttwo", w=3.4)
+    s += text(255, 30, "pick a target, watch the curve", color="accenttwo")
+    return s
+
+
+# ===========================================================================
+#                                Part 4
+# ===========================================================================
+PUD_COLS, PUD_ROWS, PUD_CELL = 46, 12, 23
+PUD_FIELD = np.random.default_rng(5).random((PUD_ROWS, PUD_COLS))
+PC_LITERATURE = 0.5927          # 2D site percolation, square lattice
+
+
+def _clusters(mask):
+    """Label 4-connected components of a boolean grid; return (labels, sizes).
+
+    Union-find over the two neighbour offsets, not a per-cell flood fill: the
+    percolation sweep labels a 200x200 grid 23 times and the flood-fill version
+    made the whole figure build take over two minutes.
+    """
+    h, w = mask.shape
+    idx = np.arange(h * w).reshape(h, w)
+    parent = np.arange(h * w)
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for da, db in ((mask[1:, :] & mask[:-1, :], (idx[1:, :], idx[:-1, :])),
+                   (mask[:, 1:] & mask[:, :-1], (idx[:, 1:], idx[:, :-1]))):
+        for u, v in zip(db[0][da], db[1][da]):
+            ru, rv = find(int(u)), find(int(v))
+            if ru != rv:
+                parent[rv] = ru
+
+    roots = np.array([find(i) for i in range(h * w)]).reshape(h, w)
+    roots = np.where(mask, roots + 1, 0)
+    uniq, counts = np.unique(roots[roots > 0], return_counts=True)
+    return roots, dict(zip(uniq.tolist(), counts.tolist()))
+
+
+def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
+    rows, cols = field.shape
+    mask = field < p
+    lab, sizes = _clusters(mask)
+    big = max(sizes, key=sizes.get) if sizes else 0
+    x0 = (DESIGN["full"] - cols * cell) / 2
+    s = ""
+    for r in range(rows):
+        for c in range(cols):
+            if not mask[r, c]:
+                continue
+            x, y = x0 + c * cell, y0 + r * cell
+            col = "accenttwo" if lab[r, c] == big else "accent"
+            s += (f"\\fill[{col}] ({x:.1f},{y:.1f}) rectangle "
+                  f"({x + cell - 2:.1f},{y + cell - 2:.1f});\n")
+    s += (f"\\draw[line width=2bp,draw=annot] ({x0 - 4:.1f},{y0 - 4:.1f}) rectangle "
+          f"({x0 + cols * cell - 2:.1f},{y0 + rows * cell - 2:.1f});\n")
+    frac = sizes.get(big, 0) / (rows * cols)
+    s += text(x0, y0 - 24, label or f"$p = {p:.2f}$", color="black",
+              anchor="north west")
+    s += text(x0 + cols * cell - 2, y0 - 24,
+              "largest puddle " + pct(frac), color="accenttwo", anchor="north east")
+    return s, frac
+
+
+def fig_puddle_low():
+    return puddle_body(0.40, PUD_FIELD, 80)[0]
+
+
+def fig_puddle_widget():
+    s, _ = puddle_body(0.60, PUD_FIELD[:10], 118)
+    x0, x1, y = 300, 800, 46
+    s += seg((x0, y), (x1, y), color="annot", w=3.0)
+    s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=22)
+    s += text(x1 + 20, y, "drag $p$", color="accenttwo", anchor="west")
+    return s
+
+
+_SMALL = (5, PUD_COLS)
+FIELD_A = np.random.default_rng(5).random(_SMALL)
+FIELD_B = np.random.default_rng(23).random(_SMALL)
+
+
+def fig_order_irrelevant():
+    """Two different yards, the same fraction wet -- the same answer."""
+    p = 0.65
+    a, fa = puddle_body(p, FIELD_A, 225, label="one yard")
+    b, fb = puddle_body(p, FIELD_B, 80, label="another yard")
+    assert abs(fa - fb) < 0.20, (fa, fb)
+    return a + b
+
+
+PERC_N = 200
+_PERC_FIELD = np.random.default_rng(9).random((PERC_N, PERC_N))
+
+
+def perc_curve():
+    ps = np.round(np.arange(0.30, 0.86, 0.025), 3)
+    out = []
+    for p in ps:
+        lab, sizes = _clusters(_PERC_FIELD < p)
+        out.append(max(sizes.values()) / PERC_N ** 2 if sizes else 0.0)
+    return list(ps), out
+
+
+PERC_P, PERC_S = perc_curve()
+_steep = max(range(1, len(PERC_P)), key=lambda i: PERC_S[i] - PERC_S[i - 1])
+PERC_MEASURED = (PERC_P[_steep] + PERC_P[_steep - 1]) / 2
+assert abs(PERC_MEASURED - PC_LITERATURE) < 0.06, (PERC_MEASURED, PC_LITERATURE)
+
+
+def fig_phase_transition():
+    X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
+
+    def X(p):
+        return X0 + (p - 0.3) / 0.55 * (X1 - X0)
+
+    def Y(v):
+        return Y0 + v * (Y1 - Y0)
+    s = axes(X0, X1, Y0, Y1, "fraction of stones wet, $p$", "largest puddle",
+             [(v, X(v)) for v in (0.3, 0.45, 0.6, 0.75)],
+             [(v, Y(v)) for v in (0, 0.5, 1.0)],
+             xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
+    s += seg((X(PC_LITERATURE), Y0), (X(PC_LITERATURE), Y1),
+             color="annot", w=2.6, dash=DASH)
+    s += text(X(PC_LITERATURE) - 14, Y(0.86), f"$p_c \\approx {PC_LITERATURE:.2f}$",
+              color="annot", anchor="east")
+    s += polyline([(X(p), Y(v)) for p, v in zip(PERC_P, PERC_S)],
+                  color="accenttwo", w=4.0)
+    s += text(LAB_X, Y(0.86), "one puddle\\\\spans the yard", color="accenttwo",
+              anchor="west")
+    s += text(LAB_X, Y(0.16), "scattered\\\\pools", color="annot", anchor="west")
+    return s
+
+
+def fig_reverse_percolation():
+    y = 200
+    s = seg((150, y), (950, y), color="annot", w=3.0)
+    for v, lab in ((150, "empty"), (950, "full")):
+        s += seg((v, y - 12), (v, y + 12), color="annot", w=2.6)
+        s += text(v, y - 24, lab, color="annot", anchor="north")
+    s += seg((300, y + 60), (830, y + 60), color="accent", w=4.0,
+             arrow="-{Stealth[length=15bp,width=12bp]}")
+    s += text(565, y + 74, "add nodes: the giant component appears",
+              color="accent", anchor="south")
+    s += seg((830, y - 90), (300, y - 90), color="accenttwo", w=4.0,
+             arrow="-{Stealth[length=15bp,width=12bp]}")
+    s += text(565, y - 104, "remove nodes: the giant component dies",
+              color="accenttwo", anchor="north")
+    return s
+
+
+# ===========================================================================
+#                                Part 5
+# ===========================================================================
+# A small network used for q(k): degrees 4, 3, 2, 1, 1, 1 -- printed, not typed.
+QK_POS = {"h": (250, 225), "a": (70, 330), "b": (70, 120), "c": (430, 330),
+          "e": (430, 120), "d": (250, 120)}
+QK_EDGES = [("h", "a"), ("h", "b"), ("h", "c"), ("h", "e"), ("c", "d"), ("a", "b")]
+QK_G = nx.Graph(QK_EDGES)
+QK_DEG = dict(QK_G.degree())
+QK_KAPPA = kappa_of(QK_DEG.values())
+assert QK_DEG["h"] == 4 and sum(QK_DEG.values()) == 2 * len(QK_EDGES)
+assert not clearance_bad(QK_EDGES, QK_POS)
+
+
+def qk_graph(highlight=None, show_deg=False):
+    s = "".join(seg(QK_POS[a], QK_POS[b],
+                    color="accenttwo" if highlight in ((a, b), (b, a)) else "black",
+                    w=HEAVY_W if highlight in ((a, b), (b, a)) else EDGE_W)
+                for a, b in QK_EDGES)
+    for n, (x, y) in QK_POS.items():
+        s += disc(x, y, str(QK_DEG[n]) if show_deg else "", fill="accent")
+    return s
+
+
+def fig_follow_edge():
+    s = qk_graph(highlight=("h", "c"))
+    x1, y1 = QK_POS["h"]
+    x2, y2 = QK_POS["c"]
+    s += seg((x1 + 30, y1 + 34), (x2 - 20, y2 + 34), color="accenttwo", w=3.4,
+             arrow="-{Stealth[length=15bp,width=12bp]}")
+    s += text(250, 45, "pick an edge, walk to its end", color="accenttwo")
+    return s
+
+
+def fig_qk_bias():
+    """Every edge contributes two ends; a hub owns more of the pile."""
+    order = ["h", "c", "a", "b", "d", "e"]
+    x0, step, ytop = 210, 148, 300
+    s = ""
+    for i, n in enumerate(order):
+        x = x0 + i * step
+        s += disc(x, ytop, "", fill="accent")
+        s += text(x, ytop + 34, f"$k = {QK_DEG[n]}$", color="black", anchor="south")
+        for j in range(QK_DEG[n]):
+            s += dot(x, ytop - 62 - j * 34, "accenttwo", d=22)
+    s += text(150, ytop - 62, "edge", color="accenttwo", anchor="east")
+    s += text(150, ytop - 96, "ends", color="accenttwo", anchor="east")
+    s += text(620, 40, "draw an end at random: the hub owns four of the "
+                       f"{2 * len(QK_EDGES)}", color="accenttwo")
+    return s
+
+
+def fig_kappa_def():
+    s = qk_graph(highlight=("h", "c"), show_deg=True)
+    s += text(250, 45, "land here, count its links", color="accenttwo")
+    return s
+
+
+def fanout(kminus1, x0=250, spread=190, rows=(200, 200), col="accent",
+           dead=(), root_y=190):
+    """Three rings of a branching search: 1 -> b -> b^2 (b = branching factor)."""
+    b = int(round(kminus1))
+    s = ""
+    lvl = {0: [(x0, root_y)]}
+    for d in range(1, 3):
+        pts = []
+        for i, (px, py) in enumerate(lvl[d - 1]):
+            for j in range(b):
+                gap = spread / (b ** d)
+                y = py + (j - (b - 1) / 2) * gap
+                pts.append((x0 + d * 300, y))
+        lvl[d] = pts
+    for d in (1, 2):
+        for i, q in enumerate(lvl[d]):
+            p = lvl[d - 1][i // b]
+            c = "annot" if (d, i) in dead else col
+            s += seg(p, q, color=c, w=EDGE_W + 1.0,
+                     dash=DASH if (d, i) in dead else "")
+    for d in (0, 1, 2):
+        for i, (x, y) in enumerate(lvl[d]):
+            c = "annot" if (d, i) in dead else ("accent" if d else "accenttwo")
+            s += disc(x, y, "", fill=c, size=SMALLNODE if d == 2 else NODE)
+    return s, lvl
+
+
+def fig_branching():
+    s, lvl = fanout(2)
+    x0, y0 = lvl[0][0]
+    s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
+    s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
+    s += text(700, 40, "$\\kappa$ links, minus the one you arrived on: "
+                       "$\\kappa - 1$ onward", color="accenttwo")
+    return s
+
+
+def fig_molloy_reed():
+    s, _ = fanout(1, x0=180, spread=120, dead={(1, 0), (2, 0)})
+    s += text(330, 40, "$\\kappa - 1 < 1$: dies out", color="annot")
+    s2, _ = fanout(2, x0=700, spread=190)
+    s += s2
+    s += text(880, 40, "$\\kappa - 1 > 1$: never stops", color="accenttwo")
+    return s
+
+
+def small_graph(pos, edges, at, scale=1.0, labels=None, col="accent",
+                node=SMALLNODE, highlight=()):
+    dx, dy = at
+    P = {k: (dx + x * scale, dy + y * scale) for k, (x, y) in pos.items()}
+    s = "".join(seg(P[a], P[b],
+                    color="accenttwo" if (a, b) in highlight or (b, a) in highlight
+                    else "black", w=EDGE_W + 1.0) for a, b in edges)
+    for k, (x, y) in P.items():
+        s += disc(x, y, (labels or {}).get(k, ""), fill=col, size=node)
+    return s, P
+
+
+def ring_pos(n, r=1.0):
+    return {i: (r * math.cos(2 * math.pi * i / n + math.pi / 2),
+                r * math.sin(2 * math.pi * i / n + math.pi / 2)) for i in range(n)}
+
+
+RING6 = (ring_pos(6), [(i, (i + 1) % 6) for i in range(6)])
+STAR6 = ({0: (0, 0), **{i: p for i, p in enumerate(ring_pos(5).values(), 1)}},
+         [(0, i) for i in range(1, 6)])
+PATH5 = ({i: (i - 2, 0) for i in range(5)}, [(i, i + 1) for i in range(4)])
+
+KAPPA_CASES = [("a ring", RING6, 90), ("a star", STAR6, 90), ("a path", PATH5, 90)]
+KAPPA_VALUES = []
+for _nm, (_p, _e), _s in KAPPA_CASES:
+    _g = nx.Graph(_e)
+    KAPPA_VALUES.append(Fraction(
+        sum(d * d for _, d in _g.degree()), sum(d for _, d in _g.degree())))
+assert KAPPA_VALUES == [Fraction(2), Fraction(3), Fraction(7, 4)], KAPPA_VALUES
+
+
+def _kappa_row(show):
+    s = ""
+    for i, ((nm, (p, e), sc), kv) in enumerate(zip(KAPPA_CASES, KAPPA_VALUES)):
+        cx = 200 + i * 350
+        degs = dict(nx.Graph(e).degree())
+        body, _ = small_graph(p, e, (cx, 230), scale=sc,
+                              labels={k: str(degs[k]) for k in p}, node=NODE)
+        s += body
+        s += text(cx, 90, nm, color="black")
+        # only the threshold case is accent-2; the deck's text says why, and an
+        # extra sentence here pushed the drawing past the height budget
+        col = ("accenttwo" if kv == 2 else "black") if show else "annot"
+        s += text(cx, 40, f"$\\kappa = {kv}$" if show else "$\\kappa = ?$", color=col)
+    return s
+
+
+def fig_kappa_worksheet():
+    return _kappa_row(False)
+
+
+def fig_kappa_answer():
+    return _kappa_row(True)
+
+
+def fig_dilution():
+    s, lvl = fanout(2, dead={(1, 1), (2, 2), (2, 3)})
+    s += text(700, 40, "remove a fraction $f$: "
+                       "$(1-f)(\\kappa-1)$ branches survive", color="accenttwo")
+    return s
+
+
+def fig_fc_formula():
+    X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
+    kappa = 5.0
+
+    def X(f):
+        return X0 + f * (X1 - X0)
+
+    def Y(v):
+        return Y0 + v / 4.0 * (Y1 - Y0)
+    fc = 1 - 1 / (kappa - 1)
+    s = axes(X0, X1, Y0, Y1, "fraction removed, $f$", "branches per step",
+             [(v, X(v)) for v in (0, 0.25, 0.5, 0.75, 1.0)],
+             [(v, Y(v)) for v in (0, 1, 2, 3, 4)],
+             xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
+    s += seg((X0, Y(1)), (X1, Y(1)), color="annot", w=2.6, dash=DASH)
+    s += polyline([(X(f), Y((1 - f) * (kappa - 1))) for f in (0, 1)],
+                  color="accenttwo", w=4.0)
+    s += seg((X(fc), Y0), (X(fc), Y(1)), color="accenttwo", w=2.6, dash=DASH)
+    s += dot(X(fc), Y(1), "accenttwo", d=20)
+    s += text(X(fc), Y0 - 16, f"$f_c = {fc:.2f}$", color="accenttwo", anchor="north")
+    s += text(LAB_X, Y(2.6), f"$\\kappa = {kappa:g}$", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.7), "1 = break-even", color="annot", anchor="west")
+    return s
+
+
+FC_KS = list(range(2, 13))
+FC_VALS = [1 - 1 / k for k in FC_KS]
+assert abs(FC_VALS[FC_KS.index(4)] - 0.75) < 1e-12
+
+
+def fig_fc_poisson():
+    X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
+
+    def X(k):
+        return X0 + (k - 2) / 10 * (X1 - X0)
+
+    def Y(v):
+        return Y0 + v * (Y1 - Y0)
+    s = axes(X0, X1, Y0, Y1, "average degree $\\langle k \\rangle$",
+             "$f_c$", [(k, X(k)) for k in (2, 4, 6, 8, 10, 12)],
+             [(v, Y(v)) for v in (0, 0.5, 1.0)],
+             xfmt=str, yfmt=lambda v: f"{v:g}")
+    s += polyline([(X(k), Y(v)) for k, v in zip(FC_KS, FC_VALS)],
+                  color="accenttwo", w=4.0)
+    k4 = FC_VALS[FC_KS.index(4)]
+    s += seg((X(4), Y0), (X(4), Y(k4)), color="annot", w=2.4, dash=DASH)
+    s += seg((X0, Y(k4)), (X(4), Y(k4)), color="annot", w=2.4, dash=DASH)
+    s += dot(X(4), Y(k4), "accenttwo", d=20)
+    s += text(X(4) + 20, Y(k4) - 44, f"$\\langle k \\rangle = 4$: {pct(k4)} must go",
+              color="accenttwo", anchor="west")
+    return s
+
+
+SF_KMAX = list(range(10, 401, 10))
+
+
+def _kappa_powerlaw(kmax, gamma=2.5, kmin=1):
+    ks = np.arange(kmin, kmax + 1, dtype=float)
+    p = ks ** -gamma
+    p /= p.sum()
+    return float((p * ks ** 2).sum() / (p * ks).sum())
+
+
+SF_KAPPAS = [_kappa_powerlaw(k) for k in SF_KMAX]
+assert SF_KAPPAS[-1] > SF_KAPPAS[0] * 2, SF_KAPPAS[:1] + SF_KAPPAS[-1:]
+
+
+def fig_fc_scalefree():
+    X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
+
+    def X(k):
+        return X0 + (k - 10) / 390 * (X1 - X0)
+
+    def Y(v):
+        return Y0 + v * (Y1 - Y0)
+    s = axes(X0, X1, Y0, Y1, "largest degree present", "",
+             [(k, X(k)) for k in (10, 100, 200, 300, 400)],
+             [(v, Y(v)) for v in (0, 0.5, 1.0)],
+             xfmt=str, yfmt=lambda v: f"{v:g}")
+    fcs = [1 - 1 / (k - 1) for k in SF_KAPPAS]
+    s += polyline([(X(k), Y(v)) for k, v in zip(SF_KMAX, fcs)],
+                  color="accenttwo", w=4.0)
+    s += seg((X0, Y(1)), (X1, Y(1)), color="annot", w=2.4, dash=DASH)
+    s += text(LAB_X, Y(0.92), "$f_c \\to 1$", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.45), "bigger hubs,\\\\bigger $\\kappa$", color="annot",
+              anchor="west")
+    return s
+
+
+# ===========================================================================
+#                                Part 6
+# ===========================================================================
+def fig_sim_random():
+    X, Y = _XY()
+    s = sim_axes()
+    s += sim_curve(("er", "random"), "accentthree")
+    s += sim_curve(("sf", "random"), "accenttwo")
+    s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_RAND_C), color="accenttwo",
+              anchor="west")
+    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_RAND_C), color="accentthree",
+              anchor="west")
+    return s
+
+
+def fig_sim_targeted():
+    X, Y = _XY()
+    s = sim_axes()
+    s += sim_curve(("er", "targeted"), "accentthree")
+    s += sim_curve(("sf", "targeted"), "accenttwo")
+    s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_TARG_C), color="accenttwo",
+              anchor="west")
+    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_TARG_C), color="accentthree",
+              anchor="west")
+    return s
+
+
+def fig_robust_fragile():
+    X, Y = _XY()
+    s = sim_axes()
+    s += sim_curve(("er", "random"), "accentthree")
+    s += sim_curve(("er", "targeted"), "accentthree", dash=DASH)
+    s += sim_curve(("sf", "random"), "accenttwo")
+    s += sim_curve(("sf", "targeted"), "accenttwo", dash=DASH)
+    s += text(LAB_X, Y(0.80), "hubs,\\\\random", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.20), "hubs,\\\\attacked", color="accenttwo", anchor="west")
+    s += text(X(0.30), Y(0.78), "same network", color="black")
+    return s
+
+
+def fig_efficiency_security():
+    star_p = {0: (0, 0), **{i: p for i, p in enumerate(ring_pos(6).values(), 1)}}
+    star_e = [(0, i) for i in range(1, 7)]
+    s, P = small_graph(star_p, star_e, (250, 220), scale=115, node=NODE)
+    s += ring(P[0][0], P[0][1], color="accenttwo")
+    s += text(250, 40, "cheap, and one node holds it up", color="accenttwo")
+    mesh_p = ring_pos(7)
+    mesh_e = [(i, (i + 1) % 7) for i in range(7)] + [(i, (i + 2) % 7) for i in range(7)]
+    s2, _ = small_graph(mesh_p, mesh_e, (830, 220), scale=115, node=NODE)
+    s += s2
+    s += text(830, 40, "dearer, no single point of failure", color="black")
+    return s
+
+
+def fig_mst_blank_design():
+    return moravia(edges=MST_PAIRS,
+                   faint=[e for e in ALL_CABLES if e not in MST_PAIRS],
+                   weights=[e for e in ALL_CABLES if e not in MST_PAIRS])
+
+
+def fig_redundant_answer():
+    new = [(a, b) for a, b, _ in REDUNDANT]
+    return moravia(edges=MST_PAIRS,
+                   heavy={e: "accentthree" for e in new},
+                   weights=new,
+                   extra_text=note(f"$+{EXTRA_KM}$ km "
+                                   f"$({pct(EXTRA_KM / MST_TOTAL)})$\\\\"
+                                   f"$R\\;{float(R_ATTACK):.2f} \\to "
+                                   f"{float(R_REDUNDANT):.2f}$"))
+
+
+def fig_design_principles():
+    deg = dict(MST2.degree())
+    new = [(a, b) for a, b, _ in REDUNDANT]
+    worst = min((connectivity(MST2, [n]), n) for n in MST2)
+    return moravia(edges=MST_PAIRS + new,
+                   heavy={e: "accentthree" for e in new},
+                   node_label={n: str(deg[n]) for n in deg},
+                   extra_text=note(f"no leaf left alone\\\\"
+                                   f"worst loss now {float(worst[0]):.3f}"))
+
+
+def fig_build_it_back():
+    new = [(a, b) for a, b, _ in REDUNDANT]
+    return moravia(edges=MST_PAIRS,
+                   heavy={e: "accentthree" for e in new},
+                   extra_text=note("1926: the tree\\\\today: the tree $+$ loops",
+                                   color="black"))
+
+
+# ===========================================================================
+#                                Part 7
+# ===========================================================================
+def _ring_case(show):
+    p, e = ring_pos(6), [(i, (i + 1) % 6) for i in range(6)]
+    s, P = small_graph(p, e, (260, 210), scale=120, node=NODE,
+                       labels={i: "2" for i in range(6)})
+    s += text(260, 40, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = ?$",
+              color="accenttwo" if show else "annot")
+    return s, P
+
+
+def fig_ring_q():
+    return _ring_case(False)[0]
+
+
+def fig_ring_a():
+    s, P = _ring_case(True)
+    s += text(260, 380, "exactly the threshold", color="accenttwo")
+    return s
+
+
+ER1 = nx.gnm_random_graph(14, 7, seed=4)
+ER1_KAPPA = Fraction(sum(d * d for _, d in ER1.degree()),
+                     sum(d for _, d in ER1.degree()))
+
+
+def _er1_case(show):
+    pos = {i: (math.cos(2 * math.pi * i / 14) * 1.0,
+               math.sin(2 * math.pi * i / 14) * 1.0) for i in ER1}
+    s, _ = small_graph(pos, list(ER1.edges()), (260, 200), scale=150, node=SMALLNODE)
+    s += text(260, 30, "$\\langle k \\rangle = 1$" if not show
+              else "$\\kappa = 2$: the birth of the giant component",
+              color="annot" if not show else "accenttwo")
+    return s
+
+
+def fig_er1_q():
+    return _er1_case(False)
+
+
+def fig_er1_a():
+    return _er1_case(True)
+
+
+BW_BRIDGE = 6
+BW_POS = {0: (215, 200), 3: (345, 200), 1: (255, 324), 2: (110, 276),
+          4: (110, 124), 5: (255, 76),
+          BW_BRIDGE: (550, 200),
+          7: (755, 200), 8: (885, 200), 9: (795, 324), 10: (650, 276),
+          11: (650, 124), 12: (795, 76)}
+BW_EDGES = ([(0, i) for i in (1, 2, 3, 4, 5)]
+            + [(3, BW_BRIDGE), (BW_BRIDGE, 7)]
+            + [(7, i) for i in (8, 9, 10, 11, 12)])
+BW_G = nx.Graph(BW_EDGES)
+BW_HUB = max(BW_G.degree(), key=lambda kv: kv[1])[0]
+assert BW_G.degree(BW_BRIDGE) == 2 and nx.is_connected(BW_G)
+assert BW_G.degree(BW_HUB) >= 6 and not clearance_bad(BW_EDGES, BW_POS)
+
+
+def _bw(removed=(), note_text=None):
+    s = "".join(seg(BW_POS[a], BW_POS[b], color="black", w=EDGE_W)
+                for a, b in BW_EDGES if a not in removed and b not in removed)
+    for n, (x, y) in BW_POS.items():
+        if n in removed:
+            s += opendisc(x, y, "accenttwo", size=SMALLNODE)
+        else:
+            s += disc(x, y, "", fill="accent", size=SMALLNODE)
+    s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], size=SMALLNODE,
+              color="accenttwo")
+    s += text(BW_POS[BW_BRIDGE][0], 370, "degree 2", color="accenttwo")
+    s += ring(BW_POS[BW_HUB][0], BW_POS[BW_HUB][1], size=SMALLNODE,
+              color="accentthree")
+    s += text(BW_POS[BW_HUB][0], 370, f"degree {BW_G.degree(BW_HUB)}",
+              color="accentthree")
+    if note_text:
+        s += text(550, 30, note_text, color="accenttwo")
+    return s
+
+
+def fig_betweenness_q():
+    return _bw()
+
+
+def fig_betweenness_a():
+    after_bridge = len(max(nx.connected_components(
+        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_BRIDGE)), key=len))
+    after_hub = len(max(nx.connected_components(
+        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_HUB)), key=len))
+    assert after_bridge < after_hub, (after_bridge, after_hub)
+    return _bw(removed=[BW_BRIDGE],
+               note_text=f"cut the degree-2 node: {after_bridge} left. "
+                         f"Cut the hub: {after_hub}.")
+
+
+TRI_POS = {i: p for i, p in enumerate(
+    [(0, 0), (1.1, 0.55), (2.2, 0), (1.1, -0.55), (3.3, 0.55), (3.3, -0.55)])}
+TRI_EDGES = [(0, 1), (1, 2), (2, 3), (3, 0), (0, 2), (2, 4), (4, 5), (5, 2), (1, 4)]
+
+
+def _tri(show):
+    s, P = small_graph(TRI_POS, TRI_EDGES, (120, 190), scale=120, node=NODE)
+    if show:
+        loop = [(0, 1), (1, 2), (2, 0)]
+        s += "".join(seg(P[a], P[b], color="accenttwo", w=HEAVY_W) for a, b in loop)
+        s += text(280, 30, "the search comes back to where it started",
+                  color="accenttwo")
+    else:
+        s += text(280, 30, "triangles everywhere", color="annot")
+    return s
+
+
+def fig_triangles_q():
+    return _tri(False)
+
+
+def fig_triangles_a():
+    return _tri(True)
+
+
+# ===========================================================================
+#                              Wrap-up
+# ===========================================================================
+def fig_recap():
+    cards = [("build it", f"{MST_TOTAL} km", "accent"),
+             ("break it", f"{float(connectivity(MST, ['Brno'])):.3f}", "accenttwo"),
+             ("build it back", f"$+{EXTRA_KM}$ km", "accentthree"),
+             ("predict it", "$1 - \\frac{1}{\\kappa-1}$", "black")]
+    s = ""
+    for i, (title, val, col) in enumerate(cards):
+        cx = 150 + i * 267
+        s += (f"\\draw[line width=2.4bp,draw=annot] ({cx - 118},70) rectangle "
+              f"({cx + 118},310);\n")
+        s += text(cx, 260, title, color="annot")
+        s += text(cx, 160, val, color=col)
+    return s
+
+
+def fig_m04_teaser():
+    order = ["h", "c", "a", "b", "d", "e"]
+    x0, step, ytop = 90, 82, 250
+    s = ""
+    for i, n in enumerate(order):
+        x = x0 + i * step
+        s += disc(x, ytop, "", fill="accent", size=SMALLNODE)
+        for j in range(QK_DEG[n]):
+            s += dot(x, ytop - 48 - j * 30, "accenttwo", d=18)
+    s += text(260, 330, "your friends", color="accent")
+    s += text(260, 30, "have more friends than you", color="accenttwo")
+    return s
+
+
+FIGURES = [
+    ("moravia-dark", fig_moravia_dark, "full", FULL_H),
+    ("abstract-1", fig_abstract_1, "full", FULL_H),
+    ("abstract-2", fig_abstract_2, "full", FULL_H),
+    ("abstract-3", fig_abstract_3, "full", FULL_H),
+    ("moravia-graph", fig_moravia_graph, "full", FULL_H),
+    ("loop-waste", fig_loop_waste, "col", 320),
+    ("tree-def", fig_tree_def, "col", 330),
+    ("spanning-count", fig_spanning_count, "full", FULL_H),
+    ("mst-def", fig_mst_def, "full", FULL_H),
+    ("kruskal-rule", fig_kruskal_rule, "full", 300),
+    ("kruskal-skip", fig_kruskal_skip, "full", FULL_H),
+    ("kruskal-worksheet", fig_kruskal_worksheet, "full", FULL_H),
+    ("kruskal-answer", fig_kruskal_answer, "full", FULL_H),
+    ("prim-rule", fig_prim_rule, "full", FULL_H),
+    ("prim-worksheet", fig_prim_worksheet, "full", FULL_H),
+    ("prim-vs-kruskal", fig_prim_vs_kruskal, "full", 380),
+    ("cut-property", fig_cut_property, "col", 350),
+    ("tie-graph", fig_tie_graph, "full", FULL_H),
+    ("tie-two-trees", fig_tie_two_trees, "full", FULL_H),
+    ("boruvka-rounds", fig_boruvka_rounds, "full", FULL_H),
+    ("mst-alone", fig_mst_alone, "full", FULL_H),
+    ("mst-blank", fig_mst_blank, "full", FULL_H),
+    ("brno-removed", fig_brno_removed, "full", FULL_H),
+    ("tree-bridges", fig_tree_bridges, "full", FULL_H),
+    ("real-grid-mesh", fig_real_grid_mesh, "full", 400),
+    ("connectivity-def", fig_connectivity_def, "full", FULL_H),
+    ("r-index", fig_r_index, "full", 420),
+    ("profile-random", fig_profile_random, "full", 420),
+    ("profile-both", fig_profile_both, "full", 420),
+    ("fixed-vs-adaptive", fig_fixed_vs_adaptive, "full", 420),
+    ("demo-still", fig_demo_still, "col", 360),
+    ("puddle-low", fig_puddle_low, "full", 440),
+    ("puddle-widget", fig_puddle_widget, "full", 460),
+    ("order-irrelevant", fig_order_irrelevant, "full", 420),
+    ("phase-transition", fig_phase_transition, "full", 420),
+    ("reverse-percolation", fig_reverse_percolation, "full", 380),
+    ("follow-edge", fig_follow_edge, "col", 420),
+    ("qk-bias", fig_qk_bias, "full", 400),
+    ("kappa-def", fig_kappa_def, "col", 420),
+    ("branching", fig_branching, "full", 400),
+    ("molloy-reed", fig_molloy_reed, "full", 400),
+    ("kappa-worksheet", fig_kappa_worksheet, "full", 380),
+    ("kappa-answer", fig_kappa_answer, "full", 420),
+    ("dilution", fig_dilution, "full", 400),
+    ("fc-formula", fig_fc_formula, "full", 420),
+    ("fc-poisson", fig_fc_poisson, "full", 420),
+    ("fc-scalefree", fig_fc_scalefree, "full", 420),
+    ("sim-random", fig_sim_random, "full", 420),
+    ("sim-targeted", fig_sim_targeted, "full", 420),
+    ("robust-fragile", fig_robust_fragile, "full", 420),
+    ("efficiency-security", fig_efficiency_security, "full", 400),
+    ("mst-blank-design", fig_mst_blank_design, "full", FULL_H),
+    ("redundant-answer", fig_redundant_answer, "full", FULL_H),
+    ("design-principles", fig_design_principles, "full", FULL_H),
+    ("build-it-back", fig_build_it_back, "full", FULL_H),
+    ("ring-q", fig_ring_q, "col", 420),
+    ("ring-a", fig_ring_a, "col", 420),
+    ("er1-q", fig_er1_q, "col", 420),
+    ("er1-a", fig_er1_a, "col", 420),
+    ("betweenness-q", fig_betweenness_q, "full", 400),
+    ("betweenness-a", fig_betweenness_a, "full", 420),
+    ("triangles-q", fig_triangles_q, "col", 380),
+    ("triangles-a", fig_triangles_a, "col", 380),
+    ("recap", fig_recap, "full", 360),
+    ("m04-teaser", fig_m04_teaser, "col", 380),
+]
+
+
+def main():
+    # Report every failing figure, not just the first: the geometry gates fire in
+    # clusters, and stopping at figure 3 of 60 hid the other five for a whole round.
+    bad = []
+    for name, fn, cont, *h in FIGURES:
+        try:
+            emit(name, fn(), cont, h[0] if h else None)
+        except AssertionError as e:
+            bad.append(str(e))
+            print(f"  FAIL {name}: {e}")
+    print(f"\n{len(_built)} figures written")
+    if bad:
+        print(f"{len(bad)} figure(s) failed their floors:")
+        for b in bad:
+            print("  " + b)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -251,9 +251,9 @@ def main():
             dw, dh, box_w, box_h, frac = ext
             ink_w, ink_h = dw, dh
             name = src.split("/")[-1]
-            # The Konigsberg engraving is a historical photograph; its lettering
-            # is not ours to size.
-            if name == "konigsberg-map.png":
+            # The Boruvka portrait is a historical photograph; it carries no
+            # lettering of ours to size, and its tonal range is not a drawing.
+            if name == "boruvka-portrait.png":
                 continue
             im = np.array(Image.open(src).convert("L"))
             sh, sw = im.shape
