@@ -351,6 +351,20 @@ function nextCheckpointId(id: string): string | null {
   return i >= 0 ? (order[i + 1] ?? null) : null;
 }
 
+/**
+ * Is `cpId` a checkpoint the tutor has not reached yet? This — not mere
+ * inequality — is what the build-ordering guard must refuse: inserting a
+ * LATER checkpoint's build while the current one is open strands its note
+ * cell after that build. Re-inserting an EARLIER one (a reveal figure added
+ * after the checkpoint was closed) is harmless and must stay allowed.
+ */
+function isAheadOf(cpId: string, openId: string): boolean {
+  const order = checkpointOrder();
+  const a = order.indexOf(cpId);
+  const b = order.indexOf(openId);
+  return a >= 0 && b >= 0 && a > b;
+}
+
 function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
   const src = fs.readFileSync(path.join(process.cwd(), "lesson", ch.file), "utf-8");
   const last = ch.checkpoints[ch.checkpoints.length - 1];
@@ -470,8 +484,11 @@ function appendLog(entry: Record<string, unknown>): boolean {
  * paraphrase. Returns what they typed since the previous checkpoint.
  */
 let studentSaidMark = 0;
+// Every pi.sendMessage injection lands in the transcript with role "user".
+// Anything added here MUST start with one of these prefixes, or it is filed
+// as the student's own words and quoted back at them in the graded record.
 const INJECTED_PREFIX =
-  /^(CHAPTER SCRIPT|RESUME CONTEXT|=== TUTORING HANDOFF|The student clicked|Please start the tutoring session|── Chapter )/;
+  /^(CHAPTER SCRIPT|RESUME CONTEXT|=== TUTORING HANDOFF|The student clicked|Please start the tutoring session|── Chapter |NOTE \(invisible to the student\))/;
 
 function allStudentMessages(ctx: any): string[] {
   const entries: any[] = ctx?.sessionManager?.getBranch?.() ?? [];
@@ -533,6 +550,16 @@ function slotTokens(s: string): string[] {
   return norm.match(/[a-z0-9](?:[a-z0-9._/-]*[a-z0-9])?/g) ?? [];
 }
 
+/**
+ * A "figure": 7/6, 1.17, 4.74, 0.61, 9:30 — a compound or multi-digit
+ * number. Bare single digits are NOT figures: they are how a subscript
+ * ($L_0$ → "l", "0") and an ordinary label ("dot 1 to dot 5") tokenize, and
+ * flagging those refused faithful records.
+ */
+function isFigure(token: string): boolean {
+  return /^\d+([./:,-]\d+)+$|^\d{2,}$/.test(token);
+}
+
 /** Content tokens in `fill` that the student never produced. */
 function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; words: string[] } {
   const pool = new Set(studentPool.flatMap(slotTokens));
@@ -540,7 +567,7 @@ function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; wo
   const words: string[] = [];
   for (const t of new Set(slotTokens(fill))) {
     if (pool.has(t) || SLOT_GLUE.has(t)) continue;
-    if (/\d/.test(t)) numbers.push(t);
+    if (isFigure(t)) numbers.push(t);
     else words.push(t);
   }
   return { numbers, words };
@@ -550,12 +577,12 @@ function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; wo
  * Pull a checkpoint's instructor-authored `note:` block out of its chapter
  * YAML (block scalar, dedented). The tutor fills «slots», not prose.
  */
-function noteSkeleton(rawId: string): string {
+// Exact id only. A practice round (`cp2_distance_extra`) is the same QUESTION
+// on new DATA, so its base checkpoint's skeleton is wrong for it: cp2's says
+// "$L = 7/6$", while the practice variant is a star ($L = 9/6$). The tutor
+// writes note_markdown for those, per AGENTS.md.
+function noteSkeleton(cpId: string): string {
   try {
-    // An improvised practice round (`cp2_distance_extra`) is the same
-    // question on new data, so it reuses its base checkpoint's skeleton —
-    // otherwise it would get no note cell and no verbatim check at all.
-    const cpId = baseCheckpointId(rawId);
     const chapter = loadChapters().find((c) => c.checkpoints.includes(cpId));
     if (!chapter) return "";
     const lines = fs
@@ -665,8 +692,8 @@ function buildSessionRecord(entries: any[]): string {
       `> ${quote.replace(/\n+/g, " ")}`,
       "",
     );
-    if (!saidRaw.length) lines.push(`*(answered in the notebook, not in words)*`, "");
-    if (e.notes) lines.push(`${String(e.notes).trim()}`, "");
+    if (!saidRaw.length) lines.push(`*(answered without typing — a picker choice or a drawing)*`, "");
+    if (e.notes) lines.push(`*Tutor's note:* ${String(e.notes).trim()}`, "");
   }
   if (detours.length) {
     lines.push(`### 🧭 Your own questions (${detours.length})`, "");
@@ -756,8 +783,17 @@ export default function (pi: ExtensionAPI) {
         pendingCheckpoint = chapter.checkpoints[0] ?? null;
         if (cps.length > 0) {
           const order = chapters.flatMap((c) => c.checkpoints);
-          const lastId = baseCheckpointId(cps[cps.length - 1].id);
-          const nextId = order[order.indexOf(lastId) + 1] ?? order[order.length - 1];
+          // Scan BACKWARDS for the last id the script actually knows. The
+          // newest entry can be off-script — a stretch (cs1_code), a typo —
+          // and indexOf(-1)+1 would silently resolve to cp0_welcome, walking
+          // a student who finished four chapters back to the welcome.
+          const lastScripted = [...cps]
+            .reverse()
+            .map((e: any) => baseCheckpointId(String(e.id ?? "")))
+            .find((id: string) => order.includes(id));
+          const nextId = lastScripted
+            ? (order[order.indexOf(lastScripted) + 1] ?? order[order.length - 1])
+            : order[0];
           chapter = chapters.find((c) => c.checkpoints.includes(nextId)) ?? chapter;
           pendingCheckpoint = nextId;
           pi.sendMessage(
@@ -1087,44 +1123,22 @@ export default function (pi: ExtensionAPI) {
       // where it was, or the retry would log an empty student_said_verbatim.
       const said = studentSaidSince(ctx, false);
       const slots = (params.note_slots ?? []).map((s: unknown) => String(s ?? ""));
-      const problems: string[] = [];
-
-      // (1) student_response itself — it is the default fill for every «slot»
-      // when note_slots is omitted, so leaving it unchecked would reopen the
-      // hole the slot check closes. NUMBERS only here: labelling their
-      // fragments ("Distance A–D = 2; average = 7/6" for a student who typed
-      // "2" and "7/6") is a faithful record, but a figure they never gave is
-      // fabrication — a real log carried "After comparison: 2.29, 2.07, 1.96",
-      // three numbers read off a widget and filed as the student's answer.
-      // Skipped when they typed nothing this round (a drawing or a picker
-      // choice leaves no transcript, and the tutor's record is all there is).
-      if (said.length > 0) {
-        const d = slotDrift(response, said);
-        if (d.numbers.length > 0) {
-          problems.push(
-            `student_response ("${response.slice(0, 80)}") states numbers they never gave: ` +
-              d.numbers.map((t) => `"${t}"`).join(", "),
-          );
-        }
-      }
-
-      // (2) note «slots». Only those the instructor marked «… verbatim» are
-      // held to the student's exact words; «their pick» (a dialog choice) and
-      // free commentary slots are the tutor's to phrase. An `_extra` practice
-      // round reuses its base checkpoint's skeleton, so it is checked too.
+      // Note «slots» the instructor marked «… verbatim» are held to the
+      // student's own words. «their pick» (a picker choice, which never
+      // reaches the transcript) and free commentary slots are the tutor's to
+      // phrase, and are not checked. The bar is deliberately low — reordering
+      // and joining and labelling are all fine — so that only invention
+      // trips it: a figure they never gave, or three added content words.
       const pool = [...said, response];
       const markers = slotMarkers(noteSkeleton(id));
-      const drifted = slots
-        .map((fill, i) => ({ i, fill, drift: slotDrift(fill, pool) }))
-        .filter(
-          (d) =>
-            /verbatim/i.test(markers[d.i] ?? "") &&
-            (d.drift.numbers.length > 0 || d.drift.words.length >= 2),
-        );
-      for (const d of drifted) {
+      const problems: string[] = [];
+      for (const [i, fill] of slots.entries()) {
+        if (!/verbatim/i.test(markers[i] ?? "")) continue;
+        const d = slotDrift(fill, pool);
+        if (d.numbers.length === 0 && d.words.length < 3) continue;
         problems.push(
-          `note slot ${d.i + 1} ("${d.fill.slice(0, 80)}") adds ` +
-            [...d.drift.numbers, ...d.drift.words].map((t) => `"${t}"`).join(", "),
+          `note slot ${i + 1} ("${fill.slice(0, 80)}") adds ` +
+            [...d.numbers, ...d.words].map((t) => `"${t}"`).join(", "),
         );
       }
 
@@ -1136,13 +1150,12 @@ export default function (pi: ExtensionAPI) {
         slotDriftWarned.set(id, strikes + 1);
         return toResult({
           out:
-            `NOT LOGGED — the graded record quotes the student word for word, and these ` +
-            `words are not in anything they said: ${problems.join("; ")}.\n` +
+            `NOT LOGGED — a «verbatim» note slot is the student's own words, and these ` +
+            `are not in anything they said: ${problems.join("; ")}.\n` +
             `What they actually typed: ${said.map((s) => `"${s}"`).join(", ")}.\n` +
-            `Quote them, don't polish: no number they didn't give, no sentence built out ` +
-            `of your own summary. If their answer was a drawing or a picker choice, put ` +
-            `THEIR spoken words in student_response and your reading of the picture in ` +
-            `notes. Then call checkpoint_done again.`,
+            `Quote them, don't polish — no figure they didn't give, no sentence built out ` +
+            `of your own summary. Your reading of a drawing, or a number a widget showed, ` +
+            `belongs in notes. Then call checkpoint_done again.`,
           failed: false,
         });
       }
@@ -1367,15 +1380,13 @@ export default function (pi: ExtensionAPI) {
       if (!/^[A-Za-z_]\w*$/.test(name)) {
         return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
       }
-      // Exact ids only — practice rounds ("<id>_extra") and stretch ids
-      // ("cs1_code") sit off the scripted sequence and stay unguarded.
       const exCpId = String(params.checkpoint ?? "").trim();
-      if (exCpId && checkpointOrder().includes(exCpId) && pendingCheckpoint && pendingCheckpoint !== exCpId) {
+      if (exCpId && pendingCheckpoint && isAheadOf(exCpId, pendingCheckpoint)) {
         return toResult({
           out:
-            `NOT INSERTED — checkpoint '${pendingCheckpoint}' is still open. ` +
-            `Call checkpoint_done for '${pendingCheckpoint}' first (its note cell must land ` +
-            `before this build), then retry this insert.`,
+            `NOT INSERTED — '${exCpId}' comes after '${pendingCheckpoint}', which is still ` +
+            `open. Call checkpoint_done for '${pendingCheckpoint}' first (its note cell ` +
+            `must land before this build), then retry this insert.`,
           failed: false,
         });
       }
@@ -1463,15 +1474,12 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      // Exact ids only. A practice round ("cp2_distance_extra") or a stretch
-      // ("cs1_code") is off the scripted sequence — checkpoint_done itself
-      // asks for the practice round, so the guard must not refuse its build.
-      if (pendingCheckpoint && checkpointOrder().includes(cpId) && pendingCheckpoint !== cpId) {
+      if (pendingCheckpoint && isAheadOf(cpId, pendingCheckpoint)) {
         return toResult({
           out:
-            `NOT INSERTED — checkpoint '${pendingCheckpoint}' is still open. ` +
-            `Call checkpoint_done for '${pendingCheckpoint}' first (its note cell must land ` +
-            `before this build), then retry this insert.`,
+            `NOT INSERTED — '${cpId}' comes after '${pendingCheckpoint}', which is still ` +
+            `open. Call checkpoint_done for '${pendingCheckpoint}' first (its note cell ` +
+            `must land before this build), then retry this insert.`,
           failed: false,
         });
       }
@@ -1888,7 +1896,7 @@ export default function (pi: ExtensionAPI) {
   const TRIVIA = [
     "Euler invented network theory in 1736 to settle a stroll — the 7 bridges of Königsberg.",
     "Two of Königsberg's seven bridges were lost in 1944, and the puzzle's answer changed with them.",
-    "The 'six degrees' idea first appeared in a 1929 short story by Frigyes Karinthy.",
+    "Frigyes Karinthy dreamed up the question behind this whole module in a 1929 short story, 'Chains'.",
     "Stanley Milgram ran his letter experiment out of Harvard in the 1960s, with paper and stamps.",
     "In 2003 a team reran Milgram's experiment by email, with 24,000 chains across 13 countries.",
     "Your friends have more friends than you do, on average — the friendship paradox.",
