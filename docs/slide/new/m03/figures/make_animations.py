@@ -25,10 +25,11 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from make_figures import (  # noqa: E402
+    km,
     ALL_CABLES, ATTACK_ORDER, ATTACK_PROFILE, BORUVKA_ROUNDS, CABLES, CONTAINER,
     DESIGN, FULL_H, KRUSKAL, MAX_FIG_H, MST_PAIRS, MST_TOTAL, NAME, NODE,
     NODE_MAX_PX, NODE_MIN_PX, OUT, PAD, PRIM, PUD_FIELD, PXBP, TEXT_MIN_PX,
-    CAP_RATIO, FONT, INK_FILL_MIN, _XY, dot, moravia, note, polyline,
+    XHEIGHT_RATIO, FONT, INK_FILL_MIN, _XY, dot, moravia, note, polyline,
     profile_axes, profile_points, puddle_body, render, text,
 )
 
@@ -71,8 +72,8 @@ def emit_gif(name, frames, container="full", h=None, hold=HOLD, ms=MS):
     assert span >= INK_FILL_MIN, f"{name}: ink spans {span:.0%} of the canvas width"
     node_px = NODE * factor
     assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
-    cap_px = FONT * CAP_RATIO * factor
-    assert cap_px >= TEXT_MIN_PX, f"{name}: text cap height {cap_px:.0f}px"
+    x_px = FONT * XHEIGHT_RATIO * factor
+    assert x_px >= TEXT_MIN_PX, f"{name}: text x-height {x_px:.1f}px on the slide"
 
     seq = ims + [ims[-1]] * hold
     pal = [im.convert("P", palette=Image.ADAPTIVE) for im in seq]
@@ -100,8 +101,8 @@ def kruskal_frames():
         out.append(moravia(
             faint=[e for e in ALL_CABLES if e not in added],
             edges=list(added), heavy={(a, b): "accenttwo"}, weights=list(added),
-            extra_text=note(f"{sum(CABLES[e] for e in added)} km")))
-    total = sum(CABLES[e] for e in added)
+            extra_text=note(f"{sum(km(e) for e in added)} km")))
+    total = sum(km(e) for e in added)
     assert total == MST_TOTAL and len(added) == 7, (total, len(added))
     return out
 
@@ -118,8 +119,8 @@ def prim_frames():
             faint=[e for e in ALL_CABLES if e not in grown],
             edges=list(grown), heavy={(u, v): "accenttwo"}, weights=list(grown),
             rings={n: "accent" for n in reached},
-            extra_text=note(f"{sum(CABLES[e] for e in grown)} km")))
-    assert sum(CABLES[e] for e in grown) == MST_TOTAL
+            extra_text=note(f"{sum(km(e) for e in grown)} km")))
+    assert sum(km(e) for e in grown) == MST_TOTAL
     return out
 
 
@@ -138,8 +139,8 @@ def boruvka_frames():
         picked += new
         out.append(moravia(faint=[e for e in ALL_CABLES if e not in picked],
                            edges=list(picked), weights=list(picked),
-                           extra_text=note(f"{sum(CABLES[e] for e in picked)} km")))
-    assert sum(CABLES[e] for e in picked) == MST_TOTAL
+                           extra_text=note(f"{sum(km(e) for e in picked)} km")))
+    assert sum(km(e) for e in picked) == MST_TOTAL
     return out
 
 

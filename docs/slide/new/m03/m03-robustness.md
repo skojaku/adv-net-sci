@@ -182,7 +182,7 @@ Connect all eight towns. Which cables do you lay, and what is the least total le
 </div>
 
 <!--
-Do not reveal 292 here. Let them work it in the next slide and hold their own number until Part Two.
+Do not give a total here. They compute their own on the next slide and hold it until Part Two.
 -->
 
 ---
@@ -215,7 +215,7 @@ Collect a few totals on the board without judging them. The spread is the point:
 
 If your cables ever form a **loop**, one of them is doing nothing: cut it and every town is still connected.
 
-So the cheapest answer has **no loops at all**.
+So the cheapest answer has no loops at all.
 
 </div>
 <div class="fig">
@@ -364,7 +364,7 @@ Run Kruskal by hand. Write down the order you take the cables in, mark the one y
 
 <hr>
 
-17, 29, 42, 48, 49, **skip 51**, 53, 54. Seven cables, **292 km** — and no grid on any of your sheets is cheaper.
+17, 29, 42, 48, 49, skip 51, 53, 54. Seven cables, 292 km — and no grid on any of your sheets is cheaper.
 
 <div class="fig">
 
@@ -379,7 +379,7 @@ Run Kruskal by hand. Write down the order you take the cables in, mark the one y
 
 <hr>
 
-Start at the Brno power plant. Repeatedly buy the cheapest cable that reaches **one new town**. *Jarník 1930 · Prim 1957.*
+Start at the Brno power plant. Repeatedly buy the cheapest cable that reaches one new town. *Jarník 1930 · Prim 1957.*
 
 <div class="fig">
 
@@ -430,7 +430,7 @@ Run Prim from Brno. Write the order the cables enter in — then compare it with
 
 <hr>
 
-Prim takes 48, 17, 49, 53, 29, 42, 54. Kruskal took them in a different order — and landed on the **same seven cables**.
+Prim takes 48, 17, 49, 53, 29, 42, 54. Kruskal took them in a different order — and landed on the same seven cables.
 
 <div class="fig">
 
@@ -466,7 +466,7 @@ Thirty seconds. Argue it with the person next to you.
 <div class="cols">
 <div>
 
-Cut the towns into any two groups. The cheapest cable crossing that cut **must** be in the minimum spanning tree — swap it in and any tree without it gets cheaper.
+Cut the towns into any two groups. The cheapest cable crossing that cut has to be in the minimum spanning tree — swap it in and any tree without it gets cheaper.
 
 Both rules only ever take such a cable. That is the whole proof.
 
@@ -507,7 +507,7 @@ Is there still one cheapest grid?
 
 <hr>
 
-Six cables are in both. Then the tie: take either one, and the total is **292 km** either way. Which one an algorithm hands you depends on how it breaks the tie.
+Six cables are in both. Then the tie: take either one, and the total is 292 km either way. Which one an algorithm hands you depends on how it breaks the tie.
 
 <div class="fig">
 
@@ -542,7 +542,7 @@ What would you do, with eight towns and a pencil?
 
 <hr>
 
-Each piece of the network looks at its own cheapest way out and takes it — **all of them simultaneously** — and the pieces merge. Repeat.
+Each piece of the network looks at its own cheapest way out and takes it — all of them at the same time — and the pieces merge. Repeat.
 
 <div class="fig">
 
@@ -618,7 +618,7 @@ Pick the town you would least like to lose. Hands up for yours.
 </div>
 
 <!--
-Run this as a real poll. Count hands for Brno, Prostejov, Trebic, and "a leaf". Write the tally on the board before the next slide.
+Run this as a real poll. Count hands town by town and write the tally on the board before turning the page.
 -->
 
 ---
@@ -627,7 +627,7 @@ Run this as a real poll. Count hands for Brno, Prostejov, Trebic, and "a leaf". 
 
 <hr>
 
-Lose Brno and eight towns become **three, three and one**. No survivor can reach two-thirds of the others.
+Lose Brno and eight towns become three, three and one. No survivor can reach two-thirds of the others.
 
 <div class="fig">
 
@@ -657,7 +657,7 @@ A tree has exactly one route between any two towns. So every single cable, and e
 
 <hr>
 
-Every transmission network you have ever depended on is **meshed**: cut any one line and the power arrives by another.
+Every transmission network you have ever depended on is *meshed*: cut any one line and the power arrives by another.
 
 <div class="fig">
 
@@ -703,14 +703,14 @@ Sketch the curve before we draw it. Does it slide, or does it fall off a cliff?
 
 <hr>
 
+Damage is a **curve**, not a number — one point per town lost.
+
 <div class="fig">
 
 ![w:1100](figures/profile-build.gif)
 <figcaption>connectivity against the fraction removed</figcaption>
 
 </div>
-
-Damage is a **curve**, not a number.
 
 <!--
 Pause on the first two frames: the first removal costs more than the next four put together.
@@ -755,7 +755,7 @@ Guess a factor before we look.
 
 <hr>
 
-Earthquakes, floods and broken transformers do not read the map. They hit leaves as often as hubs, and the grid degrades gently: $R = 0.41$.
+Earthquakes and broken transformers do not read the map. They take leaves as often as hubs: $R = 0.41$.
 
 <div class="fig">
 
@@ -770,7 +770,7 @@ Earthquakes, floods and broken transformers do not read the map. They hit leaves
 
 <hr>
 
-An adversary who can see the map takes Brno first, then the next-best connected town. Same grid, same removals, $R = 0.17$ — **2.4× the damage**.
+An adversary who can see the map takes Brno first, then the next-best connected town. Same grid, same removals, $R = 0.17$ — 2.4 times the damage.
 
 <div class="fig">
 
@@ -801,7 +801,7 @@ Is it worth the attacker's trouble to re-rank after every removal?
 
 <hr>
 
-On a random network, an attacker working from a **fixed** ranking needs 58% of the nodes. Re-ranking after **every** removal brings that down to 40%.
+On a random network, an attacker working from a fixed ranking needs 58% of the nodes. Re-ranking after every removal brings that down to 40%.
 
 <div class="fig">
 
@@ -846,7 +846,7 @@ Then on paper: *Build it, Break it, Build it back* — construct the MST by hand
 
 <hr>
 
-You can now *measure* how badly a network breaks. You cannot yet **predict** it.
+You can now *measure* how badly a network breaks. You cannot yet predict it.
 
 <div class="formula">
 
@@ -964,7 +964,7 @@ Does a different order change when the giant puddle arrives?
 
 <hr>
 
-Different yard, different stones, same fraction wet — and the same answer. What determines connectivity is **how many**, not which ones came first.
+Different yard, different stones, same fraction wet — and the same answer. What determines connectivity is how many, not which ones came first.
 
 <div class="fig">
 
@@ -1101,7 +1101,7 @@ Of the $\kappa$ links at the node you reached, one is the edge you arrived on. T
 <div class="fig">
 
 ![w:1100](figures/branching.png)
-<figcaption>one in, $\kappa - 1$ out</figcaption>
+<figcaption>one edge in, kappa minus one out</figcaption>
 
 </div>
 
@@ -1176,7 +1176,7 @@ Set the branching to exactly 1 — $(1-f)(\kappa - 1) = 1$ — and solve for $f$
 <div class="fig">
 
 ![w:1100](figures/fc-formula.png)
-<figcaption>above $f_c$ the search dies, and so does the network</figcaption>
+<figcaption>past the crossing the search dies, and so does the network</figcaption>
 
 </div>
 
@@ -1190,12 +1190,12 @@ The exact binomial dilution is in the appendix and gives the same threshold; the
 
 <hr>
 
-A Poisson degree distribution has $\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$, so $\kappa = \langle k \rangle + 1$ and $f_c = 1 - 1/\langle k \rangle$. Robustness is set by the **average degree alone**.
+A Poisson degree distribution has $\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$, so $\kappa = \langle k \rangle + 1$ and $f_c = 1 - 1/\langle k \rangle$. Robustness is set by the average degree alone.
 
 <div class="fig">
 
 ![w:1100](figures/fc-poisson.png)
-<figcaption>at $\langle k \rangle = 4$, three quarters of the nodes must go</figcaption>
+<figcaption>at four links each, three quarters of the nodes must go</figcaption>
 
 </div>
 
@@ -1221,12 +1221,12 @@ What happens to $\kappa = \langle k^2 \rangle / \langle k \rangle$?
 
 <hr>
 
-For $2 < \gamma < 3$ the second moment diverges, so $\kappa \to \infty$ and $f_c \to 1$: you have to remove essentially **every** node before a hub network fragments.
+For $2 < \gamma < 3$ the second moment diverges, so $\kappa \to \infty$ and $f_c \to 1$: remove almost everything, or the hubs hold it together.
 
 <div class="fig">
 
 ![w:1100](figures/fc-scalefree.png)
-<figcaption>bigger hubs, bigger $\kappa$, higher threshold</figcaption>
+<figcaption>bigger hubs, higher threshold</figcaption>
 
 </div>
 
@@ -1281,7 +1281,7 @@ Two simulated networks with the same 2,000 nodes and 6,000 edges. Knock out node
 
 <hr>
 
-Same two networks. This time remove the highest-degree node first, and keep going. The hub network is gone at **20%**.
+Same two networks. This time remove the highest-degree node first, and keep going. The hub network is gone at 20%.
 
 <div class="fig">
 
@@ -1311,7 +1311,7 @@ The same hubs that made random failure harmless are what an attacker aims at. St
 
 <hr>
 
-Hubs are the cheap way to connect everything — and the cheap thing to attack. Redundancy buys security and costs cable. **No structure wins both.**
+Hubs are the cheap way to connect everything — and the cheap thing to attack. Redundancy buys security and costs cable. No structure wins both.
 
 <div class="fig">
 
@@ -1328,7 +1328,7 @@ Hubs are the cheap way to connect everything — and the cheap thing to attack. 
 
 <hr>
 
-Back to Moravia. The board will fund **two** extra cables beyond the 292 km tree.
+Back to Moravia. The board will fund two extra cables beyond the 292 km tree.
 
 <div class="formula">
 
@@ -1352,7 +1352,7 @@ Take three proposals before revealing. Push for the second question: "what does 
 
 <hr>
 
-Zlín–Hodonín and Znojmo–Hodonín turn the tree into a ring. For **+136 km (+47%)**: worst single loss goes from $3/8$ to $6/8$, and $R$ from 0.17 to 0.27.
+Zlín–Hodonín and Znojmo–Hodonín turn the tree into a ring. For +136 km (+47%): worst single loss goes from $3/8$ to $6/8$, and $R$ from 0.17 to 0.27.
 
 <div class="fig">
 
@@ -1441,7 +1441,7 @@ What is $\kappa$, and what does $f_c$ say?
 <div class="cols">
 <div>
 
-$\langle k \rangle = 2$ and $\langle k^2 \rangle = 4$, so $\kappa = 2$ and the branching factor is exactly **1**.
+$\langle k \rangle = 2$ and $\langle k^2 \rangle = 4$, so $\kappa = 2$ and the branching factor is exactly 1.
 
 $f_c = 0$: a ring has no robust core to lose. Cut one node and it is a chain; cut two and it is two chains.
 
@@ -1570,9 +1570,9 @@ Does $f_c = 1 - 1/(\kappa - 1)$ still hold there?
 <div class="cols">
 <div>
 
-The branching argument assumed every step reaches a **new** node. A triangle sends the search straight back where it came from, so the real fan-out is smaller than $\kappa - 1$.
+The branching argument assumed every step reaches a node it has not seen. A triangle sends the search straight back where it came from, so the real fan-out is smaller than $\kappa - 1$.
 
-Real thresholds sit **below** the prediction.
+Real thresholds sit below the prediction.
 
 </div>
 <div class="fig">
@@ -1598,7 +1598,7 @@ Build it, break it, build it back — and the one line that predicted the breaki
 <div class="fig">
 
 ![w:1100](figures/recap.png)
-<figcaption>292 km · 0.375 · +136 km · $f_c$</figcaption>
+<figcaption>the four numbers of Module 03</figcaption>
 
 </div>
 

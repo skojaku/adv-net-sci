@@ -55,14 +55,22 @@ CONTAINER = {"col": COL_W, "full": FULL_W}
 NODE = 40          # disc diameter, bp  -> 40.7-41.3 px on the slide (band 26-52)
 SMALLNODE = 26     # only where a figure draws dozens of dots
 DOT = 14
-FONT = 30          # pt; cap height ~= 21 px on the slide, which is the floor
-CAP_RATIO = 0.70
+
+# Type size. The gate that matters is `check_render.py`'s, and it measures
+# **x-height** on the rendered slide, not cap height. Asserting cap height here
+# let 30pt Latin Modern pass the generator at 21px cap while landing 13px
+# x-height on the slide -- under the 15px floor, on 40 figures at once. Latin
+# Modern Roman: x-height 0.431 em, cap height 0.683 em. So the generator now
+# asserts the same quantity the checker reads.
+FONT = 36          # pt; x-height ~= 15.8 px on the slide
+XHEIGHT_RATIO = 0.431
+CAP_RATIO = 0.683
 EDGE_W = 2.6
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
 
 NODE_MIN_PX, NODE_MAX_PX = 26, 52
-TEXT_MIN_PX = 21
+TEXT_MIN_PX = 15.5      # x-height on the slide; check_render.py fails below 15
 INK_FILL_MIN = 0.76          # ink must span this share of the canvas width
 
 # A label's bounding box, estimated for the collision assertion.  The deck's serif
@@ -162,9 +170,9 @@ def crop_and_check(name, im, container):
 
     node_px = NODE * factor
     assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
-    cap_px = FONT * CAP_RATIO * factor
-    assert cap_px >= TEXT_MIN_PX, f"{name}: text cap height {cap_px:.0f}px"
-    return im, fw, fh, node_px, cap_px, span
+    x_px = FONT * XHEIGHT_RATIO * factor
+    assert x_px >= TEXT_MIN_PX, f"{name}: text x-height {x_px:.1f}px on the slide"
+    return im, fw, fh, node_px, x_px, span
 
 
 def emit(name, body, container="col", h=None):
@@ -176,7 +184,7 @@ def emit(name, body, container="col", h=None):
     im, fw, fh, node_px, cap_px, span = crop_and_check(name, im, container)
     im.save(OUT / f"{name}.png")
     _built.append(name)
-    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  cap {cap_px:.0f}px  "
+    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  x-h {cap_px:.1f}px  "
           f"ink {span:.0%}")
 
 
@@ -775,6 +783,13 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
 #                                Part 1
 # ===========================================================================
 ALL_CABLES = list(CABLES)
+
+
+def km(e):
+    """The length of a route, whichever way round its endpoints are given."""
+    a, b = e
+    return CABLES[(a, b)] if (a, b) in CABLES else CABLES[(b, a)]
+
 MST_PAIRS = [(a, b) for a, b, _ in MST_EDGES]
 
 
@@ -1488,7 +1503,7 @@ def fig_kappa_def():
     return s
 
 
-def fanout(kminus1, x0=250, spread=190, rows=(200, 200), col="accent",
+def fanout(kminus1, x0=250, spread=190, dx=300, col="accent",
            dead=(), root_y=190):
     """Three rings of a branching search: 1 -> b -> b^2 (b = branching factor)."""
     b = int(round(kminus1))
@@ -1500,7 +1515,7 @@ def fanout(kminus1, x0=250, spread=190, rows=(200, 200), col="accent",
             for j in range(b):
                 gap = spread / (b ** d)
                 y = py + (j - (b - 1) / 2) * gap
-                pts.append((x0 + d * 300, y))
+                pts.append((x0 + d * dx, y))
         lvl[d] = pts
     for d in (1, 2):
         for i, q in enumerate(lvl[d]):
@@ -1516,7 +1531,7 @@ def fanout(kminus1, x0=250, spread=190, rows=(200, 200), col="accent",
 
 
 def fig_branching():
-    s, lvl = fanout(2)
+    s, lvl = fanout(2, x0=190, dx=330)
     x0, y0 = lvl[0][0]
     s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
     s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
@@ -1546,9 +1561,16 @@ def small_graph(pos, edges, at, scale=1.0, labels=None, col="accent",
     return s, P
 
 
-def ring_pos(n, r=1.0):
-    return {i: (r * math.cos(2 * math.pi * i / n + math.pi / 2),
-                r * math.sin(2 * math.pi * i / n + math.pi / 2)) for i in range(n)}
+def ring_pos(n, r=1.0, ry=None, start=math.pi / 2):
+    """Nodes on a circle -- or an ellipse.
+
+    A `cols` figure must span >= 76% of 520bp and stay under 368bp tall.  A circle
+    big enough for the first is too tall for the second, so ring figures are drawn
+    as a wide ellipse: still obviously a ring, and it clears both gates.
+    """
+    ry = r if ry is None else ry
+    return {i: (r * math.cos(2 * math.pi * i / n + start),
+                ry * math.sin(2 * math.pi * i / n + start)) for i in range(n)}
 
 
 RING6 = (ring_pos(6), [(i, (i + 1) % 6) for i in range(6)])
@@ -1590,8 +1612,11 @@ def fig_kappa_answer():
 
 
 def fig_dilution():
-    s, lvl = fanout(2, dead={(1, 1), (2, 2), (2, 3)})
-    s += text(700, 40, "remove a fraction $f$: "
+    s, lvl = fanout(2, x0=190, dx=330, dead={(1, 1), (2, 2), (2, 3)})
+    x0, y0 = lvl[0][0]
+    s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
+    s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
+    s += text(660, 40, "remove a fraction $f$: "
                        "$(1-f)(\\kappa-1)$ branches survive", color="accenttwo")
     return s
 
@@ -1646,6 +1671,7 @@ def fig_fc_poisson():
     s += dot(X(4), Y(k4), "accenttwo", d=20)
     s += text(X(4) + 20, Y(k4) - 44, f"$\\langle k \\rangle = 4$: {pct(k4)} must go",
               color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.86), "denser\\\\is tougher", color="accenttwo", anchor="west")
     return s
 
 
@@ -1778,23 +1804,33 @@ def fig_build_it_back():
 # ===========================================================================
 #                                Part 7
 # ===========================================================================
-def _ring_case(show):
-    p, e = ring_pos(6), [(i, (i + 1) % 6) for i in range(6)]
-    s, P = small_graph(p, e, (260, 210), scale=120, node=NODE,
-                       labels={i: "2" for i in range(6)})
-    s += text(260, 40, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = ?$",
+def _ring_case(show, cut=False):
+    p = ring_pos(6, r=1.0, ry=0.82, start=0.0)
+    e = [(i, (i + 1) % 6) for i in range(6)]
+    gone = 3 if cut else None
+    s = "".join(seg((260 + p[a][0] * 196, 190 + p[a][1] * 196),
+                    (260 + p[b][0] * 196, 190 + p[b][1] * 196),
+                    color="black", w=EDGE_W + 1.0)
+                for a, b in e if gone not in (a, b))
+    for i, (x, y) in p.items():
+        X, Y = 260 + x * 196, 190 + y * 196
+        if i == gone:
+            s += opendisc(X, Y, "accenttwo")
+            s += seg((X - 12, Y - 12), (X + 12, Y + 12), color="accenttwo", w=3.6)
+            s += seg((X - 12, Y + 12), (X + 12, Y - 12), color="accenttwo", w=3.6)
+        else:
+            s += disc(X, Y, "2", fill="accent")
+    s += text(260, 190, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = ?$",
               color="accenttwo" if show else "annot")
-    return s, P
+    return s
 
 
 def fig_ring_q():
-    return _ring_case(False)[0]
+    return _ring_case(False)
 
 
 def fig_ring_a():
-    s, P = _ring_case(True)
-    s += text(260, 380, "exactly the threshold", color="accenttwo")
-    return s
+    return _ring_case(True, cut=True)
 
 
 ER1 = nx.gnm_random_graph(14, 7, seed=4)
@@ -1803,9 +1839,9 @@ ER1_KAPPA = Fraction(sum(d * d for _, d in ER1.degree()),
 
 
 def _er1_case(show):
-    pos = {i: (math.cos(2 * math.pi * i / 14) * 1.0,
-               math.sin(2 * math.pi * i / 14) * 1.0) for i in ER1}
-    s, _ = small_graph(pos, list(ER1.edges()), (260, 200), scale=150, node=SMALLNODE)
+    pos = ring_pos(14, r=1.0, ry=0.68, start=0.0)
+    s, _ = small_graph({i: pos[i] for i in ER1}, list(ER1.edges()), (260, 200),
+                       scale=200, node=SMALLNODE)
     s += text(260, 30, "$\\langle k \\rangle = 1$" if not show
               else "$\\kappa = 2$: the birth of the giant component",
               color="annot" if not show else "accenttwo")
@@ -1821,11 +1857,11 @@ def fig_er1_a():
 
 
 BW_BRIDGE = 6
-BW_POS = {0: (215, 200), 3: (345, 200), 1: (255, 324), 2: (110, 276),
-          4: (110, 124), 5: (255, 76),
+BW_POS = {0: (190, 200), 3: (320, 200), 1: (230, 310), 2: (85, 268),
+          4: (85, 132), 5: (230, 90),
           BW_BRIDGE: (550, 200),
-          7: (755, 200), 8: (885, 200), 9: (795, 324), 10: (650, 276),
-          11: (650, 124), 12: (795, 76)}
+          7: (790, 200), 8: (920, 200), 9: (830, 310), 10: (685, 268),
+          11: (685, 132), 12: (830, 90)}
 BW_EDGES = ([(0, i) for i in (1, 2, 3, 4, 5)]
             + [(3, BW_BRIDGE), (BW_BRIDGE, 7)]
             + [(7, i) for i in (8, 9, 10, 11, 12)])
@@ -1836,20 +1872,17 @@ assert BW_G.degree(BW_HUB) >= 6 and not clearance_bad(BW_EDGES, BW_POS)
 
 
 def _bw(removed=(), note_text=None):
+    """Degrees are printed inside the discs: no external label, no spare height."""
     s = "".join(seg(BW_POS[a], BW_POS[b], color="black", w=EDGE_W)
                 for a, b in BW_EDGES if a not in removed and b not in removed)
     for n, (x, y) in BW_POS.items():
         if n in removed:
-            s += opendisc(x, y, "accenttwo", size=SMALLNODE)
+            s += opendisc(x, y, "accenttwo")
+            s += seg((x - 12, y - 12), (x + 12, y + 12), color="accenttwo", w=3.6)
+            s += seg((x - 12, y + 12), (x + 12, y - 12), color="accenttwo", w=3.6)
         else:
-            s += disc(x, y, "", fill="accent", size=SMALLNODE)
-    s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], size=SMALLNODE,
-              color="accenttwo")
-    s += text(BW_POS[BW_BRIDGE][0], 370, "degree 2", color="accenttwo")
-    s += ring(BW_POS[BW_HUB][0], BW_POS[BW_HUB][1], size=SMALLNODE,
-              color="accentthree")
-    s += text(BW_POS[BW_HUB][0], 370, f"degree {BW_G.degree(BW_HUB)}",
-              color="accentthree")
+            s += disc(x, y, str(BW_G.degree(n)), fill="accent")
+    s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], color="accenttwo")
     if note_text:
         s += text(550, 30, note_text, color="accenttwo")
     return s
