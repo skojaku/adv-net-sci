@@ -128,11 +128,14 @@ section.part p {
   max-width: 900px;
 }
 
-/* Shallow slides: put the slack above and below the content rather than all
-   below it, so a three-line slide sits in the middle of the frame instead of
-   hanging from the rule. Add `<!-- _class: mid -->` to the slide. */
-section.mid { justify-content: center; }
-section.mid h2 { margin-top: -0.5em; }
+/* Shallow slides: centre the BODY in the space under the rule, and leave the
+   title where it always is. Centring the whole section pushed the title down
+   the frame, so a `mid` slide's heading no longer lined up with its neighbours'.
+   The auto margins put the slack above and below the body block only.
+   Add `<!-- _class: mid -->` to the slide. */
+section.mid { justify-content: flex-start; }
+section.mid > h2 + hr { margin-bottom: auto; }
+section.mid > :last-child { margin-bottom: auto; }
 
 /* ---------- body ---------- */
 
