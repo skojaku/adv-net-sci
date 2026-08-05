@@ -301,16 +301,24 @@ what's next. You supply only what a model can:
 Read the result: it tells you what the student chose. Only "READY" lets
 you start the next checkpoint. Never hand-write log JSON or the note cell.
 
-`checkpoint_done` can also refuse, and every refusal names its own fix.
+`checkpoint_done` also refuses an EMPTY `student_response` — log their
+actual words, or the literal `(no answer — moved on)` when there are none.
+And `nb_add_exercise`, like `nb_add_template`, refuses a build for a
+checkpoint that comes after the open one.
+
+It can refuse for four more reasons, and every refusal names its own fix.
 The four you have not met above: the checkpoint's scripted **build never
 happened** (run the nb_add_template your script's `build:` line names);
 a **paper checkpoint with no photo** (ask for the page and wait — or, if
 they have told you they cannot photograph, say so in `notes` and call
 again); a note that **quotes their words when they typed none** (ask the
 question, wait, then log); and `chapter_done` refusing because the
-**chapter is not finished** (carry on with the checkpoint it names). All
-of them give up after two tries and log anyway, so none can strand a
-student — but the first try is always right.
+**chapter is not finished** (carry on with the checkpoint it names). None of
+them can strand a student — the build and slot-count refusals give up after
+two tries and log anyway, the photo one after a single nudge, and the
+chapter gate advances the chapter after two (leaving those checkpoints
+unlogged, which both closing artifacts then report). Getting the first try
+right is still the only version where the record is whole.
 
 Student questions go to `log_detour` (their curiosity is graded as
 engagement, never weakness). Hints are never penalized — log truthfully;
