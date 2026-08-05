@@ -7,4 +7,12 @@ cp4_photo = mo.ui.file(
     filetypes=[".jpg", ".jpeg", ".png", ".webp"],
     label="Photo of your drawing",
 )
-cp4_photo
+mo.vstack([
+    cp4_photo,
+    mo.md(
+        "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+        "your 8-dot ring here — the drawing with your one extra cable on it. "
+        "It does not need to be neat; it needs to show which two dots you "
+        "joined. Once it is up, say so in the terminal.</span>"
+    ),
+])

@@ -10,4 +10,12 @@ cp2_paperwork_photo = mo.ui.file(
     filetypes=[".jpg", ".jpeg", ".png", ".webp"],
     label="Photo of your paper work",
 )
-cp2_paperwork_photo
+mo.vstack([
+    cp2_paperwork_photo,
+    mo.md(
+        "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+        "your paper here — the 5-dot ring, your list of all 10 pairs with a "
+        "distance beside each, and the average at the bottom. Working shown "
+        "beats a tidy answer. Once it is up, say so in the terminal.</span>"
+    ),
+])

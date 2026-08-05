@@ -7,6 +7,14 @@
 _edges = [("A", "B"), ("A", "C"), ("A", "D"), ("A", "E"), ("A", "F"), ("B", "F"), ("C", "E")]
 _friend_edges = [("B", "F"), ("C", "E")]
 mo.vstack([
-    mo.md("**A and A's five friends — rust lines = a friendship between two of A's friends**"),
+    mo.md(
+        "**A and A's five friends**\n\n"
+        "<span style='color:#6A6D75;font-size:13px'>**A** is the rust dot in "
+        "the middle; B, C, D, E and F are its five friends. The grey lines "
+        "from A are A's own friendships — ignore those. The **rust lines run "
+        "between two of A's friends**: those are the ones that say "
+        "\"my friends know each other\". Find them and count them yourself. "
+        "Dots are drag-able if the picture gets tangled.</span>"
+    ),
     netviz(_edges, highlight=_friend_edges, node_colors={"A": "#B4552D"}),
 ])

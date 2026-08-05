@@ -321,7 +321,14 @@ const STATUS_PARAM = Type.String({
 // the CURRENT chapter's script in context; chapter_done builds a handoff
 // brief, injects the next script, and trims the old conversation via
 // compaction — same session, same visible transcript, fresh LLM context.
-type Chapter = { id: string; file: string; title: string; checkpoints: string[] };
+type Chapter = {
+  id: string;
+  file: string;
+  title: string;
+  /** Lecture-note prose rendered under the chapter heading (see chapterOpening). */
+  opening?: string;
+  checkpoints: string[];
+};
 
 function loadChapters(): Chapter[] {
   try {
@@ -382,6 +389,11 @@ function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
   return (
     `CHAPTER SCRIPT ${num}/${total} — "${ch.title}" (invisible to the student). ` +
     `This is your curriculum right now:\n\n${src}\n\n` +
+    (chapterOpening(ch)
+      ? `The chapter's opening paragraph is ALREADY in their notebook, above ` +
+        `your first build — do not read it out or paraphrase it. It says:\n` +
+        `"${chapterOpening(ch)}"\n\n`
+      : "") +
     `Work its checkpoints in order, ending each one with checkpoint_done. ` +
     `After checkpoint_done for the final checkpoint (${last}), call chapter_done ` +
     `with short handoff notes.`
@@ -389,9 +401,23 @@ function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
 }
 
 /**
+ * The chapter's instructor-authored `opening:` prose, from the `chapter:`
+ * block at the top of its script. This is what turns the notebook from a
+ * pile of experiments into a lecture note: a heading alone tells a cold
+ * reader nothing about why the next four cells exist.
+ *
+ * It renders BEFORE the chapter's first question, so an opening that
+ * answers one is an answer leak — the scripts carry a comment saying so.
+ */
+function chapterOpening(ch: Chapter): string {
+  return String(ch.opening ?? "").trim();
+}
+
+/**
  * Deterministic notebook structure: a "## Chapter N — Title" markdown cell
- * at every chapter start, so the finished notebook reads as a document the
- * student can re-learn from. Skip-if-exists; cosmetic — never blocks.
+ * plus the chapter's opening prose, at every chapter start, so the finished
+ * notebook reads as a document the student can re-learn from.
+ * Skip-if-exists; cosmetic — never blocks.
  */
 async function insertChapterHeader(
   ch: Chapter,
@@ -403,7 +429,9 @@ async function insertChapterHeader(
     const warm = await ensureWarm(signal);
     if (warm) return false;
     const name = `${ch.id}_header`;
-    const body = `mo.md(${JSON.stringify(`## Chapter ${num} of ${total} — ${ch.title}`)})`;
+    const opening = chapterOpening(ch);
+    const heading = `## Chapter ${num} of ${total} — ${ch.title}`;
+    const body = `mo.md(${py(opening ? `${heading}\n\n${opening}` : heading)})`;
     await runKernel(
       `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
@@ -1825,7 +1853,9 @@ export default function (pi: ExtensionAPI) {
         const chapters = loadChapters();
         if (chapters.length > 0) {
           const h = `${chapters[0].id}_header`;
-          const body = `mo.md(${JSON.stringify(`## Chapter 1 of ${chapters.length} — ${chapters[0].title}`)})`;
+          const heading = `## Chapter 1 of ${chapters.length} — ${chapters[0].title}`;
+          const op = chapterOpening(chapters[0]);
+          const body = `mo.md(${py(op ? `${heading}\n\n${op}` : heading)})`;
           code +=
             `    _cid = ctx.create_cell(${py(body)}, name=${py(h)}, hide_code=True)\n` +
             `    ctx.run_cell(_cid)\n`;

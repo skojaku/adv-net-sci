@@ -22,6 +22,14 @@ if _extra:
 _L = nx.average_shortest_path_length(_G)
 
 mo.vstack([
-    mo.md(f"**Average distance: {_L:.2f}**"),
+    mo.md(
+        f"**Average distance: {_L:.2f}**\n\n"
+        "<span style='color:#6A6D75;font-size:13px'>The same 8-dot ring three "
+        "times over. The **rust line is the one extra cable**; the number "
+        "above is the average trip length over all 28 pairs, recomputed every "
+        "time you switch. Flip between the three options and watch only that "
+        "number: same ring, same single extra line, and the only thing that "
+        "changed is where it was put.</span>"
+    ),
     netviz(_edges, highlight=[_extra] if _extra else [], layout="circle"),
 ])
