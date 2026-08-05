@@ -72,6 +72,29 @@ alone cannot tell a 23px percolation cell or an accent-2 "o" from a small node d
 sampling the four bounding-box corners can, because a disc has empty corners and a square
 does not.
 
+### When a later round measures a fix as absent, believe the measurement
+
+Round 1 of Module 02 specified "re-bow the ring lattice's chords to remove the crossings"
+and the round reported it landed. Round 2 measured the same figure and found **16 crossings**
+on a graph `nx.check_planarity` calls planar. Both were true: what landed was a *different*
+fix — deepening the bow so each triangle had a visible interior — chosen for a good reason
+(the zero-crossing drawing made every triangle unreadable) that was recorded only in a
+docstring inside the generator.
+
+Two rules from that. A fixer who substitutes a different fix must say so **in the report**,
+not just in a comment; and a lead who reads "landed" without a measurement has learned
+nothing. The round-2 reviewer then supplied the layout that dissolved the trade-off
+altogether — the graph was an antiprism, which draws planar *and* keeps its triangles — so
+the recorded disagreement was what made the third option findable.
+
+### An assertion that is never called is not a check
+
+`assert_planar()` sat in Module 02's generator with a docstring reading "a figure whose claim
+is 'count the triangles' must not draw phantom ones", wired into exactly one figure. The
+figure that shipped 34 crossings under a caption asserting there were none was not one of
+them. Grep for every guard the codebase defines and check where it is *called*, not where it
+is defined.
+
 ### Measure on the rendered slide, not the source PNG
 
 **Three consecutive rounds reported "node size is now uniform deck-wide" and were followed

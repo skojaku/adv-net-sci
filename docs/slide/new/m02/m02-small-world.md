@@ -80,8 +80,8 @@ Each packet names one target: a stockbroker who works in Boston.
 </div>
 <div class="fig">
 
-![w:520](figures/milgram-map.png)
-<figcaption>two thousand kilometres, and no address for the target</figcaption>
+![w:520](figures/milgram-route.png)
+<figcaption>one packet's actual route across the country</figcaption>
 
 </div>
 </div>
@@ -130,7 +130,7 @@ How many people end up in the chain?
 
 ---
 
-## Most chains died
+## 160 packets, and what became of them
 
 <hr>
 
@@ -147,7 +147,7 @@ Of the 160 packets that went out, 64 reached the target. The rest stalled somewh
 
 <!-- _class: mid -->
 
-## The ones that arrived took about six steps
+## The chains that made it
 
 <hr>
 
@@ -182,8 +182,8 @@ Milgram reported a median chain length. The slogan did the rest of the work.
 </div>
 <div class="fig">
 
-![w:520](figures/six-degrees-timeline.png)
-<figcaption>the result, then the phrase</figcaption>
+![w:520](figures/guare.png)
+<figcaption>John Guare, who wrote the title — photo David Shankbone, CC BY 3.0</figcaption>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ Is *finding* a short route the same as one *existing*?
 
 ---
 
-## Finding is the stronger claim
+## What Milgram's subjects actually did
 
 <hr>
 
@@ -381,7 +381,7 @@ Not kilometres. Not people. Edges.
 
 <!-- _class: mid -->
 
-## Six
+## Count them, edge by edge
 
 <hr>
 
@@ -677,7 +677,7 @@ Every dashed line is a friendship that *could* exist among $A$'s five friends.
 
 ---
 
-## Ten
+## Every pair that could exist
 
 <hr>
 
@@ -747,7 +747,7 @@ So what does the *diagonal* entry $(\mathbf{A}^3)_{ii}$ count?
 
 ---
 
-## Closed walks of length three
+## Walking back to where you started
 
 <hr>
 
@@ -946,7 +946,7 @@ $$ s = \bar C / \bar L \qquad \text{high is small-world?} $$
 
 ---
 
-## The complete graph breaks it
+## Score the complete graph
 
 <hr>
 
@@ -1008,7 +1008,7 @@ What fraction of those pairs do you expect to be linked?
 
 ---
 
-## $C_{\mathrm{rand}} = p$
+## One coin per pair
 
 <hr>
 
@@ -1151,7 +1151,7 @@ Pick one row. Read both ratios off the axis and compute $\sigma$ yourself. *Two 
 
 ---
 
-## All three are small worlds
+## Your $\sigma$, checked
 
 <hr>
 
@@ -1216,7 +1216,7 @@ $\bar C = 0.5$ — as clustered as a real friendship network.
 
 ---
 
-## But it is enormous
+## Now walk across it
 
 <hr>
 
@@ -1363,7 +1363,7 @@ Do $C$ and $L$ fall together, or does one go first?
 
 ---
 
-## They do not fall together
+## The two curves, measured
 
 <hr>
 
@@ -1471,7 +1471,7 @@ $\bar L$ averages $d(i,j)$ over every pair. This network has pairs with no route
 
 ---
 
-## $d = \infty$, and the average dies with it
+## What the average does with it
 
 <hr>
 
@@ -1518,7 +1518,7 @@ $C_i$ divides by $k_i(k_i-1)/2$ — the number of pairs among the neighbours.
 
 ---
 
-## Zero over zero — a convention, not a fact
+## Look at the denominator
 
 <hr>
 
@@ -1567,7 +1567,7 @@ The ring lattice has the long routes. Is it enough?
 
 ---
 
-## Not the lattice
+## Score the ring lattice
 
 <hr>
 
@@ -1617,7 +1617,7 @@ Count the triplets centred on one intersection. How many are closed?
 
 ---
 
-## Six triplets, none closed
+## Counted together
 
 <hr>
 
@@ -1656,7 +1656,7 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 
 ---
 
-## Almost — but only one has independent edges
+## Where the two recipes part
 
 <hr>
 

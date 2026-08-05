@@ -142,6 +142,28 @@ figures as a **wide ellipse**, and rotate the layout so two nodes sit at the hor
 extremes — a hexagon started at 90° is only 87% as wide as its own bounding circle, which
 was the difference between 67% and 83% ink span.
 
+## Assert that the drawing is on the page
+
+The page is fixed to the design canvas, so anything drawn past its edge is **clipped**,
+silently, and the crop step cannot tell you — it only removes whitespace. Four reviewer
+Blockers on Module 03 were one missing assertion: "any cut" sliced through the middle of
+its glyphs, `= 2: the birth of the giant compone` losing both ends, and two figures whose
+right-hand nodes rendered as half-discs.
+
+    ys, xs = np.where(gray < 200)
+    assert not (xs.min() <= 2 or xs.max() >= W - 3
+                or ys.min() <= 2 or ys.max() >= H - 3), "ink runs off the page"
+
+Ink touching an edge is a clip, not a crop. The same run caught two more figures nobody
+had reported.
+
+**And assert that in-figure notes clear the labels.** A note is placed at a fixed corner
+while names are placed by the solver, so a note that grows collides with whatever the
+solver put there — "every town is its own island" was drawn straight through the word
+"Znojmo". Compute the note's box and check it against every label box; the failure message
+should say *shorten it*, because a long note is the bug (notes carry numbers, prose lives
+in the figcaption).
+
 ## Assertions
 
 Whatever the tool: **assert the facts the figure draws, and let the build fail.** This was
@@ -208,6 +230,21 @@ A figure authored for the 1120px content area and then dropped into a 537px `col
 renders at **48%** of its intended scale — 19px node discs on a slide whose twin, laid out
 full width, shows 39px. Nothing in the source looks wrong. Compute both numbers and compare
 them in the build gate.
+
+**And the container is not one number — read the theme, then read the deck.** Module 02
+assumed two factors (col and full width) and the theme applies at least four. Two separate
+caps were missed:
+
+- Marp wraps a figure in a `<p>`, so `section p { max-width: 1080px }` binds before the
+  1120px content area. Full width is **1080**, not 1120.
+- The `.fig` modifiers change the height cap — `.fig.tight` to 320px, `.fig.stack` to 190px
+  — and on a wide figure the **height** binds first, dropping the factor from 0.98 to 0.87.
+  Sixteen slides of m02 shipped 13–14px type against a 15px floor that way, and the gate
+  passed them because it used 380 for everything.
+
+So the scale is `min(width_cap / file_w, height_cap / file_h)` where both caps come from the
+class the **deck's markup** actually applies. Parse the deck for it. A generator's own table
+of intended containers is not evidence: in m02 the table and the deck disagreed twice.
 
 ## Traps found the hard way
 

@@ -151,6 +151,13 @@ def crop_and_check(name, im, container):
 
     ys, xs = np.where(a < 200)
     assert len(ys), f"{name}: blank figure"
+    edge = 2
+    touched = [side for side, hit in (
+        ("left", xs.min() <= edge), ("right", xs.max() >= a.shape[1] - 1 - edge),
+        ("top", ys.min() <= edge), ("bottom", ys.max() >= a.shape[0] - 1 - edge)) if hit]
+    assert not touched, (
+        f"{name}: ink runs off the {', '.join(touched)} edge of the page -- the "
+        f"drawing is being CLIPPED, not cropped. Move it inward or grow the canvas.")
     lo = max(0, ys.min() - int(PAD * PXBP))
     hi = min(a.shape[0], ys.max() + int(PAD * PXBP))
     im = im.crop((0, lo, im.size[0], hi))
@@ -897,7 +904,20 @@ MST_PAIRS = [(a, b) for a, b, _ in MST_EDGES]
 
 
 def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
+    """A figure's own number note, in a corner of the Moravian map.
+
+    Asserted clear of every town name: notes carry numbers (R1), and the one that
+    did not -- "every town is its own island" -- was drawn straight through the
+    word "Znojmo" on the Boruvka opening frame.
+    """
     x, y = at or NOTE_AT
+    plain = s.replace("\\\\", "\x00")                       # protect the line break
+    plain = re.sub(r"\\[a-zA-Z]+|[${}]", "", plain)
+    plain = plain.replace("\x00", "\\\\")
+    b = label_box(x, y, plain, anchor, size=size)
+    for n, lb in LABEL_BOX.items():
+        assert not boxes_overlap(b, lb), (
+            f"figure note {s!r} runs into the {n!r} label -- shorten it")
     return text(x, y, s, color=color, anchor=anchor, size=size)
 
 
@@ -1069,10 +1089,10 @@ def fig_cut_property():
     s += seg(p["b"], p["e"], color="annot", w=EDGE_W + 1.2)
     s += seg(p["e"], p["c"], color="accenttwo", w=HEAVY_W)
     s += seg(p["e"], p["d"], color="annot", w=EDGE_W + 1.2)
-    s += seg((370, 320), (370, 30), color="annot", w=2.4, dash=DASH_LONG)
+    s += seg((370, 290), (370, 30), color="annot", w=2.4, dash=DASH_LONG)
     for k, (x, y) in p.items():
         s += disc(x, y, fill="accent")
-    s += text(370, 330, "any cut", color="annot", anchor="south")
+    s += text(370, 300, "any cut", color="annot", anchor="south")
     return s
 
 
@@ -1122,7 +1142,7 @@ def fig_tie_two_trees():
                    heavy={TIE_DIFFER[0]: "accenttwo", TIE_DIFFER[1]: "accentthree"},
                    weights=TIE_DIFFER,
                    weight_override={TIE_EDGE: TIE_WEIGHT},
-                   extra_text=note(f"both grids {TIE_TOTAL} km"))
+                   extra_text=note(f"both {TIE_TOTAL} km"))
 
 
 def fig_boruvka_rounds():
@@ -1193,7 +1213,7 @@ def fig_connectivity_def():
                    heavy={(a, b): "accenttwo" for a, b in MST_PAIRS
                           if a in big and b in big},
                    rings={n: "accenttwo" for n in big},
-                   extra_text=note(f"{len(big)} / 8 = {float(frac):.3f}"))
+                   extra_text=note(f"{len(big)} / 8"))
 
 
 # --- curve plotting ---------------------------------------------------------
@@ -1730,7 +1750,7 @@ assert KAPPA_VALUES == [Fraction(2), Fraction(3), Fraction(7, 4)], KAPPA_VALUES
 def _kappa_row(show):
     s = ""
     for i, ((nm, (p, e), sc), kv) in enumerate(zip(KAPPA_CASES, KAPPA_VALUES)):
-        cx = 200 + i * 350
+        cx = 190 + i * 340
         degs = dict(nx.Graph(e).degree())
         body, _ = small_graph(p, e, (cx, 230), scale=sc,
                               labels={k: str(degs[k]) for k in p}, node=NODE)
@@ -2077,12 +2097,11 @@ TRI_EDGES = [(0, 1), (1, 2), (2, 3), (3, 0), (0, 2), (2, 4), (4, 5), (5, 2), (1,
 
 
 def _tri(show):
-    s, P = small_graph(TRI_POS, TRI_EDGES, (120, 190), scale=120, node=NODE)
+    s, P = small_graph(TRI_POS, TRI_EDGES, (70, 190), scale=110, node=NODE)
     if show:
         loop = [(0, 1), (1, 2), (2, 0)]
         s += "".join(seg(P[a], P[b], color="accenttwo", w=HEAVY_W) for a, b in loop)
-        s += text(280, 30, "the search comes back to where it started",
-                  color="accenttwo")
+        s += text(280, 30, "back where it started", color="accenttwo")
     else:
         s += text(280, 30, "triangles everywhere", color="annot")
     return s
@@ -2110,9 +2129,9 @@ def fig_recap():
     s = moravia(edges=MST_PAIRS,
                 heavy={e: "accentthree" for e in new},
                 removed=["Brno"])
-    s += note(f"built {MST_TOTAL} km", color="accent", at=(24, 96))
-    s += note(f"Brno gone: {float(worst):.3f}", color="accenttwo", at=(24, 52))
-    s += note(f"$+{EXTRA_KM}$ km of ring", color="black", at=(560, 52))
+    s += note(f"{MST_TOTAL} km", color="accent", at=(24, 72))
+    s += note(f"{int(worst * 8)}/8", color="accenttwo", at=(470, 72))
+    s += note(f"$+{EXTRA_KM}$ km", color="black", at=(850, 72))
     return s
 
 

@@ -95,7 +95,7 @@ def kruskal_frames():
                 faint=[e for e in ALL_CABLES if e not in added and e != (a, b)],
                 edges=list(added), heavy={(a, b): "accenttwo"}, struck=[(a, b)],
                 weights=list(added) + [(a, b)],
-                extra_text=note(f"{w} km would close a loop")))
+                extra_text=note(f"{w}: a loop")))
             continue
         added.append((a, b))
         out.append(moravia(
@@ -111,7 +111,7 @@ def prim_frames():
     grown, out = [], []
     out.append(moravia(faint=ALL_CABLES, weights=ALL_CABLES,
                        rings={"Brno": "accenttwo"},
-                       extra_text=note("start at Brno")))
+                       extra_text=note("0 km", color="annot")))
     for u, v, w in PRIM:
         grown.append((u, v))
         reached = {"Brno"} | {n for e in grown for n in e}
@@ -127,7 +127,7 @@ def prim_frames():
 def boruvka_frames():
     """Every component picks its own cheapest cable at once -- two rounds, not seven."""
     out = [moravia(faint=ALL_CABLES, weights=ALL_CABLES,
-                   extra_text=note("every town is its own island", color="annot"))]
+                   extra_text=note("8 pieces", color="annot"))]
     picked = []
     for i, rnd in enumerate(BORUVKA_ROUNDS, 1):
         new = [(a, b) for a, b, _ in rnd]
@@ -135,7 +135,7 @@ def boruvka_frames():
                            edges=list(picked),
                            heavy={e: "accenttwo" for e in new},
                            weights=picked + new,
-                           extra_text=note(f"round {i}: {len(new)} at once")))
+                           extra_text=note(f"round {i}: {len(new)}")))
         picked += new
         out.append(moravia(faint=[e for e in ALL_CABLES if e not in picked],
                            edges=list(picked), weights=list(picked),

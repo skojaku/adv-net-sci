@@ -8,8 +8,15 @@ Pipeline (see review/FIGURE_SPEC.md for the derivation):
 Author at final size: **1 bp = 1 slide pixel**.  The page is pinned to the design
 canvas, so the deck's own scale factor is a constant per container:
 
-    cols column : 537 / 520  = 1.033 slide px per bp
-    full width  : 1120 / 1100 = 1.018 slide px per bp
+    cols column : 537 / 520   = 1.033 slide px per bp
+    full width  : 1080 / 1100 = 0.982 slide px per bp
+
+1080, not the 1120 content area: Marp wraps the image in a `<p>` and
+`section p { max-width: 1080px }` binds first.  And the theme caps the *height* three
+different ways (`.fig` 380, `.fig.tight` 320, `.fig.stack` 190), so a drawing that is
+too tall is scaled by its height instead and everything in it shrinks.  Which cap
+applies is a fact about the deck's markup, so `_deck_usage()` reads it out of the deck
+and `emit()` refuses any figure whose height binds.
 
 Only the *height* is cropped after rasterising (to the ink, plus a pad), which leaves
 the width -- and therefore the scale -- untouched.  That is the whole reason node discs
@@ -53,19 +60,35 @@ PALETTE = {ACCENT, ACCENT2, ACCENT3, GRAY, INK, "ffffff", "f7f4f1"}
 # --------------------------------------------------------------------------- geometry
 DPI = 288
 PXBP = DPI / 72              # 4 px per bp
-COL_W, FULL_W = 537, 1120    # containers, measured in a real browser render
-MAX_FIG_H = 380              # network-science.css: section .fig img { max-height }
+
+# network-science.css caps a figure THREE ways, and this file used one number for all of
+# them -- which is how type 17% under the floor passed a green build on sixteen slides.
+# Read straight out of the theme:
+#     section p               { max-width: 1080px }   <- Marp wraps the image in a <p>,
+#                                                        so a full-width figure stops at
+#                                                        1080, not the 1120 content area
+#     section .fig img        { max-height: 380px }
+#     section .fig.tight img  { max-height: 320px }   <- 16 slides
+#     section .fig.stack img  { max-height: 190px }
+# Which cap applies is a fact about the DECK's markup and never about the FIGURES table
+# below -- the table records intent, and the two have already disagreed twice.
+COL_W, FULL_W = 537, 1080
+FIG_H = {"": 380, "tight": 320, "stack": 190}
 
 DESIGN = {"col": 520, "full": 1100}
 CONTAINER = {"col": COL_W, "full": FULL_W}
 
-NODE = 40          # disc diameter, bp  -> 40.7-41.3 px on the slide (band 26-52)
+NODE = 40          # disc diameter, bp  -> 39.3-41.3 px on the slide (band 26-52)
 SMALLNODE = 26     # only where a figure draws dozens of dots (arrival grid, ring lattice)
-# 36, not 30: check_render.py measures X-HEIGHT on the rendered slide, and for Latin
+# 37, not 30: check_render.py measures X-HEIGHT on the rendered slide, and for Latin
 # Modern x-height is 0.431 em against cap height 0.683 em.  30pt clears a 21px cap-height
 # assertion and lands 12.9px x-height -- under the checker's 15px floor, and invisible to
 # the build until the checker runs.  Both ratios are measured below, never assumed.
-FONT = 36          # pt
+# 36 was set against a full-width factor of 1.018 that the theme never applies; at the
+# real 0.982 it lands 15.2px, under this file's own floor.  The fix for a type-size
+# failure is bigger type, never a smaller floor: 37pt lands 15.7px full width and 16.5px
+# in a column, and the widest disc label ("G") still needs only 39.4bp of a 40bp disc.
+FONT = 37          # pt
 EDGE_W = 2.6
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
@@ -151,10 +174,55 @@ def _render(name, body, w, hmax):
         return im
 
 
+DECK = OUT.parent / "m02-small-world.md"
+
+
+def _deck_usage(path=DECK):
+    """Which container and height cap the DECK actually wraps each figure in.
+
+    Fact, not intent.  The `FIGURES` table records what a figure was authored for; the
+    deck's markup records what the theme will apply to it, and the two have disagreed
+    twice -- once by a whole container (48% of the intended scale) and once by the
+    `tight` modifier (0.87 instead of 0.982, on sixteen slides at a time).  So the caps
+    come from here, and `emit()` fails if the table disagrees.
+
+    Split and match exactly the way check_render.py does, or the generator and the gate
+    can read different answers out of the same file.
+    """
+    use = {}
+    for i, chunk in enumerate(path.read_text().split("\n---\n")[1:], start=1):
+        cont = "col" if 'class="cols"' in chunk else "full"
+        mod = ""
+        for m in ("tight", "stack"):
+            if f'class="fig {m}"' in chunk:
+                mod = m
+        for f in re.findall(r"!\[[^\]]*\]\(figures/([^)]+)\)", chunk):
+            use.setdefault(Path(f).stem, []).append((i, cont, mod))
+    return use
+
+
+DECK_USE = _deck_usage()
+
+
 def emit(name, body, container="col", pad=PAD):
     """Compile one TikZ body to figures/<name>.png and assert what lands on the slide."""
     if _only and not any(k in name for k in _only):
         return
+    uses = DECK_USE.get(name)
+    if uses:
+        conts = {c for _, c, _ in uses}
+        assert len(conts) == 1, (
+            f"{name}: the deck puts this one file in {sorted(conts)} on slides "
+            f"{[s for s, _, _ in uses]} -- one file cannot be authored for two "
+            f"containers, emit two")
+        deck_cont = conts.pop()
+        assert deck_cont == container, (
+            f"{name}: the FIGURES table says {container!r}, the deck's markup says "
+            f"{deck_cont!r} on slide(s) {[s for s, _, _ in uses]} -- the deck is the fact")
+    else:
+        # Not on any slide yet (a figure written ahead of the deck edit that will use it).
+        # Nothing to read, so fall back to the table and say so.
+        deck_cont, uses = container, [(None, container, "")]
     w = DESIGN[container]
     hmax = int(w * 0.70)
 
@@ -201,12 +269,23 @@ def emit(name, body, container="col", pad=PAD):
     im = im.crop((0, lo, im.size[0], hi))
 
     fw, fh = im.size
-    scale = min(CONTAINER[container] / fw, MAX_FIG_H / fh, 1.0)
-    factor = scale * PXBP                      # slide px per bp
-    want = CONTAINER[container] / w
-    assert abs(factor - want) < 1e-6, (
-        f"{name}: height binds the scale ({fh/PXBP:.0f}bp tall on a {w}bp canvas) -- "
-        f"the drawing must be shorter than {w * MAX_FIG_H / CONTAINER[container]:.0f}bp")
+    # The deck scales the image by min(width cap / file width, height cap / file height).
+    # When the HEIGHT wins, every disc and every glyph in the figure shrinks by a factor
+    # nothing in this file can see -- that is the defect, so it is a build failure, and
+    # the message says how short the drawing has to get.
+    scale, binding = 1.0, None
+    for slide, cont, mod in uses:
+        wcap, hcap = CONTAINER[cont], FIG_H[mod]
+        sw, sh = wcap / fw, hcap / fh
+        assert sh >= sw, (
+            f"{name}: the height cap binds on slide {slide} -- `fig{' ' + mod if mod else ''}`"
+            f" caps the image at {hcap}px and it is {fh / PXBP:.0f}bp tall, so the deck "
+            f"scales it to {sh * PXBP:.3f} slide px per bp instead of {sw * PXBP:.3f}. "
+            f"Shorten the drawing to {hcap * fw / wcap / PXBP:.0f}bp or less "
+            f"({(fh / PXBP) - (hcap * fw / wcap / PXBP):.0f}bp of ink to lose)")
+        if sw < scale:
+            scale, binding = sw, (slide, cont, mod)
+    factor = scale * PXBP                      # slide px per bp, as the deck applies it
 
     # ink must fill the canvas width, or the deck scales white margin
     span = (xs.max() - xs.min() + 1) / fw
@@ -239,8 +318,11 @@ def emit(name, body, container="col", pad=PAD):
 
     im.save(OUT / f"{name}.png")
     _built.append(name)
-    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  x-height {xh_px:.1f}px  "
-          f"discs {lo_d:.0f}-{hi_d:.0f}px  ink {span:.0%}")
+    where = f"fig{' ' + binding[2] if binding and binding[2] else ''}/{deck_cont}"
+    if uses[0][0] is None:
+        where += " (not in the deck)"
+    print(f"  {name}.png  {fw}x{fh}  {where}  {factor:.3f}px/bp  node {node_px:.0f}px  "
+          f"x-height {xh_px:.1f}px  discs {lo_d:.0f}-{hi_d:.0f}px  ink {span:.0%}")
 
 
 # --------------------------------------------------------------------------- drawing helpers
@@ -257,14 +339,26 @@ _LABEL_BOX = {}
 DISC_TEXT_PAD = 2      # bp of fill kept between the glyph's corner and the disc edge
 
 
+def ink_box_bp(s, size=None):
+    """Ink box (w, h) of a typeset string, measured off a render.  Cached per string.
+
+    Measured, never computed: a glyph advance is not a glyph's ink, and the one thing
+    the m02 rounds proved is that any number this file derives from FONT restates the
+    author's intention instead of reading the page.
+    """
+    key = (s, size)
+    if key not in _LABEL_BOX:
+        im = _render("ink-box", text(550, 150, s, **({} if size is None else {"size": size})),
+                     1100, 300)
+        ys, xs = np.where(np.array(im.convert("L")) < 200)
+        _LABEL_BOX[key] = ((xs.max() - xs.min() + 1) / PXBP,
+                           (ys.max() - ys.min() + 1) / PXBP)
+    return _LABEL_BOX[key]
+
+
 def _label_box_bp(label):
     """Ink box of a disc label at FONT pt, measured once per distinct label."""
-    if label not in _LABEL_BOX:
-        im = _render("label-fit", text(260, 100, label), 520, 200)
-        ys, xs = np.where(np.array(im.convert("L")) < 200)
-        _LABEL_BOX[label] = ((xs.max() - xs.min() + 1) / PXBP,
-                             (ys.max() - ys.min() + 1) / PXBP)
-    return _LABEL_BOX[label]
+    return ink_box_bp(label)
 
 
 def disc(x, y, label="", fill="accent", name=None, size=NODE, text="white"):
@@ -387,7 +481,10 @@ def curve_edge(a, b, pos, color="black", w=EDGE_W, dash="", clear=NODE / 2 + 3,
         if not others or min(np.linalg.norm(pts - q, axis=1).min() for q in others) >= clear:
             o = [f"line width={w}bp", f"draw={color}"] + ([dash] if dash else [])
             if paths is not None:
-                paths.append((a, b, pts if h else np.array([pa, pb])))
+                # always the sampled polyline, never the two endpoints: with h = 0 the
+                # control point sits on the midpoint, so `pts` IS the straight segment,
+                # and a two-point path makes every clearance test vacuously true
+                paths.append((a, b, pts))
             if h == 0:
                 return f"\\draw[{','.join(o)}] ({pa[0]:.1f},{pa[1]:.1f}) -- ({pb[0]:.1f},{pb[1]:.1f});\n"
             return (f"\\draw[{','.join(o)}] ({pa[0]:.1f},{pa[1]:.1f}) .. controls "
@@ -425,19 +522,100 @@ def assert_planar(name, paths):
                     f"is not there, on a drawing whose whole job is counting")
 
 
-def clearance_ok(edges, pos, r=NODE / 2 + 3):
-    """No straight edge may pass through a disc it does not end at (m01's ring defect)."""
-    bad = []
+def bend_path(pa, pb, bend, n=60):
+    """Sample what TikZ's `to[bend left=<bend>]` actually draws between two points.
+
+    `bend left=a` leaves pa turned `a` degrees to the left of the straight line, so the
+    curve is the circular arc whose end tangents make that angle -- sagitta
+    (L/2)tan(a/2), to the left of the direction of travel.  A quadratic Bezier with its
+    control point at twice that offset has exactly that sagitta, which is close enough
+    for a crossing or a clearance test and is the same sampling `curve_edge` already
+    does for its own bows.
+
+    This exists because `clearance_ok` and `count_crossings` saw straight segments only,
+    so every bent edge in the deck was unchecked at source and had to be measured off
+    the render by hand.
+    """
+    pa, pb = np.array(pa, float), np.array(pb, float)
+    d = pb - pa
+    L = float(np.linalg.norm(d))
+    left = np.array([-d[1], d[0]]) / (L or 1.0)
+    sag = (L / 2) * math.tan(math.radians(bend) / 2)
+    ctrl = (pa + pb) / 2 + 2 * sag * left
+    return _bezier_pts(pa, ctrl, pb, n)
+
+
+def _edge_paths(edges, pos, paths=()):
+    """Every drawn edge as a polyline: the sampled curve where one was given, else the
+    straight segment, sampled too.
+
+    Sampled, not left as its two endpoints: a clearance test that measures the distance
+    from a node to the two ENDS of an edge always passes, because the ends are the other
+    two nodes.  The disc in the middle is the one that matters.
+    """
+    # keyed by an unordered pair, not by min/max: node keys in this file are ints in some
+    # figures and (blade, side) tuples or "hub" in others, and those do not compare
+    given = {frozenset((a, b)): p for a, b, p in paths}
+    out = []
     for a, b in edges:
-        pa, pb = np.array(pos[a], float), np.array(pos[b], float)
-        d = pb - pa
-        L2 = float(d @ d)
+        k = frozenset((a, b))
+        if k in given:
+            out.append((a, b, given[k]))
+        else:
+            pa, pb = np.array(pos[a], float), np.array(pos[b], float)
+            t = np.linspace(0, 1, 60)[:, None]
+            out.append((a, b, pa + t * (pb - pa)))
+    return out
+
+
+def assert_drawn_planar(name, edges, pos, paths=()):
+    """If networkx calls the graph planar, the drawing has no excuse for a crossing.
+
+    `assert_planar` existed for a whole build and was wired to exactly one figure, so
+    `free-vs-not` shipped 34 crossings across 14 edges under a caption asserting there
+    are no triangles.  This is the version that takes an edge list, so every node-link
+    figure can be gated in one line.
+
+    Non-planar graphs return silently -- K6 and the ego graph's ten dashed pairs cannot
+    be drawn without crossings, and saying so here is what makes the silence readable.
+    """
+    if not nx.check_planarity(nx.Graph(list(edges)))[0]:
+        return
+    assert_planar(name, _edge_paths(edges, pos, paths))
+
+
+def assert_text_clear(name, box, segs, pad=6):
+    """No drawn stroke may run through a block of type.
+
+    The accent-2 edge of the $A^3$ triangle ran through the numerator of $(A^3)_{ii}$
+    and struck out the **3** -- the one symbol that slide exists to teach.  The box is
+    measured off a render, so this is the glyphs' real ink and not their advance width.
+    """
+    x0, y0, x1, y1 = box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad
+    for p, q in segs:
+        t = np.linspace(0, 1, 200)[:, None]
+        pts = np.array(p, float) + t * (np.array(q, float) - np.array(p, float))
+        hit = ((pts[:, 0] >= x0) & (pts[:, 0] <= x1)
+               & (pts[:, 1] >= y0) & (pts[:, 1] <= y1))
+        assert not hit.any(), (
+            f"{name}: the stroke {tuple(round(v) for v in p)}--{tuple(round(v) for v in q)} "
+            f"runs through the type at "
+            f"({box[0]:.0f},{box[1]:.0f})-({box[2]:.0f},{box[3]:.0f}) -- move the drawing "
+            f"or the label, a struck-through glyph is worse than no glyph")
+
+
+def clearance_ok(edges, pos, r=NODE / 2 + 3, paths=()):
+    """No drawn edge may pass through a disc it does not end at (m01's ring defect).
+
+    Curved edges are sampled rather than treated as their chord: a `to[bend]` arc that
+    clears a disc as a straight line can still run through it, and the reverse.
+    """
+    bad = []
+    for a, b, pts in _edge_paths(edges, pos, paths):
         for n, p in pos.items():
             if n in (a, b):
                 continue
-            p = np.array(p, float)
-            t = max(0.0, min(1.0, float((p - pa) @ d) / L2))
-            if np.linalg.norm(pa + t * d - p) < r:
+            if float(np.linalg.norm(pts - np.array(p, float), axis=1).min()) < r:
                 bad.append((a, b, n))
     return bad
 
@@ -491,14 +669,18 @@ assert apl(RING20) == Fraction(55, 19) and nx.diameter(RING20) == 5
 L_HUMAN = math.log(8e9) / math.log(150)
 assert abs(L_HUMAN - 4.55) < 0.01, L_HUMAN
 
-# Watts & Strogatz 1998, Table 1 -- transcribed once, every ratio derived.
+# Watts & Strogatz 1998, Table 1 -- transcribed once, every ratio derived.  The sizes are
+# from the same table: three networks four orders of magnitude apart is the evidence for
+# the universality claim, and a figure that drops them makes the claim without it.
 WS98 = [
-    ("Film actors", 3.65, 2.99, 0.79, 0.00027),
-    ("Power grid", 18.7, 12.4, 0.080, 0.005),
-    ("C. elegans", 2.65, 2.25, 0.28, 0.05),
+    ("Film actors", 225226, 3.65, 2.99, 0.79, 0.00027),
+    ("Power grid", 4941, 18.7, 12.4, 0.080, 0.005),
+    ("C. elegans", 282, 2.65, 2.25, 0.28, 0.05),
 ]
-WS98_R = [(n, L / Lr, C / Cr, (C / Cr) / (L / Lr)) for n, L, Lr, C, Cr in WS98]
+WS98_R = [(n, L / Lr, C / Cr, (C / Cr) / (L / Lr)) for n, _, L, Lr, C, Cr in WS98]
+WS98_N = {n: sz for n, sz, *_ in WS98}
 assert [round(s) for _, _, _, s in WS98_R] == [2397, 11, 5], WS98_R
+assert max(WS98_N.values()) / min(WS98_N.values()) > 700, "the sizes must span the claim"
 
 GRID = nx.grid_2d_graph(20, 20)
 assert nx.transitivity(GRID) == 0
@@ -531,13 +713,22 @@ def fig_milgram_map():
     pts = " -- ".join("(%.1f,%.1f)" % f(a, b) for a, b in US_OUTLINE)
     s = f"\\draw[line width=1.6bp,draw=annot] {pts} -- cycle;\n"
     om, wi, bo = (f(*CITIES[c]) for c in ("Omaha", "Wichita", "Boston"))
-    for p in (om, wi):
-        vx, vy = bo[0] - p[0], bo[1] - p[1]
-        L = math.hypot(vx, vy)
-        tip = (bo[0] - vx / L * (DOT / 2 + 4), bo[1] - vy / L * (DOT / 2 + 4))
+    # Both packets aim at the same point on the same disc, so the two arrowheads land on
+    # top of one another and read as one smudge.  Give each its own anchor on Boston's
+    # rim -- 15 degrees either side of the straight line -- and close the standoff to
+    # 2bp, so each arrow visibly ARRIVES instead of stopping short of the city.
+    base = [math.atan2(p[1] - bo[1], p[0] - bo[0]) for p in (om, wi)]
+    mid = sum(base) / 2
+    tips = []
+    for p, turn in ((om, 26), (wi, -26)):
+        ang = mid + math.radians(turn)
+        tip = (bo[0] + math.cos(ang) * (DOT / 2 + 2), bo[1] + math.sin(ang) * (DOT / 2 + 2))
+        tips.append(tip)
         s += seg(p, tip, color="annot", w=2.2, dash="dashed",
                  arrow="-{Stealth[length=9bp]}")
         s += dot(round(p[0], 1), round(p[1], 1), "accent")
+    sep = math.dist(*tips)
+    assert sep >= 12, f"the two arrowheads land {sep:.0f}bp apart -- they read as one mark"
     s += dot(round(bo[0], 1), round(bo[1], 1), "accenttwo")   # size encodes nothing here
     s += text(om[0] - 22, om[1] + 6, "Omaha", anchor="east")
     s += text(wi[0] - 22, wi[1] - 10, "Wichita", anchor="east")
@@ -561,20 +752,28 @@ def fig_milgram_rule():
     return s
 
 
+# 32 wide, not 20: the slide is a `fig tight`, so the theme caps the image at 320px and
+# eight rows of packets made the HEIGHT bind -- the deck then scaled the whole figure to
+# 0.87 slide px per bp and every label on it shrank.  Five rows fit, and 64 arrivals fall
+# out as exactly the top two rows instead of three and a fifth.
+ARR_COLS, ARR_ROWS = 32, 5
+ARR_DOT = 28              # 27.5px on the slide, inside the 26-52px band
+assert ARR_COLS * ARR_ROWS == 160 and 64 % ARR_COLS == 0
+
+
 def fig_milgram_arrivals():
-    cols, rows = 20, 8
-    dx, dy = 55, 40
+    dx, dy = 34, 52
     x0, y0 = 20, 60
     s = ""
     for i in range(160):
-        r, c = divmod(i, cols)
-        x, y = x0 + c * dx, y0 + (rows - 1 - r) * dy
+        r, c = divmod(i, ARR_COLS)
+        x, y = x0 + c * dx, y0 + (ARR_ROWS - 1 - r) * dy
         if i < 64:
-            s += dot(x, y, "accenttwo")
+            s += dot(x, y, "accenttwo", d=ARR_DOT)
         else:
             # same diameter as the filled dots: one object drawn at two sizes reads as
             # an encoding, and 160 packets are all the same packet
-            s += f"\\draw[line width=2bp,draw=annot] ({x},{y}) circle ({DOT / 2}bp);\n"
+            s += f"\\draw[line width=2bp,draw=annot] ({x},{y}) circle ({ARR_DOT / 2}bp);\n"
     s += text(20, 12, "64 arrived", color="accenttwo", anchor="south west")
     s += text(1080, 12, "96 never did", color="annot", anchor="south east")
     return s
@@ -585,7 +784,9 @@ def _chain_row(names, y=150, x0=95, dx=152):
 
 
 def fig_six_degrees_timeline():
-    s = seg((60, 250), (60, 60), color="annot", w=2.4)
+    # between the dot CENTRES: run past them and the rule overhangs 30bp below against
+    # 20bp above, which reads as a third, unlabelled event at each end
+    s = seg((60, 230), (60, 90), color="annot", w=2.4)
     for y, yr, cap, col in ((230, "1967", "Milgram mails the packets", "accent"),
                             (90, "1990", "Guare's play names it\\\\``six degrees of separation''",
                              "accenttwo")):
@@ -626,6 +827,7 @@ def fig_wikirace():
     # red edge.  No extra edge either: the dotted Bagel--Chopin link made the route two
     # clicks, contradicting the figure's own caption.
     pos = {0: (60, 120), 1: (210, 270), 2: (360, 120), 3: (480, 260)}
+    assert_drawn_planar("wikirace", [(0, 1), (1, 2), (2, 3)], pos)
     s = ""
     for i in range(4):
         s += disc(pos[i][0], pos[i][1], "", fill="accent" if i != 3 else "accenttwo", name=f"w{i}")
@@ -641,15 +843,20 @@ def fig_wikirace():
 
 
 def fig_routing_vs_existence():
-    """One point: the route exists, but from `you` only the two neighbours are visible."""
-    pos = {0: (70, 175), 1: (250, 280), 2: (250, 68), 3: (500, 288), 4: (500, 60),
-           5: (700, 175), 6: (880, 268), 7: (880, 78), 8: (1040, 175)}
+    """One point: the route exists, but from `you` only the two neighbours are visible.
+
+    Flattened from 60-288 to 75-265: the slide is a `fig tight`, so the theme caps the
+    image at 320px, and at the old height that cap -- not the width -- set the scale.
+    """
+    pos = {0: (70, 170), 1: (250, 240), 2: (250, 100), 3: (500, 245), 4: (500, 95),
+           5: (700, 170), 6: (880, 240), 7: (880, 100), 8: (1040, 170)}
     edges = [(0, 1), (0, 2), (1, 3), (2, 4), (3, 5), (4, 5), (5, 6), (5, 7),
              (6, 8), (7, 8)]
     route = {(0, 2), (2, 4), (4, 5), (5, 7), (7, 8)}
     assert not clearance_ok(edges, pos)
+    assert_drawn_planar("routing-vs-existence", edges, pos)
     s = ("\\draw[line width=2bp,draw=annot,dash pattern=on 9bp off 7bp,"
-         "rounded corners=26bp] (20,18) rectangle (340,326);\n")
+         "rounded corners=26bp] (20,58) rectangle (340,282);\n")
     for a, b in edges:
         hot = (a, b) in route
         s += seg(pos[a], pos[b], color="accenttwo" if hot else "annot",
@@ -664,7 +871,7 @@ def fig_routing_vs_existence():
                   f"circle ({NODE / 2}bp);\n")
     s += text(70, 143, "you", color="accenttwo", anchor="north")
     s += text(1040, 143, "target", color="accenttwo", anchor="north")
-    s += text(180, 330, "all you can see", color="annot", anchor="south")
+    s += text(180, 288, "all you can see", color="annot", anchor="south")
     return s
 
 
@@ -677,16 +884,22 @@ def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all
            name_col=None, pos=CHAIN_POS, edge_num=False, curve=True):
     """The Milgram acquaintance graph. One routine, so the geometry cannot drift."""
     s = ""
+    paths = []
     order = [e for e in edges if e in CHAIN_EDGES] + [e for e in edges if e not in CHAIN_EDGES]
     for k, (a, b) in enumerate(order):
         col = hot_col if (a, b) in hot else "black"
         w = HEAVY_W if ((a, b) in hot or heavy_all) else EDGE_W
         if curve and (b - a) > 1:
             bend = 60 if (a, b) == CHORD else -34
+            paths.append((a, b, bend_path(pos[a], pos[b], bend)))
             s += (f"\\draw[line width={w}bp,draw={col}] ({pos[a][0]},{pos[a][1]}) "
                   f"to[bend left={bend}] ({pos[b][0]},{pos[b][1]});\n")
         else:
             s += seg(pos[a], pos[b], color=col, w=w)
+    # The chord and the shortcut are `to[bend]` arcs, which every geometry gate in this
+    # file used to be blind to; sampled, they are checked like anything else.
+    assert not clearance_ok(edges, pos, paths=paths), clearance_ok(edges, pos, paths=paths)
+    assert_drawn_planar("milgram chain", edges, pos, paths)
     for i in pos:
         s += disc(pos[i][0], pos[i][1], labels[i] if labels else "",
                   fill="accenttwo" if i in ringed else "accent")
@@ -841,6 +1054,11 @@ def fig_chain_shortcut():
 DIA_PAIR = (0, 6)
 assert nx.shortest_path_length(G_FULL, *DIA_PAIR) == nx.diameter(G_FULL) == 3
 DIA_ROUTE = nx.shortest_path(G_FULL, *DIA_PAIR)
+# Four pairs tie at the diameter, so "THE worst pair" is wrong on its own figure -- and
+# the red marks one ROUTE, which is a third thing again.
+DIA_TIES = [(a, b) for a, b in itertools.combinations(range(7), 2)
+            if nx.shortest_path_length(G_FULL, a, b) == nx.diameter(G_FULL)]
+assert len(DIA_TIES) == 4, DIA_TIES
 
 
 def fig_diameter():
@@ -849,7 +1067,8 @@ def fig_diameter():
         hot.add((min(a, b), max(a, b)))
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot=hot)
     s += _names()
-    s += text(550, 285, "worst pair in the whole network: 3 edges",
+    s += text(550, 285, f"one of the {len(DIA_TIES)} worst pairs --- "
+                        f"{nx.diameter(G_FULL)} edges",
               color="accenttwo", anchor="south")
     return s
 
@@ -970,7 +1189,11 @@ def fig_ego_clustering():
     return s
 
 
-TRI = {0: (68, 100), 1: (452, 100), 2: (260, 290)}
+# Lifted 40bp off the floor: the $C_i$ formula under this triangle is a stacked fraction
+# ~100bp tall, and with the base edge at y = 100 the accent-2 stroke ran straight through
+# the numerator and crossed out the 3 in $(A^3)_{ii}$.
+TRI = {0: (68, 140), 1: (452, 140), 2: (260, 320)}
+TRI_EDGES = [(0, 1), (1, 2), (0, 2)]
 
 
 def _triangle(cols=("black", "black", "black")):
@@ -1001,10 +1224,15 @@ def _walk_loop(order, t, color, w):
 
 
 def fig_a3_walks():
-    s = "".join(seg(TRI[a], TRI[b], color="black", w=EDGE_W)
-                for a, b in ((0, 1), (1, 2), (0, 2)))
-    s += _walk_loop((0, 1, 2), 0.60, "accenttwo", 3.4)     # i -> j -> l -> i
-    s += _walk_loop((0, 2, 1), 0.36, "accentthree", 4.4)   # i -> l -> j -> i
+    """Both walks in accent-2, nested, told apart by which way the arrows point.
+
+    The second walk was accent-3: a 2.01:1 stroke against white where accent-2 on the
+    same figure measures 5.6:1, under a caption asking the room to tell the two apart by
+    colour.  Direction is the thing that differs, so direction is what carries it.
+    """
+    s = "".join(seg(TRI[a], TRI[b], color="black", w=EDGE_W) for a, b in TRI_EDGES)
+    s += _walk_loop((0, 1, 2), 0.64, "accenttwo", 3.4)     # i -> j -> l -> i
+    s += _walk_loop((0, 2, 1), 0.34, "accenttwo", 3.4)     # i -> l -> j -> i
     for i, lab in ((0, "$i$"), (1, "$j$"), (2, "$\\ell$")):
         s += disc(TRI[i][0], TRI[i][1], lab, fill="accent")
     s += text(260, 20, "two ways round: $(A^3)_{ii} = 2$", color="accenttwo",
@@ -1012,10 +1240,15 @@ def fig_a3_walks():
     return s
 
 
+A3_FORMULA = "$C_i = \\dfrac{(A^3)_{ii}}{k_i(k_i-1)} = \\dfrac{2}{2\\cdot 1} = 1$"
+
+
 def fig_a3_formula():
     s = _triangle(("accenttwo", "accenttwo", "accenttwo"))
-    s += text(260, 20, "$C_i = \\dfrac{(A^3)_{ii}}{k_i(k_i-1)} = \\dfrac{2}{2\\cdot 1} = 1$",
-              color="accenttwo", anchor="south")
+    s += text(260, 20, A3_FORMULA, color="accenttwo", anchor="south")
+    fw, fh = ink_box_bp(A3_FORMULA)
+    assert_text_clear("a3-formula", (260 - fw / 2, 20, 260 + fw / 2, 20 + fh),
+                      [(TRI[a], TRI[b]) for a, b in TRI_EDGES])
     return s
 
 
@@ -1034,14 +1267,21 @@ def fig_cbar_milgram():
 
 
 # --- windmill: hub + 5 blades -------------------------------------------------
+# ry 132, not 150: `transitivity-def` sits in a `fig tight`, whose 320px cap bound the
+# scale at 285bp of blade spread.  All four windmill figures share the geometry, so they
+# all shrink together and the graph does not change size between consecutive slides.
 WM_HUB = (300, 190)
+WM_RX, WM_RY = 245, 132
 WM = {}
 for _b in range(5):
     for _s2, _off in ((0, -18), (1, 18)):
         _a = math.radians(18 + 72 * _b + _off)
-        WM[(_b, _s2)] = (WM_HUB[0] + 245 * math.cos(_a), WM_HUB[1] + 150 * math.sin(_a))
+        WM[(_b, _s2)] = (WM_HUB[0] + WM_RX * math.cos(_a), WM_HUB[1] + WM_RY * math.sin(_a))
 WM_EDGES = [((b, s2), "hub") for b in range(5) for s2 in (0, 1)] + \
            [((b, 0), (b, 1)) for b in range(5)]
+WM_POS = {**WM, "hub": WM_HUB}
+assert not clearance_ok(WM_EDGES, WM_POS)
+assert_drawn_planar("windmill", WM_EDGES, WM_POS)
 
 
 def _windmill(blade_label="", hub_label=""):
@@ -1057,6 +1297,23 @@ def _windmill(blade_label="", hub_label=""):
     return s
 
 
+def _hub_leader(to_x, to_y):
+    """A leader that does not read as an eleventh edge.
+
+    Started at the hub's own centre it left the disc at exactly the point the ten spokes
+    leave it, so the hub drew with eleven lines coming out of it on the slide that asks
+    how many pairs of the hub's neighbours are joined.  56bp out is 36bp of white past
+    the disc's rim -- clearly a pointer, not a spoke.
+    """
+    dx, dy = to_x - WM_HUB[0], to_y - WM_HUB[1]
+    L = math.hypot(dx, dy)
+    start = (WM_HUB[0] + dx / L * 56, WM_HUB[1] + dy / L * 56)
+    gap = 56 - NODE / 2
+    assert gap >= 30, f"the hub leader starts {gap:.0f}bp off the disc -- it reads as a spoke"
+    return seg((round(start[0], 1), round(start[1], 1)), (to_x, to_y),
+               color="accenttwo", w=2.2)
+
+
 def fig_windmill():
     s = _windmill()
     s += text(760, 240, "one hub,\\\\five closed blades", color="black", anchor="west",
@@ -1067,8 +1324,9 @@ def fig_windmill():
 
 
 def fig_windmill_cbar():
+    # the blade digit is explained here, by the line naming it, and nowhere else
     s = _windmill(blade_label="1")
-    s += seg((WM_HUB[0] + 22, WM_HUB[1] - 8), (700, 120), color="accenttwo", w=2.2)
+    s += _hub_leader(700, 120)
     s += text(712, 120, "hub: $C_i = 1/9$", color="accenttwo", anchor="west")
     s += text(712, 250, "each blade node: $C_i = 1$", color="black", anchor="west")
     s += text(700, 40, "$\\bar C = 91/99 = 0.92$", color="accenttwo", anchor="west")
@@ -1076,8 +1334,10 @@ def fig_windmill_cbar():
 
 
 def fig_windmill_split():
-    s = _windmill(blade_label="1")
-    s += seg((WM_HUB[0] + 22, WM_HUB[1] - 8), (700, 120), color="accenttwo", w=2.2)
+    # no blade digit: nothing on THIS slide says what the 1 is, and an unexplained
+    # number inside every node reads as a node label
+    s = _windmill()
+    s += _hub_leader(700, 120)
     s += text(712, 120, "the hub owns 45\\\\of the 55 triplets", color="accenttwo",
               anchor="west", width=370)
     s += text(700, 300, "node-weighted: $\\bar C = 0.92$", color="black", anchor="west")
@@ -1109,30 +1369,42 @@ def fig_worksheet_b():
 
 
 def fig_worksheet_b_answer():
-    """No value row: the deck reveals the three answers one fragment at a time, and a
-    figure that prints them statically above the fragments gives the game away."""
+    """No printed value at all: the deck reveals the three answers one fragment at a
+    time, and a figure that prints anything computed leads them.
+
+    The $\\bar C$ line was worse than the three answers would have been -- it is the
+    average, which the deck reveals LAST, and it was the only coloured type on the
+    slide.  What the figure can carry without leading is which three nodes are being
+    asked about, so it rings them.
+    """
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    s += text(550, 285, f"and over all seven nodes: $\\bar C = "
-                        f"{CBAR_FULL.numerator}/{CBAR_FULL.denominator} "
-                        f"= {float(CBAR_FULL):.2f}$", color="accenttwo", anchor="south")
+    for i in WB_NODES:
+        s += ring(*CHAIN_POS[i])
     return s
 
 
 
 # --------------------------------------------------------------------------- Part 4
 def fig_paradox():
-    cl = {0: (70, 230), 1: (160, 300), 2: (250, 245), 3: (150, 165), 4: (258, 130)}
+    """Flattened, and the cluster's caption moved from above it to the empty band below.
+
+    The slide is a `fig tight`: the theme caps the image at 320px, and at the old spread
+    the cap -- not the width -- set the scale, so every disc and every glyph on the slide
+    shrank by 11% with nothing in this file able to see it.
+    """
+    cl = {0: (70, 222), 1: (160, 278), 2: (250, 234), 3: (150, 170), 4: (258, 138)}
     cle = [(0, 1), (1, 2), (0, 3), (1, 3), (2, 3), (3, 4), (2, 4)]
-    chain = {5: (420, 195), 6: (570, 250), 7: (720, 195), 8: (870, 250), 9: (1030, 195)}
+    chain = {5: (420, 194), 6: (570, 238), 7: (720, 194), 8: (870, 238), 9: (1030, 194)}
     pos = {**cl, **chain}
     edges = cle + [(2, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
     assert not clearance_ok(edges, pos)
+    assert_drawn_planar("paradox", edges, pos)
     s = ""
     for a, b in edges:
         s += seg(pos[a], pos[b], color="black" if (a, b) in cle else "annot", w=EDGE_W)
     for i2, q in pos.items():
         s += disc(q[0], q[1], "", fill="accenttwo" if i2 == 9 else "accent")
-    s += text(36, 352, "friends of friends are friends", color="black",
+    s += text(36, 105, "friends of friends are friends", color="black",
               anchor="north west")
     s += text(1090, 160, "a stranger", color="accenttwo", anchor="north east")
     s += text(620, 42, "local wiring only --- so why is anyone 4.74 steps away?",
@@ -1182,30 +1454,37 @@ def fig_er_clustering():
     return s
 
 
-FAN_ROWS = [(620, 60, ["you"]), (None, 200, None), (None, 340, None)]
+# rows at 60/178/296, not 60/200/340: the slide is a `fig tight` and the 320px cap bound
+# the scale at the old spread
+FAN_Y = (60, 178, 296)
 FAN_L1 = [340, 620, 900]
 FAN_L2 = [250, 340, 430, 530, 620, 710, 810, 900, 990]
 
 
 def _fanout():
+    pos = {"you": (620, FAN_Y[0])}
+    pos.update({("a", x): (x, FAN_Y[1]) for x in FAN_L1})
+    pos.update({("b", j): (x, FAN_Y[2]) for j, x in enumerate(FAN_L2)})
+    edges = [("you", ("a", x)) for x in FAN_L1]
+    edges += [(("a", FAN_L1[j // 3]), ("b", j)) for j in range(len(FAN_L2))]
+    assert not clearance_ok(edges, pos)
+    assert_drawn_planar("fanout", edges, pos)
     s = ""
+    for a, b in edges:
+        s += seg(pos[a], pos[b], color="black", w=EDGE_W)
+    s += disc(620, FAN_Y[0], "", fill="accenttwo")
     for x in FAN_L1:
-        s += seg((620, 60), (x, 200), color="black", w=EDGE_W)
-    for j, x in enumerate(FAN_L2):
-        s += seg((FAN_L1[j // 3], 200), (x, 340), color="black", w=EDGE_W)
-    s += disc(620, 60, "", fill="accenttwo")
-    for x in FAN_L1:
-        s += disc(x, 200, "", fill="accent")
+        s += disc(x, FAN_Y[1], "", fill="accent")
     for x in FAN_L2:
-        s += disc(x, 340, "", fill="accent")
+        s += disc(x, FAN_Y[2], "", fill="accent")
     return s
 
 
 def fig_fanout():
     s = _fanout()
-    s += text(200, 60, "you", color="accenttwo", anchor="east")
-    s += text(200, 200, "$\\langle k \\rangle$", color="black", anchor="east")
-    s += text(200, 340, "$\\langle k \\rangle^2$", color="black", anchor="east")
+    s += text(200, FAN_Y[0], "you", color="accenttwo", anchor="east")
+    s += text(200, FAN_Y[1], "$\\langle k \\rangle$", color="black", anchor="east")
+    s += text(200, FAN_Y[2], "$\\langle k \\rangle^2$", color="black", anchor="east")
     return s
 
 
@@ -1217,7 +1496,7 @@ def fig_fanout_solve():
     """The vertical axis is logarithmic, so it has to say so: unlabelled, exponential
     fan-out renders as a straight line, which is the opposite of the slide's point."""
     xa, ya = 118, 100                       # axis corner
-    x0, x1, y1 = 190, 1030, 340
+    x0, x1, y1 = 190, 1030, 292             # 292: `fig tight` caps the image at 320px
     def X(L):
         return x0 + (L - 1) / 4 * (x1 - x0)
     def Y(v):
@@ -1255,18 +1534,49 @@ def fig_fanout_solve():
 
 RND12 = nx.gnm_random_graph(12, 14, seed=1)
 assert sum(nx.triangles(RND12).values()) == 0, "the free-vs-not graph must be triangle-free"
-RND12_POS = ellipse_pos(12, 260, 200, 225, 130, start=90)
-RND12_PATH = nx.shortest_path(RND12, 0, max(nx.single_source_shortest_path_length(RND12, 0).items(), key=lambda kv: kv[1])[0])
 assert nx.is_connected(RND12)
+
+
+# The old layout put all twelve nodes on one ellipse and drew the 14 edges as chords,
+# which crossed 34 times -- and every crossing reads as a node that is not there, so the
+# drawing manufactured apparent triangles directly under a caption whose whole claim is
+# that there are none.  The graph is planar; the drawing has to be.
+#
+# These coordinates are not hand-placed and not a spring layout.  `nx.spring_layout`
+# draws this graph planar in 2 of 1800 tries and never with room for a 40bp disc; the
+# Chrobak-Payne embedding `nx.planar_layout` returns is crossing-free but puts adjacent
+# nodes 32bp apart in a 520bp column, so the discs overlap.  So the embedding was relaxed
+# by coordinate descent under a hard no-crossing gate: each node in turn moves to the
+# position that most reduces the total squared violation of "58bp between centres" and
+# "28bp between an edge and any disc it does not end at", and any move that creates a
+# crossing is rejected outright.  The four properties that makes true are re-asserted
+# here on every build, so a drift fails it.
+RND12_POS = {0: (59.7, 66.0), 1: (267.0, 244.2), 2: (201.9, 146.4), 3: (244.7, 186.8),
+             4: (287.2, 336.0), 5: (324.8, 236.8), 6: (185.8, 221.8), 7: (466.8, 66.0),
+             8: (256.0, 99.6), 9: (294.5, 142.9), 10: (183.0, 281.4), 11: (340.0, 307.2)}
+assert set(RND12_POS) == set(RND12)
+assert all(20 <= x <= 500 and 20 <= y <= 344 for x, y in RND12_POS.values())
+assert min(math.dist(RND12_POS[a], RND12_POS[b])
+           for a, b in itertools.combinations(RND12, 2)) >= NODE + 4
+assert not clearance_ok(RND12.edges(), RND12_POS, r=NODE / 2 + 6)
+# The farthest node FROM NODE 0 is node 0's eccentricity (3), not the diameter (4):
+# eight pairs sit at distance 4, and none of them involves node 0.  Seven slides later
+# the ring figure prints the same phrase and does assert it equals the diameter.
+RND12_PAIR = min((p for p in itertools.combinations(RND12, 2)
+                  if nx.shortest_path_length(RND12, *p) == nx.diameter(RND12)))
+RND12_PATH = nx.shortest_path(RND12, *RND12_PAIR)
+assert len(RND12_PATH) - 1 == nx.diameter(RND12), (RND12_PATH, nx.diameter(RND12))
 
 
 def fig_free_vs_not():
     s = ""
     hot = {(min(a, b), max(a, b)) for a, b in zip(RND12_PATH, RND12_PATH[1:])}
+    paths = []
     for a, b in RND12.edges():
         e = (min(a, b), max(a, b))
-        s += curve_edge(a, b, RND12_POS, color="accenttwo" if e in hot else "black",
-                        w=HEAVY_W if e in hot else EDGE_W, centroid=(260, 190))
+        s += seg(RND12_POS[a], RND12_POS[b], color="accenttwo" if e in hot else "black",
+                 w=HEAVY_W if e in hot else EDGE_W)
+    assert_drawn_planar("free-vs-not", RND12.edges(), RND12_POS)
     for i2 in RND12_POS:
         s += disc(RND12_POS[i2][0], RND12_POS[i2][1], "", fill="accent")
     s += text(260, 12, f"{len(RND12_PATH)-1} hops across, and no triangle",
@@ -1294,12 +1604,13 @@ def fig_sigma_def():
 
 
 def _logaxis(x0, x1, y, decades):
+    """One tick convention, not three.  This axis used to print 1, 10, then $10^2$ --
+    two notations on five ticks of the same scale, which asks the room to convert."""
     s = seg((x0, y), (x1, y), color="annot", w=2.2)
     for k in range(decades + 1):
         x = x0 + k / decades * (x1 - x0)
         s += seg((x, y - 9), (x, y + 9), color="annot", w=2.0)
-        lab = "1" if k == 0 else (f"$10^{{{k}}}$" if k > 1 else "10")
-        s += text(x, y - 14, lab, color="annot", anchor="north")
+        s += text(x, y - 14, f"{10 ** k:,}", color="annot", anchor="north")
     return s
 
 
@@ -1312,9 +1623,12 @@ def fig_ws1998_dots():
         return x0 + math.log10(v) / dec * (x1 - x0)
     s = _logaxis(x0, x1, 96, dec)
     for r, (nm, lr, cr, _) in enumerate(WS98_R):
-        y = 168 + (2 - r) * 78
+        y = 168 + (2 - r) * 70     # 70, not 78: `fig tight` caps the image at 320px
+        # a hairline, and dotted: the connector only ties the row's two dots together,
+        # and drawn at edge weight it read as a measured quantity of its own
+        s += seg((X(lr), y), (X(cr), y), color="annot", w=1.2,
+                 dash="dash pattern=on 3bp off 6bp")
         s += text(300, y, nm, color="black", anchor="east")
-        s += seg((X(lr), y), (X(cr), y), color="annot", w=2.0)
         for v, col in ((lr, "annot"), (cr, "accenttwo")):
             s += dot(round(X(v), 1), y, col)
             s += text(round(X(v), 1), y + 20,
@@ -1326,15 +1640,19 @@ def fig_ws1998_dots():
 
 
 def fig_ws1998_sigma():
-    x0, x1, dec = 330, 1050, 4
+    """x1 = 940, not 1050: at the old width the film-actors label ran off the right of
+    the canvas, and ink drawn outside the page does not exist -- it is simply cut."""
+    x0, x1, dec = 330, 940, 4
     def X(v):
         return x0 + math.log10(v) / dec * (x1 - x0)
     s = _logaxis(x0, x1, 60, dec)
-    s += seg((x0, 60), (x0, 330), color="accenttwo", w=3.0,
+    # annotation gray, not accent-2: the dots ARE the reading and they are accent-2, so
+    # a baseline in the same colour claimed to be one of them
+    s += seg((x0, 60), (x0, 248), color="annot", w=3.0,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(x0, 340, "$\\sigma = 1$", color="accenttwo", anchor="south")
+    s += text(x0 + 12, 238, "$\\sigma = 1$", color="annot", anchor="south west")
     for r, (nm, _, _, sg) in enumerate(WS98_R):
-        y = 140 + (2 - r) * 75
+        y = 128 + (2 - r) * 50     # 50, not 75: `fig tight` caps the image at 320px
         s += text(300, y, nm, color="black", anchor="east")
         s += dot(round(X(sg), 1), y, "accenttwo")
         s += text(X(sg) + 26, y, f"$\\sigma \\approx {sg:.0f}$" if sg < 100
@@ -1821,21 +2139,31 @@ def fig_gnm_gnp_answer():
 
 # --------------------------------------------------------------------------- wrap-up
 def fig_universality():
-    x0, x1, dec = 330, 1050, 4
+    """The same three networks as `ws1998-sigma`, plus the one thing that figure does not
+    carry: how far apart they are in size.
+
+    This slide used to replace the network names with "social / technological /
+    biological" and drop the sigma values, which made it the earlier figure with its
+    information removed.  Keeping the names AND printing n = 225,226 / 4,941 / 282 is
+    what turns "one signature" from an assertion into evidence: four orders of magnitude
+    of size, one column of dots.
+    """
+    x0, x1, dec = 460, 1020, 4          # x0 = 460: the rows now carry a name AND a size
     def X(v):
         return x0 + math.log10(v) / dec * (x1 - x0)
-    s = _logaxis(x0, x1, 96, dec)
-    s += text(690, 42, "small-world index", color="annot", anchor="north")
-    s += seg((x0, 96), (x0, 296), color="annot", w=3.0,
+    s = _logaxis(x0, x1, 90, dec)
+    s += text(740, 36, "small-world index", color="annot", anchor="north")
+    s += seg((x0, 90), (x0, 248), color="annot", w=3.0,
              dash="dash pattern=on 10bp off 7bp")
-    # right of the line, or it lands on the "social" row label
-    s += text(x0 + 12, 300, "$\\sigma = 1$", color="annot", anchor="south west")
-    for r, (dom, (_, _, _, sg)) in enumerate(zip(["social", "technological", "biological"],
-                                                 WS98_R)):
-        y = 160 + (2 - r) * 65
-        s += text(300, y, dom, color="black", anchor="east")
+    # beside the line and BELOW the summary: at y = 300 it sat on the same baseline as
+    # the accent-2 header and the two collided
+    s += text(x0 + 12, 238, "$\\sigma = 1$", color="annot", anchor="south west")
+    for r, (nm, _, _, sg) in enumerate(WS98_R):
+        y = 128 + (2 - r) * 50
+        s += text(430, y, f"{nm}, $n = {WS98_N[nm]:,}$".replace(",", "{,}"),
+                  color="black", anchor="east")
         s += dot(round(X(sg), 1), y, "accenttwo")
-    s += text(690, 314, "three different worlds, one signature",
+    s += text(740, 272, "four orders of magnitude apart --- one signature",
               color="accenttwo", anchor="south")
     return s
 
