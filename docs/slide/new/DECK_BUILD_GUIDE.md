@@ -121,7 +121,32 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
   my own over-generalisation of an SVG-specific finding, repeated in three briefs before
   anyone tested `<script>` separately. **One negative result about one tag is not a result
   about the sanitizer.** Test the thing you are about to rule out.
-- KaTeX does not process `<figcaption>` — no math there.
+
+  Built and shipped on m01's "Store only the nonzeros": a slider that steps through the
+  matrix rows while the row's contiguous slice of `indices`/`data` highlights. Verified by
+  driving the real slider in the bundled Chromium — inject a small harness that dispatches
+  an `input` event and writes the outcome into the DOM, then read it with `--dump-dom`,
+  since `--dump-dom` cannot interact on its own. Checking that the `<script>` tag survived
+  the export is not the same as checking that it runs.
+
+  Two gotchas that cost time here:
+
+  - **`--no-stdin`, always.** Without it marp waits on stdin and never returns when it is
+    not attached to a terminal — which is every background or scripted invocation. It looks
+    exactly like a slow render.
+  - **Widget styling lives in the theme, and the selectors must match what the JS builds.**
+    Cells appended into a `<span>` are not children of the row, so `.row > i` silently
+    matches nothing; and `<i>` is inline, so box properties need `inline-block` or every
+    cell collapses into one run-on number. Both looked fine in the HTML source and wrong on
+    the slide.
+- KaTeX does not process `<figcaption>` — **nor any other raw HTML block**, including
+  `steps-list`. Module 02 shipped nine captions and a roadmap item that printed
+  `$C/C_{\mathrm{rand}}$` to the room as literal source. `check_render.py` fails the build
+  on it now; write the symbol as a word instead.
+- **A figure is authored for one container.** Put a full-width figure inside a `cols` column
+  and it renders at 48% — 19px node discs against 39px on the identical figure laid out full
+  width, invisible in the source. The gate compares the authored width against the container
+  it is used in; keep the generator's declaration and the deck's markup in step.
 - `## Title` + `<hr>` stay on the same slide as their content; `---` after a title
   splits the slide.
 - House classes: `lead` (title), `part` (divider with `band` markup), `mid` (shallow

@@ -307,6 +307,46 @@ section .steps-list { display: flex; flex-direction: column; gap: 26px; }
 section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
 section .steps-list .i { font-size: 25px; color: #3959A6; flex: none; }
 
+/* ---------- interactive CSR widget ---------- */
+/* Lives on "Store only the nonzeros". Marp strips inline style attributes, so
+   every rule the widget needs is here. It runs in the --html export, which is
+   what the lecture is given from; the PNG/PDF export shows its initial state. */
+
+section .csrw { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+section .csrw-top { display: flex; gap: 34px; align-items: center; }
+
+/* the 5x5 matrix */
+section .csrw-m { display: grid; grid-template-columns: repeat(5, 38px); gap: 3px; }
+section .csrw-m > i {
+  display: inline-block; font-style: normal; font-size: 22px; line-height: 38px; text-align: center;
+  background: #f7f4f1; color: #6b6b6b;
+}
+section .csrw-m > i.on { background: #3959A6; color: #ffffff; }
+section .csrw-m > i.row { outline: 3px solid #B14434; outline-offset: -3px; }
+
+/* the three arrays */
+section .csrw-arrays { display: flex; flex-direction: column; gap: 10px; }
+section .csrw-row { display: flex; gap: 4px; align-items: center; }
+section .csrw-row b {
+  width: 104px; text-align: right; font-size: 21px; font-weight: 700;
+  color: #3959A6;
+}
+/* The JS appends each cell into the row's <span>, so this has to be a
+   descendant selector, not a child one -- and <i> is inline by default, so the
+   box properties need inline-block or the cells run together into one number. */
+section .csrw-row i {
+  display: inline-block; font-style: normal;
+  min-width: 34px; height: 34px; line-height: 34px; margin-right: 4px;
+  text-align: center; font-size: 21px; background: #f7f4f1; color: #000000;
+}
+section .csrw-row i.slice { background: #DAB167; }
+section .csrw-row i.bound { background: #B14434; color: #ffffff; }
+
+/* the control */
+section .csrw-ctl { display: flex; gap: 16px; align-items: center; font-size: 24px; }
+section .csrw-ctl input[type="range"] { width: 300px; accent-color: #B14434; }
+section .csrw-ctl output { color: #B14434; font-weight: 700; min-width: 210px; }
+
 /* secondary accents — use only where a contrast carries meaning */
 .accent-2 { color: #B14434; }
 .accent-3 { color: #DAB167; }

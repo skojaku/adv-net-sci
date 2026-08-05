@@ -1344,23 +1344,65 @@ Eight billion nodes, one byte per pair — more storage than most data centers h
 
 <hr>
 
-<div class="cols">
-<div>
+Most pairs aren't linked — store only what's there. The **Compressed Sparse Row (CSR)** format keeps three arrays: **indptr** where each row starts, **indices** the column of each nonzero, **data** the values.
 
-Most pairs aren't linked — store only what's there. The **Compressed Sparse Row (CSR)** format keeps three arrays:
-
-* indptr — where each row starts, so one row = one contiguous slice
-* indices — column of each nonzero
-* data — the values
-
-</div>
-<div class="fig">
-
-![w:520](figures/csr-build-anim.gif)
-<figcaption>row 1: indptr 2→5 marks the slice — indices 0, 2, 3</figcaption>
-
+<div class="csrw">
+<div class="csrw-top">
+<div class="csrw-m" id="csrm"></div>
+<div class="csrw-arrays">
+<div class="csrw-row"><b>indptr</b><span id="csrp"></span></div>
+<div class="csrw-row"><b>indices</b><span id="csri"></span></div>
+<div class="csrw-row"><b>data</b><span id="csrd"></span></div>
 </div>
 </div>
+<div class="csrw-ctl">
+<label for="csrr">row</label>
+<input type="range" id="csrr" min="0" max="4" value="1">
+<output id="csro"></output>
+</div>
+</div>
+
+<script>
+(function () {
+  var P = [0, 2, 5, 8, 10, 12],
+      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
+      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      A = [[0,1,1,0,0],[1,0,1,1,0],[1,1,0,0,1],[0,1,0,0,1],[0,0,1,1,0]];
+
+  function cells(host, vals, lo, hi, bounds) {
+    host.innerHTML = "";
+    vals.forEach(function (v, k) {
+      var c = document.createElement("i");
+      c.textContent = v;
+      if (bounds) { if (k === lo || k === hi) c.className = "bound"; }
+      else if (k >= lo && k < hi) { c.className = "slice"; }
+      host.appendChild(c);
+    });
+  }
+
+  function draw(r) {
+    var m = document.getElementById("csrm");
+    m.innerHTML = "";
+    A.forEach(function (row, i) {
+      row.forEach(function (v) {
+        var c = document.createElement("i");
+        c.textContent = v;
+        c.className = (v ? "on " : "") + (i === r ? "row" : "");
+        m.appendChild(c);
+      });
+    });
+    cells(document.getElementById("csrp"), P, r, r + 1, true);
+    cells(document.getElementById("csri"), I, P[r], P[r + 1], false);
+    cells(document.getElementById("csrd"), D, P[r], P[r + 1], false);
+    document.getElementById("csro").textContent =
+      "indptr " + P[r] + "\u2192" + P[r + 1] + "  \u2014  columns " + I.slice(P[r], P[r + 1]).join(", ");
+  }
+
+  var s = document.getElementById("csrr");
+  s.addEventListener("input", function () { draw(+s.value); });
+  draw(+s.value);
+})();
+</script>
 
 ---
 
