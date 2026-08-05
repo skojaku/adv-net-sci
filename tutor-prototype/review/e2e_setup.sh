@@ -51,21 +51,43 @@ fi
 # has taken one, and the harness exists to test that guard.
 rm -rf "$SANDBOX/assets/uploads" "$SANDBOX/assets/exercises"
 
-# Fully detach marimo's stdio: an inherited stdout would keep a caller's
-# $(...) command substitution open forever.
+# Start marimo fully detached, with PID 1 as its parent.
 #
-# And keep a live parent. `marimo edit` polls its parent process and shuts
-# itself down when that parent disappears — this script exits within seconds
-# of starting it, so the server killed itself about ten minutes into a gate
-# run, mid-checkpoint. The trailing `sleep` holds the subshell open for the
-# session's lifetime so marimo keeps a parent to see.
-(
-  cd "$SANDBOX" || exit 1
-  uvx marimo edit --sandbox --no-token --headless notebook.py &
-  echo $! >"$SANDBOX/session_artifacts/marimo.pid"
-  sleep 86400
-) >"$SANDBOX/session_artifacts/marimo_server.log" 2>&1 </dev/null &
-echo $! >"$SANDBOX/session_artifacts/marimo_keepalive.pid"
+# `marimo edit` runs a parent poller and kills itself the moment its parent
+# process goes away — and this script exits seconds after launching it, so a
+# plain background job died about ten minutes into a gate run, mid-checkpoint.
+# A keepalive subshell was tried and did not help: the poller watches the
+# DIRECT parent, and uv's own process chain sits in between.
+#
+# marimo skips the poller entirely when its parent is already init
+# (start_parent_poller returns early for parent_pid == 1), so double-fork and
+# wait for the reparenting to land BEFORE exec — no race, no poller, no
+# ten-minute death.
+python3 - "$SANDBOX" <<'DETACH'
+import os, sys, time
+
+sandbox = sys.argv[1]
+log = os.path.join(sandbox, "session_artifacts", "marimo_server.log")
+
+if os.fork() == 0:
+    os.setsid()
+    if os.fork() == 0:
+        while os.getppid() != 1:
+            time.sleep(0.01)
+        os.chdir(sandbox)
+        fd = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+        os.dup2(fd, 1)
+        os.dup2(fd, 2)
+        os.dup2(os.open(os.devnull, os.O_RDONLY), 0)
+        with open(os.path.join(sandbox, "session_artifacts", "marimo.pid"), "w") as f:
+            f.write(str(os.getpid()))
+        os.execvp(
+            "uvx",
+            ["uvx", "marimo", "edit", "--sandbox", "--no-token", "--headless", "notebook.py"],
+        )
+    os._exit(0)
+os.wait()
+DETACH
 
 MARIMO_URL=""
 for _ in $(seq 1 60); do

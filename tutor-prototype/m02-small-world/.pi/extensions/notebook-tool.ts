@@ -1165,6 +1165,49 @@ function souvenirGap(src: string, question: string): string {
   return "";
 }
 
+/**
+ * Notes whose cell could not be written, kept on disk exactly as rendered.
+ *
+ * The tutor must never re-author one: a live outage put a chapter boundary
+ * (and a context compaction) between the answer and the retry, and the
+ * rebuilt note paraphrased the student in the artifact their work is graded
+ * from. Parked here, the text is the same bytes whenever it lands.
+ */
+const parkedDir = () => path.join(process.cwd(), "session_artifacts", "parked_notes");
+
+function parkNote(id: string, markdown: string): void {
+  try {
+    fs.mkdirSync(parkedDir(), { recursive: true });
+    fs.writeFileSync(path.join(parkedDir(), `${sanitize(id)}.md`), markdown);
+  } catch {
+    // best effort — the log still holds the student's words
+  }
+}
+
+/**
+ * Insert every parked note, oldest first, before anything else goes in.
+ * Called at the top of each build so a recovered note lands in its own
+ * place rather than after the cells added while the notebook was down.
+ */
+async function flushParkedNotes(signal?: AbortSignal): Promise<void> {
+  let files: string[];
+  try {
+    files = fs.readdirSync(parkedDir()).filter((f) => f.endsWith(".md")).sort();
+  } catch {
+    return;
+  }
+  for (const f of files) {
+    const full = path.join(parkedDir(), f);
+    try {
+      const md = fs.readFileSync(full, "utf-8");
+      const r = await insertMarkdownCell(f.replace(/\.md$/, ""), md, signal);
+      if (!r.failed) fs.rmSync(full, { force: true });
+    } catch {
+      return;
+    }
+  }
+}
+
 /** Insert (or skip, if present) a markdown cell and scroll the page to it. */
 async function insertMarkdownCell(
   name: string,
@@ -1174,6 +1217,9 @@ async function insertMarkdownCell(
   const warm = await ensureWarm(signal);
   if (warm) return warm;
   if (name !== "session_record") await ensureChapterHeader(signal);
+  // Parked notes go in before anything else, so a note recovered after an
+  // outage lands in its own place rather than after the cells written while
+  // the notebook was down.
   const body = `mo.md(${pyMd(markdown)})`;
   return runKernel(
     `import marimo._code_mode as cm\n` +
@@ -1394,6 +1440,9 @@ export default function (pi: ExtensionAPI) {
   const cellReviewWarned = new Map<string, number>();
   // chapter_done's "was this chapter actually taught?" refusals, per chapter.
   const chapterGateWarned = new Map<string, number>();
+  // Checkpoints whose pace question was never actually put to the student
+  // (the picker could not run). The next build for them is bounced once.
+  const paceUnasked = new Set<string>();
   // The build-ordering refusal, per checkpoint. It was the last uncapped
   // guard in the file: whenever the open checkpoint ended up wrong, every
   // build refused forever and the only escape it named wrote a duplicate row.
@@ -2309,8 +2358,17 @@ export default function (pi: ExtensionAPI) {
           `note_markdown — add one now with nb_add_cell (name "${id}_note").`;
       } else {
         const r = await insertMarkdownCell(`${id}_note`, md, signal);
+        // A note that could not be written is PARKED, exactly as rendered.
+        // In a live run the notebook died mid-checkpoint, and by the time the
+        // tutor came back to write the note the student's wording had been
+        // compacted out of its context — so it reconstructed the quotes from
+        // memory and paraphrased three of them into the graded artifact. The
+        // text is already correct here; nothing needs to remember it.
+        if (r.failed) parkNote(id, md);
         noteLine = r.failed
-          ? `Note cell FAILED — retry once with nb_add_cell (name "${id}_note").`
+          ? `Note cell PARKED — the notebook is unreachable, so the note is saved ` +
+            `exactly as written and goes in by itself the moment the notebook is back. ` +
+            `Do NOT rewrite it later from memory; keep teaching.`
           : `Note cell added.`;
       }
 
@@ -2339,10 +2397,18 @@ export default function (pi: ExtensionAPI) {
       const READY = "Ready for the next question";
       const ASK_Q = "I have a question first";
       const MORE = "Give me another one like that";
+      // When the picker cannot run — a dead notebook, a headless restart —
+      // the pace gate becomes a sentence, and a live run simply carried on
+      // into the next checkpoint without ever asking. So the sentence leads
+      // with the prohibition, and the next build is bounced once to make it
+      // stick.
       let nextLine =
-        `No picker available — ask the student in plain text whether to move on, ` +
-        `and wait for their answer. When they say yes: ${goNext}`;
+        `No picker available. Do NOT start the next checkpoint yet: ask the student in ` +
+        `plain text whether they are ready, END YOUR TURN, and wait for their answer. ` +
+        `Only when they say yes: ${goNext}`;
+      let paceAsked = false;
       if (ctx?.ui?.select) {
+        paceAsked = true;
         const choice = await ctx.ui.select("Where to next?", [READY, ASK_Q, MORE]);
         const practiceRound = /_extra/.test(id);
         nextLine =
@@ -2371,6 +2437,7 @@ export default function (pi: ExtensionAPI) {
                   `If they want to move on: ${goNext}`;
       }
 
+      if (!paceAsked && nextId) paceUnasked.add(nextId);
       return toResult({
         out:
           `Logged${logged ? "" : " (LOG WRITE FAILED — tell no one, keep teaching)"}. ` +
@@ -2516,6 +2583,7 @@ export default function (pi: ExtensionAPI) {
     async execute(_id, params, signal) {
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
+      await flushParkedNotes(signal);
       await ensureChapterHeader(signal);
       const hide = params.show_code === true ? "False" : "True";
       let inner =
@@ -2605,6 +2673,16 @@ export default function (pi: ExtensionAPI) {
         return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
       }
       const exCpId = String(params.checkpoint ?? "").trim();
+      if (exCpId && paceUnasked.has(exCpId)) {
+        paceUnasked.delete(exCpId);
+        return toResult({
+          out:
+            `NOT INSERTED — the "where to next?" picker could not run when you closed the ` +
+            `last checkpoint, so the student has not said they are ready. Ask them in ` +
+            `plain text, END YOUR TURN, and wait. When they say yes, call this again.`,
+          failed: false,
+        });
+      }
       const exKey = `exercise:${exCpId}`;
       if (
         exCpId &&
@@ -2652,6 +2730,7 @@ export default function (pi: ExtensionAPI) {
         }
       }
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
+      await flushParkedNotes(signal);
       await ensureChapterHeader(signal);
       const edBody =
         `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
@@ -2810,6 +2889,17 @@ export default function (pi: ExtensionAPI) {
       // Keyed by TOOL as well as checkpoint: a shared budget meant the
       // exercise tool's refusals spent the template tool's, and a genuine
       // first-try violation was then waved through.
+      if (paceUnasked.has(cpId)) {
+        paceUnasked.delete(cpId);
+        return toResult({
+          out:
+            `NOT INSERTED — the "where to next?" picker could not run when you closed the ` +
+            `last checkpoint, so the student has not said they are ready. Ask them in ` +
+            `plain text, END YOUR TURN, and wait. When they say yes, call this again — it ` +
+            `will go in.`,
+          failed: false,
+        });
+      }
       const tplKey = `template:${cpId}`;
       if (
         pendingCheckpoint &&
@@ -2844,6 +2934,7 @@ export default function (pi: ExtensionAPI) {
       }
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
+      await flushParkedNotes(signal);
       await ensureChapterHeader(signal);
       let code =
         `import marimo._code_mode as cm\n` +
@@ -2978,7 +3069,13 @@ export default function (pi: ExtensionAPI) {
           awaitingResumeChoice = false;
           cellReviewWarned.clear();
           chapterGateWarned.clear();
+          try {
+            fs.rmSync(parkedDir(), { recursive: true, force: true });
+          } catch {
+            // a parked note belongs to the session just archived
+          }
           buildOrderWarned.clear();
+          paceUnasked.clear();
           resumeGaps.clear();
           viewedPhotos.clear();
           // Same rewind for the transcript mark: without it, whatever the

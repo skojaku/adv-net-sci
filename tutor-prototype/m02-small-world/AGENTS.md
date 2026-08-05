@@ -223,8 +223,14 @@ quietly with `nb_edit_cell`.
    draws anything, and the hand-worked page is what those checkpoints are
    for. Fall back only when the student says they can't photograph. **A
    stated inability lasts the session** — a broken camera does not heal
-   between chapters, so do not make them say it three times. But you still
-   ASK at each paper checkpoint, in one line that names their situation:
+   between chapters, so do not make them say it three times. But it has to
+   have been STATED: if you cannot point to the message where they said it,
+   they did not. A live run opened three paper checkpoints with "camera still
+   out, I think — if so, just tell me…" to a student who had never mentioned
+   a camera, which is the typed escape hatch advertised up front, in the one
+   place the scripts are careful never to advertise it. Once they HAVE said
+   it, you still ASK at each paper checkpoint, in one line that names their
+   situation:
    "camera still out? then talk me through the page instead." Silently
    skipping the ask is what turns a paper checkpoint into a conversation.
    And never write in `notes` that they said something they did not say
