@@ -26,6 +26,10 @@ STAMP=$(date +%Y%m%d-%H%M%S)
 session_exists() {
   [ -s "$ART/session_log.jsonl" ] && return 0
   [ -f "$ART/chapter_state.json" ] && return 0
+  # A note the notebook was down for. It is flushed at the first build of
+  # whatever session comes next, so "already a clean slate" must not leave
+  # one behind — it would land in the next student's notebook.
+  [ -n "$(ls -A "$ART/parked_notes" 2>/dev/null)" ] && return 0
   # A notebook with named cells is a notebook that has been taught in;
   # the template's own cells are all unnamed (def _(...)).
   [ -f notebook.py ] && grep -qE '^def (ch[0-9]+_header|cp[0-9a-z_]+|session_record)' notebook.py && return 0

@@ -1178,8 +1178,12 @@ const parkedDir = () => path.join(process.cwd(), "session_artifacts", "parked_no
 function parkNote(id: string, markdown: string): void {
   try {
     fs.mkdirSync(parkedDir(), { recursive: true });
-    fs.writeFileSync(path.join(parkedDir(), `${sanitize(id)}.md`), markdown);
-    // (the id passed in is already the CELL name, e.g. cp5_ring_formula_note)
+    // The chapter rides in the filename: at flush, a note belonging to the
+    // CURRENT chapter may create that chapter's heading, while one recovered
+    // into a later chapter must not — otherwise it is filed under a chapter
+    // it has nothing to do with, or lands above its own heading.
+    const chapter = sanitize(currentChapterId() || "ch");
+    fs.writeFileSync(path.join(parkedDir(), `${chapter}--${sanitize(id)}.md`), markdown);
   } catch {
     // best effort — the log still holds the student's words
   }
@@ -1208,7 +1212,9 @@ async function flushParkedNotes(signal?: AbortSignal): Promise<void> {
     const full = path.join(parkedDir(), f);
     try {
       const md = fs.readFileSync(full, "utf-8");
-      const r = await insertMarkdownCell(f.replace(/\.md$/, ""), md, signal, true);
+      const [chapter, cell] = f.replace(/\.md$/, "").split("--");
+      const ownChapter = !!cell && chapter === (currentChapterId() || "");
+      const r = await insertMarkdownCell(cell ?? chapter, md, signal, !ownChapter);
       if (!r.failed) fs.rmSync(full, { force: true });
     } catch {
       return;
@@ -1392,6 +1398,23 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
       );
     }
     out.push("");
+  }
+  try {
+    const stranded = fs
+      .readdirSync(parkedDir())
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => f.replace(/\.md$/, "").replace(/^[^-]*--/, ""));
+    if (stranded.length) {
+      out.push(
+        `## Notes that never reached the notebook`,
+        `The notebook was unreachable when these were written and did not come back, so ` +
+          `they are saved as markdown beside it in session_artifacts/parked_notes/: ` +
+          `${stranded.join(", ")}. The answers themselves are below.`,
+        "",
+      );
+    }
+  } catch {
+    // no parked notes is the normal case
   }
   if (missing.length) {
     // Name them ALL. Reporting only the first said "9 of 12" and then
@@ -3130,7 +3153,11 @@ export default function (pi: ExtensionAPI) {
           cellReviewWarned.clear();
           chapterGateWarned.clear();
           try {
-            fs.rmSync(parkedDir(), { recursive: true, force: true });
+            // Archived, not deleted — its file-level twin promises "nothing is
+            // ever deleted", and the rendered note text is nowhere else.
+            if (fs.existsSync(parkedDir())) {
+              fs.renameSync(parkedDir(), path.join(dir, `parked_notes-${stamp}`));
+            }
           } catch {
             // a parked note belongs to the session just archived
           }
