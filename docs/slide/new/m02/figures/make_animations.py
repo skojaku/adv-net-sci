@@ -75,10 +75,12 @@ def main():
             fresh = (a, b) not in lattice
             s += F.curve_edge(a, b, F.RING_POS,
                               color="accenttwo" if fresh else "black",
-                              w=F.HEAVY_W if fresh else F.EDGE_W, centroid=F.RING_C)
+                              w=F.HEAVY_W if fresh else F.EDGE_W, centroid=F.RING_C,
+                              clear=F.NODE / 2 + 3 if fresh else F.RING_CLEAR)
         if old:
             s += F.curve_edge(old[0], old[1], F.RING_POS, color="annot", w=2.2,
-                              dash="dash pattern=on 8bp off 7bp", centroid=F.RING_C)
+                              dash="dash pattern=on 8bp off 7bp", centroid=F.RING_C,
+                              clear=F.RING_CLEAR)
         for i in F.RING_POS:
             s += F.disc(F.RING_POS[i][0], F.RING_POS[i][1], "", fill="accent")
         n_new = sum(1 for e in edges if e not in lattice)

@@ -61,8 +61,7 @@ CONTAINER = {"col": COL_W, "full": FULL_W}
 
 NODE = 40          # disc diameter, bp  -> 40.7-41.3 px on the slide (band 26-52)
 SMALLNODE = 26     # only where a figure draws dozens of dots (arrival grid, ring lattice)
-FONT = 30          # pt; cap height ~= 21 px on the slide, which is the floor
-CAP_RATIO = 0.70   # cap height / font size for the serif used here
+FONT = 31          # pt; the cap height that lands on the slide is MEASURED, see CAP_BP
 EDGE_W = 2.6
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
@@ -79,6 +78,7 @@ _fontsizes = set()
 # --------------------------------------------------------------------------- TeX
 PREAMBLE = r"""
 \documentclass{article}
+\usepackage{lmodern}
 \usepackage[paperwidth=%(W)dbp,paperheight=%(H)dbp,margin=0bp]{geometry}
 \usepackage{tikz}
 \usepackage{amsmath}
@@ -116,12 +116,12 @@ def _tex(body, w, h):
     return head + body + POSTAMBLE
 
 
-def emit(name, body, container="col", pad=PAD):
-    """Compile one TikZ body to figures/<name>.png and assert what lands on the slide."""
-    if _only and not any(k in name for k in _only):
-        return
-    w = DESIGN[container]
-    hmax = int(w * 0.70)
+COORD = re.compile(r"\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)")
+
+
+def _render(name, body, w, hmax):
+    """pdflatex + pdftoppm one TikZ body.  Raises on anything that would silently
+    change what lands on the page -- a failed run, or a font-size substitution."""
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
         (td / "f.tex").write_text(_tex(body, w, hmax))
@@ -130,11 +130,55 @@ def emit(name, body, container="col", pad=PAD):
         if r.returncode:
             tail = "\n".join(r.stdout.splitlines()[-25:])
             raise SystemExit(f"{name}: pdflatex failed\n{tail}")
+        log = r.stdout
+        f_log = td / "f.log"
+        if f_log.exists():
+            log += f_log.read_text(errors="replace")
+        # Stock Computer Modern has no 30pt design size, so LaTeX substituted 24.88pt and
+        # every label in the deck shrank 17% without a word of complaint.  Never again.
+        if "Font shape" in log:
+            bad = [l for l in log.splitlines() if "Font shape" in l][:3]
+            raise SystemExit(f"{name}: LaTeX substituted a font shape -- the type on the "
+                             f"slide is not the type you asked for:\n" + "\n".join(bad))
         subprocess.run(["pdftoppm", "-png", "-r", str(DPI), "-singlefile", "f.pdf", "f"],
                        cwd=td, check=True)
         im = Image.open(td / "f.png").convert("RGB")
         im.load()
+        return im
 
+
+def emit(name, body, container="col", pad=PAD):
+    """Compile one TikZ body to figures/<name>.png and assert what lands on the slide."""
+    if _only and not any(k in name for k in _only):
+        return
+    w = DESIGN[container]
+    hmax = int(w * 0.70)
+
+    # Ink drawn beyond the page is cut off, and the raster edge test below only sees ink
+    # that still *touches* the border -- a label at y = -2 vanishes without a trace.  The
+    # generator writes these numbers, so check them exactly, at source.
+    # A Bezier control point is construction, not ink -- the curve it steers stays well
+    # inside it -- so it is the one coordinate allowed off the page.
+    for mx, my in COORD.findall(re.sub(r"controls \([^)]*\)", "", body)):
+        cx, cy = float(mx), float(my)
+        assert 0 <= cx <= w and 0 <= cy <= hmax, (
+            f"{name}: coordinate ({cx},{cy}) lies outside the {w}x{hmax}bp page -- "
+            f"anything drawn there is silently dropped")
+
+    # accent-3 is a fill and a ring colour.  At 2.0:1 against white it is unreadable as
+    # text and invisible as a hairline, so the build refuses both.
+    assert "text=accentthree" not in body, (
+        f"{name}: accent-3 used as text (2.0:1 on white, floor is 3:1) -- "
+        f"annotation gray or accent-2 for anything a reader has to read")
+    for opts in re.findall(r"\\draw\[([^\]]*)\]", body):
+        if "accentthree" not in opts:
+            continue
+        mw = re.search(r"line width=([\d.]+)bp", opts)
+        lw = float(mw.group(1)) if mw else 0.4
+        assert lw >= 4.0, (f"{name}: accent-3 stroke at {lw}bp -- accent-3 is for fills and "
+                           f"rings only, never a stroke under 4bp")
+
+    im = _render(name, body, w, hmax)
     a = np.array(im.convert("L"))
     exp = (int(round(w * PXBP)), int(round(hmax * PXBP)))
     assert im.size == exp, f"{name}: page is {im.size}, expected {exp}"
@@ -168,8 +212,10 @@ def emit(name, body, container="col", pad=PAD):
 
     node_px = NODE * factor
     assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
-    cap_px = FONT * CAP_RATIO * factor
-    assert cap_px >= TEXT_MIN_PX, f"{name}: text cap height {cap_px:.0f}px"
+    cap_px = CAP_BP * factor
+    assert cap_px >= TEXT_MIN_PX, (
+        f"{name}: text cap height {cap_px:.1f}px on the slide (floor {TEXT_MIN_PX}) -- "
+        f"measured {CAP_BP:.2f}bp at {FONT}pt")
 
     # Every filled circle in the body, checked at source. A raster detector cannot do
     # this job here: the theme's node fill (#3959A6, L=88) is lighter than the ink
@@ -193,7 +239,9 @@ def emit(name, body, container="col", pad=PAD):
 
 
 # --------------------------------------------------------------------------- drawing helpers
-DOT = 26          # every free-standing filled dot: the smallest disc the band allows
+# 26bp measured 22px on the rendered slide -- antialiasing eats ~2px a side off a small
+# disc, so the band's own floor needs the headroom.
+DOT = 32          # every free-standing filled dot
 
 
 def dot(x, y, color="accent", d=DOT):
@@ -233,15 +281,36 @@ def seg(p, q, color="black", w=EDGE_W, dash="", arrow=""):
     return f"\\draw[{','.join(o)}] ({p[0]},{p[1]}) -- ({q[0]},{q[1]});\n"
 
 
-def text(x, y, s, color="black", anchor="center", size=FONT, width=None, align="center"):
+def text(x, y, s, color="black", anchor="center", size=FONT, width=None, align="center",
+         rotate=0):
     _fontsizes.add(size)
     assert size >= FONT, f"font {size}pt is below the {FONT}pt floor"
     o = [f"font=\\fontsize{{{size}}}{{{int(size*1.15)}}}\\selectfont",
          f"text={color}", f"anchor={anchor}", f"align={align}"]
     if width:
         o.append(f"text width={width}bp")
+    if rotate:
+        o.append(f"rotate={rotate}")
     return f"\\node[{','.join(o)}] at ({x},{y}) {{{s}}};\n"
 
+
+def _measure_cap_bp():
+    """Measure the cap height the deck's own font actually renders at FONT pt.
+
+    R1's blocker: `CAP_RATIO = 0.70` was a guess, LaTeX was silently substituting a
+    24.88pt design size for the 30pt that was asked for, and the size assertion never
+    noticed because it *computed* the answer from FONT instead of reading the render.
+    One calibration page, measured once at import, and the guess is gone.
+    """
+    im = _render("cap-calibration", text(260, 100, "H"), 520, 200)
+    ys, _ = np.where(np.array(im.convert("L")) < 200)
+    return (ys.max() - ys.min() + 1) / PXBP
+
+
+CAP_BP = _measure_cap_bp()
+assert CAP_BP >= 0.66 * FONT, (
+    f"cap height measures {CAP_BP:.2f}bp at {FONT}pt (ratio {CAP_BP / FONT:.3f}) -- LaTeX is "
+    f"substituting a smaller design size, so every label in the deck is shrinking silently")
 
 
 def _bezier_pts(p0, c, p2, n=80):
@@ -250,8 +319,11 @@ def _bezier_pts(p0, c, p2, n=80):
     return (1 - ts) ** 2 * p0 + 2 * ts * (1 - ts) * c + ts ** 2 * p2
 
 
+BOWS = (0, 14, -14, 20, -20, 26, -26, 34, -34, 38, -38, 44, -44, 58, -58, 76, -76)
+
+
 def curve_edge(a, b, pos, color="black", w=EDGE_W, dash="", clear=NODE / 2 + 3,
-               centroid=None):
+               centroid=None, side=None, paths=None):
     """Draw a--b so it clears every disc it does not end at.
 
     Ring lattices are the reason this exists: with 20 nodes on a circle the
@@ -259,6 +331,11 @@ def curve_edge(a, b, pos, color="black", w=EDGE_W, dash="", clear=NODE / 2 + 3,
     what hid every triangle in the Module 01 small-world figure. The bow is searched
     for, not guessed, and the function raises if no bow clears -- so the build fails
     instead of the review.
+
+    `side=+1` forces the bow toward the centroid, `side=-1` away from it.  Two chords
+    with interleaved endpoints cannot both live inside the circle without crossing
+    (Jordan), so alternating the sign is the only way a ring lattice draws planar.
+    `paths` collects the sampled geometry for `count_crossings`.
     """
     pa, pb = np.array(pos[a], float), np.array(pos[b], float)
     others = [np.array(q, float) for k, q in pos.items() if k not in (a, b)]
@@ -268,16 +345,49 @@ def curve_edge(a, b, pos, color="black", w=EDGE_W, dash="", clear=NODE / 2 + 3,
     nrm = nrm / (np.linalg.norm(nrm) or 1.0)
     if centroid is not None and np.dot(mid - np.array(centroid, float), nrm) > 0:
         nrm = -nrm                                    # "+h" always bows toward the centre
-    for h in (0, 14, -14, 20, -20, 26, -26, 34, -34, 44, -44, 58, -58, 76, -76):
+    cand = BOWS if side is None else [h for h in BOWS if h * side > 0]
+    for h in cand:
         ctrl = mid + 2 * h * nrm
         pts = _bezier_pts(pa, ctrl, pb)
         if not others or min(np.linalg.norm(pts - q, axis=1).min() for q in others) >= clear:
             o = [f"line width={w}bp", f"draw={color}"] + ([dash] if dash else [])
+            if paths is not None:
+                paths.append((a, b, pts if h else np.array([pa, pb])))
             if h == 0:
                 return f"\\draw[{','.join(o)}] ({pa[0]:.1f},{pa[1]:.1f}) -- ({pb[0]:.1f},{pb[1]:.1f});\n"
             return (f"\\draw[{','.join(o)}] ({pa[0]:.1f},{pa[1]:.1f}) .. controls "
                     f"({ctrl[0]:.1f},{ctrl[1]:.1f}) .. ({pb[0]:.1f},{pb[1]:.1f});\n")
-    raise AssertionError(f"no bow clears every disc for edge {a}-{b}")
+    raise AssertionError(f"no bow clears every disc for edge {a}-{b} (side={side})")
+
+
+def _cross(P, Q):
+    """Does any segment of polyline P properly cross any segment of polyline Q?"""
+    p0, p1 = P[:-1][:, None, :], P[1:][:, None, :]
+    q0, q1 = Q[:-1][None, :, :], Q[1:][None, :, :]
+
+    def turn(o, u, v):
+        return ((u[..., 0] - o[..., 0]) * (v[..., 1] - o[..., 1])
+                - (u[..., 1] - o[..., 1]) * (v[..., 0] - o[..., 0]))
+
+    return bool(np.any((turn(p0, p1, q0) * turn(p0, p1, q1) < 0)
+                       & (turn(q0, q1, p0) * turn(q0, q1, p1) < 0)))
+
+
+def count_crossings(paths):
+    """Pairs of drawn edges that cross away from a shared endpoint."""
+    n = 0
+    for (a1, b1, p1), (a2, b2, p2) in itertools.combinations(paths, 2):
+        if {a1, b1} & {a2, b2}:
+            continue
+        n += _cross(p1[::4] if len(p1) > 8 else p1, p2[::4] if len(p2) > 8 else p2)
+    return n
+
+
+def assert_planar(name, paths):
+    """A figure whose claim is 'count the triangles' must not draw phantom ones."""
+    n = count_crossings(paths)
+    assert n == 0, (f"{name}: {n} crossing pairs -- every crossing reads as a node that "
+                    f"is not there, on a drawing whose whole job is counting")
 
 
 def clearance_ok(edges, pos, r=NODE / 2 + 3):
@@ -389,27 +499,26 @@ def fig_milgram_map():
     for p in (om, wi):
         s += seg(p, bo, color="annot", w=2.2, dash="dashed", arrow="-{Stealth[length=9bp]}")
         s += dot(round(p[0], 1), round(p[1], 1), "accent")
-    s += dot(round(bo[0], 1), round(bo[1], 1), "accenttwo", d=DOT + 8)
-    s += text(om[0] - 18, om[1] + 6, "Omaha", anchor="east")
-    s += text(wi[0] - 18, wi[1] - 10, "Wichita", anchor="east")
-    s += text(bo[0] - 6, bo[1] + 22, "Boston", color="accenttwo", anchor="east")
+    s += dot(round(bo[0], 1), round(bo[1], 1), "accenttwo")   # size encodes nothing here
+    s += text(om[0] - 22, om[1] + 6, "Omaha", anchor="east")
+    s += text(wi[0] - 22, wi[1] - 10, "Wichita", anchor="east")
+    # clear of both the disc and the 45th-parallel stretch of coastline it used to cross
+    s += text(bo[0] + 16, bo[1] + 42, "Boston", color="accenttwo", anchor="south east")
     s += text(260, 30, "160 packets, one target: a stockbroker", color="annot")
     return s
 
 
 def fig_milgram_rule():
-    ys = 210
-    xs = [80, 260, 440]
+    ys = 150
+    xs = [60, 260, 460]
     s = ""
     for i, x in enumerate(xs):
         s += disc(x, ys, "", fill="accent" if i != 1 else "accenttwo", name=f"p{i}")
     s += edge("p0", "p1", color="annot", w=EDGE_W, arrow="-{Stealth[length=10bp]}")
     s += edge("p1", "p2", color="accenttwo", w=HEAVY_W, arrow="-{Stealth[length=12bp]}")
-    s += text(260, 258, "you", color="accenttwo")
-    s += text(80, 258, "sender", color="annot")
-    s += text(440, 258, "next hop", color="annot")
-    s += text(260, 130, "Know the target? Mail it.\\\\Otherwise pass it to one person\\\\"
-                        "you know on a first-name basis.", color="black", width=470)
+    s += text(260, 200, "you", color="accenttwo")
+    s += text(60, 200, "sender", color="annot")
+    s += text(460, 200, "next hop", color="annot")
     return s
 
 
@@ -469,20 +578,21 @@ def fig_replication_facebook():
 
 
 def fig_wikirace():
-    pos = {0: (70, 250), 1: (230, 130), 2: (370, 250), 3: (470, 110)}
+    # A zigzag, so every label sits on the outside of the path's turn instead of under a
+    # red edge.  No extra edge either: the dotted Bagel--Chopin link made the route two
+    # clicks, contradicting the figure's own caption.
+    pos = {0: (60, 120), 1: (210, 270), 2: (360, 120), 3: (480, 260)}
     s = ""
     for i in range(4):
         s += disc(pos[i][0], pos[i][1], "", fill="accent" if i != 3 else "accenttwo", name=f"w{i}")
-    for a, b, col in ((0, 1, "accenttwo"), (1, 2, "accenttwo"), (2, 3, "accenttwo")):
-        s += edge(f"w{a}", f"w{b}", color=col, w=HEAVY_W, arrow="-{Stealth[length=11bp]}")
-    s += edge("w0", "w2", color="annot", w=EDGE_W, dash="dashed")
-    labs = ["Bagel", "Poland", "Chopin", "Piano"]
-    for i, l in enumerate(labs):
-        dy = 34 if i in (1, 3) else -34
-        anc = "south" if dy > 0 else "north"
-        s += text(pos[i][0], pos[i][1] + dy, l,
-                  color="accenttwo" if i == 3 else "annot", anchor=anc)
-    s += text(270, 30, "three clicks, links only", color="accenttwo")
+    for a, b in ((0, 1), (1, 2), (2, 3)):
+        s += edge(f"w{a}", f"w{b}", color="accenttwo", w=HEAVY_W,
+                  arrow="-{Stealth[length=11bp]}")
+    for i, (l, dy, anc) in enumerate((("Bagel", -34, "north"), ("Poland", 34, "south"),
+                                      ("Chopin", -34, "north"), ("Piano", 34, "south east"))):
+        x = pos[i][0] + (26 if anc.endswith("east") else 0)
+        s += text(x, pos[i][1] + dy, l, color="accenttwo" if i == 3 else "annot", anchor=anc)
+    s += text(270, 12, "three clicks, links only", color="accenttwo", anchor="south")
     return s
 
 
@@ -543,10 +653,19 @@ def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all
     return s
 
 
-def _names(pos=CHAIN_POS, col="annot", dy=-34):
+def _names(pos=CHAIN_POS, col="annot", dy=-34, highlight=None):
+    """`highlight` is opt-in: on every Part Two figure accent-2 is already carrying the
+    chord, the shortcut, the edge counters or the diameter route, and a permanently red
+    seventh name made the colour mean two things in one picture."""
     return "".join(text(pos[i][0], pos[i][1] + dy, NAMES[i],
-                        color="accenttwo" if i == 6 else col, anchor="north")
+                        color="accenttwo" if i == highlight else col, anchor="north")
                    for i in range(7))
+
+
+def _knew(edge, verb="already knew"):
+    """Built from NAMES and the edge tuple, so a caption can never name the wrong pair."""
+    a, b = edge
+    return f"the {NAMES[a]} {verb} the {NAMES[b]}"
 
 
 def fig_milgram_chain():
@@ -557,7 +676,7 @@ def fig_milgram_chain():
     for i in range(7):
         s += disc(CHAIN_POS[i][0], CHAIN_POS[i][1], "",
                   fill="accenttwo" if i == 6 else "accent")
-    s += _names()
+    s += _names(highlight=6)
     s += text(CHAIN_POS[0][0], 196, "Omaha", color="annot", anchor="south")
     s += text(CHAIN_POS[6][0], 196, "Boston", color="accenttwo", anchor="south")
     s += text(550, 250, "six hands, Omaha to Boston", color="accenttwo", anchor="south")
@@ -573,11 +692,13 @@ def fig_chain_graph():
 
 
 def fig_distance_def():
+    """Three nodes, one colour; accent-2 marks the route and nothing else.  The two ends
+    carry the names the slide's formula uses, so $d(i,j)$ points at something."""
     p = {0: (70, 130), 1: (260, 250), 2: (450, 130)}
     s = seg(p[0], p[1], color="accenttwo", w=HEAVY_W)
     s += seg(p[1], p[2], color="accenttwo", w=HEAVY_W)
-    for i in p:
-        s += disc(p[i][0], p[i][1], "", fill="accent" if i == 1 else "accenttwo")
+    for i, lab in ((0, "$i$"), (1, ""), (2, "$j$")):
+        s += disc(p[i][0], p[i][1], lab, fill="accent")
     s += text(150, 205, "1", color="accenttwo", anchor="south east")
     s += text(372, 205, "2", color="accenttwo", anchor="south west")
     s += text(260, 60, "$d(i,j)=2$: two edges, not two miles",
@@ -604,20 +725,21 @@ def fig_distance_six():
 def fig_chain_chord():
     s = _chain(CHAIN_EDGES + [CHORD], labels=LETTERS, hot={CHORD})
     s += _names()
-    s += text(550, 275, "the buyer already knew the teacher", color="accenttwo",
-              anchor="south")
+    s += text(550, 275, _knew(CHORD), color="accenttwo", anchor="south")
     return s
 
 
 def fig_two_routes():
+    """The rejected route is annotation gray, not gold: gold text measures 2.0:1 against
+    white where the red on the same figure measures 5.5:1, and the floor is 3:1."""
     p = {0: (70, 120), 1: (260, 250), 2: (450, 120)}
-    s = seg(p[0], p[1], color="accentthree", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
-    s += seg(p[1], p[2], color="accentthree", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
+    s = seg(p[0], p[1], color="annot", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
+    s += seg(p[1], p[2], color="annot", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
     s += (f"\\draw[line width={HEAVY_W}bp,draw=accenttwo] ({p[0][0]},{p[0][1]}) "
           f"to[bend right=22] ({p[2][0]},{p[2][1]});\n")
     for i in p:
         s += disc(p[i][0], p[i][1], LETTERS[i], fill="accent")
-    s += text(260, 300, "2 edges", color="accentthree", anchor="south")
+    s += text(260, 300, "2 edges", color="annot", anchor="south")
     s += text(260, 48, "1 edge --- so $d(A,C)=1$", color="accenttwo", anchor="north")
     return s
 
@@ -637,33 +759,38 @@ assert CNT_FULL == {1: 8, 2: 9, 3: 4}, CNT_FULL
 
 def _dotplot(counts, mean, caption):
     """21 pairs, one dot each, laid out in rows by distance -- so the tallest column of
-    the two plots (9 pairs at d=2) still fits inside a column figure."""
-    x0, dx, ytop, dy = 168, 36, 300, 46
+    the two plots (9 pairs at d=2) still fits inside a column figure.
+
+    The mean rule is clipped to the dots it summarises: at full canvas width it ran 112bp
+    past the last dot and struck through the `d = 2` row label like a deletion mark."""
+    x0, dx, ytop, dy = 168, 40, 300, 46
     s = ""
+    xr = x0
     for d in range(1, 7):
         y = ytop - (d - 1) * dy
         s += text(132, y, f"$d={d}$", color="annot", anchor="east")
         for k in range(counts.get(d, 0)):
             s += dot(x0 + k * dx, y, "accent")
+            xr = max(xr, x0 + k * dx)
     ym = ytop - (float(mean) - 1) * dy
-    s += seg((40, ym), (500, ym), color="accenttwo", w=3.4,
+    s += seg((x0 - DOT / 2 - 12, ym), (xr + DOT / 2 + 12, ym), color="accenttwo", w=3.4,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(270, 22, caption, color="accenttwo", anchor="south")
+    s += text(260, 12, caption, color="accenttwo", anchor="south")
     return s
 
 
 def fig_apl_chain():
-    return _dotplot(CNT_CHAIN, apl(G_CHAIN), "mean $8/3 = 2.67$")
+    return _dotplot(CNT_CHAIN, apl(G_CHAIN), "average over all 21 pairs: $8/3 = 2.67$")
 
 
 def fig_apl_shortcut():
-    return _dotplot(CNT_FULL, apl(G_FULL), "mean $38/21 = 1.81$")
+    return _dotplot(CNT_FULL, apl(G_FULL), "average over all 21 pairs: $38/21 = 1.81$")
 
 
 def fig_chain_shortcut():
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot={SHORTCUT})
     s += _names()
-    s += text(550, 285, "one long edge: the printer knows the buyer",
+    s += text(550, 285, "one long edge: " + _knew(SHORTCUT[::-1], "knows"),
               color="accenttwo", anchor="south")
     return s
 
@@ -684,23 +811,29 @@ def fig_diameter():
     return s
 
 
-WA_PAIRS = [(0, 6), (1, 4), (2, 5)]
+# Nothing here may repeat a number the deck has already put on screen: slide 27 prints
+# the mean and slide 28 draws d(A,G), so the worksheet asks for four values the students
+# have not been given.  All four are computed, none is typed.
+WA_PAIRS = [(0, 4), (3, 6), (1, 6)]
 WA_ANS = [nx.shortest_path_length(G_FULL, a, b) for a, b in WA_PAIRS]
-assert WA_ANS == [3, 2, 2], WA_ANS
+WA_DIA = nx.diameter(G_FULL)
+assert WA_ANS == [3, 3, 2], WA_ANS
+assert WA_DIA == 3, WA_DIA
+WA_Q = " \\quad ".join(f"$d({LETTERS[a]},{LETTERS[b]})$?" for a, b in WA_PAIRS)
+WA_A = " \\quad ".join(f"$d({LETTERS[a]},{LETTERS[b]})={v}$"
+                       for (a, b), v in zip(WA_PAIRS, WA_ANS))
 
 
 def fig_worksheet_a():
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    s += text(550, 285, "$d(A,G)$? \\quad $d(B,E)$? \\quad $d(C,F)$? \\quad "
-                        "then the average", color="black", anchor="south")
+    s += text(550, 285, WA_Q + " \\quad and the diameter?", color="black", anchor="south")
     return s
 
 
 def fig_worksheet_a_answer():
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    s += text(550, 285, "$d(A,G)=3$ \\quad $d(B,E)=2$ \\quad $d(C,F)=2$",
-              color="accenttwo", anchor="south")
-    s += text(550, 40, "average over all 21 pairs: $38/21 = 1.81$",
+    s += text(550, 285, WA_A, color="accenttwo", anchor="south")
+    s += text(550, 40, f"diameter $= {WA_DIA}$: no pair in the network is further apart",
               color="accenttwo", anchor="north")
     return s
 
@@ -715,17 +848,32 @@ def ellipse_pos(n, cx, cy, rx, ry, start=90, ccw=True):
     return out
 
 
+TRI_L = {0: (55, 105), 1: (125, 255), 2: (195, 105)}
+TRI_R = {0: (325, 105), 1: (395, 255), 2: (465, 105)}
+
+
+def _closed_panel(p):
+    s = "".join(seg(p[a], p[b], color="accenttwo", w=HEAVY_W)
+                for a, b in ((0, 1), (1, 2), (0, 2)))
+    return s + "".join(disc(p[i][0], p[i][1], "", fill="accent") for i in p)
+
+
+def fig_triangle_only():
+    """The closed panel alone: same shape, same colours, same disc size as the left half
+    of `triangle-triplet`, centred and scaled so it is not a third of a canvas."""
+    p = {0: (75, 105), 1: (260, 290), 2: (445, 105)}
+    s = _closed_panel(p)
+    s += text(260, 320, "three nodes, all three edges: a triangle",
+              color="accenttwo", anchor="south")
+    return s
+
+
 def fig_triangle_triplet():
-    left = {0: (55, 105), 1: (125, 255), 2: (195, 105)}
-    right = {0: (325, 105), 1: (395, 255), 2: (465, 105)}
-    s = ""
-    for a, b in ((0, 1), (1, 2), (0, 2)):
-        s += seg(left[a], left[b], color="accenttwo", w=HEAVY_W)
+    s = _closed_panel(TRI_L)
     for a, b in ((0, 1), (1, 2)):
-        s += seg(right[a], right[b], color="black", w=EDGE_W)
-    for p in (left, right):
-        for i in p:
-            s += disc(p[i][0], p[i][1], "", fill="accent")
+        s += seg(TRI_R[a], TRI_R[b], color="black", w=EDGE_W)
+    for i in TRI_R:
+        s += disc(TRI_R[i][0], TRI_R[i][1], "", fill="accent")
     s += text(125, 55, "closed: a triangle", color="accenttwo", anchor="north")
     s += text(395, 55, "open", color="black", anchor="north")
     s += text(260, 320, "three nodes, at least two edges: a triplet",
@@ -791,13 +939,28 @@ def _triangle(cols=("black", "black", "black")):
     return s
 
 
+TRI_CEN = tuple(sum(c) / 3 for c in zip(*TRI.values()))
+
+
+def _walk_loop(order, t, color, w):
+    """One closed walk drawn *inside* the triangle: the three edges, inset toward the
+    centroid, rounded, with a single arrowhead saying which way round it goes.
+
+    The old version drew six arcs between three nodes -- every edge twice, no arrowhead
+    anywhere -- on the one slide whose job is counting."""
+    pts = [tuple(TRI_CEN[k] + t * (TRI[i][k] - TRI_CEN[k]) for k in (0, 1)) for i in order]
+    pts.append(pts[0])
+    stop = tuple(pts[-2][k] + 0.55 * (pts[-1][k] - pts[-2][k]) for k in (0, 1))
+    path = " -- ".join("(%.1f,%.1f)" % q for q in pts[:-1] + [stop])
+    return (f"\\draw[line width={w}bp,draw={color},rounded corners=16bp,"
+            f"-{{Stealth[length=13bp]}}] {path};\n")
+
+
 def fig_a3_walks():
-    s = ""
-    for a, b, col, bend in ((0, 1, "accenttwo", 16), (1, 2, "accenttwo", 16),
-                            (2, 0, "accenttwo", 16), (0, 2, "accentthree", 16),
-                            (2, 1, "accentthree", 16), (1, 0, "accentthree", 16)):
-        s += (f"\\draw[line width=3.4bp,draw={col},-{{Stealth[length=10bp]}}] "
-              f"({TRI[a][0]},{TRI[a][1]}) to[bend left={bend}] ({TRI[b][0]},{TRI[b][1]});\n")
+    s = "".join(seg(TRI[a], TRI[b], color="black", w=EDGE_W)
+                for a, b in ((0, 1), (1, 2), (0, 2)))
+    s += _walk_loop((0, 1, 2), 0.60, "accenttwo", 3.4)     # i -> j -> l -> i
+    s += _walk_loop((0, 2, 1), 0.36, "accentthree", 4.4)   # i -> l -> j -> i
     for i, lab in ((0, "$i$"), (1, "$j$"), (2, "$\\ell$")):
         s += disc(TRI[i][0], TRI[i][1], lab, fill="accent")
     s += text(260, 20, "two ways round: $(A^3)_{ii} = 2$", color="accenttwo",
@@ -812,15 +975,17 @@ def fig_a3_formula():
     return s
 
 
+CBAR_FULL = sum(C_FULL, Fraction(0)) / 7
+assert CBAR_FULL == Fraction(5, 21), CBAR_FULL
+
+
 def fig_cbar_milgram():
+    """The per-node values are gone: this slide's point is the averaging, and printing
+    all seven both duplicated slide 41 and left the worksheet nothing to compute."""
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    for i in range(7):
-        v = C_FULL[i]
-        lab = "1" if v == 1 else ("0" if v == 0 else f"$\\frac{{{v.numerator}}}{{{v.denominator}}}$")
-        s += text(CHAIN_POS[i][0], CHAIN_POS[i][1] - 34, lab,
-                  color="accenttwo" if v else "annot", anchor="north")
-    s += text(550, 285, "average over the 7 nodes: $\\bar C = 5/21 = 0.24$",
-              color="accenttwo", anchor="south")
+    s += text(550, 285, f"average over the 7 nodes: $\\bar C = "
+                        f"{CBAR_FULL.numerator}/{CBAR_FULL.denominator} "
+                        f"= {float(CBAR_FULL):.2f}$", color="accenttwo", anchor="south")
     return s
 
 
@@ -880,7 +1045,7 @@ def fig_transitivity_def():
     s = ""
     for b in range(5):
         p, q = WM[(b, 0)], WM[(b, 1)]
-        s += (f"\\fill[accenttwo,opacity=0.16] ({WM_HUB[0]},{WM_HUB[1]}) -- "
+        s += (f"\\fill[accenttwo,opacity=0.24] ({WM_HUB[0]},{WM_HUB[1]}) -- "
               f"({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f}) -- cycle;\n")
     s += _windmill()
     s += text(700, 250, "5 triangles shaded", color="accenttwo", anchor="west")
@@ -900,10 +1065,12 @@ def fig_worksheet_b():
 
 
 def fig_worksheet_b_answer():
+    """No value row: the deck reveals the three answers one fragment at a time, and a
+    figure that prints them statically above the fragments gives the game away."""
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    s += text(550, 285, "$C_A = 1$ \\quad $C_B = 1/3$ \\quad $C_D = 0$",
-              color="accenttwo", anchor="south")
-    s += text(550, 40, "$\\bar C = 5/21 = 0.24$", color="accenttwo", anchor="north")
+    s += text(550, 285, f"and over all seven nodes: $\\bar C = "
+                        f"{CBAR_FULL.numerator}/{CBAR_FULL.denominator} "
+                        f"= {float(CBAR_FULL):.2f}$", color="accenttwo", anchor="south")
     return s
 
 
@@ -921,8 +1088,9 @@ def fig_paradox():
         s += seg(pos[a], pos[b], color="black" if (a, b) in cle else "annot", w=EDGE_W)
     for i2, q in pos.items():
         s += disc(q[0], q[1], "", fill="accenttwo" if i2 == 9 else "accent")
-    s += text(165, 350, "friends of friends are friends", color="black", anchor="north")
-    s += text(1030, 160, "a stranger", color="accenttwo", anchor="north")
+    s += text(36, 352, "friends of friends are friends", color="black",
+              anchor="north west")
+    s += text(1090, 160, "a stranger", color="accenttwo", anchor="north east")
     s += text(620, 42, "local wiring only --- so why is anyone 4.74 steps away?",
               color="accenttwo", anchor="north")
     return s
@@ -962,12 +1130,10 @@ def fig_er_coin():
 
 
 def fig_er_clustering():
+    """No ring on one pair: it was bigger than every node disc and read as an extra node
+    -- or as 'this pair is special', which is the opposite of the point."""
     s = _ego(dashed=EGO_ALL)
-    mx = (EGO[0][0] + EGO[1][0]) / 2
-    my = (EGO[0][1] + EGO[1][1]) / 2
-    s += ring(mx, my, size=54, color="accenttwo", w=3.4, grow=0)
-    s += text(mx + 40, my, "$p$", color="accenttwo", anchor="west")
-    s += text(260, 14, "each of the 10 pairs: its own coin, so $E[C_A] = p$",
+    s += text(260, 14, "10 pairs, 10 coins: $C_{\\mathrm{rand}} = p$",
               color="accenttwo", anchor="south")
     return s
 
@@ -1004,16 +1170,29 @@ assert abs(math.log(8e9) / math.log(150) - 4.55) < 0.01
 
 
 def fig_fanout_solve():
-    x0, x1, y0, y1 = 150, 1010, 60, 330
+    """The vertical axis is logarithmic, so it has to say so: unlabelled, exponential
+    fan-out renders as a straight line, which is the opposite of the slide's point."""
+    xa, ya = 118, 100                       # axis corner
+    x0, x1, y1 = 190, 1030, 340
     def X(L):
         return x0 + (L - 1) / 4 * (x1 - x0)
     def Y(v):
-        return y0 + (math.log10(v) - 2) / 9 * (y1 - y0)
-    s = seg((x0 - 40, y0), (x1 + 40, y0), color="annot", w=2.2)
+        return ya + (math.log10(v) - 2) / 9 * (y1 - ya)
+
+    s = seg((xa, ya), (1060, ya), color="annot", w=2.2)
+    s += seg((xa, ya), (xa, y1), color="annot", w=2.2)
+    for e in range(2, 12):
+        y = Y(10 ** e)
+        s += seg((xa - 9, y), (xa + 9, y), color="annot", w=2.0)
+        if e % 3 == 2:
+            s += text(xa - 18, y, f"$10^{{{e}}}$", color="annot", anchor="east")
+    s += text(38, (ya + y1) / 2, "people reached", color="annot", rotate=90)
+
     ypop = Y(8e9)
-    s += seg((x0 - 40, ypop), (x1 + 40, ypop), color="accenttwo", w=3.2,
+    s += seg((xa, ypop), (1060, ypop), color="accenttwo", w=3.2,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(x1 + 40, ypop + 16, "8 billion people", color="accenttwo", anchor="south east")
+    s += text(990, ypop + 6, "8 billion people", color="accenttwo", anchor="south east")
+
     prev = None
     for L, v in zip(range(1, 6), POW):
         pt = (X(L), Y(v))
@@ -1022,10 +1201,11 @@ def fig_fanout_solve():
         prev = pt
     for L, v in zip(range(1, 6), POW):
         s += dot(round(X(L), 1), round(Y(v), 1), "accent")
-        s += text(X(L), y0 - 16, str(L), color="annot", anchor="north")
-    s += text(580, y0 - 62, "steps $L$, at 150 friends each", color="annot", anchor="north")
-    s += text(x0 - 40, 330, "$L = \\ln n / \\ln \\langle k \\rangle = 4.55$",
-              color="accenttwo", anchor="west")
+        s += text(X(L), ya - 14, str(L), color="annot", anchor="north")
+    s += text(589, ya - 52, "steps from you, at 150 friends each", color="annot",
+              anchor="north")
+    s += text(400, 318, "$L = \\ln n / \\ln \\langle k \\rangle = 4.55$",
+              color="accenttwo", anchor="south west")
     return s
 
 
@@ -1051,18 +1231,21 @@ def fig_free_vs_not():
 
 
 def fig_sigma_def():
-    y = 210
+    """A number line that says what its numbers are.  The old one built three tick labels
+    and emitted none of them, so sigma = 1 -- the whole point -- was an unlabelled gray
+    dot; and the definition it carried is already in the slide's formula panel."""
+    y = 200
+    xd = 40 + 0.5 * 460
     s = seg((40, y), (500, y), color="annot", w=2.4)
-    for v, lab in ((0.22, "$\\sigma < 1$"), (0.5, "$\\sigma \\approx 1$"),
-                   (0.82, "$\\sigma > 1$")):
+    s += f"\\draw[line width=6bp,draw=accenttwo] ({xd},{y}) -- (500,{y});\n"
+    for v, lab in ((0.22, "$\\sigma < 1$"), (0.5, "$\\sigma = 1$"), (0.82, "$\\sigma > 1$")):
         x = 40 + v * 460
         s += seg((x, y - 10), (x, y + 10), color="annot", w=2.0)
-    s += dot(40 + 0.5 * 460, y, "annot")
-    s += (f"\\draw[line width=6bp,draw=accenttwo] ({40 + 0.58 * 460},{y}) -- (500,{y});\n")
-    s += text(140, y + 26, "anti-small-world", color="annot", anchor="south")
+        s += text(x, y - 18, lab, color="annot" if v < 0.5 else
+                  ("black" if v == 0.5 else "accenttwo"), anchor="north")
+    s += dot(xd, y, "annot")
+    s += text(155, y + 26, "anti-small-world", color="annot", anchor="south")
     s += text(400, y + 26, "small-world", color="accenttwo", anchor="south")
-    s += text(270, y - 34, "$\\sigma = \\dfrac{C/C_{\\mathrm{rand}}}"
-                           "{L/L_{\\mathrm{rand}}}$", color="black", anchor="north")
     return s
 
 
@@ -1077,20 +1260,24 @@ def _logaxis(x0, x1, y, decades):
 
 
 def fig_ws1998_dots():
+    """Slide 60 asks students to read both ratios off this axis.  The three path-length
+    dots land 1.22 / 1.51 / 1.18 -- within 17px of each other on a log axis where a decade
+    is 158px -- so every dot prints its own value."""
     x0, x1, dec = 330, 1050, 4
     def X(v):
         return x0 + math.log10(v) / dec * (x1 - x0)
-    s = _logaxis(x0, x1, 60, dec)
+    s = _logaxis(x0, x1, 96, dec)
     for r, (nm, lr, cr, _) in enumerate(WS98_R):
-        y = 150 + (2 - r) * 85
+        y = 168 + (2 - r) * 78
         s += text(300, y, nm, color="black", anchor="east")
         s += seg((X(lr), y), (X(cr), y), color="annot", w=2.0)
-        s += dot(round(X(lr), 1), y, "annot")
-        s += dot(round(X(cr), 1), y, "accenttwo")
-    s += text(X(WS98_R[0][1]) - 10, 340, "$L/L_{\\mathrm{rand}}$", color="annot",
-              anchor="south west")
-    s += text(X(WS98_R[0][2]), 340, "$C/C_{\\mathrm{rand}}$", color="accenttwo",
-              anchor="south")
+        for v, col in ((lr, "annot"), (cr, "accenttwo")):
+            s += dot(round(X(v), 1), y, col)
+            s += text(round(X(v), 1), y + 20,
+                      f"{v:.0f}" if v >= 10 else (f"{v:.1f}" if v >= 2 else f"{v:.2f}"),
+                      color=col, anchor="south")
+    s += text(345, 112, "path length", color="annot", anchor="south west")
+    s += text(1050, 112, "clustering", color="accenttwo", anchor="south east")
     return s
 
 
@@ -1115,9 +1302,14 @@ def fig_ws1998_sigma():
 # 16 nodes, not 20: at 40bp discs a 20-node ring needs a 358bp circle, which fills a
 # column figure's whole height and leaves the deck scaling white margin either side.
 # k=4 gives C = 3(k-2)/(4(k-1)) = 0.5 whatever n is, so nothing in the story changes.
-RING_N, RING_K, RING_R = 16, 4, 130
+# Vertically 124: an inward chord bowed clear of the disc it passes needs 34bp of the
+# ring's own radius, and the canvas is 364bp tall.  Horizontally 180, because a circle
+# that short left the drawing spanning 60% of the canvas width -- below that the deck is
+# scaling white margin instead of the picture.
+RING_N, RING_K = 16, 4
+RING_RX, RING_RY = 180, 124
 RING_C = (260, 200)
-RING_POS = ellipse_pos(RING_N, RING_C[0], RING_C[1], RING_R, RING_R, start=90)
+RING_POS = ellipse_pos(RING_N, RING_C[0], RING_C[1], RING_RX, RING_RY, start=90)
 RING_EDGES = sorted({(min(i, (i + d) % RING_N), max(i, (i + d) % RING_N))
                      for i in range(RING_N) for d in (1, 2)})
 assert len(RING_EDGES) == RING_N * RING_K // 2 == 32
@@ -1128,15 +1320,50 @@ RING_L = apl(_R16)
 assert RING_DIA == 4, RING_DIA
 
 
-def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=()):
+# The chord of a triangle must arc clear of the disc it passes, with white left over --
+# at NODE/2 + 3 the gap was 3bp and every triangle in the lattice was a hairline.
+RING_CLEAR = NODE / 2 + 16
+
+
+def assert_triangles_open(name, pos, paths):
+    """Every chord must leave a visible interior in the triangle it closes.
+
+    C16(1,2) is planar and a zero-crossing drawing does exist -- alternate the chords
+    inside and outside the ring and the 16 crossings go away.  It was built and rejected:
+    an outward bow has to clear the disc from the far side, which needs 34bp against 14bp
+    inward, and the result is a wavy flower in which not one triangle can be picked out.
+    On the slide whose claim is "triangles everywhere" that trades a Major for a Blocker.
+    So the chords all bow inward, deeply, and this is the invariant that protects what the
+    slide actually asserts.
+    """
+    worst = None
+    for a, b, pts in paths:
+        for k, q in pos.items():
+            if k in (a, b):
+                continue
+            d = float(np.linalg.norm(pts - np.array(q, float), axis=1).min()) - NODE / 2
+            if worst is None or d < worst[0]:
+                worst = (d, a, b, k)
+    assert worst and worst[0] >= 12, (
+        f"{name}: edge {worst[1]}-{worst[2]} runs {worst[0]:.1f}bp from node {worst[3]}'s "
+        f"disc -- under 12bp the triangle it closes has no visible interior")
+
+
+def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=(),
+          check=True):
     s = ""
+    paths = []
     for a, b in edges:
         h = (a, b) in hot or (b, a) in hot
         s += curve_edge(a, b, pos, color="accenttwo" if h else "black",
-                        w=HEAVY_W if h else EDGE_W, centroid=cen)
+                        w=HEAVY_W if h else EDGE_W, centroid=cen,
+                        clear=RING_CLEAR, paths=paths)
     for a, b in dashed:
         s += curve_edge(a, b, pos, color="annot", w=2.2,
-                        dash="dash pattern=on 8bp off 7bp", centroid=cen)
+                        dash="dash pattern=on 8bp off 7bp", centroid=cen,
+                        clear=RING_CLEAR)
+    if check:
+        assert_triangles_open("ring lattice", pos, paths)
     for i2 in pos:
         s += disc(pos[i2][0], pos[i2][1], "", fill="accent")
     for i2 in ringed:
@@ -1146,7 +1373,7 @@ def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=
 
 def fig_ring_lattice():
     s = _ring()
-    s += text(260, 8, "each node joined to its 4 nearest neighbours",
+    s += text(260, 8, f"joined to its {RING_K} nearest neighbours",
               color="black", anchor="south")
     return s
 
@@ -1158,65 +1385,84 @@ assert len(RING_FAR) - 1 == RING_DIA
 def fig_ring_distance():
     hot = {(min(a, b), max(a, b)) for a, b in zip(RING_FAR, RING_FAR[1:])}
     s = _ring(hot=hot)
-    s += text(260, 8, f"{RING_DIA} hops to reach the far side of only {RING_N} nodes",
+    s += text(260, 8, f"{RING_DIA} hops to cross a ring of {RING_N} nodes",
               color="accenttwo", anchor="south")
     return s
 
 
-RND16 = nx.gnm_random_graph(RING_N, len(RING_EDGES), seed=2)
+# seed 117541, not 2: at m = 32 a triangle-free connected draw exists but is rare (8 in the
+# first 400,000 seeds), and seed 2 carried three triangles under a caption saying it had
+# none.  The `< 0.10` assertion was too weak to notice; this one cannot be satisfied by a
+# graph with a single closed triplet in it.
+RND16 = nx.gnm_random_graph(RING_N, len(RING_EDGES), seed=117541)
 assert nx.is_connected(RND16)
+assert sum(nx.triangles(RND16).values()) == 0, "the shuffled graph must be triangle-free"
 RND16_C = nx.average_clustering(RND16)
 RND16_L = nx.average_shortest_path_length(RND16)
-assert RND16_C < 0.10 and RND16_L < float(RING_L), (RND16_C, RND16_L, float(RING_L))
+assert RND16_C == 0.0 and RND16_L < float(RING_L), (RND16_C, RND16_L, float(RING_L))
 
 
 def fig_random_graph():
     s = ""
     for a, b in RND16.edges():
-        s += curve_edge(a, b, RING_POS, centroid=RING_C)
+        s += curve_edge(a, b, RING_POS, centroid=RING_C, w=2.2)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "the very same 16 nodes and 32 edges, shuffled",
+    s += text(260, 8, "the same 16 nodes and 32 edges, shuffled",
               color="black", anchor="south")
     return s
 
 
 def fig_lattice_vs_random():
-    lp = ellipse_pos(RING_N, 280, 210, 118, 118, start=90)
-    rp = ellipse_pos(RING_N, 820, 210, 118, 118, start=90)
+    lp = ellipse_pos(RING_N, 280, 205, 118, 118, start=90)
+    rp = ellipse_pos(RING_N, 820, 205, 118, 118, start=90)
     s = ""
+    paths = []
     for a, b in RING_EDGES:
-        s += curve_edge(a, b, lp, centroid=(280, 210))
+        s += curve_edge(a, b, lp, centroid=(280, 205), clear=RING_CLEAR, paths=paths)
+    assert_triangles_open("lattice-vs-random (left panel)", lp, paths)
     for a, b in RND16.edges():
-        s += curve_edge(a, b, rp, centroid=(820, 210))
+        s += curve_edge(a, b, rp, centroid=(820, 205), w=2.2)
     for p2 in (lp, rp):
         for i2 in p2:
             s += disc(p2[i2][0], p2[i2][1], "", fill="accent")
-    s += text(280, 34, "lattice: triangles, long routes", color="accenttwo", anchor="north")
+    s += text(280, 34, "lattice: triangles, long routes", color="black", anchor="north")
     s += text(820, 34, "random: short routes, no triangles", color="black", anchor="north")
     return s
 
 
+REWIRE_OLD, REWIRE_NEW = (0, 2), (0, 9)
+assert REWIRE_OLD in RING_EDGES and REWIRE_NEW not in RING_EDGES
+
+
 def fig_ws_rewire_step():
+    """Each annotation is drawn in the colour of the thing it names, next to that thing.
+    The red sentence used to name the gray edge and the gray figcaption the red one."""
     s = ""
     for a, b in RING_EDGES:
-        if (a, b) == (0, 2):
+        if (a, b) == REWIRE_OLD:
             continue
-        s += curve_edge(a, b, RING_POS, centroid=RING_C)
-    s += curve_edge(0, 2, RING_POS, color="annot", w=2.2,
-                    dash="dash pattern=on 8bp off 7bp", centroid=RING_C)
-    s += curve_edge(0, 9, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
+        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    s += curve_edge(*REWIRE_OLD, RING_POS, color="annot", w=2.2,
+                    dash="dash pattern=on 8bp off 7bp", centroid=RING_C,
+                    clear=RING_CLEAR)
+    s += curve_edge(*REWIRE_NEW, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "the gray stub is where that edge used to end",
-              color="accenttwo", anchor="south")
+    s += text(254, 8, "red: the new end", color="accenttwo", anchor="south east")
+    s += text(266, 8, "gray: the old one", color="annot", anchor="south west")
     return s
 
 
 def _sweep_data():
-    """C(p)/C(0) and L(p)/L(0) for the Watts-Strogatz sweep -- measured, not remembered."""
+    """C(p)/C(0) and L(p)/L(0) for the Watts-Strogatz sweep -- measured, not remembered.
+
+    The first three p values expect 0.16 / 0.34 / 0.74 rewirings out of 1600 edges, so at
+    6 runs the sampling noise ran L/L(0) 0.964 -> 0.928 -> 0.960 and the curve read as
+    "L rises with p".  Those three points get 24 runs."""
     import json
-    cfg = dict(n=400, k=8, runs=6, ps=[round(10 ** (-4 + 4 * i / 12), 6) for i in range(13)])
+    cfg = dict(n=400, k=8, runs=6, quiet_runs=24, quiet=3,
+               ps=[round(10 ** (-4 + 4 * i / 12), 6) for i in range(13)])
     cache = OUT / "_sweep.json"
     if cache.exists():
         d = json.loads(cache.read_text())
@@ -1224,9 +1470,9 @@ def _sweep_data():
             return d
     rng = random.Random(20260805)
     out = {"cfg": cfg, "p": cfg["ps"], "C": [], "L": []}
-    for p in cfg["ps"]:
+    for i, p in enumerate(cfg["ps"]):
         cs, ls = [], []
-        for _ in range(cfg["runs"]):
+        for _ in range(cfg["quiet_runs"] if i < cfg["quiet"] else cfg["runs"]):
             adj = _ws_adj(cfg["n"], cfg["k"], p, rng)
             cs.append(_avg_clustering(adj))
             ls.append(_apl_adj(adj))
@@ -1297,16 +1543,22 @@ assert abs(SWEEP["C0"] - 0.6428571) < 1e-4, SWEEP["C0"]
 assert abs(SWEEP["L0"] - 25.4386) < 1e-3, SWEEP["L0"]
 
 
+BAND_LO, BAND_HI = 0.001, 0.1
+assert math.log10(BAND_HI) - math.log10(BAND_LO) >= 2.0, "the band must span two decades"
+
+
 def _sweep_frame(band=False):
-    x0, x1, y0, y1 = 200, 1050, 100, 310
+    """Both curves are fractions of the lattice value, so the vertical axis has to be
+    ticked and named -- two slides assert how far each curve has fallen."""
+    x0, x1, y0, y1 = 200, 1050, 110, 320
     def X(p):
         return x0 + (math.log10(p) + 4) / 4 * (x1 - x0)
     def Y(v):
         return y0 + v * (y1 - y0)
     s = ""
     if band:
-        s += (f"\\fill[accentthree,opacity=0.30] ({X(0.004)},{y0}) rectangle "
-              f"({X(0.1)},{y1 + 10});\n")
+        s += (f"\\fill[accentthree,opacity=0.30] ({X(BAND_LO)},{y0}) rectangle "
+              f"({X(BAND_HI)},{y1 + 10});\n")
     s += seg((x0 - 20, y0), (x1 + 20, y0), color="annot", w=2.2)
     s += seg((x0, y0), (x0, y1 + 10), color="annot", w=2.2)
     for k in range(5):
@@ -1315,6 +1567,11 @@ def _sweep_frame(band=False):
         s += text(x, y0 - 12, ["$10^{-4}$", "$10^{-3}$", "0.01", "0.1", "1"][k],
                   color="annot", anchor="north")
     s += text(625, y0 - 52, "rewiring probability $p$", color="annot", anchor="north")
+    for v, lab in ((0.0, "0"), (0.5, "0.5"), (1.0, "1")):
+        s += seg((x0 - 9, Y(v)), (x0 + 9, Y(v)), color="annot", w=2.0)
+        s += text(x0 - 16, Y(v), lab, color="annot", anchor="east")
+    s += text(x0, y1 + 20, "fraction of the lattice value", color="annot",
+              anchor="south west")
     for key, col, lab, ly in (("C", "accenttwo", "$C(p)/C(0)$", 0.86),
                               ("L", "accent", "$L(p)/L(0)$", 0.30)):
         base = SWEEP[key + "0"]
@@ -1331,8 +1588,7 @@ def fig_ws_sweep():
 
 def fig_ws_band():
     s = _sweep_frame(band=True)
-    s += text(625, 328, "a wide band gives you both at once",
-              color="accenttwo", anchor="south")
+    s += text(1050, 340, "both at once", color="accenttwo", anchor="south east")
     return s
 
 
@@ -1345,10 +1601,11 @@ def fig_ws_widget():
     for a, b in edges:
         new = (a, b) not in lattice
         s += curve_edge(a, b, RING_POS, color="accenttwo" if new else "black",
-                        w=HEAVY_W if new else EDGE_W, centroid=RING_C)
+                        w=HEAVY_W if new else EDGE_W, centroid=RING_C,
+                        clear=EDGE_W if new else RING_CLEAR)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "drag $p$ and watch the red shortcuts appear",
+    s += text(260, 8, "drag $p$: the red shortcuts appear",
               color="accenttwo", anchor="south")
     return s
 
@@ -1363,16 +1620,18 @@ assert nx.average_clustering(_RS) > 0.42, nx.average_clustering(_RS)
 
 
 def fig_shortcut_effect():
+    """Node 0 is what the gold rings are measured *from*, so it is named and ringed too --
+    unnamed, the rings encoded 'closer to' with no second term."""
     s = ""
     for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C)
+        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
     s += curve_edge(*SHORTCUT_EDGE, RING_POS, color="accenttwo", w=HEAVY_W,
                     centroid=RING_C)
     for i2 in RING_POS:
-        s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    for v in SHORTENED:
+        s += disc(RING_POS[i2][0], RING_POS[i2][1], "0" if i2 == 0 else "", fill="accent")
+    for v in [0] + SHORTENED:
         s += ring(RING_POS[v][0], RING_POS[v][1], color="accentthree", w=4.0)
-    s += text(260, 8, f"this one edge shortens {len(SHORTENED)} routes (gold rings)",
+    s += text(260, 8, f"gold: node 0 and the {len(SHORTENED)} now closer to it",
               color="accenttwo", anchor="south")
     return s
 
@@ -1396,8 +1655,8 @@ def _twocomp(answer=False):
 
 def fig_disconnected():
     s = _twocomp()
-    s += text(275, 40, "what is the distance between the two red nodes?",
-              color="black", anchor="north", width=520)
+    s += text(260, 40, "distance between the two red nodes?",
+              color="black", anchor="north")
     return s
 
 
@@ -1405,7 +1664,7 @@ def fig_disconnected_answer():
     s = _twocomp()
     s += seg((115, 105), (440, 165), color="accenttwo", w=2.4,
              dash="dash pattern=on 9bp off 8bp")
-    s += text(275, 40, "$d = \\infty$: no route at all", color="accenttwo",
+    s += text(260, 40, "$d = \\infty$: no route at all", color="accenttwo",
               anchor="north")
     return s
 
@@ -1426,26 +1685,26 @@ def _degree_one(answer=False):
 
 def fig_degree_one():
     s = _degree_one()
-    s += text(280, 40, "this node has exactly one friend. Its $C_i$?",
-              color="black", anchor="north", width=520)
+    s += text(260, 40, "one friend only --- what is its $C_i$?",
+              color="black", anchor="north")
     return s
 
 
 def fig_degree_one_answer():
     s = _degree_one()
-    s += text(280, 40, "$k(k-1)/2 = 0$: there is nothing to divide by",
+    s += text(260, 40, "$k(k-1)/2 = 0$: nothing to divide by",
               color="accenttwo", anchor="north")
     return s
 
 
 def fig_sigma_lt_1_q():
+    # "high clustering" was half the answer, printed on the question slide.
     s = _ring()
-    s += text(260, 8, "a ring lattice: long routes, high clustering",
-              color="black", anchor="south")
+    s += text(260, 8, "a ring lattice: long routes", color="black", anchor="south")
     return s
 
 
-GRID_POS = {(c, r): (60 + c * 100, 60 + r * 90) for c in range(5) for r in range(4)}
+GRID_POS = {(c, r): (60 + c * 100, 78 + r * 82) for c in range(5) for r in range(4)}
 GRID_EDGES = [((c, r), (c + 1, r)) for c in range(4) for r in range(4)] + \
              [((c, r), (c, r + 1)) for c in range(5) for r in range(3)]
 _G54 = nx.Graph(GRID_EDGES)
@@ -1458,14 +1717,22 @@ def fig_grid_no_triangles():
         s += seg(GRID_POS[a], GRID_POS[b], color="black", w=EDGE_W)
     for q in GRID_POS.values():
         s += disc(q[0], q[1], "", fill="accent")
-    s += text(260, 340, "a street grid: not one triangle, so $C = 0$",
+    # below the grid, where every other figure in the deck puts its annotation -- at
+    # y = 340 it sat on the top row of discs
+    s += text(260, 8, "a street grid: not one triangle, so $C = 0$",
               color="accenttwo", anchor="south")
     return s
 
 
 GNM_POS = ellipse_pos(6, 250, 190, 190, 100, start=0)
 GNP_POS = ellipse_pos(6, 840, 190, 190, 100, start=0)
-GNM_EDGES = [(0, 1), (1, 3), (2, 4), (3, 4), (0, 5)]
+# (1,3) forced a crossing on what is a 5-edge tree; (1,2) draws planar on the hexagon and
+# the graph is the same shape of object.  Asserted below, not eyeballed.
+GNM_EDGES = [(0, 1), (1, 2), (2, 4), (3, 4), (0, 5)]
+assert nx.is_tree(nx.Graph(GNM_EDGES))
+assert count_crossings([(a, b, np.array([GNM_POS[a], GNM_POS[b]], float))
+                        for a, b in GNM_EDGES]) == 0, "G(n,m) panel draws a crossing"
+assert not clearance_ok(GNM_EDGES, GNM_POS)
 
 
 def _gnm_gnp(mark=False):
@@ -1505,61 +1772,65 @@ def fig_universality():
     x0, x1, dec = 330, 1050, 4
     def X(v):
         return x0 + math.log10(v) / dec * (x1 - x0)
-    s = _logaxis(x0, x1, 60, dec)
-    s += seg((x0, 60), (x0, 330), color="annot", w=3.0,
+    s = _logaxis(x0, x1, 96, dec)
+    s += text(690, 42, "small-world index", color="annot", anchor="north")
+    s += seg((x0, 96), (x0, 296), color="annot", w=3.0,
              dash="dash pattern=on 10bp off 7bp")
-    s += text(x0, 340, "$\\sigma = 1$", color="annot", anchor="south")
+    s += text(x0, 300, "$\\sigma = 1$", color="annot", anchor="south")
     for r, (dom, (_, _, _, sg)) in enumerate(zip(["social", "technological", "biological"],
                                                  WS98_R)):
-        y = 140 + (2 - r) * 75
+        y = 160 + (2 - r) * 65
         s += text(300, y, dom, color="black", anchor="east")
         s += dot(round(X(sg), 1), y, "accenttwo")
-    s += text(690, 340, "three different worlds, one signature",
+    s += text(690, 314, "three different worlds, one signature",
               color="accenttwo", anchor="south")
     return s
 
 
 def fig_sw_map():
-    cs = [(180, 235), (550, 235), (920, 235)]
+    """Panel 3 is the same lattice rewired at p = 1, not a fresh random graph, so "red:
+    the rewired edges" is true of it: at the far end of the p arrow every edge has moved,
+    and the panel used to draw all 24 of them black."""
+    cs = [(180, 232), (550, 232), (920, 232)]
     labs = ["lattice", "small world", "random"]
     rng = random.Random(5)
-    graphs = [RING_EDGES,
-              sorted({(min(i, j), max(i, j))
-                      for i, a in enumerate(_ws_adj(12, 4, 0.12, rng)) for j in a}),
-              None]
+    lat = sorted({(min(i, (i + d) % 12), max(i, (i + d) % 12))
+                  for i in range(12) for d in (1, 2)})
+    mids = sorted({(min(i, j), max(i, j))
+                   for i, a in enumerate(_ws_adj(12, 4, 0.12, rng)) for j in a})
+    full = sorted({(min(i, j), max(i, j))
+                   for i, a in enumerate(_ws_adj(12, 4, 1.0, random.Random(11))) for j in a})
+    assert sum((e not in lat) for e in full) >= 18, "p = 1 must move most of the lattice"
     s = ""
     for k, (cx, cy) in enumerate(cs):
-        pos = ellipse_pos(12, cx, cy, 95, 95, start=90)
-        if k == 0:
-            ed = sorted({(min(i, (i + d) % 12), max(i, (i + d) % 12))
-                         for i in range(12) for d in (1, 2)})
-        elif k == 1:
-            ed = graphs[1]
-        else:
-            ed = sorted({(min(a, b), max(a, b))
-                         for a, b in nx.gnm_random_graph(12, 24, seed=4).edges()})
-        lat = sorted({(min(i, (i + d) % 12), max(i, (i + d) % 12))
-                      for i in range(12) for d in (1, 2)})
+        pos = ellipse_pos(12, cx, cy, 92, 92, start=90)
+        ed = (lat, mids, full)[k]
         for a, b in ed:
-            new = k == 1 and (a, b) not in lat
+            new = k > 0 and (a, b) not in lat
             s += curve_edge(a, b, pos, color="accenttwo" if new else "black",
-                            w=HEAVY_W if new else EDGE_W, centroid=(cx, cy))
+                            w=HEAVY_W if new else EDGE_W, centroid=(cx, cy),
+                            clear=NODE / 2 + 3 if new else RING_CLEAR)
         for i2 in pos:
             s += disc(pos[i2][0], pos[i2][1], "", fill="accent")
-        s += text(cx, 108, labs[k], color="accenttwo" if k == 1 else "black",
+        s += text(cx, 104, labs[k], color="accenttwo" if k == 1 else "black",
                   anchor="north")
-    s += seg((80, 60), (1020, 60), color="annot", w=2.4,
+    s += seg((80, 56), (1020, 56), color="annot", w=2.4,
              arrow="-{Stealth[length=11bp]}")
-    s += text(550, 42, "rewiring probability $p$", color="annot", anchor="north")
+    s += text(550, 38, "rewiring probability $p$", color="annot", anchor="north")
     return s
 
 
+RECAP_CHORDS = [(0, RING_N // 2), (4, 11)]
+assert all(e not in RING_EDGES for e in RECAP_CHORDS)
+
+
 def fig_recap():
+    # two chords, because the caption on this slide says "a few shortcuts"
     s = ""
     for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C)
-    s += curve_edge(0, RING_N // 2, RING_POS, color="accenttwo", w=HEAVY_W,
-                    centroid=RING_C)
+        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    for a, b in RECAP_CHORDS:
+        s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
     s += text(260, 8, "triangles kept, routes short: a small world",
@@ -1568,21 +1839,30 @@ def fig_recap():
 
 
 def fig_m03_teaser():
+    """The X goes on the edge it removes.  Both used to land near where the two chords
+    crossed, so the render X-ed out the crossing rather than either edge -- and the cut
+    edges are dashed as well, so "removed" reads without the marker at all."""
     shortcuts = [(0, 7), (3, 12), (5, 11)]
     cut = shortcuts[:2]
     s = ""
     for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C)
+        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    mids = {}
     for a, b in shortcuts:
-        s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
-    for a, b in cut:
-        mx = (RING_POS[a][0] + RING_POS[b][0]) / 2 * 0.5 + RING_C[0] * 0.5
-        my = (RING_POS[a][1] + RING_POS[b][1]) / 2 * 0.5 + RING_C[1] * 0.5
-        s += seg((mx - 15, my - 15), (mx + 15, my + 15), color="black", w=5.0)
-        s += seg((mx - 15, my + 15), (mx + 15, my - 15), color="black", w=5.0)
+        gone = (a, b) in cut
+        paths = []
+        s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C,
+                        dash="dash pattern=on 13bp off 10bp" if gone else "", paths=paths)
+        mids[(a, b)] = paths[0][2][len(paths[0][2]) // 2]
+    sep = math.dist(mids[cut[0]], mids[cut[1]])
+    assert sep >= 80, f"the two X marks are {sep:.0f}bp apart -- they will read as one"
+    for e in cut:
+        mx, my = mids[e]
+        s += seg((mx - 16, my - 16), (mx + 16, my + 16), color="black", w=5.0)
+        s += seg((mx - 16, my + 16), (mx + 16, my - 16), color="black", w=5.0)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, "cut two shortcuts --- what happens to this world?",
+    s += text(260, 8, "cut two shortcuts --- then what?",
               color="accenttwo", anchor="south")
     return s
 
@@ -1610,6 +1890,7 @@ FIGURES = [
     ("diameter", fig_diameter, "full"),
     ("worksheet-a", fig_worksheet_a, "full"),
     ("worksheet-a-answer", fig_worksheet_a_answer, "full"),
+    ("triangle-only", fig_triangle_only, "col"),
     ("triangle-triplet", fig_triangle_triplet, "col"),
     ("ego-graph", fig_ego_graph, "col"),
     ("ego-pairs", fig_ego_pairs, "col"),

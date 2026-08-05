@@ -360,7 +360,18 @@ SIDES = [
     ("east", -44, 0), ("west", 44, 0), ("south", 0, 46), ("north", 0, -46),
     ("south east", -34, 34), ("south west", 34, 34),
     ("north east", -34, -34), ("north west", 34, -34),
+    # Last resort: park the name well clear of the drawing and run a thin gray
+    # leader back to its node.  This exists because requiring every one of the
+    # thirteen cables to be clear of every name has no side-only solution -- and
+    # the alternative the solver refuses to take is shrinking the type.
+    ("east", -96, 0), ("west", 96, 0), ("south", 0, 92), ("north", 0, -92),
+    ("south east", -74, 74), ("south west", 74, 74),
+    ("north east", -74, -74), ("north west", 74, -74),
 ]
+
+# Beyond this offset the name is too far from its node to read as its label, so
+# the drawing routine runs a leader line to it.
+LEADER_AT = 60
 
 
 def place_labels(names, pos, edges, blockers=(), bounds=None, gap=0.0):
@@ -613,13 +624,12 @@ assert sorted(d for _, d in MST.degree()) == [1, 1, 1, 1, 1, 3, 3, 3]
 assert {n for n, d in MST.degree() if d == 3} == {"Brno", "Prostejov", "Trebic"}
 
 # Which side each town's name sits on — solved, not hand-assigned.
-# Edges the solver must keep clear of are the MST's seven: those are drawn heavy on
-# most slides, and a name lying across one hides the thing under discussion.  The
-# six candidate routes are dashed gray and a name crossing one is not a defect --
-# constraining all thirteen has no solution at this type size, which the solver says
-# out loud rather than silently shrinking the type.
+# The solver must clear **every** cable the figures draw, not just the MST's seven.
+# Constraining only the MST let the Znojmo-Hodonin route run straight through the
+# word "Znojmo" on every weighted figure in the deck -- a defect that survived a
+# whole build because the assertion was never asked about it.
 LABEL_SIDE, LABEL_BOX = place_labels(
-    PLAIN, POS, [(a, b) for a, b, _ in MST_EDGES],
+    PLAIN, POS, list(CABLES),
     bounds=(0, LABEL_BAND[0], DESIGN["full"], LABEL_BAND[1]), gap=3.0)
 
 # ...then the weight chips, against the names that are now fixed.
@@ -775,7 +785,12 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
     if labels:
         for n, (anc, dx, dy) in LABEL_SIDE.items():
             col = (name_color or {}).get(n, "black")
-            s += text(POS[n][0] + dx, POS[n][1] + dy, NAME[n], color=col, anchor=anc)
+            x, y = POS[n]
+            if math.hypot(dx, dy) > LEADER_AT:      # parked clear; draw a leader
+                ux, uy = dx / math.hypot(dx, dy), dy / math.hypot(dx, dy)
+                s += seg((x + ux * (NODE / 2 + 3), y + uy * (NODE / 2 + 3)),
+                         (x + dx - ux * 6, y + dy - uy * 6), color="annot", w=1.8)
+            s += text(x + dx, y + dy, NAME[n], color=col, anchor=anc)
     return s + extra_text
 
 
@@ -799,31 +814,31 @@ def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
 
 
 def fig_moravia_dark():
-    return moravia(extra_text=note("1919", color="annot"))
+    return moravia()
 
 
 def fig_abstract_1():
-    return moravia(extra_text=note("8 towns", color="annot"))
+    return moravia()
 
 
 def fig_abstract_2():
-    return moravia(faint=ALL_CABLES, extra_text=note("13 routes", color="annot"))
+    return moravia(faint=ALL_CABLES)
 
 
 def fig_abstract_3():
     return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
                    heavy={("Brno", "Prostejov"): "accenttwo"},
-                   extra_text=note("km of cable"))
+                   )
 
 
 def fig_moravia_graph():
     return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
                    rings={"Brno": "accenttwo"},
-                   extra_text=note("power plant"))
+                   )
 
 
 def fig_loop_waste():
-    p = {"a": (110, 250), "b": (360, 250), "c": (360, 90), "d": (110, 90)}
+    p = {"a": (55, 250), "b": (465, 250), "c": (465, 90), "d": (55, 90)}
     e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "a")]
     s = ""
     for x, y in e[:-1]:
@@ -834,8 +849,6 @@ def fig_loop_waste():
     s += seg((mx - 15, my + 15), (mx + 15, my - 15), color="accenttwo", w=4.0)
     for k, (x, y) in p.items():
         s += disc(x, y, fill="accent")
-    s += text(235, 20, "cut one cable of a loop --- still connected",
-              color="accenttwo", anchor="south")
     return s
 
 
@@ -846,8 +859,6 @@ def fig_tree_def():
     s = "".join(seg(p[x], p[y], w=EDGE_W + 1.2) for x, y in e)
     for k, (x, y) in p.items():
         s += disc(x, y, fill="accent")
-    s += text(235, 20, "no loop anywhere: one route between any two",
-              color="black", anchor="south")
     return s
 
 
@@ -906,7 +917,7 @@ def fig_kruskal_skip():
         heavy={**{e: "accentthree" for e in cycle}, (a, b): "accenttwo"},
         struck=[(a, b)],
         weights=[(a, b)] + cycle,
-        extra_text=note(f"{w} km closes a loop"))
+        extra_text=note(f"{w} km"))
 
 
 def fig_kruskal_worksheet():
@@ -927,7 +938,7 @@ def fig_prim_rule():
     return moravia(faint=[e for e in ALL_CABLES if e not in out],
                    heavy={**{e: "annot" for e in out}, cheapest: "accenttwo"},
                    weights=out, rings={"Brno": "accenttwo"},
-                   extra_text=note("start here, buy the cheapest"))
+                   )
 
 
 def fig_prim_worksheet():
@@ -954,24 +965,21 @@ def fig_prim_vs_kruskal():
             x = x0 + i * step
             s += disc(x, y, "", fill="white", size=SMALLNODE + 22)
             s += text(x, y, str(w), color=col)
-    s += text(635, 330, f"same seven cables, {MST_TOTAL} km either way", color="black")
     return s
 
 
 def fig_cut_property():
-    p = {"a": (90, 250), "b": (90, 90), "c": (430, 250), "d": (430, 90),
+    p = {"a": (40, 255), "b": (40, 85), "c": (480, 255), "d": (480, 85),
          "e": (260, 170)}
     s = seg(p["a"], p["b"], w=EDGE_W + 1.2) + seg(p["c"], p["d"], w=EDGE_W + 1.2)
     s += seg(p["a"], p["e"], color="annot", w=EDGE_W + 1.2)
     s += seg(p["b"], p["e"], color="annot", w=EDGE_W + 1.2)
     s += seg(p["e"], p["c"], color="accenttwo", w=HEAVY_W)
     s += seg(p["e"], p["d"], color="annot", w=EDGE_W + 1.2)
-    s += seg((345, 300), (345, 40), color="annot", w=2.4, dash=DASH_LONG)
+    s += seg((370, 320), (370, 30), color="annot", w=2.4, dash=DASH_LONG)
     for k, (x, y) in p.items():
         s += disc(x, y, fill="accent")
-    s += text(345, 330, "any cut", color="annot", anchor="south")
-    s += text(260, 20, "the cheapest cable across it is always in the tree",
-              color="accenttwo", anchor="south")
+    s += text(370, 330, "any cut", color="annot", anchor="south")
     return s
 
 
@@ -1011,7 +1019,7 @@ def fig_tie_graph():
     return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
                    weight_override={TIE_EDGE: TIE_WEIGHT},
                    heavy={TIE_EDGE: "accenttwo", TIE_RIVAL: "accenttwo"},
-                   extra_text=note(f"two routes at {TIE_WEIGHT} km"))
+                   )
 
 
 def fig_tie_two_trees():
@@ -1021,7 +1029,7 @@ def fig_tie_two_trees():
                    heavy={TIE_DIFFER[0]: "accenttwo", TIE_DIFFER[1]: "accentthree"},
                    weights=TIE_DIFFER,
                    weight_override={TIE_EDGE: TIE_WEIGHT},
-                   extra_text=note(f"six shared, then either:\\\\both grids {TIE_TOTAL} km"))
+                   extra_text=note(f"both grids {TIE_TOTAL} km"))
 
 
 def fig_boruvka_rounds():
@@ -1030,8 +1038,7 @@ def fig_boruvka_rounds():
     return moravia(edges=MST_PAIRS,
                    heavy={**{e: "accenttwo" for e in r1},
                           **{e: "accentthree" for e in r2}},
-                   extra_text=note(f"round 1: {len(r1)} cables at once\\\\"
-                                   f"round 2: {len(r2)}"))
+                   extra_text=note(f"round 1: {len(r1)}\\\\round 2: {len(r2)}"))
 
 
 # ===========================================================================
@@ -1053,7 +1060,7 @@ def fig_brno_removed():
     cols = ["accent", "accent", "accent"]
     fill = {n: cols[i] for i, p in enumerate(pieces) for n in p}
     return moravia(edges=MST_PAIRS, removed=["Brno"], node_fill=fill,
-                   extra_text=note("8 towns become 3 + 3 + 1"))
+                   extra_text=note("3 + 3 + 1"))
 
 
 def fig_tree_bridges():
@@ -1061,7 +1068,7 @@ def fig_tree_bridges():
     pairs = list(zip(route, route[1:]))
     return moravia(edges=MST_PAIRS,
                    heavy={p: "accenttwo" for p in pairs},
-                   extra_text=note("one route, no spare"))
+                   )
 
 
 def fig_real_grid_mesh():
@@ -1078,11 +1085,9 @@ def fig_real_grid_mesh():
         s += "".join(seg(p[a], p[b], color=col, w=HEAVY_W)
                      for a, b in zip(path, path[1:]))
     for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent", size=SMALLNODE)
-    for k, col in (((0, 1), "accenttwo"), ((6, 1), "accenttwo")):
-        s += ring(p[k][0], p[k][1], size=SMALLNODE, color=col)
-    s += text(550, 20, "two independent routes: cut either, the other carries",
-              color="accenttwo", anchor="south")
+        s += disc(x, y, fill="accent")
+    for k in ((0, 1), (6, 1)):
+        s += ring(p[k][0], p[k][1], color="accenttwo")
     return s
 
 
@@ -1095,8 +1100,7 @@ def fig_connectivity_def():
                    heavy={(a, b): "accenttwo" for a, b in MST_PAIRS
                           if a in big and b in big},
                    rings={n: "accenttwo" for n in big},
-                   extra_text=note(f"largest piece {len(big)}\\\\"
-                                   f"of 8 = {float(frac):.3f}"))
+                   extra_text=note(f"{len(big)} / 8 = {float(frac):.3f}"))
 
 
 # --- curve plotting ---------------------------------------------------------
@@ -1291,7 +1295,6 @@ def fig_demo_still():
     s += seg((x0, y0), (x0, y1), color="annot", w=2.0)
     s += polyline([(x0, y1), (x0 + 40, y1 - 90), (x0 + 80, y0 + 40), (x1, y0 + 6)],
                   color="accenttwo", w=3.4)
-    s += text(255, 30, "pick a target, watch the curve", color="accenttwo")
     return s
 
 
@@ -1359,14 +1362,14 @@ def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
 
 
 def fig_puddle_low():
-    return puddle_body(0.40, PUD_FIELD, 80)[0]
+    return puddle_body(0.40, PUD_FIELD[:10], 80)[0]
 
 
 def fig_puddle_widget():
     s, _ = puddle_body(0.60, PUD_FIELD[:10], 118)
     x0, x1, y = 300, 800, 46
     s += seg((x0, y), (x1, y), color="annot", w=3.0)
-    s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=22)
+    s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=28)
     s += text(x1 + 20, y, "drag $p$", color="accenttwo", anchor="west")
     return s
 
@@ -1475,7 +1478,6 @@ def fig_follow_edge():
     x2, y2 = QK_POS["c"]
     s += seg((x1 + 30, y1 + 34), (x2 - 20, y2 + 34), color="accenttwo", w=3.4,
              arrow="-{Stealth[length=15bp,width=12bp]}")
-    s += text(250, 45, "pick an edge, walk to its end", color="accenttwo")
     return s
 
 
@@ -1489,17 +1491,16 @@ def fig_qk_bias():
         s += disc(x, ytop, "", fill="accent")
         s += text(x, ytop + 34, f"$k = {QK_DEG[n]}$", color="black", anchor="south")
         for j in range(QK_DEG[n]):
-            s += dot(x, ytop - 62 - j * 34, "accenttwo", d=22)
+            s += dot(x, ytop - 66 - j * 38, "accenttwo", d=28)
     s += text(150, ytop - 62, "edge", color="accenttwo", anchor="east")
     s += text(150, ytop - 96, "ends", color="accenttwo", anchor="east")
-    s += text(620, 40, "draw an end at random: the hub owns four of the "
-                       f"{2 * len(QK_EDGES)}", color="accenttwo")
+    s += text(620, 40, f"the hub owns 4 of the {2 * len(QK_EDGES)} ends",
+              color="accenttwo")
     return s
 
 
 def fig_kappa_def():
     s = qk_graph(highlight=("h", "c"), show_deg=True)
-    s += text(250, 45, "land here, count its links", color="accenttwo")
     return s
 
 
@@ -1535,17 +1536,16 @@ def fig_branching():
     x0, y0 = lvl[0][0]
     s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
     s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
-    s += text(700, 40, "$\\kappa$ links, minus the one you arrived on: "
-                       "$\\kappa - 1$ onward", color="accenttwo")
+    s += text(700, 40, "$\\kappa - 1$ onward", color="accenttwo")
     return s
 
 
 def fig_molloy_reed():
     s, _ = fanout(1, x0=180, spread=120, dead={(1, 0), (2, 0)})
-    s += text(330, 40, "$\\kappa - 1 < 1$: dies out", color="annot")
+    s += text(330, 40, "$\\kappa - 1 < 1$", color="annot")
     s2, _ = fanout(2, x0=700, spread=190)
     s += s2
-    s += text(880, 40, "$\\kappa - 1 > 1$: never stops", color="accenttwo")
+    s += text(880, 40, "$\\kappa - 1 > 1$", color="accenttwo")
     return s
 
 
@@ -1616,8 +1616,7 @@ def fig_dilution():
     x0, y0 = lvl[0][0]
     s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
     s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
-    s += text(660, 40, "remove a fraction $f$: "
-                       "$(1-f)(\\kappa-1)$ branches survive", color="accenttwo")
+    s += text(660, 40, "$(1-f)(\\kappa-1)$ survive", color="accenttwo")
     return s
 
 
@@ -1756,12 +1755,12 @@ def fig_efficiency_security():
     star_e = [(0, i) for i in range(1, 7)]
     s, P = small_graph(star_p, star_e, (250, 220), scale=115, node=NODE)
     s += ring(P[0][0], P[0][1], color="accenttwo")
-    s += text(250, 40, "cheap, and one node holds it up", color="accenttwo")
+    s += text(250, 40, "one node holds it up", color="accenttwo")
     mesh_p = ring_pos(7)
     mesh_e = [(i, (i + 1) % 7) for i in range(7)] + [(i, (i + 2) % 7) for i in range(7)]
     s2, _ = small_graph(mesh_p, mesh_e, (830, 220), scale=115, node=NODE)
     s += s2
-    s += text(830, 40, "dearer, no single point of failure", color="black")
+    s += text(830, 40, "no single point", color="black")
     return s
 
 
@@ -1783,22 +1782,45 @@ def fig_redundant_answer():
 
 
 def fig_design_principles():
-    deg = dict(MST2.degree())
-    new = [(a, b) for a, b, _ in REDUNDANT]
-    worst = min((connectivity(MST2, [n]), n) for n in MST2)
-    return moravia(edges=MST_PAIRS + new,
-                   heavy={e: "accentthree" for e in new},
-                   node_label={n: str(deg[n]) for n in deg},
-                   extra_text=note(f"no leaf left alone\\\\"
-                                   f"worst loss now {float(worst[0]):.3f}"))
+    """Degrees before and after the two extra cables, as a dot plot.
+
+    Authored for the `cols` column so it can sit beside the five principles. The
+    Moravian map is a full-width figure; putting it in a column rendered it at 48%
+    and dropped its discs to 19px.
+    """
+    before = dict(MST.degree())
+    after = dict(MST2.degree())
+    towns = sorted(before, key=lambda n: (before[n], after[n], n))
+    # "Even out the degrees" is a claim, so check it. The *range* does not move
+    # (3 and 1 both survive); what improves is the spread and the number of towns
+    # left on a single cable, which is what the dot plot actually shows.
+    var = lambda d: float(np.var(list(d.values())))
+    leaves = lambda d: sum(1 for v in d.values() if v == 1)
+    assert var(after) < var(before), (var(before), var(after))
+    assert leaves(after) < leaves(before), (leaves(before), leaves(after))
+
+    y0, dy = 100, 34
+    xs = {k: 280 + (k - 1) * 90 for k in range(1, 4)}
+    s = seg((xs[1] - 40, 70), (xs[3] + 40, 70), color="annot", w=2.2)
+    for k, x in xs.items():
+        s += seg((x, 62), (x, 78), color="annot", w=2.0)
+        s += text(x, 54, str(k), color="annot", anchor="north")
+    for i, n in enumerate(towns):
+        y = y0 + i * dy
+        s += text(200, y, NAME[n], color="black", anchor="east")
+        b, a = before[n], after[n]
+        if a != b:
+            s += seg((xs[b], y), (xs[a], y), color="annot", w=2.0, dash=DASH)
+        s += dot(xs[b], y, "annot", d=20)
+        s += dot(xs[a], y, "accentthree", d=26)
+    return s
 
 
 def fig_build_it_back():
     new = [(a, b) for a, b, _ in REDUNDANT]
     return moravia(edges=MST_PAIRS,
                    heavy={e: "accentthree" for e in new},
-                   extra_text=note("1926: the tree\\\\today: the tree $+$ loops",
-                                   color="black"))
+                   extra_text=note("1926\\\\today", color="black"))
 
 
 # ===========================================================================
@@ -1947,16 +1969,20 @@ def fig_recap():
 
 
 def fig_m04_teaser():
-    order = ["h", "c", "a", "b", "d", "e"]
-    x0, step, ytop = 90, 82, 250
+    """Same pile-of-edge-ends as qk-bias, at column width.
+
+    Discs at NODE and dots at 28bp: at SMALLNODE and 18bp they landed 18px on the
+    slide, under the 26px floor, which the node-size gate could not see until it
+    was taught to find discs by colour rather than by darkness.
+    """
+    order = ["h", "c", "a", "b", "e", "d"]
+    x0, step, ytop = 70, 76, 300
     s = ""
     for i, n in enumerate(order):
         x = x0 + i * step
-        s += disc(x, ytop, "", fill="accent", size=SMALLNODE)
+        s += disc(x, ytop, "", fill="accent")
         for j in range(QK_DEG[n]):
-            s += dot(x, ytop - 48 - j * 30, "accenttwo", d=18)
-    s += text(260, 330, "your friends", color="accent")
-    s += text(260, 30, "have more friends than you", color="accenttwo")
+            s += dot(x, ytop - 56 - j * 40, "accenttwo", d=28)
     return s
 
 
@@ -2014,7 +2040,7 @@ FIGURES = [
     ("efficiency-security", fig_efficiency_security, "full", 400),
     ("mst-blank-design", fig_mst_blank_design, "full", FULL_H),
     ("redundant-answer", fig_redundant_answer, "full", FULL_H),
-    ("design-principles", fig_design_principles, "full", FULL_H),
+    ("design-principles", fig_design_principles, "col", 400),
     ("build-it-back", fig_build_it_back, "full", FULL_H),
     ("ring-q", fig_ring_q, "col", 420),
     ("ring-a", fig_ring_a, "col", 420),

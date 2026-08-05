@@ -42,6 +42,25 @@ The underlying cause is that fix agents keep working after reporting. Prefer to 
 reviewers only once every fix agent has gone idle, and re-run the check immediately before
 you launch them.
 
+### A gate that cannot fire is worse than no gate
+
+`check_render.py`'s node-diameter band was inert for the whole of Module 02's first build.
+It thresholds on `gray < 60`, and every colour in this palette is lighter than that — the
+node blue converts to luminance 88 — so `node_discs()` returned `[]` on every slide and the
+26–52px band went unenforced. A 19px disc passed a green run. Two reviewers found it
+independently in the same round.
+
+No gate at all would have been safer, because the green run was read as coverage. When you
+add or inherit a gate, prove it fires: run its detector on a slide you know is bad and check
+it says so. Then check the summary actually prints the measurement — the missing
+`node diameter: …px across N discs` line was the visible symptom for a whole build and
+nobody looked for it.
+
+The generator had the same disease from the other end: it *computed* the property it was
+asserting instead of measuring it (see `FIGURE_GUIDE.md`, "Measure the render"). Between
+them, two independent checks on in-figure type size both passed while every label in the
+deck was 17% under the floor.
+
 ### Measure on the rendered slide, not the source PNG
 
 **Three consecutive rounds reported "node size is now uniform deck-wide" and were followed
@@ -99,6 +118,21 @@ Two mathematical errors reached slides through specs written in this loop:
   the fix built on it could not work.
 
 Compute it, or read the file, before writing it down.
+
+### Make the generator report every failure, not the first
+
+A figure generator that stops at the first failed assertion hides the rest. Module 03's
+geometry gates fire in clusters — raising the type size broke seven figures at once — and
+stopping at figure 3 of 60 turns one round of fixes into seven. Catch per figure, print each
+failure, and exit non-zero at the end:
+
+    bad = []
+    for name, fn, cont in FIGURES:
+        try:
+            emit(name, fn(), cont)
+        except AssertionError as e:
+            bad.append(str(e)); print(f"  FAIL {name}: {e}")
+    if bad: sys.exit(1)
 
 ### Watch for a fix that moves an error rather than removing it
 

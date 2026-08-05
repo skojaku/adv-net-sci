@@ -1,0 +1,279 @@
+/* @theme network-science */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap');
+
+/* 1280x720 (16:9). All sizes are the 1920px design values / 1.5 */
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 40px 80px 48px;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.42;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ---------- headings ---------- */
+
+section h2 {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+/* the rule under every content title */
+section h2 + hr {
+  border: 0;
+  height: 2px;
+  background: #dddddd;
+  margin: 27px 0 32px;
+  flex: none;
+}
+
+section h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3959A6;
+}
+
+/* ---------- title slide ---------- */
+
+section.lead {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 34px;
+}
+section.lead h1 {
+  margin: 0;
+  font-size: 90px;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: #000000;
+}
+section.lead hr {
+  border: 0;
+  width: 290px;
+  height: 4px;
+  background: #3959A6;
+  margin: 0;
+}
+section.lead .eyebrow {
+  font-size: 21px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+section.lead .sub {
+  font-size: 33px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  max-width: 870px;
+}
+section.lead .credit {
+  font-size: 23px;
+  letter-spacing: 0.1em;
+  color: #6b6b6b;
+}
+
+/* ---------- part dividers ---------- */
+
+section.part {
+  padding: 0;
+  justify-content: center;
+}
+section.part .band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #3959A6;
+  color: #ffffff;
+  padding: 36px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+section.part .band .count { opacity: 0.72; letter-spacing: 0.1em; }
+section.part h2 {
+  margin: 0 80px;
+  font-size: 67px;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  max-width: 1000px;
+}
+section.part p {
+  margin: 32px 80px 0;
+  font-size: 31px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  max-width: 900px;
+}
+
+/* ---------- body ---------- */
+
+section p {
+  margin: 0 0 20px;
+  max-width: 1080px;
+  text-wrap: pretty;
+}
+section p:last-child { margin-bottom: 0; }
+
+section ul, section ol {
+  margin: 0;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+section li { line-height: 1.42; }
+section li::marker { color: #3959A6; }
+
+strong { font-weight: 700; color: #000000; }
+em { font-style: italic; }
+a { color: #3959A6; text-decoration: none; }
+a:hover { color: #22336b; }
+
+/* annotations / secondary copy — slightly gray */
+section .note,
+section blockquote {
+  font-size: 23px;
+  line-height: 1.45;
+  color: #6b6b6b;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  max-width: 1080px;
+}
+
+/* handwriting, for figure labels and captions */
+section .hand,
+section figcaption {
+  font-family: 'Caveat', cursive;
+  font-size: 26px;
+  color: #6b6b6b;
+}
+
+/* ---------- formula panel ---------- */
+
+section .formula {
+  background: #f7f4f1;
+  padding: 22px 28px;
+  margin: 0 0 22px;
+  font-size: 26px;
+}
+section .formula:last-child { margin-bottom: 0; }
+section .katex { color: #000000; }
+section .katex-display { margin: 0; }
+
+/* labelled derivation rows: | LABEL | formula | */
+section table.steps,
+section table.steps td { border: 0; }
+section table.steps td:first-child {
+  width: 210px;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3959A6;
+  vertical-align: middle;
+}
+
+/* ---------- tables ---------- */
+
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 24px;
+}
+section th {
+  text-align: left;
+  padding: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+}
+section td {
+  padding: 17px 0;
+  border-bottom: 1px solid #eeeeee;
+  color: #000000;
+}
+
+/* ---------- utility layout ---------- */
+
+section .cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 46px;
+  align-items: start;
+}
+section .cols3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 36px;
+  align-items: start;
+}
+section .fig { min-width: 0; }
+section .fig img { width: 100%; height: auto; }
+
+/* three-up statistic row */
+section .stats {
+  display: flex;
+  gap: 46px;
+  flex: 1;
+  align-items: center;
+}
+section .stats > div {
+  flex: 1;
+  border-left: 4px solid #3959A6;
+  padding-left: 29px;
+}
+section .stats .n {
+  font-size: 74px;
+  line-height: 1;
+  color: #000000;
+}
+section .stats .cap {
+  margin-top: 14px;
+  font-size: 23px;
+  line-height: 1.4;
+  color: #6b6b6b;
+}
+
+/* numbered takeaway list */
+section .steps-list { display: flex; flex-direction: column; gap: 26px; }
+section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
+section .steps-list .i { font-size: 25px; color: #3959A6; flex: none; }
+
+/* secondary accents — use only where a contrast carries meaning */
+.accent-2 { color: #B14434; }
+.accent-3 { color: #DAB167; }
+
+/* pagination */
+section::after {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 16px;
+  color: #b3b3b3;
+  right: 80px;
+  bottom: 24px;
+}
+section.lead::after,
+section.part::after { display: none; }

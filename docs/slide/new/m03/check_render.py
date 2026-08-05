@@ -59,7 +59,12 @@ MAX_FIG_H = 380  # network-science.css: section .fig img { max-height }
 # either overflowing or colliding with the pagination. Raising the body type
 # from 25px to 30px pushed one slide's last line clean off the frame -- the
 # deck's only notebook pointer -- and nothing caught it.
-CONTENT_BOTTOM = 690
+#
+# m02 lowered this from 690 to the theme's actual content box (720 - 60 padding).
+# 690 sits 60px BELOW the pagination row, so two slides shipped a last line that
+# rendered underneath the page number and still passed the gate. Anything below
+# 660 is outside the box the theme reserves for content, full stop.
+CONTENT_BOTTOM = 660
 
 # The `w:NNN` directive in the deck is INERT. The theme sets
 # `section .fig img { width: auto !important }`, and an author !important
@@ -70,12 +75,28 @@ CONTENT_BOTTOM = 690
 # Confirmed against getComputedStyle in a real browser: 536.98px measured.
 COL_W, FULL_W = 537, 1120
 
-DARK = 60      # node fill / heavy ink
+DARK = 60      # heavy ink
 INK = 200      # any mark
 
+# Node discs are found by COLOUR, not by darkness. The luminance test this file
+# shipped with (`gray < 60`) is inert on this palette -- accent converts to L=88,
+# accent-2 to L=99 -- so `node_discs()` returned [] on every slide of m02 and the
+# 26-52px band went unenforced for a whole build. Two independent reviewers found
+# the same thing, one of them after a 19px disc had passed a green gate.
+#
+# Masking on the fill colour also solves the problem that made a luminance test
+# unworkable in the first place: edges are black, so they are not in the mask and
+# cannot merge two discs into one component.
+NODE_FILLS = [(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)]
+FILL_TOL = 46
 
-def components(mask, min_px=120, step=2):
-    """Connected components of a boolean mask, as (h, w, area) triples."""
+
+def components(mask, min_px=120, step=2, boxes=False):
+    """Connected components of a boolean mask, as (h, w, area) triples.
+
+    With boxes=True each entry gains (y0, x0) so a caller can look at the blob's
+    corners -- which is how a disc is told apart from a square (see node_discs).
+    """
     H, W = mask.shape
     seen = np.zeros_like(mask, bool)
     out = []
@@ -97,19 +118,87 @@ def components(mask, min_px=120, step=2):
                         seen[ny, nx] = True
                         q.append((ny, nx))
             if n >= min_px:
-                out.append((max(ys) - min(ys) + 1, max(xs) - min(xs) + 1, n))
+                item = (max(ys) - min(ys) + 1, max(xs) - min(xs) + 1, n)
+                out.append(item + (min(ys), min(xs)) if boxes else item)
     return out
 
 
-def node_discs(gray):
-    """Filled circles: near-square bounding box, fill ratio near pi/4."""
+def node_discs(rgb):
+    """Filled circles: near-square bounding box, fill ratio near pi/4.
+
+    Takes an RGB array and masks on the theme's node fills (see NODE_FILLS), which
+    is the only way this test fires at all on this palette.
+    """
+    a = np.asarray(rgb, dtype=np.int16)
+    if a.ndim == 2:                       # tolerate a grayscale caller
+        a = np.stack([a] * 3, axis=-1)
+    mask = np.zeros(a.shape[:2], bool)
+    for fill in NODE_FILLS:
+        mask |= (np.abs(a - np.array(fill, dtype=np.int16)).max(axis=-1) <= FILL_TOL)
+    # A part divider's band is a solid accent rectangle across the whole frame, and
+    # the glyphs sitting in it read as small discs. Any row the mask fills more than
+    # halfway across is a band, not a drawing.
+    mask[(mask.mean(axis=1) > 0.5)] = False
     out = []
-    for h, w, area in components(gray < DARK):
+    for h, w, area, y0, x0 in components(mask, boxes=True):
         if h < 8 or w < 8:
             continue
-        if 0.82 < h / w < 1.22 and 0.70 < area / (h * w) < 0.92:
-            out.append((h + w) / 2)
+        if not (0.82 < h / w < 1.22 and 0.70 < area / (h * w) < 0.92):
+            continue
+        # A disc has empty corners; a square does not, and neither does a round
+        # coloured glyph. Aspect and fill ratio alone could not tell them apart:
+        # a 23px percolation cell and the letter "o" set in accent-2 both land
+        # inside the aspect and fill windows, and m03 failed its node-size gate
+        # on twelve glyphs of a caption and one wet paving stone before this
+        # test existed. Sampling one pixel in from each corner costs nothing and
+        # is exact for the shapes this deck actually draws.
+        c = max(2, int(min(h, w) * 0.12))
+        corners = [mask[y0 + c, x0 + c], mask[y0 + c, x0 + w - 1 - c],
+                   mask[y0 + h - 1 - c, x0 + c], mask[y0 + h - 1 - c, x0 + w - 1 - c]]
+        if any(corners):
+            continue
+        out.append((h + w) / 2)
     return out
+
+
+def figure_containers(deck="m03-robustness.md"):
+    """Which container each figure is USED in, per slide.
+
+    A figure authored for the full content width and then dropped into a `cols`
+    column renders at 48% of its intended scale -- 19px node discs on a slide whose
+    twin, laid out full width, shows 39px. Two slides of m02 shipped that way. It is
+    invisible in the source and obvious once the two numbers are put side by side,
+    so the gate computes both.
+    """
+    with open(deck) as fh:
+        parts = fh.read().split("\n---\n")
+    out = []
+    for i, chunk in enumerate(parts[1:], start=1):
+        in_cols = 'class="cols"' in chunk
+        for f in re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk):
+            out.append((i, f, COL_W if in_cols else FULL_W))
+    return out
+
+
+def figcaption_math(deck="m03-robustness.md"):
+    """KaTeX does not process <figcaption>, or any other raw HTML block.
+
+    Nine captions and one roadmap item of m02 rendered `$\\sigma$` and
+    `$C/C_{\\mathrm{rand}}$` to the room as literal source. FIGURE_GUIDE has recorded
+    the trap since m01; recording it was not enough, so it is a build failure now.
+    """
+    with open(deck) as fh:
+        text = fh.read()
+    bad = []
+    for m in re.finditer(r"<figcaption>(.*?)</figcaption>", text, re.S):
+        if "$" in m.group(1):
+            bad.append(("figcaption", m.group(1).strip()[:60]))
+    for m in re.finditer(r'<div class="steps-list">(.*?)</div>\s*\n', text, re.S):
+        if "$" in m.group(1):
+            for line in m.group(1).splitlines():
+                if "$" in line:
+                    bad.append(("steps-list", line.strip()[:60]))
+    return bad
 
 
 def smallest_text(src_path):
@@ -216,9 +305,31 @@ def main():
     fails = []
     warns = []
     diams = []
+
+    # Source-level gates. These do not need a render, and both of them shipped a
+    # defect to the rendered deck of m02 before they existed.
+    for kind, snippet in figcaption_math():
+        fails.append(f"deck: math inside a {kind} — KaTeX will print it literally: {snippet!r}")
+    for n, src, container in figure_containers():
+        try:
+            sw = Image.open(src).size[0]
+        except OSError:
+            fails.append(f"slide {n:03d}: {src} is missing")
+            continue
+        # Figures are authored at 4px per bp: a column figure is 520bp -> 2080px
+        # (the GIF is emitted at half that), a full-width one 1100bp -> 4400px.
+        authored = COL_W if sw <= 3000 else FULL_W
+        if authored != container:
+            fails.append(
+                f"slide {n:03d}: {src} is authored {sw}px wide (for a {authored}px "
+                f"container) but used in a {container}px one — it renders at "
+                f"{container / authored:.0%} of its intended scale")
+
     for path in files:
         n = int(re.search(r"(\d+)", path.split("/")[-1]).group(1))
-        gray = np.array(Image.open(path).convert("L"))
+        im = Image.open(path).convert("RGB")
+        rgb = np.array(im)
+        gray = np.array(im.convert("L"))
 
         # Vertical overflow. Ignore the page-number corner, which lives below
         # this line by design.
@@ -230,7 +341,7 @@ def main():
                 f"in a 720px frame — the bottom of the slide is cut off"
             )
 
-        d = node_discs(gray)
+        d = node_discs(rgb)
         if d:
             diams += d
             lo, hi = min(d), max(d)
@@ -278,7 +389,7 @@ def main():
             # has room to be bigger. A figure whose whole content is one node
             # cannot exceed the node band, so demanding 150px there would ask two
             # of this file's own constraints to contradict each other.
-            has_nodes = bool(node_discs(np.array(Image.open(src).convert("L"))))
+            has_nodes = bool(node_discs(np.array(Image.open(src).convert("RGB"))))
             if not has_nodes and max(dw, dh) < MIN_DRAWING_PX:
                 fails.append(
                     f"slide {n:03d} ({name}): drawing lands {dw:.0f}x{dh:.0f}px — "

@@ -75,7 +75,7 @@ Post-war Moravia has no electricity and no money
 
 <hr>
 
-Czechoslovakia is one year old. Its eastern lands are dark, and every crown spent on cable is a crown not spent on a hospital.
+Czechoslovakia is one year old, its eastern lands dark, and every crown of cable is a crown not spent on a hospital.
 
 <div class="fig">
 
@@ -122,7 +122,7 @@ We come back to how *he* solved it at the end of Part Two.
 
 <hr>
 
-Rivers, roads, borders, town size — none of it changes which cables you should lay. Keep the towns.
+Rivers, roads, borders, town size — none of it changes which cables to lay.
 
 <div class="fig">
 
@@ -137,7 +137,7 @@ Rivers, roads, borders, town size — none of it changes which cables you should
 
 <hr>
 
-Not every pair of towns is worth a cable. Thirteen routes are plausible — the rest run through mountains or double back.
+Not every pair is worth a cable. Thirteen routes are plausible; the rest cross mountains or double back.
 
 <div class="fig">
 
@@ -191,7 +191,7 @@ Do not give a total here. They compute their own on the next slide and hold it u
 
 <hr>
 
-Five minutes. Draw a set of cables that connects all eight towns, add up the kilometres, and keep your number to yourself.
+Five minutes. Draw cables connecting all eight towns, total the kilometres, keep your number.
 
 <div class="fig">
 
@@ -254,7 +254,7 @@ Between any two nodes there is exactly one route — no choices, no spares.
 
 <hr>
 
-A **spanning tree** touches every node. For $n$ towns it has exactly $n - 1$ cables — count them.
+A **spanning tree** touches every node, and for $n$ towns it has exactly $n - 1$ cables.
 
 <div class="fig">
 
@@ -273,7 +273,7 @@ The number of cables is not a design choice. Only WHICH seven is.
 
 <hr>
 
-Of all the spanning trees, the one with the least total weight is the **minimum spanning tree**.
+The spanning tree of least total weight is the **minimum spanning tree**.
 
 <div class="fig">
 
@@ -298,7 +298,7 @@ Take the cheapest thing that is not stupid, and repeat
 
 <hr>
 
-Sort every route by price. Walk the list from the cheapest and take each cable — unless it would close a loop, in which case skip it. *Joseph Kruskal, 1956.*
+Take the cables cheapest first, and skip any that would close a loop. *Joseph Kruskal, 1956.*
 
 <div class="fig">
 
@@ -330,7 +330,7 @@ Let the loop run twice before saying anything. Ask what happened at 51 km.
 
 <hr>
 
-Olomouc–Zlín is 51 km and it is next on the list. But both of its ends are already connected to each other, so the cable would buy nothing.
+Olomouc–Zlín is 51 km and next on the list — but both ends are already connected, so it would buy nothing.
 
 <div class="fig">
 
@@ -349,7 +349,7 @@ This single skip IS the algorithm. Everything else is "take the cheapest".
 
 <hr>
 
-Run Kruskal by hand. Write down the order you take the cables in, mark the one you refuse, and total the kilometres.
+Run Kruskal by hand: the order you take the cables, the one you refuse, the total.
 
 <div class="fig">
 
@@ -364,7 +364,7 @@ Run Kruskal by hand. Write down the order you take the cables in, mark the one y
 
 <hr>
 
-17, 29, 42, 48, 49, skip 51, 53, 54. Seven cables, 292 km — and no grid on any of your sheets is cheaper.
+17, 29, 42, 48, 49, skip 51, 53, 54 — seven cables, 292 km, and nothing cheaper exists.
 
 <div class="fig">
 
@@ -379,7 +379,7 @@ Run Kruskal by hand. Write down the order you take the cables in, mark the one y
 
 <hr>
 
-Start at the Brno power plant. Repeatedly buy the cheapest cable that reaches one new town. *Jarník 1930 · Prim 1957.*
+Start at the Brno plant; buy the cheapest cable reaching one new town. *Jarník 1930 · Prim 1957.*
 
 <div class="fig">
 
@@ -430,7 +430,7 @@ Run Prim from Brno. Write the order the cables enter in — then compare it with
 
 <hr>
 
-Prim takes 48, 17, 49, 53, 29, 42, 54. Kruskal took them in a different order — and landed on the same seven cables.
+Prim takes 48, 17, 49, 53, 29, 42, 54 — a different order, the same seven cables.
 
 <div class="fig">
 
@@ -507,7 +507,7 @@ Is there still one cheapest grid?
 
 <hr>
 
-Six cables are in both. Then the tie: take either one, and the total is 292 km either way. Which one an algorithm hands you depends on how it breaks the tie.
+Six cables are in both. Then the tie — take either, 292 km either way. Which one you get depends on how the tie is broken.
 
 <div class="fig">
 
@@ -557,7 +557,7 @@ Each piece of the network looks at its own cheapest way out and takes it — all
 
 <hr>
 
-Round one chooses six cables at the same time. Round two chooses the last. Kruskal and Prim need seven sequential decisions for the same tree.
+Round one chooses six cables at once; round two chooses the last. Kruskal and Prim need seven decisions in sequence.
 
 <div class="fig">
 
@@ -586,7 +586,7 @@ The bill is paid, the grid is up, and now things start to fail
 
 <hr>
 
-292 kilometres of cable, eight towns, seven lines. This is what 1926 would have built.
+292 kilometres of cable, eight towns, seven lines — what 1926 would have built.
 
 <div class="fig">
 
@@ -627,7 +627,7 @@ Run this as a real poll. Count hands town by town and write the tally on the boa
 
 <hr>
 
-Lose Brno and eight towns become three, three and one. No survivor can reach two-thirds of the others.
+Lose Brno and eight towns become three, three and one.
 
 <div class="fig">
 
@@ -642,7 +642,7 @@ Lose Brno and eight towns become three, three and one. No survivor can reach two
 
 <hr>
 
-A tree has exactly one route between any two towns. So every single cable, and every town on that route, is a single point of failure. This is not bad luck — it is what "cheapest" bought.
+One route between any two towns means every cable is a single point of failure — not bad luck, but what "cheapest" bought.
 
 <div class="fig">
 
@@ -657,7 +657,7 @@ A tree has exactly one route between any two towns. So every single cable, and e
 
 <hr>
 
-Every transmission network you have ever depended on is *meshed*: cut any one line and the power arrives by another.
+Every transmission network you depend on is *meshed*: cut one line, the power arrives by another.
 
 <div class="fig">
 
@@ -672,7 +672,7 @@ Every transmission network you have ever depended on is *meshed*: cut any one li
 
 <hr>
 
-**Connectivity** = size of the largest surviving piece ÷ original number of nodes. Losing Brno scores $3/8 = 0.375$; losing a leaf scores $7/8$.
+**Connectivity** = largest surviving piece ÷ original size. Brno scores $3/8 = 0.375$; a leaf scores $7/8$.
 
 <div class="fig">
 
@@ -722,7 +722,7 @@ Pause on the first two frames: the first removal costs more than the next four p
 
 <hr>
 
-The **R-index** is the area under the profile: $R = \frac{1}{N}\sum_k y_k$. High area, robust network. This attack scores $R = 0.17$.
+The **R-index** is the area under the profile, $R = \frac{1}{N}\sum_k y_k$. This attack scores 0.17.
 
 <div class="fig">
 
@@ -770,7 +770,7 @@ Earthquakes and broken transformers do not read the map. They take leaves as oft
 
 <hr>
 
-An adversary who can see the map takes Brno first, then the next-best connected town. Same grid, same removals, $R = 0.17$ — 2.4 times the damage.
+An adversary who can see the map takes Brno first. Same grid, same removals, $R = 0.17$ — 2.4 times the damage.
 
 <div class="fig">
 
@@ -801,7 +801,7 @@ Is it worth the attacker's trouble to re-rank after every removal?
 
 <hr>
 
-On a random network, an attacker working from a fixed ranking needs 58% of the nodes. Re-ranking after every removal brings that down to 40%.
+A fixed ranking needs 58% of the nodes. Re-ranking after every removal brings that down to 40%.
 
 <div class="fig">
 
@@ -874,7 +874,7 @@ Before networks — a paved yard in the rain
 
 <hr>
 
-Rain falls on a paved yard. Each stone holds water with probability $p$, independently. Puddles on touching stones join up.
+Each paving stone holds water with probability $p$; touching puddles join up.
 
 <div class="formula">
 
@@ -911,7 +911,7 @@ Ask them to call out when it happens. The room will call it within a few hundred
 
 <hr>
 
-Below $p_c \approx 0.59$ there are scattered pools. Above it, one puddle owns the yard. There is no gentle ramp: this is a **phase transition**.
+Below $p_c \approx 0.59$, scattered pools; above it, one puddle owns the yard. No ramp — a **phase transition**.
 
 <div class="fig">
 
@@ -926,20 +926,13 @@ Below $p_c \approx 0.59$ there are scattered pools. Above it, one puddle owns th
 
 <hr>
 
-<div class="cols">
-<div>
+Drag $p$ in the module notebook and find the transition by hand — then say how sharp it gets when the yard is ten times bigger.
 
-Drag $p$ yourself in the module notebook and find the transition by hand.
-
-Then answer this: how sharp is it when the yard is ten times bigger?
-
-</div>
 <div class="fig">
 
-![w:520](figures/puddle-widget.png)
+![w:1100](figures/puddle-widget.png)
 <figcaption>the marimo widget from the notes</figcaption>
 
-</div>
 </div>
 
 ---
@@ -964,7 +957,7 @@ Does a different order change when the giant puddle arrives?
 
 <hr>
 
-Different yard, different stones, same fraction wet — and the same answer. What determines connectivity is how many, not which ones came first.
+Different yard, different stones, same fraction wet — and the same answer.
 
 <div class="fig">
 
@@ -979,7 +972,7 @@ Different yard, different stones, same fraction wet — and the same answer. Wha
 
 <hr>
 
-One axis, two directions. Adding nodes builds a giant component; removing them destroys it. The mathematics is already written — we only have to read it right to left.
+One axis, two directions: adding nodes builds the giant component, removing them destroys it.
 
 <div class="fig">
 
@@ -1022,6 +1015,9 @@ What would you have to know about a network to tell them apart?
 
 <hr>
 
+<div class="cols">
+<div>
+
 Pick an **edge** at random — not a node — and walk to the node at its far end.
 
 <div class="formula">
@@ -1030,10 +1026,12 @@ Is the node you arrive at a typical member of the network?
 
 </div>
 
+</div>
 <div class="fig">
 
 ![w:520](figures/follow-edge.png)
 
+</div>
 </div>
 
 ---
@@ -1042,24 +1040,13 @@ Is the node you arrive at a typical member of the network?
 
 <hr>
 
-<div class="cols">
-<div>
+Twice the degree, twice the chance of being the one you land on: $q(k) = k\,p(k) / \langle k \rangle$.
 
-Every edge has two ends, and a node owns one end per link. So a node with twice the degree has twice the chance of being the one you land on.
-
-<div class="formula">
-
-$$ q(k) = \frac{k\,p(k)}{\langle k \rangle} $$
-
-</div>
-
-</div>
 <div class="fig">
 
-![w:520](figures/qk-bias.png)
-<figcaption>draw an end at random</figcaption>
+![w:1100](figures/qk-bias.png)
+<figcaption>draw an end at random, not a node</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1096,7 +1083,7 @@ $\kappa$ is large exactly when the network has hubs.
 
 <hr>
 
-Of the $\kappa$ links at the node you reached, one is the edge you arrived on. The search fans out by $\kappa - 1$ — the **branching factor**.
+One of the $\kappa$ links is the edge you arrived on, so the search fans out by $\kappa - 1$ — the **branching factor**.
 
 <div class="fig">
 
@@ -1111,7 +1098,7 @@ Of the $\kappa$ links at the node you reached, one is the edge you arrived on. T
 
 <hr>
 
-Branching above 1 and the search never dies out; below 1 and it stalls. So a **giant component** exists exactly when $\kappa > 2$. *Molloy & Reed, 1995.*
+Branching above 1 and the search never dies. A **giant component** exists exactly when $\kappa > 2$. *Molloy & Reed, 1995.*
 
 <div class="fig">
 
@@ -1126,7 +1113,7 @@ Branching above 1 and the search never dies out; below 1 and it stalls. So a **g
 
 <hr>
 
-Three small networks. Write down each degree, average $k$ and $k^2$ over the nodes, and compute $\kappa = \langle k^2 \rangle / \langle k \rangle$.
+Three small networks. Average $k$ and $k^2$ over the nodes, then take $\kappa = \langle k^2 \rangle / \langle k \rangle$.
 
 <div class="fig">
 
@@ -1141,7 +1128,7 @@ Three small networks. Write down each degree, average $k$ and $k^2$ over the nod
 
 <hr>
 
-The star is comfortably above the threshold; the path is below it and falls apart on its own. The ring sits **exactly** at $\kappa = 2$.
+The star is above the threshold, the path below it. The ring sits exactly at $\kappa = 2$.
 
 <div class="fig">
 
@@ -1156,7 +1143,7 @@ The star is comfortably above the threshold; the path is below it and falls apar
 
 <hr>
 
-Remove a fraction $f$ of the nodes at random. Each surviving neighbour still had $\kappa - 1$ onward links, but only $(1-f)$ of them lead anywhere.
+Remove a fraction $f$ at random: of each neighbour's $\kappa - 1$ onward links, only $(1-f)$ still lead anywhere.
 
 <div class="fig">
 
@@ -1171,7 +1158,7 @@ Remove a fraction $f$ of the nodes at random. Each surviving neighbour still had
 
 <hr>
 
-Set the branching to exactly 1 — $(1-f)(\kappa - 1) = 1$ — and solve for $f$: $\;f_c = 1 - \dfrac{1}{\kappa - 1}$.
+Set the branching to 1 — $(1-f)(\kappa-1) = 1$ — and solve: $f_c = 1 - 1/(\kappa - 1)$.
 
 <div class="fig">
 
@@ -1190,7 +1177,7 @@ The exact binomial dilution is in the appendix and gives the same threshold; the
 
 <hr>
 
-A Poisson degree distribution has $\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$, so $\kappa = \langle k \rangle + 1$ and $f_c = 1 - 1/\langle k \rangle$. Robustness is set by the average degree alone.
+Poisson degrees give $\kappa = \langle k \rangle + 1$, so $f_c = 1 - 1/\langle k \rangle$ — robustness set by the average degree alone.
 
 <div class="fig">
 
@@ -1221,7 +1208,7 @@ What happens to $\kappa = \langle k^2 \rangle / \langle k \rangle$?
 
 <hr>
 
-For $2 < \gamma < 3$ the second moment diverges, so $\kappa \to \infty$ and $f_c \to 1$: remove almost everything, or the hubs hold it together.
+For $2 < \gamma < 3$ the second moment diverges: $\kappa \to \infty$ and $f_c \to 1$.
 
 <div class="fig">
 
@@ -1266,7 +1253,7 @@ Is that the whole story?
 
 <hr>
 
-Two simulated networks with the same 2,000 nodes and 6,000 edges. Knock out nodes at random and both hold together for a long time; the hub network holds on longest.
+Two networks, 2,000 nodes and 6,000 edges each. Knock nodes out at random and both hold; the hub network holds longest.
 
 <div class="fig">
 
@@ -1281,7 +1268,7 @@ Two simulated networks with the same 2,000 nodes and 6,000 edges. Knock out node
 
 <hr>
 
-Same two networks. This time remove the highest-degree node first, and keep going. The hub network is gone at 20%.
+Same two networks, highest degree first. The hub network is gone at 20%.
 
 <div class="fig">
 
@@ -1296,7 +1283,7 @@ Same two networks. This time remove the highest-degree node first, and keep goin
 
 <hr>
 
-The same hubs that made random failure harmless are what an attacker aims at. Strength and weakness are one structural fact. *Albert, Jeong & Barabási, Nature, 2000.*
+The hubs that made random failure harmless are what an attacker aims at. *Albert, Jeong & Barabási, Nature, 2000.*
 
 <div class="fig">
 
@@ -1311,7 +1298,7 @@ The same hubs that made random failure harmless are what an attacker aims at. St
 
 <hr>
 
-Hubs are the cheap way to connect everything — and the cheap thing to attack. Redundancy buys security and costs cable. No structure wins both.
+Hubs are the cheap way to connect everything — and the cheap thing to attack. No structure wins both.
 
 <div class="fig">
 
@@ -1352,7 +1339,7 @@ Take three proposals before revealing. Push for the second question: "what does 
 
 <hr>
 
-Zlín–Hodonín and Znojmo–Hodonín turn the tree into a ring. For +136 km (+47%): worst single loss goes from $3/8$ to $6/8$, and $R$ from 0.17 to 0.27.
+Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst single loss $3/8 \to 6/8$, $R$ 0.17 → 0.27.
 
 <div class="fig">
 
@@ -1380,7 +1367,7 @@ Zlín–Hodonín and Znojmo–Hodonín turn the tree into a ring. For +136 km (+
 <div class="fig">
 
 ![w:520](figures/design-principles.png)
-<figcaption>degrees after the two extra cables</figcaption>
+<figcaption>cables per town, before (gray) and after (gold)</figcaption>
 
 </div>
 </div>
@@ -1391,7 +1378,7 @@ Zlín–Hodonín and Znojmo–Hodonín turn the tree into a ring. For +136 km (+
 
 <hr>
 
-1926 answered "cheapest". A modern grid answers "cheapest that survives" — the same tree, plus the loops that cost money and save cities.
+1926 answered "cheapest". A modern grid answers "cheapest that survives" — the same tree, plus loops.
 
 <div class="fig">
 
@@ -1418,6 +1405,9 @@ Four networks that test the law
 
 <hr>
 
+<div class="cols">
+<div>
+
 Every town has exactly two cables — a perfect loop, no hubs, no leaves.
 
 <div class="formula">
@@ -1426,10 +1416,12 @@ What is $\kappa$, and what does $f_c$ say?
 
 </div>
 
+</div>
 <div class="fig">
 
 ![w:520](figures/ring-q.png)
 
+</div>
 </div>
 
 ---
@@ -1462,6 +1454,9 @@ $f_c = 0$: a ring has no robust core to lose. Cut one node and it is a chain; cu
 
 <hr>
 
+<div class="cols">
+<div>
+
 Poisson degrees, one edge per node on average.
 
 <div class="formula">
@@ -1470,10 +1465,12 @@ What does $\kappa = \langle k \rangle + 1$ say about it?
 
 </div>
 
+</div>
 <div class="fig">
 
 ![w:520](figures/er1-q.png)
 
+</div>
 </div>
 
 ---
@@ -1526,7 +1523,7 @@ Would that do more damage? What would it cost?
 
 <hr>
 
-The degree-2 node in the middle carries every route between the two halves. Degree misses it completely; betweenness finds it — at a far higher price to compute.
+The degree-2 node carries every route between the halves. Degree misses it; betweenness finds it, at a far higher price.
 
 <div class="fig">
 
@@ -1547,6 +1544,9 @@ Module 06 defines betweenness properly. Flag it here so the definition arrives w
 
 <hr>
 
+<div class="cols">
+<div>
+
 Module 02 showed that real networks are heavily clustered: your neighbours are each other's neighbours.
 
 <div class="formula">
@@ -1555,10 +1555,12 @@ Does $f_c = 1 - 1/(\kappa - 1)$ still hold there?
 
 </div>
 
+</div>
 <div class="fig">
 
 ![w:520](figures/triangles-q.png)
 
+</div>
 </div>
 
 ---
@@ -1593,7 +1595,7 @@ The point is not that the formula is wrong. It is that you should always know wh
 
 <hr>
 
-Build it, break it, build it back — and the one line that predicted the breaking before it happened.
+Build it, break it, build it back — and the line that predicted the breaking.
 
 <div class="fig">
 
