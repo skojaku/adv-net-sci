@@ -41,12 +41,12 @@ Two windows appear:
 | Window | What it is |
 |---|---|
 | **Terminal** (tutor) | Where you and your tutor talk — questions and answers happen here. |
-| **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. When you finish an interactive step, just tell your tutor in the terminal — no button to click. |
+| **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. A drop box or a code box has a **📨 Send to my tutor** button under it — press it and your tutor sees your work. Anything else you explore, just tell your tutor about in the terminal. |
 
 Say hello in the terminal and follow along. Have **pen and paper** ready:
 three steps happen off-screen — a distance table, a drawing, and a
-derivation — and you photograph each with your phone, or just describe it in
-words.
+derivation — and you photograph each with your phone and drop it into the
+notebook.
 
 A session takes about 60–90 minutes. You can stop anytime and pick up later —
 your progress is saved.

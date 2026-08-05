@@ -844,9 +844,12 @@ def cp5_ring_fig(cp5_ring_k, cp5_ring_show, mo, netviz):
     _hl = _friend_pairs if cp5_ring_show.value else []
     mo.vstack([
         mo.md(
-            "**Node 0** is the rust dot; the **amber dots are its friends** "
-            f"({_half} on each side). Every line is a friendship — the ones to "
-            "count are the lines that join *two amber dots*."
+            "<span style='color:#6A6D75;font-size:13px'>**Node 0** is the rust dot; "
+            f"the **amber dots are its friends** ({_half} on each side). Every line "
+            "is a friendship — the ones to count are the lines that join *two amber "
+            "dots*. The slider changes how many friends each person has. The "
+            "check-box paints those amber-to-amber lines rust once you have "
+            "committed to a number, so you can check your own count.</span>"
         ),
         netviz(_edges, highlight=_hl, node_colors=_node_colors, layout=_pos),
     ])
@@ -1070,7 +1073,11 @@ def cp6_ws_fig(cp6_p, mo, netviz, nx):
             f"clustering C/C₀ = {_Cr:.2f}**\n\n"
             f"<span style='color:#6A6D75;font-size:13px'>The two numbers are measured "
             f"on a {_n}-person ring (averaged over 3 tries). The picture below is a "
-            f"60-dot sketch of the same rewiring, small enough to see.</span>"
+            f"60-dot sketch of the same rewiring, small enough to see: **grey lines "
+            f"are the ring's original neighbour links; rust lines are the ones the "
+            f"slider has picked up and reconnected somewhere random**. Move the "
+            f"slider one notch at a time and watch the two numbers above, one at a "
+            f"time — L/L₀ first, then C/C₀.</span>"
         ),
         netviz(_ringe + _short, highlight=_short, layout=_pos60, width=820, height=820),
     ])

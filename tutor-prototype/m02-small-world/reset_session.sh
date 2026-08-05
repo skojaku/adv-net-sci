@@ -59,12 +59,15 @@ move "$ART/session_log.jsonl" "session_log-${STAMP}.jsonl"
 move "$ART/session_summary.md" "session_summary-${STAMP}.md"
 move assets/uploads "uploads-${STAMP}"
 # The archived notebook keeps its photo cells' relative paths
-# (assets/uploads/<w>_view.jpg), which resolve from session_artifacts/ where
-# it now lives — so leave a copy there or every archived keepsake opens with
-# a FileNotFoundError where the student's own page should be.
-if [ -d "$ART/uploads-${STAMP}" ]; then
-  mkdir -p "$ART/assets/uploads"
-  cp -R "$ART/uploads-${STAMP}/." "$ART/assets/uploads/" 2>/dev/null || true
+# (assets/uploads/<w>_view.jpg), which no longer exist once the directory is
+# archived under a stamp — so point the archived copy at its own uploads.
+# A shared session_artifacts/assets/uploads/ was tried first and was worse:
+# the second reset overwrote it, so session 1's keepsake rendered session 2's
+# photograph as that student's own hand-worked page.
+if [ -f "$ART/notebook-${STAMP}.py" ] && [ -d "$ART/uploads-${STAMP}" ]; then
+  sed "s#assets/uploads/#uploads-${STAMP}/#g" "$ART/notebook-${STAMP}.py" \
+    >"$ART/notebook-${STAMP}.py.tmp" &&
+    mv "$ART/notebook-${STAMP}.py.tmp" "$ART/notebook-${STAMP}.py"
 fi
 # The student's saved exercise code is their work too — and the coding cell
 # renders whatever it finds under "The code I wrote and ran", so a file left
