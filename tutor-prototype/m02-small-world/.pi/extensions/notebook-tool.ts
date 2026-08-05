@@ -1242,7 +1242,23 @@ export default function (pi: ExtensionAPI) {
       code: Type.String({ description: "Python code to run in the scratchpad." }),
     }),
     async execute(_id, params, signal) {
-      return toResult(await runKernel(params.code, signal));
+      const result = await runKernel(params.code, signal);
+      // In-band nudge: a checkpoint log write is the moment flash tends to
+      // rush ahead — remind it of the transition ritual exactly once, right
+      // where it reads next. No watchers, no double-fire.
+      if (
+        !result.failed &&
+        /session_log/.test(params.code) &&
+        /checkpoint/.test(params.code)
+      ) {
+        result.out =
+          (result.out ? result.out + "\n" : "") +
+          `Checkpoint logged. Before moving on: add the note cell (script's note: ` +
+          `skeleton) if you haven't, then ALWAYS the transition ask_user_question ` +
+          `("Next, please!" / "I have a question" / "Give me another one like that"). ` +
+          `Never advance without it.`;
+      }
+      return toResult(result);
     },
     ...quietRender,
   });
