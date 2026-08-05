@@ -203,7 +203,9 @@ what's next. You supply only what a model can:
   shows you. A slot that does NOT say «verbatim» is one whose answer came
   from a drawing, a photo or a picker — write what the picture shows and
   quote whatever reasoning they did speak. Omit the parameter and every slot defaults to
-  `student_response`. Write `note_markdown` yourself in the two cases
+  `student_response`. A script that says `note: none` gets NO note cell —
+  that checkpoint is session mechanics, not lecture; don't add one.
+  Write `note_markdown` yourself in the two cases
   where there is no skeleton to fill: a script with no `note:`, and an
   `_extra` practice round (its base checkpoint's note states the ORIGINAL
   data's numbers, which are wrong for the new problem — write a short note
