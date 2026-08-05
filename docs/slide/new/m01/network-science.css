@@ -166,6 +166,20 @@ section blockquote {
 }
 section .note:last-child, section blockquote:last-child { margin-bottom: 0; }
 
+/* lecturer's cues — readable from the lectern, not from the back row.
+   Wrap your own prompting bullets in <div class="cue"> … </div>. Body size,
+   so it is easy to read up close; near-white, so the room reads it as texture
+   rather than text. #d2d2d2 is fainter than the page number (#b3b3b3) —
+   darken it if your projector washes out, lighten it if the room sees it. */
+section .cue,
+section .cue p,
+section .cue li,
+section .cue strong {
+  color: #d2d2d2;
+  font-weight: 400;
+}
+section .cue li::marker { color: #d2d2d2; }
+
 /* handwriting, for figure labels and captions */
 section .hand,
 section figcaption {
