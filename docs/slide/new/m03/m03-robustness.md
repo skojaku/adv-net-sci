@@ -528,7 +528,7 @@ All weights distinct implies a unique MST; ties imply several optima of equal co
 
 <hr>
 
-Neither of these is his. In 1926 there is no computer, no sorted list of thirteen numbers, and no notion of an "algorithm" to lean on.
+Neither of these is his. In 1926 there is no computer, no sorted list of thirteen numbers, and no notion of an “algorithm” to lean on.
 
 <div class="formula">
 
@@ -642,7 +642,7 @@ Lose Brno and eight towns become three, three and one.
 
 <hr>
 
-One route between any two towns means every cable is a single point of failure — not bad luck, but what "cheapest" bought.
+One route between any two towns means every cable is a single point of failure — not bad luck, but what “cheapest” bought.
 
 <div class="fig">
 
@@ -677,7 +677,7 @@ Every transmission network you depend on is *meshed*: cut one line, the power ar
 <div class="fig">
 
 ![w:1100](figures/connectivity-def.png)
-<figcaption>one number for "how bad"</figcaption>
+<figcaption>one number for how bad it is</figcaption>
 
 </div>
 
@@ -739,7 +739,7 @@ The **R-index** is the area under the profile, $R = \frac{1}{N}\sum_k y_k$. This
 
 <hr>
 
-Same grid. Same number of towns removed. Only the **order** is different.
+Same grid. Same number of towns removed. Only the *order* is different.
 
 <div class="formula">
 
@@ -1377,7 +1377,7 @@ Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst singl
 
 <hr>
 
-1926 answered "cheapest". A modern grid answers "cheapest that survives" — the same tree, plus loops.
+1926 answered “cheapest”. A modern grid answers “cheapest that survives” — the same tree, plus loops.
 
 <div class="fig">
 

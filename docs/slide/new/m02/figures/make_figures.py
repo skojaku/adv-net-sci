@@ -680,7 +680,9 @@ WS98 = [
 WS98_R = [(n, L / Lr, C / Cr, (C / Cr) / (L / Lr)) for n, _, L, Lr, C, Cr in WS98]
 WS98_N = {n: sz for n, sz, *_ in WS98}
 assert [round(s) for _, _, _, s in WS98_R] == [2397, 11, 5], WS98_R
-assert max(WS98_N.values()) / min(WS98_N.values()) > 700, "the sizes must span the claim"
+_orders = round(math.log10(max(WS98_N.values()) / min(WS98_N.values())))
+WS98_ORDERS = ["no", "one", "two", "three", "four"][_orders]
+assert _orders == 3, _orders
 
 GRID = nx.grid_2d_graph(20, 20)
 assert nx.transitivity(GRID) == 0
@@ -1107,6 +1109,32 @@ def ellipse_pos(n, cx, cy, rx, ry, start=90, ccw=True):
     for i in range(n):
         a = math.radians(start + (360 / n) * (i if ccw else -i))
         out[i] = (cx + rx * math.cos(a), cy + ry * math.sin(a))
+    return out
+
+
+def antiprism_pos(n, cx, cy, rx, ry, inner, start=90):
+    """Positions for C_n(1,2) that draw it planar with straight edges.
+
+    C_n(1,2) IS the (n/2)-antiprism.  Put the even nodes on an outer ellipse and the odd
+    nodes on a concentric inner one and the two families of edge separate cleanly: the
+    +2 edges become the two (n/2)-gons, the +1 edges the zigzag between them.  Zero
+    crossings, and every triangle draws as a triangle.
+
+    On one ellipse there is no such drawing.  Bow every skip chord inward and adjacent
+    chords cross at every node -- sixteen crossings on the slide whose claim is that
+    triangles are everywhere, with each triangle rendering as a lens.  Alternate the bows
+    in and out instead and the crossings go, but an outward bow has to clear its disc
+    from the far side, and the result is a wavy flower in which no triangle can be picked
+    out at all.  The antiprism dissolves the trade rather than choosing a side.
+    """
+    assert n % 2 == 0, n
+    step = 720.0 / n                      # even nodes sit two ring steps apart
+    out = {}
+    for k in range(n // 2):
+        a = math.radians(start + step * k)
+        out[2 * k] = (cx + rx * math.cos(a), cy + ry * math.sin(a))
+        b = math.radians(start + step * k + step / 2)
+        out[2 * k + 1] = (cx + inner * rx * math.cos(b), cy + inner * ry * math.sin(b))
     return out
 
 
@@ -1664,14 +1692,12 @@ def fig_ws1998_sigma():
 # 16 nodes, not 20: at 40bp discs a 20-node ring needs a 358bp circle, which fills a
 # column figure's whole height and leaves the deck scaling white margin either side.
 # k=4 gives C = 3(k-2)/(4(k-1)) = 0.5 whatever n is, so nothing in the story changes.
-# Vertically 124: an inward chord bowed clear of the disc it passes needs 34bp of the
-# ring's own radius, and the canvas is 364bp tall.  Horizontally 180, because a circle
-# that short left the drawing spanning 60% of the canvas width -- below that the deck is
-# scaling white margin instead of the picture.
+# The layout is the 8-antiprism (see antiprism_pos): rx 195 so the drawing spans the
+# column, ry 124 so the whole figure clears the 364bp canvas with its caption under it.
 RING_N, RING_K = 16, 4
-RING_RX, RING_RY = 180, 124
+RING_RX, RING_RY, RING_INNER = 195, 124, 0.62
 RING_C = (260, 200)
-RING_POS = ellipse_pos(RING_N, RING_C[0], RING_C[1], RING_RX, RING_RY, start=90)
+RING_POS = antiprism_pos(RING_N, RING_C[0], RING_C[1], RING_RX, RING_RY, RING_INNER)
 RING_EDGES = sorted({(min(i, (i + d) % RING_N), max(i, (i + d) % RING_N))
                      for i in range(RING_N) for d in (1, 2)})
 assert len(RING_EDGES) == RING_N * RING_K // 2 == 32
@@ -1689,15 +1715,11 @@ RING_CLEAR = NODE / 2 + 16
 
 
 def assert_triangles_open(name, pos, paths):
-    """Every chord must leave a visible interior in the triangle it closes.
+    """Every edge must leave a visible interior in the triangle it closes.
 
-    C16(1,2) is planar and a zero-crossing drawing does exist -- alternate the chords
-    inside and outside the ring and the 16 crossings go away.  It was built and rejected:
-    an outward bow has to clear the disc from the far side, which needs 34bp against 14bp
-    inward, and the result is a wavy flower in which not one triangle can be picked out.
-    On the slide whose claim is "triangles everywhere" that trades a Major for a Blocker.
-    So the chords all bow inward, deeply, and this is the invariant that protects what the
-    slide actually asserts.
+    On the antiprism layout the 16 triangles are drawn with straight edges and this gate
+    measures the gap between an edge and the disc it passes; it is what stops the inner
+    ellipse creeping out toward the outer one until the triangles collapse into slivers.
     """
     worst = None
     for a, b, pts in paths:
@@ -1712,21 +1734,33 @@ def assert_triangles_open(name, pos, paths):
         f"disc -- under 12bp the triangle it closes has no visible interior")
 
 
-def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=(),
-          check=True):
+def _lattice_edges(pos=RING_POS, edges=RING_EDGES, hot=(), name="ring lattice"):
+    """The lattice itself, drawn straight, and gated three ways.
+
+    Straight is the point: on the antiprism layout no lattice edge needs a bow to clear
+    a disc, so there is nothing to bow and nothing to cross.  The three gates are the
+    guarantee -- planar drawing, disc clearance, and a visible triangle interior.
+    """
     s = ""
-    paths = []
     for a, b in edges:
         h = (a, b) in hot or (b, a) in hot
-        s += curve_edge(a, b, pos, color="accenttwo" if h else "black",
-                        w=HEAVY_W if h else EDGE_W, centroid=cen,
-                        clear=RING_CLEAR, paths=paths)
+        s += seg(pos[a], pos[b], color="accenttwo" if h else "black",
+                 w=HEAVY_W if h else EDGE_W)
+    paths = _edge_paths(edges, pos)
+    assert_drawn_planar(name, edges, pos)
+    assert not clearance_ok(edges, pos, r=NODE / 2 + 10), \
+        clearance_ok(edges, pos, r=NODE / 2 + 10)
+    assert_triangles_open(name, pos, paths)
+    return s
+
+
+def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=(),
+          check=True):
+    s = _lattice_edges(pos, edges, hot)
     for a, b in dashed:
         s += curve_edge(a, b, pos, color="annot", w=2.2,
                         dash="dash pattern=on 8bp off 7bp", centroid=cen,
                         clear=RING_CLEAR)
-    if check:
-        assert_triangles_open("ring lattice", pos, paths)
     for i2 in pos:
         s += disc(pos[i2][0], pos[i2][1], "", fill="accent")
     for i2 in ringed:
@@ -2160,10 +2194,12 @@ def fig_universality():
     s += text(x0 + 12, 238, "$\\sigma = 1$", color="annot", anchor="south west")
     for r, (nm, _, _, sg) in enumerate(WS98_R):
         y = 128 + (2 - r) * 50
-        s += text(430, y, f"{nm}, $n = {WS98_N[nm]:,}$".replace(",", "{,}"),
-                  color="black", anchor="east")
+        # {,} and not a bare comma inside the math: a comma is punctuation there, so
+        # $225,226$ typesets with a thin space after it
+        n = f"{WS98_N[nm]:,}".replace(",", "{,}")
+        s += text(430, y, f"{nm}, $n = {n}$", color="black", anchor="east")
         s += dot(round(X(sg), 1), y, "accenttwo")
-    s += text(740, 272, "four orders of magnitude apart --- one signature",
+    s += text(740, 272, f"{WS98_ORDERS} orders of magnitude apart --- one signature",
               color="accenttwo", anchor="south")
     return s
 

@@ -92,3 +92,37 @@ reported; that range still has no independent read.
   spanning cluster at p just above p_c, so "one puddle owns the yard" is not what the
   picture does. Needs a squarer yard and a tighter assertion.
 - **Slides 24–46 have no independent read at all.**
+
+---
+
+# Round 7 — closing the unreviewed range (slides 24–46)
+
+rev-24-46 never reported, so this range was read here, slide by slide, on the current
+render. Four findings, all fixed:
+
+1. **Slide 27 — F3** — "any cut" sat at y=330 on a 350bp canvas, so the page sliced its
+   glyphs in half. Caught by the new clipping gate, along with seven other figures.
+2. **Slide 31 — F3** — the Borůvka opening frame drew "every town is its own island"
+   straight through the word "Znojmo". Notes carry numbers now, and a note that runs into
+   a town name fails the build.
+3. **Slide 39 — F1** — removing Brno leaves 3 + 3 + 1, so **two** pieces tie for largest;
+   the figure ringed whichever one `max()` happened to return, telling the room it was the
+   bigger. Both are highlighted now, and the tie is asserted.
+4. **Slides 30, 37, 39, 81 — typography** — straight quotes; **slide 43** — "order" bolded
+   for stress rather than as a term.
+
+All 23 slides in the range have now been read individually.
+
+## Coverage as it stands
+
+| range | read by |
+|---|---|
+| 1–23 | rev-1-23 (full report) + spot checks here |
+| 24–46 | **this session, slide by slide** (rev-24-46 never reported) |
+| 47–69 | rev-47-69 (full report) |
+| 70–92 | rev-70-92 (full report) |
+
+Every slide has now been read by someone. What remains open is listed under "Live and NOT
+fixed this round" above, minus the CSS item, which the lecturer authorised and which is
+fixed: `section.mid` now out-specifies `.formula:last-child`, so question slides centre
+their body instead of hanging it on the floor.

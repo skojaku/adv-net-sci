@@ -1205,15 +1205,22 @@ def fig_real_grid_mesh():
 
 
 def fig_connectivity_def():
+    """Both largest pieces are highlighted, because they are TIED.
+
+    Removing Brno leaves 3 + 3 + 1. Ringing only one of the two 3-node pieces --
+    whichever `max` happened to return -- told the room that piece was bigger.
+    """
     pieces = sorted(nx.connected_components(
         nx.subgraph_view(MST, filter_node=lambda n: n != "Brno")), key=len, reverse=True)
-    big = max(pieces, key=len)
-    frac = connectivity(MST, ["Brno"])
+    top = max(len(p) for p in pieces)
+    biggest = [p for p in pieces if len(p) == top]
+    assert len(biggest) == 2 and top == 3, [len(p) for p in pieces]
+    marked = set().union(*biggest)
     return moravia(edges=MST_PAIRS, removed=["Brno"],
                    heavy={(a, b): "accenttwo" for a, b in MST_PAIRS
-                          if a in big and b in big},
-                   rings={n: "accenttwo" for n in big},
-                   extra_text=note(f"{len(big)} / 8"))
+                          if a in marked and b in marked},
+                   rings={n: "accenttwo" for n in marked},
+                   extra_text=note(f"{top} / 8"))
 
 
 # --- curve plotting ---------------------------------------------------------
