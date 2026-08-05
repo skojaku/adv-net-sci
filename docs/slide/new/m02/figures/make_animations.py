@@ -82,8 +82,8 @@ def main():
         for i in F.RING_POS:
             s += F.disc(F.RING_POS[i][0], F.RING_POS[i][1], "", fill="accent")
         n_new = sum(1 for e in edges if e not in lattice)
-        s += F.text(260, 8, f"{n_new} edges rewired so far", color="accenttwo",
-                    anchor="south")
+        s += F.text(260, 8, f"rewired so far: {n_new} of the {len(lattice)} lattice edges",
+                    color="accenttwo", anchor="south")
         imgs.append(_render(s, F.DESIGN["col"], int(F.DESIGN["col"] * 0.70)))
 
     # crop every frame to the same box, so the ring does not jump between frames
