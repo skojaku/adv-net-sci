@@ -477,7 +477,59 @@ def cp2_paperwork_photo(mo):
         filetypes=[".jpg", ".jpeg", ".png", ".webp"],
         label="Photo of your paper work",
     )
-    cp2_paperwork_photo
+    mo.vstack([
+        cp2_paperwork_photo,
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+            "your paper here — the 5-dot ring, your list of all 10 pairs with a "
+            "distance beside each, and the average at the bottom. Working shown "
+            "beats a tidy answer.</span>"
+        ),
+    ])
+    return (cp2_paperwork_photo,)
+
+
+@app.cell(hide_code=True)
+def cp2_paperwork_photo_preview(cp2_paperwork_photo, mo):
+    _files = list(cp2_paperwork_photo.value or [])
+    cp2_paperwork_photo_send = mo.ui.run_button(
+        label="📨 Send to my tutor", disabled=not _files
+    )
+    if not _files:
+        _out = mo.vstack([
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
+                "here once you drop it in above.*</span>"
+            ),
+            cp2_paperwork_photo_send,
+        ])
+    else:
+        _out = mo.vstack([
+            mo.image(_files[0].contents, width=420),
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>This is exactly what "
+                "your tutor will see. Missed a pair, or want to redo the table? Drop "
+                "another photo into the box above — it replaces this one, as many "
+                "times as you like. When it looks right, press send.</span>"
+            ),
+            cp2_paperwork_photo_send,
+        ])
+    _out
+    return (cp2_paperwork_photo_send,)
+
+
+@app.cell(hide_code=True)
+def cp2_paperwork_photo_sent(cp2_paperwork_photo, cp2_paperwork_photo_send, mo):
+    if cp2_paperwork_photo_send.value and (cp2_paperwork_photo.value or []):
+        from pathlib import Path as _P
+
+        _P("session_artifacts").mkdir(exist_ok=True)
+        with open("session_artifacts/student_signal.txt", "a") as _f:
+            _f.write("cp2_paperwork_photo\n")
+        _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
+    else:
+        _sent = mo.md("")
+    _sent
     return
 
 
@@ -485,10 +537,11 @@ def cp2_paperwork_photo(mo):
 def cp2_paperwork_note(mo):
     mo.md(r"""
     ### ✏️ By hand: distance on a 5-ring
-    Same idea as before ($d(u,v)$, average path length $L$), computed
-    entirely on paper this time, on a network no widget ever showed. 5
-    pairs sit at distance 1, 5 "across the circle" pairs sit at distance
-    2, so $L = 15/10 = 1.5$.
+    Same two ideas as before — $d(u,v)$, the distance between two people
+    (the fewest lines you cross to get from $u$ to $v$), and $L$, the
+    average of $d(u,v)$ over every pair — computed entirely on paper this
+    time, on a network no widget ever showed. 5 pairs sit at distance 1,
+    5 "across the circle" pairs sit at distance 2, so $L = 15/10 = 1.5$.
 
     > **My work:** neighbors AB, BC, CD, DE, EA are all 1. The across pairs AC, AD, BD, BE, CE are 2 each. Sum 5 + 10 = 15, over 10 pairs = 1.5.
     """)
@@ -541,7 +594,57 @@ def cp4_photo(mo):
         filetypes=[".jpg", ".jpeg", ".png", ".webp"],
         label="Photo of your drawing",
     )
-    cp4_photo
+    mo.vstack([
+        cp4_photo,
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+            "your 8-dot ring here — the drawing with your one extra cable on it. "
+            "It does not need to be neat; it needs to show which two dots you "
+            "joined.</span>"
+        ),
+    ])
+    return (cp4_photo,)
+
+
+@app.cell(hide_code=True)
+def cp4_photo_preview(cp4_photo, mo):
+    _files = list(cp4_photo.value or [])
+    cp4_photo_send = mo.ui.run_button(label="📨 Send to my tutor", disabled=not _files)
+    if not _files:
+        _out = mo.vstack([
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
+                "here once you drop it in above.*</span>"
+            ),
+            cp4_photo_send,
+        ])
+    else:
+        _out = mo.vstack([
+            mo.image(_files[0].contents, width=420),
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>This is exactly what "
+                "your tutor will see. Not the one you meant? Drop another photo "
+                "into the box above — it replaces this one, as many times as you "
+                "like. When it looks right, press send.</span>"
+            ),
+            cp4_photo_send,
+        ])
+    _out
+    return (cp4_photo_send,)
+
+
+@app.cell(hide_code=True)
+def cp4_photo_sent(cp4_photo, cp4_photo_send, mo):
+    if cp4_photo_send.value and (cp4_photo.value or []):
+        from pathlib import Path as _P
+
+        _P("session_artifacts").mkdir(exist_ok=True)
+        with open("session_artifacts/student_signal.txt", "a") as _f:
+            _f.write("cp4_photo\n")
+        _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
+    else:
+        _sent = mo.md("")
+    _sent
     return
 
 
@@ -656,7 +759,61 @@ def cp5_ring_paperwork_photo(mo):
         filetypes=[".jpg", ".jpeg", ".png", ".webp"],
         label="Photo of your ring working (triangles + formulas)",
     )
-    cp5_ring_paperwork_photo
+    mo.vstack([
+        cp5_ring_paperwork_photo,
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+            "your derivation here — node 0's friends, which pairs among them "
+            "already know each other, and the two formulas you ended up with. "
+            "Crossings-out are fine and welcome.</span>"
+        ),
+    ])
+    return (cp5_ring_paperwork_photo,)
+
+
+@app.cell(hide_code=True)
+def cp5_ring_paperwork_photo_preview(cp5_ring_paperwork_photo, mo):
+    _files = list(cp5_ring_paperwork_photo.value or [])
+    cp5_ring_paperwork_photo_send = mo.ui.run_button(
+        label="📨 Send to my tutor", disabled=not _files
+    )
+    if not _files:
+        _out = mo.vstack([
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
+                "here once you drop it in above.*</span>"
+            ),
+            cp5_ring_paperwork_photo_send,
+        ])
+    else:
+        _out = mo.vstack([
+            mo.image(_files[0].contents, width=420),
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>This is exactly what "
+                "your tutor will see. Want to fix a step and try again? Drop another "
+                "photo into the box above — it replaces this one, as many times as "
+                "you like. When it looks right, press send.</span>"
+            ),
+            cp5_ring_paperwork_photo_send,
+        ])
+    _out
+    return (cp5_ring_paperwork_photo_send,)
+
+
+@app.cell(hide_code=True)
+def cp5_ring_paperwork_photo_sent(
+    cp5_ring_paperwork_photo, cp5_ring_paperwork_photo_send, mo
+):
+    if cp5_ring_paperwork_photo_send.value and (cp5_ring_paperwork_photo.value or []):
+        from pathlib import Path as _P
+
+        _P("session_artifacts").mkdir(exist_ok=True)
+        with open("session_artifacts/student_signal.txt", "a") as _f:
+            _f.write("cp5_ring_paperwork_photo\n")
+        _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
+    else:
+        _sent = mo.md("")
+    _sent
     return
 
 
@@ -664,20 +821,19 @@ def cp5_ring_paperwork_photo(mo):
 def cp5_ring_formula_note(mo):
     mo.md(r"""
     ### 🔺 Clustering and path length on a ring — as formulas
-    Three letters, in plain words: $N$ is how many people are in the ring,
-    $k$ is how many friends each person has, $C$ is clustering — how often
-    two of your friends know each other — and $L$ is the average distance,
-    the typical number of steps between two people.
+    Four letters: $N$ = people in the ring, $k$ = friends each person
+    has, $C$ = clustering (how often two of your friends know each
+    other), $L$ = average distance (typical steps between two people).
 
     On a ring where everyone has $k$ friends ($k/2$ per side), clustering
     is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-    $k=2$ gives $C=0$ (no triangles possible — the plain ring I drew) and
-    $k=4$ gives $C=0.5$, the value I counted out.
+    $k=2$ gives $C=0$ (the plain ring I drew: no triangles possible),
+    $k=4$ gives $C=0.5$, the value I counted out. Everybody on a ring has
+    an identical neighbourhood, so node 0's $C_0$ is the whole ring's $C$.
 
-    Path length is different: it grows with the crowd. The farthest trip
-    is about $N/k$ hops — half a ring at $k/2$ places per hop — and the
-    average over all pairs is about half of that, $L \approx N/(2k)$.
-    More people, more hops, even though $k$ stays fixed.
+    Path length grows with the crowd instead: the farthest trip is about
+    $N/k$ hops — half a ring at $k/2$ places per hop — and the average
+    over all pairs is about half that, $L \approx N/(2k)$.
 
     > **My work:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5. Swapping in 1000 people changes nothing near me — C stays 0.5. Farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
     """)
@@ -895,8 +1051,10 @@ def cp7_redteam_note(mo):
     "High clustering ⇒ small world" is NOT enough: small-world means BOTH
     high clustering AND short paths. My counterexample: the $p=0$ ring —
     very clustered, yet enormous distances. The proper check is the
-    small-world index $\sigma$, which compares both $C$ and $L$ against a
-    random baseline.
+    small-world index $\sigma$, one number that compares both $C$
+    (clustering — how often two of your friends know each other) and $L$
+    (average distance — the typical number of steps between two people)
+    against a random network of the same size.
 
     > **My review of the AI's analysis:** I wouldn't sign it. They only measured clustering — small-world needs short paths too. My own k=4 ring had C = 0.5 with terrible distances. I'd ask for L, compared against a random network, before believing the claim — the σ index does exactly that.
     """)
@@ -919,28 +1077,139 @@ def cp8_wrapup_note(mo):
 @app.cell(hide_code=True)
 def session_record(mo):
     mo.md(r"""
-    ### 📋 Session record
-    Every checkpoint, with my answer word for word, how it was judged, and
-    the hints I used. *Hints are never penalized — they are part of learning.*
+    ## 📋 Session record
 
-    | Checkpoint | My answer (verbatim) | Judgment | Hints |
-    |---|---|---|---|
-    | cp0 welcome | "comfortable with Python" | pass | 0 |
-    | cp1 six degrees | "about 20 — the country is huge" | prediction | 0 |
-    | cp2 distance & average | "A to D is 2 — you have to go through B or C. Average: five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17." | pass | 0 |
-    | cp2 paperwork (5-ring by hand) | "neighbors AB, BC, CD, DE, EA are all 1. The across pairs AC, AD, BD, BE, CE are 2 each. Sum 5 + 10 = 15, over 10 pairs = 1.5." | pass | 0 |
-    | cp3 clustering | "count the friend-pairs that are friends themselves and divide by all possible pairs. Two rust lines — B–F and C–E — so 2 out of 10 = 0.2." | pass | 0 |
-    | cp4 shortcut drawing | "I connected the two dots straight across from each other — the far pairs have the worst trips, and a bridge in the middle cuts all of them down at once." | pass | 0 |
-    | cp5 ring formulas | "at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5. Swapping in 1000 people changes nothing near me — C stays 0.5. Farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k)." | pass_with_hints | 1 |
-    | cp5 the tension | "the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N. The random world delivers mail fast but none of my friends know each other. Real life somehow gets both." | pass | 0 |
-    | cp6 Watts–Strogatz | prediction: "distance drops a lot, clustering barely changes" → "L/L₀ fell off a cliff around p ≈ 0.01 — down to 0.61 — while C/C₀ was still 0.97. Called it, but the cliff came earlier than I expected." | prediction + pass | 0 |
-    | cp6 large-N experiment | "same cliff, but earlier — at N=2000 the L/L₀ drop is already big by p = 0.005, while C/C₀ hasn't moved. The fraction of rewires you need got smaller as N grew, not bigger." | pass | 0 |
-    | cp7 red-team | "I wouldn't sign it. They only measured clustering — small-world needs short paths too. My own k=4 ring had C = 0.5 with terrible distances. I'd ask for L, compared against a random network, before believing the claim — the σ index does exactly that." | pass | 0 |
-    | cp8 wrap-up | "Most of your friends live near you, so the world is clumpy. But a few people keep far-away links, and those shortcuts cut the distance for everyone at once. Six steps is enough because almost every route can jump onto one of those shortcuts." | pass | 0 |
+    *Your answer to each question, and every word you typed while working on*
+    *it — this is what gets reviewed, not the code. Hints are never held*
+    *against you.*
 
-    **Detours (curiosity, logged as engagement):** "Only 64 of the 160
-    letters arrived — doesn't that make the 6 unfair?" → survivorship-bias
-    note in Chapter 1.
+    **cp0_welcome** · pass
+
+    *How do you feel about Python?*
+
+    > comfortable with Python
+
+    *You chose:* "comfortable with Python"
+
+    *Tutor's note:* Calibrated the session — code cells stay visible.
+
+    **cp1_milgram** · prediction
+
+    *For the letters that made it, how many hands on average?*
+
+    > about 20
+
+    *You chose:* "about 20"
+
+    *You typed:* "way off — the country is huge, I'd never have said 6"
+
+    *Tutor's note:* Honest reconciliation after the reveal; full pass.
+
+    **cp2_distance** · pass
+
+    *Distance from A to D, then the average over all 6 pairs?*
+
+    > A to D is 2. Average 7/6 ≈ 1.17
+
+    *You typed:* "2 — you have to go through B or C" · "five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17"
+
+    *Tutor's note:* Listed all six pairs unprompted before averaging.
+
+    **cp2_paperwork** · pass
+
+    *By hand on a 5-ring: every pair's distance, then the average.*
+
+    > neighbors AB, BC, CD, DE, EA are all 1. The across pairs AC, AD, BD, BE, CE are 2 each. Sum 5 + 10 = 15, over 10 pairs = 1.5.
+
+    *You typed:* "neighbors AB, BC, CD, DE, EA are all 1. The across pairs AC, AD, BD, BE, CE are 2 each. Sum 5 + 10 = 15, over 10 pairs = 1.5."
+
+    *Tutor's note:* Photo shows the ring, all 10 pairs listed, average at the bottom.
+
+    **cp3_clustering** · pass
+
+    *How many friendships exist among A's five friends, out of how many possible?*
+
+    > count the friend-pairs that are friends themselves and divide by all possible pairs. Two rust lines — B–F and C–E — so 2 out of 10 = 0.2.
+
+    *You typed:* "count the friend-pairs that are friends themselves and divide by all possible pairs" · "two rust lines — B–F and C–E — so 2 out of 10 = 0.2"
+
+    *Tutor's note:* Reached the ratio without being given the denominator.
+
+    **cp4_shortcut_drawing** · pass
+
+    *One extra cable on an 8-ring — where does it go, and why there?*
+
+    > the far pairs have the worst trips, and a bridge in the middle cuts all of them down at once
+
+    *You typed:* "the far pairs have the worst trips, and a bridge in the middle cuts all of them down at once"
+
+    *Tutor's note:* Photo shows a chord between dots 0 and 4 — straight across.
+
+    **cp5_ring_formula** · pass_with_hints · 1 hint
+
+    *Does C depend on N? And how does L relate to N and k?*
+
+    > at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5. Swapping in 1000 people changes nothing near me — C stays 0.5. Farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
+
+    *You typed:* "at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0" · "of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5" · "swapping in 1000 people changes nothing near me — C stays 0.5" · "farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k)"
+
+    *Tutor's note:* Needed one hint to split "half a ring" from "places per hop"; the rest was theirs.
+
+    **cp5_tension** · pass
+
+    *What do your two formulas say about the ring world, and about the random world?*
+
+    > the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N. The random world delivers mail fast but none of my friends know each other. Real life somehow gets both.
+
+    *You typed:* "the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N" · "the random world delivers mail fast but none of my friends know each other. Real life somehow gets both"
+
+    *Tutor's note:* Named both trade-offs and landed on "neither world" by themselves.
+
+    **cp6_watts_strogatz** · prediction
+
+    *Which notch drops L/L₀ the most, and what is C/C₀ there?*
+
+    > L/L₀ fell off a cliff around p ≈ 0.01 — down to 0.61 — while C/C₀ was still 0.97. Called it, but the cliff came earlier than I expected.
+
+    *You chose:* "distance drops a lot, clustering barely changes"
+
+    *You typed:* "L/L₀ fell off a cliff around p ≈ 0.01 — down to 0.61 — while C/C₀ was still 0.97. Called it, but the cliff came earlier than I expected."
+
+    *Tutor's note:* Prediction correct and reconciled against the numbers on screen.
+
+    **cp6_large_n_experiment** · pass
+
+    *At which p does L/L₀ drop most on your own chart, and is that p bigger or smaller than at N=200?*
+
+    > same cliff, but earlier — at N=2000 the L/L₀ drop is already big by p = 0.005, while C/C₀ hasn't moved. The fraction of rewires you need got smaller as N grew, not bigger.
+
+    *You typed:* "same cliff, but earlier — at N=2000 the L/L₀ drop is already big by p = 0.005, while C/C₀ hasn't moved" · "the fraction of rewires you need got smaller as N grew, not bigger"
+
+    *Tutor's note:* Ran the sweep at N=2000 and read the comparison off their own chart.
+
+    **cp7_redteam** · pass
+
+    *Would you sign off on the AI's small-world claim? What would you check?*
+
+    > I wouldn't sign it. They only measured clustering — small-world needs short paths too. My own k=4 ring had C = 0.5 with terrible distances. I'd ask for L, compared against a random network, before believing the claim — the σ index does exactly that.
+
+    *You typed:* "I wouldn't sign it. They only measured clustering — small-world needs short paths too. My own k=4 ring had C = 0.5 with terrible distances. I'd ask for L, compared against a random network, before believing the claim — the σ index does exactly that."
+
+    *Tutor's note:* Cited their own p=0 ring as the counterexample, unprompted.
+
+    **cp8_wrapup** · pass
+
+    *How can a letter cross a whole country in about six steps?*
+
+    > Most of your friends live near you, so the world is clumpy. But a few people keep far-away links, and those shortcuts cut the distance for everyone at once. Six steps is enough because almost every route can jump onto one of those shortcuts.
+
+    *You typed:* "Most of your friends live near you, so the world is clumpy. But a few people keep far-away links, and those shortcuts cut the distance for everyone at once. Six steps is enough because almost every route can jump onto one of those shortcuts."
+
+    *Tutor's note:* All three ingredients — clusters, rare long links, everyone close.
+
+    ### 🧭 Your own questions (1)
+
+    - *Only 64 of the 160 letters arrived — doesn't that make the 6 unfair?*
     """)
     return
 
