@@ -52,6 +52,7 @@ function stripRedundantImports(code: string): string {
     /^\s*import igraph as ig\s*$/,
     /^\s*import seaborn as sns\s*$/,
     /^\s*import altair as alt\s*$/,
+    /^\s*import pandas as pd\s*$/,
   ];
   return code
     .split("\n")
@@ -628,7 +629,7 @@ const MARIMO_CELL_RULES =
   "(1) NEVER read a widget's .value in the cell that creates it — marimo forbids it. " +
   "Pattern: one cell makes and displays the widget (w = mo.ui.slider(…) then w as last line), " +
   "a SECOND cell uses w.value. " +
-  "(2) Do NOT import mo/nx/np/plt/ig/sns/alt — they already exist (redundant imports are " +
+  "(2) Do NOT import mo/nx/np/plt/ig/sns/alt/pd — they already exist (redundant imports are " +
   "stripped); netviz(edges, highlight=[...]) is also predefined for themed D3 network drawings. " +
   "(3) Each public variable is owned by exactly ONE cell; prefix throwaway names with _ . " +
   "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…'''). " +

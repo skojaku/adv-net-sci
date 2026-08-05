@@ -1,4 +1,4 @@
-# Chapter 4 of 5 — The Small-World Recipe (cp6, + optional stretch).
+# Chapter 4 of 5 — The Small-World Recipe (cp6, cp6_large_n_experiment, + optional stretch).
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
 # "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
 # After logging the last checkpoint, call chapter_done with short handoff notes.
@@ -7,7 +7,8 @@ chapter:
   id: ch4
   title: "The Small-World Recipe"
   goal: Student sees that a tiny fraction of rewired links collapses distance
-        while clustering survives (Watts-Strogatz).
+        while clustering survives (Watts-Strogatz), then proves it themselves
+        with a real coded experiment at large N.
 
 checkpoints:
 
@@ -17,11 +18,12 @@ checkpoints:
     build: |
       nb_add_template("cp6_ws_explorer")
       (only AFTER the prediction below is committed) — slider over p; the
-      network drawing highlights rewired shortcut edges in red, and the
+      network drawing highlights rewired shortcut edges in rust, and the
       title shows L(p)/L₀ and C(p)/C₀ live.
     ask: |
       FIRST, before any widget exists, ask_user_question: "Rewire just 1% of the
-      ring's links to random targets. What happens?" Options:
+      ring's links to random targets. Per your own C(k)/L(N,k) formulas from
+      last chapter, what happens?" Options:
       "both distance and clustering drop a lot" /
       "distance drops a lot, clustering barely changes" /
       "clustering drops a lot, distance barely changes" /
@@ -51,6 +53,72 @@ checkpoints:
 
       > **My prediction:** «their pick» → **what I actually saw:**
       «their report, verbatim»
+
+  - id: cp6_large_n_experiment
+    goal: |
+      Student runs a real coded experiment — large N, sweep p, find where L
+      collapses while C survives — and sees the effect get more dramatic (a
+      smaller critical p) as N grows past the N=200 toy from cp6.
+    build: |
+      nb_add_exercise with name "cp6_large_n", adapted to the student's cp0
+      comfort level (carried in your handoff notes — same mechanism the
+      cs1_code stretch already relies on):
+
+      COMFORTABLE WITH PYTHON — scaffold with a few `...` blanks:
+      ```
+      # 1. Set a LARGE network size — much bigger than the N=200 you played with.
+      N = ...  # try 2000
+      k = 4
+      p_values = [0.0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0]
+
+      L0 = C0 = None
+      rows = []
+      for p in p_values:
+          G = nx.connected_watts_strogatz_graph(N, k, p, seed=1) if p > 0 else nx.watts_strogatz_graph(N, k, 0)
+          L = ...  # average shortest path length of G
+          C = ...  # average clustering of G
+          if p == 0.0:
+              L0, C0 = L, C
+          rows.append({"p": str(p), "L/L0": L / L0, "C/C0": C / C0})
+
+      df = pd.DataFrame(rows).melt("p", var_name="measure", value_name="ratio")
+      alt.Chart(df).mark_line(point=True).encode(
+          x=alt.X("p:O", title="rewiring probability p"),
+          y=alt.Y("ratio:Q", title="ratio to p=0 baseline"),
+          color="measure:N",
+      ).properties(title=f"N={N}, k={k}")
+      ```
+
+      "I DON'T CODE" / "TRIED A LITTLE" — same scaffold, fully filled in
+      (zero blanks, N=2000, `L = nx.average_shortest_path_length(G)`,
+      `C = nx.average_clustering(G)` already written) — they press ▶ Run
+      and read the chart rather than writing anything.
+    ask: |
+      "Run it — it takes a few seconds on a network this size. At N=2000,
+      around what p does distance collapse now? Does the FRACTION of
+      rewired links needed look bigger, smaller, or about the same as the
+      ~1% you found at N=200 last time?"
+    accept: |
+      Correctly reads the collapse point from their own chart; a
+      qualitative comparison to the N=200 result (same tiny fraction, or
+      even smaller — the critical p shrinks as N grows). No exact number
+      required — interpretation is what's graded, same standard as
+      cs1_code.
+    hints:
+      - "Same reading as before: find where the L/L0 line drops sharply. What p is that, roughly?"
+      - "At that p, has C/C0 moved much?"
+    reveal_after: |
+      Terminal: this is the real Watts-Strogatz result at scale, not a toy
+      — the effect you found on 200 dots holds (and sharpens) on thousands.
+      Bridges to next chapter's small-world index, which turns "clustering
+      high AND distance low" into one number.
+    note: |
+      ### 💻 The phase transition, at scale
+      Same experiment as the slider, but coded and run on a much bigger
+      network ($N=2000$ instead of $200$) by sweeping the rewiring
+      probability $p$ and plotting $L/L_0$ and $C/C_0$ together.
+
+      > **What I found:** «their answers, verbatim»
 
 # Optional stretch — offer ONLY if cp0 said "comfortable with Python", after
 # cp6, if time and energy allow. Never required, never logged as a fail.

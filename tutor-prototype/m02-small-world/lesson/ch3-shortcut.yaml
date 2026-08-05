@@ -1,4 +1,4 @@
-# Chapter 3 of 5 — The Power of One Cable (cp4-cp5).
+# Chapter 3 of 5 — The Power of One Cable (cp4, cp5_ring_formula, cp5_tension).
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
 # "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
 # After logging the last checkpoint, call chapter_done with short handoff notes.
@@ -7,7 +7,8 @@ chapter:
   id: ch3
   title: "The Power of One Cable"
   goal: Student discovers that WHERE a link goes matters more than HOW MANY,
-        and can articulate the clustering-vs-distance tension.
+        derives on paper how clustering and path length scale with N and k on
+        a ring, and can articulate the resulting tension.
 
 checkpoints:
 
@@ -40,7 +41,8 @@ checkpoints:
       Terminal — the punchline, referencing THEIR cable: a SHORT extra link
       creates a triangle (clustering up, distances barely move); a LONG one is
       a SHORTCUT (distances drop for everyone). One cable, two very different
-      effects.
+      effects. This plain ring (each dot connects only to ITS TWO neighbors)
+      has ZERO triangles before the cable — remember that, it matters next.
     note: |
       ### 🔌 One cable, two very different effects
       A cable between nearby dots closes a **triangle**: clustering goes up,
@@ -50,20 +52,89 @@ checkpoints:
 
       > **My cable:** «which dots they connected + their why, verbatim»
 
+  - id: cp5_ring_formula
+    goal: |
+      Student derives, on paper, that a ring's clustering C depends only on
+      the friend-count k (NOT on N), while its path length L depends on
+      BOTH N and k — and explicitly corrects the "plain ring has no
+      triangles" fact from cp4 into "a ring CAN have triangles once each
+      person has more than 1 friend per side".
+    build: |
+      nb_add_template("cp5_ring_lattice") — a 12-dot ring with a friend-count
+      slider k (2, 4, or 6); node 0's k nearest neighbors light up amber, and
+      any friendship already existing between two of those neighbors draws
+      as a rust line, with C for node 0 live in the caption.
+    ask: |
+      ONE piece at a time:
+      1. "Set k to 2 — everyone knows only their 1 nearest neighbor each
+         side, same as cp4's ring. Can two of node 0's friends ever know
+         each other here? Why or why not?"
+      2. "Now set k to 4 — 2 friends each side. On paper, list node 0's 4
+         friends. Of the 6 possible friendships among them, which ones
+         ALREADY exist? How many?"
+      3. "So node 0's clustering C₀ at k=4 is...?"
+      4. "Now imagine this same k=4 ring has 1000 people instead of 12,
+         everyone still with exactly 4 friends. Would C₀ change? Write it
+         down: does clustering depend on N?"
+      5. "But to reach someone on the OPPOSITE side of a 1000-person ring,
+         about how many hops would it take, if each hop reaches k new
+         people? Write down how L relates to N and to k — does it grow,
+         shrink, or stay the same as each one changes?"
+    accept: |
+      (1) k=2 -> C=0, with a reason (node 0's two friends aren't directly
+      connected to each other — no triangle possible).
+      (2)-(3) k=4 -> 3 of the 6 possible friendships already exist ->
+      C₀ = 3/6 = 0.5 (must show the counting, not just the number).
+      (4) Explicit statement that C does NOT depend on N (only on k).
+      (5) Qualitative: L grows as N grows, L shrinks as k grows (exact
+      constant not required — "roughly N divided by k" or "proportional to
+      N/k" both pass).
+      Photo of their paper work (cells/cp5_ring_paperwork.py), or typed
+      reasoning as a fallback — same as cp4's photo/typed fallback.
+    hints:
+      - "At k=2, node 0's only two friends are its immediate left and right neighbor. Are THEY directly connected to each other, or two steps apart?"
+      - "At k=4, node 0's friends are the two people on each side. Look only at pairs AMONG those 4 — ignore node 0 itself. Which pairs are close enough (1 or 2 steps apart) to already be friends?"
+      - "If you swapped N=12 for N=1000 but kept k=4, would node 0's LOCAL neighborhood (its 4 friends) look any different?"
+      - "Each hop reaches about k new people. To cross half the ring (about N/2 people), how many hops of size k does that take?"
+    fresh_variants: |
+      If an answer slips out, re-check with k=6 instead of k=4: 9 of the 15
+      possible friendships already exist -> C₀ = 9/15 = 0.6.
+    reveal_after: |
+      Terminal: name the closed forms, crediting their own derivation —
+      "you just found the k=4 term of a general formula": for a ring where
+      everyone has k friends, clustering is C(k) = 3(k-2) / (4(k-1)) —
+      independent of N — while path length is L(N,k) ≈ N / (2k), which
+      DOES grow with N. That mismatch (C bounded, L unbounded as N grows)
+      is exactly the puzzle the next checkpoint names.
+    note: |
+      ### 🔺 Clustering and path length on a ring — as formulas
+      On a ring where everyone has $k$ friends ($k/2$ per side), clustering
+      is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
+      $k=2$ gives $C=0$ (no triangles possible — cp4's plain ring); $k=4$
+      gives $C=0.5$; $k=6$ gives $C=0.6$. Path length is different: it
+      grows with the crowd, $L(N,k) \approx N / (2k)$ — more people, more
+      hops, even though $k$ stays fixed.
+
+      > **My work:** «their answers, verbatim»
+
   - id: cp5_tension
-    goal: Student articulates the tension that makes small-world non-trivial.
+    goal: Student articulates the tension that makes small-world non-trivial,
+          now grounded in the C(k)/L(N,k) facts just derived.
     build: none
     ask: |
-      ONE world at a time: "Imagine a RING world — everyone knows only their
-      neighbors. What's good about living there, and what's bad?" After they
-      answer, the RANDOM world (friends scattered completely at random) the
-      same way.
+      ONE world at a time: "So on a ring, C stays put but L keeps growing as
+      N grows. Imagine a country-sized ring — everyone knows only their
+      nearest few neighbors. What's good about living there, and what's
+      bad?" After they answer, the RANDOM world (friends scattered
+      completely at random) the same way.
     accept: |
-      Ring: high clustering / tight communities (good), long distances (bad).
-      Random: short distances (good), no clustering (bad). Any phrasing that
-      captures both trade-offs passes.
+      Ring: high, N-independent clustering / tight communities (good), path
+      length that grows with N — long distances at country scale (bad).
+      Random: short distances (good), essentially no clustering (bad). Any
+      phrasing that captures both trade-offs, referencing the C(k)/L(N,k)
+      facts from the last checkpoint, passes.
     hints:
-      - "In the RING world, do your friends know each other? And how long does a letter take to cross the ring?"
+      - "In the RING world, do your friends know each other? And per your own formula, what happens to L as the ring grows to country size?"
       - "In the RANDOM world, how fast can a letter travel? And do your friends know each other?"
     reveal_after: |
       Terminal, sharply: real social networks have BOTH high clustering AND
@@ -71,9 +142,10 @@ checkpoints:
       do it?
     note: |
       ### ⚖️ The puzzle: clustered AND close?
-      **Ring world:** tight communities (high $C$) but long journeys
-      (high $L$). **Random world:** short journeys (low $L$) but no
-      community (low $C$). Real social networks somehow have BOTH high
-      clustering and short paths — neither extreme world explains it.
+      **Ring world:** tight communities (high $C$, independent of $N$) but
+      journeys that get longer and longer as $N$ grows ($L \approx N/(2k)$).
+      **Random world:** short journeys (low $L$) but no community (low
+      $C$). Real social networks somehow have BOTH high clustering and
+      short paths — neither extreme world explains it.
 
       > **My take on the two worlds:** «their answer, verbatim»
