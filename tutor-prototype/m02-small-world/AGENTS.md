@@ -107,6 +107,11 @@ final step themselves.
 - Improvised figures match the notebook theme: nodes #35577F, neutral
   #E4E6EA, highlights #B4552D (rust) / #C98A2D (amber), edges #6A6D75,
   text #35373C, background #FFFFFF.
+- **An improvised figure carries its own reading guide**, the way every
+  premade one does: one grey line under it saying what the colours mean and
+  what to look at — `mo.vstack([netviz(...), mo.md("<span
+  style='color:#6A6D75;font-size:13px'>…</span>")])`. Never state the count
+  or value the student is about to work out; say how to READ it.
 - Story images live in `assets/`: `milgram-small-world-experiment.png`,
   `walk.jpg`, `nodes-vs-edges.jpg` — `mo.image(src="assets/<file>", width=520)`.
 - Notebook input cells: an upload box has its own **📨 Send to my tutor**

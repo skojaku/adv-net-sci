@@ -52,13 +52,28 @@ install_skill() {
     rm -rf "$cache"
   fi
 }
-# Only the Claude fallback needs it. Under pi the notebook tool does every
-# notebook operation, and having the skill installed anyway let the model
-# reach for it mid-hint — printing a bare "[skill] marimo-pair" line into the
-# student's terminal, which is exactly the infrastructure talk AGENTS.md
-# forbids. Remove a copy left by an older run.
+# Under pi the notebook tool does every notebook operation, so the SKILL is
+# not wanted — installed, the model reaches for it mid-hint and a bare
+# "[skill] marimo-pair" line lands in the student's terminal. But the
+# extension talks to the kernel through that skill's execute-code.sh, so the
+# scripts are staged outside any skills directory and only the skill itself
+# is removed. (Removing both, briefly shipped, killed every notebook call.)
+install_bridge() {
+  local dest=".pi/marimo-bridge"
+  [ -f "$dest/scripts/execute-code.sh" ] && return 0
+  local cache=".skill-cache"
+  say "Installing the notebook bridge -> $dest"
+  rm -rf "$cache"
+  git clone --depth 1 "$MARIMO_PAIR_REPO" "$cache"
+  mkdir -p "$dest"
+  cp -R "$cache/skills/marimo-pair/scripts" "$dest/scripts"
+  rm -rf "$cache"
+}
 if [ "$AGENT" = "pi" ]; then
+  install_bridge
   rm -rf ".pi/skills/marimo-pair"
+  [ -f ".pi/marimo-bridge/scripts/execute-code.sh" ] ||
+    die "Notebook bridge missing at .pi/marimo-bridge/scripts/execute-code.sh"
 else
   install_skill ".claude/skills/marimo-pair"
 fi

@@ -504,7 +504,9 @@ def cp2_distance_note(mo):
     $L = 7/6 \approx 1.17$. "Six degrees" is exactly this number, measured
     on a whole country.
 
-    > **I worked out:** A to D is 2 — you have to go through B or C. Average: five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17.
+    > **A to D:** A to D is 2 — you have to go through B or C.
+    >
+    > **The average over all six pairs:** five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17.
     """)
     return
 
@@ -980,7 +982,11 @@ def cp5_tension_note(mo):
     $C$). Real social networks somehow have BOTH high clustering and
     short paths — neither extreme world explains it.
 
-    > **My take on the two worlds:** the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N. The random world delivers mail fast but none of my friends know each other. Real life somehow gets both.
+    > **The ring world:** the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N.
+    >
+    > **The random world:** delivers mail fast but none of my friends know each other.
+    >
+    > **Which one I live in:** neither, really — real life somehow gets both.
     """)
     return
 
@@ -1198,7 +1204,10 @@ def cp6_large_n_sent(cp6_large_n_send, mo):
             _f.write("cp6_large_n_ed\n")
         _sent = mo.md("✅ **Handed in.** Your tutor is reading your code now.")
     else:
-        _sent = mo.md("")
+        _sent = mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "
+            "chart looks right — that is what hands your code in.*</span>"
+        )
     _sent
     return
 

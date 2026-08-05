@@ -27,6 +27,30 @@ rsync -a --exclude session_artifacts --exclude __marimo__ --exclude .skill-cache
 cp "$SANDBOX/notebook.template.py" "$SANDBOX/notebook.py"
 mkdir -p "$SANDBOX/session_artifacts"
 
+# The extension reaches the kernel through execute-code.sh, which ships inside
+# the marimo-pair skill. The SKILL is excluded above on purpose (a pi tutor
+# that can see it prints "[skill] marimo-pair" into the student's terminal),
+# so stage the scripts on their own. Fail loudly: without this every nb_* call
+# returns "bridge missing" and the whole run is a silent write-off.
+if [ ! -f "$SANDBOX/.pi/marimo-bridge/scripts/execute-code.sh" ]; then
+  for src in "$MODULE_DIR/.pi/marimo-bridge/scripts" \
+             "$MODULE_DIR/.pi/skills/marimo-pair/scripts" \
+             "$MODULE_DIR/.claude/skills/marimo-pair/scripts"; do
+    [ -d "$src" ] || continue
+    mkdir -p "$SANDBOX/.pi/marimo-bridge"
+    cp -R "$src" "$SANDBOX/.pi/marimo-bridge/scripts"
+    break
+  done
+fi
+[ -f "$SANDBOX/.pi/marimo-bridge/scripts/execute-code.sh" ] || {
+  echo "error: no execute-code.sh anywhere in $MODULE_DIR — run ./run_tutor.sh there once first" >&2
+  exit 1
+}
+
+# A previous session's photos would satisfy the photo guard before the student
+# has taken one, and the harness exists to test that guard.
+rm -rf "$SANDBOX/assets/uploads" "$SANDBOX/assets/exercises"
+
 # Fully detach marimo's stdio: an inherited stdout would keep a caller's
 # $(...) command substitution open forever.
 (cd "$SANDBOX" && exec uvx marimo edit --sandbox --no-token --headless notebook.py) \
