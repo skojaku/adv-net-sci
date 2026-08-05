@@ -19,6 +19,19 @@ def _save(name):
     print('wrote', name + '.svg')
 
 
+def _sbm(n, pref_matrix, block_sizes):
+    """Build an SBM across python-igraph versions.
+
+    python-igraph 1.0 dropped the leading `n` argument from Graph.SBM, since
+    the block sizes already determine the vertex count.
+    """
+    try:
+        return igraph.Graph.SBM(pref_matrix, block_sizes)          # >= 1.0
+    except TypeError:
+        return igraph.Graph.SBM(n, pref_matrix, block_sizes)       # < 1.0
+
+
+
 # --- cell 0 --------------------------------------------------
 # caption: Adjacency Matrix of Stochastic Block Model
 import numpy as np
@@ -40,7 +53,7 @@ pref_matrix = [
 ]
 
 # Generate SBM using igraph
-g = igraph.Graph.SBM(n, pref_matrix, block_sizes)
+g = _sbm(n, pref_matrix, block_sizes)
 
 # Convert to adjacency matrix for visualization
 A = np.array(g.get_adjacency().data)
@@ -99,7 +112,7 @@ pref_matrix = [
 ]
 
 # Generate SBM using igraph
-g = igraph.Graph.SBM(n, pref_matrix, block_sizes)
+g = _sbm(n, pref_matrix, block_sizes)
 
 # Convert to adjacency matrix for visualization
 A = np.array(g.get_adjacency().data)
