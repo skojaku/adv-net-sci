@@ -3394,10 +3394,21 @@ def fig_smallworld_teaser():
     # near, even at the deck-wide NODE_R this figure now draws at like every other one (R8
     # fix -- this was the deck's most undersized node, 9px, against 148px on the Konigsberg
     # figures the review picked as the target; see the module note above NODE_R).
-    n = 13
+    # R8 fix: n must be small enough that the i<->i+2 chord clears the intermediate
+    # node it passes, or the second-neighbour edges vanish behind the discs and the
+    # ring reads as a plain cycle -- no visible triangle, which is the one thing this
+    # figure exists to show. The chord sits cos(2*pi/n) from the centre; the
+    # intermediate node's inner edge is at 1-NODE_R. At the old n=13 that clearance
+    # was -0.005 (the chord grazed the disc); n=9 gives +0.114.
+    n = 9
     fig, ax = plt.subplots(figsize=(5.6, 5.6))
     angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
     pts = {i: (np.cos(a), np.sin(a)) for i, a in enumerate(angles)}
+    chord_clearance = (1.0 - NODE_R) - np.cos(2 * np.pi / n)
+    assert chord_clearance > 0.05, (
+        f"smallworld: second-neighbour chord clears the intermediate node by only "
+        f"{chord_clearance:.3f} data units at n={n} -- the triangles will be hidden"
+    )
     # "a few shortcuts change everything" removed -- it is the figcaption verbatim.
     # A touch of extra x-room (the ring itself stays circular) lands the crop <=0.95.
     ax.set_xlim(-1.5, 1.5)
@@ -3409,7 +3420,7 @@ def fig_smallworld_teaser():
             j = (i + step) % n
             ax.plot([pts[i][0], pts[j][0]], [pts[i][1], pts[j][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1)
-    for u, v in [(0, 4), (2, 7), (5, 11), (9, 12)]:
+    for u, v in [(0, 4), (1, 6), (3, 7), (2, 8)]:
         ax.plot([pts[u][0], pts[v][0]], [pts[u][1], pts[v][1]], color=ACCENT2, linewidth=EDGE_W, zorder=2)
     draw_nodes(ax, pts, colors=INK, zorder=3)
     save(fig, "smallworld-teaser.png")

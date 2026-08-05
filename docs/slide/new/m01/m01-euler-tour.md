@@ -33,9 +33,10 @@ Open with the story, not the definitions. Königsberg is the hook; abstraction i
 <div><div class="i">02</div><div>Abstraction — landmasses → nodes, bridges → edges</div></div>
 <div><div class="i">03</div><div>Degree and Euler — parity decides what is possible</div></div>
 <div><div class="i">04</div><div>Vocabulary — walk, trail, path, circuit, cycle</div></div>
-<div><div class="i">05</div><div>Connectivity — components, giants, directed reachability</div></div>
-<div><div class="i">06</div><div>Representation — edge lists, adjacency, sparsity, CSR</div></div>
-<div><div class="i">07</div><div>Edge cases — the graphs that break the rules</div></div>
+<div><div class="i">05</div><div>Connectivity — components and the giant component</div></div>
+<div><div class="i">06</div><div>Direction — in/out-degree, the directed Euler condition, strong vs. weak reachability</div></div>
+<div><div class="i">07</div><div>Representation — edge lists, adjacency, sparsity, CSR</div></div>
+<div><div class="i">08</div><div>Edge cases — the graphs that break the rules</div></div>
 
 </div>
 
@@ -43,7 +44,7 @@ Open with the story, not the definitions. Königsberg is the hook; abstraction i
 
 <!-- _class: part -->
 
-<div class="band"><span>Part One</span><span class="count">01 / 07</span></div>
+<div class="band"><span>Part One</span><span class="count">01 / 08</span></div>
 
 ## The puzzle
 
@@ -113,7 +114,7 @@ Ask yourself: What information is essential — bridge length? Island size? How 
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Two</span><span class="count">02 / 07</span></div>
+<div class="band"><span>Part Two</span><span class="count">02 / 08</span></div>
 
 ## Abstraction
 
@@ -250,7 +251,7 @@ For Königsberg: four landmasses, seven bridges.
 <div class="cols">
 <div>
 
-Königsberg has two bridges between island A and bank N — and two more between A and bank S. Count each one, or collapse the pair?
+Königsberg has two bridges between island A and bank N — and two more between A and bank S, so A touches five bridges in all (the other three you counted on the previous slide). Count each one, or collapse the pair?
 
 * Both count. Each bridge is its own edge.
 * Collapse them into one and you are solving a **different** puzzle — one with fewer crossings to make.
@@ -259,7 +260,7 @@ Königsberg has two bridges between island A and bank N — and two more between
 <div class="fig">
 
 ![w:520](figures/multigraph.png)
-<figcaption>N–A, doubled — A touches five bridges in all, not four</figcaption>
+<figcaption>N–A, doubled — two bridges, one pair</figcaption>
 
 </div>
 </div>
@@ -290,7 +291,7 @@ Königsberg has none. But graphs in general do, and the definition needs to allo
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Three</span><span class="count">03 / 07</span></div>
+<div class="band"><span>Part Three</span><span class="count">03 / 08</span></div>
 
 ## Degree and Euler’s theorem
 
@@ -441,7 +442,7 @@ Hands up when you have an answer — possible, or impossible?
 <div class="fig">
 
 ![w:520](figures/konigsberg-blank.png)
-<figcaption>same four landmasses, same seven bridges — no counts shown</figcaption>
+<figcaption>same map, no counts shown</figcaption>
 
 </div>
 </div>
@@ -482,6 +483,12 @@ An **Eulerian path** is a route that uses every edge exactly once.
 
 On a graph you can get around — every node reachable from every other — one exists exactly when **0 or 2** nodes have odd degree.
 
+<div class="note">
+
+We've only shown the "more than two odd" direction breaks it. That the condition is also *enough* — a path always exists when it holds — we'll use without proving.
+
+</div>
+
 </div>
 <div class="fig">
 
@@ -514,7 +521,7 @@ Add one requirement: the walk must end back where it began. What happens to the 
 <div class="cols">
 <div>
 
-A closed walk has no ends — no start, no finish, just one loop. There’s no node left over to absorb a leftover edge.
+Ending back where you began removes the ends — no start, no finish, just one loop. There’s no node left over to absorb a leftover edge.
 
 * The “exactly two odd” case disappears. For an **Eulerian circuit**, every node must be even.
 * Königsberg fails either way — four odd nodes is neither 0 nor 2.
@@ -523,7 +530,7 @@ A closed walk has no ends — no start, no finish, just one loop. There’s no n
 <div class="fig">
 
 ![w:520](figures/euler-circuit-example.png)
-<figcaption>trace the closed walk — cross all six edges, end where you began</figcaption>
+<figcaption>cross all six edges, end where you began</figcaption>
 
 </div>
 </div>
@@ -577,7 +584,7 @@ World War II. Königsberg is bombed and two bridges are destroyed.
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Four</span><span class="count">04 / 07</span></div>
+<div class="band"><span>Part Four</span><span class="count">04 / 08</span></div>
 
 ## Vocabulary
 
@@ -638,7 +645,8 @@ A **path** is a walk that never uses the same node twice — and so never the sa
 
 <div class="note">
 
-Every path is a trail. Not every trail is a path.
+* Every path is a trail. Not every trail is a path.
+* That's also why the **Eulerian path** from earlier — which revisits nodes — is really an Eulerian *trail*. The name predates this vocabulary; it stuck anyway.
 
 </div>
 
@@ -715,98 +723,6 @@ A **cycle** is a closed path — back to the start, no node repeated.
 
 ---
 
-## Writing a graph as a matrix
-
-<hr>
-
-<div class="cols">
-<div>
-
-$$
-A_{ij} =
-\begin{cases}
-1 & i \sim j \\
-0 & \text{otherwise}
-\end{cases}
-$$
-
-</div>
-<div class="fig">
-
-![w:520](figures/adjacency-matrix.png)
-<figcaption>edge 1–3 ↔ cells (1,3) and (3,1)</figcaption>
-
-</div>
-</div>
-
----
-
-## For a multigraph, count the edges
-
-<hr>
-
-<div class="cols">
-<div>
-
-Two bridges between the same pair? The matrix entry isn't capped at 1 — $A_{ij}$ becomes the **number** of edges between $i$ and $j$.
-
-</div>
-<div class="fig">
-
-![w:520](figures/multigraph.png)
-<figcaption>two N–A bridges → the entry is 2, not 1</figcaption>
-
-</div>
-</div>
-
----
-
-## Multiply $A$ by itself. What do the entries mean?
-
-<hr>
-
-<div class="formula">
-
-$$ \mathbf{A}^2 $$
-
-What does entry $(i,j)$ count?
-
-</div>
-
-*30 seconds — try it on the graph from the previous slide.*
-
----
-
-## $A^k$ counts walks
-
-<hr>
-
-<div class="cols">
-<div>
-
-<div class="formula">
-
-$$ (\mathbf{A}^k)_{ij} = \#\{\text{walks of length } k \text{ from } i \text{ to } j\} $$
-
-</div>
-
-<div class="note">
-
-Walks, not paths — repetition is allowed. Later modules reuse this for clustering and centrality.
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:520](figures/adjacency-squared.png)
-<figcaption>red route 1–2–4, gold route 1–3–4 — both land in cell (1,4)</figcaption>
-
-</div>
-</div>
-
----
-
 ## Your turn: one trail, both triangles
 
 <hr>
@@ -831,11 +747,11 @@ Six edges, two triangles, not touching. Trace one trail — no edge repeated —
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Five</span><span class="count">05 / 07</span></div>
+<div class="band"><span>Part Five</span><span class="count">05 / 08</span></div>
 
 ## Connectivity
 
-Euler's theorem quietly assumed you can get everywhere
+Euler’s theorem quietly assumed you can get everywhere
 
 ---
 
@@ -843,18 +759,13 @@ Euler's theorem quietly assumed you can get everywhere
 
 <hr>
 
-A graph is **connected** when a path exists between every pair of nodes.
+* A graph is **connected** when a path exists between every pair of nodes — every reachability argument since Euler has been quietly assuming this.
+* The two triangles from a moment ago fail that test — no trail crosses between them. **Impossible**, as suspected.
 
-<div class="fig">
+<div class="fig tight">
 
 ![w:760](figures/connected-vs-not.png)
 <figcaption>one missing edge splits five nodes into two pieces</figcaption>
-
-</div>
-
-<div class="note">
-
-Every reachability argument since Euler has been quietly assuming this.
 
 </div>
 
@@ -864,18 +775,13 @@ Every reachability argument since Euler has been quietly assuming this.
 
 <hr>
 
-When the answer is no, the graph splits into **connected components** — maximal sets of mutually reachable nodes.
+* When the answer is no, the graph splits into **connected components** — maximal sets of mutually reachable nodes.
+* A single isolated node counts too — a component of one, with nowhere to go.
 
 <div class="fig">
 
 ![w:760](figures/components-band.png)
-<figcaption>sizes 8, 3, and 1 — no edge crosses between them</figcaption>
-
-</div>
-
-<div class="note">
-
-A single isolated node counts too — a component of one, with nowhere to go.
+<figcaption>three components, no edge crosses between them</figcaption>
 
 </div>
 
@@ -905,18 +811,14 @@ No components marked yet — trace your own below. How many sweeps until every n
 
 <hr>
 
-Sweep 1 clears the eight-node ladder. Sweep 2 clears the triangle. Sweep 3 finds the lone node.
+* Sweep 1 clears the eight-node ladder.
+* Sweep 2 clears the triangle.
+* Sweep 3 finds the lone node.
 
 <div class="fig tight">
 
 ![w:760](figures/sweep-3.png)
 <figcaption>each component restarts its own count at 1</figcaption>
-
-</div>
-
-<div class="note">
-
-Cost is $O(N+M)$ — you touch every node and edge once.
 
 </div>
 
@@ -961,6 +863,16 @@ It depends on $N$. The same 1,000 nodes are giant in a network of 1,200 — and 
 
 ---
 
+<!-- _class: part -->
+
+<div class="band"><span>Part Six</span><span class="count">06 / 08</span></div>
+
+## Direction
+
+Point every edge one way — degree, Euler's condition, and connectivity all split in two
+
+---
+
 ## Edges with direction
 
 <hr>
@@ -987,11 +899,13 @@ In a **directed** graph, each edge has an orientation. Reachability need not run
 
 **Degree** has counted edges at a node so far without asking which way they point.
 
-<div class="note">
+<div class="formula">
 
-30 seconds: once edges have direction, degree splits — into what?
+Once edges have direction, degree splits — into what?
 
 </div>
+
+*30 seconds.*
 
 ---
 
@@ -1002,13 +916,36 @@ In a **directed** graph, each edge has an orientation. Reachability need not run
 <div class="cols">
 <div>
 
-Each node now has two counts: **in-degree**, edges arriving, and **out-degree**, edges leaving. Euler's condition becomes: in-degree equals out-degree, at every node.
+Each node now has two counts: **in-degree**, edges arriving, and **out-degree**, edges leaving.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/directed-indegree.png)
 <figcaption>A→B→C→A — each arrow both leaves and arrives once</figcaption>
+
+</div>
+</div>
+
+---
+
+## The directed Euler condition
+
+<hr>
+
+<div class="cols">
+<div>
+
+On a graph that's **strongly connected** — every node reachable from every other, direction respected — Euler's condition splits into two cases. Below, both nodes total 2 — yet neither balances.
+
+* **Closed tour:** in-degree equals out-degree, at every node.
+* **Trail:** exactly one node has out − in = 1 (the start), one has in − out = 1 (the end), every other node balances.
+
+</div>
+<div class="fig">
+
+![w:520](figures/directed-parity-counterexample.png)
+<figcaption>A: in 0, out 2 — B: in 2, out 0 — both "even," neither balanced</figcaption>
 
 </div>
 </div>
@@ -1063,11 +1000,11 @@ One-way streets get you out, not necessarily back.
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Six</span><span class="count">06 / 07</span></div>
+<div class="band"><span>Part Seven</span><span class="count">07 / 08</span></div>
 
 ## Representation
 
-How a computer holds a network
+How you store a network shapes what you can ask it
 
 ---
 
@@ -1134,11 +1071,23 @@ Store each node's neighbors directly. Node 1's neighbors are node 1's row — no
 <div class="cols">
 <div>
 
+$$
+A_{ij} =
+\begin{cases}
+1 & i \sim j \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
 An $n \times n$ grid of 0s and 1s. This opens the door to linear algebra — but storing it costs $O(n^2)$, even when almost every entry is 0.
 
 <div class="note">
 
-* Degree is the same quantity, three ways: count incidences in the edge list, read a row's length in the adjacency list, sum a row in the matrix.
+Degree is the same quantity, three ways:
+
+* Count incidences in the edge list.
+* Read a row's length in the adjacency list.
+* Sum a row in the matrix.
 
 </div>
 
@@ -1146,7 +1095,73 @@ An $n \times n$ grid of 0s and 1s. This opens the door to linear algebra — but
 <div class="fig">
 
 ![w:520](figures/store-matrix.png)
-<figcaption>row 1 (red) is node 1's row: 1s at columns 0, 2, 3</figcaption>
+<figcaption>row 1 (red): 1s at columns 0, 2, 3 — node 1's three neighbors</figcaption>
+
+</div>
+</div>
+
+---
+
+## For a multigraph, count the edges
+
+<hr>
+
+<div class="cols">
+<div>
+
+Two bridges between the same pair? The matrix entry isn't capped at 1 — $A_{ij}$ becomes the **number** of edges between $i$ and $j$.
+
+</div>
+<div class="fig">
+
+![w:520](figures/multigraph.png)
+<figcaption>two N–A bridges → the entry is 2, not 1</figcaption>
+
+</div>
+</div>
+
+---
+
+## Multiply $A$ by itself. What do the entries mean?
+
+<hr>
+
+<div class="formula">
+
+$$ \mathbf{A}^2 $$
+
+What does entry $(i,j)$ count?
+
+</div>
+
+*30 seconds — try it on the five-node graph from a couple of slides back, the one whose matrix you just wrote down.*
+
+---
+
+## $A^k$ counts walks
+
+<hr>
+
+<div class="cols">
+<div>
+
+<div class="formula">
+
+$$ (\mathbf{A}^k)_{ij} = \#\{\text{walks of length } k \text{ from } i \text{ to } j\} $$
+
+</div>
+
+<div class="note">
+
+Walks, not paths — repetition is allowed. Later modules reuse this for clustering and centrality.
+
+</div>
+
+</div>
+<div class="fig">
+
+![w:520](figures/adjacency-squared.png)
+<figcaption>red route 1–2–4, gold route 1–3–4 — both land in cell (1,4)</figcaption>
 
 </div>
 </div>
@@ -1169,6 +1184,26 @@ Guess before you compute — kilobytes? Gigabytes? More?
 
 ---
 
+## 64 exabytes
+
+<hr>
+
+<div class="formula">
+
+$$ n = 8\times10^{9} \qquad n^2 \times 1\text{ byte} = 6.4\times10^{19}\text{ bytes} \approx 64\text{ EB} $$
+
+</div>
+
+Eight billion nodes, one byte per pair — more raw storage than most data centers on Earth hold, just to record who is *not* connected to whom.
+
+<div class="note">
+
+Almost every entry in that grid is a wasted zero. That waste is exactly what CSR refuses to store.
+
+</div>
+
+---
+
 ## Store only the nonzeros
 
 <hr>
@@ -1176,7 +1211,7 @@ Guess before you compute — kilobytes? Gigabytes? More?
 <div class="cols">
 <div>
 
-**512 exabytes.** Most pairs of people are not linked, so store only what is actually there, in three arrays:
+Most pairs of people are not linked, so store only what is actually there, in three arrays:
 
 * **data** — the values
 * **indices** — the column of each nonzero
@@ -1240,7 +1275,7 @@ $$ O(n^2) \rightarrow O(m+n) $$
 <div class="fig">
 
 ![w:520](figures/csr-memory.png)
-<figcaption>n=5: dense 25 vs CSR 30, dense wins — n=100,000: dense 10B vs CSR 1.3M, CSR wins 7,700×</figcaption>
+<figcaption>n=5: dense 25 vs CSR 30, dense wins — n=100,000, average degree 6: dense 10B vs CSR 1.3M, CSR wins 7,700×</figcaption>
 
 </div>
 </div>
@@ -1253,14 +1288,14 @@ $$ O(n^2) \rightarrow O(m+n) $$
 
 <div class="note">
 
-Rule of thumb: edge list on disk, sparse matrices for analysis. You build a CSR matrix by hand in the Module 01 notebook.
+Rule of thumb: edge list on disk, sparse matrices for analysis.
 
 </div>
 
 <div class="fig tight">
 
 ![w:760](figures/format-regimes.png)
-<figcaption>real networks cluster large-and-sparse — bottom right</figcaption>
+<figcaption>axes: node count vs. density, log scale</figcaption>
 
 </div>
 
@@ -1268,7 +1303,7 @@ Rule of thumb: edge list on disk, sparse matrices for analysis. You build a CSR 
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Seven</span><span class="count">07 / 07</span></div>
+<div class="band"><span>Part Eight</span><span class="count">08 / 08</span></div>
 
 ## Edge cases
 
@@ -1321,7 +1356,7 @@ This keeps the parity argument intact — a self-loop adds an even number, so it
 <div class="fig">
 
 ![w:520](figures/selfloop-answer.png)
-<figcaption>① and ② mark where the loop leaves and returns</figcaption>
+<figcaption>1 and 2 mark where the loop leaves and returns</figcaption>
 
 </div>
 </div>
@@ -1400,8 +1435,33 @@ Parity alone is not enough. Euler's theorem also requires **connectivity** — a
 </div>
 <div class="fig">
 
-![w:520](figures/edge-disconnected.png)
-<figcaption>two triangles, no edge between them</figcaption>
+![w:520](figures/edge-disconnected-2.png)
+<figcaption>two squares, no edge between them</figcaption>
+
+</div>
+</div>
+
+---
+
+## Back to Königsberg
+
+<hr>
+
+<div class="cols">
+<div>
+
+Run both conditions against the seven bridges, one last time:
+
+* **Connected?** Yes — every landmass reaches every other.
+* **0 or 2 odd-degree nodes?** No — all four are odd.
+
+One condition holds, one fails. That single failure is enough: no Eulerian circuit, and no Eulerian path either.
+
+</div>
+<div class="fig">
+
+![w:520](figures/konigsberg-degrees.png)
+<figcaption>both hypotheses, checked against the same graph</figcaption>
 
 </div>
 </div>
@@ -1421,10 +1481,16 @@ Parity alone is not enough. Euler's theorem also requires **connectivity** — a
 </div>
 <div>
 
-* **Abstraction (1736):** landmasses → nodes, bridges → edges — the birth of graph theory
-* **Euler's theorem:** connected, plus 0 or 2 odd-degree nodes — with vocabulary to name every walk, trail, path, circuit, cycle
-* **Connectivity:** components, the giant component, and $(\mathbf{A}^k)_{ij}$ counting walks between nodes
-* **Representation:** edge list, adjacency list, matrix — and CSR's $O(n^2) \rightarrow O(m+n)$
+* **Abstraction (1736):** landmasses → nodes, bridges → edges
+* **Euler's theorem:** connected, 0 or 2 odd-degree nodes — walk, trail, path, circuit, cycle
+* **Connectivity:** components, the giant component, $(\mathbf{A}^k)_{ij}$ counts walks
+* **Representation:** edge list, adjacency, matrix, CSR — $O(n^2) \rightarrow O(m+n)$
+
+<div class="note">
+
+Build a CSR matrix by hand in the Module 01 notebook.
+
+</div>
 
 </div>
 </div>
