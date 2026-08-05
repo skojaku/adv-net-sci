@@ -116,9 +116,9 @@ def smallest_text(src_path):
     """Smallest glyph x-height in a figure, in source pixels.
 
     Letters are small ink blobs. Take every component in a letter-like size and
-    fill range, and report the 10th percentile of their heights -- the modal
-    small glyph, rather than the single smallest speck, which would be a dot or
-    an antialiasing artifact.
+    fill range, and report the smallest one that is actually part of the body
+    of text in the figure -- not a lone artifact that happens to pass the
+    shape filter.
     """
     im = np.array(Image.open(src_path).convert("L"))
     heights = []
@@ -138,6 +138,25 @@ def smallest_text(src_path):
         for k in (h - 1, h, h + 1):
             counts[k] = counts.get(k, 0) + 1
     real = [h for h in sorted(set(heights)) if counts.get(h, 0) >= 3]
+    if not real:
+        return None
+    # Fix: a bare "seen >= 3 times" bar still let non-letter ink through as the
+    # reported x-height -- confirmed directly (get_window_extent + colour
+    # sampling, not guessed) on several figures: a dashed connector's own dash
+    # segments, overlapping scatter dots, an arrowhead tip and a comma inside a
+    # big number all recur 3+ times at one small size and clear the shape
+    # filter, so the SMALLEST "real" height was a dash or a comma, not a
+    # letter -- and the build failed over ink nobody was meant to read as text.
+    # Genuine body text is the DOMINANT population of letter-shaped ink in a
+    # figure (every word contributes several letters at the same height); an
+    # artifact is a minority that happens to clear the bare 3-times bar next to
+    # it. Requiring a count at least a fifth of the figure's own most common
+    # letter-height discards that minority while still catching a real,
+    # deliberately smaller secondary text style (axis ticks beside a title,
+    # say) -- unlike a handful of dashes or commas, that has enough of its own
+    # letters to clear this bar too.
+    max_count = max(counts[h] for h in real)
+    real = [h for h in real if counts[h] >= max(3, 0.2 * max_count)]
     return float(real[0]) if real else None
 
 

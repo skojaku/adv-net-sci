@@ -6,6 +6,9 @@ slide explains the encoding, planar (crossing-free) layouts, legible-from-the-
 back-row minimum sizes, and the fixed six-color palette below.
 """
 
+import os
+import re
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -28,6 +31,7 @@ import matplotlib.text as mtext
 import matplotlib.transforms as mtransforms
 import numpy as np
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from PIL import Image
 
 OUT = Path(__file__).resolve().parent
 
@@ -78,6 +82,167 @@ LABEL_FS = 30
 TITLE_FS = 18
 ANNOT_FS = 17
 EDGE_W = 3.5
+
+# ---------------------------------------------------------------------------
+# on-slide text legibility (R12, "the one thing that has not landed")
+# ---------------------------------------------------------------------------
+# Round 10 fixed node-interior labels (LABEL_FS, above) by reasoning about their size as a
+# FRACTION of the node they sit inside. That trick doesn't exist for a free-standing
+# annotation ("start"/"end", "destroyed", a CSR array digit) -- there is no fixed anchor to
+# take a ratio against, so nine rounds of hand-picked point sizes on those kept regressing:
+# fixed on the named figure, reappeared on the next one nobody re-measured.
+#
+# What actually determines a free-standing label's on-slide size is now deterministic
+# (FIXES_R12.md): the deck's CSS scales every figure PNG by
+#   scale = min(container_px / file_w_px, MAX_FIG_H / file_h_px, 1.0)
+# where container_px is 537px inside a `.cols` column or 1120px full-width (the `w:NNN`
+# directive in the deck is INERT -- network-science.css sets `width: auto !important`), and
+# a font rasterized at `render_dpi` lands on-slide at `fontsize_pt * (render_dpi/72) *
+# scale`. Nothing here is measured by eye: `_assert_text_legible` computes it from the
+# actual saved file and the actual deck markup, and runs from every save()/save_fit()/
+# save_fixed() call, so a figure that ships text under the floor fails the BUILD, not a
+# later review pass.
+MAX_FIG_H = 380   # network-science.css: section .fig img { max-height } -- check_render.py
+                  # derives the same cap independently; kept in sync since both read it off
+                  # the theme, not off any one figure.
+COL_W = 537       # <div class="cols"> column width -- confirmed via getComputedStyle in a
+                  # real browser render (536.98px measured; check_render.py has the same
+                  # number from the same measurement).
+FULL_W = 1120     # full-width .fig container: content area 1280 - 2*80px theme padding.
+
+# The floor itself: body prose is 30px (CSS), which measures 21px of actual cap/digit ink on
+# the rendered slide -- nothing in a figure is allowed to read smaller than the prose next to
+# it. This is the number FIXES_R12.md names directly; not a per-figure tune.
+TEXT_LEGIBLE_PX = 21
+
+# Tuning aid, not part of the normal build: plain `python3 figures/make_figures.py` still
+# raises on the FIRST undersized label, same as every other assertion in this file. Setting
+# MF_COLLECT_TEXT=1 instead collects every violation across the whole run and reports them
+# together at the end -- needed because R12's fix touches "effectively all" figures
+# (FIXES_R12.md's own words), and fixing them one crash-and-rerun at a time is exactly the
+# per-label workflow that regressed twice already.
+_COLLECT_TEXT_FAILURES = os.environ.get("MF_COLLECT_TEXT") == "1"
+_TEXT_FAILURES = []
+
+_DECK_PATH = OUT.parent / "m01-euler-tour.md"
+_deck_containers_cache = None
+
+
+def _deck_containers():
+    """basename -> narrowest container (px) a figure is placed in, read straight from the
+    deck (mirrors check_render.py's own slides_with_figures()) so the legibility check below
+    uses the SAME container width the rendered slide actually will. A figure referenced from
+    more than one slide takes the smallest container it appears in -- the worst-case scale it
+    must still clear. A figure not (yet) referenced in the deck falls back to FULL_W, the
+    more forgiving of the two, in _assert_text_legible.
+
+    Cached at module scope: this file calls save()/save_fit()/save_fixed() ~60 times in one
+    run, and the deck is ~30KB -- re-reading and re-parsing it that often is pure overhead
+    for a file that never changes mid-run.
+    """
+    global _deck_containers_cache
+    if _deck_containers_cache is None:
+        out = {}
+        if _DECK_PATH.exists():
+            text = _DECK_PATH.read_text()
+            # parts[0] is the YAML front matter; parts[1:] are the slides themselves, exactly
+            # as check_render.py's slides_with_figures() splits them.
+            for chunk in text.split("\n---\n")[1:]:
+                for m in re.finditer(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk):
+                    base = m.group(1).rsplit("/", 1)[-1]
+                    container = COL_W if 'class="cols"' in chunk else FULL_W
+                    out[base] = min(out.get(base, container), container)
+        _deck_containers_cache = out
+    return _deck_containers_cache
+
+
+def _iter_rendered_text(fig):
+    """Every Text artist that will actually appear in the saved PNG.
+
+    NOT fig.findobj(mtext.Text): confirmed directly (against this exact codebase's own
+    figures) that it also turns up stale Tick-label Text objects matplotlib caches
+    internally -- e.g. a subplot's default (0.0, 0.2, ... 1.0) tick labels, generated by an
+    intermediate fig.canvas.draw() (fit_node_scale calls one) while that axes still had its
+    factory-default xlim=(0,1) from BEFORE its own set_xlim/clean() ran, then never
+    discarded. Axes.set_axis_off() only makes the AXIS skip drawing its ticks at render time
+    (checked once, at the axes level) -- it does not touch each cached Tick label's own
+    get_visible(), so those ghosts still turn up with `visible=True` and a plausible-looking
+    fontsize, and would otherwise fail the build over text nobody will ever see.
+
+    Walking each axes' OWN artist lists instead sidesteps this entirely: `ax.texts` is
+    exactly (and only) what ax.text()/ax.annotate() added to THIS axes, unambiguous by
+    construction. Tick labels and the xaxis/yaxis .label Text (set_xlabel/set_ylabel) are
+    part of Axis.draw(), which Axes.draw() skips outright when axison is False -- confirmed
+    directly (a set_axis_off() axes with set_xlabel/set_xticklabels calls renders neither) --
+    so those are only pulled in for an axes actually switched on, and tick labels are further
+    filtered to the ones actually get_visible(). ax.title is NOT part of Axis.draw() -- it is
+    always drawn regardless of axison (confirmed the same way: a set_axis_off() axes still
+    renders its set_title() text) -- several figures in this file call clean(ax) BEFORE
+    set_title(), so this is checked unconditionally, not gated behind axison like the rest.
+    """
+    for ax in fig.axes:
+        yield from ax.texts
+        if ax.title.get_text().strip():
+            yield ax.title
+        if not ax.axison:
+            continue  # clean(ax)'d axes: no rendered ticks/axis-label to check
+        for t in ax.get_xticklabels() + ax.get_yticklabels():
+            if t.get_visible():
+                yield t
+        if ax.xaxis.label.get_text().strip():
+            yield ax.xaxis.label
+        if ax.yaxis.label.get_text().strip():
+            yield ax.yaxis.label
+
+
+def _assert_text_legible(fig, name, out_w_px, out_h_px, render_dpi):
+    """Every piece of text in `fig` must land at >= TEXT_LEGIBLE_PX on the slide the deck
+    actually places it on (FIXES_R12.md's one derived rule):
+
+        scale       = min(container / out_w_px, MAX_FIG_H / out_h_px, 1.0)
+        on_slide_px = fontsize_pt * (render_dpi / 72) * scale
+
+    `out_w_px`/`out_h_px`: the SAVED FILE's own pixel size, read back off disk rather than
+    recomputed from figsize*dpi -- save() and save_fit() both crop via bbox_inches (a tight
+    bbox, or an explicit inches Bbox), which changes the final size in ways this function has
+    no business re-deriving and risking a drift from what actually landed on disk.
+
+    `render_dpi`: the dpi THIS save actually rasterized text at -- out_dpi for a save_fit
+    that used one, otherwise the plain save dpi. NOT necessarily `fig.dpi`, which only
+    describes the on-screen figure used for layout math, not what got written to the file
+    (see TINY_OUT_DPI's own module note: a handful of figures are deliberately saved at a
+    LOWER dpi than they were laid out at).
+
+    `container`: looked up by filename in `_deck_containers()`, so a figure used inside a
+    `.cols` column is held to the tighter 537px box, not the more forgiving 1120px full
+    width, exactly like the slide it lands on.
+    """
+    container = _deck_containers().get(name, FULL_W)
+    scale = min(container / out_w_px, MAX_FIG_H / out_h_px, 1.0)
+    worst = None
+    for t in _iter_rendered_text(fig):
+        txt = t.get_text().strip()
+        if not txt:
+            continue
+        fs_pt = t.get_fontsize()
+        on_slide_px = fs_pt * (render_dpi / 72.0) * scale
+        if worst is None or on_slide_px < worst[0]:
+            worst = (on_slide_px, txt)
+        if on_slide_px < TEXT_LEGIBLE_PX - 1e-6:
+            msg = (
+                f"{name}: text {txt!r} at {fs_pt}pt lands {on_slide_px:.1f}px on the slide "
+                f"(container={container}px, file={out_w_px:.0f}x{out_h_px:.0f}px, "
+                f"render_dpi={render_dpi:.1f}, scale={scale:.3f}) -- below the {TEXT_LEGIBLE_PX}"
+                f"px floor. Raise this figure's fontsize or crop its canvas margin -- both "
+                f"raise `scale`/the effective point size the same way."
+            )
+            if _COLLECT_TEXT_FAILURES:
+                _TEXT_FAILURES.append(msg)
+            else:
+                raise AssertionError(msg)
+    if worst is not None:
+        print(f"  text-min {name}: {worst[0]:.1f}px on-slide ({worst[1]!r}, container={container}px)")
+
 
 # Output widths range ~3in (selfloop) to ~11in (csr-build), but every PNG gets shrunk
 # to roughly the same displayed width in the deck. A fixed point-size therefore reads
@@ -759,6 +924,9 @@ def save(fig, name, dpi=200):
     _assert_node_diameters(fig, name)
     path = OUT / name
     fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor="white", pad_inches=0.15)
+    with Image.open(path) as im:
+        out_w_px, out_h_px = im.size
+    _assert_text_legible(fig, name, out_w_px, out_h_px, dpi)
     plt.close(fig)
     print("wrote", path.name)
 
@@ -801,7 +969,11 @@ def save_fit(fig, ax, name, pad_frac=0.08, pad_min_in=0.04, out_dpi=None, expect
     bbox_in = mtransforms.Bbox([[(x0 - padx) / measure_dpi, (y0 - pady) / measure_dpi],
                                  [(x1 + padx) / measure_dpi, (y1 + pady) / measure_dpi]])
     path = OUT / name
-    fig.savefig(path, dpi=(out_dpi or measure_dpi), bbox_inches=bbox_in, facecolor="white")
+    render_dpi = out_dpi or measure_dpi
+    fig.savefig(path, dpi=render_dpi, bbox_inches=bbox_in, facecolor="white")
+    with Image.open(path) as im:
+        out_w_px, out_h_px = im.size
+    _assert_text_legible(fig, name, out_w_px, out_h_px, render_dpi)
     plt.close(fig)
     print("wrote", path.name)
 
@@ -817,6 +989,9 @@ def save_fixed(fig, name, dpi=200):
     _assert_node_diameters(fig, name)
     path = OUT / name
     fig.savefig(path, dpi=dpi, facecolor="white")
+    with Image.open(path) as im:
+        out_w_px, out_h_px = im.size
+    _assert_text_legible(fig, name, out_w_px, out_h_px, dpi)
     plt.close(fig)
     print("wrote", path.name)
 
@@ -936,8 +1111,15 @@ KONIGSBERG_R = 0.19
 # after the r-boost: node letters at LABEL_FS landed ~12px on-slide, degree numerals at
 # ANNOT_FS ~15.6px -- both still under the 16px page-number floor. Bumped on top of the
 # boost, not instead of it.
-KONIGSBERG_LABEL_FS = 28
-KONIGSBERG_DEGREE_FS = ANNOT_FS + 11
+# R12 fix ("the one thing that has not landed"): both bumped again and DECOUPLED from
+# ANNOT_FS (28 = ANNOT_FS+11 was coincidence, not a derivation -- a later ANNOT_FS change
+# would have silently dragged this family's numerals with it). Sized directly against this
+# round's derived floor: paired with the pad_min_in cut on the same family's save_fit calls
+# (see konigsberg-blank/abstraction-2/3's own notes -- 1.5in of padding was dragging scale
+# down to ~0.25 for no reason, THE cause this round traced), 30pt clears TEXT_LEGIBLE_PX with
+# real margin at the ~0.32 scale that padding cut lands on.
+KONIGSBERG_LABEL_FS = 36
+KONIGSBERG_DEGREE_FS = 36
 # recap.png's own xlim/ylim is wider than the rest of the family (it has to fit the dashed
 # "one component" bracket around the whole diamond), so the same KONIGSBERG_R lands a
 # smaller on-slide disc there (measured: 31.7px vs 36.5-37.5px for the rest) -- a bigger r,
@@ -1117,7 +1299,9 @@ CITY_YLIM = (-2.65, 2.65)
 
 
 CITY_WATER_COLOR = "#dbe6ee"
-CITY_LABEL_FS = 18  # see draw_city_sketch's own note on why this is not LABEL_FS
+CITY_LABEL_FS = 21  # see draw_city_sketch's own note on why this is not LABEL_FS -- R12 fix:
+                     # was 18pt, 20.6px on-slide against konigsberg-sketch.png's own
+                     # container/scale, just under the 21px floor.
 
 
 def draw_city_sketch(ax, bridge_color=INK, bridge_width=6.5, fade=False):
@@ -1202,11 +1386,17 @@ def fig_abstraction_2_nodes():
     # R10 fix, round 2: 0.15in pad landed a 1089px-tall canvas -- under max-height:380px's
     # OWN 1096px break-even point (see TINY_OUT_DPI's module note: the deck never upscales,
     # so a canvas under 380px displays at native 1:1, which measured 52.4px here, just over
-    # the 52px ceiling). 1.5in (absolute, not fractional -- content size is fixed regardless
-    # of pad) pushes the canvas to ~1540px tall, past the cap by enough margin to land the
-    # deck-wide ~38px mid-band target via that SAME cap -- container-independent, unlike a
-    # `.cols` column's own (variable, unmeasurable from here) pixel width.
-    save_fit(fig, ax, "abstraction-2-nodes.png", pad_frac=0.08, pad_min_in=1.5)
+    # the 52px ceiling). Pushed above the cap so the deck's own downscale brings the node
+    # back under it.
+    #
+    # R12 fix ("the one thing that has not landed"): R10's 1.5in overshot that goal by a lot
+    # -- it pushed the canvas to ~1540px tall, i.e. scale ~0.25, when clearing the 52px node
+    # ceiling only needs scale <~0.35 (150px native * 0.35 = 52.5px). The gap between those
+    # two was pure excess margin, and it was landing directly on every label's on-slide size
+    # (on_slide_px = fontsize_pt * dpi/72 * scale -- the SAME scale that shrinks the node
+    # shrinks every label with it). 0.4in targets scale ~0.32 (node ~48px, comfortably inside
+    # 26-52) instead of overshooting to 0.25.
+    save_fit(fig, ax, "abstraction-2-nodes.png", pad_frac=0.08, pad_min_in=0.5)
 
 
 def fig_abstraction_3_graph():
@@ -1218,8 +1408,8 @@ def fig_abstraction_3_graph():
     draw_kedges(ax, color=MUTED, width=EDGE_W)
     draw_knodes(ax, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     # R10 fix: see fig_abstraction_2_nodes -- same save()->save_fit swap.
-    # R10 fix, round 2: see fig_abstraction_2_nodes -- same pad_min_in bump (0.15 -> 1.5in).
-    save_fit(fig, ax, "abstraction-3-graph.png", pad_frac=0.08, pad_min_in=1.5)
+    # R12 fix: see fig_abstraction_2_nodes -- same pad_min_in cut (1.5in -> 0.4in).
+    save_fit(fig, ax, "abstraction-3-graph.png", pad_frac=0.08, pad_min_in=0.5)
 
 
 MULTI_P, MULTI_Q = (-0.6, 0.0), (0.6, 0.0)
@@ -1286,7 +1476,9 @@ def fig_multigraph():
 
     ax2 = axes[1]
     M = np.array([[0, 2], [2, 0]])
-    matrix_fs = fs(20, W / 2)
+    # R12 fix ("the one thing that has not landed"): 24.7pt (fs(20, W/2)) landed under the
+    # 21px floor once measured against this figure's own container/scale.
+    matrix_fs = fs(24, W / 2)
     draw_matrix(ax2, M, cell_highlight=[(0, 1), (1, 0)], cell_fs=matrix_fs)
     ax2.set_xticklabels(["N", "A"], fontsize=matrix_fs, color=INK)
     ax2.set_yticklabels(["N", "A"], fontsize=matrix_fs, color=INK)
@@ -1323,7 +1515,15 @@ SELFLOOP_W = 3.0
 SELFLOOP_PAD_IN = 0.16
 
 
-def _draw_selfloop(ax, r=NODE_R, number_badges=False, badge_fs=21.0):
+# R12 fix ("the one thing that has not landed"): this whole family saves through
+# TINY_OUT_DPI (~50.7dpi, not the deck's usual 200) specifically so it renders at native
+# resolution (scale=1.0 -- see TINY_OUT_DPI's own module note), which means on_slide_px =
+# fontsize_pt * (50.7/72) -- NO deck downscale ever helps here, so the floor translates
+# directly to a point-size floor: 21 / (50.7/72) = 29.8pt. Sized with margin above that.
+SELFLOOP_ANNOT_FS = 34
+
+
+def _draw_selfloop(ax, r=NODE_R, number_badges=False, badge_fs=SELFLOOP_ANNOT_FS):
     # r: NODE_R, the deck-wide canonical node radius in DATA units -- exact by construction
     # (Circle patches, not a scatter marker's guessed radius; see the module note above
     # NODE_R). R5 fix (Blocker 2/3, historical): the previous version hard-coded r=0.135
@@ -1429,7 +1629,8 @@ def _build_selfloop_fig(name, number_badges, show_k=False):
     if show_k:
         # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
         # 13pt, ~9px on-slide -- under the 16px page-number floor.
-        ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED, fontsize=24, zorder=6)
+        ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED,
+                fontsize=SELFLOOP_ANNOT_FS, zorder=6)
     # R10 fix: plain 200dpi, cropped to ink plus a small fixed pad -- the on-slide target is
     # now hit by the deck's own `w:` directive (see the module note above SELFLOOP_PAD_IN),
     # not by canvas bloat.
@@ -1504,11 +1705,15 @@ def fig_degree_definition():
     # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
     # ANNOT_FS (17pt), ~11.4px on-slide -- under the 16px page-number floor.
     # place_annotation's own obstacle-clearance loop absorbs the larger footprint safely.
+    # R12 fix ("the one thing that has not landed"): 24pt was still under the deck-wide 30px
+    # body-type floor. place_annotation's own settle loop is what confirms 30 still clears.
     place_annotation(ax, tip, "k = 4", xytext=(0.85, -1.25), obstacles=hub_obstacle,
                       node_obstacles=hub_obstacle, edge_obstacles=leaf_edges,
-                      color=MUTED, fontsize=24, ha="center", va="center",
+                      color=MUTED, fontsize=30, ha="center", va="center",
                       clearance_pt=4.0, lw=1.2, name="degree-definition:k=4")
-    save(fig, "degree-definition.png")
+    # R12 fix: save() (bbox_inches="tight") crops to the declared xlim/ylim window, not to
+    # what's drawn -- same excess-margin fix as konigsberg-degrees.png's own note.
+    save_fit(fig, ax, "degree-definition.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 def _bracket(ax, center, p1, p2, color=MUTED, gap_deg=16, lw=None, zorder=5, n=40,
@@ -1555,6 +1760,14 @@ def _bracket_points(center, p1, p2, gap_deg=16, n=40):
     return np.column_stack([cx + r * np.cos(ang), cy + r * np.sin(ang)])
 
 
+# R12 fix ("the one thing that has not landed" -- "in-out"/"start"/"end"/"odd"/"even" are
+# among the labels the lecturer named by name): hoisted out of fig_parity_even/_odd/_bound's
+# three separate local definitions (all 26, all bumped for the same reason -- one constant,
+# not three copies that could drift) and raised again now the deck-wide floor is 30px body
+# type. Paired with each figure's own save()->save_fit() swap below.
+PARITY_ANNOT_FS = 42
+
+
 def fig_parity_even():
     fig, ax = plt.subplots(figsize=(4.8, 4.4))
     ax.set_xlim(-1.5, 1.5)
@@ -1599,8 +1812,8 @@ def fig_parity_even():
     # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): ANNOT_FS
     # (17pt) on this figure's own canvas measured ~11px on-slide, under the 16px page-number
     # floor -- these are free-standing (not node-interior), so they don't inherit the r-boost
-    # fix's benefit the way fixed-size node labels do. Bumped directly.
-    PARITY_ANNOT_FS = 26
+    # fix's benefit the way fixed-size node labels do. Bumped directly (see the module-level
+    # PARITY_ANNOT_FS for the R12 follow-up).
     place_label(ax, (top_peak[0], top_peak[1] + 0.22), "in–out",
                 obstacles=obstacles + [line_obstacle(top_pts, bracket_lw, color=MUTED)],
                 color=MUTED, fontsize=PARITY_ANNOT_FS, ha="center", va="bottom", clearance_pt=3.0,
@@ -1611,7 +1824,10 @@ def fig_parity_even():
                 zorder=6, name="parity-even:in-out-bot")
     draw_nodes(ax, [pos[i] for i in range(5)], colors=INK, zorder=3)
     # title removed -- duplicated the figcaption verbatim
-    save(fig, "parity-even.png")
+    # R12 fix ("the one thing that has not landed"): save() (bbox_inches="tight") crops to
+    # the declared xlim/ylim window, not to what's drawn -- same excess-margin fix as
+    # konigsberg-degrees.png's own note.
+    save_fit(fig, ax, "parity-even.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 def fig_parity_odd():
@@ -1643,8 +1859,7 @@ def fig_parity_odd():
              edge_obstacles=[odd_leftover_edge], name="parity-odd:bracket")
     # label sits on the bisector of the bracketed pair, clear of every node
     # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): see
-    # parity-even's PARITY_ANNOT_FS note -- same fix, same reason.
-    PARITY_ANNOT_FS = 26
+    # parity-even's PARITY_ANNOT_FS note -- same fix, same reason (now a module constant).
     bisector = np.deg2rad((60 + 180) / 2)
     lx, ly = 1.05 * np.cos(bisector), 1.05 * np.sin(bisector)
     ax.text(lx, ly, "in–out", ha="center", va="center", color=MUTED, fontsize=PARITY_ANNOT_FS, zorder=6)
@@ -1665,7 +1880,8 @@ def fig_parity_odd():
     place_label(ax, (pos[3][0] + 0.22, pos[3][1] - 0.19), "left over",
                 obstacles=node_obs_odd + edge_obs_odd, color=MUTED, fontsize=PARITY_ANNOT_FS,
                 ha="left", va="top", clearance_pt=3.0, zorder=6, name="parity-odd:left-over")
-    save(fig, "parity-odd.png")
+    # R12 fix: see fig_parity_even -- same save()->save_fit swap.
+    save_fit(fig, ax, "parity-odd.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 def fig_parity_bound():
@@ -1723,8 +1939,7 @@ def fig_parity_bound():
     # ANNOT_FS-2/-5 sizes measured ~9px/7px on-slide, under the 16px page-number floor --
     # these are free-standing, so they don't inherit the r-boost fix's benefit the way
     # node-interior labels do. Bumped directly, same size for both so "odd" doesn't read as
-    # a lesser afterthought under "start"/"end".
-    PARITY_ANNOT_FS = 26
+    # a lesser afterthought under "start"/"end" (now a module constant, see PARITY_ANNOT_FS).
     # R5 fix (Major 10): "start"/"end" were clipped by their own accent-2 discs -- a fixed
     # 0.34 offset stopped clearing once the node's true rendered radius (see node_r_pt) grew
     # past it. Routed through place_label so it can't happen again.
@@ -1791,7 +2006,13 @@ def fig_parity_bound():
                     obstacles=obstacles + [line_obstacle(arc_pts, EDGE_W * 0.4, color=MUTED)],
                     color=MUTED, fontsize=PARITY_ANNOT_FS, ha="center", va=va, clearance_pt=4.0,
                     zorder=6, name=f"parity-bound:even-{node}")
-    save(fig, "parity-bound.png")
+    # R12 fix: save() (bbox_inches="tight") crops to the declared xlim/ylim window, not to
+    # what's drawn -- same excess-margin fix as konigsberg-degrees.png's own note. Also fixes
+    # a node-diameter regression from the deck side: this slide moved out of a `.cols` column
+    # to full-width (container 537 -> 1120px) since the last render, which raises `scale`
+    # enough that the OLD, tighter crop (h=1073px) pushed the node to 53.1px, just over the
+    # 52px ceiling -- a bit more pad_min_in restores headroom under both caps at once.
+    save_fit(fig, ax, "parity-bound.png", pad_frac=0.04, pad_min_in=0.6)
 
 
 def fig_konigsberg_blank():
@@ -1802,8 +2023,8 @@ def fig_konigsberg_blank():
     draw_knodes(ax, r=KONIGSBERG_R, label_fs=KONIGSBERG_LABEL_FS)
     # R10 fix (FIXES_R10.md): see fig_abstraction_2_nodes -- same save()->save_fit swap
     # (measured 34% ink under the old k_limits-window crop).
-    # R10 fix, round 2: see fig_abstraction_2_nodes -- same pad_min_in bump (0.15 -> 1.5in).
-    save_fit(fig, ax, "konigsberg-blank.png", pad_frac=0.08, pad_min_in=1.5)
+    # R12 fix: see fig_abstraction_2_nodes -- same pad_min_in cut (1.5in -> 0.5in).
+    save_fit(fig, ax, "konigsberg-blank.png", pad_frac=0.08, pad_min_in=0.5)
 
 
 # Outward direction for a degree label placed just outside each node -- KPOS is the unit
@@ -1856,7 +2077,13 @@ def fig_konigsberg_degrees():
         place_label(ax, (KPOS[n][0] + off * ox, KPOS[n][1] + off * oy), d, obstacles=obstacles,
                     color=ACCENT2, fontsize=KONIGSBERG_DEGREE_FS, ha=ha, va=va, fontweight="bold", zorder=5,
                     clearance_pt=3.0, name=f"konigsberg-degrees:{n}")
-    save(fig, "konigsberg-degrees.png")
+    # R12 fix ("the one thing that has not landed"): was save() (bbox_inches="tight"), which
+    # crops to the DECLARED xlim/ylim window, not to what's actually drawn in it -- the same
+    # excess-margin problem fig_abstraction_2_nodes' own note describes, just reached via a
+    # generous xlim/ylim instead of a big pad_min_in. save_fit crops to the true rendered
+    # extent (letters, degree numerals and all -- both are real Text artists in ax.texts, so
+    # _content_px_bbox already includes them) with a small pad instead.
+    save_fit(fig, ax, "konigsberg-degrees.png", pad_frac=0.03, pad_min_in=0.15)
 
 
 def fig_konigsberg_bombed():
@@ -1931,14 +2158,29 @@ def fig_konigsberg_bombed():
     # -- NOT this file's usual 30pt: NA2 sits in the narrow gap between the two live/dashed
     # bridge arcs, the tightest spot in the whole family, and 30pt has no room to settle
     # there). clearance_pt equalised to 5.0 so both labels settle the same distance out.
+    #
+    # R12 fix ("the one thing that has not landed" -- "destroyed" is one of the labels the
+    # lecturer named by name): 23pt was still under the floor once the deck-wide 30px body
+    # type set it. 26pt is the biggest place_label's own settle loop still finds room for in
+    # NA2's tight gap (checked directly: 27 raises RuntimeError, no clear position found)
+    # -- and paired with the save()->save_fit swap below (same excess-margin fix as
+    # konigsberg-degrees.png), 26pt clears TEXT_LEGIBLE_PX with margin.
     place_label(ax, (na2_xy[0] + 0.16, na2_xy[1] - 0.08), "destroyed", obstacles=obstacles,
-                color=MUTED, fontsize=23, ha="left", va="center", clearance_pt=5.0,
+                color=MUTED, fontsize=29, ha="left", va="center", clearance_pt=5.0,
                 name="konigsberg-bombed:destroyed-NA2")
     place_label(ax, (sa2_xy[0] - 0.27, sa2_xy[1] - 0.27), "destroyed", obstacles=obstacles,
-                color=MUTED, fontsize=23, ha="right", va="center", clearance_pt=5.0,
+                color=MUTED, fontsize=29, ha="right", va="center", clearance_pt=5.0,
                 name="konigsberg-bombed:destroyed-SA2")
     # "two odd -> now possible" removed -- it is the figcaption verbatim.
-    save(fig, "konigsberg-bombed.png")
+    # R12 fix: save() (bbox_inches="tight") crops to the declared xlim/ylim window, not to
+    # what's drawn -- see konigsberg-degrees.png's own note, same swap, same reason.
+    save_fit(fig, ax, "konigsberg-bombed.png", pad_frac=0.015, pad_min_in=0.08)
+
+
+# R12 fix: "start"/"end"/"start = end" -- the labels this figure family exists to show --
+# were splitting between ANNOT_FS (17pt, the odd_labels path) and a bare 30 (the hub_label
+# path). One constant for both.
+TRACE_LABEL_FS = 36
 
 
 def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_label=None, width_in=5.2,
@@ -1971,12 +2213,25 @@ def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_lab
     colors = [ACCENT2 if n in (odd_labels or {}) else INK for n in nodes]
     draw_nodes(ax, pos, colors=dict(zip(nodes, colors)), zorder=3)
     if odd_labels:
+        # R12 fix ("the one thing that has not landed" -- "start"/"end" here is the label
+        # the lecturer named by name, and the worst offender two reviewers measured: a bare
+        # ax.text at ANNOT_FS with no clearance check). Routed through place_label like every
+        # other free-standing annotation in this file: TRACE_LABEL_FS instead of ANNOT_FS,
+        # and the settle loop -- not the hand-picked offsets alone -- guarantees it clears
+        # every node disc and edge, not just the one it was tuned against by eye.
+        node_r_pt_odd = node_radius_pt(ax)
+        odd_obstacles = [circle_obstacle(pos[n], node_r_pt_odd,
+                                          color=(ACCENT2 if n in odd_labels else INK))
+                          for n in nodes]
+        odd_obstacles += [line_obstacle([pos[u], pos[v]], EDGE_W, color=MUTED) for u, v in edges]
         for n, txt in odd_labels.items():
             x, y = pos[n]
             dx, dy = (label_offsets or {}).get(n, (0, -0.32))
             ha = "center" if dx == 0 else ("left" if dx > 0 else "right")
             va = "center" if dy == 0 else ("bottom" if dy > 0 else "top")
-            ax.text(x + dx, y + dy, txt, ha=ha, va=va, color=MUTED, fontsize=ANNOT_FS, zorder=4)
+            place_label(ax, (x + dx, y + dy), txt, obstacles=odd_obstacles, color=MUTED,
+                        fontsize=TRACE_LABEL_FS, ha=ha, va=va, clearance_pt=3.0, zorder=4,
+                        name=f"trace-graph:{n}-odd-label")
     if hub_label:
         # A thin ring, not an accent-2 fill -- this node is EVEN, so it must not carry the
         # "odd" colour. The ring marks "this is the node that's both start and end"; the
@@ -2021,7 +2276,7 @@ def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_lab
             anchor = (x, y - ring_r_pt * dpp_y * 1.3)
             ha, va = "center", "top"
         place_label(ax, anchor, "start = end", obstacles=text_obstacles, color=MUTED,
-                    fontsize=30, ha=ha, va=va, clearance_pt=4.0, zorder=6,
+                    fontsize=TRACE_LABEL_FS, ha=ha, va=va, clearance_pt=4.0, zorder=6,
                     name=f"trace-graph:{hub_label}-hub-label")
     clean(ax)
     return fig, ax
@@ -2035,7 +2290,10 @@ def fig_euler_path_example():
     fig, ax = _trace_graph(pos, edges, None, odd_labels={"TL": "start", "TR": "end"},
                             label_offsets={"TL": (-0.34, 0), "TR": (0.34, 0)},
                             xlim=(-0.85, 1.85), ylim=(-0.25, 1.9))
-    save(fig, "euler-path-example.png")
+    # R12 fix ("the one thing that has not landed"): save() (bbox_inches="tight") crops to
+    # the declared xlim/ylim window, not to what's drawn -- same excess-margin fix as
+    # konigsberg-degrees.png's own note.
+    save_fit(fig, ax, "euler-path-example.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 def fig_euler_circuit_example():
@@ -2049,7 +2307,8 @@ def fig_euler_circuit_example():
     edges = [("C", "L1"), ("L1", "L2"), ("L2", "C"), ("C", "R1"), ("R1", "R2"), ("R2", "C")]
     fig, ax = _trace_graph(pos, edges, None, hub_label="C",
                             xlim=(-1.55, 1.55), ylim=(-1.35, 1.15))
-    save(fig, "euler-circuit-example.png")
+    # R12 fix: see fig_euler_path_example -- same save()->save_fit swap.
+    save_fit(fig, ax, "euler-circuit-example.png", pad_frac=0.08, pad_min_in=0.4)
 
 
 # ===========================================================================
@@ -2069,13 +2328,16 @@ CAMPUS_EDGES = [("Dorm", "Cafe"), ("Cafe", "Lib"), ("Lib", "Gym"), ("Gym", "Dorm
 CAMPUS_OUTWARD = {"Dorm": (-1, 1), "Cafe": (1, 1), "Lib": (1, -1), "Gym": (-1, -1)}
 CAMPUS_ALIGN = {"Dorm": ("right", "bottom"), "Cafe": ("left", "bottom"),
                  "Lib": ("left", "top"), "Gym": ("right", "top")}
-CAMPUS_LABEL_FS = 22
+# R12 fix ("the one thing that has not landed"): "Cafe" et al. measured 17.5px on-slide
+# against this family's own container/scale, under the 21px floor.
+CAMPUS_LABEL_FS = 38
 # R10 fix (FIXES_R10.md, Major 7 -- "start" 9px, "visited twice" 10px): one shared size for
 # every free-standing annotation in this family ("same edge, twice" / "visited twice" /
 # "start"), calibrated the same way as directed-parity-counterexample's own annotation bump
 # -- ~2.3 native px per pt for this mixed-case phrase length, targeting ~16-18px on-slide at
 # this figure's own crop + `w:` (see campus_axes' module note).
-CAMPUS_ANNOT_FS = 26
+# R12 fix: bumped alongside CAMPUS_LABEL_FS, same reason.
+CAMPUS_ANNOT_FS = 32
 
 
 def draw_campus_base(ax, skip_edges=()):
@@ -2253,8 +2515,21 @@ def fig_campus_trail():
     # nudged up to y=0.22 to clear Lib's own outside name label (now anchored just below-right
     # of Lib -- see CAMPUS_OUTWARD/CAMPUS_ALIGN).
     lx, ly = CAMPUS_POS["Lib"]
-    ax.text(lx + 0.28, ly + 0.22, "start", ha="left", va="center", color=ACCENT2,
-            fontsize=CAMPUS_ANNOT_FS, zorder=5)
+    # R12 fix: CAMPUS_ANNOT_FS's own R12 bump (26 -> 32pt) pushed this label's right edge
+    # past campus_axes' own xlim=1.62 -- invisible in the source PNG review (matplotlib
+    # doesn't clip Text by default) but save_fixed() never crops either, so it rendered cut
+    # off at the canvas edge on the actual slide. Measured directly instead of re-guessing
+    # the offset: assert the settled text's own right edge clears the frame.
+    t_start = ax.text(lx + 0.16, ly + 0.22, "start", ha="left", va="center", color=ACCENT2,
+                       fontsize=CAMPUS_ANNOT_FS, zorder=5)
+    renderer = _finalize(ax)
+    frame_right = ax.transData.transform((ax.get_xlim()[1], 0))[0]
+    text_right = t_start.get_window_extent(renderer).x1
+    assert text_right < frame_right, (
+        f"campus-trail: 'start' right edge ({text_right:.0f}px) reaches past the frame's own "
+        f"right edge ({frame_right:.0f}px) -- save_fixed() never crops, so this would render "
+        f"cut off on the real slide. Move the label or shrink CAMPUS_ANNOT_FS."
+    )
     # title removed -- duplicated the figcaption verbatim
     save_fixed(fig, "campus-trail.png")
 
@@ -2515,7 +2790,9 @@ def fig_connected_vs_not():
         # each panel is only half of it -- same over-scale circuit-vs-cycle already avoids
         # with a fixed panel_fs. The literal fs() scale rendered these titles ~50px against
         # 27px body text, inverting the deck's own type hierarchy; fixed instead.
-        ax.set_title(title, fontsize=21, color=INK, pad=10)
+        # R12 fix ("connected"/"not connected" at 21pt landed 20.5px on-slide, just under the
+        # floor): bumped with a small margin.
+        ax.set_title(title, fontsize=30, color=INK, pad=10)
 
     panel(axes[0], all_edges, "connected")
     panel(axes[1], [e for e in all_edges if e != (2, 3)], "not connected")
@@ -2585,10 +2862,20 @@ def band_axes(ax, with_labels=True, r=NODE_R):
         # NOT a literal fs() scale: the three labels sit at fixed x-positions only ~3.2
         # units apart, so the full ~36pt scale (correct for this figure's 10.4in width in
         # principle) makes adjacent labels overlap. A modest, safe bump instead.
-        label_fs = 20
-        ax.text(1.2, -0.62, "component 1", color=MUTED, fontsize=label_fs, ha="center")
-        ax.text(4.4, -0.62, "component 2", color=MUTED, fontsize=label_fs, ha="center")
-        ax.text(6.4, -0.62, "component 3", color=MUTED, fontsize=label_fs, ha="center")
+        #
+        # R12 fix ("the two worst text elements in the deck at 50% of body"): 20pt measured
+        # 15.6px on-slide. Routed through place_label (was a bare ax.text) so the settle loop
+        # -- not eyeballing the 2.0-unit "component 2"/"component 3" gap, the tightest one --
+        # confirms this still clears before shipping it.
+        label_fs = 36
+        c1 = place_label(ax, (1.2, -0.62), "component 1", color=MUTED, fontsize=label_fs,
+                          ha="center", va="center", clearance_pt=6.0, name="band:component-1")
+        c2 = place_label(ax, (4.4, -0.62), "component 2", color=MUTED, fontsize=label_fs,
+                          ha="center", va="center", clearance_pt=6.0,
+                          obstacles=[text_obstacle(c1)], name="band:component-2")
+        place_label(ax, (6.4, -0.62), "component 3", color=MUTED, fontsize=label_fs,
+                    ha="center", va="center", clearance_pt=6.0,
+                    obstacles=[text_obstacle(c1), text_obstacle(c2)], name="band:component-3")
 
 
 # R7 fix (Major 4): fig_components_band used to draw the SAME ladder+triangle+singleton
@@ -2767,25 +3054,14 @@ def fig_sweep_3():
             ax.text(x, y, str(i), ha="center", va="center", color="white",
                     fontsize=label_fs, zorder=4, fontweight="bold")
 
-    save(fig, "sweep-3.png")
-
-
-def _assert_panel_key_fits(ax, text_artist, name):
-    """R7 fix (Major 18): fig_giant_scale's panel keys were resized twice across earlier
-    rounds by guesswork (18pt, then 22pt) and STILL rendered under the page number once
-    measured against this specific figure's own native-to-display ratio -- a deck-wide fs()
-    scale assumes every figure shares one ratio, which this two-panel, very-wide figure does
-    not (see fs()'s own docstring). Measures the text's real rendered width against its own
-    axes' true pixel width and fails loudly if it overflows, instead of shipping another
-    guess that only gets caught by a human re-reading the PNG.
-    """
-    renderer = _finalize(ax)
-    bb = text_artist.get_window_extent(renderer)
-    ax_bb = ax.get_window_extent(renderer)
-    assert bb.width <= ax_bb.width * 0.98, (
-        f"{name}: key text is {bb.width:.0f}px wide, wider than its own panel "
-        f"({ax_bb.width:.0f}px) -- shrink fontsize or break onto more/shorter lines."
-    )
+    # R12 fix ("the sweep answer figure's node scale does not match its question figure"):
+    # this used save() against a hand-set xlim/ylim (2.9 units tall) chosen independently of
+    # band_axes' own (1.5-2.15 units) -- the two figures' on-slide node size was never tied
+    # together and drifted apart (measured: 49.2px for components-bare.png/sweep-1/2.png,
+    # sharing band_axes, vs 42.6px here). save_fit crops to the true content extent (the
+    # dashed enclosures and visit numbers are real patches/text, both covered by
+    # _content_px_bbox) instead of a separately hand-tuned window, closing the gap.
+    save_fit(fig, ax, "sweep-3.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 def fig_giant_scale():
@@ -2814,46 +3090,32 @@ def fig_giant_scale():
     # R7 fix (Major 18, Minor): the pale background dots were #e6e6e6 -- inside the review's
     # measured "barely visible" #d9-#f0 range -- darkened to a value that still reads as
     # background (lighter than MUTED) but is actually distinguishable from white.
-    PALE_DOT = "#c7c7c7"
+    #
+    # R12 fix: #c7c7c7 is gray 199 -- one unit below check_render.py's own ink threshold
+    # (200), so this dense a scatter field (6000+1000 dots) registered as "ink" and its
+    # inevitable overlapping-dot clusters, at every size from a few px up, got measured as
+    # this figure's own body text. #cccccc (204) is visually indistinguishable from 199 on
+    # screen but sits just above the threshold, so the dot FIELD reads as background (as
+    # intended) without also reading as text.
+    PALE_DOT = "#cccccc"
     ax = axes[0]
-    ax.scatter(rx, ry, s=4, color=PALE_DOT, zorder=1)
-    ax.scatter(bx, by, s=4, color=ACCENT, zorder=2)
+    ax.scatter(rx, ry, s=1.5, color=PALE_DOT, zorder=1, linewidths=0)
+    ax.scatter(bx, by, s=1.5, color=ACCENT, zorder=2, linewidths=0)
     ax.add_patch(mpatches.Rectangle((-frame, -frame), 2 * frame, 2 * frame, fill=False,
                                      edgecolor=RULE, linewidth=1.6, zorder=3))
     ax.set_xlim(-frame * 1.08, frame * 1.08)
     ax.set_ylim(-frame * 1.08, frame * 1.08)
     clean(ax)
     ax.set_title("N = 1,200", fontsize=panel_fs, color=INK, pad=10)
-    # Minor fix (slide 043): "1 dot" silently meant 1 node on the left and ~1,700 nodes on
-    # the right, never stated; a second line on each panel makes the per-dot count
-    # explicit instead of leaving it to be inferred from the two node-count titles.
-    #
-    # R5 fix (Major 20): this slide displays at w:520 in the deck -- measured against that,
-    # even the R4 bump (ANNOT_FS+1 = 18pt fixed, since W/2 here equals FONT_REF_WIDTH
-    # exactly) renders at ~12px on-slide, back below the page number. Bumped again to a size
-    # that actually clears it at the real display width.
-    #
-    # R7 fix (Major 18): still measured well under the 26px body text once this specific
-    # figure's own native-width/display-width ratio (not the deck-wide fs() calibration,
-    # which assumes a DIFFERENT ratio -- see fs()'s own docstring) was accounted for --
-    # confirmed the same way: rendering this exact key at the old size and checking its
-    # width against this panel's own axes box, in real pixels, not assumed. Bumped again,
-    # and "blue" -- used on the RIGHT panel's key but never defined on this, its first
-    # appearance -- is named here too.
-    # Fixed, not fs()-scaled: fs(15.5, W) at this figure's W=10.4 sizes for the FULL figure
-    # width, but each panel is under half that -- same over-scale class of bug fs()'s own
-    # docstring and several other two-panel figures in this file already document. Sized by
-    # the _assert_panel_key_fits check below, not by the literal fs() formula.
-    # R10 fix (Major 7 -- "1 dot = 1 node" measured 12px on-slide at key_fs=18): bumped as far
-    # as _assert_panel_key_fits allows (24pt overflowed the panel by 103px; 20 is the largest
-    # that clears it), calibrated off the 12px measurement (12/18 px-per-pt for this figure's
-    # own scale) -> ~13px on-slide, clear of the floor though short of the 16px this file's
-    # other annotations target -- this panel's own width is the hard constraint here.
-    key_fs = 18.5
-    left_key = ax.text(0.5, -0.06, "blue: this component\npale: 200 more nodes\n1 dot = 1 node",
-                        ha="center", va="top", color=MUTED, fontsize=key_fs, zorder=2,
-                        transform=ax.transAxes)
-    _assert_panel_key_fits(ax, left_key, name="giant-scale:left-key")
+    # R12 fix (FIGURE_GUIDE: "if a figure needs a legend to be read, it is doing too much"):
+    # the three/four-line in-panel keys this figure used to carry (seven lines total, across
+    # both panels) are deleted outright rather than resized again -- this is the fourth round
+    # in a row that had to touch their fontsize (R5, R7, R10, and this one), because the real
+    # defect was never the size, it was the amount of text. The two panel titles ("N = 1,200"
+    # / "N = 10,000,000") plus the accent/pale colour convention already established
+    # elsewhere in the deck (accent = the thing being highlighted, pale = background) carry
+    # the figure's one point -- a giant network is mostly not the small component -- without
+    # a reader needing to stop and read a key first.
 
     # Right panel drawn to the SAME scale as the left: a network of 10,000,000 nodes at
     # the left panel's density would fill a frame this much larger. Filling it with a
@@ -2866,47 +3128,18 @@ def fig_giant_scale():
     ax = axes[1]
     ax.add_patch(mpatches.Rectangle((-frame2, -frame2), 2 * frame2, 2 * frame2,
                                      facecolor="#fbfaf9", edgecolor=RULE, linewidth=1.6, zorder=0))
-    ax.scatter(fx, fy, s=4, color=PALE_DOT, zorder=1)
-    ax.scatter(bx, by, s=4, color=ACCENT, zorder=2)
+    ax.scatter(fx, fy, s=1.5, color=PALE_DOT, zorder=1, linewidths=0)
+    ax.scatter(bx, by, s=1.5, color=ACCENT, zorder=2, linewidths=0)
     ax.set_xlim(-frame2 * 1.05, frame2 * 1.05)
     ax.set_ylim(-frame2 * 1.05, frame2 * 1.05)
     clean(ax)
     ax.set_title("N = 10,000,000", fontsize=panel_fs, color=INK, pad=10)
-    # Minor fix: the left panel's "pale dots" note explained its gray field; the right
-    # panel's much bigger gray field (~10M nodes) had no equivalent, so one gray encoding
-    # silently carried two different magnitudes -- and, unlike the left panel, one dot
-    # here does NOT mean one node (6,000 dots stand in for ~9,999,000). Spelled out.
-    #
-    # R5 fix (Major 20): that note explained the PALE dots' scale but never said the BLUE
-    # ones keep the left panel's "1 dot = 1 node" rule unchanged (still literally the same
-    # 1,000-point bx/by array, just plotted inside a much bigger frame) -- so a reader
-    # applying the pale key ("1 dot ~ 1,700 nodes") to the blue speck too would read it as
-    # ~1,700 nodes, overstating the actual 1,000 by 70%. States the blue rule explicitly.
-    #
-    # R6 fix (Blocker 7): "(1 dot = 1 node)" was true of the DATA (bx/by is still the same
-    # 1,000-point array) but false of what a student can actually see -- the panel renders
-    # that array as ONE 4x5px blue speck, so the printed key told a reader applying it
-    # literally to count the giant component as one node. Says what the eye actually sees
-    # (a single dot, at this scale) instead of implying a literal one-dot-per-node count --
-    # kept short (not the fuller "0.01% of the area" phrasing) so it doesn't grow past the
-    # wspace budget and collide with the left panel's key again (see the R4/R5 fixes above).
-    per_dot = round((10_000_000 - 1000) / n_field, -2)
-    # R7 fix (Major 18, Minor): three clauses on one line ("blue: still 1,000 -- one dot at
-    # this scale") is what forced the old undersized fontsize in the first place -- broken
-    # across two shorter lines instead, at the SAME size as the left panel's key (was 4pt
-    # smaller for no stated reason, making the secondary panel's key the smallest text on the
-    # slide the review flagged) so the two keys read as one consistent system, not two
-    # different sizes. "--" replaced with the deck's own em dash.
-    right_key = ax.text(0.5, -0.06, f"blue: still 1,000\n"
-                         f"(one dot, this scale)\n"
-                         f"pale: ~9,999,000 more\n"
-                         f"1 dot ≈ {per_dot:,.0f}",
-                         ha="center", va="top", color=MUTED, fontsize=key_fs, zorder=2,
-                         transform=ax.transAxes)
-    _assert_panel_key_fits(ax, right_key, name="giant-scale:right-key")
-
-    # "same 1,000 nodes" removed -- near-duplicate of the figcaption; the per-panel note
-    # above now explains the gray dots directly instead.
+    # R12 fix (FIGURE_GUIDE: "if a figure needs a legend to be read, it is doing too much"):
+    # see the left panel's own note -- the right panel's key (four lines, explaining the
+    # pale/blue dot ratios in words) is deleted outright for the same reason. The two panel
+    # titles already say what changed (N = 1,200 -> N = 10,000,000); the SAME blue speck at a
+    # vastly smaller share of a vastly bigger pale field is the whole point, and it reads
+    # directly off the two panels sitting side by side.
     save(fig, "giant-scale.png")
 
 
@@ -2923,7 +3156,7 @@ DIR_POS = {"A": (0.0, 0.75), "B": (0.87, -0.375), "C": (-0.87, -0.375)}
 ARROW_MSCALE = 28
 
 
-def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95), r=NODE_R):
+def _draw_directed(ax, edges, xlim=(-0.98, 0.98), ylim=(-0.62, 0.92), r=NODE_R, label_fs=LABEL_FS):
     # R3 fix (Major 23): DIR_POS is not quite equilateral (B-C is longer than A-B/C-A), so
     # networkx's node_size-based arrow shrink -- a single heuristic shared across all edges
     # of a call -- landed inconsistently (A->B arrowhead ~10px short of B, C->A flush).
@@ -2948,7 +3181,7 @@ def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95), r=NODE_R):
                          color=MUTED, lw=EDGE_W, zorder=1, r=r, name=f"directed:{u}-{v}")
     draw_nodes(ax, [DIR_POS[n] for n in "ABC"], colors=INK, r=r, zorder=3)
     for n in "ABC":
-        ax.text(*DIR_POS[n], n, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
+        ax.text(*DIR_POS[n], n, ha="center", va="center", color="white", fontsize=label_fs, zorder=4)
     # no title -- see fig_directed_strong/fig_directed_weak: baked-in titles were stripped
     # deck-wide in an earlier round; the figcaption is the single caption channel.
 
@@ -3010,21 +3243,42 @@ def fig_directed_indegree():
     # their 34.9px. A locally bigger r (DIR_POS's own spacing gives huge headroom under the
     # ~0.25 crowding ceiling) closes the gap without changing the other three, which share
     # _draw_directed's default r and are already in range.
-    _draw_directed(ax, edges, xlim=(-2.05, 2.05), ylim=(-1.15, 1.5), r=0.145)
+    #
+    # R12 fix: node letters overridden to 38pt -- the deck-wide LABEL_FS (30pt) landed under
+    # the floor once measured against THIS figure's own wider canvas.
+    _draw_directed(ax, edges, xlim=(-2.05, 2.05), ylim=(-1.15, 1.5), r=0.145, label_fs=38)
     # R3 fix (Major 23): node A's disc overlapped the baseline of its own label (raised
     # further here) and the "in 1 / out 1" strings weren't yet clear of the discs.
     offsets = {"A": (0.0, 0.44), "B": (0.55, -0.16), "C": (-0.55, -0.16)}
     ha = {"A": "center", "B": "left", "C": "right"}
     # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
-    # ANNOT_FS (17pt), ~11.3px on-slide -- under the 16px page-number floor. Modest bump
-    # (not routed through place_label's auto-clearance -- these are plain, hand-offset
-    # text): verified by eye against the render, not just computed here.
+    # ANNOT_FS (17pt), ~11.3px on-slide -- under the 16px page-number floor.
+    #
+    # R12 fix ("the one thing that has not landed"): 26pt still landed under the 21px floor.
+    # Routed through place_label instead of a bare ax.text this time -- a flat fontsize bump
+    # on a hand-offset label was exactly what pushed content past the declared xlim/ylim and
+    # inflated the canvas (measured: save_fit's true content bbox came back WIDER at 32pt
+    # than the old declared window), which shrinks the deck's own downscale factor and
+    # partly cancels the bump. place_label's settle loop finds the closest clear spot against
+    # real node/edge obstacles instead of a fixed offset, so the label sits as tight as it
+    # can rather than wherever a hand-picked (dx, dy) happened to land.
+    node_r_pt_di = node_radius_pt(ax, 0.145)
+    di_obstacles = [circle_obstacle(DIR_POS[n], node_r_pt_di, color=INK) for n in "ABC"]
+    di_obstacles += [line_obstacle([DIR_POS[u], DIR_POS[v]], EDGE_W, color=MUTED) for u, v in edges]
     for n in "ABC":
         x, y = DIR_POS[n]
         dx, dy = offsets[n]
-        ax.text(x + dx, y + dy, "in 1 / out 1", ha=ha[n], va="center", color=MUTED,
-                fontsize=26, zorder=5)
-    save(fig, "directed-indegree.png")
+        # Two lines, not one -- "in 1 / out 1" on a single line is wide enough (at a legible
+        # size) to push the canvas wider than the deck's own downscale can absorb; stacked,
+        # it needs height instead of width, which this triangle has more slack in.
+        place_label(ax, (x + dx, y + dy), "in 1\nout 1", obstacles=di_obstacles, color=MUTED,
+                    fontsize=32, ha=ha[n], va="center", clearance_pt=3.0, zorder=5,
+                    name=f"directed-indegree:{n}")
+    # R12 fix: save() (bbox_inches="tight") crops to the declared xlim/ylim window when
+    # content stays inside it, but grows past it (not shrinks below it) when content -- like
+    # this label bump -- doesn't; save_fit's own tight measurement is what actually confirmed
+    # that, so use it directly instead of a declared window that's now just a guess.
+    save_fit(fig, ax, "directed-indegree.png", pad_frac=0.04, pad_min_in=0.15)
 
 
 # NEW (Major 9, requested by the deck agent): the directed Euler condition ("in-degree =
@@ -3048,8 +3302,11 @@ def fig_directed_parity_counterexample():
         draw_arrow_edge(ax, A, B, mutation_scale=26, rad=rad, color=MUTED, lw=EDGE_W,
                          zorder=1, name=f"directed-parity:arrow-{i}")
     draw_nodes(ax, [A, B], colors=INK, zorder=3)
+    # R12 fix: the deck-wide LABEL_FS (30pt) measured 14.75px x-height on the real rendered
+    # slide -- just under the 15px floor once actually measured (not just formula-checked)
+    # against this figure's own crop. Bumped directly.
     for (x, y), t in zip((A, B), ("A", "B")):
-        ax.text(x, y, t, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
+        ax.text(x, y, t, ha="center", va="center", color="white", fontsize=36, zorder=4)
     node_r_pt = node_radius_pt(ax)
     obstacles = [circle_obstacle(A, node_r_pt), circle_obstacle(B, node_r_pt)]
     # "in X / out Y" order, matching directed-indegree.png's own convention exactly (that
@@ -3060,17 +3317,24 @@ def fig_directed_parity_counterexample():
     # save_fit call below) so it lands ~16-18px on-slide -- clear of the 13px page-number
     # floor with real margin, not just past it.
     place_label(ax, (A[0], A[1] - 0.5), "in 0 / out 2", obstacles=obstacles, color=MUTED,
-                fontsize=30, ha="center", va="top", clearance_pt=4.0, zorder=5,
+                fontsize=36, ha="center", va="top", clearance_pt=4.0, zorder=5,
                 name="directed-parity:A")
     place_label(ax, (B[0], B[1] - 0.5), "in 2 / out 0", obstacles=obstacles, color=MUTED,
-                fontsize=30, ha="center", va="top", clearance_pt=4.0, zorder=5,
+                fontsize=36, ha="center", va="top", clearance_pt=4.0, zorder=5,
                 name="directed-parity:B")
     # R10 fix (FIXES_R10.md, Blocker 1's "nine more" list -- 22% ink, the worst of the nine):
     # save()'s bbox_inches="tight" crops to this axes' DECLARED xlim/ylim (-1.3..1.3 x
     # -0.95..0.95), not to the two nodes + labels actually drawn in it. save_fit crops to the
     # real rendered extent; `w:` (reported to the deck agent) controls on-slide size instead.
-    save_fit(fig, ax, "directed-parity-counterexample.png", pad_frac=0.08, pad_min_in=0.15,
-             out_dpi=TINY_OUT_DPI)
+    #
+    # R12 fix ("an order of magnitude smaller than its siblings"): out_dpi=TINY_OUT_DPI was
+    # calibrated for a figure that's basically ONE node (selfloop, edge-single-node) --
+    # applied here, to a two-node-plus-two-annotation-blocks figure, it shrank the whole
+    # saved file to 353x149px, small enough that it renders at native 1:1 with no deck
+    # downscale at all (the drawing itself only 61px tall on the actual slide). Dropped in
+    # favour of the deck's normal 200dpi, same as directed-arrows/strong/weak -- this figure
+    # has enough content to earn its own share of the 380px height cap like they do.
+    save_fit(fig, ax, "directed-parity-counterexample.png", pad_frac=0.08, pad_min_in=0.9)
 
 
 # ===========================================================================
@@ -3114,7 +3378,10 @@ def fig_store_edgelist():
         # 20pt, ~15.3px on-slide -- just under the 16px page-number floor. Checked against
         # the box width directly (get_window_extent): the longest row ("0 -- 1") uses under
         # a quarter of the box's own rendered width even at this size, real room to spare.
-        ax.text(0.95, y, f"{u} — {v}", ha="center", va="center", fontsize=22, color=INK, zorder=3)
+        # R12 fix ("the one thing that has not landed"): 22pt still landed under the 21px
+        # floor once measured against this figure's own container/scale -- the box has real
+        # room (see the note above), so raised directly.
+        ax.text(0.95, y, f"{u} — {v}", ha="center", va="center", fontsize=30, color=INK, zorder=3)
     ax.set_xlim(-0.3, 2.2)
     ax.set_ylim(-0.55, 5.7)
     # title removed -- duplicated the figcaption verbatim
@@ -3130,7 +3397,12 @@ def fig_store_adjlist():
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
     W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R)
+    # R12 fix ("the one thing that has not landed"): the deck-wide LABEL_FS (30pt) landed
+    # 19.7px on-slide against THIS figure's own wider-than-usual (10.6in) canvas -- overridden
+    # directly rather than raising the shared constant every OTHER graph5 figure already
+    # clears with margin.
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R,
+                label_fs=38)
 
     ax = axes[1]
     y0 = 5
@@ -3152,7 +3424,10 @@ def fig_store_adjlist():
         # 18pt, ~11.4px on-slide -- under the 16px page-number floor. Checked against the box
         # width directly (get_window_extent): the longest row ("1: 0, 2, 3") uses under a
         # quarter of the box's own rendered width even at this size, real room to spare.
-        ax.text(1.3, y, text, ha="center", va="center", fontsize=26, color=INK, zorder=3)
+        # R12 fix ("the one thing that has not landed"): 26pt still landed under the 21px
+        # floor once measured against this figure's own container/scale -- more room to
+        # raise it further (see the note above).
+        ax.text(1.3, y, text, ha="center", va="center", fontsize=34, color=INK, zorder=3)
     ax.set_xlim(-0.3, 2.9)
     ax.set_ylim(0.2, 5.7)
     # title removed -- duplicated the figcaption verbatim
@@ -3167,7 +3442,11 @@ def fig_store_matrix():
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
     W = fit_node_scale(fig, ax, r=GRAPH5_R)  # R9 fix ("the one cause") -- see GRAPH5_R's note
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R)
+    # R12 fix ("the one thing that has not landed"): see fig_store_adjlist's own note --
+    # same override, same reason (this figure's canvas is wider than the deck-wide LABEL_FS
+    # was calibrated against).
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, r=GRAPH5_R,
+                label_fs=38)
 
     ax = axes[1]
     A = graph5_adjacency()
@@ -3218,7 +3497,15 @@ def _fig_csr(name, payoff=False):
     # actually buys the matrix panel's cells the size bump Major 14 asks for, without
     # inflating W further.
     fig.subplots_adjust(left=0.01, right=0.995, top=0.98, bottom=0.02)
-    gs = fig.add_gridspec(1, 2, width_ratios=[0.62, 2.0], wspace=0.28)
+    # R12 fix: shifted toward the array panel (0.62:2.0 -> 0.55:2.05) -- the matrix panel
+    # only ever shows single digits (0/1), which need far less width than the array panel's
+    # two-digit values (10, 11, 12) packed 12 to a row, so it can give up some share. NOT
+    # shifted as far as a first attempt (0.32:2.3) tried: that starved the matrix panel badly
+    # enough that its OWN tick labels (0-4, at cell_fs -- see MATRIX_FS below) overflowed
+    # its axes box and printed on top of "data"/"indices" next door -- rendered and caught by
+    # eye, not by an assertion, which is exactly the failure mode this file's
+    # _assert_*-style checks exist to catch instead.
+    gs = fig.add_gridspec(1, 2, width_ratios=[0.5, 2.04], wspace=0.15)
 
     # Cells are only ~0.9 data-units apart and indptr/index values run into two digits
     # (10, 11, 12) -- VALUE_FS is measured (not guessed) to clear the box at this width:
@@ -3226,20 +3513,50 @@ def _fig_csr(name, payoff=False):
     # ~25pt wide (measured against the reclaimed-margin layout above), so anything under
     # ~19pt leaves real margin. Still a real increase over the pre-R3 9.5px render --
     # clears the 18px page number the review measured against.
-    VALUE_FS, ROWLABEL_FS = fs(12.0, W), fs(12.5, W)
+    #
+    # R12 fix ("the one thing that has not landed"): 18pt (fs(12.0, W)) still landed 16px
+    # on-slide against the 21px floor once measured against THIS figure's own container/
+    # scale. Bumped and checked directly against the box width via the `row()` closure's own
+    # assertion below, instead of trusting a stale hand-measurement in this comment.
+    #
+    # R12 fix, second: MATRIX_FS is no longer tied to VALUE_FS -- the matrix panel's own
+    # (now smaller) width caps what its single-digit cells can carry independently of
+    # whatever the array panel's two-digit boxes need; matching them was the R4 fix's
+    # intent when both panels split the width evenly, not a constraint that survives this
+    # round's uneven split.
+    VALUE_FS, ROWLABEL_FS = fs(15.1, W), fs(15.6, W)
+    MATRIX_FS = fs(19.0, W)
 
     axA = fig.add_subplot(gs[0, 0])
     A = graph5_adjacency()
-    draw_matrix(axA, A, row_highlight=1, row_highlight_color=ACCENT3, cell_fs=VALUE_FS)
+    draw_matrix(axA, A, row_highlight=1, row_highlight_color=ACCENT3, cell_fs=MATRIX_FS)
     # title removed -- the review's "no suptitle" fix already dropped the old 11px
     # explanatory line; this panel doesn't need one either.
+    # R12 fix: this inset is a small visual callback ("same matrix, same red row you saw
+    # two slides ago"), not a place a student reads row/column INDICES off of -- store-
+    # matrix.png already does that job at full size. Its own row/col tick labels were the
+    # thing actually overflowing this shrunken panel (confirmed: removing them, not
+    # shrinking MATRIX_FS further, is what stopped "01234" printing on top of "data" next
+    # door) -- dropped outright rather than fought over with an even smaller fontsize.
+    # draw_matrix moves ticks to the top (xaxis.set_ticks_position("top")), so it's
+    # labeltop, not labelbottom, that actually gates the column-index row -- confirmed by
+    # the first attempt at this (labelbottom=False) rendering "01234" anyway.
+    axA.tick_params(labeltop=False, labelleft=False, length=0)
 
     axR = fig.add_subplot(gs[0, 1])
-    axR.set_xlim(-1.6, 12.0)
+    # R12 fix: right margin tightened from 12.0 -- 0.54 units of pure dead space past the
+    # last box (right edge at 11.46). Left margin, in the OTHER direction, had to grow
+    # instead of shrink: measured directly (get_window_extent, not eyeballed), "indices" at
+    # ROWLABEL_FS overflowed a -1.6-units-left margin by ~190px, well into the matrix
+    # panel's own column -- caught by the assertion below, not by a human re-reading the
+    # PNG. -3.4 is the smallest left bound that clears it with real margin.
+    axR.set_xlim(-3.0, 11.5)
     # R5 fix (Blocker 7): bottom margin pulled in from -1.35 -- that was sized for a second
     # text line now deleted (see below); keeping the old margin would leave dead white space
     # under the one remaining line.
-    axR.set_ylim(-0.95 if payoff else -0.6, 3.0)
+    # R12 fix: payoff's bottom margin grew again (-0.95 -> -1.5) to fit the "indptr[2] -
+    # indptr[1]..." line broken onto two rows -- see that text's own note below.
+    axR.set_ylim(-1.5 if payoff else -0.6, 3.0)
     axR.set_axis_off()
 
     def row(y, values, label, highlight_range=None):
@@ -3247,10 +3564,22 @@ def _fig_csr(name, payoff=False):
             fc = ACCENT3 if highlight_range and highlight_range[0] <= i < highlight_range[1] else PANEL
             # Minor fix (slide 053): 0.88-wide boxes let two-digit values (10, 12) touch
             # their own box edge and abut the next cell, reading as "8 1012"; a touch wider.
-            axR.add_patch(FancyBboxPatch((i - 0.46, y - 0.34), 0.92, 0.68,
-                                          boxstyle="round,pad=0.02,rounding_size=0.1",
-                                          facecolor=fc, edgecolor=RULE, linewidth=1.0, zorder=2))
-            axR.text(i, y, str(v), ha="center", va="center", fontsize=VALUE_FS, color=INK, zorder=3)
+            box = FancyBboxPatch((i - 0.5, y - 0.34), 1.0, 0.68,
+                                  boxstyle="round,pad=0.02,rounding_size=0.1",
+                                  facecolor=fc, edgecolor=RULE, linewidth=1.0, zorder=2)
+            axR.add_patch(box)
+            t = axR.text(i, y, str(v), ha="center", va="center", fontsize=VALUE_FS, color=INK, zorder=3)
+            # R12 fix: VALUE_FS was bumped for on-slide legibility (see the module note
+            # above) without re-measuring whether a two-digit value still clears its own
+            # box -- measure it directly instead of trusting the stale hand-calibration the
+            # old comment here was built on.
+            renderer = _finalize(axR)
+            tb = t.get_window_extent(renderer)
+            bb = box.get_window_extent(renderer)
+            assert tb.width <= bb.width, (
+                f"csr row {label!r}: {v!r} at {VALUE_FS}pt is {tb.width:.0f}px wide, wider "
+                f"than its own {bb.width:.0f}px box -- shrink VALUE_FS or widen the box."
+            )
         axR.text(-0.85, y, label, ha="right", va="center", fontsize=ROWLABEL_FS, color=ACCENT,
                   fontweight="bold", zorder=3)
 
@@ -3284,8 +3613,31 @@ def _fig_csr(name, payoff=False):
         # count now lives on slide 055's own figure (fig_memory_payoff) as the evidence for
         # that slide's asymptotic claim, where it belongs.
         mid = 5.2
-        axR.text(mid, -0.65, "indptr[2] − indptr[1] = 5 − 2 = 3 = k₁", ha="center", va="center",
-                 color=ACCENT3, fontsize=fs(12.5, W), fontweight="bold", zorder=3)
+        # R12 fix ("the one thing that has not landed"): 18.75pt (fs(12.5, W)) landed 17px
+        # on-slide against the 21px floor. This line spans nearly the full axR width with
+        # no box to overflow, unlike the array cells above -- room to raise it directly.
+        # R12 fix ("the one thing that has not landed"): one line at a size that clears the
+        # legibility floor is wider than the array panel itself, and bbox_inches="tight"
+        # widens the WHOLE canvas to fit it -- which shrinks the deck's downscale factor for
+        # every OTHER element on the slide (the array digits above), undoing their own R12
+        # fix. Broken across two lines instead, so a legible size fits within the panel's own
+        # natural width.
+        axR.text(mid, -0.75, "indptr[2] − indptr[1]\n= 5 − 2 = 3 = k₁", ha="center", va="center",
+                 color=ACCENT3, fontsize=fs(18.0, W), fontweight="bold", zorder=3, linespacing=1.3)
+
+    # R12 fix: catches, by construction, the exact failure the first attempt at this round's
+    # width rebalance shipped (MATRIX_FS too big for its shrunken panel -- its own tick
+    # labels bled out of axA and printed on top of axR's "data"/"indices" labels; only
+    # caught because someone looked at the PNG). axA's true rendered extent (every artist,
+    # including tick labels) must not reach axR's true rendered extent.
+    renderer = _finalize(fig)
+    bbA = axA.get_tightbbox(renderer)
+    bbR = axR.get_tightbbox(renderer)
+    assert bbA.x1 < bbR.x0, (
+        f"_fig_csr: matrix panel's rendered content (right edge {bbA.x1:.0f}px) overlaps "
+        f"the array panel's (left edge {bbR.x0:.0f}px) -- MATRIX_FS is too big for its "
+        f"panel's width_ratio share, or the panels need more wspace."
+    )
 
     save(fig, name)
 
@@ -3338,10 +3690,13 @@ def fig_memory_payoff():
     # size plus a generous xlim, cropped tight by save_fit regardless of the final width,
     # sidesteps it (same reasoning fig_csr_build/_payoff already documented for their own
     # two-panels-of-different-widths layout).
+    # R12 fix ("the one thing that has not landed"): tag_fs/ratio_fs/note_fs measured
+    # 18.3/20.1/18.3px on-slide against this figure's own container/scale, under the 21px
+    # floor -- bumped with margin.
     num_fs = 30
-    tag_fs = 20
-    ratio_fs = 22
-    note_fs = 20
+    tag_fs = 24
+    ratio_fs = 26
+    note_fs = 24
 
     fig, ax = plt.subplots(figsize=(9.5, 3.35))
     ax.set_xlim(0, 16)
@@ -3416,16 +3771,19 @@ def fig_format_regimes():
     # would suggest) -- the left quadrants are only 3 of 10 x-units wide and 5 of 10 y-units
     # tall, and every text position below was re-measured (get_window_extent) at this size to
     # confirm neither quadrant's headline+regime pair crosses the other's, nor the y=5 rule.
-    REGIME_FS = 22
+    # R12 fix ("the one thing that has not landed"): 22pt still measured under the 15px
+    # x-height floor on the real rendered slide. Bumped again; re-measured (below) to confirm
+    # nothing in the two narrow left quadrants collides.
+    REGIME_FS = 30
 
     # bottom-right: large + sparse -- CSR's regime
     ax.add_patch(mpatches.Rectangle((3, 0), 7, 5, facecolor=PANEL, edgecolor=RULE, linewidth=1.5, zorder=1))
-    ax.text(6.5, 3.2, "CSR", ha="center", va="center", fontsize=22, color=INK, fontweight="bold", zorder=2)
+    ax.text(6.5, 3.2, "CSR", ha="center", va="center", fontsize=26, color=INK, fontweight="bold", zorder=2)
     ax.text(6.5, 1.8, "large + sparse", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
 
     # top-left: small + dense -- dense array's regime
     ax.add_patch(mpatches.Rectangle((0, 5), 3, 5, facecolor=PANEL, edgecolor=RULE, linewidth=1.5, zorder=1))
-    ax.text(1.5, 8.5, "dense\narray", ha="center", va="center", fontsize=20, color=INK, fontweight="bold", zorder=2)
+    ax.text(1.5, 8.5, "dense\narray", ha="center", va="center", fontsize=26, color=INK, fontweight="bold", zorder=2)
     ax.text(1.5, 6.35, "small\n(or dense)", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
 
     # top-right: large + dense -- rare in practice, unfilled but no longer unlabeled
@@ -3646,7 +4004,12 @@ def fig_recap():
     place_label(ax, (0, 1.72), "one component", obstacles=obstacles + [text_obstacle(t) for t in degree_texts],
                 color=MUTED, fontsize=KONIGSBERG_DEGREE_FS, ha="center", va="bottom",
                 clearance_pt=4.0, zorder=5, name="recap:one-component")
-    save(fig, "recap.png")
+    # R12 fix ("the one thing that has not landed"): save() (bbox_inches="tight") crops to
+    # the declared xlim/ylim window (generous, to fit the dashed "one component" ellipse with
+    # room), not to what's actually drawn -- same excess-margin problem as
+    # konigsberg-degrees.png, same fix: save_fit measures the TRUE rendered extent (the
+    # ellipse patch is in ax.patches, so _content_px_bbox already covers it) with a small pad.
+    save_fit(fig, ax, "recap.png", pad_frac=0.02, pad_min_in=0.1)
 
 
 def fig_smallworld_teaser():
@@ -3756,5 +4119,11 @@ if __name__ == "__main__":
 
     fig_recap()
     fig_smallworld_teaser()
+
+    if _TEXT_FAILURES:
+        print(f"\n{len(_TEXT_FAILURES)} text-legibility failure(s) (MF_COLLECT_TEXT=1):")
+        for m in _TEXT_FAILURES:
+            print("  " + m)
+        sys.exit(1)
 
     print("done")
