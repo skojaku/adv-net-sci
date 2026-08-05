@@ -632,7 +632,7 @@ Lose Brno and eight towns become three, three and one.
 <div class="fig">
 
 ![w:1100](figures/brno-removed.png)
-<figcaption>3 + 3 + 1</figcaption>
+<figcaption>Jihlava's half, Olomouc's half, and Hodonín alone</figcaption>
 
 </div>
 
@@ -1344,7 +1344,7 @@ Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst singl
 <div class="fig">
 
 ![w:1100](figures/redundant-answer.png)
-<figcaption>the best pair of the fifteen — searched, not guessed</figcaption>
+<figcaption>the best of the fifteen possible pairs — searched, not guessed</figcaption>
 
 </div>
 

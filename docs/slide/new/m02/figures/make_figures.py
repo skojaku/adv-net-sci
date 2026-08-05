@@ -61,13 +61,17 @@ CONTAINER = {"col": COL_W, "full": FULL_W}
 
 NODE = 40          # disc diameter, bp  -> 40.7-41.3 px on the slide (band 26-52)
 SMALLNODE = 26     # only where a figure draws dozens of dots (arrival grid, ring lattice)
-FONT = 31          # pt; the cap height that lands on the slide is MEASURED, see CAP_BP
+# 36, not 30: check_render.py measures X-HEIGHT on the rendered slide, and for Latin
+# Modern x-height is 0.431 em against cap height 0.683 em.  30pt clears a 21px cap-height
+# assertion and lands 12.9px x-height -- under the checker's 15px floor, and invisible to
+# the build until the checker runs.  Both ratios are measured below, never assumed.
+FONT = 36          # pt
 EDGE_W = 2.6
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
 
 NODE_MIN_PX, NODE_MAX_PX = 26, 52
-TEXT_MIN_PX = 21
+XHEIGHT_MIN_PX = 15.5        # the floor check_render.py enforces on the rendered slide
 INK_FILL_MIN = 0.76          # ink must span this share of the canvas width
 
 _only = sys.argv[1:]
@@ -212,10 +216,11 @@ def emit(name, body, container="col", pad=PAD):
 
     node_px = NODE * factor
     assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
-    cap_px = CAP_BP * factor
-    assert cap_px >= TEXT_MIN_PX, (
-        f"{name}: text cap height {cap_px:.1f}px on the slide (floor {TEXT_MIN_PX}) -- "
-        f"measured {CAP_BP:.2f}bp at {FONT}pt")
+    # x-height, because that is the quantity check_render.py measures on the slide
+    xh_px = XHEIGHT_BP * factor
+    assert xh_px >= XHEIGHT_MIN_PX, (
+        f"{name}: text x-height {xh_px:.1f}px on the slide (floor {XHEIGHT_MIN_PX}) -- "
+        f"measured {XHEIGHT_BP:.2f}bp at {FONT}pt")
 
     # Every filled circle in the body, checked at source. A raster detector cannot do
     # this job here: the theme's node fill (#3959A6, L=88) is lighter than the ink
@@ -234,7 +239,7 @@ def emit(name, body, container="col", pad=PAD):
 
     im.save(OUT / f"{name}.png")
     _built.append(name)
-    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  cap {cap_px:.0f}px  "
+    print(f"  {name}.png  {fw}x{fh}  node {node_px:.0f}px  x-height {xh_px:.1f}px  "
           f"discs {lo_d:.0f}-{hi_d:.0f}px  ink {span:.0%}")
 
 
@@ -294,23 +299,29 @@ def text(x, y, s, color="black", anchor="center", size=FONT, width=None, align="
     return f"\\node[{','.join(o)}] at ({x},{y}) {{{s}}};\n"
 
 
-def _measure_cap_bp():
-    """Measure the cap height the deck's own font actually renders at FONT pt.
+def _ink_height_bp(glyph):
+    """Ink height of one glyph at FONT pt, read off the render.
 
-    R1's blocker: `CAP_RATIO = 0.70` was a guess, LaTeX was silently substituting a
-    24.88pt design size for the 30pt that was asked for, and the size assertion never
-    noticed because it *computed* the answer from FONT instead of reading the render.
-    One calibration page, measured once at import, and the guess is gone.
+    R1's blocker was a guessed ratio: `CAP_RATIO = 0.70` described a font that was never on
+    the page, because LaTeX was silently substituting 24.88pt for the 30pt asked for, and
+    the assertion *computed* its answer from FONT instead of reading the render.  Measure.
     """
-    im = _render("cap-calibration", text(260, 100, "H"), 520, 200)
+    im = _render(f"calibration-{glyph}", text(260, 100, glyph), 520, 200)
     ys, _ = np.where(np.array(im.convert("L")) < 200)
     return (ys.max() - ys.min() + 1) / PXBP
 
 
-CAP_BP = _measure_cap_bp()
+# "x" has neither ascender nor descender, so its ink height *is* the x-height -- and the
+# x-height is what check_render.py measures on the rendered slide.
+XHEIGHT_BP = _ink_height_bp("x")
+CAP_BP = _ink_height_bp("H")
+XHEIGHT_RATIO, CAP_RATIO = XHEIGHT_BP / FONT, CAP_BP / FONT
 assert CAP_BP >= 0.66 * FONT, (
-    f"cap height measures {CAP_BP:.2f}bp at {FONT}pt (ratio {CAP_BP / FONT:.3f}) -- LaTeX is "
+    f"cap height measures {CAP_BP:.2f}bp at {FONT}pt (ratio {CAP_RATIO:.3f}) -- LaTeX is "
     f"substituting a smaller design size, so every label in the deck is shrinking silently")
+assert XHEIGHT_RATIO < CAP_RATIO, (XHEIGHT_RATIO, CAP_RATIO)
+print(f"font {FONT}pt: x-height {XHEIGHT_BP:.2f}bp (ratio {XHEIGHT_RATIO:.3f}), "
+      f"cap {CAP_BP:.2f}bp (ratio {CAP_RATIO:.3f})")
 
 
 def _bezier_pts(p0, c, p2, n=80):
@@ -688,11 +699,8 @@ def fig_milgram_chain():
 
 
 def fig_chain_graph():
-    s = _chain(CHAIN_EDGES, labels=LETTERS)
-    s += _names()
-    s += text(550, 240, "one person, one node --- ``knows'' is the edge",
-              color="annot", anchor="south")
-    return s
+    # no in-figure title: the deck body carries the node/edge definition and cannot drop it
+    return _chain(CHAIN_EDGES, labels=LETTERS) + _names()
 
 
 def fig_distance_def():
@@ -1955,9 +1963,22 @@ FIGURES = [
 
 
 def main():
+    """Every failure, not the first.
+
+    These gates fire in clusters -- raising the type size breaks a dozen figures at once --
+    and stopping at figure 3 of 67 turns one round of fixes into a dozen rebuilds.
+    """
+    bad = []
     for name, fn, cont in FIGURES:
-        emit(name, fn(), cont)
-    print(f"\n{len(_built)} figures written")
+        try:
+            emit(name, fn(), cont)
+        except AssertionError as e:
+            bad.append(name)
+            print(f"  FAIL {name}: {e}")
+    print(f"\n{len(_built)} figures written, {len(bad)} failed")
+    if bad:
+        print("  " + " ".join(bad))
+        sys.exit(1)
 
 
 if __name__ == "__main__":

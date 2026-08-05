@@ -789,7 +789,8 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
             if math.hypot(dx, dy) > LEADER_AT:      # parked clear; draw a leader
                 ux, uy = dx / math.hypot(dx, dy), dy / math.hypot(dx, dy)
                 s += seg((x + ux * (NODE / 2 + 3), y + uy * (NODE / 2 + 3)),
-                         (x + dx - ux * 6, y + dy - uy * 6), color="annot", w=1.8)
+                         (x + dx - ux * 6, y + dy - uy * 6), color="annot", w=1.2,
+                         dash="dash pattern=on 2bp off 4bp")
             s += text(x + dx, y + dy, NAME[n], color=col, anchor=anc)
     return s + extra_text
 
@@ -832,9 +833,7 @@ def fig_abstract_3():
 
 
 def fig_moravia_graph():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
-                   rings={"Brno": "accenttwo"},
-                   )
+    return moravia(faint=ALL_CABLES, weights=ALL_CABLES)
 
 
 def fig_loop_waste():
@@ -883,21 +882,28 @@ SORTED_CABLES = sorted(CABLES.items(), key=lambda kv: kv[1])
 
 
 def fig_kruskal_rule():
-    """The thirteen routes laid out cheapest-first: the rule, before the run."""
+    """The thirteen routes laid out cheapest-first: the rule, before the run.
+
+    Drawn as outlined chips, not numbers on a rule: the first version set white
+    discs behind the numbers, which is invisible on a white page, so the row read
+    as one run-on string with a stray dash at the front.
+    """
     n = len(SORTED_CABLES)
-    x0, x1, y = 60, 1040, 170
+    x0, x1, y = 70, 1030, 200
     step = (x1 - x0) / (n - 1)
-    s = seg((x0 - 34, y), (x1 + 34, y), color="annot", w=2.2,
-            arrow="-{Stealth[length=13bp,width=10bp]}")
+    r = 32
+    s = ""
     for i, ((a, b), w) in enumerate(SORTED_CABLES):
         x = x0 + i * step
-        col = "accenttwo" if i == 0 else "black"
-        s += disc(x, y, str(w), fill="white", size=SMALLNODE + 22, text_col=col)
-        s += text(x, y, str(w), color=col)
-    s += text(x0 - 34, 90, "cheapest", color="accenttwo", anchor="west")
-    s += text(x1 + 34, 90, "dearest", color="annot", anchor="east")
-    s += text(550, 250, "sort every route by price, then take them in turn",
-              color="black")
+        col = "accenttwo" if i == 0 else "annot"
+        s += (f"\\draw[line width={3.0 if i == 0 else 2.0}bp,draw={col},fill=white] "
+              f"({x:.1f},{y}) circle ({r}bp);\n")
+        s += text(x, y, str(w), color="accenttwo" if i == 0 else "black")
+    s += seg((x0 - r - 10, y - r - 26), (x1 + r + 10, y - r - 26), color="annot",
+             w=2.4, arrow="-{Stealth[length=15bp,width=12bp]}")
+    s += text(x0 - r - 10, y - r - 44, "cheapest", color="accenttwo",
+              anchor="north west")
+    s += text(x1 + r + 10, y - r - 44, "dearest", color="annot", anchor="north east")
     return s
 
 
@@ -1060,7 +1066,7 @@ def fig_brno_removed():
     cols = ["accent", "accent", "accent"]
     fill = {n: cols[i] for i, p in enumerate(pieces) for n in p}
     return moravia(edges=MST_PAIRS, removed=["Brno"], node_fill=fill,
-                   extra_text=note("3 + 3 + 1"))
+                   )
 
 
 def fig_tree_bridges():
@@ -1504,48 +1510,86 @@ def fig_kappa_def():
     return s
 
 
-def fanout(kminus1, x0=250, spread=190, dx=300, col="accent",
-           dead=(), root_y=190):
-    """Three rings of a branching search: 1 -> b -> b^2 (b = branching factor)."""
-    b = int(round(kminus1))
-    s = ""
-    lvl = {0: [(x0, root_y)]}
-    for d in range(1, 3):
+def fan_tree(x0, dx, y0, spread, levels=2, b=2, dead=(), node=NODE):
+    """A branching search drawn as a proper tree: children sit under their parent.
+
+    Returns (tikz, levels_dict).  The earlier version computed the x of every level
+    from one dx and let level 2 land at x = 1300 on an 1100bp canvas, so half of
+    `molloy-reed` was drawn off the page and the two panels overlapped.  Here the
+    caller gives the x step and the routine asserts the tree fits.
+    """
+    lvl = {0: [(x0, y0)]}
+    for d in range(1, levels + 1):
         pts = []
-        for i, (px, py) in enumerate(lvl[d - 1]):
+        gap = spread / (b ** d)
+        for (px, py) in lvl[d - 1]:
             for j in range(b):
-                gap = spread / (b ** d)
-                y = py + (j - (b - 1) / 2) * gap
-                pts.append((x0 + d * dx, y))
+                pts.append((x0 + d * dx, py + (j - (b - 1) / 2) * gap))
         lvl[d] = pts
-    for d in (1, 2):
+    far = x0 + levels * dx + node / 2
+    assert far <= DESIGN["full"] - 8, f"fan tree runs to {far}bp on a 1100bp canvas"
+    s = ""
+    for d in range(1, levels + 1):
         for i, q in enumerate(lvl[d]):
-            p = lvl[d - 1][i // b]
-            c = "annot" if (d, i) in dead else col
-            s += seg(p, q, color=c, w=EDGE_W + 1.0,
-                     dash=DASH if (d, i) in dead else "")
-    for d in (0, 1, 2):
+            parent = lvl[d - 1][i // b]
+            gone = (d, i) in dead or (d - 1, i // b) in dead
+            s += seg(parent, q, color="annot" if gone else "accent",
+                     w=EDGE_W + 1.0, dash=DASH if gone else "")
+    for d in range(levels + 1):
         for i, (x, y) in enumerate(lvl[d]):
-            c = "annot" if (d, i) in dead else ("accent" if d else "accenttwo")
-            s += disc(x, y, "", fill=c, size=SMALLNODE if d == 2 else NODE)
+            gone = any((dd, ii) in dead for dd, ii in [(d, i)]) or \
+                   (d > 0 and (d - 1, i // b) in dead)
+            fill = "annot" if gone else ("accenttwo" if d == 0 else "accent")
+            s += disc(x, y, "", fill=fill, size=node)
     return s, lvl
 
 
+def _arrival(x, y, label=True):
+    """The edge the search arrived on, labelled ABOVE it.
+
+    Labelling it to the left ran the text off the canvas and the crop clipped it to
+    "in / ay" -- a caption that had lost its own first letters on two slides.
+    """
+    s = seg((x - 130, y), (x - NODE / 2 - 3, y), color="annot", w=EDGE_W + 1.0)
+    if label:
+        s += text(x - 66, y + 26, "came in here", color="annot", anchor="south")
+    return s
+
+
 def fig_branching():
-    s, lvl = fanout(2, x0=190, dx=330)
-    x0, y0 = lvl[0][0]
-    s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
-    s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
-    s += text(700, 40, "$\\kappa - 1$ onward", color="accenttwo")
+    s = _arrival(230, 200)
+    body, lvl = fan_tree(230, 300, 200, 200)
+    s += body
+    s += text(880, 60, "$\\kappa - 1$ onward", color="accenttwo")
+    return s
+
+
+def fig_dilution():
+    s = _arrival(230, 200)
+    body, lvl = fan_tree(230, 300, 200, 200, dead={(1, 1), (2, 0)})
+    s += body
+    s += text(880, 60, "$(1-f)(\\kappa-1)$ survive", color="accenttwo")
     return s
 
 
 def fig_molloy_reed():
-    s, _ = fanout(1, x0=180, spread=120, dead={(1, 0), (2, 0)})
-    s += text(330, 40, "$\\kappa - 1 < 1$", color="annot")
-    s2, _ = fanout(2, x0=700, spread=190)
-    s += s2
-    s += text(880, 40, "$\\kappa - 1 > 1$", color="accenttwo")
+    """Two panels: a search that dies, and one that never does.
+
+    The left panel is drawn by hand rather than as a b=1 tree: a one-child-per-step
+    chain of three nodes reads as a search that is still going, which is the
+    opposite of the point. It ends in a stub that reaches nothing.
+    """
+    s = _arrival(150, 200, label=False)
+    s += seg((150, 200), (330, 200), color="accent", w=EDGE_W + 1.0)
+    s += disc(150, 200, "", fill="accenttwo")
+    s += disc(330, 200, "", fill="accent")
+    s += seg((350, 200), (470, 200), color="annot", w=EDGE_W + 1.0, dash=DASH)
+    s += text(480, 200, "nothing", color="annot", anchor="west")
+    s += text(300, 70, "$\\kappa - 1 < 1$", color="annot")
+    s += seg((600, 40), (600, 350), color="annot", w=2.0, dash=DASH_LONG)
+    body, _ = fan_tree(690, 190, 200, 220)
+    s += body
+    s += text(880, 70, "$\\kappa - 1 > 1$", color="accenttwo")
     return s
 
 
@@ -1609,15 +1653,6 @@ def fig_kappa_worksheet():
 
 def fig_kappa_answer():
     return _kappa_row(True)
-
-
-def fig_dilution():
-    s, lvl = fanout(2, x0=190, dx=330, dead={(1, 1), (2, 2), (2, 3)})
-    x0, y0 = lvl[0][0]
-    s += seg((x0 - 150, y0), (x0 - 24, y0), color="annot", w=EDGE_W + 1.0, dash=DASH)
-    s += text(x0 - 156, y0, "came in\\\\this way", color="annot", anchor="east")
-    s += text(660, 40, "$(1-f)(\\kappa-1)$ survive", color="accenttwo")
-    return s
 
 
 def fig_fc_formula():
@@ -1775,10 +1810,7 @@ def fig_redundant_answer():
     return moravia(edges=MST_PAIRS,
                    heavy={e: "accentthree" for e in new},
                    weights=new,
-                   extra_text=note(f"$+{EXTRA_KM}$ km "
-                                   f"$({pct(EXTRA_KM / MST_TOTAL)})$\\\\"
-                                   f"$R\\;{float(R_ATTACK):.2f} \\to "
-                                   f"{float(R_REDUNDANT):.2f}$"))
+                   )
 
 
 def fig_design_principles():
