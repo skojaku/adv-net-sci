@@ -2398,7 +2398,21 @@ BAND_W = 10.4
 
 def band_axes(ax, with_labels=True, r=NODE_R):
     ax.set_xlim(-0.4, 7.2)
-    ax.set_ylim(-0.85, 1.3)
+    # R9 fix (team-lead's live report, "Your turn: run the sweep"): the with_labels=False
+    # callers (components-bare/-intro) don't draw the "component N" strings that need the
+    # -0.85 lower margin, but they were still cropped (save()'s bbox_inches="tight" -- see
+    # its own docstring -- crops to this AXES BOX, i.e. essentially this xlim/ylim, not to
+    # sparse content within it) to the SAME tall, mostly-blank box as the labelled variant.
+    # At this family's on-slide WIDTH-bound scale (760/w -- confirmed by direct measurement:
+    # shrinking height here changes nothing about on-slide node size, since width, not
+    # height, sets the scale), that blank height translated straight into on-slide display
+    # height (225px, confirmed against the real render) with nothing to show for it --
+    # pushing components-bare.png's figcaption entirely below the slide's 720px frame on
+    # "Your turn: run the sweep" (0 pixels of caption ink found on the rendered slide).
+    # Tightened to the real content bound (nodes at y in {0, 0.3, 0.85, 0.9}, radius
+    # BAND_R=0.17) plus a small margin -- verified by re-rendering that slide, not just
+    # computed here.
+    ax.set_ylim(-0.85, 1.3) if with_labels else ax.set_ylim(-0.35, 1.15)
     clean(ax)
     fit_node_scale(ax.figure, ax, r=r)
     if with_labels:

@@ -26,11 +26,21 @@ find figures -name '*.png' -newer review/slide.001.png | wc -l   # must be 0
 [ deck.md -nt review/slide.001.png ] && echo STALE
 ```
 
-This happened **twice**, each time costing a full round: a figure agent regenerated all
-assets after the render, so three reviewers spent a round reading images that no longer
-matched disk. If it happens mid-flight, tell the reviewers to hold, re-render, then signal
-them to re-read from scratch — text and layout observations survive, every figure judgment
-does not.
+This has happened **three times**: a figure agent finished one more fix after the render, so
+reviewers spent their pass reading images that no longer matched disk. The first two cost a
+full round each. The third was caught by running the check above and cost nothing — the
+recovery works, so use it:
+
+1. Message every reviewer: **hold, do not report, wait for the word RERENDERED.**
+2. Regenerate figures, delete the old PNGs, re-render, confirm the check returns 0.
+3. Message RERENDERED and tell them to re-read their range **from scratch**.
+
+Their text and layout observations survive — the markdown did not change — but every figure
+judgment must be redone.
+
+The underlying cause is that fix agents keep working after reporting. Prefer to launch
+reviewers only once every fix agent has gone idle, and re-run the check immediately before
+you launch them.
 
 ### Measure on the rendered slide, not the source PNG
 
