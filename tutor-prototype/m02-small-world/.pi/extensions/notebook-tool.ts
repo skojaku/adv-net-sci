@@ -966,6 +966,61 @@ export default function (pi: ExtensionAPI) {
     recordPickedAnswer(event);
   });
 
+  // ── The student's "Send to my tutor" button ───────────────────────────
+  // marimo runs in its own process, so a button in the page cannot call a
+  // tool. The upload templates append the widget's name to
+  // session_artifacts/student_signal.txt instead, and this watcher turns
+  // each new line into a turn. Without it the student has to type "it's up"
+  // in the terminal — one more thing to explain, and one more place for a
+  // nervous beginner to sit waiting for permission.
+  //
+  // The message starts with "The student clicked", which INJECTED_PREFIX
+  // filters: a button press is the student acting, but it is not their
+  // words, and it must never be logged as something they said.
+  const signalPath = () =>
+    path.join(process.cwd(), "session_artifacts", "student_signal.txt");
+  const readSignalLines = (): string[] => {
+    try {
+      return fs
+        .readFileSync(signalPath(), "utf-8")
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+  // Whatever is already in the file belongs to an earlier session.
+  let signalMark = readSignalLines().length;
+  const signalTimer = setInterval(() => {
+    try {
+      const lines = readSignalLines();
+      if (lines.length < signalMark) signalMark = lines.length; // reset/archived
+      if (lines.length <= signalMark) return;
+      const widget = lines[lines.length - 1];
+      signalMark = lines.length;
+      if (!/^[A-Za-z_]\w*$/.test(widget)) return;
+      pi.sendMessage(
+        {
+          customType: "student-signal",
+          content:
+            `The student clicked "Send to my tutor" in the notebook: their photo is ` +
+            `uploaded and showing in the "${widget}" box. Call ` +
+            `nb_view_image(widget="${widget}", …) now — do not ask them whether it is ` +
+            `up. Judge what you see against the task, and say something specific about ` +
+            `THEIR picture. If it does not show what the checkpoint asked for, say so ` +
+            `warmly and ask them to redo it and drop the new photo into the same box; ` +
+            `they can replace it as many times as they need.`,
+          display: false,
+        },
+        { deliverAs: "followUp", triggerTurn: true },
+      );
+    } catch {
+      // the button is a convenience — never let it break a turn
+    }
+  }, 2000);
+  (signalTimer as any).unref?.();
+
   pi.on("session_start", async (_event, _ctx) => {
     // ── Chapter start + resume brief ──────────────────────────────────────
     // Determine the current chapter (from progress or saved state), inject
@@ -2140,12 +2195,20 @@ export default function (pi: ExtensionAPI) {
         `    import marimo._code_mode as cm\n` +
         `    async with cm.get_context() as ctx:\n` +
         `        _names = [c.name for c in ctx.cells]\n` +
-        `        if ${py(viewCell)} in _names:\n` +
+        // The upload templates already show a LIVE preview of whatever is in
+        // the box, and it updates on every re-upload. Adding a second,
+        // frozen copy of the same photo below it just makes the notebook
+        // repeat itself — and after a redo the two would disagree.
+        `        if ${py(base + "_preview")} in _names:\n` +
+        `            print("preview cell already shows this photo — no extra cell added")\n` +
+        `        elif ${py(viewCell)} in _names:\n` +
         `            ctx.edit_cell(${py(viewCell)}, ${py(cellBody)})\n` +
+        `            ctx.run_cell(${py(viewCell)})\n` +
+        focusCellCode(`ctx.cells[${py(viewCell)}].id`, "            ") +
         `        else:\n` +
         `            ctx.create_cell(${py(cellBody)}, name=${py(viewCell)}, hide_code=True)\n` +
-        `        ctx.run_cell(${py(viewCell)})\n` +
-        focusCellCode(`ctx.cells[${py(viewCell)}].id`, "        ") +
+        `            ctx.run_cell(${py(viewCell)})\n` +
+        focusCellCode(`ctx.cells[${py(viewCell)}].id`, "            ") +
         `    print("B64:" + _b64.b64encode(_out.getvalue()).decode())\n`;
       const result = await runKernel(code, signal);
       if (result.failed) return toResult(result);
