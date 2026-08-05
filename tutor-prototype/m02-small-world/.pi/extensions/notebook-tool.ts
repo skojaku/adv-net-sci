@@ -763,6 +763,34 @@ function noteSkeleton(cpId: string): string {
   return checkpointBlock(cpId, "note");
 }
 
+/**
+ * `note: none` in the script — this checkpoint gets NO note cell. Some
+ * checkpoints are session mechanics, not lecture: cp0 calibrates how much
+ * code the student wants to see, and a cell about that is the first thing a
+ * cold reader meets in a document that has not begun. The answer still gets
+ * logged and still lands in the closing session_record.
+ */
+function noteSuppressed(cpId: string): boolean {
+  try {
+    const chapter = loadChapters().find((c) => c.checkpoints.includes(baseCheckpointId(cpId)));
+    if (!chapter) return false;
+    const lines = fs
+      .readFileSync(path.join(process.cwd(), "lesson", chapter.file), "utf-8")
+      .split("\n");
+    const start = lines.findIndex((l) =>
+      new RegExp(`^\\s*-\\s+id:\\s*${baseCheckpointId(cpId)}\\s*$`).test(l),
+    );
+    if (start < 0) return false;
+    for (let i = start + 1; i < lines.length; i++) {
+      if (/^\s*-\s+id:\s/.test(lines[i])) break;
+      if (/^\s*note:\s*none\s*$/.test(lines[i])) return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 /** Does the script offer a practice variant for this checkpoint? */
 function hasFreshVariants(cpId: string): boolean {
   return checkpointBlock(cpId, "fresh_variants").trim().length > 0;
@@ -1394,12 +1422,19 @@ export default function (pi: ExtensionAPI) {
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 
-      const skeleton = noteSkeleton(id);
-      const md = skeleton
-        ? fillSlots(skeleton, params.note_slots ?? [], response)
-        : String(params.note_markdown ?? "").trim();
+      const suppressed = noteSuppressed(id);
+      const skeleton = suppressed ? "" : noteSkeleton(id);
+      const md = suppressed
+        ? ""
+        : skeleton
+          ? fillSlots(skeleton, params.note_slots ?? [], response)
+          : String(params.note_markdown ?? "").trim();
       let noteLine: string;
-      if (!md) {
+      if (suppressed) {
+        noteLine =
+          `No note cell for this one, by design (the script says note: none) — it is ` +
+          `logged and appears in the closing record. Do NOT add one yourself.`;
+      } else if (!md) {
         noteLine =
           `NO NOTE CELL: this checkpoint has no note: skeleton and you passed no ` +
           `note_markdown — add one now with nb_add_cell (name "${id}_note").`;
