@@ -19,7 +19,10 @@ checkpoints:
       Then ask with ask_user_question (the DIALOG, not plain text — this is
       one of the two places the dialog is used): "How do you feel about
       Python?" Options: "I don't code" / "tried a little" /
-      "comfortable with Python". Do not also type the question out.
+      "comfortable with Python". Every option needs a `description` (the
+      field is required) — here it can say what the answer means for the
+      session, since there is no right answer to give away. Do not also type
+      the question out.
     # No hints and no reveal_after, deliberately: "how do you feel about
     # Python?" has no wrong answer to hint toward and nothing to reveal.
     # Same for cp1's guess below. Every OTHER checkpoint carries both.

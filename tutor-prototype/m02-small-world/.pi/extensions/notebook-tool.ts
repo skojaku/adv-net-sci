@@ -721,10 +721,15 @@ function recordPickedAnswer(event: any): void {
     // after a resume": if the tutor asks continue-or-fresh in plain text,
     // the flag would otherwise swallow the next real prediction instead —
     // and a re-asked resume dialog would slip the original one through.
-    if (
-      awaitingResumeChoice &&
-      /continue|fresh|left off|pick (things )?up|no input/i.test(picked)
-    ) {
+    // A dismissed dialog is not an answer. The package returns a fixed
+    // "User declined to answer questions", which is a machine's sentence —
+    // stored, it printed in the submitted record as *You chose: "User
+    // declined to answer questions"*, attributed to the student.
+    if (/declined to answer|no input/i.test(picked)) {
+      if (awaitingResumeChoice) awaitingResumeChoice = false;
+      return;
+    }
+    if (awaitingResumeChoice && /continue|fresh|left off|pick (things )?up/i.test(picked)) {
       awaitingResumeChoice = false;
       return;
     }
@@ -2164,7 +2169,10 @@ export default function (pi: ExtensionAPI) {
       if (isScriptedCheckpoint(id)) {
         const ord = checkpointOrder();
         const advanced = nextCheckpointId(id);
-        const here = pendingCheckpoint ? ord.indexOf(pendingCheckpoint) : -1;
+        // null means "module finished" — the END of the order, not before
+        // its start, or closing a stray practice round could pull the
+        // session back out of the terminal state.
+        const here = pendingCheckpoint ? ord.indexOf(pendingCheckpoint) : ord.length;
         const there = advanced ? ord.indexOf(advanced) : ord.length;
         if (there >= here) pendingCheckpoint = advanced;
       }
@@ -2520,8 +2528,14 @@ export default function (pi: ExtensionAPI) {
         return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
       }
       const exCpId = String(params.checkpoint ?? "").trim();
-      if (exCpId && pendingCheckpoint && isAheadOf(exCpId, pendingCheckpoint)) {
-        buildOrderWarned.set(exCpId, (buildOrderWarned.get(exCpId) ?? 0) + 1);
+      const exKey = `exercise:${exCpId}`;
+      if (
+        exCpId &&
+        pendingCheckpoint &&
+        isAheadOf(exCpId, pendingCheckpoint) &&
+        (buildOrderWarned.get(exKey) ?? 0) < 2
+      ) {
+        buildOrderWarned.set(exKey, (buildOrderWarned.get(exKey) ?? 0) + 1);
         return toResult({
           out:
             `NOT INSERTED — '${exCpId}' comes after '${pendingCheckpoint}', which is still ` +
@@ -2716,12 +2730,16 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
+      // Keyed by TOOL as well as checkpoint: a shared budget meant the
+      // exercise tool's refusals spent the template tool's, and a genuine
+      // first-try violation was then waved through.
+      const tplKey = `template:${cpId}`;
       if (
         pendingCheckpoint &&
         isAheadOf(cpId, pendingCheckpoint) &&
-        (buildOrderWarned.get(cpId) ?? 0) < 2
+        (buildOrderWarned.get(tplKey) ?? 0) < 2
       ) {
-        buildOrderWarned.set(cpId, (buildOrderWarned.get(cpId) ?? 0) + 1);
+        buildOrderWarned.set(tplKey, (buildOrderWarned.get(tplKey) ?? 0) + 1);
         return toResult({
           out:
             `NOT INSERTED — '${cpId}' comes after '${pendingCheckpoint}', which is still ` +
