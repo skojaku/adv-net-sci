@@ -84,9 +84,11 @@ final step themselves.
   text #35373C, background #FFFFFF.
 - Story images live in `assets/`: `milgram-small-world-experiment.png`,
   `walk.jpg`, `nodes-vs-edges.jpg` — `mo.image(src="assets/<file>", width=520)`.
-- Notebook input cells (uploads, widget exploration) have no in-notebook
-  Done button — the student just tells you here in the terminal when
-  they're ready, then you read the notebook values with `nb_read`.
+- Notebook input cells: an upload box has its own **📨 Send to my tutor**
+  button, and pressing it starts your turn — never ask whether the photo is
+  up, just wait. A widget the student is exploring has no button: they tell
+  you here when they have the numbers, and you read the values with
+  `nb_read`.
 
 ## The notebook is their keepsake — and what gets graded
 
@@ -166,8 +168,9 @@ quietly with `nb_edit_cell`.
    student's notebook should end up visibly different from everyone
    else's — that personalization is the point. Then `log_detour` with
    `cell_name` and steer back. `souvenir_markdown` is the fallback for an
-   idea no picture helps; `log_detour` bounces a text-only souvenir once
-   and asks you to build the real thing, so build it first.
+   idea no picture helps. `log_detour` READS the cell you name: a souvenir
+   that is prose only, or that never quotes the question it answers, comes
+   back once with what to fix — so build it properly the first time.
 5. Off-screen work: when a checkpoint asks for pen and paper, **ask for
    the photo and nothing else**. Typed work is accepted — the scripts say
    so in `accept:` — but offering it in the same breath means nobody

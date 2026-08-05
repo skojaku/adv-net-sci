@@ -33,6 +33,40 @@ const SCRIPT_CANDIDATES = [
 
 /** JSON string literals are valid Python string literals. */
 const py = (s: string) => JSON.stringify(s);
+
+/**
+ * The argument of an `mo.md(...)` call, as a RAW triple-quoted literal.
+ *
+ * `py()` is wrong here, and silently so. marimo recognises a markdown cell
+ * when it saves the file and rewrites it as a triple-quoted literal, copying
+ * the r/f prefix from the ORIGINAL source token — so a note created as
+ * `mo.md("…\\frac…")` is written back as a NON-raw `mo.md("""…\frac…""")`,
+ * and the next reload lets Python eat `\f`, `\a`, `\r`, `\t`. That is how
+ * the module's central definition ended up on screen as
+ * `C_i = rac{ ext{friendships…}}`, and $L = 7/6 pprox 1.17$ beside it.
+ * Every note skeleton is full of LaTeX, so this hit the keepsake hardest.
+ *
+ * A raw string cannot contain `"""` and cannot end in a backslash, so the
+ * text is split into raw chunks glued together with ordinary literals. In
+ * the normal case (no triple quote anywhere) that is exactly the
+ * `r"""…"""` marimo writes for itself.
+ */
+function pyMd(markdown: string): string {
+  const chunk = (s: string): string => {
+    if (!s) return '""';
+    // Neither a quote nor a backslash may sit against the closing """ —
+    // peel any trailing run of them into an ordinary escaped literal.
+    const tail = /["\\]+$/.exec(s);
+    if (!tail) return `r"""${s}"""`;
+    const head = s.slice(0, s.length - tail[0].length);
+    return head ? `r"""${head}""" ${py(tail[0])}` : py(tail[0]);
+  };
+  return markdown
+    .replace(/\r\n/g, "\n")
+    .split('"""')
+    .map(chunk)
+    .join(` '"""' `);
+}
 const pyList = (xs: string[]) => JSON.stringify(xs);
 const sanitize = (s: string) => s.replace(/\W/g, "_");
 
@@ -431,7 +465,7 @@ async function insertChapterHeader(
     const name = `${ch.id}_header`;
     const opening = chapterOpening(ch);
     const heading = `## Chapter ${num} of ${total} — ${ch.title}`;
-    const body = `mo.md(${py(opening ? `${heading}\n\n${opening}` : heading)})`;
+    const body = `mo.md(${pyMd(opening ? `${heading}\n\n${opening}` : heading)})`;
     await runKernel(
       `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
@@ -628,7 +662,14 @@ function recordPickedAnswer(event: any): void {
         .join(" · ");
       if (joined) picked = joined;
     } catch {
-      // not JSON — the raw text is the answer
+      // Not JSON. The dialog package hands back a sentence of plumbing —
+      //   User has answered your questions: "How do you feel about
+      //   Python?"="tried a little". You can now continue …
+      // — and storing that whole sentence put a machine's voice inside the
+      // student's own `*You chose:*` line in the submitted notebook. Keep
+      // only the answers: every "question"="answer" pair's right-hand side.
+      const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)].map((m) => m[2].trim());
+      if (pairs.length) picked = pairs.filter(Boolean).join(" · ");
     }
     pickedAnswers.push(picked.slice(0, 300));
   } catch {
@@ -871,6 +912,58 @@ function withQuotedQuestion(markdown: string, question: string): string {
   return `${quote}\n\n${markdown}`;
 }
 
+/**
+ * The source of a named cell, or null when it cannot be read (kernel cold,
+ * marimo API shifted). Used to CHECK a souvenir the tutor built itself —
+ * the `cell_name` path was the unchecked half of the contract, and it is
+ * the path the model actually takes.
+ */
+async function readCellSource(name: string, signal?: AbortSignal): Promise<string | null> {
+  const r = await runKernel(
+    `import marimo._code_mode as cm\n` +
+      `async with cm.get_context() as ctx:\n` +
+      `    _c = None\n` +
+      `    for _x in ctx.cells:\n` +
+      `        if getattr(_x, "name", None) == ${py(name)}:\n` +
+      `            _c = _x\n` +
+      `    if _c is None:\n` +
+      `        print("SOUVENIR_MISSING")\n` +
+      `    else:\n` +
+      `        _src = ""\n` +
+      `        for _a in ("code", "source", "text"):\n` +
+      `            _v = getattr(_c, _a, None)\n` +
+      `            if isinstance(_v, str) and _v.strip():\n` +
+      `                _src = _v\n` +
+      `                break\n` +
+      `        print("SOUVENIR_SRC<<")\n` +
+      `        print(_src)\n` +
+      `        print(">>SOUVENIR_SRC")\n`,
+    signal,
+  );
+  if (r.failed) return null;
+  if (r.out.includes("SOUVENIR_MISSING")) return "";
+  const m = /SOUVENIR_SRC<<\n([\s\S]*?)\n>>SOUVENIR_SRC/.exec(r.out);
+  const src = m?.[1] ?? "";
+  // Empty means the attribute walk found nothing — unknown, not empty. A
+  // check that cannot see the cell must stand down, never accuse.
+  return src.trim() ? src : null;
+}
+
+/** What a souvenir cell is missing, or "" when it honours the contract. */
+function souvenirGap(src: string, question: string): string {
+  if (!src) return "does not exist in the notebook";
+  const shows = /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(|mo\.carousel|mo\.accordion/.test(
+    src,
+  );
+  const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
+  const needle = flat(question).slice(0, 40);
+  const quotes = needle.length > 0 && flat(src).includes(needle);
+  if (!shows && !quotes) return "is prose only, and never quotes their question";
+  if (!shows) return "is prose only — nothing to look at or play with";
+  if (!quotes) return "never quotes the question it answers";
+  return "";
+}
+
 /** Insert (or skip, if present) a markdown cell and scroll the page to it. */
 async function insertMarkdownCell(
   name: string,
@@ -880,7 +973,7 @@ async function insertMarkdownCell(
   const warm = await ensureWarm(signal);
   if (warm) return warm;
   if (name !== "session_record") await ensureChapterHeader(signal);
-  const body = `mo.md(${py(markdown)})`;
+  const body = `mo.md(${pyMd(markdown)})`;
   return runKernel(
     `import marimo._code_mode as cm\n` +
       `async with cm.get_context() as ctx:\n` +
@@ -1725,6 +1818,31 @@ export default function (pi: ExtensionAPI) {
       // and four text-only blobs in one live session is what that failure
       // looks like. Bounced ONCE, with both ways out spelled out, then
       // accepted — some ideas really are just words.
+      //
+      // The cell the tutor built ITSELF is checked the same way. Trusting
+      // that path was the hole: every detour in the failing session arrived
+      // as a cell_name, and every one of them was prose that never quoted
+      // the question it answered.
+      let gap = "";
+      if (cellName) {
+        const src = await readCellSource(cellName, signal);
+        if (src !== null) gap = souvenirGap(src, question);
+      }
+      if (gap && !detourTextOnlyWarned.has(question)) {
+        detourTextOnlyWarned.add(question);
+        return toResult({
+          out:
+            `NOT LOGGED YET — the souvenir cell "${cellName}" ${gap}. Fix it with ` +
+            `nb_edit_cell so it is ONE cell holding both: their question quoted ` +
+            `("${question.slice(0, 60)}") and something to see or try —\n` +
+            `  mo.vstack([mo.md(r"""> 🧭 **You asked:** “…”\n\n…"""), netviz(edges, highlight=[…])])\n` +
+            `— or an nb_add_exercise box if the idea is playable. Then call log_detour ` +
+            `again with the same cell_name.\n` +
+            `If words genuinely are the whole answer here, call log_detour again as it ` +
+            `is and it will be accepted.`,
+          failed: false,
+        });
+      }
       if (!cellName && md0 && !detourTextOnlyWarned.has(question)) {
         detourTextOnlyWarned.add(question);
         return toResult({
@@ -1749,12 +1867,14 @@ export default function (pi: ExtensionAPI) {
         // into the detour record — leaving checkpoint_done with an empty
         // student_said_verbatim and a drift check with nothing to match.
         student_said_verbatim: studentSaidSince(ctx, false),
+        // Accepted on the retry despite the gap — the grader sees what the
+        // souvenir was missing rather than the tool pretending it was fine.
+        ...(gap ? { souvenir_gap: gap } : {}),
       });
       if (!md0) {
         return toResult({
           out: cellName
-            ? `Logged. Souvenir cell "${cellName}" noted — check it quotes their question ` +
-              `("${question.slice(0, 60)}") and shows something, not just tells.`
+            ? `Logged. Souvenir cell "${cellName}" noted.`
             : `Logged — but NO souvenir cell yet. Add one now (nb_add_cell, name ` +
               `"detour_<topic>"): their question quoted plus the idea, text and picture ` +
               `together in ONE cell (mo.vstack + netviz).`,
@@ -1889,7 +2009,7 @@ export default function (pi: ExtensionAPI) {
       const edBody =
         `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
         `${name}_run = mo.ui.run_button(label="▶ Run my code")\n` +
-        `mo.vstack([mo.md(${py(params.instructions)}), ${name}_ed, ${name}_run])`;
+        `mo.vstack([mo.md(${pyMd(params.instructions)}), ${name}_ed, ${name}_run])`;
       const outBody =
         `if ${name}_run.value:\n` +
         `    _res = run_student_code(${name}_ed.value, ${envDict})\n` +
@@ -2117,7 +2237,7 @@ export default function (pi: ExtensionAPI) {
           const h = `${chapters[0].id}_header`;
           const heading = `## Chapter 1 of ${chapters.length} — ${chapters[0].title}`;
           const op = chapterOpening(chapters[0]);
-          const body = `mo.md(${py(op ? `${heading}\n\n${op}` : heading)})`;
+          const body = `mo.md(${pyMd(op ? `${heading}\n\n${op}` : heading)})`;
           code +=
             `    _cid = ctx.create_cell(${py(body)}, name=${py(h)}, hide_code=True)\n` +
             `    ctx.run_cell(_cid)\n`;
@@ -2292,7 +2412,7 @@ export default function (pi: ExtensionAPI) {
         `from pathlib import Path as _P\n` +
         `mo.vstack([\n` +
         `    mo.image(_P(${py(viewRel)}).read_bytes(), width=420),\n` +
-        `    mo.md(${py(caption)}),\n` +
+        `    mo.md(${pyMd(caption)}),\n` +
         `])`;
       const source = widget
         ? `_files = list(${widget}.value or [])\n` +
