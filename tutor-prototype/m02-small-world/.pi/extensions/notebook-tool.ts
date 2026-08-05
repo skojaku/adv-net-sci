@@ -415,32 +415,28 @@ function isScriptedCheckpoint(id: string): boolean {
 
 /** The checkpoint the tutor is expected to work next, or null if unknown. */
 /**
- * Where to go after closing `id`: the first scripted checkpoint with no log
- * row, treating `id` as logged (checkpoint_done sets this before it appends).
+ * Where to go after closing `id`: the next checkpoint in the script, full
+ * stop.
  *
- * Positional "the next one in the list" was wrong once resume learned to
- * pick up AT a gap. A log that reached cp8 with three checkpoints missing
- * resumed correctly at the first gap and was then walked forward through six
- * checkpoints it had already done — and could not skip them, because the
- * build-ordering guard refuses a forward jump. Each re-close appended a
- * second row while the note cell kept the first answer: 18 rows in a
- * 12-checkpoint record, six of them contradicting their own note.
+ * This was briefly made gap-aware — "the first checkpoint with no log row" —
+ * so that a session killed mid-module could resume into the hole it left.
+ * Three rounds of review found three different Blockers in that, all the
+ * same shape: the ordering guard, `chapter_done`'s re-arm, the per-chapter
+ * scripts and this function each have their own idea of "next", and making
+ * one of them gap-aware puts it at odds with the other three — a build the
+ * guard refuses, a chapter that can never be re-loaded, a walk back through
+ * checkpoints that already have rows and notes, duplicate rows in the graded
+ * record. Positional is the only rule all four share.
+ *
+ * A gap is also close to unreachable now: the build guard refuses a
+ * checkpoint ahead of the open one, and this advances one at a time. The
+ * gapped logs in session_artifacts/ predate both. When one does appear, the
+ * honest outcome is a record that says so — the closing summary already
+ * prints "Checkpoints completed: 11 of 12" and names where to pick up —
+ * not a record that quietly re-runs half the module to paper over it.
  */
 function nextCheckpointId(id: string): string | null {
   const order = checkpointOrder();
-  const done = new Set<string>([baseCheckpointId(id)]);
-  try {
-    for (const e of readSessionLog()) {
-      if (e?.type === "checkpoint" && e.id) done.add(baseCheckpointId(String(e.id)));
-    }
-  } catch {
-    // No log to read — the positional answer below is the whole truth.
-  }
-  const gap = order.find((o) => !done.has(o));
-  if (gap) return gap;
-  // Everything is logged. Fall back to the positional answer so a normal
-  // session (where the row for `id` is written a moment later) still knows
-  // there is nothing after the last checkpoint.
   const i = order.indexOf(baseCheckpointId(id));
   return i >= 0 ? (order[i + 1] ?? null) : null;
 }
@@ -1000,7 +996,9 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
   return skeleton.replace(/«[^»]*»/g, () => {
     const supplied = slots[i];
     i += 1;
-    if (supplied !== undefined && supplied !== "") return supplied;
+    // `.trim()`, matching the slot-count guard: a whitespace pad satisfied
+    // neither, and rendered as a heading with nothing under it.
+    if (supplied !== undefined && supplied.trim() !== "") return supplied;
     if (usedFallback) return "*(not answered)*";
     usedFallback = true;
     return fallback;
@@ -1390,22 +1388,28 @@ export default function (pi: ExtensionAPI) {
         let moduleFinished = false;
         if (cps.length > 0) {
           const order = chapters.flatMap((c) => c.checkpoints);
-          // Where to pick up = the FIRST checkpoint with no log row, not the
-          // one after the last row. Two earlier shapes of this both failed:
-          // "after the last logged" walked a student who had a gap in the
-          // middle past it, and answering "is the last one logged?" separately
-          // from "where next?" produced a brief that said "continue at
-          // checkpoint undefined". One question, asked once — and off-script
-          // rows (a stretch, a typo) simply are not in `order`, so they can no
-          // longer drag the answer anywhere.
-          const doneIds = new Set(cps.map((e: any) => baseCheckpointId(String(e.id))));
-          const nextId = order.find((o: string) => !doneIds.has(o));
-          // No next id means every scripted checkpoint has a row: the module
-          // is finished. Do NOT fall back to the last checkpoint — that tells
-          // the tutor to re-run cp8, whose re-close silently skips the
-          // existing session_record while overwriting session_summary.md, and
-          // the two then disagree.
+          // Scan BACKWARDS for the last id the script actually knows. The
+          // newest entry can be off-script — a stretch (cs1_code), a typo —
+          // and indexOf(-1)+1 would silently resolve to cp0_welcome, walking
+          // a student who finished four chapters back to the welcome.
+          const lastScripted = [...cps]
+            .reverse()
+            .map((e: any) => baseCheckpointId(String(e.id ?? "")))
+            .find((id: string) => order.includes(id));
+          // Positional, matching nextCheckpointId — see the note there for
+          // why resuming INTO a gap is not supported. No next id means the
+          // module is done; do NOT fall back to the last checkpoint, which
+          // tells the tutor to re-run cp8, whose re-close skips the existing
+          // session_record while overwriting session_summary.md.
+          const nextId = lastScripted ? order[order.indexOf(lastScripted) + 1] : order[0];
           const finished = !nextId;
+          // A gap is reported, not repaired: the brief says so in one line so
+          // the tutor does not silently carry on as if the module were whole,
+          // and the closing summary lists the missing ids either way.
+          const doneIds = new Set(cps.map((e: any) => baseCheckpointId(String(e.id))));
+          const gaps = order.filter(
+            (o: string) => !doneIds.has(o) && (!nextId || order.indexOf(o) < order.indexOf(nextId)),
+          );
           moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
@@ -1421,6 +1425,12 @@ export default function (pi: ExtensionAPI) {
               content:
                 `RESUME CONTEXT (invisible to the student — never mention this message): ` +
                 `a previous session exists. Progress so far:\n${progressBrief(entries)}\n` +
+                (gaps.length
+                  ? `Note for you, not for them: ${gaps.join(", ")} ${gaps.length > 1 ? "have" : "has"} ` +
+                    `no record — an earlier session ended between them. Do NOT go back for ` +
+                    `${gaps.length > 1 ? "them" : "it"}; carry on from where the module is now, and the ` +
+                    `closing summary will show ${gaps.length > 1 ? "them" : "it"} as missing.\n`
+                  : "") +
                 `FIRST, greet the student and ask with ask_user_question: continue where you left ` +
                 `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
                 `its instructions (chapter 1 reloads automatically — do not improvise). ` +

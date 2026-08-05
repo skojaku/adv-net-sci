@@ -23,7 +23,11 @@ checkpoints:
     # No hints and no reveal_after, deliberately: "how do you feel about
     # Python?" has no wrong answer to hint toward and nothing to reveal.
     # Same for cp1's guess below. Every OTHER checkpoint carries both.
-    accept: Any answer. Record it.
+    accept: |
+      Any answer. Record it. Judgment is `pass` with 0 hints — this is a
+      calibration question, not a lesson: there is nothing to get wrong and
+      nothing to hint toward. (A live run logged `guided`, which the
+      extension then reconciled into a hint that never happened.)
     adapt: |
       "I don't code"  -> never ask the student to write code; keep all
                          notebook code collapsed; explain in plain words.
