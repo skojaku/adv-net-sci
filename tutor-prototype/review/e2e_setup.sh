@@ -53,9 +53,19 @@ rm -rf "$SANDBOX/assets/uploads" "$SANDBOX/assets/exercises"
 
 # Fully detach marimo's stdio: an inherited stdout would keep a caller's
 # $(...) command substitution open forever.
-(cd "$SANDBOX" && exec uvx marimo edit --sandbox --no-token --headless notebook.py) \
-  >"$SANDBOX/session_artifacts/marimo_server.log" 2>&1 </dev/null &
-echo $! >"$SANDBOX/session_artifacts/marimo.pid"
+#
+# And keep a live parent. `marimo edit` polls its parent process and shuts
+# itself down when that parent disappears — this script exits within seconds
+# of starting it, so the server killed itself about ten minutes into a gate
+# run, mid-checkpoint. The trailing `sleep` holds the subshell open for the
+# session's lifetime so marimo keeps a parent to see.
+(
+  cd "$SANDBOX" || exit 1
+  uvx marimo edit --sandbox --no-token --headless notebook.py &
+  echo $! >"$SANDBOX/session_artifacts/marimo.pid"
+  sleep 86400
+) >"$SANDBOX/session_artifacts/marimo_server.log" 2>&1 </dev/null &
+echo $! >"$SANDBOX/session_artifacts/marimo_keepalive.pid"
 
 MARIMO_URL=""
 for _ in $(seq 1 60); do

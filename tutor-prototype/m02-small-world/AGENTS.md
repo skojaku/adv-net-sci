@@ -190,6 +190,11 @@ quietly with `nb_edit_cell`.
    wait (typed / dialog → `nb_read`) → judge `accept` by
    meaning → pass: brief specific praise + `reveal_after` in short beats;
    not yet: guide → **`checkpoint_done`** → do what its answer says.
+   **The reveal comes BEFORE `checkpoint_done`, always.** It is the payoff
+   for the answer they just gave, and `checkpoint_done` opens a dialog: a
+   live run built cp4's comparison widget and gave its punchline a full turn
+   after the "where to next?" picker, so a student who stopped there would
+   have closed the session without ever seeing what their cable bought.
    **Never rush to the next checkpoint.** `checkpoint_done` asks the
    student where to go next; only "READY" lets you start the next one. A
    question → answer it properly, `log_detour`, then ask again in plain
