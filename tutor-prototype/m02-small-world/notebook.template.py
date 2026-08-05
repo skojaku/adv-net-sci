@@ -97,11 +97,17 @@ function render({ model, el }) {
   const links = model.get("links").map(d => ({...d}));
   const byId = new Map(nodes.map(d => [d.id, d]));
   links.forEach(l => { l.source = byId.get(l.source); l.target = byId.get(l.target); });
+  const straight = links.filter(l => l.source !== l.target);
+  const loops = links.filter(l => l.source === l.target);
 
-  const link = svg.append("g").selectAll("line").data(links).join("line")
+  const link = svg.append("g").selectAll("line").data(straight).join("line")
     .attr("stroke", d => d.color || "#6A6D75")
     .attr("stroke-width", d => d.width || 2)
     .attr("stroke-linecap", "round");
+  const loop = svg.append("g").selectAll("path").data(loops).join("path")
+    .attr("fill", "none")
+    .attr("stroke", d => d.color || "#6A6D75")
+    .attr("stroke-width", d => d.width || 2);
 
   const node = svg.append("g").selectAll("g").data(nodes).join("g")
     .style("cursor", "grab");
@@ -119,6 +125,10 @@ function render({ model, el }) {
   function place() {
     link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+    loop.attr("d", d => {
+      const x = d.source.x, y = d.source.y, r = d.source.r || 16;
+      return `M ${x - 6} ${y - r + 4} C ${x - 30} ${y - r - 34}, ${x + 30} ${y - r - 34}, ${x + 6} ${y - r + 4}`;
+    });
     node.attr("transform", d => `translate(${d.x},${d.y})`);
   }
 
@@ -159,7 +169,8 @@ export default { render };
     ):
         """Draw a small network as a themed, drag-able D3 widget.
 
-        edges: [(u, v), ...] — node names appear in first-seen order.
+        edges: [(u, v), ...] — node names appear in first-seen order;
+               (u, u) draws a self-loop arc above the node.
         highlight: edges to paint rust-red (e.g. shortcuts).
         node_colors: {node: "#hex"} overrides (default themed blue).
         nodes: extra nodes to include even if they have no edges.

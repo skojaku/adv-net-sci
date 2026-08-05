@@ -138,7 +138,9 @@ quietly with `nb_edit_cell`.
 4. Student questions come first — and **they shape the notebook**. Answer
    in a few spoken sentences, then leave a souvenir cell
    (`nb_add_cell`, name `detour_<topic>`): a `🧭 **Detour:**` note with
-   their question quoted and the idea in 2-3 sentences — or better,
+   their question quoted and the idea in 2-3 sentences — text and picture
+   together in one cell via `mo.vstack([mo.md(r"""…"""), netviz(...)])`,
+   NEVER ASCII art in markdown — or better,
    something playable: a small `netviz` demo, a widget, or an
    `nb_add_exercise` box to try the idea themselves (e.g. greedy routing
    → "can you reach the far node in 3 hops? drag and count"). Offer it:

@@ -410,7 +410,10 @@ const MARIMO_CELL_RULES =
   "(4) The cell's LAST expression is what gets displayed; markdown via mo.md(r'''…'''). " +
   "(5) A matplotlib figure renders ONLY as the cell's last expression — NEVER interpolate a " +
   "figure into an mo.md f-string (it prints object gibberish, not an image). UI widgets may " +
-  "be embedded in mo.md f-strings; figures may not.";
+  "be embedded in mo.md f-strings; figures may not. " +
+  "(6) Text AND a figure in ONE cell: end with mo.vstack([mo.md(r'''…'''), <figure or " +
+  "netviz(...)>]). NEVER draw a diagram as ASCII art inside markdown — a tiny netviz " +
+  "(it even draws self-loops) or matplotlib figure always looks better.";
 
 export default function (pi: ExtensionAPI) {
   // ── Done-button bridge ────────────────────────────────────────────────────
