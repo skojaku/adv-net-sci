@@ -157,6 +157,20 @@ skip S9's verbatim cross-check on it (there is no transcript behind it).
 - **S16 Coding is scaffolded, not hard.** Exercise boxes: numbered `#` steps,
   ≤3 `...` blanks, one concept per blank, runnable as given once filled, and
   a friendly error path. A student who "doesn't code" can finish with hints.
+- **S17 Chapter openings read like a lecture note.** Every chapter header
+  cell carries instructor-authored opening prose (2–4 sentences) under the
+  title: what question this chapter opens, bridging from the previous one —
+  a bare "## Chapter N — Title" tells a cold reader nothing. Openings render
+  BEFORE the chapter's checkpoints, so they must never state an answer a
+  checkpoint asks for (same rule as the deliberately vague titles). Fix
+  target: `lesson/index.json` `opening` fields, rendered by the extension's
+  header cells.
+- **S18 Every figure is introduced.** Each figure/widget cell carries its
+  own reading guide — what the encoding means (colors, bars, sliders, rust
+  highlights) and what to look at — so the figure works for a cold reader
+  without the conversation. The guide explains how to READ, never what the
+  student is about to answer (cp3's and cp5's counts stay unstated). Fix
+  target: `cells/*.py`.
 
 ## Part C — Curriculum scripts
 
@@ -188,6 +202,12 @@ Review `lesson/ch*.yaml`, `lesson/index.json`, `cells/*.py` against
   `# describe:` line matching what it actually renders.
 - **C10 No unexplained jargon.** Every technical term in `ask`/`reveal_after`
   is defined at first use, in plain words.
+- **C11 Paper exercises ask for the photo, full stop.** Photo-checkpoint
+  `ask` texts request the upload and nothing else — no "or just tell me…"
+  escape hatch advertised. The typed fallback lives only in `accept` (a
+  volunteered typed answer counts) and as an explicit last resort for a
+  student who says they cannot photograph. The hand-made page IS the
+  artifact; a script that offers the easier path forfeits it.
 
 ## Part P — Session process
 
@@ -221,6 +241,12 @@ the student or the past session (see Fix targets).
 - **P10 Failures stay backstage.** nb_* errors handled via their RECOVERY
   line; no infrastructure debugging, cell talk, or error jargon shown to
   the student.
+- **P11 Photo-first discipline.** At paper checkpoints the tutor asks for
+  the upload and waits; it never volunteers the typed alternative (C11).
+  Typed work is accepted when the student offers it unprompted, and the
+  typed fallback is offered only after the student says they cannot
+  photograph. Check transcripts and E2E runs for "or just tell/type…"
+  phrasing while the photo ask is open.
 
 ## Part D — Dynamic E2E gate
 
