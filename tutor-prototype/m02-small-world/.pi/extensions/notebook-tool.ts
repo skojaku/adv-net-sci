@@ -2004,6 +2004,34 @@ export default function (pi: ExtensionAPI) {
       // precisely so the keepsake quotes the ANSWER and not whichever
       // fragment came last — under-filling turns that back into one sentence
       // repeated under three labels.
+      // A number the student said that reaches no slot. Not an attribution
+      // guess — it does not care WHICH slot — just: they typed 0.2, and the
+      // note their work is graded from does not contain it. Live runs
+      // dropped "2 out of 10, so thats 0.2" and a C/C₀ reading this way.
+      if (
+        markers.some((m) => /verbatim/i.test(m)) &&
+        slots.some((f) => f.trim()) &&
+        (slotDriftWarned.get(`${id}:figures`) ?? 0) < 1
+      ) {
+        const inFills = new Set(slots.flatMap(slotTokens).filter(isFigure));
+        const dropped = [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter(
+          (f) => !inFills.has(f),
+        );
+        if (dropped.length) {
+          slotDriftWarned.set(`${id}:figures`, 1);
+          return toResult({
+            out:
+              `NOT LOGGED — they typed ${dropped.map((f) => `"${f}"`).join(", ")} and no ` +
+              `slot quotes ${dropped.length > 1 ? "them" : "it"}. Those are the numbers ` +
+              `this checkpoint asked for, in their own words, and the note is what their ` +
+              `work is graded from.\n` +
+              `In order, they said: ${said.map((x, i) => `[${i + 1}] "${x.slice(0, 90)}"`).join("  ")}\n` +
+              `Put each part of their answer in the slot that asked for it, then call ` +
+              `checkpoint_done again.`,
+            failed: false,
+          });
+        }
+      }
       const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
       // No note_markdown exemption: the renderer ignores note_markdown
       // whenever a skeleton exists, so taking that escape hatch discarded the
@@ -2113,7 +2141,13 @@ export default function (pi: ExtensionAPI) {
       });
       for (const [i, fill] of slots.entries()) {
         if (said.length === 0) break;
-        if (!/verbatim/i.test(markers[i] ?? "")) continue;
+        // A photo slot is exempt because the tutor legitimately describes a
+        // picture there. When no photo ever arrived, there is no picture to
+        // describe — whatever is in that slot came from words the student
+        // typed, and it is held to them like any other quote. A live run
+        // used the exemption to paraphrase a typed derivation.
+        const photoSlotAnsweredByTyping = photoMissing && !/verbatim/i.test(markers[i] ?? "");
+        if (!/verbatim/i.test(markers[i] ?? "") && !photoSlotAnsweredByTyping) continue;
         const d = slotDrift(fill, pool);
         if (d.numbers.length === 0 && d.words.length < 3) continue;
         problems.push(
@@ -3202,7 +3236,11 @@ export default function (pi: ExtensionAPI) {
       "Escape hatch: run arbitrary Python in the notebook's scratchpad (variables visible, new " +
       "top-level bindings discarded). Use for: appending to the session log, saving uploaded " +
       "photo bytes to session_artifacts/, timestamps (datetime), quick computations. " +
-      "NOT for creating/editing cells — use nb_add_cell/nb_edit_cell for that.",
+      "NOT for creating/editing cells — use nb_add_cell/nb_edit_cell for that. " +
+      "AND NEVER TO PRE-SOLVE THE OPEN CHECKPOINT: a live run worked out '250 hops' here " +
+      "and said it in the next breath, so the student never answered the question they " +
+      "were asked. If a number is what the checkpoint is asking for, you may not be the " +
+      "one who says it — ask, end your turn, wait.",
     promptSnippet: "Run scratchpad Python in the notebook kernel (logging, file saves, checks)",
     parameters: Type.Object({
       status: STATUS_PARAM,
