@@ -28,7 +28,14 @@ import { complete } from "@earendil-works/pi-ai/compat";
 import { Text } from "@earendil-works/pi-tui";
 import { keyHint, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
+// How every nb_* call reaches the marimo kernel. The script ships inside the
+// marimo-pair skill, but under pi the SKILL must not be installed: the model
+// reaches for it mid-hint and a bare "[skill] marimo-pair" line lands in the
+// student's terminal. So run_tutor.sh stages just the scripts outside any
+// skills directory, and that copy is tried first. (Deleting the skill without
+// staging the bridge was briefly shipped and killed every notebook call.)
 const SCRIPT_CANDIDATES = [
+  ".pi/marimo-bridge/scripts/execute-code.sh",
   ".pi/skills/marimo-pair/scripts/execute-code.sh",
   ".claude/skills/marimo-pair/scripts/execute-code.sh",
 ];
@@ -149,7 +156,10 @@ function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; f
   const script = SCRIPT_CANDIDATES.map((p) => path.join(cwd, p)).find(fs.existsSync);
   if (!script) {
     return Promise.resolve({
-      out: "marimo-pair skill scripts not found. Ask the student to restart with ./run_tutor.sh.",
+      out:
+        "The notebook bridge (.pi/marimo-bridge/scripts/execute-code.sh) is missing, so " +
+        "nothing can reach the notebook. Tell the student, in one warm sentence, that the " +
+        "notebook needs restarting with ./run_tutor.sh — then keep teaching in the terminal.",
       failed: true,
     });
   }
@@ -1353,7 +1363,13 @@ export default function (pi: ExtensionAPI) {
           // re-close silently skips the existing session_record while
           // overwriting session_summary.md — the two then disagree.
           const nextId = lastScripted ? order[order.indexOf(lastScripted) + 1] : order[0];
-          const finished = !nextId;
+          // "Finished" must mean EVERY checkpoint, not just that the last one
+          // was reached: a log with cp7 skipped and cp8 logged scanned as
+          // finished, so the brief said "do not re-run any checkpoint" while
+          // chapter_done replied "carry on with cp7_redteam" — two orders in
+          // one turn.
+          const doneIds = new Set(cps.map((e: any) => baseCheckpointId(String(e.id))));
+          const finished = !nextId && order.every((o: string) => doneIds.has(o));
           moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
@@ -1951,15 +1967,20 @@ export default function (pi: ExtensionAPI) {
       // not dishonesty, just two fields the model has to keep agreeing, so
       // the extension makes them agree. Hints are never penalised; the point
       // is that the record says what happened.
+      const hintsOut = Math.max(0, Number(params.hints_used ?? 0) || 0);
       const judgmentOut =
-        judgment === "pass" && Number(params.hints_used ?? 0) > 0 ? "pass_with_hints" : judgment;
+        judgment === "pass" && hintsOut > 0
+          ? "pass_with_hints"
+          : judgment === "pass_with_hints" && hintsOut === 0
+            ? "pass"
+            : judgment;
       const logged = appendLog({
         type: "checkpoint",
         id,
         question: String(params.question ?? ""),
         student_response: response,
         judgment: judgmentOut,
-        hints_used: Number(params.hints_used ?? 0),
+        hints_used: hintsOut,
         notes: String(params.notes ?? ""),
         student_said_verbatim: said,
         ...(picked.length > 0 ? { student_picked: picked } : {}),
@@ -2337,7 +2358,12 @@ export default function (pi: ExtensionAPI) {
         `        _f.write(${py(name + "_ed")} + "\\n")\n` +
         `    _sent = mo.md("✅ **Handed in.** Your tutor is reading your code now.")\n` +
         `else:\n` +
-        `    _sent = mo.md("")\n` +
+        // Not mo.md(""): an empty markdown node is a blank cell in the
+        // keepsake, and reopening it always lands on this branch.
+        `    _sent = mo.md(\n` +
+        `        "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "\n` +
+        `        "chart looks right — that is what hands your code in.*</span>"\n` +
+        `    )\n` +
         `_sent`;
       let code =
         `import marimo._code_mode as cm\n` +
@@ -2530,9 +2556,16 @@ export default function (pi: ExtensionAPI) {
         // next run of the coding checkpoint opens showing the PREVIOUS
         // student's code under "The code I wrote and ran" — someone else's
         // work, in this student's voice.
-        const ex = path.join(process.cwd(), "assets", "exercises");
-        if (fs.existsSync(ex)) {
-          fs.renameSync(ex, path.join(dir, `exercises-${stamp}`));
+        // Both directories, for the same reason: they are the previous
+        // student's work, and the photo guard reads assets/uploads as
+        // evidence that a page arrived — stale files there disarm it before
+        // the new student has taken a photo.
+        for (const [rel, label] of [
+          ["exercises", `exercises-${stamp}`],
+          ["uploads", `uploads-${stamp}`],
+        ] as const) {
+          const src = path.join(process.cwd(), "assets", rel);
+          if (fs.existsSync(src)) fs.renameSync(src, path.join(dir, label));
         }
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
@@ -2824,9 +2857,11 @@ export default function (pi: ExtensionAPI) {
         return toResult({
           out:
             result.out +
-            `\nNothing is in the drop box yet. Say nothing about it and WAIT — pressing ` +
-            `📨 Send to my tutor starts your turn by itself. Only if they say they ` +
-            `cannot photograph, ask them to describe the drawing in words here.`,
+            `\nThe drop box is EMPTY — they pressed Send before the photo attached, so ` +
+            `they are waiting on you and do not know why. Say so warmly in one line ` +
+            `("the box came through empty — drop the photo in and press send again"), ` +
+            `then end your turn. Never answer this one with silence: they just pressed ` +
+            `a button and a quiet screen reads as broken.`,
           failed: false,
         });
       }
