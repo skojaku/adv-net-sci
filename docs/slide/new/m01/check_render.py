@@ -42,6 +42,8 @@ NODE_MIN_PX, NODE_MAX_PX = 26, 52
 INK_FRACTION_FAIL = 0.15
 INK_FRACTION_WANT = 0.35
 
+MAX_FIG_H = 380  # network-science.css: section .fig img { max-height }
+
 DARK = 60      # node fill / heavy ink
 INK = 200      # any mark
 
@@ -84,42 +86,29 @@ def node_discs(gray):
     return out
 
 
-def figure_region(gray):
-    """The right-hand figure column: ink right of the text column, below the rule.
+def drawing_extent(src_path, w_directive):
+    """How big the drawing lands on the slide, and what share of its box it fills.
 
-    Returns (ink_h, ink_w) of the drawing, or None if the slide has no figure.
+    Measured on the *source* PNG, not the render. The ink fraction is invariant
+    under the deck's uniform downscale, so it is identical either way -- and on
+    the source there is no figcaption to segment away. Trying to separate caption
+    from drawing on the rendered slide by whitespace bands is fragile: a caption
+    that wraps to two lines gets counted as drawing, and a figure whose own
+    annotation sits far from its graph gets cut in half.
+
+    Returns (drawn_w, drawn_h, box_w, box_h, fraction) in slide pixels.
     """
-    sub = gray[120:610, 640:1210]
-    rows = (sub < INK).sum(axis=1)
-    if rows.sum() < 60:
+    im = np.array(Image.open(src_path).convert("L"))
+    ys, xs = np.where(im < INK)
+    if len(ys) == 0:
         return None
-    # The figcaption sits below the drawing with clear white between them, and a
-    # naive ink bbox would union the two — the caption is wide, so a collapsed
-    # drawing would still look like it fills its box. Split into bands separated
-    # by whitespace so the caption can be dropped below.
-    bands, start = [], None
-    gap = 0
-    for i, r in enumerate(rows):
-        if r > 0:
-            if start is None:
-                start = i
-            gap = 0
-        elif start is not None:
-            gap += 1
-            if gap >= 8:
-                bands.append((start, i - gap))
-                start = None
-    if start is not None:
-        bands.append((start, len(rows) - 1))
-    if not bands:
-        return None
-    # The figcaption is always the bottom-most band. Drop it and keep the rest:
-    # picking the *largest* band instead would select the caption whenever the
-    # drawing has collapsed, which is exactly the case we need to catch.
-    drawing = bands[:-1] if len(bands) > 1 else bands
-    y0, y1 = drawing[0][0], drawing[-1][1]
-    xs = np.where((sub[y0:y1 + 1] < INK).any(axis=0))[0]
-    return y1 - y0 + 1, xs.max() - xs.min() + 1
+    ink_w = xs.max() - xs.min() + 1
+    ink_h = ys.max() - ys.min() + 1
+    sh, sw = im.shape
+    # Whichever of the width directive and the CSS max-height binds first.
+    scale = min(w_directive / sw, MAX_FIG_H / sh, 1.0)
+    frac = (ink_w * ink_h) / float(sw * sh)
+    return ink_w * scale, ink_h * scale, sw * scale, sh * scale, frac
 
 
 def slides_with_figures(deck="m01-euler-tour.md"):
@@ -136,9 +125,11 @@ def slides_with_figures(deck="m01-euler-tour.md"):
     parts = text.split("\n---\n")
     out = {}
     for i, chunk in enumerate(parts[1:], start=1):
-        m = re.search(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk)
+        m = re.search(r"!\[([^\]]*)\]\((figures/[^)]+)\)", chunk)
         if m:
-            out[i] = m.group(1)
+            w = re.search(r"w:(\d+)", m.group(1))
+            out[i] = (m.group(2), int(w.group(1)) if w else 520,
+                      'class="cols"' in chunk)
     return out
 
 
@@ -166,19 +157,18 @@ def main():
                 )
 
         if n in figs:
-            reg = figure_region(gray)
-            if reg is None:
-                fails.append(f"slide {n:03d}: references {figs[n]} but nothing rendered")
+            src, w_directive, _ = figs[n]
+            ext = drawing_extent(src, w_directive)
+            if ext is None:
+                fails.append(f"slide {n:03d}: {src} is blank")
                 continue
-            ink_h, ink_w = reg
-            # The figure box is the column width, capped at the CSS max-height.
-            box_h, box_w = 380, 520
-            frac = (ink_h * ink_w) / float(box_h * box_w)
-            name = figs[n].split("/")[-1]
+            dw, dh, box_w, box_h, frac = ext
+            ink_w, ink_h = dw, dh
+            name = src.split("/")[-1]
             if frac < INK_FRACTION_FAIL:
                 fails.append(
-                    f"slide {n:03d} ({name}): drawing is {ink_w}x{ink_h}px = "
-                    f"{frac:.0%} of its {box_w}x{box_h} box — the deck is scaling "
+                    f"slide {n:03d} ({name}): drawing lands {ink_w:.0f}x{ink_h:.0f}px = "
+                    f"{frac:.0%} of its {box_w:.0f}x{box_h:.0f} box — the deck is scaling "
                     f"white margin; crop the canvas to its ink"
                 )
             elif frac < INK_FRACTION_WANT:
