@@ -48,7 +48,7 @@ Why is a stranger on the other side of the world only about six handshakes away?
 <div><div class="i">01</div><div>The claim — a letter from Omaha, and 160 envelopes</div></div>
 <div><div class="i">02</div><div>Measuring "six" — distance, average path length, diameter</div></div>
 <div><div class="i">03</div><div>The other half — triangles and clustering</div></div>
-<div><div class="i">04</div><div>The yardstick — a random baseline and the index $\sigma$</div></div>
+<div><div class="i">04</div><div>The yardstick — a random baseline and the index sigma</div></div>
 <div><div class="i">05</div><div>The mechanism — Watts–Strogatz rewiring</div></div>
 <div><div class="i">06</div><div>Edge cases — the networks that break the definitions</div></div>
 
@@ -73,7 +73,7 @@ A letter, a stranger, and 160 envelopes
 <div class="cols">
 <div>
 
-Stanley Milgram mails packets to people picked at random in **Omaha, Nebraska** and **Wichita, Kansas**.
+Stanley Milgram mails packets to people picked at random in Omaha, Nebraska and Wichita, Kansas.
 
 Each packet names one target: a stockbroker who works in Boston.
 
@@ -87,6 +87,8 @@ Each packet names one target: a stockbroker who works in Boston.
 </div>
 
 ---
+
+<!-- _class: mid -->
 
 ## The one rule
 
@@ -150,13 +152,15 @@ Of the 160 packets that went out, 64 reached the target. The rest stalled somewh
 <div class="fig">
 
 ![w:1000](figures/milgram-chain.png)
-<figcaption>a typical completed chain, Omaha to Boston</figcaption>
+<figcaption>one packet's route, hop by hop</figcaption>
 
 </div>
 
-The median completed chain ran through roughly **six** links. Not sixty. Not six thousand.
+The median completed chain ran through roughly six links. Not sixty.
 
 ---
+
+<!-- _class: mid -->
 
 ## Milgram never said "six degrees"
 
@@ -237,11 +241,13 @@ Not a sample this time — the whole graph. **721 million** users and **69 billi
 
 Average distance between two users: **4.74**.
 
+*Check that against the number you wrote down.*
+
 </div>
 <div class="fig">
 
 ![w:520](figures/replication-facebook.png)
-<figcaption>bigger network, shorter distance</figcaption>
+<figcaption>eight hundred times the people, still under five</figcaption>
 
 </div>
 </div>
@@ -313,6 +319,8 @@ Turn the chain into a graph and count
 
 ---
 
+<!-- _class: mid -->
+
 ## The chain is a graph
 
 <hr>
@@ -327,6 +335,8 @@ Turn the chain into a graph and count
 Each person becomes a **node**; "knows on a first-name basis" becomes an **edge**. Everything else about them is gone.
 
 ---
+
+<!-- _class: mid -->
 
 ## Distance
 
@@ -343,12 +353,14 @@ Not kilometres. Not people. Edges.
 <div class="fig">
 
 ![w:520](figures/distance-def.png)
-<figcaption>two edges, so the distance is two</figcaption>
+<figcaption>the same number in either direction</figcaption>
 
 </div>
 </div>
 
 ---
+
+<!-- _class: mid -->
 
 ## What is $d(A,G)$?
 
@@ -365,6 +377,8 @@ Not kilometres. Not people. Edges.
 
 ---
 
+<!-- _class: mid -->
+
 ## Six
 
 <hr>
@@ -376,7 +390,7 @@ Not kilometres. Not people. Edges.
 
 </div>
 
-Six edges, seven people — the shape the phrase "six degrees" is describing.
+Six edges, seven people. That is the number you wrote down at the start — and the shape the phrase "six degrees" describes.
 
 ---
 
@@ -479,7 +493,7 @@ A second long edge, again with no new people. This is the whole small-world stor
 <div class="cols">
 <div>
 
-Two extra edges out of 21 pairs, and $\bar L$ falls from **2.67** to **1.81**.
+Two extra edges out of 21 pairs, and $\bar L$ falls from 2.67 to 1.81.
 
 <div class="note">
 
@@ -524,7 +538,7 @@ The **diameter** is the largest distance in the network — the worst case, not 
 
 </div>
 
-On paper: the three distances above, then the average over all 21 pairs. *Four minutes.*
+On paper: the three distances above, then the diameter of the whole network. *Four minutes.*
 
 ---
 
@@ -535,12 +549,11 @@ On paper: the three distances above, then the average over all 21 pairs. *Four m
 <div class="fig">
 
 ![w:1000](figures/worksheet-a-answer.png)
-<figcaption>the three answers, and the average</figcaption>
+<figcaption>the four answers, on the network</figcaption>
 
 </div>
 
-* $d(A,G) = 3$ · $d(B,E) = 2$ · $d(C,F) = 2$
-* $\bar L = 38/21 = 1.81$ over all 21 pairs
+The diameter is the largest distance in the whole network — not the largest of the three you just computed.
 
 ---
 
@@ -572,16 +585,36 @@ What are the odds that those two know each other?
 
 ---
 
-## Triangles and triplets
+## Triangles
 
 <hr>
 
 <div class="cols">
 <div>
 
-Three mutually connected nodes form a **triangle**.
+Three nodes, all three edges present: a **triangle**.
 
-Any three nodes with at least two edges among them form a **triplet** — closed if the third edge is there, open if it is not.
+</div>
+<div class="fig">
+
+![w:520](figures/triangle-only.png)
+<figcaption>the smallest closed thing a network can hold</figcaption>
+
+</div>
+</div>
+
+---
+
+## Open and closed triplets
+
+<hr>
+
+<div class="cols">
+<div>
+
+Any three nodes with at least two edges among them form a **triplet**.
+
+Closed if the third edge is there, open if it is not.
 
 </div>
 <div class="fig">
@@ -603,7 +636,7 @@ Any three nodes with at least two edges among them form a **triplet** — closed
 
 Node $A$ has five friends.
 
-The question is not about $A$'s edges. It is about the edges **among those five**.
+The question is not about $A$'s edges. It is about the edges among those five.
 
 </div>
 <div class="fig">
@@ -625,6 +658,8 @@ The question is not about $A$'s edges. It is about the edges **among those five*
 
 Every dashed line is a friendship that *could* exist among $A$'s five friends.
 
+*Take 20 seconds — no formula, just count.*
+
 </div>
 <div class="fig">
 
@@ -633,8 +668,6 @@ Every dashed line is a friendship that *could* exist among $A$'s five friends.
 
 </div>
 </div>
-
-*Take 20 seconds — no formula, just count.*
 
 ---
 
@@ -655,7 +688,7 @@ possible edges among them — here $5 \times 4 / 2 = 10$.
 <div class="fig">
 
 ![w:520](figures/ego-pairs-count.png)
-<figcaption>ten possible edges</figcaption>
+<figcaption>the dashed lines are possibilities, not edges</figcaption>
 
 </div>
 </div>
@@ -675,7 +708,7 @@ $$ C_i = \frac{\text{edges among } i\text{'s neighbours}}{k_i(k_i-1)/2} $$
 
 </div>
 
-Two of the ten exist, so $C_A = 0.2$.
+Count the edges that do exist among the neighbours, then divide by every pair that could have been there.
 
 </div>
 <div class="fig">
@@ -702,7 +735,7 @@ So what does the *diagonal* entry $(\mathbf{A}^3)_{ii}$ count?
 
 </div>
 
-*30 seconds — a walk of length three that starts and ends at $i$.*
+*30 seconds.*
 
 ---
 
@@ -713,7 +746,7 @@ So what does the *diagonal* entry $(\mathbf{A}^3)_{ii}$ count?
 <div class="cols">
 <div>
 
-A closed 3-walk from $i$ can only be a triangle through $i$ — and every triangle can be walked **two ways**.
+A closed 3-walk from $i$ can only be a triangle through $i$ — and every triangle can be walked two ways.
 
 </div>
 <div class="fig">
@@ -745,7 +778,7 @@ $$ C_i = \frac{(\mathbf{A}^3)_{ii}}{k_i(k_i-1)} $$
 <div class="fig">
 
 ![w:520](figures/a3-formula.png)
-<figcaption>one triangle at $i$, degree two: $C_i = 1$</figcaption>
+<figcaption>one triangle, degree two</figcaption>
 
 </div>
 </div>
@@ -759,7 +792,7 @@ $$ C_i = \frac{(\mathbf{A}^3)_{ii}}{k_i(k_i-1)} $$
 <div class="fig">
 
 ![w:1000](figures/cbar-milgram.png)
-<figcaption>each node's own $C_i$, printed beneath it</figcaption>
+<figcaption>the seven people from Part One, again</figcaption>
 
 </div>
 
@@ -778,7 +811,7 @@ The **average local clustering** $\bar C = \frac{1}{n}\sum_i C_i$ gives every no
 
 </div>
 
-Every blade node sees a perfectly closed neighbourhood; the hub sees almost none. Averaging over nodes gives $\bar C = 0.92$.
+Every blade node sees a perfectly closed neighbourhood; the hub sees almost none.
 
 ---
 
@@ -804,27 +837,15 @@ Would you call this network 92% clustered?
 
 <hr>
 
-<div class="cols">
-<div>
+Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\, \#\text{triplets}$.
 
-Count objects instead of averaging nodes:
+<div class="fig tight">
 
-<div class="formula">
-
-$$ C = \frac{3 \times \#\text{triangles}}{\#\text{triplets}} $$
+![w:1000](figures/transitivity-def.png)
 
 </div>
 
-The windmill has 5 triangles and 55 triplets, so $C = 15/55 = 0.27$.
-
-</div>
-<div class="fig">
-
-![w:520](figures/transitivity-def.png)
-<figcaption>red: the five triangles</figcaption>
-
-</div>
-</div>
+For the windmill that comes to $15/55 = 0.27$.
 
 ---
 
@@ -832,14 +853,14 @@ The windmill has 5 triangles and 55 triplets, so $C = 15/55 = 0.27$.
 
 <hr>
 
-<div class="fig">
+* $\bar C$ weights nodes: the blades outvote the hub.
+* $C$ weights triplets: the hub owns most of them.
+
+<div class="fig tight">
 
 ![w:1000](figures/windmill-split.png)
-<figcaption>the same graph under both definitions</figcaption>
 
 </div>
-
-$\bar C$ weights **nodes** and the blades outvote the hub; $C$ weights **triplets** and the hub owns 45 of the 55. Both are correct; they answer different questions.
 
 ---
 
@@ -865,13 +886,13 @@ On paper: the local clustering coefficient of the three nodes named above. *Four
 <div class="fig">
 
 ![w:1000](figures/worksheet-b-answer.png)
-<figcaption>three nodes, three answers</figcaption>
+<figcaption>the mean over all seven nodes</figcaption>
 
 </div>
 
-* $C_A = 1$ — both of $A$'s friends know each other
+* $C_A = 1$ — $A$'s two friends know each other
 * $C_B = 1/3$ — one of $B$'s three pairs is closed
-* $C_D = 0$ — and averaging all seven gives $\bar C = 5/21$
+* $C_D = 0$ — $D$'s two friends are strangers
 
 ---
 
@@ -896,7 +917,7 @@ High and short compared to *what*?
 
 </div>
 
-High clustering means your edges stay local. Local wiring should put the far side of the world many, many hops away. Facebook measures **4.74**.
+High clustering means your edges stay local. Local wiring should put the far side of the world many, many hops away. Facebook measures 4.74.
 
 ---
 
@@ -925,7 +946,7 @@ $$ s = \bar C / \bar L \qquad \text{high is small-world?} $$
 <div class="cols">
 <div>
 
-Join every pair. Then $\bar C = 1$ and $\bar L = 1$, so $s = 1$ — the largest value the index can take.
+Join every pair, and the naive index hits $s = 1$ — the largest value it can take.
 
 For the least interesting network there is.
 
@@ -947,7 +968,7 @@ For the least interesting network there is.
 <div class="cols">
 <div>
 
-So we need a **structureless network of the same size** to compare against.
+So we need a structureless network of the same size to compare against.
 
 Take $n$ nodes and connect each pair independently with probability $p$.
 
@@ -1031,7 +1052,7 @@ After $L$ steps, how many people have you reached?
 <div class="fig tight">
 
 ![w:1000](figures/fanout.png)
-<figcaption>one step reaches $\langle k \rangle$, two steps reach $\langle k \rangle^2$</figcaption>
+<figcaption>one step reaches k friends, two steps k squared</figcaption>
 
 </div>
 
@@ -1043,26 +1064,13 @@ In a sparse random graph you almost never come back to someone you have met, so 
 
 <hr>
 
-<div class="cols">
-<div>
+Set $\langle k \rangle^L = n$ and solve: $L_{\mathrm{rand}} \approx \ln n / \ln \langle k \rangle$.
 
-Set $\langle k \rangle^L = n$ and solve:
+<div class="fig tight">
 
-<div class="formula">
+![w:1000](figures/fanout-solve.png)
+<figcaption>red: the world's population, at 150 friends each</figcaption>
 
-$$ L_{\mathrm{rand}} \approx \frac{\ln n}{\ln \langle k \rangle} $$
-
-</div>
-
-Eight billion people, 150 friends each: **4.55**.
-
-</div>
-<div class="fig">
-
-![w:520](figures/fanout-solve.png)
-<figcaption>red: the world's population</figcaption>
-
-</div>
 </div>
 
 ---
@@ -1082,12 +1090,14 @@ That is why the two properties together are surprising, and why $\bar L$ alone p
 <div class="fig">
 
 ![w:520](figures/free-vs-not.png)
-<figcaption>red: a short route through a graph with zero triangles</figcaption>
+<figcaption>twelve nodes wired at random</figcaption>
 
 </div>
 </div>
 
 ---
+
+<!-- _class: mid -->
 
 ## The small-world index
 
@@ -1124,7 +1134,7 @@ $\sigma > 1$ is a small world; $\sigma \approx 1$ is random-like.
 <div class="fig tight">
 
 ![w:1000](figures/ws1998-dots.png)
-<figcaption>gray: $L/L_{\mathrm{rand}}$ — red: $C/C_{\mathrm{rand}}$, on a log axis</figcaption>
+<figcaption>gray: the path-length ratio — red: the clustering ratio, log axis</figcaption>
 
 </div>
 
@@ -1139,7 +1149,7 @@ Pick one row. Read both ratios off the axis and compute $\sigma$ yourself. *Two 
 <div class="fig tight">
 
 ![w:1000](figures/ws1998-sigma.png)
-<figcaption>every network sits far to the right of $\sigma = 1$</figcaption>
+<figcaption>every network sits far to the right of the random baseline</figcaption>
 
 </div>
 
@@ -1208,8 +1218,7 @@ Crossing a ring lattice means walking around it, two nodes at a time.
 
 * 16 nodes: 4 hops to the far side.
 * 1000 nodes: $\bar L = 125$.
-
-Distance grows **linearly** with $n$ — the opposite of what we measured.
+* Distance grows linearly with $n$ — the opposite of what we measured.
 
 </div>
 <div class="fig">
@@ -1231,13 +1240,13 @@ Distance grows **linearly** with $n$ — the opposite of what we measured.
 
 Same nodes, same number of edges, shuffled.
 
-Routes get short immediately — and the triangles vanish with them.
+Routes get short immediately — and the clustering collapses with them, from 0.5 to almost nothing.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/random-graph.png)
-<figcaption>short routes, nothing closed</figcaption>
+<figcaption>short routes, and almost nothing closed</figcaption>
 
 </div>
 </div>
@@ -1251,7 +1260,7 @@ Routes get short immediately — and the triangles vanish with them.
 <div class="fig tight">
 
 ![w:1000](figures/lattice-vs-random.png)
-<figcaption>the two extremes, same $n$ and same $m$</figcaption>
+<figcaption>the two extremes, same nodes and same edge count</figcaption>
 
 </div>
 
@@ -1366,7 +1375,7 @@ $L$ collapses while $C$ is still essentially untouched. A few random edges are e
 <div class="fig tight">
 
 ![w:1000](figures/ws-band.png)
-<figcaption>gold: two decades of $p$ where both hold</figcaption>
+<figcaption>gold: two decades of rewiring where both hold</figcaption>
 
 </div>
 
@@ -1389,7 +1398,7 @@ That asymmetry is the whole mechanism.
 <div class="fig">
 
 ![w:520](figures/shortcut-effect.png)
-<figcaption>gold rings: the nodes this single red edge brings closer</figcaption>
+<figcaption>the lattice underneath is untouched</figcaption>
 
 </div>
 </div>
@@ -1411,7 +1420,7 @@ Find the smallest $p$ where $L$ has already collapsed and $C$ has not.
 <div class="fig">
 
 ![w:520](figures/ws-widget.png)
-<figcaption>the ring at $p = 0.14$</figcaption>
+<figcaption>the ring at fourteen percent rewiring</figcaption>
 
 </div>
 </div>
@@ -1466,7 +1475,7 @@ One unreachable pair makes $\bar L$ infinite, however short everything else is.
 <div class="fig">
 
 ![w:520](figures/disconnected-answer.png)
-<figcaption>no route, at any length</figcaption>
+<figcaption>two components, and no edge between them</figcaption>
 
 </div>
 </div>
@@ -1502,16 +1511,16 @@ $C_i$ divides by $k_i(k_i-1)/2$ — the number of pairs among the neighbours.
 <div class="cols">
 <div>
 
-With $k \leq 1$ there are no pairs, so both numerator and denominator are zero. $C_i$ is genuinely **undefined**.
+No pairs among the neighbours, so numerator and denominator are both zero. $C_i$ is genuinely **undefined**.
 
-* The usual convention sets $C_i = 0$.
-* It drags $\bar C$ down in networks full of leaves — which is worth knowing before you quote one.
+* The usual convention: set it to zero.
+* That drags $\bar C$ down in networks full of leaves.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/degree-one-answer.png)
-<figcaption>nothing to divide by</figcaption>
+<figcaption>a leaf — and real networks are full of them</figcaption>
 
 </div>
 </div>
@@ -1535,24 +1544,47 @@ The ring lattice has the long routes. Is it enough?
 <div class="fig">
 
 ![w:520](figures/sigma-lt-1-q.png)
-<figcaption>long routes, high clustering</figcaption>
+<figcaption>sixteen nodes, four neighbours each</figcaption>
 
 </div>
 </div>
 
 ---
 
-## Not the lattice — you have to kill the triangles
+## Not the lattice
 
 <hr>
 
 <div class="cols">
 <div>
 
-The ring lattice scores $\sigma \approx 5$: its clustering advantage beats its distance penalty.
+$\sigma > 1$: the ring lattice's clustering advantage beats its distance penalty.
 
-* You need clustering **below** random, and random is already near zero.
-* A square street grid has no triangle at all, so $C = 0$ and $\sigma = 0$.
+$\sigma \approx 5$ for a ring of a thousand nodes; even the 16-node ring scores 1.56.
+
+</div>
+<div class="fig">
+
+![w:520](figures/ring-lattice.png)
+<figcaption>clustering wins the ratio, even here</figcaption>
+
+</div>
+</div>
+
+---
+
+## You have to kill the triangles
+
+<hr>
+
+<div class="cols">
+<div>
+
+You need clustering under the random baseline — and random is already near zero.
+
+A square street grid has no triangle at all. $C = 0$, and $\sigma = 0$ with it.
+
+*Count the triplets around one intersection: how many are closed? 60 seconds.*
 
 </div>
 <div class="fig">
@@ -1589,11 +1621,11 @@ The ring lattice scores $\sigma \approx 5$: its clustering advantage beats its d
 <div class="fig tight">
 
 ![w:1000](figures/gnm-gnp-answer.png)
-<figcaption>fixing $m$ couples the edges to each other</figcaption>
+<figcaption>fixing the edge count couples the edges to each other</figcaption>
 
 </div>
 
-Fix $m$ and the edges are no longer independent: using one up makes the rest less likely. Independence is exactly what let us write $E[C_i] = p$ two parts ago.
+Fix $m$ and the edges are no longer independent: using one up makes the rest less likely. Independence is exactly what let us write $C_{\mathrm{rand}} = p$ two parts ago.
 
 ---
 
@@ -1649,7 +1681,7 @@ Measure $\bar L$, $\bar C$ and $\sigma$ on a real network in the Module 02 noteb
 * **Distance:** $d(i,j)$, then $\bar L$ and the diameter
 * **Clustering:** $C_i$, then $\bar C$ and transitivity $C$
 * **$\sigma$:** both halves against a random graph of the same size
-* **Watts–Strogatz:** a few shortcuts buy short routes almost for free
+* **Watts–Strogatz:** a few shortcuts buy short routes
 
 </div>
 </div>
@@ -1673,7 +1705,7 @@ So what happens when they break — by accident, or because someone picked them 
 <div class="fig">
 
 ![w:520](figures/m03-teaser.png)
-<figcaption>two shortcuts removed</figcaption>
+<figcaption>three shortcuts, two of them cut</figcaption>
 
 </div>
 </div>
