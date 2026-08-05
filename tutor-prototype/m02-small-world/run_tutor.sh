@@ -52,8 +52,13 @@ install_skill() {
     rm -rf "$cache"
   fi
 }
+# Only the Claude fallback needs it. Under pi the notebook tool does every
+# notebook operation, and having the skill installed anyway let the model
+# reach for it mid-hint — printing a bare "[skill] marimo-pair" line into the
+# student's terminal, which is exactly the infrastructure talk AGENTS.md
+# forbids. Remove a copy left by an older run.
 if [ "$AGENT" = "pi" ]; then
-  install_skill ".pi/skills/marimo-pair"
+  rm -rf ".pi/skills/marimo-pair"
 else
   install_skill ".claude/skills/marimo-pair"
 fi

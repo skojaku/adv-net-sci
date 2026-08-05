@@ -1373,10 +1373,21 @@ export default function (pi: ExtensionAPI) {
                 `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
                 `its instructions (chapter 1 reloads automatically — do not improvise). ` +
                 (finished
-                  ? `If they continue: they already FINISHED this module — do not re-run any ` +
-                    `checkpoint and do not call chapter_done. Say so warmly, offer to answer ` +
-                    `questions or replay any experiment in the notebook, and log anything you ` +
-                    `answer with log_detour.`
+                  ? (fs.existsSync(path.join(process.cwd(), "session_artifacts", "session_summary.md"))
+                      ? `If they continue: they already FINISHED this module — do not re-run any ` +
+                        `checkpoint and do not call chapter_done. Say so warmly, offer to answer ` +
+                        `questions or replay any experiment in the notebook, and log anything you ` +
+                        `answer with log_detour.`
+                      // Every checkpoint is logged but the closing record was never
+                      // written — the last session ended between the final answer and
+                      // chapter_done. Seen live: the tutor said a warm goodbye and the
+                      // student's notebook shipped with no session_record and no
+                      // summary, the two things the grader opens first.
+                      : `If they continue: every checkpoint is logged but this module was ` +
+                        `never CLOSED — there is no session_record cell and no summary. Do ` +
+                        `not re-run any checkpoint. Say one warm line that you are just ` +
+                        `filing their work, call chapter_done to write the closing record, ` +
+                        `and then say goodbye.`)
                   : `If they continue: do NOT rebuild existing notebook cells ` +
                     `(nb_add_template skips duplicates automatically), remind them in one ` +
                     `sentence where you two left off, and continue at checkpoint ${nextId} ` +
@@ -1764,16 +1775,32 @@ export default function (pi: ExtensionAPI) {
       // one — and in that case the record should say so. One nudge, then it
       // logs either way with the gap on the row.
       const wantPhotos = wantCells.filter((c) => /_photo$/.test(c));
+      // The in-memory set dies with the process, but the photo itself does
+      // not: nb_view_image saves the original under assets/uploads/. Consult
+      // both, or a resume after a photo was already read re-fires the
+      // refusal and stamps a false `photo_missing` on the graded row.
+      const uploadedOnDisk = (w: string): boolean => {
+        try {
+          return fs
+            .readdirSync(path.join(process.cwd(), "assets", "uploads"))
+            .some((f) => f.startsWith(`${w}_upload`) || f.startsWith(`${w}_view`));
+        } catch {
+          return false;
+        }
+      };
       const photoMissing =
-        wantPhotos.length > 0 && !wantPhotos.some((w) => viewedPhotos.has(w));
+        wantPhotos.length > 0 &&
+        !wantPhotos.some((w) => viewedPhotos.has(w) || uploadedOnDisk(w));
       if (photoMissing && (slotDriftWarned.get(`${id}:photo`) ?? 0) < 1) {
         slotDriftWarned.set(`${id}:photo`, 1);
         return toResult({
           out:
             `NOT LOGGED — this is a pen-and-paper checkpoint and no photo has reached ` +
-            `me for "${wantPhotos[0]}". If you have not asked yet: ask for the page and ` +
-            `nothing else, then END YOUR TURN and wait — their 📨 Send press starts the ` +
-            `next one, and you read it with nb_view_image.\n` +
+            `me for "${wantPhotos[0]}". If you have not asked yet: SAY THE ASK OUT LOUD ` +
+            `to the student now — the page and nothing else — and only then end your ` +
+            `turn. Never end a turn on this without speaking: a silent turn is a frozen ` +
+            `screen, and in a live run it left a student waiting ten minutes. Their 📨 ` +
+            `Send press starts the next turn, and you read it with nb_view_image.\n` +
             `If they have already told you they cannot photograph, that is fine and their ` +
             `typed work counts — say so in notes ("camera broken, typed instead") and ` +
             `call checkpoint_done again; it will log.`,
@@ -1884,8 +1911,9 @@ export default function (pi: ExtensionAPI) {
           out:
             `NOT LOGGED — ${problems.join("; ")}.\n` +
             `Do not write that line for them and do not call checkpoint_done again ` +
-            `until they have answered: ask the question in plain text, END YOUR TURN, ` +
-            `and log what they type.`,
+            `until they have answered. SAY THE QUESTION OUT LOUD in plain text — never ` +
+            `end this turn without speaking, a silent turn is a frozen screen — then ` +
+            `wait, and log what they type.`,
           failed: false,
         });
       }
@@ -1918,12 +1946,19 @@ export default function (pi: ExtensionAPI) {
       studentSaidSince(ctx, true);
       pickedSince(true);
 
+      // A checkpoint that needed hints is `pass_with_hints`, whatever the
+      // model typed. It logged plain `pass` with hints_used 2 in a live run —
+      // not dishonesty, just two fields the model has to keep agreeing, so
+      // the extension makes them agree. Hints are never penalised; the point
+      // is that the record says what happened.
+      const judgmentOut =
+        judgment === "pass" && Number(params.hints_used ?? 0) > 0 ? "pass_with_hints" : judgment;
       const logged = appendLog({
         type: "checkpoint",
         id,
         question: String(params.question ?? ""),
         student_response: response,
-        judgment,
+        judgment: judgmentOut,
         hints_used: Number(params.hints_used ?? 0),
         notes: String(params.notes ?? ""),
         student_said_verbatim: said,
