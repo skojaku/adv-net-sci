@@ -1663,6 +1663,22 @@ export default function (pi: ExtensionAPI) {
       const pool = [...said, ...picked, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
+      // A skeleton that asks for the student's own words, on a checkpoint
+      // where the student never typed any, means the question that was
+      // supposed to get those words was skipped. cp1 is the case that
+      // showed it: answered entirely through the picker, its reveal asks
+      // one typed follow-up, and when the tutor jumped straight to
+      // checkpoint_done the slot fell back to student_response and the
+      // notebook read "**My guess:** about 60 — about 60". Photo and
+      // drawing checkpoints are exempt by construction: their slots are
+      // deliberately not marked «verbatim».
+      if (said.length === 0 && markers.some((m) => /verbatim/i.test(m))) {
+        problems.push(
+          `this checkpoint's note quotes the student's own words, but they have not ` +
+            `typed anything here yet — ask them the question your script's reveal_after ` +
+            `names, in plain text, and wait for their answer`,
+        );
+      }
       // student_response is the headline quote of the graded record, so it
       // gets the same treatment as a «verbatim» slot — plus a repair the
       // slots do not need. A near-copy is snapped back to the transcript
@@ -1712,6 +1728,17 @@ export default function (pi: ExtensionAPI) {
       // flagged for the grader: a model that cannot satisfy the check must
       // never be able to strand the student mid-lesson.
       const strikes = slotDriftWarned.get(id) ?? 0;
+      if (problems.length > 0 && strikes < 2 && said.length === 0) {
+        slotDriftWarned.set(id, strikes + 1);
+        return toResult({
+          out:
+            `NOT LOGGED — ${problems.join("; ")}.\n` +
+            `Do not write that line for them and do not call checkpoint_done again ` +
+            `until they have answered: ask the question in plain text, END YOUR TURN, ` +
+            `and log what they type.`,
+          failed: false,
+        });
+      }
       if (problems.length > 0 && strikes < 2) {
         slotDriftWarned.set(id, strikes + 1);
         return toResult({

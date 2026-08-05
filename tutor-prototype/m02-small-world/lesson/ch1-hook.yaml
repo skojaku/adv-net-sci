@@ -48,7 +48,14 @@ checkpoints:
       reach a specific stockbroker in Boston; rule — you may only forward it
       to someone you know on a first-name basis. Then ask for a guess with
       ask_user_question: for the letters that made it, how many hands on average?
-      Options: "about 6" / "about 20" / "about 60" / "over 200".
+      Options: "about 6" / "about 20" / "about 60" / "over 200" — bare labels,
+      no descriptions: a description that calls one of them "surprisingly few"
+      hands over the answer while the question is still open.
+      THEN give the reveal below, and finish with ONE typed question:
+      "How does that compare with what you guessed?" Their picker choice never
+      reaches the transcript, so this line is the only thing the notebook can
+      quote in their own voice. Ask it, end your turn, and wait — checkpoint_done
+      refuses this checkpoint until they have answered.
     accept: |
       Any guess. This is a prediction — never mark it wrong. Their one-line
       reaction to the reveal is never wrong either; any honest comparison
