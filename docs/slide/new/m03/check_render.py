@@ -193,11 +193,13 @@ def figcaption_math(deck="m03-robustness.md"):
     for m in re.finditer(r"<figcaption>(.*?)</figcaption>", text, re.S):
         if "$" in m.group(1):
             bad.append(("figcaption", m.group(1).strip()[:60]))
-    for m in re.finditer(r'<div class="steps-list">(.*?)</div>\s*\n', text, re.S):
-        if "$" in m.group(1):
-            for line in m.group(1).splitlines():
-                if "$" in line:
-                    bad.append(("steps-list", line.strip()[:60]))
+    # Non-greedy to the first `</div>` stopped at the end of ITEM 01, so items 02+
+    # were never scanned and `$\kappa$` shipped in item 05 with this gate in place.
+    # Scan every line of the block instead, to its closing blank line.
+    for m in re.finditer(r'<div class="steps-list">\n(.*?)\n\n</div>', text, re.S):
+        for line in m.group(1).splitlines():
+            if "$" in line:
+                bad.append(("steps-list", line.strip()[:60]))
     return bad
 
 

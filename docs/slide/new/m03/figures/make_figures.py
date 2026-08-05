@@ -242,6 +242,9 @@ def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=Non
     # A bare % is a TeX comment: it swallowed the rest of a \node line and the
     # build died with "Undefined control sequence" pointing at the wrong token.
     assert not re.search(r"(?<!\\)%", s), f"unescaped % in {s!r} -- write \\%"
+    # accent-3 on white is 2.0:1 contrast -- fine for a 4bp stroke, unreadable as
+    # type. It is a stroke colour only.
+    assert color != "accentthree", "accent-3 is not a text colour (2.0:1 on white)"
     o = [f"font=\\fontsize{{{size}}}{{{int(size * 1.15)}}}\\selectfont",
          f"text={color}", f"anchor={anchor}", "align=center"]
     if width:
@@ -440,15 +443,42 @@ def place_labels(names, pos, edges, blockers=(), bounds=None, gap=0.0):
 # Where a weight chip may sit on its edge: a fraction along it, plus a perpendicular
 # offset.  Chips left at the plain midpoint collided with each other wherever two
 # edges converged on the same node -- "49" and "51" overlapped on the first render.
-CHIP_SLOTS = [(0.50, 0), (0.42, 0), (0.58, 0), (0.36, 0), (0.64, 0),
-              (0.50, 28), (0.50, -28), (0.40, 28), (0.60, -28),
-              (0.40, -28), (0.60, 28), (0.50, 40), (0.50, -40),
-              (0.30, 0), (0.70, 0), (0.35, 34), (0.65, -34),
-              (0.35, -34), (0.65, 34), (0.50, 52), (0.50, -52)]
+# Where a weight chip may sit on its edge: a fraction along it, plus a perpendicular
+# offset. Ordered nearest-the-edge first, because a chip must end up closer to the
+# cable it names than to any other (see place_chips) -- large offsets are a last
+# resort, and it was the large offsets that put "17" on the wrong cable.
+CHIP_SLOTS = [(t, off)
+              for off in (0, 11, -11, 17, -17, 23, -23, 30, -30)
+              for t in (0.50, 0.45, 0.55, 0.40, 0.60, 0.35, 0.65, 0.30, 0.70,
+                        0.25, 0.75, 0.20, 0.80)]
+
+# Tried only when no in-place slot leaves the chip nearest its own cable. Prostejov
+# -- Olomouc is 59bp long and 40bp of that is inside its two discs, so it is
+# geometrically impossible to label it unambiguously in place: the chip is parked
+# clear and a leader line says which cable it belongs to.
+CHIP_LEADER_SLOTS = [(t, off) for off in (44, -44, 56, -56, 70, -70)
+                     for t in (0.50, 0.40, 0.60, 0.30, 0.70)]
 
 
-def place_chips(weights, pos, blockers=()):
-    """Choose a spot per edge-weight chip so no two chips (or a chip and a name) touch."""
+def point_seg_dist(pt, a, b):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    L2 = dx * dx + dy * dy
+    if L2 == 0:
+        return math.dist(pt, a)
+    t = max(0.0, min(1.0, ((pt[0] - ax) * dx + (pt[1] - ay) * dy) / L2))
+    return math.dist(pt, (ax + t * dx, ay + t * dy))
+
+
+def place_chips(weights, pos, blockers=(), edges=None, margin=8.0):
+    """Choose a spot per edge-weight chip so no two chips (or a chip and a name) touch.
+
+    A chip must also be **nearest the cable it names**.  Without that rule the
+    perpendicular offsets (up to +-52bp) put "17" 4px from Prostejov-Zlin and 36px
+    from its own Prostejov-Olomouc, so the picture priced the wrong cable -- on the
+    two slides that ask students to add the kilometres up, and in both GIFs.
+    """
     items = sorted(weights, key=lambda e: math.dist(pos[e[0]], pos[e[1]]))
     chosen, boxes = {}, {}
 
@@ -460,22 +490,43 @@ def place_chips(weights, pos, blockers=()):
         y = y1 + t * (y2 - y1) + off * py
         return (x, y), label_box(x, y, str(weights[e]), "center", pad=5)
 
+    others = list(edges if edges is not None else weights)
+
+    def owns(e, pt):
+        mine = point_seg_dist(pt, pos[e[0]], pos[e[1]])
+        for f in others:
+            if frozenset(f) == frozenset(e):
+                continue
+            if point_seg_dist(pt, pos[f[0]], pos[f[1]]) <= mine + margin:
+                return False
+        return True
+
+    def free(e, p, b):
+        if any(box_hits_disc(b, x, y) for x, y in pos.values()):
+            return False
+        if any(boxes_overlap(b, o) for o in boxes.values()):
+            return False
+        return not any(boxes_overlap(b, o) for o in blockers)
+
     def solve(i):
         if i == len(items):
             return True
         e = items[i]
         for t, off in CHIP_SLOTS:
             p, b = slot_box(e, t, off)
-            if any(box_hits_disc(b, x, y) for x, y in pos.values()):
-                continue
-            if any(boxes_overlap(b, o) for o in boxes.values()):
-                continue
-            if any(boxes_overlap(b, o) for o in blockers):
-                continue
-            chosen[e], boxes[e] = p, b
-            if solve(i + 1):
-                return True
-            del chosen[e], boxes[e]
+            if owns(e, p) and free(e, p, b):
+                chosen[e], boxes[e] = (p, False), b
+                if solve(i + 1):
+                    return True
+                del chosen[e], boxes[e]
+        # No in-place slot keeps this chip nearest its own cable: park it and lead.
+        for t, off in CHIP_LEADER_SLOTS:
+            p, b = slot_box(e, t, off)
+            if free(e, p, b):
+                chosen[e], boxes[e] = (p, True), b
+                if solve(i + 1):
+                    return True
+                del chosen[e], boxes[e]
         return False
 
     if not solve(0):
@@ -644,7 +695,10 @@ LABEL_SIDE, LABEL_BOX = place_labels(
     bounds=(0, LABEL_BAND[0], DESIGN["full"], LABEL_BAND[1]), gap=3.0)
 
 # ...then the weight chips, against the names that are now fixed.
-CHIP_AT = place_chips(CABLES, POS, blockers=list(LABEL_BOX.values()))
+CHIP_AT = place_chips(CABLES, POS, blockers=list(LABEL_BOX.values()),
+                      edges=list(CABLES))
+
+_TREE_SET = {frozenset((a, b)) for a, b, _ in MST_EDGES}
 
 KRUSKAL_STEP = {frozenset((a, b)): i for i, (a, b, _, act)
                 in enumerate([t for t in KRUSKAL if t[3] == "add"], 1)}
@@ -770,7 +824,12 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
             continue
         key = (a, b) if (a, b) in CABLES else (b, a)
         w = (weight_override or {}).get(key, CABLES[key])
-        mx, my = CHIP_AT[key]
+        (mx, my), lead = CHIP_AT[key]
+        if lead:
+            ex = (POS[key[0]][0] + POS[key[1]][0]) / 2
+            ey = (POS[key[0]][1] + POS[key[1]][1]) / 2
+            s += seg((mx, my), (ex, ey), color="annot", w=1.2,
+                     dash="dash pattern=on 2bp off 4bp")
         col = (heavy.get((a, b)) or heavy.get((b, a))
                or (weight_override or {}).get(key) and "accenttwo" or "black")
         s += (f"\\node[fill=white,inner sep=1.5bp,"
@@ -780,7 +839,12 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
     for e, tag in badge.items():
         a, b = tuple(e)
         key = (a, b) if (a, b) in CABLES else (b, a)
-        mx, my = CHIP_AT[key]
+        (mx, my), lead = CHIP_AT[key]
+        if lead:
+            ex = (POS[key[0]][0] + POS[key[1]][0]) / 2
+            ey = (POS[key[0]][1] + POS[key[1]][1]) / 2
+            s += seg((mx, my), (ex, ey), color="annot", w=1.2,
+                     dash="dash pattern=on 2bp off 4bp")
         s += disc(mx, my, tag, fill="accenttwo", size=SMALLNODE + 8)
 
     for n, (x, y) in POS.items():
@@ -810,6 +874,18 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
 #                                Part 1
 # ===========================================================================
 ALL_CABLES = list(CABLES)
+
+
+def is_tree_edge(e):
+    """Orientation-independent. MST_PAIRS stores three cables reversed relative to
+    CABLES, so `e not in MST_PAIRS` priced nine cables as unused instead of six --
+    three tree cables showed a price and four showed none, on the slide that asks
+    the room to spend a budget."""
+    return frozenset(e) in _TREE_SET
+
+
+assert len([e for e in ALL_CABLES if not is_tree_edge(e)]) == 6, \
+    "the unused-cable set is wrong -- MST_PAIRS orientation again"
 
 
 def km(e):
@@ -879,7 +955,7 @@ def fig_spanning_count():
 
 
 def fig_mst_def():
-    return moravia(faint=[e for e in ALL_CABLES if e not in MST_PAIRS],
+    return moravia(faint=[e for e in ALL_CABLES if not is_tree_edge(e)],
                    edges=MST_PAIRS,
                    heavy={e: "accenttwo" for e in MST_PAIRS},
                    weights=MST_PAIRS,
@@ -1187,7 +1263,7 @@ def fig_profile_random():
     s += "".join(dot(x, y, "accentthree") for x, y in pts)
     X, Y = _XY()
     s += text(LAB_X, Y(0.55), f"random\\\\$R = {float(R_RANDOM):.2f}$",
-              color="accentthree", anchor="west")
+              color="black", anchor="west")
     return s
 
 
@@ -1200,7 +1276,7 @@ def fig_profile_both():
         s += polyline(pts, color=col, w=4.0)
         s += "".join(dot(x, y, col) for x, y in pts)
         s += text(LAB_X, Y(ly), f"{lab}\\\\$R = {float(r_index(prof)):.2f}$",
-                  color=col, anchor="west")
+                  color="black" if col == "accentthree" else col, anchor="west")
     s += text(X(0.52), Y(0.36),
               f"{float(R_RANDOM / R_ATTACK):.1f}$\\times$ the damage", color="black")
     return s
@@ -1292,7 +1368,7 @@ def fig_fixed_vs_adaptive():
     s += sim_curve(("er", "fixed"), "accentthree")
     s += sim_curve(("er", "targeted"), "accenttwo")
     s += text(LAB_X, Y(0.74), "fixed list\\\\gone at " + pct(ER_FIXED_C),
-              color="accentthree", anchor="west")
+              color="black", anchor="west")
     s += text(LAB_X, Y(0.26), "re-ranked\\\\gone at " + pct(ER_TARG_C),
               color="accenttwo", anchor="west")
     return s
@@ -1490,11 +1566,20 @@ def qk_graph(highlight=None, show_deg=False):
 
 
 def fig_follow_edge():
+    """The arrowhead sits ON the highlighted edge, ending at the far node's border.
+
+    Offsetting it by 34bp drew a second red mark parallel to the edge, starting and
+    ending in white space and touching neither node -- a ghost edge with nothing on
+    the slide to explain it.
+    """
     s = qk_graph(highlight=("h", "c"))
-    x1, y1 = QK_POS["h"]
-    x2, y2 = QK_POS["c"]
-    s += seg((x1 + 30, y1 + 34), (x2 - 20, y2 + 34), color="accenttwo", w=3.4,
-             arrow="-{Stealth[length=15bp,width=12bp]}")
+    (x1, y1), (x2, y2) = QK_POS["h"], QK_POS["c"]
+    L = math.hypot(x2 - x1, y2 - y1)
+    ux, uy = (x2 - x1) / L, (y2 - y1) / L
+    s += seg((x1 + ux * (NODE / 2 + 2), y1 + uy * (NODE / 2 + 2)),
+             (x2 - ux * (NODE / 2 + 4), y2 - uy * (NODE / 2 + 4)),
+             color="accenttwo", w=HEAVY_W,
+             arrow="-{Stealth[length=16bp,width=13bp]}")
     return s
 
 
@@ -1768,7 +1853,7 @@ def fig_sim_random():
     s += sim_curve(("sf", "random"), "accenttwo")
     s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_RAND_C), color="accenttwo",
               anchor="west")
-    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_RAND_C), color="accentthree",
+    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_RAND_C), color="black",
               anchor="west")
     return s
 
@@ -1780,7 +1865,7 @@ def fig_sim_targeted():
     s += sim_curve(("sf", "targeted"), "accenttwo")
     s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_TARG_C), color="accenttwo",
               anchor="west")
-    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_TARG_C), color="accentthree",
+    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_TARG_C), color="black",
               anchor="west")
     return s
 
@@ -1793,7 +1878,7 @@ def fig_robust_fragile():
     s += sim_curve(("sf", "random"), "accenttwo")
     s += sim_curve(("sf", "targeted"), "accenttwo", dash=DASH)
     s += text(LAB_X, Y(0.86), "hubs,\\\\random", color="accenttwo", anchor="west")
-    s += text(LAB_X, Y(0.52), "random net,\\\\random", color="accentthree",
+    s += text(LAB_X, Y(0.52), "random net,\\\\random", color="black",
               anchor="west")
     s += text(LAB_X, Y(0.20), "attacked\\\\(dashed)", color="black", anchor="west")
     return s
@@ -1815,8 +1900,8 @@ def fig_efficiency_security():
 
 def fig_mst_blank_design():
     return moravia(edges=MST_PAIRS,
-                   faint=[e for e in ALL_CABLES if e not in MST_PAIRS],
-                   weights=[e for e in ALL_CABLES if e not in MST_PAIRS])
+                   faint=[e for e in ALL_CABLES if not is_tree_edge(e)],
+                   weights=[e for e in ALL_CABLES if not is_tree_edge(e)])
 
 
 def fig_redundant_answer():
@@ -1898,7 +1983,14 @@ def fig_ring_q():
 
 
 def fig_ring_a():
-    return _ring_case(True, cut=True)
+    """The INTACT ring, because kappa = 2 is a fact about the intact ring.
+
+    Drawing the ring after the cut and printing kappa = 2 on it put the wrong
+    number on the graph: the cut leaves a 5-node chain with degrees 1,2,2,2,1 and
+    kappa = 7/4 -- this deck's own value for "a path", three slides earlier. What
+    one cut does is in the body text, where it does not have to be drawn wrong.
+    """
+    return _ring_case(True)
 
 
 ER1 = nx.gnm_random_graph(14, 7, seed=4)
@@ -2008,17 +2100,19 @@ def fig_triangles_a():
 #                              Wrap-up
 # ===========================================================================
 def fig_recap():
-    cards = [("build it", f"{MST_TOTAL} km", "accent"),
-             ("break it", f"{float(connectivity(MST, ['Brno'])):.3f}", "accenttwo"),
-             ("build it back", f"$+{EXTRA_KM}$ km", "accentthree"),
-             ("predict it", "$1 - \\frac{1}{\\kappa-1}$", "black")]
-    s = ""
-    for i, (title, val, col) in enumerate(cards):
-        cx = 150 + i * 267
-        s += (f"\\draw[line width=2.4bp,draw=annot] ({cx - 118},70) rectangle "
-              f"({cx + 118},310);\n")
-        s += text(cx, 260, title, color="annot")
-        s += text(cx, 160, val, color=col)
+    """One drawing, three numbers where they happened -- not four bordered cells.
+
+    The first version was a row of four boxed header/value pairs: a 2x4 table, which
+    L2 makes a Blocker, on a slide titled "Module 03 in one picture".
+    """
+    new = [(a, b) for a, b, _ in REDUNDANT]
+    worst = connectivity(MST, ["Brno"])
+    s = moravia(edges=MST_PAIRS,
+                heavy={e: "accentthree" for e in new},
+                removed=["Brno"])
+    s += note(f"built {MST_TOTAL} km", color="accent", at=(24, 96))
+    s += note(f"Brno gone: {float(worst):.3f}", color="accenttwo", at=(24, 52))
+    s += note(f"$+{EXTRA_KM}$ km of ring", color="black", at=(560, 52))
     return s
 
 

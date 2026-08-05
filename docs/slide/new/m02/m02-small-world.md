@@ -886,13 +886,12 @@ On paper: the local clustering coefficient of the three nodes named above. *Four
 <div class="fig">
 
 ![w:1000](figures/worksheet-b-answer.png)
-<figcaption>the mean over all seven nodes</figcaption>
 
 </div>
 
-* $C_A = 1$ — $A$'s two friends know each other
+* $C_A = 1$ — both of $A$'s friends know each other
 * $C_B = 1/3$ — one of $B$'s three pairs is closed
-* $C_D = 0$ — $D$'s two friends are strangers
+* $C_D = 0$ — $D$'s friends are strangers
 
 ---
 

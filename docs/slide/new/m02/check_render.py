@@ -87,8 +87,17 @@ INK = 200      # any mark
 # Masking on the fill colour also solves the problem that made a luminance test
 # unworkable in the first place: edges are black, so they are not in the mask and
 # cannot merge two discs into one component.
-NODE_FILLS = [(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)]
+# Accent only, not accent-2. A highlight RING is accent-2 drawn around an accent disc,
+# and once holes are filled the two merge into one 55px blob. Masking the disc fill alone
+# keeps the ring out of the mask entirely, so the disc inside it measures correctly. The
+# few accent-2 discs in the deck are drawn at the same NODE size as their neighbours and
+# the generator asserts that at source, so nothing is lost by not measuring them here.
+NODE_FILLS = [(0x39, 0x59, 0xA6)]
 FILL_TOL = 46
+
+# A disc at the bottom of the band covers ~530px2. A filled-in letter "o" at the type
+# floor covers ~200. Below this, a component is a glyph the hole-filling closed up.
+MIN_DISC_AREA = 380
 
 
 def components(mask, min_px=120, step=2, with_origin=False):
@@ -169,7 +178,7 @@ def node_discs(rgb):
     # a 12px one. Anything the background cannot reach from outside is interior.
     filled = ~_flood_from_border(~mask)
     out = []
-    for h, w, area, y0, x0 in components(filled, with_origin=True):
+    for h, w, area, y0, x0 in components(filled, min_px=MIN_DISC_AREA, with_origin=True):
         if h < 8 or w < 8:
             continue
         if not (0.82 < h / w < 1.22 and 0.70 < area / (h * w) < 0.92):
@@ -444,7 +453,12 @@ def main():
             f"(spread {max(diams)/min(diams):.1f}x) across {len(diams)} discs"
         )
     if warns:
-        print(f"\n{len(warns)} figure(s) fill less than {INK_FRACTION_WANT:.0%} of their box:")
+        # This header used to read "N figure(s) fill less than 35% of their box" while
+        # printing len(warns) -- the count of EVERY warning, most of which are x-height
+        # and margin notes. It reported 48 under-filled figures on a deck whose worst
+        # figure fills 66% and whose median fills 81%. A gate that mislabels its own
+        # output is the same failure as a gate that cannot fire: both are read as fact.
+        print(f"\n{len(warns)} warning(s):")
         for w in warns:
             print("  " + w)
     if fails:

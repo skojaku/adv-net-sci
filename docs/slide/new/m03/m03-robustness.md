@@ -53,7 +53,7 @@ Do not answer this. Part Five answers it with one formula; Part Six shows the an
 <div><div class="i">02</div><div>Greedy — Kruskal, Prim, and why the obvious rule wins here</div></div>
 <div><div class="i">03</div><div>Break it — one town goes dark, and the grid splits</div></div>
 <div><div class="i">04</div><div>Percolation — puddles, and a transition that arrives all at once</div></div>
-<div><div class="i">05</div><div>The formula — $\kappa$, branching, and the critical fraction $f_c$</div></div>
+<div><div class="i">05</div><div>The formula — kappa, branching, and the critical fraction</div></div>
 <div><div class="i">06</div><div>Robust yet fragile — and what you would build instead</div></div>
 <div><div class="i">07</div><div>Edge cases — the graphs that test the law</div></div>
 
@@ -1357,10 +1357,9 @@ Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst singl
 <div class="cols">
 <div>
 
-* **Even out the degrees** — no town carrying three others
+* **Even out the degrees** — fewer towns on a single cable
 * **Redundant routes** — two ways to reach anywhere
 * **Protect the hubs** you cannot design away
-* **Layer** local grids under a backbone
 * **Reconfigure** when an attack is detected
 
 </div>
