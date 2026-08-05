@@ -45,6 +45,25 @@ column width it will occupy. In Altair, set `width`/`height` to the final pixel 
 The same rule fixes node size: Module 01's nodes were uniform in *figure* space and still
 ranged 68–177px on the slide.
 
+### Measured floors (from the m01 rounds — assert these in the generator)
+
+The deck's containers are fixed: content area **1120px**, a `cols` column **537px**,
+display height cap **380px**. So the on-slide size of anything in a figure is computable
+at authoring time:
+
+    scale       = min(container / src_w, 380 / src_h, 1.0)
+    on_slide_px = size_pt * (dpi / 72) * scale
+
+- **In-figure text ≥ 21px on the slide** (body is 30px type ≈ 15px x-height). The
+  lecturer raised this four times on m01; it is a build failure now, not a taste note.
+- **Node discs 26–52px on the slide** — uniform enough that the same graph does not
+  change size between consecutive slides.
+- **Drawing ≥ 150px rendered**, **per-axis margin ≤ 30%**, ink fraction ≥ 15% of the box
+  (aim for 35%) — below that the deck is scaling white margin, not the picture.
+
+`m01/check_render.py` re-measures all of this on the rendered slides after `marp
+--images png`; copy it into each new module and keep it exiting 0.
+
 ### No bar charts
 
 Use a form that shows the quantity directly — the actual objects, a dot plot, a slope, an

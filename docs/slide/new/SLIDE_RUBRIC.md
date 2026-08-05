@@ -98,6 +98,10 @@ Use the report format at the bottom. Order findings by severity, then slide numb
   the structure hard to trace at all.
 - **F3 · Major — Legible from the back row.** Labels, strokes, and contrast must
   read at rendered slide size. Thin lines, small fonts, gray-on-gray fail.
+  Concretely: in-figure text must land at least **body size on the rendered slide**
+  (30px type ≈ 15px x-height). The page number is *not* the floor — that standard was
+  tried and rejected by the lecturer. `check_render.py` measures this; a failing run
+  is a Major on every named slide.
 - **F4 · Major — The figure carries the point.** The figure must show the slide's
   single point, not a multi-panel dump. Multi-panel figures are acceptable only as
   a build (one panel per step). Decorative elements that encode nothing get cut.
@@ -119,6 +123,13 @@ Use the report format at the bottom. Order findings by severity, then slide numb
 - **L4 · Minor — Bullets in moderation.** Bullets are practical but easy to overuse:
   more than 4 items, nested bullets, or more than one list per slide is a Minor.
   A bullet list standing in where a figure should teach the idea is a Major (F4).
+- **L5 · Major — No paragraph below a fragmented list.** The room reads it before the
+  bullets reveal, which defeats the build. Move it above the list, fold it into the
+  last fragment, or make it a fragment itself.
+- **L6 · Minor — Centre shallow slides.** A slide whose content does not fill the frame
+  hangs from the rule with all the slack below; it takes `<!-- _class: mid -->`, which
+  centres the body block only (headings stay at their fixed y so titles line up
+  deck-wide). Most question slides qualify.
 
 ### N — Narrative and tone
 
@@ -132,7 +143,9 @@ Use the report format at the bottom. Order findings by severity, then slide numb
   address or question is a Major; individual textbook-monologue slides are Minors.
 - **N4 · Major — Question before answer.** Key results are set up as a question,
   a beat for thinking (turn to your neighbor / take 30 seconds), then the answer.
-  Revealing the punchline in the same breath as the question is a Major.
+  Revealing the punchline in the same breath as the question is a Major. The answer
+  must not appear *anywhere* on the question slide — a gray `note` has leaked the
+  puzzle's answer twice; check the notes, not just the body.
 
 ### S — Deck structure (four-act arc + milestones)
 
