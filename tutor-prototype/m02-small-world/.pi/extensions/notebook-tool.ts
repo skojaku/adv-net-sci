@@ -72,6 +72,31 @@ const focusCellCode = (cellIdExpr: string, indent: string) =>
   `${indent}except Exception:\n` +
   `${indent}    pass\n`;
 
+/**
+ * Python source of the improvised-cell review (nb_review.py), prepended to
+ * the kernel call that creates the cell. Missing file = review skipped.
+ */
+let reviewSrcCache: string | null = null;
+function reviewSource(): string {
+  if (reviewSrcCache === null) {
+    try {
+      reviewSrcCache = fs.readFileSync(
+        path.join(process.cwd(), ".pi", "extensions", "nb_review.py"),
+        "utf-8",
+      );
+    } catch {
+      reviewSrcCache = "";
+    }
+  }
+  return reviewSrcCache;
+}
+
+const indentBlock = (s: string, n: number) =>
+  s
+    .split("\n")
+    .map((l) => (l.trim() ? " ".repeat(n) + l : l))
+    .join("\n");
+
 const BOOTSTRAP =
   `import marimo._code_mode as cm\n` +
   `async with cm.get_context() as ctx:\n` +
@@ -550,6 +575,39 @@ export default function (pi: ExtensionAPI) {
       const curId = currentChapterId() ?? chapters[0]?.id;
       const idx = chapters.findIndex((c) => c.id === curId);
       const next = chapters[idx + 1];
+
+      // ── Forced chapter-end follow-up ────────────────────────────────────
+      // Enforced here, not by prompt: a chapter boundary is the one moment
+      // the student must get an unhurried "anything first?" — the tutor was
+      // racing past questions and requests for extra practice.
+      const READY = next ? "I'm ready for the next chapter" : "I'm ready to wrap up";
+      const ASK_Q = "I have a question first";
+      const MORE = "Give me one more practice problem";
+      if (ctx?.ui?.select) {
+        const title = chapters[idx]?.title ?? "this part";
+        const choice = await ctx.ui.select(`Before we leave "${title}" — anything first?`, [
+          READY,
+          ASK_Q,
+          MORE,
+        ]);
+        if (choice !== READY) {
+          const text =
+            choice === ASK_Q
+              ? `The student has a QUESTION. Do NOT advance. Ask them in plain text what it ` +
+                `is, answer it properly, leave a souvenir cell (mo.vstack: note + netviz/figure ` +
+                `— never ASCII art), log the detour, then call chapter_done again.`
+              : choice === MORE
+                ? `The student wants MORE PRACTICE. Do NOT advance. Improvise ONE problem of ` +
+                  `the same kind on NEW data, reusing this module's objects (the 4-person ` +
+                  `network, the 8-dot ring) so the numbers stay comparable. Guide, judge, log ` +
+                  `it as extra practice (never a fail), then call chapter_done again.`
+                : `The student closed the picker without choosing — they may want to say ` +
+                  `something in their own words. Ask them in plain text what they'd like to do, ` +
+                  `handle it, then call chapter_done again.`;
+          return { content: [{ type: "text" as const, text }], details: { gated: true } };
+        }
+      }
+
       if (!next) {
         return {
           content: [
@@ -711,9 +769,7 @@ export default function (pi: ExtensionAPI) {
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
       const hide = params.show_code === true ? "False" : "True";
-      let code =
-        `import marimo._code_mode as cm\n` +
-        `_code = ${py(stripRedundantImports(params.code))}\n` +
+      let inner =
         `async with cm.get_context() as ctx:\n` +
         `    _cid = ctx.create_cell(_code, name=${py(params.name)}, hide_code=${hide})\n` +
         `    ctx.run_cell(_cid)\n`;
@@ -727,13 +783,30 @@ export default function (pi: ExtensionAPI) {
           `    from pathlib import Path as _P\n` +
           `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
           `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
-        code +=
+        inner +=
           `    _btn = ctx.create_cell(${py(btnBody)}, name=${py(params.name + "_done_btn")}, hide_code=True, after=_cid)\n` +
           `    ctx.run_cell(_btn)\n` +
           `    _sig = ctx.create_cell(${py(sigBody)}, name=${py(params.name + "_done_sig")}, hide_code=True, after=_btn)\n` +
           `    ctx.run_cell(_sig)\n`;
       }
-      code += focusCellCode("_cid", "    ");
+      inner += focusCellCode("_cid", "    ");
+      // Improvised cells go through the review (nb_review.py) — it catches the
+      // displays marimo would silently drop before the student sees a cell
+      // with a missing figure.
+      const review = reviewSource();
+      const code =
+        `import marimo._code_mode as cm\n` +
+        (review ? review + "\n" : "") +
+        `_code = ${py(stripRedundantImports(params.code))}\n` +
+        (review
+          ? `_code, _note, _fatal = _nb_review(_code)\n` +
+            `if _fatal:\n` +
+            `    print(_fatal)\n` +
+            `else:\n` +
+            indentBlock(inner, 4) +
+            `    if _note:\n` +
+            `        print(_note)\n`
+          : inner);
       return toResult(await runKernel(code, signal));
     },
     ...quietRender,
