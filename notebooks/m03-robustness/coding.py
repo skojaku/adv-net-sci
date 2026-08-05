@@ -4,7 +4,7 @@
 #     "matplotlib",
 #     "numpy",
 #     "pandas",
-#     "python-igraph",
+#     "igraph",
 #     "seaborn",
 # ]
 # [tool.marimo.display]

@@ -12,6 +12,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NOTE = ROOT / "docs/lecture-note"
 
+HOW = {
+    "wasm": "It runs in your browser — nothing to install, nothing to sign into. "
+            "The first load takes a few seconds while Python itself is downloaded.",
+    "molab": "This one uses a compiled package that the browser runtime cannot load, "
+             "so it runs on molab instead. You will need to sign in.",
+}
+
 MODULES = [
     dict(
         dir="m01-euler_tour",
@@ -145,6 +152,7 @@ MODULES = [
     dict(
         dir="m08-embedding",
         var="m08",
+        run="molab",
         nb="notebooks/m08-network-embedding/coding.ipynb",
         title="Hands-on: Turning a Network into Coordinates",
         lead="Two families of embedding, built from scratch, then judged on the same task.",
@@ -164,6 +172,7 @@ MODULES = [
     dict(
         dir="m09-graph-neural-networks",
         var="m09",
+        run="molab",
         nb="notebooks/m09-graph-neural-nets/coding.ipynb",
         title="Hands-on: Building Graph Neural Networks",
         lead="GCN, GraphSAGE and GAT on the same task, plus the failure mode that depth causes.",
@@ -199,10 +208,12 @@ This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-[Open the notebook in molab]({{{{< var molab.{var} >}}}})
+### [▶ Run this notebook]({{{{< var molab.{var} >}}}})
 
-Prefer to work locally? The same notebook is in the repository at
-[`{nb}`](https://github.com/skojaku/adv-net-sci/blob/main/{nb}).
+{how}
+
+Prefer to work locally? The notebook is in the repository at
+[`{nb_py}`](https://github.com/skojaku/adv-net-sci/blob/main/{nb_py}).
 Run it with `marimo edit {nb_py}`.
 :::
 
@@ -245,6 +256,7 @@ def main():
             var=m["var"],
             nb=m["nb"],
             nb_py=m["nb"].replace(".ipynb", ".py"),
+            how=HOW[m.get("run", "wasm")],
             build=bullets(m["build"]),
             watch=dashes(m["watch"]),
             extra=extra,

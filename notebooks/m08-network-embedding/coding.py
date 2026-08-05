@@ -6,7 +6,7 @@
 #     "matplotlib",
 #     "numpy",
 #     "pandas",
-#     "python-igraph",
+#     "igraph",
 #     "scikit-learn",
 #     "seaborn",
 #     "umap-learn",

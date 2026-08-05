@@ -3,7 +3,7 @@
 #     "marimo",
 #     "numpy",
 #     "pandas",
-#     "python-igraph",
+#     "igraph",
 # ]
 # [tool.marimo.display]
 # default_width = "full"

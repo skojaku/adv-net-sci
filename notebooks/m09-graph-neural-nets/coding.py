@@ -4,7 +4,7 @@
 #     "matplotlib",
 #     "networkx",
 #     "numpy",
-#     "python-igraph",
+#     "igraph",
 #     "scipy",
 #     "seaborn",
 #     "torch",

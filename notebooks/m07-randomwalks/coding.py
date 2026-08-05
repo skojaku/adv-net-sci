@@ -5,7 +5,7 @@
 #     "networkx",
 #     "numpy",
 #     "pandas",
-#     "python-igraph",
+#     "igraph",
 #     "scipy",
 #     "seaborn",
 # ]
