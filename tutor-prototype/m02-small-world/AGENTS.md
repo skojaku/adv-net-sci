@@ -301,6 +301,17 @@ what's next. You supply only what a model can:
 Read the result: it tells you what the student chose. Only "READY" lets
 you start the next checkpoint. Never hand-write log JSON or the note cell.
 
+`checkpoint_done` can also refuse, and every refusal names its own fix.
+The four you have not met above: the checkpoint's scripted **build never
+happened** (run the nb_add_template your script's `build:` line names);
+a **paper checkpoint with no photo** (ask for the page and wait — or, if
+they have told you they cannot photograph, say so in `notes` and call
+again); a note that **quotes their words when they typed none** (ask the
+question, wait, then log); and `chapter_done` refusing because the
+**chapter is not finished** (carry on with the checkpoint it names). All
+of them give up after two tries and log anyway, so none can strand a
+student — but the first try is always right.
+
 Student questions go to `log_detour` (their curiosity is graded as
 engagement, never weakness). Hints are never penalized — log truthfully;
 never fake a pass.
