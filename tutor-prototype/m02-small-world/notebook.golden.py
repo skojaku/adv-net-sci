@@ -637,7 +637,9 @@ def cp3_clustering_note(mo):
     so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
     network's clustering $C$ — typically HIGH in social networks.
 
-    > **I worked out:** count the friend-pairs that are friends themselves and divide by all possible pairs. Two rust lines — B–F and C–E — so 2 out of 10 = 0.2.
+    > **What the two pictures differ by:** count the friend-pairs that are friends themselves and divide by all possible pairs.
+    >
+    > **What I counted, and out of how many:** two rust lines — B–F and C–E — so 2 out of 10 = 0.2.
     """)
     return
 
@@ -952,7 +954,13 @@ def cp5_ring_formula_note(mo):
     $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
     about half that, $L \approx N/(2k)$.
 
-    > **My work:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5. Swapping in 1000 people changes nothing near me — C stays 0.5. Farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
+    > **The counting:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5.
+    >
+    > **Does C depend on N?** swapping in 1000 people changes nothing near me — C stays 0.5.
+    >
+    > **The two formulas:** farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
+    >
+    > **On paper:** the photographed page shows the 12-dot ring at k=4, node 0's four friends listed, the three existing pairs ticked, and both formulas boxed at the bottom.
     """)
     return
 
@@ -1110,7 +1118,10 @@ df = pd.DataFrame(rows).melt("p", var_name="measure", value_name="ratio")
 alt.Chart(df).mark_line(point=True).encode(
     x=alt.X("p:O", title="rewiring probability p"),
     y=alt.Y("ratio:Q", title="ratio to p=0 baseline"),
-    color=alt.Color("measure:N", scale=alt.Scale(range=["#B4552D", "#35577F"])),
+    color=alt.Color(
+        "measure:N",
+        scale=alt.Scale(domain=["L/L0", "C/C0"], range=["#B4552D", "#35577F"]),
+    ),
 ).properties(title=f"N={N}, k={k}")
 """,
         language="python",

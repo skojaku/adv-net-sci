@@ -928,7 +928,11 @@ function scriptedBuildCells(cpId: string): string[] {
   const build = checkpointBlock(cpId, "build");
   if (!build.trim() || /^\s*none\s*$/i.test(build)) return [];
   const out: string[] = [];
-  for (const m of build.matchAll(/nb_add_template\(\s*["']([\w-]+)["']\s*\)/g)) {
+  // Tolerate the argument form the tool itself asks for —
+  // nb_add_template("x", checkpoint="cp4") — and a named first argument.
+  // Requiring the bare one-arg call meant an instructor aligning a build:
+  // line with the tool contract silently switched this guard off.
+  for (const m of build.matchAll(/nb_add_template\(\s*(?:template\s*=\s*)?["']([\w-]+)["']/g)) {
     try {
       const src = fs.readFileSync(path.join(process.cwd(), "cells", `${m[1]}.py`), "utf-8");
       for (const c of src.matchAll(/^#\s*---\s*cell:\s*(\w+)\s*---/gm)) out.push(c[1]);
@@ -964,7 +968,16 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
  */
 function withQuotedQuestion(markdown: string, question: string): string {
   if (!question) return markdown;
-  const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
+  // Same normalisation souvenirGap uses, or the two halves of the contract
+  // disagree: a cell that quotes "can't" against a question typed "cant"
+  // satisfies that check and then gets a SECOND copy of the question
+  // prepended by this one.
+  const flat = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/['\u2018\u2019\u02BC"\u201C\u201D]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
   if (flat(markdown).includes(flat(question))) return markdown;
   const quote = `> 🧭 **You asked:** “${question}”`;
   const lines = markdown.split("\n");
@@ -1147,12 +1160,19 @@ function buildSessionRecord(entries: any[]): string {
 
 function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
   const cps = entries.filter((e) => e?.type === "checkpoint" && e.id);
-  const done = new Set(cps.map((e) => e.id));
+  // Count the SCRIPT's checkpoints, not the log rows: a practice round is
+  // logged under its own `_extra` id, and counting those produced
+  // "Checkpoints completed: 13 of 12" on the first full run — a summary the
+  // grader cannot read as anything but a bug. Extra rounds are worth
+  // reporting, just not as progress through the module.
+  const done = new Set(cps.map((e) => baseCheckpointId(String(e.id))));
+  const extras = cps.filter((e) => /_extra/.test(String(e.id))).length;
   const missing = allCheckpoints.filter((id) => !done.has(id));
   const out = [
     "# Session summary",
     "",
-    `Checkpoints completed: ${done.size} of ${allCheckpoints.length}`,
+    `Checkpoints completed: ${allCheckpoints.filter((id) => done.has(id)).length} of ${allCheckpoints.length}`,
+    ...(extras ? [`Extra practice rounds asked for: ${extras}`] : []),
     `Detours (student's own questions): ${entries.filter((e) => e?.type === "detour").length}`,
     "",
   ];
@@ -1215,6 +1235,12 @@ export default function (pi: ExtensionAPI) {
   const detourTextOnlyWarned = new Set<string>();
   // Improvised-cell review refusals, per cell name — capped like the rest.
   const cellReviewWarned = new Map<string, number>();
+  // Upload widgets nb_view_image has actually looked at. Cell presence is
+  // not evidence that the photo was ASKED for: cp5's script builds the drop
+  // area up front, so the area exists from question 1 and a tutor that then
+  // skips the "photograph that page" step closes a paper checkpoint with no
+  // paper in it — which is exactly what a live run did.
+  const viewedPhotos = new Set<string>();
 
   pi.on("tool_result", async (event: any) => {
     recordPickedAnswer(event);
@@ -1732,6 +1758,28 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
+      // The build existing is not the same as the page being asked for. On a
+      // checkpoint whose build inserts a drop area, either a photo came
+      // through (nb_view_image saw it) or the student said they cannot take
+      // one — and in that case the record should say so. One nudge, then it
+      // logs either way with the gap on the row.
+      const wantPhotos = wantCells.filter((c) => /_photo$/.test(c));
+      const photoMissing =
+        wantPhotos.length > 0 && !wantPhotos.some((w) => viewedPhotos.has(w));
+      if (photoMissing && (slotDriftWarned.get(`${id}:photo`) ?? 0) < 1) {
+        slotDriftWarned.set(`${id}:photo`, 1);
+        return toResult({
+          out:
+            `NOT LOGGED — this is a pen-and-paper checkpoint and no photo has reached ` +
+            `me for "${wantPhotos[0]}". If you have not asked yet: ask for the page and ` +
+            `nothing else, then END YOUR TURN and wait — their 📨 Send press starts the ` +
+            `next one, and you read it with nb_view_image.\n` +
+            `If they have already told you they cannot photograph, that is fine and their ` +
+            `typed work counts — say so in notes ("camera broken, typed instead") and ` +
+            `call checkpoint_done again; it will log.`,
+          failed: false,
+        });
+      }
       // Peek, don't consume: a refusal below must leave the transcript mark
       // where it was, or the retry would log an empty student_said_verbatim.
       const said = studentSaidSince(ctx, false);
@@ -1881,6 +1929,7 @@ export default function (pi: ExtensionAPI) {
         student_said_verbatim: said,
         ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
+        ...(photoMissing ? { photo_missing: true } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 
@@ -2472,6 +2521,7 @@ export default function (pi: ExtensionAPI) {
           pickedMark = 0;
           awaitingResumeChoice = false;
           cellReviewWarned.clear();
+          viewedPhotos.clear();
           // Same rewind for the transcript mark: without it, whatever the
           // student typed before choosing "start fresh" is filed as the new
           // cp0's own words.
@@ -2747,6 +2797,10 @@ export default function (pi: ExtensionAPI) {
       }
       const b64 = /^B64:([A-Za-z0-9+/=]+)\s*$/m.exec(result.out)?.[1];
       const fileLine = /^FILE:.*$/m.exec(result.out)?.[0] ?? "";
+      // A photo actually reached the tutor for this widget — the one piece
+      // of evidence checkpoint_done can use to tell "asked for the page" from
+      // "never mentioned it".
+      if (widget) viewedPhotos.add(widget);
       if (!b64) {
         return toResult({
           out:
