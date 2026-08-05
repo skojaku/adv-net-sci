@@ -30,17 +30,26 @@ checkpoints:
       "distance drops a lot, clustering barely changes" /
       "clustering drops a lot, distance barely changes" /
       "both barely change".
-      Then build the explorer and: "Play with the slider. Around which p does
-      distance collapse — and what is clustering doing there? Tell me here
-      when you've got it."
+      Then build the explorer and ask it as a reading task, not as
+      "where does it collapse" — the slider has eight fixed stops and
+      "collapse" is not a thing they can see a definition of:
+      "Move the slider one notch at a time from the left, and write the
+      two numbers down as you go. Which single notch drops L/L₀ the most?
+      And at that same notch, what is C/C₀ — near 1, or near 0? Tell me
+      here when you have it."
     accept: |
-      Report notices that L falls steeply while p is still tiny — anywhere
-      in the 0.005-0.05 band counts, and so does "somewhere around 1%" —
-      while C is still high, and honestly compares to their prediction.
-      (Measured on the widget's own 200-person ring: L/L₀ is 1.00 at
-      p=0.001, 0.70 at p=0.005, 0.61 at p=0.01, 0.29 at p=0.05, while C/C₀
-      is still 0.98 at p=0.005 and 0.97 at p=0.01. So do NOT insist on
-      0.01 — the drop is a band, not a point.)
+      They name a notch where L/L₀ fell hard and report that C/C₀ was still
+      high there, and reconcile that honestly with their prediction.
+      Measured on the widget's own 200-person ring, notch by notch:
+        p      L/L₀   C/C₀   drop in L/L₀ from the notch before
+        0.001  1.00   1.00   0.00
+        0.005  0.70   0.98   0.30   <- one of the two biggest
+        0.01   0.61   0.97   0.09
+        0.05   0.29   0.84   0.32   <- the other
+        0.1    0.24   0.75   0.05
+      So 0.005, 0.01 and 0.05 ALL pass, and so does "somewhere around 1%".
+      The two steepest single drops are nearly tied — never insist on one
+      notch, and never correct a student who picked the other.
       A wrong prediction + honest reconciliation is a FULL PASS — say so.
     fresh_variants: |
       If the answer slips out, ask the same thing from the other end: "start
@@ -119,16 +128,25 @@ checkpoints:
       `C = nx.average_clustering(G)` already written) — they press ▶ Run
       and read the chart rather than writing anything.
     ask: |
-      "Run it — it takes a few seconds on a network this size. At N=2000,
-      around what p does distance collapse now? Does the FRACTION of
-      rewired links needed look bigger, smaller, or about the same as the
-      ~1% you found at N=200 last time?"
+      "Run it — it takes a few seconds on a network this size. Same reading
+      as before, now on your own chart: at which p does the L/L₀ line make
+      its steepest drop, and what is C/C₀ doing at that p? Then the
+      comparison: is that p bigger, smaller, or about the same as the one
+      you found on the 200-person ring?"
     accept: |
-      Correctly reads the collapse point from their own chart; a
-      qualitative comparison to the N=200 result (same tiny fraction, or
-      even smaller — the critical p shrinks as N grows). No exact number
-      required — interpretation is what's graded, same standard as
-      cs1_code.
+      Reads the steepest drop off their own chart, and compares it to the
+      200-person ring. At N=2000, seed 1, the drops are unambiguous:
+        p      L/L₀   C/C₀   drop from the notch before
+        0.001  0.52   1.00   0.48   <- clearly the steepest
+        0.005  0.30   0.99   0.22
+        0.01   0.17   0.98   0.13
+        0.05   0.05   0.86   0.11
+      So the expected answer is p = 0.001 with C/C₀ still 1.00, and the
+      comparison is SMALLER than what they found at N=200 — a tenth of a
+      percent of the links instead of half a percent to five percent.
+      "Smaller" is the graded half; the exact notch is not. A student who
+      says "about the same, still a tiny fraction" has also understood the
+      point and passes — press only for whether it moved, not by how much.
     hints:
       - "Same reading as before: find where the L/L0 line drops sharply. What p is that, roughly?"
       - "At that p, has C/C0 moved much?"
