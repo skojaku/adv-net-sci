@@ -387,10 +387,10 @@ async function insertChapterHeader(
   num: number,
   total: number,
   signal?: AbortSignal,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const warm = await ensureWarm(signal);
-    if (warm) return;
+    if (warm) return false;
     const name = `${ch.id}_header`;
     const body = `mo.md(${JSON.stringify(`## Chapter ${num} of ${total} — ${ch.title}`)})`;
     await runKernel(
@@ -403,9 +403,35 @@ async function insertChapterHeader(
         focusCellCode("_cid", "        "),
       signal,
     );
+    return true;
   } catch {
     // headers are cosmetic — never block the lesson
+    return false;
   }
+}
+
+/**
+ * Chapter 1's header is the one nobody else retries: chapters 2-5 get theirs
+ * from chapter_done, long after the kernel is warm, but chapter 1's fires
+ * once at session start — and the kernel stays cold until a browser client
+ * connects. A student who opens the page late (the D7 notebook-down path)
+ * used to lose that header for good, leaving a notebook whose first heading
+ * says "Chapter 2 of 5". Keep trying until it lands, the chapter moves on,
+ * or we give up after ~5 minutes. create_cell is skip-if-exists, so a late
+ * success can never duplicate it.
+ */
+function scheduleChapterHeader(ch: Chapter, num: number, total: number): void {
+  let attempts = 0;
+  const tick = async () => {
+    attempts += 1;
+    if (currentChapterId() !== ch.id) return;
+    const ok = await insertChapterHeader(ch, num, total);
+    if (ok || attempts >= 20) return;
+    const t = setTimeout(() => void tick(), 15_000);
+    (t as any).unref?.();
+  };
+  const first = setTimeout(() => void tick(), 15_000);
+  (first as any).unref?.();
 }
 
 function chapterStatePath(): string {
@@ -672,24 +698,23 @@ function buildSessionRecord(entries: any[]): string {
   const lines = [
     "## 📋 Session record",
     "",
-    "*Your own words, exactly as you said them — this is what gets reviewed,*",
-    "*not the code. Hints are never held against you.*",
+    "*Your answer to each question, and every word you typed while working on*",
+    "*it — this is what gets reviewed, not the code. Hints are never held*",
+    "*against you.*",
     "",
   ];
   for (const e of cps) {
     const hints = Number(e.hints_used ?? 0);
-    // Quote the TRANSCRIPT capture, not the tutor's summary field: the
-    // heading above promises "exactly as you said them", and only the
-    // captured messages can honour that. Fall back to the tutor's record
-    // when the answer never passed through the keyboard (a drawing, a
-    // picker choice) — and say so, rather than claiming words they never
-    // typed.
+    // Two separate things, never conflated. The quote is the tutor's record
+    // of the ANSWER — which for a picker choice or a drawing is the only
+    // record there is. Beneath it, verbatim, goes everything the student
+    // actually typed while working on this checkpoint, straight from the
+    // transcript. Printing the capture AS the answer was wrong: a stray
+    // "ok" typed while a dialog was open would have become their answer.
     const saidRaw: string[] = Array.isArray(e.student_said_verbatim)
       ? e.student_said_verbatim.map((s: unknown) => String(s ?? "").trim()).filter(Boolean)
       : [];
-    const quote = saidRaw.length
-      ? saidRaw.join(" · ")
-      : String(e.student_response ?? "").trim();
+    const quote = String(e.student_response ?? "").trim();
     lines.push(
       `**${e.id}** · ${e.judgment ?? "?"}${hints ? ` · ${hints} hint${hints > 1 ? "s" : ""}` : ""}`,
       "",
@@ -698,7 +723,12 @@ function buildSessionRecord(entries: any[]): string {
       `> ${quote.replace(/\n+/g, " ")}`,
       "",
     );
-    if (!saidRaw.length) lines.push(`*(answered without typing — a picker choice or a drawing)*`, "");
+    if (saidRaw.length) {
+      lines.push(
+        `*You typed:* ${saidRaw.map((s) => `"${s.replace(/\n+/g, " ")}"`).join(" · ")}`,
+        "",
+      );
+    }
     if (e.notes) lines.push(`*Tutor's note:* ${String(e.notes).trim()}`, "");
   }
   if (detours.length) {
@@ -838,18 +868,13 @@ export default function (pi: ExtensionAPI) {
           },
           { deliverAs: "nextTurn" },
         );
-        // Delayed: the kernel is likely still booting at session start. Guard
-        // against staleness — if the student chose "start fresh" (or a
-        // chapter transition otherwise happened) before this fires, the
-        // chapter this timer was scheduled for is no longer current, and
+        // Delayed and retried: the kernel is still booting at session start,
+        // and stays cold until a browser client connects. Each attempt
+        // re-checks that this chapter is still current — if the student
+        // chose "start fresh" (or a chapter transition otherwise happened),
         // inserting its header would land a stray "Chapter N" heading in
         // the middle of a different chapter's cells (seen in production).
-        const scheduledForChapterId = chapter.id;
-        const headerTimer = setTimeout(() => {
-          if (currentChapterId() !== scheduledForChapterId) return;
-          void insertChapterHeader(chapter, num, chapters.length);
-        }, 15_000);
-        (headerTimer as any).unref?.();
+        scheduleChapterHeader(chapter, num, chapters.length);
       }
     } catch {
       // chapter injection is best-effort; AGENTS.md tells the tutor how to cope
@@ -1143,7 +1168,15 @@ export default function (pi: ExtensionAPI) {
       // phrase, and are not checked. The bar is deliberately low — reordering
       // and joining and labelling are all fine — so that only invention
       // trips it: a figure they never gave, or three added content words.
-      const pool = [...said, response];
+      //
+      // The pool is the transcript plus the QUESTION's own vocabulary —
+      // echoing the words of the question ("distance", "average") is
+      // labelling, not fabrication. student_response is model-authored, so
+      // it counts only when the student typed nothing at all this round (a
+      // drawing, a picker choice): including it otherwise let the model
+      // whitelist its own paraphrase by writing the same text in both
+      // fields, which is exactly the failure the check exists to catch.
+      const pool = said.length > 0 ? [...said, String(params.question ?? "")] : [response];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
       for (const [i, fill] of slots.entries()) {
@@ -1912,7 +1945,7 @@ export default function (pi: ExtensionAPI) {
     "Two of Königsberg's seven bridges were lost in 1944, and the puzzle's answer changed with them.",
     "Frigyes Karinthy dreamed up the question behind this whole module in a 1929 short story, 'Chains'.",
     "Stanley Milgram ran his letter experiment out of Harvard in the 1960s, with paper and stamps.",
-    "In 2003 a team reran Milgram's experiment by email, with 24,000 chains across 13 countries.",
+    "In 2003 a team reran Milgram's experiment by email: 24,163 chains, 18 targets, 166 countries.",
     "Your friends have more friends than you do, on average — the friendship paradox.",
     "Watts & Strogatz published their network model in Nature in 1998; it has been cited over 50,000 times.",
     "The original three networks studied in 1998: film actors, the US power grid, and a worm's brain.",

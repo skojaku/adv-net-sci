@@ -67,11 +67,11 @@ checkpoints:
       the untouched ring, so $L/L_0$ and $C/C_0$ read "compared to before".
 
       Rewiring only about 1% of a ring's links ($p \approx 0.01$) already
-      pulls distance down hard — $L/L_0 \approx 0.6$ on 200 people, $0.17$
-      on 2000 — while clustering barely moves ($C/C_0 \approx 1$). Those
-      few random rewires are the long cables from my drawing: rare enough
-      to keep the communities, long enough to shortcut the whole ring.
-      That's the small-world recipe, and it's why six degrees works.
+      pulls distance down hard — on this 200-person ring $L/L_0$ falls to
+      about $0.6$ — while clustering barely moves ($C/C_0 \approx 1$).
+      Those few random rewires are the long cables from my drawing: rare
+      enough to keep the communities, long enough to shortcut the whole
+      ring. That's the small-world recipe, and it's why six degrees works.
 
       > **My prediction:** «their pick» → **what I actually saw:**
       «their report, verbatim»
@@ -99,8 +99,10 @@ checkpoints:
       rows = []
       for p in p_values:
           G = nx.connected_watts_strogatz_graph(N, k, p, seed=1) if p > 0 else nx.watts_strogatz_graph(N, k, 0)
-          L = ...  # average shortest path length of G
-          C = ...  # average clustering of G
+          # 2. Measure the average distance of G — nx.average_shortest_path_length
+          L = ...
+          # 3. Measure the average clustering of G — nx.average_clustering
+          C = ...
           if p == 0.0:
               L0, C0 = L, C
           rows.append({"p": str(p), "L/L0": L / L0, "C/C0": C / C0})
