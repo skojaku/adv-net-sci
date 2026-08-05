@@ -70,7 +70,8 @@ checkpoints:
       just the final number.
     hints:
       - "List all 10 pairs first: AB, AC, AD, AE, BC, BD, BE, CD, CE, DE. Which ones are neighbors — distance 1?"
-      - "5 pairs are neighbors. The other 5 — going the SHORT way around the circle — how many steps?"
+      - "Take the pairs that are NOT neighbors. Pick one and walk it the SHORT way around the circle — how many steps?"
+      - "You have every pair's distance now. Averaging means: add them all up, then divide by what?"
     fresh_variants: |
       If the answer slips out, re-check on a 6-person ring (same rule: each
       dot connects only to its two neighbors): 6 pairs at distance 1, 6 at
@@ -108,7 +109,8 @@ checkpoints:
       Calculation: 2 of 10 exist -> C_A = 2/10 = 0.2.
     hints:
       - "Look only at A's friends: B, C, D, E, F. Ignore A. How many lines run BETWEEN them?"
-      - "2 friendships exist out of 10 possible. So the fraction is...?"
+      - "Take one friend at a time. Does B have a line to any of C, D, E, F? Then C — does it?"
+      - "You have two counts now: the friendships that exist, and the 10 that could. What do you do with two counts to get 'how often'?"
     fresh_variants: |
       If the answer slips out, re-check on new data: Alice with 4 friends
       and exactly one friendship among them -> 1 of 6 possible pairs = 1/6;

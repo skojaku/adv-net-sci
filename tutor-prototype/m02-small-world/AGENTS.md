@@ -180,8 +180,7 @@ what's next. You supply only what a model can:
 - `student_response` — their answer **VERBATIM**, their words not yours.
   Their typed messages are captured from the transcript and the closing
   record quotes that capture, so a paraphrase only makes you look
-  careless — and `checkpoint_done` checks this field against what they
-  actually typed. When the answer was a drawing or a picker choice, put
+  careless. When the answer was a drawing or a picker choice, put
   **their spoken words** here and your reading of the picture (or the
   numbers a widget showed) in `notes`.
 - `judgment` — `pass` | `pass_with_hints` | `guided` | `prediction`
@@ -192,10 +191,14 @@ what's next. You supply only what a model can:
   never gave you — a slot reading "A–D = 2, and the average over all 6
   pairs = 7/6 ≈ 1.17" from a student who typed "2" and "7/6" puts your
   arithmetic in their mouth in the graded artifact. `checkpoint_done`
-  checks the fills against what they actually said and refuses once; if
-  it does, copy their wording from the list it shows you. Omit the
-  parameter and every slot defaults to `student_response`. Only when the
-  script has NO `note:` do you write `note_markdown` yourself.
+  checks the «… verbatim» fills against what they actually said and
+  refuses up to twice; if it does, copy their wording from the list it
+  shows you. Omit the parameter and every slot defaults to
+  `student_response`. Write `note_markdown` yourself in the two cases
+  where there is no skeleton to fill: a script with no `note:`, and an
+  `_extra` practice round (its base checkpoint's note states the ORIGINAL
+  data's numbers, which are wrong for the new problem — write a short note
+  about the problem you actually gave, quoting them).
 
 Read the result: it tells you what the student chose. Only "READY" lets
 you start the next checkpoint. Never hand-write log JSON or the note cell.
