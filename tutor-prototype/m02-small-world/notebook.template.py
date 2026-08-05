@@ -198,12 +198,16 @@ export default { render };
             for _i, _nid in enumerate(ids):
                 _a = 2 * math.pi * _i / len(ids) - math.pi / 2
                 pos[_nid] = (0.5 + 0.42 * math.cos(_a), 0.5 + 0.42 * math.sin(_a))
+        # One scale for both axes, then centre: scaling 0..1 coords by width
+        # and height separately turned every ring into a 4:3 ellipse.
+        _s = min(width, height)
+        _ox, _oy = (width - _s) / 2, (height - _s) / 2
         node_list = []
         for _nid in ids:
             _d = {"id": str(_nid), "color": node_colors.get(_nid, "#35577F")}
             if _nid in pos:
-                _d["x"] = pos[_nid][0] * width
-                _d["y"] = pos[_nid][1] * height
+                _d["x"] = _ox + pos[_nid][0] * _s
+                _d["y"] = _oy + pos[_nid][1] * _s
             node_list.append(_d)
         link_list = [
             {
