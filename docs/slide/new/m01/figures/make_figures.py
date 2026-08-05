@@ -302,9 +302,18 @@ NODE_DIAM_IN = 0.75
 # SAME physical-inch crop (measured, like everywhere else, at this module's 200dpi) at a
 # LOWER final resolution, which rescales EVERY element uniformly (node, text, line widths are
 # all defined in physical points/inches, so one dpi change shrinks all of them together,
-# preserving every proportion the deck-wide constants already establish). 38px target
-# diameter, at NODE_DIAM_IN=0.75in -> the dpi at which 0.75in rasterizes to exactly 38px.
-TINY_OUT_DPI = 38 / NODE_DIAM_IN
+# preserving every proportion the deck-wide constants already establish).
+#
+# R13 fix (lecturer: "013"/"014"/"072"/"073" figures "far too small", named individually,
+# on top of "raise fonts, at least double" repeated four times): 38px was the BOTTOM of the
+# 26-52px node band, picked in R10 to clear the minimum -- correct for the constraint it was
+# solving, but it also means every figure that hits this code path renders its whole drawing
+# near the SMALLEST it's allowed to be, every time, with zero regard for how much bigger it
+# could still go. 46px -- near the TOP of the same band, still comfortably inside it -- makes
+# these figures read the same size as every node elsewhere in the deck instead of the
+# smallest defensible one. At NODE_DIAM_IN=0.75in, this is the dpi at which 0.75in
+# rasterizes to exactly 46px.
+TINY_OUT_DPI = 46 / NODE_DIAM_IN
 
 
 def data_units_per_point(ax):
@@ -1631,9 +1640,12 @@ def _build_selfloop_fig(name, number_badges, show_k=False):
         # 13pt, ~9px on-slide -- under the 16px page-number floor.
         ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED,
                 fontsize=SELFLOOP_ANNOT_FS, zorder=6)
-    # R10 fix: plain 200dpi, cropped to ink plus a small fixed pad -- the on-slide target is
-    # now hit by the deck's own `w:` directive (see the module note above SELFLOOP_PAD_IN),
-    # not by canvas bloat.
+    # R13 fix (lecturer: slide 013/014 "figure far too small"): plain 200dpi (tried first)
+    # renders this tight a crop at native 1:1 with NO deck downscale at all (content stays
+    # under both caps), which put the node at its full 150px native diameter -- three times
+    # over the 52px band, not "too small" anymore but wrong the other way. TINY_OUT_DPI is
+    # the right lever, just needed its OWN target raised -- see its module note (38 -> 46px,
+    # near the top of the legal band instead of the bottom).
     save_fit(fig, ax, name, pad_frac=0.08, pad_min_in=SELFLOOP_PAD_IN, out_dpi=TINY_OUT_DPI)
 
 
@@ -1701,15 +1713,25 @@ def fig_degree_definition():
     tip = (R * 1.18 * np.cos(ang), R * 1.18 * np.sin(ang))  # right (0) leaf edges
     node_r_pt = node_radius_pt(ax, R)
     hub_obstacle = [circle_obstacle(pos[0], node_r_pt, color=INK)]
+    # R13 fix (lecturer: "raise it as far as it goes"): the text-clearance obstacle list only
+    # ever had the HUB disc in it -- correct while "k = 4" was small enough to never reach
+    # any leaf, but pushing the size up (below) let the settled label drift down onto the
+    # bottom leaf's own disc, uncaught, because that leaf was never something the settle loop
+    # knew to avoid. All five discs now guard the text, not just the leader's path.
+    all_node_obstacles = [circle_obstacle(pos[i], node_r_pt, color=INK) for i in range(5)]
     leaf_edges = [line_obstacle([pos[0], pos[i]], EDGE_W, color=MUTED) for i in range(1, 5)]
     # R9 fix ("free-standing annotations... need their own size bump", FIXES_R9.md): was
     # ANNOT_FS (17pt), ~11.4px on-slide -- under the 16px page-number floor.
     # place_annotation's own obstacle-clearance loop absorbs the larger footprint safely.
     # R12 fix ("the one thing that has not landed"): 24pt was still under the deck-wide 30px
     # body-type floor. place_annotation's own settle loop is what confirms 30 still clears.
-    place_annotation(ax, tip, "k = 4", xytext=(0.85, -1.25), obstacles=hub_obstacle,
+    # R13 fix (lecturer, "Degree" -- "k = 4" still hard to read, raise it as far as it goes):
+    # pushed until place_annotation's own settle loop (now checked against every node, see
+    # above) stops finding a clear spot -- 68pt is the largest that does, measured directly,
+    # not the first value that merely rendered without crashing.
+    place_annotation(ax, tip, "k = 4", xytext=(0.85, -1.25), obstacles=all_node_obstacles,
                       node_obstacles=hub_obstacle, edge_obstacles=leaf_edges,
-                      color=MUTED, fontsize=30, ha="center", va="center",
+                      color=MUTED, fontsize=68, ha="center", va="center",
                       clearance_pt=4.0, lw=1.2, name="degree-definition:k=4")
     # R12 fix: save() (bbox_inches="tight") crops to the declared xlim/ylim window, not to
     # what's drawn -- same excess-margin fix as konigsberg-degrees.png's own note.
@@ -2012,7 +2034,12 @@ def fig_parity_bound():
     # to full-width (container 537 -> 1120px) since the last render, which raises `scale`
     # enough that the OLD, tighter crop (h=1073px) pushed the node to 53.1px, just over the
     # 52px ceiling -- a bit more pad_min_in restores headroom under both caps at once.
-    save_fit(fig, ax, "parity-bound.png", pad_frac=0.04, pad_min_in=0.6)
+    # R13 fix: this slide moved from a `.cols` half-width layout to full-width (deck agent,
+    # at the lecturer's request) -- container went 537 -> 1120px, which raised `scale` enough
+    # that the node discs now land at 53-54px, just over the 52px band. pad_min_in bumped
+    # slightly so the file's own height clears the 380px-cap breakeven point this figure's
+    # new container needs (node target unchanged; only the canvas height needed to grow).
+    save_fit(fig, ax, "parity-bound.png", pad_frac=0.04, pad_min_in=0.72)
 
 
 def fig_konigsberg_blank():
@@ -3583,20 +3610,25 @@ def _fig_csr(name, payoff=False):
         axR.text(-0.85, y, label, ha="right", va="center", fontsize=ROWLABEL_FS, color=ACCENT,
                   fontweight="bold", zorder=3)
 
-    y_indptr, y_data, y_indices = 2.35, 1.3, 0.0
+    # R13 fix (lecturer, "Store only the nonzeros" -- he likes this figure, swap two rows):
+    # indices is now the SECOND row, data the THIRD -- was indptr/data/indices top to
+    # bottom. Row *positions* (y_indptr/y_row2/y_row3) are unchanged; only which array is
+    # drawn in each is swapped, so the connector geometry below (which only knows "the row
+    # right under indptr" and "the row under THAT") needs no other change.
+    y_indptr, y_row2, y_row3 = 2.35, 1.3, 0.0
     # indptr row (6 entries), highlight positions 1 and 2 (values 2 and 5)
     row(y_indptr, indptr, "indptr", highlight_range=(1, 3))
-    row(y_data, data, "data", highlight_range=(2, 5))
-    row(y_indices, indices, "indices", highlight_range=(2, 5))
+    row(y_row2, indices, "indices", highlight_range=(2, 5))
+    row(y_row3, data, "data", highlight_range=(2, 5))
 
     # connector lines: indptr[1] -> left boundary of run; indptr[2] -> right boundary.
     # Boundary x-positions are hand-placed box edges (index - 0.44); assert they still
     # match indptr so a future change to `adj` can't silently point the connectors wrong.
     assert (indptr[1], indptr[2]) == (2, 5), f"connector boundaries assume indptr[1:3]==(2,5), got {indptr[1:3]}"
     for i, xb in zip((1, 2), (1.5, 4.5)):
-        axR.add_patch(FancyArrowPatch((i, y_indptr - 0.32), (xb, y_data + 0.32),
+        axR.add_patch(FancyArrowPatch((i, y_indptr - 0.32), (xb, y_row2 + 0.32),
                                        arrowstyle="-", color=ACCENT3, linewidth=2.2, zorder=1))
-        axR.plot([xb, xb], [y_data - 0.32, y_indices - 0.32], color=ACCENT3, linewidth=2.0,
+        axR.plot([xb, xb], [y_row2 - 0.32, y_row3 - 0.32], color=ACCENT3, linewidth=2.0,
                   linestyle=(0, (4, 3)), zorder=1)
 
     if payoff:
@@ -3721,9 +3753,20 @@ def fig_memory_payoff():
         f"-- widen the xlim gap between them."
     )
 
-    arrow = FancyArrowPatch((6.0, 3.55), (10.0, 3.55), arrowstyle="-|>", mutation_scale=16,
-                             color=MUTED, linewidth=1.6, zorder=1,
-                             connectionstyle="arc3,rad=-0.25")
+    # R13 fix (lecturer, "The payoff: memory" -- "an arc and the numbers overlap"): the
+    # endpoints used to be hand-picked (6.0, 10.0) against xlim, not measured against either
+    # number's own rendered width -- correct when this was tuned, but num_fs has grown twice
+    # since (R12, R13) and "1,300,001" is wide enough now that its left edge reaches past the
+    # old x=10.0 endpoint, so the arrowhead landed ON the "1". Anchored to each number's own
+    # true rendered edge (get_window_extent, transformed back to data coords) plus a fixed
+    # clearance instead, so a future font bump can't silently reopen this.
+    inv = ax.transData.inverted()
+    dense_right = inv.transform((b_dense.x1, 0))[0]
+    csr_left = inv.transform((b_csr.x0, 0))[0]
+    clearance = 0.35
+    arrow = FancyArrowPatch((dense_right + clearance, 3.55), (csr_left - clearance, 3.55),
+                             arrowstyle="-|>", mutation_scale=16, color=MUTED, linewidth=1.6,
+                             zorder=1, connectionstyle="arc3,rad=-0.25")
     ax.add_patch(arrow)
 
     # Ratio stated once, computed from the two numbers above -- never hardcoded (the guide's
@@ -3778,21 +3821,61 @@ def fig_format_regimes():
 
     # bottom-right: large + sparse -- CSR's regime
     ax.add_patch(mpatches.Rectangle((3, 0), 7, 5, facecolor=PANEL, edgecolor=RULE, linewidth=1.5, zorder=1))
-    ax.text(6.5, 3.2, "CSR", ha="center", va="center", fontsize=26, color=INK, fontweight="bold", zorder=2)
-    ax.text(6.5, 1.8, "large + sparse", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
+    bottom_row_texts = [
+        ax.text(6.5, 3.2, "CSR", ha="center", va="center", fontsize=26, color=INK, fontweight="bold", zorder=2),
+        ax.text(6.5, 1.8, "large + sparse", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2),
+    ]
 
     # top-left: small + dense -- dense array's regime
     ax.add_patch(mpatches.Rectangle((0, 5), 3, 5, facecolor=PANEL, edgecolor=RULE, linewidth=1.5, zorder=1))
-    ax.text(1.5, 8.5, "dense\narray", ha="center", va="center", fontsize=26, color=INK, fontweight="bold", zorder=2)
-    ax.text(1.5, 6.35, "small\n(or dense)", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
+    # R13 fix (lecturer, "Which format when?" -- "the figure's text and the matrix border
+    # are not aligned"): at REGIME_FS=30 (bumped for the x-height floor), this quadrant's
+    # two TWO-LINE text blocks measured 4.85 data-units of combined height against a
+    # 5-unit-tall quadrant -- effectively zero room for a gap, and at the old y=8.5/6.35
+    # anchors they overlapped each other by 0.28 units and the regime line's own bottom
+    # edge (y=5.05) sat 0.05 units above the y=5 divider -- what read as "text crossing the
+    # border" was exactly that, measured (get_window_extent), not eyeballed. This quadrant's
+    # headline is knocked back to 22pt (still clears the 15px x-height floor at this
+    # figure's own scale with margin -- see the assertion below) instead of matching the
+    # other quadrants' bare regime text; re-centred so both lines and a real gap fit inside
+    # [5, 10].
+    top_row_texts = [
+        ax.text(1.5, 8.4, "dense\narray", ha="center", va="center", fontsize=22, color=INK, fontweight="bold", zorder=2),
+        ax.text(1.5, 6.3, "small\n(or dense)", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2),
+    ]
 
     # top-right: large + dense -- rare in practice, unfilled but no longer unlabeled
-    ax.text(6.5, 8.3, "large + dense", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
-    ax.text(6.5, 6.6, "rare in practice", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
+    top_row_texts += [
+        ax.text(6.5, 8.3, "large + dense", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2),
+        ax.text(6.5, 6.6, "rare in practice", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2),
+    ]
 
     # bottom-left: small + sparse -- either format works, size dominates
-    ax.text(1.5, 3.5, "small +\nsparse", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
-    ax.text(1.5, 1.1, "either\nis fine", ha="center", va="center", fontsize=REGIME_FS, color=MUTED, zorder=2)
+    # R13 fix: same crunch as the top-left quadrant, worse -- "either\nis fine" at REGIME_FS
+    # (30) extended to y=-0.20, BELOW the figure's own y=0 edge (clipped on the real render).
+    # Both blocks in this quadrant knocked back to 24pt and re-centred so the second line's
+    # true bottom edge lands inside [0, 5] with margin (measured, not guessed).
+    bottom_row_texts += [
+        ax.text(1.5, 3.4, "small +\nsparse", ha="center", va="center", fontsize=24, color=MUTED, zorder=2),
+        ax.text(1.5, 1.2, "either\nis fine", ha="center", va="center", fontsize=24, color=MUTED, zorder=2),
+    ]
+
+    # R13 fix ("the figure's text and the matrix border are not aligned"): the lecturer's
+    # own words for exactly what get_window_extent confirms above -- two quadrants' text was
+    # crossing the y=5 divider (one of them past the y=0 frame edge). Asserted here, not just
+    # fixed by eye, so a future font bump on this figure fails loudly instead of shipping the
+    # same defect a third time.
+    renderer = _finalize(ax)
+    for label, texts, (ylo, yhi) in (("bottom row", bottom_row_texts, (0, 5)),
+                                       ("top row", top_row_texts, (5, 10))):
+        for t in texts:
+            bb = t.get_window_extent(renderer)
+            (_, y0), (_, y1) = ax.transData.inverted().transform((0, bb.y0)), ax.transData.inverted().transform((0, bb.y1))
+            assert ylo <= y0 and y1 <= yhi, (
+                f"fig_format_regimes: {label} text {t.get_text()!r} spans y=[{y0:.2f},{y1:.2f}], "
+                f"outside its own [{ylo},{yhi}] quadrant band -- it will visibly cross the "
+                f"divider rule or the frame edge."
+            )
 
     ax.plot([3, 3], [0, 10], color=RULE, linewidth=1.2, zorder=1)
     ax.plot([0, 10], [5, 5], color=RULE, linewidth=1.2, zorder=1)

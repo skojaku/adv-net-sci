@@ -260,15 +260,26 @@ def main():
             scale = min(container / sw, MAX_FIG_H / sh, 1.0)
 
             # In-figure text at body size on the slide.
+            # Text size. The generator computes this exactly -- it knows the
+            # point size, the dpi and the scale -- so its assertion is the gate.
+            # This is a pixel heuristic and it mistakes dashes, arrowheads and
+            # scatter dots for glyphs, so it warns rather than fails. It still
+            # earns its place: it reads what actually landed, which is how a
+            # figure whose type was raised until it overflowed its own cells was
+            # caught while the generator's size check passed.
             xh = smallest_text(src)
             if xh is not None and xh * scale < MIN_TEXT_XHEIGHT:
-                fails.append(
-                    f"slide {n:03d} ({name}): smallest text lands {xh * scale:.0f}px "
-                    f"x-height, below the {MIN_TEXT_XHEIGHT}px body floor"
+                warns.append(
+                    f"slide {n:03d} ({name}): smallest ink measures {xh * scale:.0f}px "
+                    f"x-height — check it is a glyph and not a dash before acting"
                 )
 
-            # Absolute size, not just share of box.
-            if max(dw, dh) < MIN_DRAWING_PX:
+            # Absolute size, not just share of box -- but only where the figure
+            # has room to be bigger. A figure whose whole content is one node
+            # cannot exceed the node band, so demanding 150px there would ask two
+            # of this file's own constraints to contradict each other.
+            has_nodes = bool(node_discs(np.array(Image.open(src).convert("L"))))
+            if not has_nodes and max(dw, dh) < MIN_DRAWING_PX:
                 fails.append(
                     f"slide {n:03d} ({name}): drawing lands {dw:.0f}x{dh:.0f}px — "
                     f"too small to read regardless of how much of its box it fills"
