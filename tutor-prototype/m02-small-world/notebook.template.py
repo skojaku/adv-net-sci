@@ -9,6 +9,7 @@
 #     "altair",
 #     "anywidget",
 #     "numpy",
+#     "pandas",
 #     "pillow",
 # ]
 # ///
@@ -73,8 +74,9 @@ def _():
 def _():
     import altair as alt
     import igraph as ig
+    import pandas as pd
 
-    return alt, ig
+    return alt, ig, pd
 
 
 @app.cell(hide_code=True)
@@ -227,7 +229,7 @@ export default { render };
 
 
 @app.cell(hide_code=True)
-def _(alt, ig, mo, netviz, np, nx, plt):
+def _(alt, ig, mo, netviz, np, nx, pd, plt):
     def run_student_code(code, env=None):
         """Run code from a fill-in exercise box; show stdout + last expression.
 
@@ -238,7 +240,7 @@ def _(alt, ig, mo, netviz, np, nx, plt):
 
         ns = {
             "mo": mo, "ig": ig, "nx": nx, "np": np,
-            "plt": plt, "alt": alt, "netviz": netviz,
+            "plt": plt, "alt": alt, "pd": pd, "netviz": netviz,
         }
         ns.update(env or {})
         buf = io.StringIO()

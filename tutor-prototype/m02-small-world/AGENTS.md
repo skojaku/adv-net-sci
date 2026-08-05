@@ -122,7 +122,7 @@ from a half-blank cell.
 
 Tool `status` fields are shown to the student — short, warm, plain words;
 never mention cells, code, or errors. Already defined in the notebook:
-`mo`, `ig`, `nx`, `np`, `plt`, `sns`, `alt`, `netviz`.
+`mo`, `ig`, `nx`, `np`, `plt`, `sns`, `alt`, `pd`, `netviz`.
 Never use bash or marimo code-mode boilerplate; a broken cell gets fixed
 quietly with `nb_edit_cell`.
 

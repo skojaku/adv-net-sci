@@ -1,6 +1,6 @@
 # Premade cells for checkpoint cp6_watts_strogatz — the rewiring explorer.
 # Insert AFTER the student commits a prediction.
-# describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a 60-dot ring where rewired shortcut edges are rust-red; the title shows L/L0 and C/C0 live.
+# describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a 60-dot ring on a drag-able network widget where rewired shortcut edges are rust lines; the title shows L/L0 and C/C0 live.
 # --- cell: cp6_legend ---
 mo.md(
     r"""**Reading the dials:** $L$ = average distance — how many steps apart a
@@ -32,18 +32,24 @@ for _seed in (1, 2, 3):
 _Lr = (sum(_Ls) / len(_Ls)) / _L0
 _Cr = (sum(_Cs) / len(_Cs)) / _C0
 
+import math as _math
+
 _D = nx.connected_watts_strogatz_graph(60, 4, _p, seed=5) if _p > 0 else nx.watts_strogatz_graph(60, 4, 0)
-_posd = nx.circular_layout(_D)
 _ringe = [e for e in _D.edges() if min(abs(e[0] - e[1]), 60 - abs(e[0] - e[1])) <= 2]
 _short = [e for e in _D.edges() if min(abs(e[0] - e[1]), 60 - abs(e[0] - e[1])) > 2]
 
-_fig, _ax = plt.subplots(figsize=(6, 5))
-nx.draw_networkx_nodes(_D, _posd, ax=_ax, node_color="#E4E6EA", node_size=60, edgecolors="none")
-nx.draw_networkx_edges(_D, _posd, ax=_ax, edgelist=_ringe, width=1, edge_color="#E4E6EA")
-nx.draw_networkx_edges(_D, _posd, ax=_ax, edgelist=_short, width=1.8, edge_color="#B4552D")
-_ax.set_title(
-    f"p = {_p}    distance L/L₀ = {_Lr:.2f}    clustering C/C₀ = {_Cr:.2f}",
-    fontsize=13,
-)
-_ax.axis("off")
-_fig
+# Explicit node order (0..59) for the circle layout — netviz's "circle"
+# string layout orders nodes by first appearance in the edge list, and
+# nx.Graph.edges() after rewiring does NOT visit nodes in index order, so
+# the string layout scrambles node positions. Position every node ourselves.
+_pos60 = {
+    _i: (
+        0.5 + 0.42 * _math.cos(2 * _math.pi * _i / 60 - _math.pi / 2),
+        0.5 + 0.42 * _math.sin(2 * _math.pi * _i / 60 - _math.pi / 2),
+    )
+    for _i in range(60)
+}
+mo.vstack([
+    mo.md(f"**p = {_p} &nbsp;&nbsp; distance L/L₀ = {_Lr:.2f} &nbsp;&nbsp; clustering C/C₀ = {_Cr:.2f}**"),
+    netviz(_ringe + _short, highlight=_short, layout=_pos60, width=820, height=820),
+])
