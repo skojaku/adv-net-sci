@@ -1973,6 +1973,46 @@ export default function (pi: ExtensionAPI) {
           );
         }
       }
+      // The slots are the ask's parts, in order, and so are the messages the
+      // student typed. A live run filled them shifted by one — every quote
+      // was something they really said, so the drift check passed, but each
+      // slot answered the previous question and the LAST answer (the
+      // synthesis the checkpoint exists for) was dropped from the keepsake
+      // entirely. The cheap invariant that catches the shift: the final
+      // «verbatim» slot has to come from their final message.
+      const lastVerbatim = markers.reduce(
+        (acc, m, i) => (/verbatim/i.test(m) ? i : acc),
+        -1,
+      );
+      if (
+        lastVerbatim >= 0 &&
+        markers.filter((m) => /verbatim/i.test(m)).length > 1 &&
+        said.length > 1 &&
+        slots[lastVerbatim] &&
+        (slotDriftWarned.get(`${id}:order`) ?? 0) < 1
+      ) {
+        const tail = said[said.length - 1];
+        const flatten = (x: string) => x.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        const fits =
+          flatten(slots[lastVerbatim]).includes(flatten(tail)) ||
+          flatten(tail).includes(flatten(slots[lastVerbatim])) ||
+          bigramDice(slots[lastVerbatim], tail) >= 0.5;
+        if (!fits) {
+          slotDriftWarned.set(`${id}:order`, 1);
+          return toResult({
+            out:
+              `NOT LOGGED — the slots are the parts of the ask IN ORDER, and so are the ` +
+              `messages they typed. The last slot ` +
+              `(${markers[lastVerbatim].replace(/[«»]/g, "").replace(/\s+/g, " ").trim()}) ` +
+              `does not hold their last answer, which means the fills are shifted and ` +
+              `their final answer is about to be dropped from the notebook.\n` +
+              `In order, they said: ${said.map((x, i) => `[${i + 1}] "${x.slice(0, 90)}"`).join("  ")}\n` +
+              `Map each slot to the reply that ANSWERED that part, then call ` +
+              `checkpoint_done again.`,
+            failed: false,
+          });
+        }
+      }
       for (const [i, fill] of slots.entries()) {
         if (said.length === 0) break;
         if (!/verbatim/i.test(markers[i] ?? "")) continue;
@@ -2341,6 +2381,8 @@ export default function (pi: ExtensionAPI) {
       "a code box pre-filled with your scaffold (numbered # steps with ... blanks), and a " +
       "▶ Run button that executes it and shows output or a friendly error. They can run as " +
       "often as they like. Read their attempt with nb_read('<name>_ed.value'). env_vars " +
+      "is ONLY for variables another notebook cell already defines (a graph G you built " +
+      "earlier) — never the scaffold's own variables, which live inside the code box. " +
       "lists notebook variables their code may use (e.g. a graph G you set up earlier). " +
       "ALWAYS use this instead of asking the student to edit cells. Pass checkpoint when this " +
       "exercise IS a checkpoint's build (not a detour) — lets the tool catch a checkpoint you " +
@@ -2381,7 +2423,28 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      const envVars = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
+      // env_vars becomes a REAL reference in the generated cell, which is
+      // how marimo passes a notebook variable into the exercise — and how a
+      // name that does not exist takes the whole notebook down. A live run
+      // listed the scaffold's OWN variables (N, k, p_values, L0, C0, rows,
+      // df), which live only inside the editor's text, and the export died
+      // with "name 'p_values' is not defined" on a cell the student cannot
+      // even see. So only names the kernel actually defines get through.
+      const asked = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
+      let envVars = asked;
+      let droppedEnv: string[] = [];
+      if (asked.length) {
+        const probe = await runKernel(
+          `print("DEFINED<<" + ",".join(_n for _n in ${pyList(asked)} if _n in globals()) + ">>")\n`,
+          signal,
+        );
+        const m = /DEFINED<<(.*)>>/.exec(probe.out ?? "");
+        if (!probe.failed && m) {
+          const defined = new Set(m[1].split(",").filter(Boolean));
+          envVars = asked.filter((v) => defined.has(v));
+          droppedEnv = asked.filter((v) => !defined.has(v));
+        }
+      }
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
       const warm = await ensureWarm(signal);
       if (warm) return toResult(warm);
@@ -2480,6 +2543,10 @@ export default function (pi: ExtensionAPI) {
       if (!result.failed) {
         result.out =
           `Exercise inserted. The student sees your instructions, a runnable code box, a ` +
+          (droppedEnv.length
+            ? `Ignored env_vars the notebook does not define: ${droppedEnv.join(", ")} — ` +
+              `those are your scaffold's own variables and belong inside the code box.\n`
+            : "") +
           `▶ Run button, and — once they have run it — a 📨 Send button that hands the ` +
           `code in. Ask for the code, then WAIT: their press starts your turn. Every run ` +
           `saves the code to ${savedPath}, so it is still in the notebook months later.\n` +
