@@ -1339,7 +1339,7 @@ export default function (pi: ExtensionAPI) {
   let triviaTimer: ReturnType<typeof setInterval> | null = null;
   const showTrivia = (ctx: any) => {
     try {
-      const line = `🕸 ${TRIVIA[triviaIdx++ % TRIVIA.length]}`;
+      const line = `Tip: ${TRIVIA[triviaIdx++ % TRIVIA.length]}`;
       ctx.ui.setWorkingMessage(ctx.ui.theme.fg("dim", line));
     } catch {
       // cosmetic only — never let trivia break a turn
