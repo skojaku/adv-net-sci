@@ -1208,7 +1208,8 @@ def cp6_large_n_sent(cp6_large_n_send, mo):
             "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "
             "chart looks right — that is what hands your code in.*</span>"
             if _P("assets/golden/cp6_large_n.py").exists()
-            else ""
+            else "<span style='color:#6A6D75;font-size:13px'>*A 📨 hand-in button "
+            "appears here once you have pressed ▶ Run.*</span>"
         )
     _sent
     return
