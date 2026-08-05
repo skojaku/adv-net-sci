@@ -1,5 +1,5 @@
 # Premade cell for checkpoint cp4_shortcut_drawing — photo upload area.
-# Insert with done_signal="cp4_shortcut_drawing" to get the Done button.
+# The student tells the tutor in the terminal once the photo is up.
 # describe: A photo upload area for the student's hand drawing.
 # --- cell: cp4_photo ---
 cp4_photo = mo.ui.file(

@@ -285,17 +285,5 @@ def _(alt, ig, mo, netviz, np, nx, plt):
     return (run_student_code,)
 
 
-@app.cell(hide_code=True)
-def _():
-    from pathlib import Path as _Path
-
-    def notify_tutor(checkpoint: str):
-        """Signal the terminal tutor that notebook input is ready."""
-        _Path("session_artifacts").mkdir(exist_ok=True)
-        (_Path("session_artifacts") / "student_signal.txt").write_text(checkpoint)
-
-    return (notify_tutor,)
-
-
 if __name__ == "__main__":
     app.run()

@@ -41,7 +41,7 @@ Two windows appear:
 | Window | What it is |
 |---|---|
 | **Terminal** (tutor) | Where you and your tutor talk — questions and answers happen here. |
-| **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. When a step shows a **✅ Done button**, click it when you're finished — your tutor will notice. |
+| **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. When you finish an interactive step, just tell your tutor in the terminal — no button to click. |
 
 Say hello in the terminal and follow along. Have **pen and paper** ready: one
 step asks you to draw (you photograph it with your phone, or just describe it
@@ -74,7 +74,8 @@ detours counts in your favor — it's the whole point.
 | `AGENTS.md` | The tutor's behavior contract (auto-loaded by pi; Claude Code loads it via `CLAUDE.md`). Pedagogy, logging schema, hard rules. Lesson-independent. |
 | `notebook.template.py` | Pristine starter: visually blank (only hidden import/helper cells). `notebook.py` is the working copy (gitignored), created from the template on first run. When a previous session exists, the extension injects an invisible progress brief and the tutor **asks the student** — continue where we left off, or start fresh? Fresh → `nb_fresh_start` archives the old notebook + log to `session_artifacts/` and clears the whiteboard; continue → the tutor resumes at the right checkpoint with no re-teaching or duplicate cells. |
 | `run_tutor.sh` | Launcher: installs the marimo-pair skill, starts marimo (`--no-token`), starts the agent (pi runs with bash disabled). |
-| `.pi/extensions/notebook-tool.ts` | The single pi extension: the `nb_*` notebook toolkit (`nb_add_template`, `nb_add_cell`, `nb_edit_cell`, `nb_delete_cell`, `nb_read`, `nb_run`, `nb_fresh_start`) generating all marimo code-mode plumbing (model sends only cell bodies; cold-kernel auto-recovery; each call renders as one friendly status line), plus the ✅ Done-button bridge, the resume brief, and a silent runaway guard that aborts degenerate repetition loops. Fixed-choice questions and checkpoint transitions use the `ask_user_question` dialog (`@juicesharp/rpiv-ask-user-question`, declared in `.pi/settings.json`). Speaking style is steered by AGENTS.md prompt guidance only — no gating, no added latency. |
+| `.pi/extensions/notebook-tool.ts` | The single pi extension. The `nb_*` toolkit (`nb_add_template`, `nb_add_cell`, `nb_add_exercise`, `nb_edit_cell`, `nb_delete_cell`, `nb_read`, `nb_view_image`, `nb_run`, `nb_fresh_start`) generates all marimo code-mode plumbing — the model sends only cell bodies, cold kernels recover themselves, and each call renders as one friendly status line. It also owns the ceremony: `checkpoint_done` writes the log, renders the note cell from the chapter script's `note:` skeleton, and asks the student what's next; `log_detour` records off-script questions; `chapter_done` gates chapter transitions on the student's own answer and, at the end, derives `session_record` and `session_summary.md` from the log. Plus the resume brief, chapter headers, scroll-to-new-cell, and a silent runaway guard. Speaking style is steered by AGENTS.md prompt guidance only — no gating, no added latency. |
+| `.pi/extensions/nb_review.py` | Deterministic review of improvised cells (Python AST, run in the kernel before insertion): marimo renders only a cell's last expression, so displays that would vanish get wrapped in one `mo.vstack`, unrescuable cells are refused with an instruction, and ASCII-art diagrams are flagged. |
 
 ### Design decisions
 
@@ -86,8 +87,9 @@ detours counts in your favor — it's the whole point.
 - **Channel discipline:** words live in the terminal (stories, questions,
   typed answers); the notebook is reserved for what the terminal can't do —
   figures, *interactive/animated* widgets (preferred over static images),
-  photo uploads. Notebook-input steps get an auto-wired ✅ Done button that
-  pings the terminal tutor when clicked.
+  photo uploads. When the student finishes an interactive step they say so in
+  the terminal and the tutor reads the widget values — no in-notebook button
+  (an earlier Done button competed with the terminal for keyboard focus).
 - **Interaction modalities on purpose:** prediction (cp1, cp6), calculation
   (cp2, cp3), pen-and-paper drawing with photo upload (cp4), concept
   articulation (cp3, cp5, cp8), exploration with a widget (cp2, cp6), and a

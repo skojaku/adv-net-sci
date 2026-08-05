@@ -109,15 +109,22 @@ notebook re-learnable.
    grader. And the tutor never writes answers into the notebook: guided
    discovery ends with the student taking the last step.
 
-10. **The student controls the pace**, and chapter boundaries enforce it.
-    After every checkpoint the tutor opens an `ask_user_question` dialog —
-    "Next, please!" / "I have a question" / "Give me another one like
-    that" — and only an explicit "next" advances (prompt guidance, plus an
-    in-band reminder attached to every checkpoint log write). At a chapter
-    boundary this is not left to the model: `chapter_done` asks the
-    student itself and **refuses to transition** unless they choose to
-    move on. Extra rounds are improvised on fresh data, reusing the
+10. **The student controls the pace, and the extension enforces it.**
+    `checkpoint_done` — the one call that ends a checkpoint — asks them
+    itself: ready / I have a question / give me another one like that.
+    Only "ready" comes back as permission to advance. `chapter_done` does
+    the same at a chapter boundary and **refuses to transition**
+    otherwise. Extra rounds are improvised on fresh data, reusing the
     module's canonical objects, and logged as practice — never as failure.
+
+11. **Ceremony belongs to the extension, judgment to the model.** The
+    tutor supplies the verbatim answer and the judgment; the extension
+    writes the log (validated, timestamped, with the student's own
+    messages captured from the transcript), renders the note cell from
+    the script's skeleton, asks what's next, and at the end derives
+    `session_record` and `session_summary.md` from the log. The model
+    never hand-writes the graded record — it can't drift or fabricate
+    what it doesn't type. *(checkpoint_done, log_detour, chapter_done)*
 
 ## Cell naming conventions
 
@@ -128,7 +135,6 @@ notebook re-learnable.
 | `cpN_*` | Build cells for checkpoint N (template or improvised) |
 | `<cp>_note` | Note cell after checkpoint (the re-learnable layer) |
 | `<name>_ed` / `_out` | Exercise code box / its output cell |
-| `*_done_btn` / `*_done_sig` | Done-button pair (auto-wired) |
 | `session_record` | Closing grading summary |
 
 Named cells are wiped by `nb_fresh_start`; unnamed template cells persist.
@@ -141,5 +147,6 @@ Named cells are wiped by `nb_fresh_start`; unnamed template cells persist.
 | Curriculum + note skeletons + fresh variants | `lesson/ch*.yaml` |
 | Premade visuals (self-describing) | `cells/*.py` |
 | Theme, deps, `netviz`, `run_student_code`, bug-report line | `notebook.template.py` |
-| Tools, chapter orchestration, headers, focus, Done bridge | `.pi/extensions/notebook-tool.ts` |
+| Tools, chapter orchestration, headers, focus, logging | `.pi/extensions/notebook-tool.ts` |
+| Improvised-cell review (AST) | `.pi/extensions/nb_review.py` |
 | Launch: sandbox venv, app view, vision model | `run_tutor.sh` |

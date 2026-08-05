@@ -1092,10 +1092,7 @@ export default function (pi: ExtensionAPI) {
     label: "Add notebook cell",
     description:
       "Create and run a new cell in the live marimo notebook. " +
-      MARIMO_CELL_RULES +
-      " Set done_signal to a checkpoint id to auto-attach a '✅ Done — tell my tutor!' button " +
-      "below the cell (you'll get a message when the student clicks it) — use it whenever the " +
-      "cell expects student input (uploads, widget exploration).",
+      MARIMO_CELL_RULES,
     promptSnippet: "Add and run a cell in the live marimo notebook",
     promptGuidelines: [
       "Use nb_add_cell / nb_edit_cell / nb_delete_cell / nb_read / nb_run for ALL notebook work — never bash, never raw marimo._code_mode boilerplate.",
@@ -1112,11 +1109,6 @@ export default function (pi: ExtensionAPI) {
           description: "Show the code editor to the student (default false). Use true for cells whose code the student should read.",
         }),
       ),
-      done_signal: Type.Optional(
-        Type.String({
-          description: "Checkpoint id to signal when the student clicks the auto-added Done button.",
-        }),
-      ),
     }),
     async execute(_id, params, signal) {
       const warm = await ensureWarm(signal);
@@ -1126,22 +1118,6 @@ export default function (pi: ExtensionAPI) {
         `async with cm.get_context() as ctx:\n` +
         `    _cid = ctx.create_cell(_code, name=${py(params.name)}, hide_code=${hide})\n` +
         `    ctx.run_cell(_cid)\n`;
-      if (params.done_signal) {
-        const v = `done_${sanitize(params.done_signal)}`;
-        const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
-        // Self-contained on purpose: no dependency on notebook helpers, which
-        // students (or session saves) can break.
-        const sigBody =
-          `if ${v}.value:\n` +
-          `    from pathlib import Path as _P\n` +
-          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
-          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
-        inner +=
-          `    _btn = ctx.create_cell(${py(btnBody)}, name=${py(params.name + "_done_btn")}, hide_code=True, after=_cid)\n` +
-          `    ctx.run_cell(_btn)\n` +
-          `    _sig = ctx.create_cell(${py(sigBody)}, name=${py(params.name + "_done_sig")}, hide_code=True, after=_btn)\n` +
-          `    ctx.run_cell(_sig)\n`;
-      }
       inner += focusCellCode("_cid", "    ");
       // Improvised cells go through the review (nb_review.py) — it catches the
       // displays marimo would silently drop before the student sees a cell
@@ -1179,8 +1155,7 @@ export default function (pi: ExtensionAPI) {
       "▶ Run button that executes it and shows output or a friendly error. They can run as " +
       "often as they like. Read their attempt with nb_read('<name>_ed.value'). env_vars " +
       "lists notebook variables their code may use (e.g. a graph G you set up earlier). " +
-      "Set done_signal for the usual Done button. ALWAYS use this instead of asking the " +
-      "student to edit cells.",
+      "ALWAYS use this instead of asking the student to edit cells.",
     promptSnippet: "Insert a fill-in coding exercise (code box + Run button) into the notebook",
     parameters: Type.Object({
       status: STATUS_PARAM,
@@ -1195,9 +1170,6 @@ export default function (pi: ExtensionAPI) {
         Type.Array(Type.String(), {
           description: "Notebook variable names the student's code may use.",
         }),
-      ),
-      done_signal: Type.Optional(
-        Type.String({ description: "Checkpoint id for the auto-attached Done button." }),
       ),
     }),
     async execute(_id, params, signal) {
@@ -1231,20 +1203,6 @@ export default function (pi: ExtensionAPI) {
         `        _first = _cid\n` +
         `        _cid = ctx.create_cell(${py(outBody)}, name=${py(name + "_out")}, hide_code=True, after=_cid)\n` +
         `        ctx.run_cell(_cid)\n`;
-      if (params.done_signal) {
-        const v = `done_${sanitize(params.done_signal)}`;
-        const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
-        const sigBody =
-          `if ${v}.value:\n` +
-          `    from pathlib import Path as _P\n` +
-          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
-          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
-        code +=
-          `        _cid = ctx.create_cell(${py(btnBody)}, name=${py(name + "_done_btn")}, hide_code=True, after=_cid)\n` +
-          `        ctx.run_cell(_cid)\n` +
-          `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(name + "_done_sig")}, hide_code=True, after=_cid)\n` +
-          `        ctx.run_cell(_cid)\n`;
-      }
       code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
       if (!result.failed) {
@@ -1276,8 +1234,7 @@ export default function (pi: ExtensionAPI) {
         "Insert a PREMADE, tested group of cells into the notebook instantly — no code to " +
         "write. ALWAYS prefer this over nb_add_cell when a template exists for the " +
         "checkpoint. Available templates: " +
-        (names.join(", ") || "(none found)") +
-        ". Set done_signal to auto-attach the Done button after the last cell."
+        (names.join(", ") || "(none found)")
       );
     })(),
     promptSnippet: "Insert premade, tested notebook cells by template name (instant)",
@@ -1287,9 +1244,6 @@ export default function (pi: ExtensionAPI) {
     parameters: Type.Object({
       status: STATUS_PARAM,
       template: Type.String({ description: "Template name, e.g. 'cp2_ripple'." }),
-      done_signal: Type.Optional(
-        Type.String({ description: "Checkpoint id for the auto-attached Done button." }),
-      ),
     }),
     async execute(_id, params, signal) {
       const file = path.join(process.cwd(), "cells", `${params.template}.py`);
@@ -1324,20 +1278,6 @@ export default function (pi: ExtensionAPI) {
       for (const c of cells.slice(1)) {
         code +=
           `        _cid = ctx.create_cell(${py(c.code)}, name=${py(c.name)}, hide_code=True, after=_cid)\n` +
-          `        ctx.run_cell(_cid)\n`;
-      }
-      if (params.done_signal) {
-        const v = `done_${sanitize(params.done_signal)}`;
-        const btnBody = `${v} = mo.ui.run_button(label="✅ Done — tell my tutor!")\n${v}`;
-        const sigBody =
-          `if ${v}.value:\n` +
-          `    from pathlib import Path as _P\n` +
-          `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
-          `    (_P("session_artifacts") / "student_signal.txt").write_text(${py(params.done_signal)})`;
-        code +=
-          `        _cid = ctx.create_cell(${py(btnBody)}, name=${py(params.template + "_done_btn")}, hide_code=True, after=_cid)\n` +
-          `        ctx.run_cell(_cid)\n` +
-          `        _cid = ctx.create_cell(${py(sigBody)}, name=${py(params.template + "_done_sig")}, hide_code=True, after=_cid)\n` +
           `        ctx.run_cell(_cid)\n`;
       }
       code += focusCellCode("_first", "        ");
@@ -1381,8 +1321,6 @@ export default function (pi: ExtensionAPI) {
         if (fs.existsSync(nb)) fs.copyFileSync(nb, path.join(dir, `notebook-${stamp}.py`));
         const log = path.join(dir, "session_log.jsonl");
         if (fs.existsSync(log)) fs.renameSync(log, path.join(dir, `session_log-${stamp}.jsonl`));
-        const sig = path.join(dir, "student_signal.txt");
-        if (fs.existsSync(sig)) fs.writeFileSync(sig, "");
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
       }
@@ -1619,8 +1557,8 @@ export default function (pi: ExtensionAPI) {
         return toResult({
           out:
             result.out +
-            `\nAsk the student to upload their photo in the notebook first (then the ` +
-            `Done button), or to describe the drawing in words here.`,
+            `\nAsk the student to upload their photo in the notebook first (then tell you ` +
+            `here when it's up), or to describe the drawing in words here.`,
           failed: false,
         });
       }
