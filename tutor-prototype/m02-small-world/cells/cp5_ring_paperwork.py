@@ -8,6 +8,6 @@
 cp5_ring_paperwork_photo = mo.ui.file(
     kind="area",
     filetypes=[".jpg", ".jpeg", ".png", ".webp"],
-    label="Photo of your paper work",
+    label="Photo of your ring working (triangles + formulas)",
 )
 cp5_ring_paperwork_photo

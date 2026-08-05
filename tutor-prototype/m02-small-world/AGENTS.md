@@ -158,8 +158,12 @@ quietly with `nb_edit_cell`.
    else's — that personalization is the point. Then `log_detour` (pass
    `cell_name` if you already built the cell, or `souvenir_markdown` to
    have it written for you) and steer back.
-5. Uploads: call `nb_view_image` (widget `cp4_photo`, the task you gave
-   them, and the question you need answered). It saves the photo, shows it
+5. Uploads: call `nb_view_image` with the task you gave them and the
+   question you need answered. The **widget name is not `cp4_photo` every
+   time** — each upload area has its own (`cp4_photo`,
+   `cp2_paperwork_photo`, `cp5_ring_paperwork_photo`). Take it from the
+   `nb_add_template` result that inserted the area, or from the script's
+   `build:` line; never guess. It saves the photo, shows it
    in the notebook, and returns a vision model's description. That
    description is a machine's reading, not ground truth — confirm the key
    detail while moving forward: "Looks like your cable links X and Y — did
@@ -179,9 +183,15 @@ what's next. You supply only what a model can:
 - `judgment` — `pass` | `pass_with_hints` | `guided` | `prediction`
 - `hints_used`, `notes` (one line: what their answer showed)
 - `note_slots` — the «slot» fills for the script's note skeleton, in
-  order (usually their own words). Omit and they default to
-  `student_response`. Only when the script has NO `note:` do you write
-  `note_markdown` yourself.
+  order. **Their words only.** Quote, don't polish, don't join their
+  fragments into a sentence of your own, and never add a number they
+  never gave you — a slot reading "A–D = 2, and the average over all 6
+  pairs = 7/6 ≈ 1.17" from a student who typed "2" and "7/6" puts your
+  arithmetic in their mouth in the graded artifact. `checkpoint_done`
+  checks the fills against what they actually said and refuses once; if
+  it does, copy their wording from the list it shows you. Omit the
+  parameter and every slot defaults to `student_response`. Only when the
+  script has NO `note:` do you write `note_markdown` yourself.
 
 Read the result: it tells you what the student chose. Only "READY" lets
 you start the next checkpoint. Never hand-write log JSON or the note cell.

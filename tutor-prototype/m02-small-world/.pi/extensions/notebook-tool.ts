@@ -330,6 +330,27 @@ function loadChapters(): Chapter[] {
   }
 }
 
+/** Flat checkpoint order across all chapters — the script is the authority. */
+function checkpointOrder(): string[] {
+  return loadChapters().flatMap((c) => c.checkpoints);
+}
+
+/** "cp2_distance_extra" (an improvised practice round) → "cp2_distance". */
+function baseCheckpointId(id: string): string {
+  return id.replace(/_extra\d*$/, "");
+}
+
+function isScriptedCheckpoint(id: string): boolean {
+  return checkpointOrder().includes(baseCheckpointId(id));
+}
+
+/** The checkpoint the tutor is expected to work next, or null if unknown. */
+function nextCheckpointId(id: string): string | null {
+  const order = checkpointOrder();
+  const i = order.indexOf(baseCheckpointId(id));
+  return i >= 0 ? (order[i + 1] ?? null) : null;
+}
+
 function chapterScriptMessage(ch: Chapter, num: number, total: number): string {
   const src = fs.readFileSync(path.join(process.cwd(), "lesson", ch.file), "utf-8");
   const last = ch.checkpoints[ch.checkpoints.length - 1];
@@ -474,15 +495,55 @@ function allStudentMessages(ctx: any): string[] {
   return out;
 }
 
-function studentSaidSince(ctx: any): string[] {
+function studentSaidSince(ctx: any, commit = true): string[] {
   try {
     const all = allStudentMessages(ctx);
     const fresh = all.slice(studentSaidMark);
-    studentSaidMark = all.length;
+    if (commit) studentSaidMark = all.length;
     return fresh;
   } catch {
     return [];
   }
+}
+
+/**
+ * The note cell's «slots» are the graded artifact's centerpiece: they must be
+ * the STUDENT's words, not the tutor's prose. A live session produced
+ * "A–D = 2, and the average over all 6 pairs = 7/6 ≈ 1.17" from a student who
+ * had typed only "yes", "2", "7/6" — a fabricated number presented as their
+ * work. So the extension checks the fills against what the student actually
+ * said (transcript capture + the tutor's own verbatim field) and refuses once.
+ *
+ * Tolerant by design: word order, joining and connective words are free; what
+ * it catches is invented content — any number they never gave, or several
+ * added content words.
+ */
+const SLOT_GLUE = new Set([
+  "a", "an", "and", "the", "of", "to", "in", "on", "at", "is", "are", "was", "were",
+  "it", "its", "i", "my", "me", "we", "our", "you", "your", "that", "this", "these",
+  "those", "so", "then", "for", "with", "as", "but", "or", "if", "not", "be", "been",
+  "there", "here", "each", "every", "both", "than", "when", "because", "about",
+]);
+
+function slotTokens(s: string): string[] {
+  const norm = s
+    .toLowerCase()
+    .replace(/[‐-―−]/g, "-")
+    .replace(/[*_`>#]/g, " ");
+  return norm.match(/[a-z0-9](?:[a-z0-9._/-]*[a-z0-9])?/g) ?? [];
+}
+
+/** Content tokens in `fill` that the student never produced. */
+function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; words: string[] } {
+  const pool = new Set(studentPool.flatMap(slotTokens));
+  const numbers: string[] = [];
+  const words: string[] = [];
+  for (const t of new Set(slotTokens(fill))) {
+    if (pool.has(t) || SLOT_GLUE.has(t)) continue;
+    if (/\d/.test(t)) numbers.push(t);
+    else words.push(t);
+  }
+  return { numbers, words };
 }
 
 /**
@@ -528,6 +589,11 @@ function noteSkeleton(cpId: string): string {
   } catch {
     return "";
   }
+}
+
+/** The «…» markers of a note skeleton, in order. */
+function slotMarkers(skeleton: string): string[] {
+  return skeleton.match(/«[^»]*»/g) ?? [];
 }
 
 function fillSlots(skeleton: string, slots: string[], fallback: string): string {
@@ -641,6 +707,23 @@ const MARIMO_CELL_RULES =
   "(it even draws self-loops) or matplotlib figure always looks better.";
 
 export default function (pi: ExtensionAPI) {
+  // Guards against a checkpoint's build landing in the wrong place: if the
+  // tutor starts building checkpoint B before closing checkpoint A with
+  // checkpoint_done, A's note cell gets created LATE and lands after B's
+  // build cells instead of before them (seen in production — a "welcome"
+  // note appeared after the next checkpoint's image). nb_add_template (and
+  // nb_add_exercise, when tagged) check this before inserting.
+  //
+  // The open checkpoint is armed from the SCRIPT, not from the build: a
+  // checkpoint with `build: none` (cp0_welcome, cp5_tension) never inserts a
+  // cell, so arming on insert left exactly those unguarded — which is how
+  // cp0's welcome note landed after cp1's image. Armed at session start and
+  // advanced to the next scripted id by checkpoint_done.
+  let pendingCheckpoint: string | null = null;
+  // A slot-drift refusal fires at most once per checkpoint, so a model that
+  // cannot satisfy it can never trap the student in a retry loop.
+  const slotDriftWarned = new Set<string>();
+
   pi.on("session_start", async (_event, _ctx) => {
     // ── Chapter start + resume brief ──────────────────────────────────────
     // Determine the current chapter (from progress or saved state), inject
@@ -653,11 +736,13 @@ export default function (pi: ExtensionAPI) {
         const cps = entries.filter((e: any) => e.type === "checkpoint" && e.id);
         let chapter =
           chapters.find((c) => c.id === currentChapterId()) ?? chapters[0];
+        pendingCheckpoint = chapter.checkpoints[0] ?? null;
         if (cps.length > 0) {
           const order = chapters.flatMap((c) => c.checkpoints);
-          const lastId = cps[cps.length - 1].id;
+          const lastId = baseCheckpointId(cps[cps.length - 1].id);
           const nextId = order[order.indexOf(lastId) + 1] ?? order[order.length - 1];
           chapter = chapters.find((c) => c.checkpoints.includes(nextId)) ?? chapter;
+          pendingCheckpoint = nextId;
           pi.sendMessage(
             {
               customType: "resume-brief",
@@ -919,14 +1004,6 @@ export default function (pi: ExtensionAPI) {
   // Fixed-choice questions go through the ask_user_question tool
   // (@juicesharp/rpiv-ask-user-question package, declared in .pi/settings.json).
 
-  // Guards against a checkpoint's build landing in the wrong place: if the
-  // tutor starts building checkpoint B before closing checkpoint A with
-  // checkpoint_done, A's note cell gets created LATE and lands after B's
-  // build cells instead of before them (seen in production — a "welcome"
-  // note appeared after the next checkpoint's image). nb_add_template (and
-  // nb_add_exercise, when tagged) check this before inserting.
-  let pendingCheckpoint: string | null = null;
-
   // ── checkpoint_done ───────────────────────────────────────────────────────
   // One call replaces the whole per-checkpoint ceremony: the extension writes
   // the graded log (with the student's own messages captured from the
@@ -989,9 +1066,46 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      pendingCheckpoint = null;
+      // Peek, don't consume: a refusal below must leave the transcript mark
+      // where it was, or the retry would log an empty student_said_verbatim.
+      const said = studentSaidSince(ctx, false);
+      const slots = (params.note_slots ?? []).map((s: unknown) => String(s ?? ""));
+      const pool = [...said, response];
+      // Only slots the instructor marked «… verbatim» are held to the
+      // student's exact words; «their pick» (a dialog choice) and free
+      // commentary slots are the tutor's to phrase.
+      const markers = slotMarkers(noteSkeleton(id));
+      const drifted = slots
+        .map((fill, i) => ({ i, fill, drift: slotDrift(fill, pool) }))
+        .filter(
+          (d) =>
+            /verbatim/i.test(markers[d.i] ?? "") &&
+            (d.drift.numbers.length > 0 || d.drift.words.length >= 2),
+        );
+      if (drifted.length > 0 && !slotDriftWarned.has(id)) {
+        slotDriftWarned.add(id);
+        const offenders = drifted
+          .map(
+            (d) =>
+              `slot ${d.i + 1} ("${d.fill.slice(0, 80)}") adds ` +
+              [...d.drift.numbers, ...d.drift.words].map((t) => `"${t}"`).join(", "),
+          )
+          .join("; ");
+        return toResult({
+          out:
+            `NOT LOGGED — a note «slot» is the student's own words, and these are not in ` +
+            `anything they said: ${offenders}.\nWhat they actually said: ` +
+            `${pool.map((s) => `"${s}"`).join(", ")}.\nRewrite the slots with only their ` +
+            `words — quote, don't polish, and never add a number they didn't give — then ` +
+            `call checkpoint_done again.`,
+          failed: false,
+        });
+      }
+      // The next scripted checkpoint is now the open one, even if it builds
+      // nothing — that is what keeps its note cell ahead of the next build.
+      pendingCheckpoint = nextCheckpointId(id);
+      studentSaidSince(ctx, true);
 
-      const said = studentSaidSince(ctx);
       const logged = appendLog({
         type: "checkpoint",
         id,
@@ -1001,6 +1115,7 @@ export default function (pi: ExtensionAPI) {
         hints_used: Number(params.hints_used ?? 0),
         notes: String(params.notes ?? ""),
         student_said_verbatim: said,
+        ...(drifted.length > 0 ? { note_slot_drift: true } : {}),
       });
 
       const skeleton = noteSkeleton(id);
@@ -1201,16 +1316,18 @@ export default function (pi: ExtensionAPI) {
       if (!/^[A-Za-z_]\w*$/.test(name)) {
         return toResult({ out: `'${name}' is not a valid cell name.`, failed: true });
       }
-      const exCpId = String(params.checkpoint ?? "").trim();
-      if (exCpId && pendingCheckpoint && pendingCheckpoint !== exCpId) {
+      // Stretch/off-script ids (cs1_code) are not in the chapter order and are
+      // deliberately unguarded — the guard only enforces the scripted sequence.
+      const exCpId = baseCheckpointId(String(params.checkpoint ?? "").trim());
+      if (exCpId && isScriptedCheckpoint(exCpId) && pendingCheckpoint && pendingCheckpoint !== exCpId) {
         return toResult({
           out:
-            `NOT INSERTED — checkpoint '${pendingCheckpoint}' was started but never closed. ` +
-            `Call checkpoint_done for '${pendingCheckpoint}' first, then retry this insert.`,
+            `NOT INSERTED — checkpoint '${pendingCheckpoint}' is still open. ` +
+            `Call checkpoint_done for '${pendingCheckpoint}' first (its note cell must land ` +
+            `before this build), then retry this insert.`,
           failed: false,
         });
       }
-      if (exCpId) pendingCheckpoint = exCpId;
       const envVars = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
       const warm = await ensureWarm(signal);
@@ -1288,17 +1405,23 @@ export default function (pi: ExtensionAPI) {
       }),
     }),
     async execute(_id, params, signal) {
-      const cpId = String(params.checkpoint ?? "").trim();
-      if (pendingCheckpoint && pendingCheckpoint !== cpId) {
+      const cpId = baseCheckpointId(String(params.checkpoint ?? "").trim());
+      if (!cpId) {
+        return toResult({
+          out: `NOT INSERTED — pass checkpoint: the id of the checkpoint this build is for.`,
+          failed: false,
+        });
+      }
+      // Stretch/off-script ids are not in the chapter order and stay unguarded.
+      if (pendingCheckpoint && isScriptedCheckpoint(cpId) && pendingCheckpoint !== cpId) {
         return toResult({
           out:
-            `NOT INSERTED — checkpoint '${pendingCheckpoint}' was started but never closed. ` +
+            `NOT INSERTED — checkpoint '${pendingCheckpoint}' is still open. ` +
             `Call checkpoint_done for '${pendingCheckpoint}' first (its note cell must land ` +
             `before this build), then retry this insert.`,
           failed: false,
         });
       }
-      pendingCheckpoint = cpId || pendingCheckpoint;
       const file = path.join(process.cwd(), "cells", `${params.template}.py`);
       if (!fs.existsSync(file)) {
         return toResult({ out: `No template named '${params.template}'.`, failed: true });
@@ -1336,9 +1459,20 @@ export default function (pi: ExtensionAPI) {
       code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
       if (!result.failed && describe) {
+        // Upload widgets are named per template (cp4_photo, cp2_paperwork_photo,
+        // cp5_ring_paperwork_photo…). The tutor cannot know which one it just
+        // inserted, and nb_view_image with the wrong name blows up in the
+        // kernel — so the insert result names it.
+        const uploads = cells
+          .filter((c) => /\bmo\.ui\.file\s*\(/.test(c.code))
+          .map((c) => c.name);
+        const uploadLine = uploads.length
+          ? `When they say the photo is up, call nb_view_image(widget="${uploads[0]}", …).\n`
+          : "";
         result.out =
           `Inserted. The student now sees: ${describe}\n` +
           `(Describe it to the student ONLY from this line — never guess counts or details.)\n` +
+          uploadLine +
           result.out;
       }
       return toResult(result);
@@ -1384,6 +1518,10 @@ export default function (pi: ExtensionAPI) {
         const chapters = loadChapters();
         if (chapters.length > 0) {
           writeChapterState(chapters[0].id);
+          // Re-arm the open-checkpoint guard on cp0 — a fresh start rewinds
+          // the script, so a stale pending id would refuse cp1's build.
+          pendingCheckpoint = chapters[0].checkpoints[0] ?? null;
+          slotDriftWarned.clear();
           pi.sendMessage(
             {
               customType: "chapter-script",
@@ -1559,7 +1697,11 @@ export default function (pi: ExtensionAPI) {
       if (warm) return toResult(warm);
 
       const base = sanitize(widget || path.basename(file).replace(/\.[^.]*$/, ""));
-      const viewRel = `session_artifacts/${base}_view.jpg`;
+      // assets/, not session_artifacts/: the photo is the student's own figure
+      // in the keepsake notebook, so it has to travel WITH the module. The
+      // archive folder is gitignored evidence and may not be carried along —
+      // a notebook pointing there throws FileNotFoundError on reopen.
+      const viewRel = `assets/uploads/${base}_view.jpg`;
       const viewCell = `${base}_view`;
       // Self-contained display cell: the student sees exactly what the vision
       // model was sent (survives notebook reloads; deleted by fresh_start).
@@ -1580,13 +1722,13 @@ export default function (pi: ExtensionAPI) {
       const code =
         `import base64 as _b64, io as _io\n` +
         `from pathlib import Path as _P\n` +
-        `_P("session_artifacts").mkdir(exist_ok=True)\n` +
+        `_P("assets/uploads").mkdir(parents=True, exist_ok=True)\n` +
         `_raw = None\n` +
         source +
         `if _raw is not None:\n` +
         `    from PIL import Image as _Image, ImageOps as _ImageOps\n` +
         `    _ext = _P(_name).suffix.lower() or ".png"\n` +
-        `    (_P("session_artifacts") / (${py(base + "_upload")} + _ext)).write_bytes(_raw)\n` +
+        `    (_P("assets/uploads") / (${py(base + "_upload")} + _ext)).write_bytes(_raw)\n` +
         `    _img = _Image.open(_io.BytesIO(_raw))\n` +
         `    _img = (_ImageOps.exif_transpose(_img) or _img).convert("RGB")\n` +
         `    _img.thumbnail((1280, 1280))\n` +
