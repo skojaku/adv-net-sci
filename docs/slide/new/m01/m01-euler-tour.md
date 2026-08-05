@@ -67,12 +67,6 @@ Cross each bridge exactly once and return to the start?
 
 </div>
 
-<div class="note">
-
-Nobody could find such a walk. More importantly: nobody could *prove* it was impossible.
-
-</div>
-
 </div>
 <div class="fig">
 
@@ -94,12 +88,6 @@ Nobody could find such a walk. More importantly: nobody could *prove* it was imp
 Take ten minutes. Trace a route — or work the pen-and-paper worksheet.
 
 [Worksheet (Esteban Moro)](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)
-
-<div class="note">
-
-Ask yourself: What information is essential — bridge length? Island size? How do you move from "I can't find a path" to "a path cannot exist"?
-
-</div>
 
 </div>
 <div class="fig">
@@ -133,7 +121,7 @@ Look again — the puzzle survives even if you erase almost everything here.
 
 <div class="note">
 
-Turn to your neighbor — 30 seconds. Does the puzzle depend on bridge length? Island area? River width? Which bank you start from?
+Does the puzzle depend on bridge length? Island area? River width? Which bank you start from?
 
 </div>
 
@@ -156,6 +144,12 @@ Turn to your neighbor — 30 seconds. Does the puzzle depend on bridge length? I
 <div>
 
 Euler asked the same question. His answer: keep only what connects to what — geography, distance, shape, all gone.
+
+<div class="note">
+
+Notice the coastlines already fading in the figure — that's the erasure starting.
+
+</div>
 
 </div>
 <div class="fig">
@@ -250,22 +244,6 @@ For Königsberg: four landmasses, seven bridges.
 
 <!-- _class: mid -->
 
-## Your turn: abstract a transit line
-
-<hr>
-
-Picture a small bus line: three stops — Depot, Mall, Park — a Depot–Mall leg, a Mall–Park leg, and an express Depot–Park run that skips Mall.
-
-<div class="formula">
-
-Decide with your neighbor: what are the nodes? What are the edges? Does the express route change Mall's degree?
-
-</div>
-
-*Take two minutes — sketch it as dots and lines.*
-
----
-
 ## Two bridges, one pair
 
 <hr>
@@ -273,10 +251,10 @@ Decide with your neighbor: what are the nodes? What are the edges? Does the expr
 <div class="cols">
 <div>
 
-Two bridges between island A and bank N. Two more between A and bank S. Count each, or collapse the pair?
+Two bridges between island A and bank N; two more between A and bank S.
 
-* Both count. Each bridge is its own edge.
-* Collapse them and you're solving a different puzzle — fewer crossings to make.
+* **Both count** — each bridge is its own edge.
+* A repeated pair like this is a **multi-edge**; a graph containing one is a **multigraph**.
 
 </div>
 <div class="fig">
@@ -340,28 +318,9 @@ Count every edge touching the node — nothing more, nothing less.
 <div class="fig">
 
 ![w:520](figures/degree-definition.png)
-<figcaption>the arms: degree 1 each. The center: degree 4.</figcaption>
 
 </div>
 </div>
-
----
-
-<!-- _class: mid -->
-
-## You are mid-walk. How many edges do you use?
-
-<hr>
-
-Your walk crosses every bridge once. Mid-walk, you arrive at a node — then leave again.
-
-<div class="formula">
-
-How many edges, just to pass through?
-
-</div>
-
-*30 seconds — count on your fingers.*
 
 ---
 
@@ -433,30 +392,18 @@ An odd-degree node must be where you begin or where you finish.
 
 <hr>
 
-<div class="cols">
-<div>
+<div class="fig">
+
+![w:1000](figures/parity-bound.png)
+
+</div>
 
 <div class="formula">
 
-If a walk crosses every edge exactly once, then
+**Euler's theorem** (half of it): if a walk crosses every edge exactly once, then
 
-$$ \#\{\text{odd-degree nodes in the graph}\} \leq 2 $$
+$$ \#\{\text{odd nodes}\} \leq 2 $$
 
-</div>
-
-<div class="note">
-
-A walk using every edge once has exactly two ends. Only those two spots can absorb a leftover edge — at most two odd-degree nodes.
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:480](figures/parity-bound.png)
-<figcaption>six nodes; only the two red ends are odd</figcaption>
-
-</div>
 </div>
 
 ---
@@ -490,9 +437,9 @@ Hands up when you have an answer — possible, or impossible?
 <div class="cols">
 <div>
 
-* Degrees: three, three, five, three
+* Degrees: 3, 5, 3, 3
 * All four odd
-* Rule: at most two odd nodes
+* Rule: a cross-every-edge walk allows at most 2 odd
 * Impossible.
 
 </div>
@@ -557,7 +504,7 @@ Add one rule: end back where you began. What happens to "exactly two odd"?
 
 Ending back where you began removes the ends — no start, no finish, one loop. No node is left to absorb a leftover edge.
 
-* The “exactly two odd” case disappears. For an **Eulerian circuit**, every node must be even.
+* For an **Eulerian circuit**, every node must be even.
 * Königsberg fails either way — four odd nodes is neither 0 nor 2.
 
 </div>
@@ -684,7 +631,7 @@ A **path** is a walk that never uses the same node twice — and so never the sa
 <div class="note">
 
 * Every path is a trail. Not every trail is a path.
-* That's why the **Eulerian path** from earlier is really an Eulerian *trail* — the name predates this vocabulary.
+* That's why the **Eulerian path** from earlier is really an **Eulerian trail** — a trail that uses every edge.
 
 </div>
 
@@ -833,35 +780,21 @@ Euler’s theorem quietly assumed you can get everywhere
 
 ---
 
-## Your turn: run the sweep
+## Finding components: the sweep
 
 <hr>
 
-* Pick an unvisited node, mark it.
-* Visit its unvisited neighbors, and theirs, until stuck.
-* Everything touched is one component — repeat if nodes remain.
+Pick an unvisited node; visit its unvisited neighbors, and theirs, until stuck — everything touched is one component. Repeat until no nodes remain.
 
-<div class="fig tight">
+<div class="note">
 
-![w:760](figures/components-bare.png)
-<figcaption>trace it yourself — how many sweeps in all?</figcaption>
+This is **BFS** (or **DFS** — visit order differs, the partition doesn't). Cost $O(N+M)$; breadth-first also gives shortest-path distances, which Module 2 needs.
 
 </div>
-
----
-
-## Three sweeps, three components
-
-<hr>
-
-* Sweep 1 clears the eight-node ladder.
-* Sweep 2 clears the triangle.
-* Sweep 3 finds the lone node.
 
 <div class="fig tight">
 
 ![w:760](figures/sweep-3.png)
-<figcaption>dashed boxes mark each swept component — numbering restarts at 1</figcaption>
 
 </div>
 
@@ -989,7 +922,7 @@ Each node now has two counts: **in-degree**, edges arriving, and **out-degree**,
 <div class="cols">
 <div>
 
-A directed path from every node to every other node.
+A graph is **strongly connected** when a directed path runs from every node to every other.
 
 </div>
 <div class="fig">
@@ -1156,7 +1089,7 @@ How would you lay this out in memory?
 <div class="cols">
 <div>
 
-Simplest option: a list of pairs, one per edge. Compact — but finding node 1's neighbors means scanning every pair.
+Simplest option: a list of pairs, one per edge — an **edge list**. Compact — but finding node 1's neighbors means scanning every pair.
 
 </div>
 <div class="fig">
@@ -1178,7 +1111,7 @@ Simplest option: a list of pairs, one per edge. Compact — but finding node 1's
 <div class="cols">
 <div>
 
-Store each node's neighbors directly — node 1's row is the answer, no scanning.
+Store each node's neighbors directly in an **adjacency list** — node 1's row is the answer, no scanning.
 
 </div>
 <div class="fig">
@@ -1206,7 +1139,7 @@ A_{ij} =
 \end{cases}
 $$
 
-An $n \times n$ grid of 0s and 1s — opens the door to linear algebra, but costs $O(n^2)$ even when nearly all zero.
+The **adjacency matrix**: an $n \times n$ grid of 0s and 1s — opens the door to linear algebra, but costs $O(n^2)$ even when nearly all zero.
 
 </div>
 <div class="fig">
@@ -1309,7 +1242,7 @@ Two bridges, same pair? The entry isn't capped at 1 — $A_{ij}$ is the number o
 
 <!-- _class: mid -->
 
-## Multiply $A$ by itself. What do the entries mean?
+## Multiply $A$ by itself. What does one entry mean?
 
 <hr>
 
@@ -1317,11 +1250,29 @@ Two bridges, same pair? The entry isn't capped at 1 — $A_{ij}$ is the number o
 
 $$ \mathbf{A}^2 $$
 
-What does entry $(i,j)$ count?
+Compute entry $(1,4)$ by hand. What does it count?
 
 </div>
 
-*30 seconds — try it on the five-node graph from a couple of slides back, the one whose matrix appeared on-screen.*
+*30 seconds — try it on the five-node graph whose matrix appeared on-screen.*
+
+---
+
+<!-- _class: mid -->
+
+## Now predict $A^3$ and $A^4$
+
+<hr>
+
+You've just seen what one entry of $\mathbf{A}^2$ counts.
+
+<div class="formula">
+
+Without multiplying it out — what will entries of $\mathbf{A}^3$ and $\mathbf{A}^4$ count?
+
+</div>
+
+*30 seconds — extend the pattern.*
 
 ---
 
@@ -1373,6 +1324,8 @@ Guess before you compute — kilobytes? Gigabytes? More?
 
 ---
 
+<!-- _class: mid -->
+
 ## 64 exabytes
 
 <hr>
@@ -1385,12 +1338,6 @@ $$ n = 8\times10^{9} \qquad n^2 \times 1\text{ byte} = 6.4\times10^{19}\text{ by
 
 Eight billion nodes, one byte per pair — more storage than most data centers hold, just to record who is *not* connected.
 
-<div class="note">
-
-Almost every entry in that grid is a wasted zero. That waste is exactly what a sparse format refuses to store.
-
-</div>
-
 ---
 
 ## Store only the nonzeros
@@ -1402,9 +1349,9 @@ Almost every entry in that grid is a wasted zero. That waste is exactly what a s
 
 Most pairs aren't linked — store only what's there. The **Compressed Sparse Row (CSR)** format keeps three arrays:
 
-* **data** — the values
-* **indices** — column of each nonzero
-* **indptr** — where each row starts, so one row = one contiguous slice
+* indptr — where each row starts, so one row = one contiguous slice
+* indices — column of each nonzero
+* data — the values
 
 </div>
 <div class="fig">
@@ -1443,6 +1390,8 @@ $$ k_i = \mathrm{indptr}[i+1]-\mathrm{indptr}[i] $$
 
 ---
 
+<!-- _class: mid -->
+
 ## The payoff: memory
 
 <hr>
@@ -1450,7 +1399,7 @@ $$ k_i = \mathrm{indptr}[i+1]-\mathrm{indptr}[i] $$
 <div class="cols">
 <div>
 
-Dense stores 25 numbers here; CSR stores 30 (data 12 + indices 12 + indptr 6) — at this toy size, CSR loses. The claim is about growth: real networks are far larger and sparser, and the gap flips hard:
+Dense stores 25 numbers for that five-node graph; CSR stores 30 (data 12 + indices 12 + indptr 6) — at this toy size, CSR loses. The claim is about growth: real networks are far larger and sparser, and the gap flips hard:
 
 <div class="formula">
 
@@ -1462,7 +1411,6 @@ $$ O(n^2) \rightarrow O(m+n) $$
 <div class="fig">
 
 ![w:520](figures/csr-memory.png)
-<figcaption>n=100,000, average degree 6: dense 10B vs CSR 1.3M — CSR wins 7,692×</figcaption>
 
 </div>
 </div>
@@ -1473,16 +1421,11 @@ $$ O(n^2) \rightarrow O(m+n) $$
 
 <hr>
 
-<div class="note">
-
 Rule of thumb: edge list on disk, sparse matrices for analysis.
-
-</div>
 
 <div class="fig tight">
 
 ![w:760](figures/format-regimes.png)
-<figcaption>axes: node count vs. density</figcaption>
 
 </div>
 
@@ -1620,6 +1563,8 @@ Picture a graph where every node has degree 2 — parity satisfied, in full.
 
 ---
 
+<!-- _class: mid -->
+
 ## The graph is in two pieces
 
 <hr>
@@ -1627,7 +1572,7 @@ Picture a graph where every node has degree 2 — parity satisfied, in full.
 <div class="cols">
 <div>
 
-Parity alone isn't enough — Euler's theorem also requires **connectivity**. A single walk can't jump between components, however even their degrees. That's why the sweep from Part Five matters.
+Parity alone isn't enough — Euler's theorem also requires **connectivity**. A single walk can't jump between components, however even their degrees.
 
 </div>
 <div class="fig">
@@ -1650,7 +1595,7 @@ Parity alone isn't enough — Euler's theorem also requires **connectivity**. A 
 Run both conditions against the seven bridges, one last time:
 
 * **Connected?** Yes.
-* **0 or 2 odd-degree?** No — all four are odd.
+* 0 or 2 odd-degree? No — all four are odd.
 * One failure is enough: no circuit, no path.
 
 </div>
@@ -1677,16 +1622,16 @@ Run both conditions against the seven bridges, one last time:
 </div>
 <div>
 
-* **Abstraction (1736):** landmasses → nodes, bridges → edges
-* **Euler's theorem:** connected, 0 or 2 odd-degree nodes — walk, trail, path, circuit, cycle
-* **Connectivity:** components, the giant component, $(\mathbf{A}^k)_{ij}$ counts walks
-* **Representation:** edge list, adjacency, matrix, CSR — $O(n^2) \rightarrow O(m+n)$
-
 <div class="note">
 
 Build a CSR matrix by hand in the Module 01 notebook.
 
 </div>
+
+* Abstraction (1736): landmasses → nodes, bridges → edges
+* **Euler's theorem:** connected, 0 or 2 odd-degree nodes
+* **Connectivity:** components, the giant component
+* Representation: edge list, adjacency, matrix, CSR — $O(n^2) \rightarrow O(m+n)$
 
 </div>
 </div>
