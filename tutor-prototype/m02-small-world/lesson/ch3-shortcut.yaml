@@ -37,6 +37,12 @@ checkpoints:
       - "Try your cable between two dots that are already close. Who benefits? Now try it between dots that are far apart. Who benefits now?"
       - "Pick the two dots that are FARTHEST apart on your ring — how many steps between them right now? Now put the cable there: how many steps is it?"
       - "Forget the whole ring for a second. Just you and the dot straight across: does your cable make YOUR trip to it shorter, or not?"
+    fresh_variants: |
+      If the answer slips out, run it again on a ring of 10 dots (opposite
+      dots are 5 steps apart) — or on a 12-dot ring (opposite dots 6 apart)
+      — and ask for TWO cables this time: "where do the two go, and why
+      there?" Same discovery, new numbers, and the two-cable version makes
+      them think about spacing rather than a single lucky choice.
     reveal_after: |
       nb_add_template("cp4_compare") — a radio-driven comparison: choosing
       "no cable / short cable / long cable" redraws the 8-ring and updates
@@ -119,6 +125,11 @@ checkpoints:
       is exactly the puzzle the next checkpoint names.
     note: |
       ### 🔺 Clustering and path length on a ring — as formulas
+      Three letters, in plain words: $N$ is how many people are in the ring,
+      $k$ is how many friends each person has, $C$ is clustering — how often
+      two of your friends know each other — and $L$ is the average distance,
+      the typical number of steps between two people.
+
       On a ring where everyone has $k$ friends ($k/2$ per side), clustering
       is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
       $k=2$ gives $C=0$ (no triangles possible — cp4's plain ring); $k=4$
@@ -153,6 +164,11 @@ checkpoints:
       do it?
     note: |
       ### ⚖️ The puzzle: clustered AND close?
+      Same four letters as before: $C$ = clustering (how often two of your
+      friends know each other), $L$ = average distance (typical number of
+      steps between two people), $N$ = how many people there are, $k$ = how
+      many friends each person has.
+
       **Ring world:** tight communities (high $C$, independent of $N$) but
       journeys that get longer and longer as $N$ grows ($L \approx N/(2k)$).
       **Random world:** short journeys (low $L$) but no community (low

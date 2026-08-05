@@ -5,7 +5,9 @@
 # pairs after they have committed to a number — still no number shown.
 # describe: A 12-dot ring on a drag-able network widget with a friend-count slider k (2, 4, or 6) and a "check my count" box; node 0 is rust, its k nearest neighbours are amber, and ticking the box highlights any friendship that already exists between two amber dots. No counts and no clustering value are shown — the student does the counting.
 # --- cell: cp5_ring_controls ---
-cp5_ring_k = mo.ui.slider(steps=[2, 4, 6], value=2, label="k (friends per person)")
+cp5_ring_k = mo.ui.slider(
+    steps=[2, 4, 6], value=2, label="k (friends per person)", show_value=True
+)
 cp5_ring_show = mo.ui.checkbox(
     value=False, label="check my count (highlight friendships among the amber dots)"
 )

@@ -32,9 +32,19 @@ checkpoints:
       distance collapse — and what is clustering doing there? Tell me here
       when you've got it."
     accept: |
-      Report notices that L collapses at small p (~0.01, i.e. ~1% of links)
+      Report notices that L falls steeply while p is still tiny — anywhere
+      in the 0.005-0.05 band counts, and so does "somewhere around 1%" —
       while C is still high, and honestly compares to their prediction.
+      (Measured on the widget's own 200-person ring: L/L₀ is 1.00 at
+      p=0.005, 0.61 at p=0.01, 0.29 at p=0.05, while C/C₀ is still 0.97 at
+      p=0.01. So do NOT insist on 0.01 — the drop is a band, not a point.)
       A wrong prediction + honest reconciliation is a FULL PASS — say so.
+    fresh_variants: |
+      If the answer slips out, ask the same thing from the other end: "start
+      the slider at p=1 (everything rewired) and walk it DOWN — where does
+      clustering come back, and what is distance doing there?" Same two
+      curves, opposite direction of travel: C/C₀ climbs back near 1 only
+      once p is back down around 0.01, while L/L₀ stays low.
     hints:
       - "Set p = 0.01 exactly. Read the two numbers. Which one moved?"
       - "Slide p from 0 up slowly and watch ONE number only: L/L₀. Where does it fall off a cliff?"
@@ -46,9 +56,17 @@ checkpoints:
       resolves ch3's puzzle and explains ch1's six degrees.
     note: |
       ### 🎛️ The Watts–Strogatz recipe (1998)
-      Rewiring only ~1% of a ring's links ($p \approx 0.01$) makes distance
-      collapse — $L/L_0$ falls hard — while clustering barely moves
-      ($C/C_0 \approx 1$). Those few random rewires are the long cables from
+      What the dials say: $p$ is the fraction of links picked up and
+      reconnected to a random person. $L$ is the average distance (typical
+      steps between two people) and $C$ is clustering (how often two of your
+      friends know each other). $L_0$ and $C_0$ are those same two numbers on
+      the untouched ring, so $L/L_0$ and $C/C_0$ read "compared to before".
+
+      Rewiring only about 1% of a ring's links ($p \approx 0.01$) already
+      pulls distance down hard — and the bigger the ring, the harder it
+      falls — while clustering barely moves ($C/C_0 \approx 1$). On 200
+      people $L/L_0$ is about 0.6 there; on 2000 it is about 0.17.
+      Those few random rewires are the long cables from
       my drawing: rare enough to keep the communities, long enough to
       shortcut the whole ring. That's the small-world recipe, and it's why
       six degrees works.
@@ -117,8 +135,10 @@ checkpoints:
     note: |
       ### 💻 The phase transition, at scale
       Same experiment as the slider, but coded and run on a much bigger
-      network ($N=2000$ instead of $200$) by sweeping the rewiring
-      probability $p$ and plotting $L/L_0$ and $C/C_0$ together.
+      network — $N$, the number of people, is 2000 here instead of 200. I
+      swept $p$ (the fraction of links rewired at random) and plotted
+      $L/L_0$ (average distance, compared to the untouched ring) against
+      $C/C_0$ (clustering, compared to the untouched ring).
 
       > **What I found:** «their answers, verbatim»
 
