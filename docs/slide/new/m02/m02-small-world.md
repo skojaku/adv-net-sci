@@ -145,6 +145,8 @@ Of the 160 packets that went out, 64 reached the target. The rest stalled somewh
 
 ---
 
+<!-- _class: mid -->
+
 ## The ones that arrived took about six steps
 
 <hr>
@@ -263,7 +265,7 @@ Average distance between two users: **4.74**.
 
 Two random Wikipedia articles. Links only, no search box. Fewest clicks wins.
 
-Play one round now, at [wiki-race.com](https://wiki-race.com) — shout out your click count.
+Play at [wiki-race.com](https://wiki-race.com) — one round, then shout out your click count.
 
 </div>
 <div class="fig">
@@ -405,7 +407,7 @@ Six edges, seven people. That is the number you wrote down at the start — and 
 
 </div>
 
-It turns out the grain buyer already knew the teacher. One extra edge, no new people.
+It turns out the farmer already knew the teacher. One extra edge, no new people.
 
 ---
 
@@ -424,7 +426,7 @@ Distance takes the **minimum**. The longer route still exists; it just does not 
 <div class="fig">
 
 ![w:520](figures/two-routes.png)
-<figcaption>red: the shortest route — gold: the route it replaces</figcaption>
+<figcaption>red: the shortest route — dashed gray: the route it replaces</figcaption>
 
 </div>
 </div>
@@ -478,7 +480,7 @@ For the plain chain: $\bar L = 8/3 = 2.67$.
 <div class="fig">
 
 ![w:1000](figures/chain-shortcut.png)
-<figcaption>red: the printer turns out to know the buyer</figcaption>
+<figcaption>black: the chord from two slides ago — red: the new long edge</figcaption>
 
 </div>
 
@@ -523,7 +525,7 @@ Notice which pairs moved: the far ones. The neighbours were already close.
 
 </div>
 
-The **diameter** is the largest distance in the network — the worst case, not the average. Here it fell from 6 to 3.
+The **diameter** is the largest distance in the network — the worst case, not the average.
 
 ---
 
@@ -585,6 +587,8 @@ What are the odds that those two know each other?
 
 ---
 
+<!-- _class: mid -->
+
 ## Triangles
 
 <hr>
@@ -612,9 +616,11 @@ Three nodes, all three edges present: a **triangle**.
 <div class="cols">
 <div>
 
-Any three nodes with at least two edges among them form a **triplet**.
+Two edges meeting at a node form a **triplet**, counted at that shared **centre** node.
 
 Closed if the third edge is there, open if it is not.
+
+So one triangle holds three closed triplets — one centred at each corner.
 
 </div>
 <div class="fig">
@@ -682,7 +688,9 @@ With $k$ friends there are
 
 $$ \binom{k}{2} = \frac{k(k-1)}{2} $$
 
-possible edges among them — here $5 \times 4 / 2 = 10$.
+possible edges among them.
+
+* Here: $5 \times 4 / 2 = 10$.
 
 </div>
 <div class="fig">
@@ -708,7 +716,7 @@ $$ C_i = \frac{\text{edges among } i\text{'s neighbours}}{k_i(k_i-1)/2} $$
 
 </div>
 
-Count the edges that do exist among the neighbours, then divide by every pair that could have been there.
+* Count the edges that do exist among the neighbours, then divide by every pair that could have been there.
 
 </div>
 <div class="fig">
@@ -811,7 +819,7 @@ The **average local clustering** $\bar C = \frac{1}{n}\sum_i C_i$ gives every no
 
 </div>
 
-Every blade node sees a perfectly closed neighbourhood; the hub sees almost none.
+* Every blade node sees a perfectly closed neighbourhood; the hub sees almost none.
 
 ---
 
@@ -845,7 +853,7 @@ Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\,
 
 </div>
 
-For the windmill that comes to $15/55 = 0.27$.
+* For the windmill that comes to $15/55 = 0.27$.
 
 ---
 
@@ -853,14 +861,14 @@ For the windmill that comes to $15/55 = 0.27$.
 
 <hr>
 
-* $\bar C$ weights nodes: the blades outvote the hub.
-* $C$ weights triplets: the hub owns most of them.
-
-<div class="fig tight">
+<div class="fig">
 
 ![w:1000](figures/windmill-split.png)
 
 </div>
+
+* $\bar C$ weights nodes: the blades outvote the hub.
+* $C$ weights triplets: the hub owns most of them.
 
 ---
 
@@ -1007,7 +1015,9 @@ What fraction of those pairs do you expect to be linked?
 <div class="cols">
 <div>
 
-Each neighbour pair is its own independent coin with the same $p$, so the expected fraction is $p$ — whatever the degree:
+Each neighbour pair is its own independent coin with the same $p$, so the expected fraction is $p$ — whatever the degree.
+
+A node has $n-1$ coins of its own, so its **average degree** is $\langle k \rangle = p(n-1)$:
 
 <div class="formula">
 
@@ -1216,7 +1226,7 @@ $\bar C = 0.5$ — as clustered as a real friendship network.
 Crossing a ring lattice means walking around it, two nodes at a time.
 
 * 16 nodes: 4 hops to the far side.
-* 1000 nodes: $\bar L = 125$.
+* 1000 nodes: $\bar L \approx 125$.
 * Distance grows linearly with $n$ — the opposite of what we measured.
 
 </div>
@@ -1239,9 +1249,8 @@ Crossing a ring lattice means walking around it, two nodes at a time.
 
 Same nodes, same number of edges, shuffled.
 
-Routes get short immediately — and the clustering falls with them, from 0.50 to 0.24.
-
-At sixteen nodes that is only a halving. Grow the network and $\langle k \rangle/(n-1)$ takes it to nothing, while the ring stays at 0.50 forever.
+* Routes get short immediately, and the clustering falls with them: 0.50 to 0.24 — at sixteen nodes, only a halving.
+* Grow the network and $\langle k \rangle/(n-1)$ takes it to nothing, while the ring stays at 0.50 forever.
 
 </div>
 <div class="fig">
@@ -1303,7 +1312,7 @@ Walk the lattice edge by edge. With probability $p$, detach one end and reattach
 <div class="fig">
 
 ![w:520](figures/ws-rewire-step.png)
-<figcaption>red: the edge's new end</figcaption>
+<figcaption>one edge moved; every other edge stays exactly where it was</figcaption>
 
 </div>
 </div>
@@ -1432,9 +1441,9 @@ Find the smallest $p$ where $L$ has already collapsed and $C$ has not.
 
 <div class="band"><span>Part Six</span><span class="count">06 / 06</span></div>
 
-## Edge cases
+## Edge cases, and what survives them
 
-The networks that break the definitions
+The networks that break the definitions — and the one signature that does not break
 
 ---
 
@@ -1448,6 +1457,8 @@ The networks that break the definitions
 <div>
 
 $\bar L$ averages $d(i,j)$ over every pair. This network has pairs with no route between them at all.
+
+*30 seconds — what should the average do with those pairs?*
 
 </div>
 <div class="fig">
@@ -1493,6 +1504,8 @@ One unreachable pair makes $\bar L$ infinite, however short everything else is.
 <div>
 
 $C_i$ divides by $k_i(k_i-1)/2$ — the number of pairs among the neighbours.
+
+*30 seconds with your neighbour before we write anything down.*
 
 </div>
 <div class="fig">
@@ -1541,6 +1554,8 @@ $\sigma < 1$ needs long routes *and* clustering below the random baseline.
 
 The ring lattice has the long routes. Is it enough?
 
+*30 seconds — which half of the ratio wins?*
+
 </div>
 <div class="fig">
 
@@ -1583,15 +1598,41 @@ $\sigma \approx 5$ for a ring of a thousand nodes; even the 16-node ring scores 
 
 You need clustering under the random baseline — and random is already near zero.
 
-A square street grid has no triangle at all. $C = 0$, and $\sigma = 0$ with it.
+<div class="formula">
 
-*Count the triplets around one intersection: how many are closed? 60 seconds.*
+Count the triplets centred on one intersection. How many are closed?
+
+</div>
+
+*60 seconds on paper.*
 
 </div>
 <div class="fig">
 
 ![w:520](figures/grid-no-triangles.png)
 <figcaption>every face is a square</figcaption>
+
+</div>
+</div>
+
+---
+
+## Six triplets, none closed
+
+<hr>
+
+<div class="cols">
+<div>
+
+An intersection has four neighbours, so $\binom{4}{2} = 6$ triplets are centred on it — and no two of those four are joined to each other.
+
+Nothing closes. $C = 0$, and $\sigma = 0$ with it.
+
+</div>
+<div class="fig">
+
+![w:520](figures/grid-no-triangles.png)
+<figcaption>no diagonals anywhere — so every triplet stays open</figcaption>
 
 </div>
 </div>
@@ -1626,7 +1667,7 @@ A square street grid has no triangle at all. $C = 0$, and $\sigma = 0$ with it.
 
 </div>
 
-Fix $m$ and the edges are no longer independent: using one up makes the rest less likely. Independence is exactly what let us write $C_{\mathrm{rand}} = p$ two parts ago.
+Fix $m$ and the edges stop being independent: using one up makes the rest less likely — and independence is what let us write $C_{\mathrm{rand}} = p$.
 
 ---
 
