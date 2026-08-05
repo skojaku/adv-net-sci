@@ -339,7 +339,16 @@ function checkpointOrder(): string[] {
 
 /** "cp2_distance_extra" (an improvised practice round) → "cp2_distance". */
 function baseCheckpointId(id: string): string {
-  return id.replace(/_extra(_?\d+)?$/, "");
+  // Repeated, because a looping tutor produced "cp0_welcome_extra_extra" —
+  // one strip left an id no lookup could match, which silently disabled the
+  // ordering guard and the note skeleton for every later round.
+  let out = id;
+  for (let i = 0; i < 8; i++) {
+    const next = out.replace(/_extra(_?\d+)?$/, "");
+    if (next === out) break;
+    out = next;
+  }
+  return out;
 }
 
 function isScriptedCheckpoint(id: string): boolean {
@@ -631,7 +640,7 @@ function slotDrift(fill: string, studentPool: string[]): { numbers: string[]; wo
 // on new DATA, so its base checkpoint's skeleton is wrong for it: cp2's says
 // "$L = 7/6$", while the practice variant is a star ($L = 9/6$). The tutor
 // writes note_markdown for those, per AGENTS.md.
-function noteSkeleton(cpId: string): string {
+function checkpointBlock(cpId: string, key: string): string {
   try {
     const chapter = loadChapters().find((c) => c.checkpoints.includes(cpId));
     if (!chapter) return "";
@@ -649,7 +658,7 @@ function noteSkeleton(cpId: string): string {
       }
     }
     for (let i = start; i < end; i++) {
-      const m = /^(\s*)note:\s*\|/.exec(lines[i]);
+      const m = new RegExp(`^(\\s*)${key}:\\s*\\|`).exec(lines[i]);
       if (!m) continue;
       const keyIndent = m[1].length;
       const block: string[] = [];
@@ -670,6 +679,16 @@ function noteSkeleton(cpId: string): string {
   } catch {
     return "";
   }
+}
+
+/** A checkpoint's instructor-authored `note:` skeleton. */
+function noteSkeleton(cpId: string): string {
+  return checkpointBlock(cpId, "note");
+}
+
+/** Does the script offer a practice variant for this checkpoint? */
+function hasFreshVariants(cpId: string): boolean {
+  return checkpointBlock(cpId, "fresh_variants").trim().length > 0;
 }
 
 /** The «…» markers of a note skeleton, in order. */
@@ -1284,27 +1303,50 @@ export default function (pi: ExtensionAPI) {
           : `Note cell added.`;
       }
 
+      // Every branch NAMES the checkpoint to go to. Without that, a small
+      // model three practice rounds deep loses the thread: in a live run it
+      // answered READY by inventing yet another warm-up and logging
+      // cp0_welcome_extra, then _extra_extra — the student could not leave
+      // cp0 at all. "Start the next checkpoint from your script" is not an
+      // instruction a flash model can act on; "start cp1_milgram" is.
+      const nextId = nextCheckpointId(id);
+      const goNext = nextId
+        ? `Start checkpoint "${nextId}" NOW: find it in your CHAPTER SCRIPT and ask its ` +
+          `first question. Do not revisit "${baseCheckpointId(id)}".`
+        : `That was the last checkpoint of this chapter — call chapter_done next.`;
       const READY = "Ready for the next question";
       const ASK_Q = "I have a question first";
       const MORE = "Give me another one like that";
       let nextLine =
         `No picker available — ask the student in plain text whether to move on, ` +
-        `and wait for their answer.`;
+        `and wait for their answer. When they say yes: ${goNext}`;
       if (ctx?.ui?.select) {
         const choice = await ctx.ui.select("Where to next?", [READY, ASK_Q, MORE]);
+        const practiceRound = /_extra/.test(id);
         nextLine =
           choice === READY
-            ? `The student is READY — start the next checkpoint from your script.`
+            ? `The student is READY. ${goNext}`
             : choice === ASK_Q
               ? `The student has a QUESTION. Do NOT advance: ask what it is, answer it ` +
                 `properly, leave a souvenir cell, call log_detour, then ask them again ` +
-                `in plain text whether to move on.`
+                `in plain text whether to move on. When they are ready: ${goNext}`
               : choice === MORE
-                ? `The student wants MORE PRACTICE. Do NOT advance: improvise ONE problem ` +
-                  `of the same kind on NEW data, reusing this module's objects (the 4-person ` +
-                  `network, the 8-dot ring) so the numbers stay comparable. Guide, then ` +
-                  `checkpoint_done again with id "${id}_extra" (never a fail).`
-                : `The student closed the picker — ask in plain text what they'd like to do.`;
+                ? // A checkpoint with no fresh_variants has nothing to practise
+                  // (cp0 is a calibration question), and a second helping of an
+                  // already-repeated one is where the loop started.
+                  !hasFreshVariants(baseCheckpointId(id))
+                  ? `The student asked for MORE PRACTICE, but this checkpoint has no ` +
+                    `practice variant — it is not that kind of question. Say so warmly in ` +
+                    `ONE sentence, then: ${goNext}`
+                  : practiceRound
+                    ? `They have already had a practice round here. Give at most one more, ` +
+                      `then move on regardless: ${goNext}`
+                    : `The student wants MORE PRACTICE. Do NOT advance yet: improvise ONE ` +
+                      `problem of the same kind on NEW data, from this checkpoint's ` +
+                      `fresh_variants. Guide, then checkpoint_done again with id ` +
+                      `"${baseCheckpointId(id)}_extra" (never a fail). After that: ${goNext}`
+                : `The student closed the picker — ask in plain text what they'd like to do. ` +
+                  `If they want to move on: ${goNext}`;
       }
 
       return toResult({

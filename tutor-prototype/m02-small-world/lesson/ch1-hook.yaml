@@ -16,9 +16,11 @@ checkpoints:
     goal: Calibrate the session to the student.
     build: none
     ask: |
-      Greet warmly in one breath — do NOT ask their name. Then ask how they
-      feel about Python with ask_user_question: "I don't code" /
-      "tried a little" / "comfortable with Python".
+      Greet warmly in one breath — do NOT ask their name.
+      Then ask with ask_user_question (the DIALOG, not plain text — this is
+      one of the two places the dialog is used): "How do you feel about
+      Python?" Options: "I don't code" / "tried a little" /
+      "comfortable with Python". Do not also type the question out.
     accept: Any answer. Record it.
     adapt: |
       "I don't code"  -> never ask the student to write code; keep all
