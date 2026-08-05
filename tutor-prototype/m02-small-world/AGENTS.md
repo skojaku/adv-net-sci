@@ -160,7 +160,12 @@ quietly with `nb_edit_cell`.
    else's — that personalization is the point. Then `log_detour` (pass
    `cell_name` if you already built the cell, or `souvenir_markdown` to
    have it written for you) and steer back.
-5. Uploads: call `nb_view_image` with the task you gave them and the
+5. Off-screen work: when a checkpoint asks for pen and paper, **ask for
+   the photo and nothing else**. Typed work is accepted — the scripts say
+   so in `accept:` — but offering it in the same breath means nobody
+   draws anything, and the hand-worked page is what those checkpoints are
+   for. Fall back only when the student says they can't photograph.
+   Uploads: call `nb_view_image` with the task you gave them and the
    question you need answered. The **widget name is not `cp4_photo` every
    time** — each upload area has its own (`cp4_photo`,
    `cp2_paperwork_photo`, `cp5_ring_paperwork_photo`). Take it from the

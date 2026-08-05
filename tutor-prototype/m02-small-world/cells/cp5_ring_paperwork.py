@@ -10,4 +10,13 @@ cp5_ring_paperwork_photo = mo.ui.file(
     filetypes=[".jpg", ".jpeg", ".png", ".webp"],
     label="Photo of your ring working (triangles + formulas)",
 )
-cp5_ring_paperwork_photo
+mo.vstack([
+    cp5_ring_paperwork_photo,
+    mo.md(
+        "<span style='color:#6A6D75;font-size:13px'>Drop a phone photo of "
+        "your derivation here — node 0's friends, which pairs among them "
+        "already know each other, and the two formulas you ended up with. "
+        "Crossings-out are fine and welcome. Once it is up, say so in the "
+        "terminal.</span>"
+    ),
+])

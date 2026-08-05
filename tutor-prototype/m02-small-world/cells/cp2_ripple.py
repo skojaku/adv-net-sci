@@ -24,6 +24,15 @@ _colors = {
     for _n in _G.nodes()
 }
 mo.vstack([
-    mo.md(f"**Wave from A — {cp2_steps.value} step(s)**"),
+    mo.md(
+        f"**Wave from A — {cp2_steps.value} step(s)**\n\n"
+        "<span style='color:#6A6D75;font-size:13px'>Four people, five "
+        "friendships. **A** is rust; **amber** dots are everyone A can reach "
+        "in that many steps or fewer; **grey** dots are still out of range. "
+        "Drag the slider up one notch at a time and watch who joins — the "
+        "step at which someone first turns amber IS their distance from A. "
+        "You can drag the dots too; moving them changes nothing but the "
+        "picture.</span>"
+    ),
     netviz(_edges, node_colors=_colors),
 ])

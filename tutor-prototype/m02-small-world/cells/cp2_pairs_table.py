@@ -7,7 +7,7 @@ _df = pd.DataFrame(_pairs, columns=["u", "v", "distance"])
 _df["pair"] = _df["u"] + "–" + _df["v"]
 _df["highlight"] = _df["distance"] > 1
 
-alt.Chart(_df).mark_bar(size=22, cornerRadiusEnd=4).encode(
+_fig = alt.Chart(_df).mark_bar(size=22, cornerRadiusEnd=4).encode(
     y=alt.Y("pair:N", sort=_df["pair"].tolist(), title=None),
     x=alt.X("distance:Q", title="shortest-path distance", scale=alt.Scale(domain=[0, 2.4])),
     color=alt.condition("datum.highlight", alt.value("#B4552D"), alt.value("#35577F")),
@@ -16,3 +16,14 @@ alt.Chart(_df).mark_bar(size=22, cornerRadiusEnd=4).encode(
     title="All 6 pairs, distance — average 7/6 ≈ 1.17",
     height=220,
 )
+mo.vstack([
+    _fig,
+    mo.md(
+        "<span style='color:#6A6D75;font-size:13px'>One bar per pair of "
+        "people — with four people there are exactly six pairs, and every "
+        "pair gets counted once. Bar length is that pair's distance, so a "
+        "one-step bar means they are directly connected; the **rust bar is "
+        "the only pair that needs a detour**. Average path length is just "
+        "the mean of these six bars — the single number in the title.</span>"
+    ),
+])
