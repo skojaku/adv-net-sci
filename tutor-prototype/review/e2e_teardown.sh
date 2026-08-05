@@ -9,4 +9,6 @@ set -euo pipefail
 
 herdr pane close "$(pane_id "$AGENT")" >/dev/null 2>&1 || true
 kill "$(cat "$SANDBOX/session_artifacts/marimo.pid" 2>/dev/null)" 2>/dev/null || true
+# The keepalive subshell that holds marimo's parent open (see e2e_setup.sh).
+kill "$(cat "$SANDBOX/session_artifacts/marimo_keepalive.pid" 2>/dev/null)" 2>/dev/null || true
 echo "artifacts kept in: $SANDBOX"
