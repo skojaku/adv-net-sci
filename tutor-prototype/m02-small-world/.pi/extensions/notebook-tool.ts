@@ -1200,15 +1200,21 @@ function buildSessionRecord(entries: any[]): string {
   }
   const scripted = checkpointOrder();
   const haveIds = new Set(cps.map((e) => baseCheckpointId(String(e.id))));
-  const absent = scripted.filter((c) => !haveIds.has(c));
-  if (absent.length) {
-    lines.push(
-      `### ⚠ Not recorded (${absent.length} of ${scripted.length})`,
-      "",
-      `*An earlier session ended before these were reached, so there is no answer of ` +
-        `yours here for them: ${absent.join(", ")}.*`,
-      "",
-    );
+  const furthest = scripted.reduce((acc, id, i) => (haveIds.has(id) ? i : acc), -1);
+  const holes = scripted.filter((c) => !haveIds.has(c) && scripted.indexOf(c) < furthest);
+  const notReached = scripted.filter((c) => !haveIds.has(c) && scripted.indexOf(c) > furthest);
+  if (holes.length || notReached.length) {
+    lines.push(`### ⚠ Not everything is here`, "");
+    if (holes.length) {
+      lines.push(
+        `*A session ended part-way and the next one carried on, so these have no answer ` +
+          `of yours: ${holes.join(", ")}.*`,
+        "",
+      );
+    }
+    if (notReached.length) {
+      lines.push(`*The module stops here — still to come: ${notReached.join(", ")}.*`, "");
+    }
   }
   if (detours.length) {
     lines.push(`### 🧭 Your own questions (${detours.length})`, "");
@@ -1254,16 +1260,30 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
     // artifact the grader reads. And a module whose last checkpoint IS
     // logged is not "where to pick up" — it is a record with holes, which
     // is what it should say.
-    const lastLogged = allCheckpoints[allCheckpoints.length - 1];
-    out.push(
-      done.has(lastLogged) ? `## Not recorded` : `## Where to pick up`,
-      done.has(lastLogged)
-        ? `These checkpoints have no record — an earlier session ended before they ` +
-          `were reached: ${missing.join(", ")}`
-        : `Next checkpoint: ${missing[0]}` +
-          (missing.length > 1 ? `\nAlso never recorded: ${missing.slice(1).join(", ")}` : ""),
-      "",
+    // Two different things, and they were being conflated: checkpoints
+    // BEHIND the furthest one reached are holes an earlier session left —
+    // the resume brief says never to go back for them — while the ones
+    // AHEAD are simply where the module stopped. Naming the first hole as
+    // "where to pick up" sent the next session back into it, and listing
+    // the untaught remainder as holes described the whole rest of the
+    // lesson as missing.
+    const furthest = allCheckpoints.reduce(
+      (acc: number, id: string, i: number) => (done.has(id) ? i : acc),
+      -1,
     );
+    const holes = missing.filter((id) => allCheckpoints.indexOf(id) < furthest);
+    const ahead = missing.filter((id) => allCheckpoints.indexOf(id) > furthest);
+    if (holes.length) {
+      out.push(
+        `## Not recorded`,
+        `These checkpoints have no record — an earlier session ended before they were ` +
+          `reached, and later ones carried on without them: ${holes.join(", ")}`,
+        "",
+      );
+    }
+    if (ahead.length) {
+      out.push(`## Where to pick up`, `Next checkpoint: ${ahead[0]}`, "");
+    }
   }
   return out.join("\n");
 }
@@ -2039,54 +2059,38 @@ export default function (pi: ExtensionAPI) {
           );
         }
       }
-      // The slots are the ask's parts in order, and so are the messages the
-      // student typed — a live run filled three checkpoints shifted by one,
-      // every quote genuinely theirs but each under the wrong heading.
+      // Which message each «verbatim» slot appears to come from. RECORDED,
+      // not enforced.
       //
-      // Requiring the LAST slot to hold the LAST message was the obvious
-      // check and the wrong one: students ask questions mid-checkpoint (the
-      // scripts encourage it) and say "ok its uploaded", so the last message
-      // is often an aside — and the refusal then told the tutor to move that
-      // aside into the graded note. What IS always wrong, shift or no shift,
-      // is two slots quoting the same message: the parts of an ask are
-      // different questions, and one reply cannot be the record of both.
-      const verbatimSlots = slots
-        .map((fill, i) => ({ fill, i }))
-        .filter(({ fill, i }) => fill.trim() && /verbatim/i.test(markers[i] ?? ""));
-      if (said.length > 1 && verbatimSlots.length > 1) {
-        const sourceOf = ({ fill }: { fill: string }) => {
-          let best = -1;
-          let score = 0;
-          said.forEach((m, mi) => {
-            const d = bigramDice(fill, m);
-            if (d > score) {
-              score = d;
-              best = mi;
-            }
-          });
-          return score >= 0.5 ? best : -1;
-        };
-        const sources = verbatimSlots.map(sourceOf);
-        const dup = sources.find((v, i) => v >= 0 && sources.indexOf(v) !== i);
-        if (dup !== undefined && (slotDriftWarned.get(`${id}:order`) ?? 0) < 1) {
-          slotDriftWarned.set(`${id}:order`, 1);
-          const which = verbatimSlots
-            .filter((_, i) => sources[i] === dup)
-            .map(({ i }) => markers[i].replace(/[«»]/g, "").replace(/\s+/g, " ").trim());
-          return toResult({
-            out:
-              `NOT LOGGED — two slots are quoting the same message: ` +
-              `${which.map((w) => `"${w}"`).join(" and ")} both come from ` +
-              `"${said[dup].slice(0, 90)}". Those are different questions, so one reply ` +
-              `cannot be the record of both — the fills are shifted, and one part of ` +
-              `their answer is about to be dropped.\n` +
-              `In order, they said: ${said.map((x, i) => `[${i + 1}] "${x.slice(0, 90)}"`).join("  ")}\n` +
-              `Slot N is the answer to ask step N. Re-pair them, then call ` +
-              `checkpoint_done again.`,
-            failed: false,
-          });
-        }
-      }
+      // The failure worth catching is a fill set shifted by one, which drops
+      // the student's last answer from the keepsake. Two deterministic
+      // guards were tried and both had to be withdrawn, because the thing
+      // they must tell apart is not decidable without reading meaning:
+      //   - "the last slot holds their last message" refused every
+      //     checkpoint where the student's final message was a question or
+      //     "ok its uploaded" — and told the tutor to move that aside INTO
+      //     the graded slot;
+      //   - "no two slots quote the same message" refused every checkpoint
+      //     where the student answered two ask-steps in one breath and the
+      //     tutor correctly split that message in two — including the
+      //     module's own golden reference data.
+      // A shift and a legitimate split look identical to any string
+      // comparison. So the attribution goes in the log for a human to read,
+      // the instruction lives in AGENTS.md, and nothing here refuses a
+      // record on a guess.
+      const slotSources = slots.map((fill, i) => {
+        if (!fill.trim() || !/verbatim/i.test(markers[i] ?? "")) return null;
+        let best = -1;
+        let score = 0;
+        said.forEach((m, mi) => {
+          const d = bigramDice(fill, m);
+          if (d > score) {
+            score = d;
+            best = mi;
+          }
+        });
+        return score >= 0.5 ? best + 1 : null;
+      });
       for (const [i, fill] of slots.entries()) {
         if (said.length === 0) break;
         if (!/verbatim/i.test(markers[i] ?? "")) continue;
@@ -2171,6 +2175,7 @@ export default function (pi: ExtensionAPI) {
         ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(photoMissing ? { photo_missing: true } : {}),
+        ...(slotSources.some((v) => v !== null) ? { slot_sources: slotSources } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 

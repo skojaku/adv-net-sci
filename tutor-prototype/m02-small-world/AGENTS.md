@@ -270,8 +270,12 @@ what's next. You supply only what a model can:
   with the part it answered. A live run filled three checkpoints shifted by
   one — every quote genuinely theirs, every quote under the wrong heading,
   and the last answer (the one the checkpoint exists for) dropped
-  altogether. `checkpoint_done` checks that the last slot holds their last
-  reply and refuses once if it does not. Sending fewer is refused twice and
+  altogether. Nothing checks this for you: a shift and a student who
+  answered two steps in one breath look identical to any string comparison,
+  so two guards that tried were withdrawn for refusing honest records. What
+  `checkpoint_done` DOES enforce is one fill per slot, and it records which
+  message each fill came from so a grader can see a shift. Getting the
+  pairing right is yours. Sending fewer is refused twice and
   then the unfilled ones print as "(not answered)" in the graded notebook,
   which is a worse record than a short honest quote.
   A slot that does NOT say «verbatim» is one whose answer came
