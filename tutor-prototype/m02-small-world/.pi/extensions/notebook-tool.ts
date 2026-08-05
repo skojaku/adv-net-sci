@@ -644,10 +644,20 @@ function allStudentMessages(ctx: any): string[] {
  */
 const pickedAnswers: string[] = [];
 let pickedMark = 0;
+/**
+ * Set while the resume brief is in flight. The continue-or-fresh dialog is
+ * session mechanics, not an answer to a lesson question, so its result is
+ * dropped instead of riding into the next checkpoint's `student_picked`.
+ */
+let awaitingResumeChoice = false;
 
 function recordPickedAnswer(event: any): void {
   try {
     if (!/ask.?user.?question/i.test(String(event?.toolName ?? ""))) return;
+    if (awaitingResumeChoice) {
+      awaitingResumeChoice = false;
+      return;
+    }
     const text = (event?.content ?? [])
       .filter((c: any) => c?.type === "text" && typeof c.text === "string")
       .map((c: any) => c.text)
@@ -970,8 +980,19 @@ function souvenirGap(src: string, question: string): string {
   const shows = /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(|mo\.carousel|mo\.accordion/.test(
     src,
   );
-  const flat = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
-  const needle = flat(question).slice(0, 40);
+  // Quoting is judged on words, not bytes. The suggested template wraps the
+  // question in typographic quotes, a model rewrites "what's" as "what’s"
+  // or drops the trailing "?", and a byte-exact match then bounced a
+  // souvenir that plainly does quote the question — and stamped it
+  // `souvenir_gap` in the log afterwards.
+  const flat = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const needle = flat(question).slice(0, 40).replace(/\s+\S*$/, "");
   const quotes = needle.length > 0 && flat(src).includes(needle);
   if (!shows && !quotes) return "is prose only, and never quotes their question";
   if (!shows) return "is prose only — nothing to look at or play with";
@@ -1236,6 +1257,12 @@ export default function (pi: ExtensionAPI) {
           moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
+          // The continue-or-fresh answer below is session mechanics, not a
+          // lesson answer, and nothing drains the pick buffer until the next
+          // checkpoint_done — so without this it rode into that checkpoint's
+          // record and printed as *You chose: "Continue where we left off"*
+          // under a lecture question in the submitted notebook.
+          awaitingResumeChoice = true;
           pi.sendMessage(
             {
               customType: "resume-brief",
@@ -2227,6 +2254,12 @@ export default function (pi: ExtensionAPI) {
           pendingCheckpoint = chapters[0].checkpoints[0] ?? null;
           slotDriftWarned.clear();
           detourTextOnlyWarned.clear();
+          // A fresh start rewinds the record too: anything picked before it
+          // (the resume dialog, a previous run's answers) must not surface
+          // in the new session's first checkpoint.
+          pickedAnswers.length = 0;
+          pickedMark = 0;
+          awaitingResumeChoice = false;
           pi.sendMessage(
             {
               customType: "chapter-script",

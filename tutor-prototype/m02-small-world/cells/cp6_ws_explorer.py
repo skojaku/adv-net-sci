@@ -61,7 +61,11 @@ mo.vstack([
         f"clustering C/C₀ = {_Cr:.2f}**\n\n"
         f"<span style='color:#6A6D75;font-size:13px'>The two numbers are measured "
         f"on a {_n}-person ring (averaged over 3 tries). The picture below is a "
-        f"60-dot sketch of the same rewiring, small enough to see.</span>"
+        f"60-dot sketch of the same rewiring, small enough to see: **grey lines "
+        f"are the ring's original neighbour links; rust lines are the ones the "
+        f"slider has picked up and reconnected somewhere random**. Move the "
+        f"slider one notch at a time and watch the two numbers above, one at a "
+        f"time — L/L₀ first, then C/C₀.</span>"
     ),
     netviz(_ringe + _short, highlight=_short, layout=_pos60, width=820, height=820),
 ])
