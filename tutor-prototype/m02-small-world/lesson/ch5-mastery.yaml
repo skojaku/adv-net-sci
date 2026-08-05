@@ -29,6 +29,18 @@ checkpoints:
     hints:
       - "Small-world needs TWO properties. The assistant measured how many?"
       - "You built a network in an earlier chapter with very high clustering and terrible distances. Which one?"
+    fresh_variants: |
+      If the answer slips out, hand them a SECOND flawed claim instead —
+      same skill, new data:
+      (a) "This 5000-person network has average path length 3.2, way below
+      the 1200 you'd get on a ring. Therefore it's a small world." (Missing
+      half: clustering was never measured — a purely random graph has short
+      paths and no clustering at all.)
+      (b) "Clustering is 0.61 and average path length is 3.4, so it's a small
+      world." (Both measured, but neither compared to anything — 0.61 and
+      3.4 mean nothing without the random baseline, which is what σ does.)
+      Claim (a) is the mirror image of the scripted one; (b) is the harder
+      step up. Judge exactly as above.
     reveal_after: |
       Terminal: verifying an AI's analysis requires knowing what the concept
       demands — exactly the skill this course grades. Point to the small-world
@@ -55,6 +67,10 @@ checkpoints:
       Mentions (any wording): local links create clusters; a few long-range
       shortcuts exist; those shortcuts make everyone close. All three ->
       full pass. Two of three -> one gentle follow-up, then pass.
+    hints:
+      - "Take just the first sentence. Think about your own corner of the world: do most of your friends know each other?"
+      - "Now the letter has to get OUT of that corner. Back in your drawing, which kind of cable moved it the farthest in one step?"
+      - "Last sentence. Those far cables are rare — only about 1 in 100. Does the letter still need many steps once a few of them exist?"
     reveal_after: |
       This is the final checkpoint — call chapter_done, which will hand you
       the Ending protocol (session summary, congratulations, what's next:

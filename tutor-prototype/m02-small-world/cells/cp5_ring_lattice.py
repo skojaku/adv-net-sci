@@ -1,11 +1,15 @@
 # Premade cells for checkpoint cp5_ring_formula — the ring-lattice degree
-# explorer. Lets the student check their by-hand triangle count against the
-# picture: k=2 highlights nothing (no triangles possible); k=4 highlights
-# exactly 3 of the 6 possible friend-pairs; k=6 highlights 9 of 15.
-# describe: A 12-dot ring on a drag-able network widget with a friend-count slider k (2, 4, or 6); node 0's k nearest neighbors light up amber, and any friendship already existing between two of those neighbors is drawn as a rust line; the caption shows the live-computed clustering C for node 0.
-# --- cell: cp5_ring_k ---
+# explorer. The student COUNTS the friend-pairs themselves; the widget must
+# never print the count or C₀ (that is the checkpoint's own answer, and the
+# k=6 fresh_variant's too). The "check my count" box only highlights the
+# pairs after they have committed to a number — still no number shown.
+# describe: A 12-dot ring on a drag-able network widget with a friend-count slider k (2, 4, or 6) and a "check my count" box; node 0 is rust, its k nearest neighbours are amber, and ticking the box highlights any friendship that already exists between two amber dots. No counts and no clustering value are shown — the student does the counting.
+# --- cell: cp5_ring_controls ---
 cp5_ring_k = mo.ui.slider(steps=[2, 4, 6], value=2, label="k (friends per person)")
-cp5_ring_k
+cp5_ring_show = mo.ui.checkbox(
+    value=False, label="check my count (highlight friendships among the amber dots)"
+)
+mo.hstack([cp5_ring_k, cp5_ring_show], justify="start", gap=2)
 # --- cell: cp5_ring_fig ---
 import math as _math
 
@@ -34,14 +38,13 @@ _friend_pairs = [
     for _j in range(_i + 1, len(_friends))
     if tuple(sorted((_friends[_i], _friends[_j]))) in _edge_lookup
 ]
-_possible = _k * (_k - 1) // 2
-_Ci = len(_friend_pairs) / _possible if _possible else 0.0
-
 _node_colors = {0: "#B4552D", **{_f: "#C98A2D" for _f in _friends}}
+_hl = _friend_pairs if cp5_ring_show.value else []
 mo.vstack([
     mo.md(
-        f"**Node 0 has {_k} friends. Friendships already among them: "
-        f"{len(_friend_pairs)} of {_possible} possible → C₀ = {_Ci:.2f}**"
+        "**Node 0** is the rust dot; the **amber dots are its friends** "
+        f"({_half} on each side). Every line is a friendship — the ones to "
+        "count are the lines that join *two amber dots*."
     ),
-    netviz(_edges, highlight=_friend_pairs, node_colors=_node_colors, layout=_pos),
+    netviz(_edges, highlight=_hl, node_colors=_node_colors, layout=_pos),
 ])
