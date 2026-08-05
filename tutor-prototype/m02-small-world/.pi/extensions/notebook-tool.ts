@@ -713,8 +713,12 @@ function recordPickedAnswer(event: any): void {
       // — and storing that whole sentence put a machine's voice inside the
       // student's own `*You chose:*` line in the submitted notebook. Keep
       // only the answers: every "question"="answer" pair's right-hand side.
-      const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)].map((m) => m[2].trim());
-      if (pairs.length) picked = pairs.filter(Boolean).join(" · ");
+      // Per ANSWER, not per sentence: a dialog with two questions where one
+      // was left blank must still record the one that was answered.
+      const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)]
+        .map((m) => m[2].trim())
+        .filter((v) => v && !/^\(no input\)$/i.test(v));
+      picked = pairs.length ? pairs.join(" · ") : "";
     }
     // The continue-or-fresh answer is session mechanics, not a lesson
     // answer. Match it by CONTENT rather than "whatever dialog comes first
@@ -725,10 +729,11 @@ function recordPickedAnswer(event: any): void {
     // "User declined to answer questions", which is a machine's sentence —
     // stored, it printed in the submitted record as *You chose: "User
     // declined to answer questions"*, attributed to the student.
-    if (/declined to answer|no input/i.test(picked)) {
-      if (awaitingResumeChoice) awaitingResumeChoice = false;
-      return;
-    }
+    //
+    // And it does NOT answer the resume question, so the flag stays armed:
+    // clearing it here meant the RE-ASKED continue-or-fresh answer was
+    // stored instead, which is the same leak one dialog later.
+    if (!picked || /declined to answer/i.test(picked)) return;
     if (awaitingResumeChoice && /continue|fresh|left off|pick (things )?up/i.test(picked)) {
       awaitingResumeChoice = false;
       return;
