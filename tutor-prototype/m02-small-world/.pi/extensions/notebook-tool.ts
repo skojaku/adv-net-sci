@@ -1198,6 +1198,18 @@ function buildSessionRecord(entries: any[]): string {
       );
     }
   }
+  const scripted = checkpointOrder();
+  const haveIds = new Set(cps.map((e) => baseCheckpointId(String(e.id))));
+  const absent = scripted.filter((c) => !haveIds.has(c));
+  if (absent.length) {
+    lines.push(
+      `### ⚠ Not recorded (${absent.length} of ${scripted.length})`,
+      "",
+      `*An earlier session ended before these were reached, so there is no answer of ` +
+        `yours here for them: ${absent.join(", ")}.*`,
+      "",
+    );
+  }
   if (detours.length) {
     lines.push(`### 🧭 Your own questions (${detours.length})`, "");
     for (const d of detours) lines.push(`- *${String(d.question ?? "").trim()}*`);
@@ -1237,7 +1249,21 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
     out.push("");
   }
   if (missing.length) {
-    out.push(`## Where to pick up`, `Next checkpoint: ${missing[0]}`, "");
+    // Name them ALL. Reporting only the first said "9 of 12" and then
+    // pointed at one id, so two missing checkpoints appeared nowhere in the
+    // artifact the grader reads. And a module whose last checkpoint IS
+    // logged is not "where to pick up" — it is a record with holes, which
+    // is what it should say.
+    const lastLogged = allCheckpoints[allCheckpoints.length - 1];
+    out.push(
+      done.has(lastLogged) ? `## Not recorded` : `## Where to pick up`,
+      done.has(lastLogged)
+        ? `These checkpoints have no record — an earlier session ended before they ` +
+          `were reached: ${missing.join(", ")}`
+        : `Next checkpoint: ${missing[0]}` +
+          (missing.length > 1 ? `\nAlso never recorded: ${missing.slice(1).join(", ")}` : ""),
+      "",
+    );
   }
   return out.join("\n");
 }
@@ -1283,6 +1309,12 @@ export default function (pi: ExtensionAPI) {
   const detourTextOnlyWarned = new Set<string>();
   // Improvised-cell review refusals, per cell name — capped like the rest.
   const cellReviewWarned = new Map<string, number>();
+  // chapter_done's "was this chapter actually taught?" refusals, per chapter.
+  const chapterGateWarned = new Map<string, number>();
+  // Checkpoints an EARLIER session left unlogged. Reported to the tutor at
+  // resume and then treated as settled: the brief says not to go back for
+  // them, so nothing downstream may order it to.
+  const resumeGaps = new Set<string>();
   // Upload widgets nb_view_image has actually looked at. Cell presence is
   // not evidence that the photo was ASKED for: cp5's script builds the drop
   // area up front, so the area exists from question 1 and a tutor that then
@@ -1392,10 +1424,19 @@ export default function (pi: ExtensionAPI) {
           // newest entry can be off-script — a stretch (cs1_code), a typo —
           // and indexOf(-1)+1 would silently resolve to cp0_welcome, walking
           // a student who finished four chapters back to the welcome.
-          const lastScripted = [...cps]
-            .reverse()
+          // The FURTHEST scripted checkpoint reached, not the newest row.
+          // A practice round logged out of order (a `cp2_distance_extra`
+          // after chapter 3) rewound the whole session and armed the build
+          // guard back at chapter 2, while the closing summary still read
+          // the position correctly — the two disagreed on the same log.
+          const lastScripted = cps
             .map((e: any) => baseCheckpointId(String(e.id ?? "")))
-            .find((id: string) => order.includes(id));
+            .filter((id: string) => order.includes(id))
+            .reduce(
+              (acc: string | undefined, id: string) =>
+                acc === undefined || order.indexOf(id) > order.indexOf(acc) ? id : acc,
+              undefined as string | undefined,
+            );
           // Positional, matching nextCheckpointId — see the note there for
           // why resuming INTO a gap is not supported. No next id means the
           // module is done; do NOT fall back to the last checkpoint, which
@@ -1410,6 +1451,8 @@ export default function (pi: ExtensionAPI) {
           const gaps = order.filter(
             (o: string) => !doneIds.has(o) && (!nextId || order.indexOf(o) < order.indexOf(nextId)),
           );
+          resumeGaps.clear();
+          for (const g of gaps) resumeGaps.add(g);
           moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
@@ -1546,8 +1589,21 @@ export default function (pi: ExtensionAPI) {
             .filter((e: any) => e?.type === "checkpoint" && e.id)
             .map((e: any) => baseCheckpointId(String(e.id))),
         );
-        const missing = cur.checkpoints.filter((c) => !loggedIds.has(c));
-        if (missing.length > 0) {
+        // Checkpoints an earlier session already skipped are NOT this
+        // chapter's unfinished business: the resume brief told the tutor not
+        // to go back for them, and this gate was then ordering it straight
+        // back. Same rule both places — a gap is reported, not repaired.
+        const missing = cur.checkpoints.filter(
+          (c) => !loggedIds.has(c) && !resumeGaps.has(c),
+        );
+        // Capped like every other guard. Without a cap, a log that cannot be
+        // written makes this fire forever — readSessionLog() returns [], so
+        // every checkpoint reads as missing — while checkpoint_done is
+        // telling the tutor "LOG WRITE FAILED — keep teaching". The student
+        // could never leave chapter 1.
+        const gateStrikes = chapterGateWarned.get(cur.id) ?? 0;
+        if (missing.length > 0 && gateStrikes < 2) {
+          chapterGateWarned.set(cur.id, gateStrikes + 1);
           return {
             content: [
               {
@@ -1983,41 +2039,49 @@ export default function (pi: ExtensionAPI) {
           );
         }
       }
-      // The slots are the ask's parts, in order, and so are the messages the
-      // student typed. A live run filled them shifted by one — every quote
-      // was something they really said, so the drift check passed, but each
-      // slot answered the previous question and the LAST answer (the
-      // synthesis the checkpoint exists for) was dropped from the keepsake
-      // entirely. The cheap invariant that catches the shift: the final
-      // «verbatim» slot has to come from their final message.
-      const lastVerbatim = markers.reduce(
-        (acc, m, i) => (/verbatim/i.test(m) ? i : acc),
-        -1,
-      );
-      if (
-        lastVerbatim >= 0 &&
-        markers.filter((m) => /verbatim/i.test(m)).length > 1 &&
-        said.length > 1 &&
-        slots[lastVerbatim] &&
-        (slotDriftWarned.get(`${id}:order`) ?? 0) < 1
-      ) {
-        const tail = said[said.length - 1];
-        const flatten = (x: string) => x.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-        const fits =
-          flatten(slots[lastVerbatim]).includes(flatten(tail)) ||
-          flatten(tail).includes(flatten(slots[lastVerbatim])) ||
-          bigramDice(slots[lastVerbatim], tail) >= 0.5;
-        if (!fits) {
+      // The slots are the ask's parts in order, and so are the messages the
+      // student typed — a live run filled three checkpoints shifted by one,
+      // every quote genuinely theirs but each under the wrong heading.
+      //
+      // Requiring the LAST slot to hold the LAST message was the obvious
+      // check and the wrong one: students ask questions mid-checkpoint (the
+      // scripts encourage it) and say "ok its uploaded", so the last message
+      // is often an aside — and the refusal then told the tutor to move that
+      // aside into the graded note. What IS always wrong, shift or no shift,
+      // is two slots quoting the same message: the parts of an ask are
+      // different questions, and one reply cannot be the record of both.
+      const verbatimSlots = slots
+        .map((fill, i) => ({ fill, i }))
+        .filter(({ fill, i }) => fill.trim() && /verbatim/i.test(markers[i] ?? ""));
+      if (said.length > 1 && verbatimSlots.length > 1) {
+        const sourceOf = ({ fill }: { fill: string }) => {
+          let best = -1;
+          let score = 0;
+          said.forEach((m, mi) => {
+            const d = bigramDice(fill, m);
+            if (d > score) {
+              score = d;
+              best = mi;
+            }
+          });
+          return score >= 0.5 ? best : -1;
+        };
+        const sources = verbatimSlots.map(sourceOf);
+        const dup = sources.find((v, i) => v >= 0 && sources.indexOf(v) !== i);
+        if (dup !== undefined && (slotDriftWarned.get(`${id}:order`) ?? 0) < 1) {
           slotDriftWarned.set(`${id}:order`, 1);
+          const which = verbatimSlots
+            .filter((_, i) => sources[i] === dup)
+            .map(({ i }) => markers[i].replace(/[«»]/g, "").replace(/\s+/g, " ").trim());
           return toResult({
             out:
-              `NOT LOGGED — the slots are the parts of the ask IN ORDER, and so are the ` +
-              `messages they typed. The last slot ` +
-              `(${markers[lastVerbatim].replace(/[«»]/g, "").replace(/\s+/g, " ").trim()}) ` +
-              `does not hold their last answer, which means the fills are shifted and ` +
-              `their final answer is about to be dropped from the notebook.\n` +
+              `NOT LOGGED — two slots are quoting the same message: ` +
+              `${which.map((w) => `"${w}"`).join(" and ")} both come from ` +
+              `"${said[dup].slice(0, 90)}". Those are different questions, so one reply ` +
+              `cannot be the record of both — the fills are shifted, and one part of ` +
+              `their answer is about to be dropped.\n` +
               `In order, they said: ${said.map((x, i) => `[${i + 1}] "${x.slice(0, 90)}"`).join("  ")}\n` +
-              `Map each slot to the reply that ANSWERED that part, then call ` +
+              `Slot N is the answer to ask step N. Re-pair them, then call ` +
               `checkpoint_done again.`,
             failed: false,
           });
@@ -2441,9 +2505,17 @@ export default function (pi: ExtensionAPI) {
       // with "name 'p_values' is not defined" on a cell the student cannot
       // even see. So only names the kernel actually defines get through.
       const asked = (params.env_vars ?? []).filter((v: string) => /^[A-Za-z_]\w*$/.test(v));
-      let envVars = asked;
-      let droppedEnv: string[] = [];
+      const warm = await ensureWarm(signal);
+      if (warm) return toResult(warm);
+      let envVars: string[] = [];
+      let droppedEnv = asked;
       if (asked.length) {
+        // AFTER ensureWarm: on a cold kernel every name reads as undefined,
+        // and a resume that lands straight on the coding checkpoint makes
+        // this the session's first nb_* call. And it fails CLOSED — letting
+        // an unchecked name through is what broke `marimo export` on a cell
+        // the student cannot see, while dropping one costs nothing here
+        // (run_student_code already injects mo/ig/nx/np/plt/alt/pd/netviz).
         const probe = await runKernel(
           `print("DEFINED<<" + ",".join(_n for _n in ${pyList(asked)} if _n in globals()) + ">>")\n`,
           signal,
@@ -2456,8 +2528,6 @@ export default function (pi: ExtensionAPI) {
         }
       }
       const envDict = `{${envVars.map((v: string) => `${py(v)}: ${v}`).join(", ")}}`;
-      const warm = await ensureWarm(signal);
-      if (warm) return toResult(warm);
       await ensureChapterHeader(signal);
       const edBody =
         `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
@@ -2553,13 +2623,14 @@ export default function (pi: ExtensionAPI) {
       if (!result.failed) {
         result.out =
           `Exercise inserted. The student sees your instructions, a runnable code box, a ` +
-          (droppedEnv.length
-            ? `Ignored env_vars the notebook does not define: ${droppedEnv.join(", ")} — ` +
-              `those are your scaffold's own variables and belong inside the code box.\n`
-            : "") +
           `▶ Run button, and — once they have run it — a 📨 Send button that hands the ` +
           `code in. Ask for the code, then WAIT: their press starts your turn. Every run ` +
           `saves the code to ${savedPath}, so it is still in the notebook months later.\n` +
+          (droppedEnv.length
+            ? `(Ignored env_vars this notebook does not define: ${droppedEnv.join(", ")} — ` +
+              `those look like your scaffold's own variables, which live inside the code ` +
+              `box. Nothing to fix unless you meant a variable an earlier cell made.)\n`
+            : "") +
           result.out;
       }
       return toResult(result);
@@ -2755,6 +2826,8 @@ export default function (pi: ExtensionAPI) {
           pickedMark = 0;
           awaitingResumeChoice = false;
           cellReviewWarned.clear();
+          chapterGateWarned.clear();
+          resumeGaps.clear();
           viewedPhotos.clear();
           // Same rewind for the transcript mark: without it, whatever the
           // student typed before choosing "start fresh" is filed as the new
