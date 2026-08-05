@@ -3578,6 +3578,26 @@ def fig_store_matrix():
     save(fig, "store-matrix.png")
 
 
+def csr_arrays():
+    """The single source of truth for this deck's CSR walkthrough (graph5): indptr/
+    indices/data derived from graph5_adjacency() -- the same matrix every other graph5
+    figure (adjacency-matrix.png, store-matrix.png, adjacency-squared.png, ...) draws --
+    not a second, hand-typed adjacency-list copy. _fig_csr (the static build/payoff
+    figures below) and make_animations.animate_csr_build (Part Seven's construction GIF)
+    both call this, so a change to GRAPH5_EDGES can't leave one of the two silently
+    drawing a different graph than the other."""
+    A = graph5_adjacency()
+    n = A.shape[0]
+    adj = {i: [j for j in range(n) if A[i, j]] for i in range(n)}
+    data, indices, indptr = [], [], [0]
+    for i in range(n):
+        for j in adj[i]:
+            data.append(1)
+            indices.append(j)
+        indptr.append(len(data))
+    return indptr, indices, data
+
+
 def _fig_csr(name, payoff=False):
     # R3 fix (Major 19): at the old figsize=(11.2, 5.6), the array panel's text rendered
     # ~9.5px in the deck -- smaller than the 18px page number -- because a fixed point-size
@@ -3586,13 +3606,21 @@ def _fig_csr(name, payoff=False):
     # per-cell position-index sub-row (the least load-bearing element, freeing width for a
     # wider array-panel share) both apply together, since neither alone bought enough room
     # for the two-digit indptr/index values (10, 11, 12) without overlapping cells.
-    adj = {0: [1, 2], 1: [0, 2, 3], 2: [0, 1, 4], 3: [1, 4], 4: [2, 3]}
-    data, indices, indptr = [], [], [0]
-    for i in range(5):
-        for j in adj[i]:
-            data.append(1)
-            indices.append(j)
-        indptr.append(len(data))
+    #
+    # R14 fix (team-lead: the animation duplicated this construction loop from a hand-typed
+    # `adj` copy, so the two could drift): both now call csr_arrays(), the shared function
+    # above, and the values it must produce for this figure's hand-placed connector geometry
+    # (xb in (1.5, 4.5), the "row 1: indices 0, 2, 3" figcaption) are asserted, not assumed.
+    indptr, indices, data = csr_arrays()
+    assert (indptr, indices, data) == (
+        [0, 2, 5, 8, 10, 12],
+        [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
+        [1] * 12,
+    ), (
+        f"_fig_csr: csr_arrays() returned {(indptr, indices, data)} -- GRAPH5_EDGES changed "
+        f"under this figure's hand-placed connector geometry and figcaption text ('row 1: "
+        f"indices 0, 2, 3'); update both, don't just silence this."
+    )
     # indptr = [0, 2, 5, 8, 10, 12]; row 1 = data[2:5] == indices[2:5]
 
     # The matrix only ever shows single digits (0/1); the array panel has to fit two-digit

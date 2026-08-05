@@ -41,6 +41,7 @@ from make_figures import (  # noqa: E402
     RULE,
     _assert_fits_container,
     _finalize,
+    csr_arrays,
     draw_matrix,
     graph5_adjacency,
 )
@@ -166,18 +167,28 @@ def animate_route(name, stops):
 # wants to press a button / step a slider through the ORDERING structure while he talks --
 # the point of CSR is that one row of the matrix becomes one CONTIGUOUS slice of indices/
 # data, in scan order, and that only reads as a sequence if it happens in front of the room
-# rather than sitting fully built on arrival. Marp restricts scripting (see module docstring
-# above), so a slider isn't reachable -- this is the same "loop instead of interact" answer
-# already shipped for Walk/Trail/Path, applied to the construction _fig_csr draws statically.
+# rather than sitting fully built on arrival.
 #
-# Geometry, palette and the row-drawing convention are duplicated from make_figures._fig_csr
-# rather than imported, on purpose: that function's fontsizes/margins are tuned against ITS
-# OWN containment assertions for a figure that is always fully built, and re-deriving them
-# per revealed-length here would be re-litigating a fight already won. CSR_VALUE_FS etc.
-# below are the same numbers _fig_csr landed on -- if that figure's sizing changes, re-check
-# these too (there's no shared constant precisely because fs()-scaling and containment don't
-# commute the same way for a row of length 2 as for one of length 12; see _fig_csr's own W/
-# VALUE_FS notes for why fixed points, not fs(), are used here as well).
+# On the slider itself: checked rather than assumed. A <script>-driven <input type="range">
+# DOES run under Marp's --html export (verified against the Chromium marp-cli itself bundles
+# -- a real 'input' event dispatched at the element fires its listener and updates the DOM),
+# but only when --html is passed / html: true is set, which is also what the deck's OWN
+# <div class="cols"> layout already needs from that export path -- without it, --html escapes
+# ALL raw HTML to literal text, this deck's div structure included. So a slider is not ruled
+# out by the platform; it is ruled out of THIS file's scope, because reaching it means new
+# markdown/HTML content on the slide, not a figure asset. Until that's built, a loop is the
+# honest answer -- the same one already shipped for Walk/Trail/Path.
+#
+# indptr/indices/data come from make_figures.csr_arrays() (graph5_adjacency(), the same
+# matrix every other graph5 figure draws), not a second hand-typed copy -- a round-14 fix,
+# after that duplication was flagged as a real drift risk. Fontsizes/margins below are still
+# duplicated from make_figures._fig_csr on purpose, not imported: that function's numbers are
+# tuned against ITS OWN containment assertions for a figure that is always fully built, and
+# re-deriving them per revealed-length here would be re-litigating a fight already won.
+# CSR_VALUE_FS etc. are the same numbers _fig_csr landed on -- if that figure's sizing
+# changes, re-check these too (there's no shared constant precisely because fs()-scaling and
+# containment don't commute the same way for a row of length 2 as for one of length 12; see
+# _fig_csr's own W/VALUE_FS notes for why fixed points, not fs(), are used here as well).
 CSR_W = 9.6
 CSR_VALUE_FS, CSR_ROWLABEL_FS = 20.8, 21.2
 CSR_MATRIX_FS = 23.5
@@ -186,20 +197,6 @@ CSR_ENTRY_FRAMES = 5      # frames each newly-revealed (indices, data) pair hold
 CSR_BOUNDARY_FRAMES = 9   # extra hold once a row's indptr boundary + connectors land
 CSR_INTRO_FRAMES = 6      # frames at the very start: matrix shown, nothing scanned yet
 CSR_FINAL_FRAMES = 20     # hold on the fully-built figure before the loop restarts
-
-
-def _csr_data():
-    # Same graph, same construction loop as make_figures._fig_csr -- kept in lockstep by
-    # eye (both are five lines) rather than imported, since importing a helper out of a
-    # function-local scope would mean reaching into _fig_csr's internals from outside.
-    adj = {0: [1, 2], 1: [0, 2, 3], 2: [0, 1, 4], 3: [1, 4], 4: [2, 3]}
-    data, indices, indptr = [], [], [0]
-    for i in range(5):
-        for j in adj[i]:
-            data.append(1)
-            indices.append(j)
-        indptr.append(len(data))
-    return indptr, indices, data
 
 
 def _csr_row(axR, y, values, label, highlight_range=None):
@@ -282,7 +279,7 @@ def _draw_csr_frame(axA, axR, A, indptr, indices, data, n_revealed, highlight_ro
 
 
 def animate_csr_build():
-    indptr, indices, data = _csr_data()
+    indptr, indices, data = csr_arrays()
     A = graph5_adjacency()
     seq = _csr_frame_sequence(indptr, data)
 
