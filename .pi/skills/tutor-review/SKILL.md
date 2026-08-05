@@ -18,8 +18,9 @@ skill is only a dispatcher:
    `tutor-prototype/m02-small-world`.
 2. Read `tutor-prototype/TUTOR_REVIEW_RUBRIC.md` and follow its
    "How to run a review" and "Iteration protocol" sections exactly:
-   reviewer isolated from fixer (subagent here — see the rubric's Runner
-   portability for other harnesses), fresh reviewer every round, fixes at
-   the rubric's fix targets only, E2E gate before the final PASS.
+   reviewer isolated from fixer (use the `pi-subagents` skill if available —
+   see the rubric's Runner portability otherwise), fresh reviewer every
+   round, fixes at the rubric's fix targets only, E2E gate before the final
+   PASS.
 3. Relay each round's findings to the user; finish with PASS/not-PASS,
    iterations used, and remaining Minors.

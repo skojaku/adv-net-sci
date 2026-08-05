@@ -78,6 +78,25 @@ The intended use: a **reviewer subagent** runs this rubric and reports; the
    requires a curriculum/content decision, stop and surface it to the user
    instead of iterating. Never weaken a rubric item to make a review pass.
 
+**Runner portability.** The reviewer role needs only file reading and a
+shell — any agent can run it (Claude Code, pi, Cursor, a human). What
+matters is *isolation between reviewer and fixer*, not the mechanism:
+
+- runner has subagents (Claude Code's agent tool, pi's `pi-subagents`) →
+  spawn the reviewer as a fresh read-only subagent each round;
+- no subagents (e.g. Cursor) → run the review in a fresh chat/session, paste
+  the findings into the fixing session; or, last resort, alternate roles in
+  one context — finish the entire findings report before fixing anything,
+  and on each re-review re-derive findings from the artifacts, never from
+  memory of the previous round.
+
+Entry points: `.claude/skills/tutor-review/` (Claude Code),
+`.pi/skills/tutor-review/` (pi — loads project skills from the cwd's `.pi/`
+only, so start pi at the repo root; conveniently, this also keeps the skill
+out of tutor sessions running inside a module dir), `.cursor/commands/
+tutor-review.md` (Cursor). All three just point here — an agent with none
+of these can simply be told to read this file and follow it.
+
 ---
 
 ## Part S — The notebook artifact
