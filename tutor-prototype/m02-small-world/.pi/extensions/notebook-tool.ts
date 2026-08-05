@@ -565,6 +565,55 @@ function allStudentMessages(ctx: any): string[] {
   return out;
 }
 
+/**
+ * A picker answer never becomes a transcript message, so until now the graded
+ * record had NO independent evidence of it — and a live run logged
+ * "Comfortable with Python" for a student who had picked "I don't code",
+ * miscalibrating the whole session and putting the opposite of their answer
+ * in the artifact they submit. These are captured straight off the
+ * ask_user_question tool result instead.
+ */
+const pickedAnswers: string[] = [];
+let pickedMark = 0;
+
+function recordPickedAnswer(event: any): void {
+  try {
+    if (!/ask.?user.?question/i.test(String(event?.toolName ?? ""))) return;
+    const text = (event?.content ?? [])
+      .filter((c: any) => c?.type === "text" && typeof c.text === "string")
+      .map((c: any) => c.text)
+      .join("\n")
+      .trim();
+    if (!text) return;
+    let picked = text;
+    try {
+      const parsed = JSON.parse(text);
+      const answers = parsed?.answers ?? parsed;
+      const flat = Array.isArray(answers)
+        ? answers
+        : answers && typeof answers === "object"
+          ? Object.values(answers)
+          : [];
+      const joined = flat
+        .map((a: any) => (typeof a === "string" ? a : (a?.answer ?? a?.value ?? "")))
+        .filter(Boolean)
+        .join(" · ");
+      if (joined) picked = joined;
+    } catch {
+      // not JSON — the raw text is the answer
+    }
+    pickedAnswers.push(picked.slice(0, 300));
+  } catch {
+    // capture is best-effort; never break a turn
+  }
+}
+
+function pickedSince(commit = true): string[] {
+  const fresh = pickedAnswers.slice(pickedMark);
+  if (commit) pickedMark = pickedAnswers.length;
+  return fresh;
+}
+
 function studentSaidSince(ctx: any, commit = true): string[] {
   try {
     const all = allStudentMessages(ctx);
@@ -761,6 +810,12 @@ function buildSessionRecord(entries: any[]): string {
       `> ${quote.replace(/\n+/g, " ")}`,
       "",
     );
+    const pickedRaw: string[] = Array.isArray(e.student_picked)
+      ? e.student_picked.map((s: unknown) => String(s ?? "").trim()).filter(Boolean)
+      : [];
+    if (pickedRaw.length) {
+      lines.push(`*You chose:* ${pickedRaw.map((s) => `"${s}"`).join(" · ")}`, "");
+    }
     if (saidRaw.length) {
       lines.push(
         `*You typed:* ${saidRaw.map((s) => `"${s.replace(/\n+/g, " ")}"`).join(" · ")}`,
@@ -850,6 +905,10 @@ export default function (pi: ExtensionAPI) {
   // A slot-drift refusal fires at most once per checkpoint, so a model that
   // cannot satisfy it can never trap the student in a retry loop.
   const slotDriftWarned = new Map<string, number>();
+
+  pi.on("tool_result", async (event: any) => {
+    recordPickedAnswer(event);
+  });
 
   pi.on("session_start", async (_event, _ctx) => {
     // ── Chapter start + resume brief ──────────────────────────────────────
@@ -1216,6 +1275,7 @@ export default function (pi: ExtensionAPI) {
       // Peek, don't consume: a refusal below must leave the transcript mark
       // where it was, or the retry would log an empty student_said_verbatim.
       const said = studentSaidSince(ctx, false);
+      const picked = pickedSince(false);
       const slots = (params.note_slots ?? []).map((s: unknown) => String(s ?? ""));
       // Note «slots» the instructor marked «… verbatim» are held to the
       // student's own words. «their pick» (a picker choice, which never
@@ -1240,6 +1300,19 @@ export default function (pi: ExtensionAPI) {
       const pool = [...said, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
+      // When the answer came ONLY from a picker, student_response must be the
+      // option they actually chose. This is the one case the transcript can't
+      // police and the one a live run got backwards.
+      if (said.length === 0 && picked.length > 0) {
+        const pool = new Set(picked.flatMap(slotTokens));
+        const shared = slotTokens(response).some((t) => pool.has(t) && !SLOT_GLUE.has(t));
+        if (!shared) {
+          problems.push(
+            `student_response ("${response.slice(0, 80)}") does not match what they picked: ` +
+              picked.map((p) => `"${p}"`).join(", "),
+          );
+        }
+      }
       for (const [i, fill] of slots.entries()) {
         if (said.length === 0) break;
         if (!/verbatim/i.test(markers[i] ?? "")) continue;
@@ -1264,7 +1337,11 @@ export default function (pi: ExtensionAPI) {
             `What they actually typed: ${said.map((s) => `"${s}"`).join(", ")}.\n` +
             `Quote them, don't polish — no figure they didn't give, no sentence built out ` +
             `of your own summary. Your reading of a drawing, or a number a widget showed, ` +
-            `belongs in notes. Then call checkpoint_done again.`,
+            `belongs in notes.` +
+            (picked.length
+              ? ` They picked: ${picked.map((p) => `"${p}"`).join(", ")} — record THAT.`
+              : "") +
+            ` Then call checkpoint_done again.`,
           failed: false,
         });
       }
@@ -1274,6 +1351,7 @@ export default function (pi: ExtensionAPI) {
       // switch the ordering guard off for the rest of the session.
       if (isScriptedCheckpoint(id)) pendingCheckpoint = nextCheckpointId(id);
       studentSaidSince(ctx, true);
+      pickedSince(true);
 
       const logged = appendLog({
         type: "checkpoint",
@@ -1284,6 +1362,7 @@ export default function (pi: ExtensionAPI) {
         hints_used: Number(params.hints_used ?? 0),
         notes: String(params.notes ?? ""),
         student_said_verbatim: said,
+        ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 

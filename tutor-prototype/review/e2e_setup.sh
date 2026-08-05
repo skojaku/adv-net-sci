@@ -54,13 +54,39 @@ else
   echo "warning: no 'open' — connect a browser to $MARIMO_URL/?view-as=present yourself" >&2
 fi
 
+# --no-extensions keeps the MACHINE's global extensions out, but it also
+# stops pi discovering the packages the module declares in .pi/settings.json
+# — and one of those is ask_user_question, the dialog the scripts require for
+# their predictions. Production (run_tutor.sh) loads them, so a run without
+# them tests the wrong tutor: it falls back to plain text and P8 can never be
+# assessed. Explicit -e still works under --no-extensions, so load each
+# declared package by path.
+EXTS=(-e "$SANDBOX/.pi/extensions/notebook-tool.ts")
+while IFS= read -r pkg; do
+  [ -n "$pkg" ] || continue
+  entry="$SANDBOX/.pi/npm/node_modules/${pkg#npm:}/index.ts"
+  [ -f "$entry" ] || entry="$SANDBOX/.pi/npm/node_modules/${pkg#npm:}/index.js"
+  if [ -f "$entry" ]; then
+    EXTS+=(-e "$entry")
+  else
+    echo "warning: declared package '$pkg' is not installed in the sandbox — " \
+         "run 'pi update --extensions' in the module first, or dialogs will be missing" >&2
+  fi
+done < <(python3 -c "
+import json, sys
+try:
+    print('\n'.join(json.load(open(sys.argv[1])).get('packages', [])))
+except Exception:
+    pass
+" "$SANDBOX/.pi/settings.json" 2>/dev/null)
+
 KICKOFF="Please start the tutoring session. Your CHAPTER SCRIPT message contains the current curriculum — begin at its first checkpoint, unless a RESUME CONTEXT message is present (then greet the student back and follow it). Keep replies short and conversational (1-3 spoken sentences, one question at a time), and use the nb_* notebook tools for all notebook work — the student is watching this terminal."
 
 herdr agent start "$AGENT" --cwd "$SANDBOX" --no-focus \
   --env MARIMO_URL="$MARIMO_URL" \
   --env TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-openrouter/google/gemini-3.6-flash}" \
   -- pi --model "$TUTOR_MODEL" --thinking low --exclude-tools bash -a \
-     --no-extensions -e "$SANDBOX/.pi/extensions/notebook-tool.ts" "$KICKOFF" >/dev/null
+     --no-extensions "${EXTS[@]}" "$KICKOFF" >/dev/null
 
 STATE="$SANDBOX/review-state.env"
 {
