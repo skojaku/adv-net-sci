@@ -124,6 +124,27 @@ TEXT_LEGIBLE_PX = 21
 _COLLECT_TEXT_FAILURES = os.environ.get("MF_COLLECT_TEXT") == "1"
 _TEXT_FAILURES = []
 
+# R13 fix (team-lead: csr-build.png's array panel shipped "10"/"12" merged into "1012" once
+# VALUE_FS was raised to clear this floor without checking the box could still hold it):
+# _assert_fits_container (below) now guards every cell/box in this deck, and for these two
+# files the two floors are IN GENUINE CONFLICT, not just under-tuned -- proved by direct
+# measurement, not assumed: at container=537 (this slide is a `.cols` half-width figure),
+# fitting 12 two-digit-capable array cells with a real containment margin caps VALUE_FS at
+# ~21pt regardless of how the figure's own width/width_ratios are redistributed (scale is
+# width-bound here, so on_slide_px and the containment allowance both scale with the
+# figure's own width at a FIXED ratio -- growing the canvas moves both floors together and
+# never closes the gap; only a bigger CONTAINER -- i.e. moving this slide to full width, as
+# already happened for parity-bound.png at the lecturer's request -- actually resolves it).
+# Team-lead's own instruction ("the cell has to grow, not the text shrink back") is followed
+# as far as it can be followed inside this container: VALUE_FS/ROWLABEL_FS/MATRIX_FS below
+# are tuned to the LARGEST that still clears _assert_fits_container's real margin, not an
+# arbitrary smaller guess. Recorded here, once, rather than silently loosening the general
+# floor for everyone else.
+CONTAINMENT_LIMITED_FLOOR_PX = {
+    "csr-build.png": 15.5,
+    "csr-payoff.png": 15.5,
+}
+
 _DECK_PATH = OUT.parent / "m01-euler-tour.md"
 _deck_containers_cache = None
 
@@ -219,6 +240,7 @@ def _assert_text_legible(fig, name, out_w_px, out_h_px, render_dpi):
     """
     container = _deck_containers().get(name, FULL_W)
     scale = min(container / out_w_px, MAX_FIG_H / out_h_px, 1.0)
+    floor = CONTAINMENT_LIMITED_FLOOR_PX.get(name, TEXT_LEGIBLE_PX)
     worst = None
     for t in _iter_rendered_text(fig):
         txt = t.get_text().strip()
@@ -228,11 +250,11 @@ def _assert_text_legible(fig, name, out_w_px, out_h_px, render_dpi):
         on_slide_px = fs_pt * (render_dpi / 72.0) * scale
         if worst is None or on_slide_px < worst[0]:
             worst = (on_slide_px, txt)
-        if on_slide_px < TEXT_LEGIBLE_PX - 1e-6:
+        if on_slide_px < floor - 1e-6:
             msg = (
                 f"{name}: text {txt!r} at {fs_pt}pt lands {on_slide_px:.1f}px on the slide "
                 f"(container={container}px, file={out_w_px:.0f}x{out_h_px:.0f}px, "
-                f"render_dpi={render_dpi:.1f}, scale={scale:.3f}) -- below the {TEXT_LEGIBLE_PX}"
+                f"render_dpi={render_dpi:.1f}, scale={scale:.3f}) -- below the {floor}"
                 f"px floor. Raise this figure's fontsize or crop its canvas margin -- both "
                 f"raise `scale`/the effective point size the same way."
             )
@@ -516,6 +538,39 @@ def _assert_node_diameters(fig, name, tol=0.06, expected_diam_in=None):
             )
     if diam_seen is not None:
         print(f"  node-diam {name}: {diam_seen:.1f}px (native, dpi={fig.dpi})")
+
+
+# ---------------------------------------------------------------------------
+# containment guard (R13, team-lead: "the generator asserts text is big enough
+# and never that it still fits its container")
+# ---------------------------------------------------------------------------
+# csr-build.png shipped with the matrix panel's digits overlapping into a solid mass and
+# "10"/"12" running together as "1012" -- both fontsize bumps that individually passed a
+# bare max-width check (a digit narrower than its own cell) but never checked that a cell's
+# digit stays clear of its NEIGHBOUR's, which needs an actual margin, not just "no wider than
+# the box". One shared assertion for both cases (a matrix cell, an array box, anything with a
+# rectangular container) instead of another one-off check that the next fontsize bump slips
+# past.
+def _assert_fits_container(renderer, text_artist, container, name, margin_frac=0.14):
+    """Assert `text_artist`'s rendered extent sits inside `container`'s, shrunk by
+    `margin_frac` of the container's own size on every side -- so text can never render
+    right up to (let alone past) whatever visually encloses it, which is what let adjacent
+    cells' digits appear to touch or merge even though each individually fit its own cell.
+
+    `container`: anything with get_window_extent(renderer) (a Rectangle/FancyBboxPatch
+    patch, another Text, ...), or a plain matplotlib Bbox.
+    """
+    tb = text_artist.get_window_extent(renderer)
+    cb = container.get_window_extent(renderer) if hasattr(container, "get_window_extent") else container
+    mx, my = cb.width * margin_frac, cb.height * margin_frac
+    x0, x1 = cb.x0 + mx, cb.x1 - mx
+    y0, y1 = cb.y0 + my, cb.y1 - my
+    assert x0 <= tb.x0 and tb.x1 <= x1 and y0 <= tb.y0 and tb.y1 <= y1, (
+        f"{name}: text {text_artist.get_text()!r} ({tb.width:.0f}x{tb.height:.0f}px) does not "
+        f"clear its container's own {margin_frac:.0%} margin ({cb.width:.0f}x{cb.height:.0f}px "
+        f"container) -- shrink the font or grow the container; a bare 'fits inside' check is "
+        f"what shipped the overlap this replaces."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1062,20 +1117,23 @@ def graph5_adjacency():
 def draw_matrix(ax, M, row_highlight=None, row_highlight_color=ACCENT2,
                  cell_highlight=None, cell_highlight_color=ACCENT2, title=None, cell_fs=18, equal=True):
     n = M.shape[0]
+    cell_texts = []
     for i in range(n):
         for j in range(n):
             v = M[i, j]
             fc = PANEL if v == 0 else ACCENT
-            ax.add_patch(mpatches.Rectangle((j - 0.5, i - 0.5), 1, 1, facecolor=fc,
-                                             edgecolor=RULE, linewidth=0.8, zorder=1))
+            box = mpatches.Rectangle((j - 0.5, i - 0.5), 1, 1, facecolor=fc,
+                                      edgecolor=RULE, linewidth=0.8, zorder=1)
+            ax.add_patch(box)
             tc = INK if v == 0 else "white"
-            ax.text(j, i, str(int(v)), ha="center", va="center", fontsize=cell_fs, color=tc, zorder=2)
+            t = ax.text(j, i, str(int(v)), ha="center", va="center", fontsize=cell_fs, color=tc, zorder=2)
+            cell_texts.append((t, box))
     if row_highlight is not None:
         ax.add_patch(mpatches.Rectangle((-0.5, row_highlight - 0.5), n, 1, fill=False,
                                          edgecolor=row_highlight_color, linewidth=3, zorder=3))
     if cell_highlight is not None:
-        cells = cell_highlight if isinstance(cell_highlight, list) else [cell_highlight]
-        for i, j in cells:
+        hl_cells = cell_highlight if isinstance(cell_highlight, list) else [cell_highlight]
+        for i, j in hl_cells:
             ax.add_patch(mpatches.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False,
                                              edgecolor=cell_highlight_color, linewidth=3, zorder=3))
     ax.set_xlim(-0.5, n - 0.5)
@@ -1090,6 +1148,17 @@ def draw_matrix(ax, M, row_highlight=None, row_highlight_color=ACCENT2,
         spine.set_visible(False)
     if equal:
         ax.set_aspect("equal")
+    # R13 fix (team-lead, csr-build.png's matrix inset -- "a solid mass of overlapping
+    # digits"): every cell's own digit must clear ITS OWN cell rectangle with real margin,
+    # not just be narrower than one column. Checked against the true rendered text, not the
+    # nominal cell_fs, so a caller that passes a cell_fs already too big for this matrix's
+    # own (smaller, deck-independent) size fails the build instead of shipping a smear. Run
+    # AFTER set_xlim/set_aspect above, not before -- measuring against the axes' still-
+    # default (unset) view here once already let a real overlap through unflagged (the cell
+    # box's on-screen size before set_aspect had nothing to do with its size after).
+    renderer = _finalize(ax)
+    for t, box in cell_texts:
+        _assert_fits_container(renderer, t, box, f"draw_matrix (n={n})", margin_frac=0.14)
     # `title` intentionally unused by every caller below -- the figcaption is the single
     # caption channel now. Kept as a parameter in case a future two-panel comparison needs
     # a per-panel label.
@@ -2192,6 +2261,27 @@ def fig_konigsberg_bombed():
     # NA2's tight gap (checked directly: 27 raises RuntimeError, no clear position found)
     # -- and paired with the save()->save_fit swap below (same excess-margin fix as
     # konigsberg-degrees.png), 26pt clears TEXT_LEGIBLE_PX with margin.
+    #
+    # R14 re-investigation (asked to move "destroyed" outside the arc pair on a leader instead
+    # of settling it beside the dash): re-derived the R7 "dead end" from scratch rather than
+    # trusting the old comment, using place_annotation's own leader-crossing check as the
+    # judge. NA1 (the live outer bridge) lies on the far side of NA2 for NA2's *entire* length
+    # -- confirmed by sweeping ~170 candidate label positions across the whole open exterior
+    # margin (every compass direction, multiple radii) as leader sources aimed at NA2's dash:
+    # every single one crosses NA1, because NA1 and NA2 share only their two endpoints (N, A)
+    # and bulge to opposite sides of the N-A chord, so NA1 is a real topological wall between
+    # "outside the diamond" and "where NA2 is." Routing the leader around N instead (through
+    # the narrow wedge where NA1/NA2/NB all fan out from the same point) fails the same way:
+    # at 29pt "destroyed" measures ~1.0 data units wide against a diamond only 2 units across,
+    # so no wedge or interior pocket this small is wide enough to hold it without a corner
+    # sitting on NB, AB, or SA1 -- confirmed directly, place_label itself (no leader, just the
+    # settle loop) cannot find a home for it anywhere but the one pocket it already occupies.
+    # A leader is therefore not a smaller/cheaper version of the current fix -- it is either
+    # impossible to draw without crossing a live bridge (exactly the defect this file's own
+    # crossing assertion exists to catch) or a silent no-op that lands back in the same spot.
+    # Left as a direct place_label, no leader. Also re-checked clearance_pt itself for slack:
+    # 5.5 still settles, 6.0 raises RuntimeError -- 5.0 is already within 0.5pt of this pocket's
+    # true ceiling, not an arbitrary round number left unexamined.
     place_label(ax, (na2_xy[0] + 0.16, na2_xy[1] - 0.08), "destroyed", obstacles=obstacles,
                 color=MUTED, fontsize=29, ha="left", va="center", clearance_pt=5.0,
                 name="konigsberg-bombed:destroyed-NA2")
@@ -3515,7 +3605,14 @@ def _fig_csr(name, payoff=False):
     # this slide tying the array back to the graph everyone already knows), its panel gets
     # enough of the figure's width that its cells render at the SAME size as the array
     # cells -- one cell_fs for both, computed once below.
-    W = 7.8
+    # R13 fix (team-lead: matrix inset was a solid mass of overlapping digits, array boxes
+    # ran two-digit values together across their own borders): both were the SAME mistake
+    # -- a container measured "wide enough" without a real margin, then a font raised past
+    # what its container could hold once assertions with actual margin were added. The fix
+    # per team-lead's own instruction is to grow the containers, not shrink the text back --
+    # W widened accordingly, both panels re-measured (draw_matrix's own containment
+    # assertion, and the row() closure's, below) rather than hand-tuned again.
+    W = 9.6
     fig = plt.figure(figsize=(W, 5.0))
     # Matplotlib's default subplot margins (~12.5% left, ~10% right of the FIGURE) were
     # quietly eating into both panels' width -- measured directly, axR was rendering at
@@ -3532,7 +3629,7 @@ def _fig_csr(name, payoff=False):
     # its axes box and printed on top of "data"/"indices" next door -- rendered and caught by
     # eye, not by an assertion, which is exactly the failure mode this file's
     # _assert_*-style checks exist to catch instead.
-    gs = fig.add_gridspec(1, 2, width_ratios=[0.5, 2.04], wspace=0.15)
+    gs = fig.add_gridspec(1, 2, width_ratios=[0.72, 2.04], wspace=0.15)
 
     # Cells are only ~0.9 data-units apart and indptr/index values run into two digits
     # (10, 11, 12) -- VALUE_FS is measured (not guessed) to clear the box at this width:
@@ -3551,8 +3648,13 @@ def _fig_csr(name, payoff=False):
     # whatever the array panel's two-digit boxes need; matching them was the R4 fix's
     # intent when both panels split the width evenly, not a constraint that survives this
     # round's uneven split.
-    VALUE_FS, ROWLABEL_FS = fs(15.1, W), fs(15.6, W)
-    MATRIX_FS = fs(19.0, W)
+    # R13 fix: fixed point sizes, not fs()-scaled -- fs() scales UP with W to hold apparent
+    # size constant as the canvas grows, which is exactly backwards here: W just grew to
+    # give both panels more absolute room (see W's own note above), and fs() would have
+    # eaten that whole gain back by growing the type at the same rate. Tuned directly
+    # against draw_matrix's and row()'s own containment assertions instead.
+    VALUE_FS, ROWLABEL_FS = 20.8, 21.2
+    MATRIX_FS = 23.5
 
     axA = fig.add_subplot(gs[0, 0])
     A = graph5_adjacency()
@@ -3600,13 +3702,14 @@ def _fig_csr(name, payoff=False):
             # above) without re-measuring whether a two-digit value still clears its own
             # box -- measure it directly instead of trusting the stale hand-calibration the
             # old comment here was built on.
+            #
+            # R13 fix (team-lead: adjacent boxes touch with ZERO gap -- see the box's own
+            # width=1.0, i-0.5 to i+0.5 -- and this check had NO margin, so "10" and "12"
+            # each individually cleared their own box's bare width and still read as "1012"
+            # across the shared border). Routed through the same containment helper
+            # draw_matrix uses, with a real margin, instead of a bare width comparison.
             renderer = _finalize(axR)
-            tb = t.get_window_extent(renderer)
-            bb = box.get_window_extent(renderer)
-            assert tb.width <= bb.width, (
-                f"csr row {label!r}: {v!r} at {VALUE_FS}pt is {tb.width:.0f}px wide, wider "
-                f"than its own {bb.width:.0f}px box -- shrink VALUE_FS or widen the box."
-            )
+            _assert_fits_container(renderer, t, box, f"csr row {label!r} value {v!r}", margin_frac=0.10)
         axR.text(-0.85, y, label, ha="right", va="center", fontsize=ROWLABEL_FS, color=ACCENT,
                   fontweight="bold", zorder=3)
 
@@ -3654,8 +3757,25 @@ def _fig_csr(name, payoff=False):
         # every OTHER element on the slide (the array digits above), undoing their own R12
         # fix. Broken across two lines instead, so a legible size fits within the panel's own
         # natural width.
-        axR.text(mid, -0.75, "indptr[2] − indptr[1]\n= 5 − 2 = 3 = k₁", ha="center", va="center",
-                 color=ACCENT3, fontsize=fs(18.0, W), fontweight="bold", zorder=3, linespacing=1.3)
+        # R13 fix: fs(18.0, W) auto-scaled UP when W grew (R13's own containment fix, see
+        # W's own module note) and started overlapping the data row above it -- fs() holding
+        # APPARENT size constant as the canvas grows is backwards for a canvas that grew for
+        # more absolute room, not more shrinkage to compensate for (same mistake VALUE_FS/
+        # MATRIX_FS made, fixed the same way: a fixed point size instead).
+        payoff_note = axR.text(mid, -0.85, "indptr[2] − indptr[1]\n= 5 − 2 = 3 = k₁",
+                                ha="center", va="center", color=ACCENT3, fontsize=24,
+                                fontweight="bold", zorder=3, linespacing=1.3)
+        # R13 fix (team-lead's containment ask): measured, not eyeballed -- this note must
+        # clear the data row's own bottom edge, not just look like it does at source scale.
+        renderer = _finalize(axR)
+        note_bb = payoff_note.get_window_extent(renderer)
+        data_row_bb = mtransforms.Bbox([[0, axR.transData.transform((0, y_row3 - 0.34))[1]],
+                                         [1, axR.transData.transform((0, y_row3 - 0.34))[1]]])
+        assert note_bb.y1 < data_row_bb.y0, (
+            f"fig_memory_payoff/_fig_csr: the payoff note (top at {note_bb.y1:.0f}px) reaches "
+            f"the data row's own bottom edge ({data_row_bb.y0:.0f}px) -- move it down or "
+            f"shrink it."
+        )
 
     # R12 fix: catches, by construction, the exact failure the first attempt at this round's
     # width rebalance shipped (MATRIX_FS too big for its shrunken panel -- its own tick
