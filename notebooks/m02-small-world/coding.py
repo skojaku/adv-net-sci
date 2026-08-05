@@ -2,7 +2,7 @@
 # dependencies = [
 #     "marimo",
 #     "numpy",
-#     "python-igraph",
+#     "igraph",
 # ]
 # [tool.marimo.display]
 # default_width = "full"

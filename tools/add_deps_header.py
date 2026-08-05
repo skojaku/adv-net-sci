@@ -20,7 +20,8 @@ from pathlib import Path
 
 # import name -> distribution name on PyPI
 DIST = {
-    "igraph": "python-igraph",
+    # Pyodide ships the real package as "igraph"; "python-igraph" is only a shim.
+    "igraph": "igraph",
     "sklearn": "scikit-learn",
     "PIL": "pillow",
     "cv2": "opencv-python-headless",

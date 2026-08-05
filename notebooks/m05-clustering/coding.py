@@ -3,7 +3,7 @@
 #     "marimo",
 #     "matplotlib",
 #     "numpy",
-#     "python-igraph",
+#     "igraph",
 #     "seaborn",
 # ]
 # [tool.marimo.display]
