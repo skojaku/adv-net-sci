@@ -74,6 +74,9 @@ if os.fork() == 0:
     if os.fork() == 0:
         while os.getppid() != 1:
             time.sleep(0.01)
+        # Lead our own process group, so teardown's `kill -- -<pid>` reaches
+        # the whole uv chain instead of a group that does not exist.
+        os.setpgid(0, 0)
         os.chdir(sandbox)
         fd = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
         os.dup2(fd, 1)

@@ -1179,6 +1179,7 @@ function parkNote(id: string, markdown: string): void {
   try {
     fs.mkdirSync(parkedDir(), { recursive: true });
     fs.writeFileSync(path.join(parkedDir(), `${sanitize(id)}.md`), markdown);
+    // (the id passed in is already the CELL name, e.g. cp5_ring_formula_note)
   } catch {
     // best effort — the log still holds the student's words
   }
@@ -1192,7 +1193,14 @@ function parkNote(id: string, markdown: string): void {
 async function flushParkedNotes(signal?: AbortSignal): Promise<void> {
   let files: string[];
   try {
-    files = fs.readdirSync(parkedDir()).filter((f) => f.endsWith(".md")).sort();
+    files = fs
+      .readdirSync(parkedDir())
+      .filter((f) => f.endsWith(".md"))
+      // By WHEN they were parked. Sorting names put cp6_large_n_experiment
+      // before cp6_watts_strogatz, which is back to front.
+      .map((f) => ({ f, t: fs.statSync(path.join(parkedDir(), f)).mtimeMs }))
+      .sort((a, b) => a.t - b.t)
+      .map(({ f }) => f);
   } catch {
     return;
   }
@@ -1200,7 +1208,7 @@ async function flushParkedNotes(signal?: AbortSignal): Promise<void> {
     const full = path.join(parkedDir(), f);
     try {
       const md = fs.readFileSync(full, "utf-8");
-      const r = await insertMarkdownCell(f.replace(/\.md$/, ""), md, signal);
+      const r = await insertMarkdownCell(f.replace(/\.md$/, ""), md, signal, true);
       if (!r.failed) fs.rmSync(full, { force: true });
     } catch {
       return;
@@ -1213,10 +1221,14 @@ async function insertMarkdownCell(
   name: string,
   markdown: string,
   signal?: AbortSignal,
+  skipHeader = false,
 ): Promise<{ out: string; failed: boolean }> {
   const warm = await ensureWarm(signal);
   if (warm) return warm;
-  if (name !== "session_record") await ensureChapterHeader(signal);
+  // A note recovered from an outage belongs to the chapter it was written
+  // in, so it must not be the thing that creates the CURRENT chapter's
+  // heading — that would file it under a chapter it has nothing to do with.
+  if (name !== "session_record" && !skipHeader) await ensureChapterHeader(signal);
   // Parked notes go in before anything else, so a note recovered after an
   // outage lands in its own place rather than after the cells written while
   // the notebook was down.
@@ -1295,8 +1307,26 @@ function buildSessionRecord(entries: any[]): string {
   const furthest = scripted.reduce((acc, id, i) => (haveIds.has(id) ? i : acc), -1);
   const holes = scripted.filter((c) => !haveIds.has(c) && scripted.indexOf(c) < furthest);
   const notReached = scripted.filter((c) => !haveIds.has(c) && scripted.indexOf(c) > furthest);
-  if (holes.length || notReached.length) {
+  let stillParked: string[] = [];
+  try {
+    stillParked = fs
+      .readdirSync(parkedDir())
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => f.replace(/\.md$/, ""));
+  } catch {
+    stillParked = [];
+  }
+  if (holes.length || notReached.length || stillParked.length) {
     lines.push(`### ⚠ Not everything is here`, "");
+    if (stillParked.length) {
+      lines.push(
+        `*The notebook was unreachable when these notes were written, and it never came ` +
+          `back, so they are saved beside this notebook rather than in it ` +
+          `(session_artifacts/parked_notes/): ${stillParked.join(", ")}. Your answers ` +
+          `themselves are in the record below.*`,
+        "",
+      );
+    }
     if (holes.length) {
       lines.push(
         `*A session ended part-way and the next one carried on, so these have no answer ` +
@@ -1790,6 +1820,31 @@ export default function (pi: ExtensionAPI) {
                   `handle it, then call chapter_done again.`;
           return { content: [{ type: "text" as const, text }], details: { gated: true } };
         }
+      } else if ((chapterGateWarned.get(`${chapters[idx]?.id}:pace`) ?? 0) < 1) {
+        // No picker — a dead notebook, a headless restart. DESIGN.md says
+        // chapter_done "refuses to transition" without the student's word,
+        // and with no else branch it simply transitioned. checkpoint_done's
+        // gate was fixed the same way; this is its twin.
+        //
+        // ONE refusal, because the picker will still be missing on the
+        // retry: the point is to make the tutor ask, not to trap it in a
+        // loop it can never satisfy.
+        chapterGateWarned.set(`${chapters[idx]?.id}:pace`, 1);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text:
+                `NOT ADVANCED — the picker could not run, so the student has not been asked ` +
+                `whether they want anything before leaving "${chapters[idx]?.title ?? "this part"}". ` +
+                `Ask them in plain text — ready to move on, a question first, or one more ` +
+                `practice problem — END YOUR TURN, and wait. Call chapter_done again once ` +
+                `they answer; handle a question or a practice round first if that is what ` +
+                `they choose.`,
+            },
+          ],
+          details: { gated: true },
+        };
       }
 
       if (!next) {
@@ -1798,6 +1853,10 @@ export default function (pi: ExtensionAPI) {
         const entries = readSessionLog();
         const allCps = chapters.flatMap((c) => c.checkpoints);
         let done = "";
+        // Last chance for any note the notebook was down for — chapter 5 has
+        // no builds at all, so without this a note parked at cp7 or cp8 would
+        // never reach the page it belongs on.
+        await flushParkedNotes(_signal);
         const rec = await insertMarkdownCell("session_record", buildSessionRecord(entries), _signal);
         done += rec.failed ? "session_record cell FAILED. " : "Closing record added to their notebook. ";
         try {
@@ -2357,6 +2416,7 @@ export default function (pi: ExtensionAPI) {
           `NO NOTE CELL: this checkpoint has no note: skeleton and you passed no ` +
           `note_markdown — add one now with nb_add_cell (name "${id}_note").`;
       } else {
+        await flushParkedNotes(signal);
         const r = await insertMarkdownCell(`${id}_note`, md, signal);
         // A note that could not be written is PARKED, exactly as rendered.
         // In a live run the notebook died mid-checkpoint, and by the time the
@@ -2364,7 +2424,7 @@ export default function (pi: ExtensionAPI) {
         // compacted out of its context — so it reconstructed the quotes from
         // memory and paraphrased three of them into the graded artifact. The
         // text is already correct here; nothing needs to remember it.
-        if (r.failed) parkNote(id, md);
+        if (r.failed) parkNote(`${id}_note`, md);
         noteLine = r.failed
           ? `Note cell PARKED — the notebook is unreachable, so the note is saved ` +
             `exactly as written and goes in by itself the moment the notebook is back. ` +
