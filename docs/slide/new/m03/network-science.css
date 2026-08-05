@@ -137,6 +137,17 @@ section.mid { justify-content: flex-start; }
 section.mid > h2 + hr { margin-bottom: auto; }
 section.mid > :last-child { margin-bottom: auto; }
 
+/* ...but `section .formula:last-child { margin-bottom: 0 }` further down has the
+   SAME specificity (0,2,1) and comes later, so it won on every `mid` slide whose
+   last block is a formula panel — which is most of the question slides. With the
+   bottom auto margin gone, the top one pushed the whole body to the floor: 360px
+   of dead band under the rule, and the page number rendering inside the beige
+   panel. Two independent reviewers reported it from different slides.
+   The override has to out-specify that rule, not merely repeat it. */
+section.mid > .formula:last-child,
+section.mid > div:last-child,
+section.mid > p:last-child { margin-bottom: auto; }
+
 /* ---------- body ---------- */
 
 section p {
