@@ -52,7 +52,19 @@ NODE_MIN_PX, NODE_MAX_PX = 26, 52
 INK_FRACTION_FAIL = 0.15
 INK_FRACTION_WANT = 0.35
 
-MAX_FIG_H = 380  # network-science.css: section .fig img { max-height }
+# network-science.css caps figures three different ways, and using one number for all of
+# them is how 13px type passed a green gate on sixteen slides. Measured on the render:
+# discs the generator draws at a uniform 40bp land 38-40px in a plain full-width figure
+# and 34-38px in a `fig tight` one.
+#   section .fig img        { max-height: 380px }
+#   section .fig.tight img  { max-height: 320px }   <- 16 slides use this
+#   section .fig.stack img  { max-height: 190px }
+FIG_H = {"": 380, "tight": 320, "stack": 190}
+MAX_FIG_H = FIG_H[""]
+
+# And the WIDTH cap for a full-width figure is not the content area. Marp wraps the image
+# in a <p>, and `section p { max-width: 1080px }` binds first.
+FULL_IMG_W = 1080
 
 # Content must stop before the frame does. The theme's bottom padding is 60px,
 # and the page number sits in the bottom-right corner, so ink below this row is
@@ -206,8 +218,12 @@ def figure_containers(deck="m02-small-world.md"):
     out = []
     for i, chunk in enumerate(parts[1:], start=1):
         in_cols = 'class="cols"' in chunk
+        mod = ""
+        for m in ("tight", "stack"):
+            if f'class="fig {m}"' in chunk:
+                mod = m
         for f in re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk):
-            out.append((i, f, COL_W if in_cols else FULL_W))
+            out.append((i, f, COL_W if in_cols else FULL_IMG_W, FIG_H[mod], mod))
     return out
 
 
@@ -341,20 +357,30 @@ def main():
     # defect to the rendered deck of m02 before they existed.
     for kind, snippet in figcaption_math():
         fails.append(f"deck: math inside a {kind} — KaTeX will print it literally: {snippet!r}")
-    for n, src, container in figure_containers():
+    for n, src, container, hcap, mod in figure_containers():
         try:
-            sw = Image.open(src).size[0]
+            sw, sh = Image.open(src).size
         except OSError:
             fails.append(f"slide {n:03d}: {src} is missing")
             continue
         # Figures are authored at 4px per bp: a column figure is 520bp -> 2080px
         # (the GIF is emitted at half that), a full-width one 1100bp -> 4400px.
-        authored = COL_W if sw <= 3000 else FULL_W
+        authored = COL_W if sw <= 3000 else FULL_IMG_W
         if authored != container:
             fails.append(
                 f"slide {n:03d}: {src} is authored {sw}px wide (for a {authored}px "
                 f"container) but used in a {container}px one — it renders at "
                 f"{container / authored:.0%} of its intended scale")
+        # The height cap the deck's own markup applies. When it binds before the width
+        # does, every glyph in the figure shrinks with it -- which is how 13px type
+        # passed this gate on sixteen `fig tight` slides.
+        elif hcap / sh < container / sw:
+            fails.append(
+                f"slide {n:03d}: {src} is {sh}px tall, so the "
+                f"{('`fig ' + mod + '`') if mod else '`fig`'} height cap of {hcap}px "
+                f"binds before the width does — it lands "
+                f"{min(container / sw, hcap / sh) * 4:.2f} slide px per bp instead of "
+                f"{container * 4 / sw:.2f}, and the in-figure type shrinks with it")
 
     for path in files:
         n = int(re.search(r"(\d+)", path.split("/")[-1]).group(1))

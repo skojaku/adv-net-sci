@@ -1599,7 +1599,7 @@ Build it, break it, build it back — and the line that predicted the breaking.
 <div class="fig">
 
 ![w:1100](figures/recap.png)
-<figcaption>the four numbers of Module 03</figcaption>
+<figcaption>built it, lost Brno, ringed the south</figcaption>
 
 </div>
 
