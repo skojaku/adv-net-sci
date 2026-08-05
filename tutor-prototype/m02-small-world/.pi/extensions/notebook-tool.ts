@@ -1209,17 +1209,31 @@ export default function (pi: ExtensionAPI) {
       const widget = lines[lines.length - 1];
       signalMark = lines.length;
       if (!/^[A-Za-z_]\w*$/.test(widget)) return;
+      // Two kinds of box send: a photo drop area, and an exercise code box
+      // (whose widget name ends in _ed). They need opposite instructions —
+      // one is read with the vision model, the other with nb_read — and a
+      // tutor told to call nb_view_image on a code box burns a turn on an
+      // error the student then watches it recover from.
+      const isCode = /_ed$/.test(widget);
       pi.sendMessage(
         {
           customType: "student-signal",
-          content:
-            `The student clicked "Send to my tutor" in the notebook: their photo is ` +
-            `uploaded and showing in the "${widget}" box. Call ` +
-            `nb_view_image(widget="${widget}", …) now — do not ask them whether it is ` +
-            `up. Judge what you see against the task, and say something specific about ` +
-            `THEIR picture. If it does not show what the checkpoint asked for, say so ` +
-            `warmly and ask them to redo it and drop the new photo into the same box; ` +
-            `they can replace it as many times as they need.`,
+          content: isCode
+            ? `The student clicked "Send my code to my tutor" in the notebook: they have ` +
+              `run their code and are handing it in. Read it with ` +
+              `nb_read(["${widget}.value"]) now — do not ask them to paste it. Their ` +
+              `output is already on screen under the box; react to what THEIR code and ` +
+              `chart actually show, and ask the checkpoint's question about it. If the ` +
+              `code does not run or does not do the task, say so warmly and point at the ` +
+              `one line to change — they can edit and press ▶ Run again as often as they ` +
+              `like, then send again.`
+            : `The student clicked "Send to my tutor" in the notebook: their photo is ` +
+              `uploaded and showing in the "${widget}" box. Call ` +
+              `nb_view_image(widget="${widget}", …) now — do not ask them whether it is ` +
+              `up. Judge what you see against the task, and say something specific about ` +
+              `THEIR picture. If it does not show what the checkpoint asked for, say so ` +
+              `warmly and ask them to redo it and drop the new photo into the same box; ` +
+              `they can replace it as many times as they need.`,
           display: false,
         },
         { deliverAs: "followUp", triggerTurn: true },
@@ -2116,12 +2130,57 @@ export default function (pi: ExtensionAPI) {
         `${name}_ed = mo.ui.code_editor(value=${py(params.scaffold)}, language="python", min_height=140)\n` +
         `${name}_run = mo.ui.run_button(label="▶ Run my code")\n` +
         `mo.vstack([mo.md(${pyMd(params.instructions)}), ${name}_ed, ${name}_run])`;
+      // Every ▶ Run writes the code to assets/exercises/<name>.py. marimo
+      // does NOT serialise a code_editor's value, so without this the one
+      // coding checkpoint left nothing in the submitted notebook: reopen it
+      // and the box is back to the scaffold, the chart is gone, and the
+      // grader sees `...` blanks where the student's work was. Same cure as
+      // the photo view cell — save the artifact, render it from disk.
+      const savedPath = `assets/exercises/${name}.py`;
       const outBody =
+        `from pathlib import Path as _P\n` +
+        `_saved = _P(${py(savedPath)})\n` +
+        `${name}_send = mo.ui.run_button(\n` +
+        `    label="📨 Send my code to my tutor",\n` +
+        `    disabled=not (${name}_run.value or _saved.exists()),\n` +
+        `)\n` +
         `if ${name}_run.value:\n` +
-        `    _res = run_student_code(${name}_ed.value, ${envDict})\n` +
+        `    _saved.parent.mkdir(parents=True, exist_ok=True)\n` +
+        `    _saved.write_text(${name}_ed.value)\n` +
+        `    _res = mo.vstack([\n` +
+        `        run_student_code(${name}_ed.value, ${envDict}),\n` +
+        `        mo.md(\n` +
+        `            "<span style='color:#6A6D75;font-size:13px'>Run it as many times "\n` +
+        `            "as you like. When it does what you want, press 📨 — that is what "\n` +
+        `            "hands it in and tells your tutor to look.</span>"\n` +
+        `        ),\n` +
+        `        ${name}_send,\n` +
+        `    ])\n` +
+        `elif _saved.exists():\n` +
+        `    _res = mo.vstack([\n` +
+        `        mo.md(\n` +
+        `            "<span style='color:#6A6D75;font-size:13px'>The code I wrote and ran, "\n` +
+        `            "saved from my session:</span>\\n\\n\`\`\`python\\n"\n` +
+        `            + _saved.read_text()\n` +
+        `            + "\\n\`\`\`"\n` +
+        `        ),\n` +
+        `        run_student_code(_saved.read_text(), ${envDict}),\n` +
+        `        ${name}_send,\n` +
+        `    ])\n` +
         `else:\n` +
         `    _res = mo.md("*Press ▶ Run when you're ready.*")\n` +
         `_res`;
+      const sentBody =
+        `if ${name}_send.value:\n` +
+        `    from pathlib import Path as _P\n` +
+        `\n` +
+        `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
+        `    with open("session_artifacts/student_signal.txt", "a") as _f:\n` +
+        `        _f.write(${py(name + "_ed")} + "\\n")\n` +
+        `    _sent = mo.md("✅ **Handed in.** Your tutor is reading your code now.")\n` +
+        `else:\n` +
+        `    _sent = mo.md("")\n` +
+        `_sent`;
       let code =
         `import marimo._code_mode as cm\n` +
         `async with cm.get_context() as ctx:\n` +
@@ -2133,14 +2192,18 @@ export default function (pi: ExtensionAPI) {
         `        ctx.run_cell(_cid)\n` +
         `        _first = _cid\n` +
         `        _cid = ctx.create_cell(${py(outBody)}, name=${py(name + "_out")}, hide_code=True, after=_cid)\n` +
+        `        ctx.run_cell(_cid)\n` +
+        `        _cid = ctx.create_cell(${py(sentBody)}, name=${py(name + "_sent")}, hide_code=True, after=_cid)\n` +
         `        ctx.run_cell(_cid)\n`;
       code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
       if (!result.failed) {
         result.out =
-          `Exercise inserted. The student sees your instructions, a runnable code box, and ` +
-          `a ▶ Run button; results appear right below it. Read their attempt with ` +
-          `nb_read(['${name}_ed.value']).\n` + result.out;
+          `Exercise inserted. The student sees your instructions, a runnable code box, a ` +
+          `▶ Run button, and — once they have run it — a 📨 Send button that hands the ` +
+          `code in. Ask for the code, then WAIT: their press starts your turn. Every run ` +
+          `saves the code to ${savedPath}, so it is still in the notebook months later.\n` +
+          result.out;
       }
       return toResult(result);
     },
