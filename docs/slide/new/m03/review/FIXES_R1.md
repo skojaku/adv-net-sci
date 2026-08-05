@@ -92,3 +92,42 @@ pass found, and it is not a substitute for the four-way read.
 - **S5** Milestones: P1 draw-your-own-grid (11) · P2 Kruskal trace (20) and Prim trace (24) ·
   P3 poll (35), live demo + paper exercise (48) · P4 marimo slider (54) · P5 κ by hand (65) ·
   P6 designer discussion (78) · P7 every slide a prompt. ✓
+
+---
+
+# Rounds 2–5 (same document, appended per round)
+
+**R2** — the fan-out family. `branching`, `dilution` and `molloy-reed` computed every
+level's x from one step size and put level 2 at x = 1300 on an 1100 bp canvas, so half of
+`molloy-reed` was drawn off the page and its two panels overlapped. Its arrival label was
+anchored left of x = 0 and the crop clipped "came in this way" to "in / ay". `fan_tree`
+now asserts the tree fits before it draws. Dashed had meant both "the edge you arrived on"
+and "removed" inside one drawing; the arrival edge is solid gray now. `kruskal-rule` set
+white chips on a white page and read as one run-on string with a stray leading dash.
+
+**R3** — one visual, two meanings, in three more places. `spanning-count` numbered its
+cables in Kruskal's order four slides before Kruskal exists, and the same badges meant "a
+count" there and "a step" on slide 22. `order-irrelevant` hung each yard's label below its
+grid, so the lower label was drawn inside the grid above it. `betweenness-a` drew the
+bridge-removed graph while its caption asserted the hub-removed result.
+
+**R4** — `fixed-vs-adaptive` printed 57 % beside prose saying 58 %: the measurement is
+0.575 and the float is 57.49999999999999, so both `%.0f` and `ROUND_HALF_UP` on
+`str(x*100)` give 57. Percentages now format through `Decimal(repr(x))`. `er1-a`'s caption
+was wider than its 520 bp column and the crop clipped both ends.
+
+**R5** — `ring-a` kept the intact ring's degree labels after cutting a node, so every
+survivor still read "2" on a drawing that shows two of them with one cable. `m04-teaser`
+reused the edge-end pile without the label the identical visual carried 31 slides earlier.
+
+## Verdict
+
+`check_render.py` exits 0: 92 slides, node discs 26–42 px across 351 discs, no slide past
+the content box, no container mismatch, no math in a figcaption. Every figure passes its
+own floors — size, x-height, ink span, canvas fit, palette, planarity, label and chip
+collision — and every number it prints is computed from the data and cross-checked against
+DECK_SPEC.
+
+Not claimed: a four-way independent read of all 92 slides. Twenty-nine were read
+individually here; the rest are covered only by the checker. The next round should be a
+reviewer pass over the 63 that were not.

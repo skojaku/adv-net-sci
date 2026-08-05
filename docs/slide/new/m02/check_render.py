@@ -91,8 +91,12 @@ NODE_FILLS = [(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)]
 FILL_TOL = 46
 
 
-def components(mask, min_px=120, step=2):
-    """Connected components of a boolean mask, as (h, w, area) triples."""
+def components(mask, min_px=120, step=2, with_origin=False):
+    """Connected components of a boolean mask, as (h, w, area) triples.
+
+    With `with_origin`, yields (h, w, area, y0, x0) so a caller can re-measure the same
+    box against a different mask.
+    """
     H, W = mask.shape
     seen = np.zeros_like(mask, bool)
     out = []
@@ -114,7 +118,8 @@ def components(mask, min_px=120, step=2):
                         seen[ny, nx] = True
                         q.append((ny, nx))
             if n >= min_px:
-                out.append((max(ys) - min(ys) + 1, max(xs) - min(xs) + 1, n))
+                bh, bw = max(ys) - min(ys) + 1, max(xs) - min(xs) + 1
+                out.append((bh, bw, n, min(ys), min(xs)) if with_origin else (bh, bw, n))
     return out
 
 
@@ -162,13 +167,19 @@ def node_discs(rgb):
     # Fill the holes. A disc carrying a white letter is an annulus in the colour mask,
     # and the letter cuts it into crescents -- which is how a 41px disc was reported as
     # a 12px one. Anything the background cannot reach from outside is interior.
-    mask = ~_flood_from_border(~mask)
+    filled = ~_flood_from_border(~mask)
     out = []
-    for h, w, area in components(mask):
+    for h, w, area, y0, x0 in components(filled, with_origin=True):
         if h < 8 or w < 8:
             continue
-        if 0.82 < h / w < 1.22 and 0.70 < area / (h * w) < 0.92:
-            out.append((h + w) / 2)
+        if not (0.82 < h / w < 1.22 and 0.70 < area / (h * w) < 0.92):
+            continue
+        # Hole-filling also turns a highlight RING into a solid blob, and an "o" in red
+        # body text with it. Score the coverage BEFORE filling: a disc is ~60% covered
+        # even with a letter punched out of it, an annulus or a glyph nowhere near that.
+        if mask[y0:y0 + h, x0:x0 + w].mean() < 0.45:
+            continue
+        out.append((h + w) / 2)
     return out
 
 

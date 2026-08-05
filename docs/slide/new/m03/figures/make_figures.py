@@ -1887,7 +1887,7 @@ def _ring_case(show, cut=False):
             s += seg((X - 12, Y - 12), (X + 12, Y + 12), color="accenttwo", w=3.6)
             s += seg((X - 12, Y + 12), (X + 12, Y - 12), color="accenttwo", w=3.6)
         else:
-            s += disc(X, Y, "2", fill="accent")
+            s += disc(X, Y, "" if cut else "2", fill="accent")
     s += text(260, 190, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = ?$",
               color="accenttwo" if show else "annot")
     return s
@@ -2030,13 +2030,14 @@ def fig_m04_teaser():
     was taught to find discs by colour rather than by darkness.
     """
     order = ["h", "c", "a", "b", "e", "d"]
-    x0, step, ytop = 70, 76, 300
-    s = ""
+    x0, step, ytop = 175, 62, 320
+    s = text(150, ytop, "people", color="accent", anchor="east")
+    s += text(150, ytop - 96, "friend-\\\\ships", color="accenttwo", anchor="east")
     for i, n in enumerate(order):
         x = x0 + i * step
         s += disc(x, ytop, "", fill="accent")
         for j in range(QK_DEG[n]):
-            s += dot(x, ytop - 56 - j * 40, "accenttwo", d=28)
+            s += dot(x, ytop - 52 - j * 36, "accenttwo", d=28)
     return s
 
 
