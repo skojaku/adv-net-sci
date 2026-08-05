@@ -640,7 +640,7 @@ A **walk** is any route through the graph. Nodes may repeat. Edges may repeat. N
 </div>
 <div class="fig">
 
-![w:520](figures/campus-walk.png)
+![w:520](figures/campus-walk-anim.gif)
 <figcaption>the route: Dorm → Cafe → Gym → Cafe → Lib</figcaption>
 
 </div>
@@ -664,7 +664,7 @@ Nodes may still repeat.
 </div>
 <div class="fig">
 
-![w:520](figures/campus-trail.png)
+![w:520](figures/campus-trail-anim.gif)
 <figcaption>the route: Lib → Gym → Dorm → Cafe → Gym</figcaption>
 
 </div>
@@ -691,7 +691,7 @@ A **path** is a walk that never uses the same node twice — and so never the sa
 </div>
 <div class="fig">
 
-![w:520](figures/campus-path.png)
+![w:520](figures/campus-path-anim.gif)
 <figcaption>the route: Lib → Cafe → Dorm → Gym</figcaption>
 
 </div>

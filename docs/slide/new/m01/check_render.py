@@ -25,9 +25,19 @@ from PIL import Image
 
 SLIDES = "review/slide.*.png"
 
-# What a student can actually read, in slide pixels. The page number renders at
-# 13px of ink and is the floor everyone agreed on; body text is 21px.
-MIN_TEXT_PX = 13
+# In-figure text must be at least body size on the slide. Body is 30px type,
+# which renders as ~15px of x-height ink. The page number is NOT the floor --
+# that was tried and the lecturer rejected it as far too low.
+MIN_TEXT_XHEIGHT = 15
+
+# The drawing must be big enough in absolute terms, not just as a share of its
+# box. A 353x149px figure scores 74% on ink fraction and still lands 61px tall.
+MIN_DRAWING_PX = 150
+
+# Margin has to be checked per axis. A bounding-box area ratio hides margin that
+# is all on one axis: three figures scored 37% while 48% of their height was
+# white, which is what stranded their captions 145px below the drawing.
+MAX_AXIS_MARGIN = 0.30
 
 # Node discs. Uniform enough that the same graph does not change size between
 # consecutive slides, wide enough to allow a genuinely denser figure to be
@@ -43,6 +53,13 @@ INK_FRACTION_FAIL = 0.15
 INK_FRACTION_WANT = 0.35
 
 MAX_FIG_H = 380  # network-science.css: section .fig img { max-height }
+
+# Content must stop before the frame does. The theme's bottom padding is 60px,
+# and the page number sits in the bottom-right corner, so ink below this row is
+# either overflowing or colliding with the pagination. Raising the body type
+# from 25px to 30px pushed one slide's last line clean off the frame -- the
+# deck's only notebook pointer -- and nothing caught it.
+CONTENT_BOTTOM = 690
 
 # The `w:NNN` directive in the deck is INERT. The theme sets
 # `section .fig img { width: auto !important }`, and an author !important
@@ -95,6 +112,35 @@ def node_discs(gray):
     return out
 
 
+def smallest_text(src_path):
+    """Smallest glyph x-height in a figure, in source pixels.
+
+    Letters are small ink blobs. Take every component in a letter-like size and
+    fill range, and report the 10th percentile of their heights -- the modal
+    small glyph, rather than the single smallest speck, which would be a dot or
+    an antialiasing artifact.
+    """
+    im = np.array(Image.open(src_path).convert("L"))
+    heights = []
+    for h, w, area in components(im < INK, min_px=12, step=1):
+        # Aspect filter excludes dashes (wide and flat) and rules (long and thin);
+        # a letterform is roughly as tall as it is wide, within a factor of a few.
+        if 4 <= h <= 60 and 2 <= w <= 60 and 0.12 < area / (h * w) < 0.90 \
+                and 0.45 <= h / w <= 4.0:
+            heights.append(h)
+    if len(heights) < 3:
+        return None
+    # A word has several letters of the same height, so a height that occurs
+    # once is a dot, a dash or an antialiasing speck rather than text. Keep only
+    # heights seen at least three times (within 1px), then take the smallest.
+    counts = {}
+    for h in heights:
+        for k in (h - 1, h, h + 1):
+            counts[k] = counts.get(k, 0) + 1
+    real = [h for h in sorted(set(heights)) if counts.get(h, 0) >= 3]
+    return float(real[0]) if real else None
+
+
 def drawing_extent(src_path, container_w):
     """How big the drawing lands on the slide, and what share of its box it fills.
 
@@ -134,11 +180,11 @@ def slides_with_figures(deck="m01-euler-tour.md"):
     parts = text.split("\n---\n")
     out = {}
     for i, chunk in enumerate(parts[1:], start=1):
-        m = re.search(r"!\[([^\]]*)\]\((figures/[^)]+)\)", chunk)
-        if m:
-            w = re.search(r"w:(\d+)", m.group(1))
-            out[i] = (m.group(2), int(w.group(1)) if w else 520,
-                      'class="cols"' in chunk)
+        # findall, not search: a slide may stack two images in one .fig, and
+        # checking only the first leaves the second unexamined.
+        hits = re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk)
+        if hits:
+            out[i] = (hits, 'class="cols"' in chunk)
     return out
 
 
@@ -155,6 +201,16 @@ def main():
         n = int(re.search(r"(\d+)", path.split("/")[-1]).group(1))
         gray = np.array(Image.open(path).convert("L"))
 
+        # Vertical overflow. Ignore the page-number corner, which lives below
+        # this line by design.
+        below = gray[CONTENT_BOTTOM:, :1080] < INK
+        if below.sum() > 8:
+            rows = np.where(below.any(axis=1))[0]
+            fails.append(
+                f"slide {n:03d}: content runs to y={CONTENT_BOTTOM + rows.max()} "
+                f"in a 720px frame — the bottom of the slide is cut off"
+            )
+
         d = node_discs(gray)
         if d:
             diams += d
@@ -166,14 +222,49 @@ def main():
                 )
 
         if n in figs:
-            src, _, in_cols = figs[n]
-            ext = drawing_extent(src, COL_W if in_cols else FULL_W)
+          srcs, in_cols = figs[n]
+          for src in srcs:
+            container = COL_W if in_cols else FULL_W
+            ext = drawing_extent(src, container)
             if ext is None:
                 fails.append(f"slide {n:03d}: {src} is blank")
                 continue
             dw, dh, box_w, box_h, frac = ext
             ink_w, ink_h = dw, dh
             name = src.split("/")[-1]
+            # The Konigsberg engraving is a historical photograph; its lettering
+            # is not ours to size.
+            if name == "konigsberg-map.png":
+                continue
+            im = np.array(Image.open(src).convert("L"))
+            sh, sw = im.shape
+            scale = min(container / sw, MAX_FIG_H / sh, 1.0)
+
+            # In-figure text at body size on the slide.
+            xh = smallest_text(src)
+            if xh is not None and xh * scale < MIN_TEXT_XHEIGHT:
+                fails.append(
+                    f"slide {n:03d} ({name}): smallest text lands {xh * scale:.0f}px "
+                    f"x-height, below the {MIN_TEXT_XHEIGHT}px body floor"
+                )
+
+            # Absolute size, not just share of box.
+            if max(dw, dh) < MIN_DRAWING_PX:
+                fails.append(
+                    f"slide {n:03d} ({name}): drawing lands {dw:.0f}x{dh:.0f}px — "
+                    f"too small to read regardless of how much of its box it fills"
+                )
+
+            # Margin per axis, since an area ratio hides one-sided padding.
+            ys, xs = np.where(im < INK)
+            mx = 1 - (xs.max() - xs.min() + 1) / sw
+            my = 1 - (ys.max() - ys.min() + 1) / sh
+            if max(mx, my) > MAX_AXIS_MARGIN:
+                axis, val = ("horizontal", mx) if mx > my else ("vertical", my)
+                warns.append(
+                    f"slide {n:03d} ({name}): {val:.0%} {axis} white margin baked "
+                    f"into the canvas"
+                )
             if frac < INK_FRACTION_FAIL:
                 fails.append(
                     f"slide {n:03d} ({name}): drawing lands {ink_w:.0f}x{ink_h:.0f}px = "
