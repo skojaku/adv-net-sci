@@ -8,6 +8,20 @@ back-row minimum sizes, and the fixed six-color palette below.
 
 from pathlib import Path
 
+import matplotlib
+# R7 fix (found chasing Blocker 3): force a headless, non-HiDPI backend BEFORE pyplot picks
+# one on its own. On a Retina Mac, matplotlib's default interactive backend (here, macosx)
+# silently reports fig.dpi as 400 -- double the 200 this whole file assumes throughout (see
+# the dpi comment below) -- because it renders for a 2x-density display. save()/save_fixed()
+# hardcode dpi=200 explicitly so they were never affected, but save_fit's OUTPUT dpi defaults
+# to `measure_dpi = fig.dpi` when no `out_dpi` is given, so on this backend it silently saved
+# at 400dpi instead of 200 -- exactly double, on every save_fit figure, with nothing about the
+# figure's own content to blame. This is what made csr-memory.png's width backend-dependent
+# rather than content-dependent (confirmed: forcing Agg here dropped an otherwise-identical
+# render from 3858px to 1929px). Agg is also simply the right backend for a batch script with
+# no display -- deterministic and portable across whatever machine runs `python3
+# figures/make_figures.py`.
+matplotlib.use("Agg")
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.text as mtext
@@ -66,31 +80,230 @@ def fs(base_pt, width_in, ref=FONT_REF_WIDTH):
     return round(base_pt * width_in / ref, 1)
 
 
-# Same problem as fs(), for scatter markers: `s` is an area in points^2, rendered at a
-# FIXED dpi regardless of a figure's own width, so its pixel diameter in the raw PNG does
-# NOT depend on figsize -- but every PNG then gets shrunk to the same displayed width in
-# the deck, so a marker drawn at a fixed `s` in an 11in-wide figure ends up much smaller
-# on-slide than the same `s` in a 3.6in-wide figure (the R3 "cross-figure scale" minor:
-# measured node diameters 71-109px for figures that should read as the same size). Since
-# displayed diameter is proportional to sqrt(s)/width_in, s must scale as width_in^2 to
-# keep it constant -- unlike fs() (linear in width), this one is squared.
-NODE_S_REF = 2200
+# ---------------------------------------------------------------------------
+# R8 fix: nodes are Circle patches, not ax.scatter markers (FIXES_R8_CIRCLE.md)
+# ---------------------------------------------------------------------------
+# Six consecutive rounds failed the same defect class under three different-looking
+# symptoms (self-loop legs that don't meet their node, arrowheads that don't arrive, rings
+# drawn inside the disc they were meant to encircle) because every node in this file was an
+# ax.scatter marker, whose `s` is an area in points^2 -- a SCREEN unit, decoupled from data
+# coordinates. So a marker's radius *in the data-coordinate system every edge/annotation is
+# computed in* depended on the axes' current xlim/ylim, and every figure in this deck has
+# its own xlim/ylim -- so every boundary computation against a node was a guess, wrong by a
+# different factor in every figure (measured: same scatter s=900 at figsize 4x4 has a data-
+# unit radius of 0.0672 / 0.1344 / 0.2688 depending on whether xlim is (0,1) / (0,2) / (0,4)).
+#
+# A `Circle(center, r)` patch's radius is in DATA units and is invariant to xlim/ylim -- so
+# NODE_R below is exact everywhere, by construction, with nothing left to guess.
+NODE_R = 0.12  # data units -- the ONE node radius, used by every figure in this file.
+               # Picked small enough to clear the tightest inter-node spacing anywhere in
+               # the deck (the band/ladder figures, nodes 0.8 data units apart -- a NODE_R
+               # any bigger than ~0.2 starts crowding those) while staying comfortably
+               # visible against graph5/Konigsberg's ~1.0-1.4 unit spacing. The single value
+               # is what makes every formula below ("edges stop at NODE_R from centre",
+               # "rings are drawn at k*NODE_R") exact and figure-independent.
+
+# Deck-wide rendered node diameter, in PHYSICAL inches -- picked to match the Konigsberg
+# family's own current look (measured off konigsberg-blank.png before this fix: ~150px
+# native at dpi=200, i.e. 0.75in) per FIXES_R8_CIRCLE.md's own instruction ("pick the target
+# from the figures that already look right"). Every OTHER figure's node now renders at this
+# exact physical size too, regardless of that figure's own data range -- see fit_node_scale.
+NODE_DIAM_IN = 0.75
 
 
-def node_s(width_in, base_s=NODE_S_REF, ref=FONT_REF_WIDTH):
-    return base_s * (width_in / ref) ** 2
+def data_units_per_point(ax):
+    """(dx, dy): data units spanned by one point (1/72 in) along each axis, at ax's
+    CURRENT transform. Valid only once xlim/ylim/aspect are at their final values."""
+    _finalize(ax)
+    inv = ax.transData.inverted()
+    ppp = ax.figure.dpi / 72.0  # display px per point
+    x0, y0 = inv.transform((0, 0))
+    x1, _ = inv.transform((ppp, 0))
+    _, y1 = inv.transform((0, ppp))
+    return abs(x1 - x0), abs(y1 - y0)
 
 
-# The node marker's OWN rendered radius, in points, at the reference width -- derived
-# straight from NODE_S_REF (area = pi * r^2) rather than a separately hand-picked constant.
-# R4 fix (Major 18): _draw_directed used a hand-picked shrink of 24pt against a true radius
-# of sqrt(2200/pi)=26.46pt, undershooting by ~2.5pt (~7px at dpi=200) -- enough that
-# directed-indegree's arrowheads visibly stopped short of the node they point to. Deriving
-# the shrink from the same constant that sizes the marker keeps the two in lock-step by
-# construction; +3pt on top is deliberate overlap (a curved edge's shrink acts along its
-# *local tangent*, not the radial direction, so a curved arc needs a small buffer beyond
-# the geometric radius to still land inside the disc after that skew).
-NODE_RADIUS_PT_REF = (NODE_S_REF / np.pi) ** 0.5
+def node_radius_pt(ax, r=NODE_R):
+    """`r` (DATA units, default NODE_R) converted EXACTLY to points at `ax`'s current
+    transform -- for APIs that only take points (FancyArrowPatch's shrinkA/shrinkB,
+    circle_obstacle's r_pt). Not a guess: data_units_per_point is a plain unit conversion at
+    the real, current transform, unlike the deleted node_s()/node_radius_data() (which
+    estimated a *scatter marker's* radius, the thing this whole fix removes)."""
+    dx, dy = data_units_per_point(ax)
+    return r / ((dx + dy) / 2)
+
+
+def fit_node_scale(fig, ax, r=NODE_R, target_in=None):
+    """Rescale `fig` IN PLACE (via set_size_inches -- preserving whatever aspect ratio or
+    multi-panel gridspec proportions it already has) so that a Circle of DATA-unit radius
+    `r`, measured against `ax`'s CURRENT xlim/ylim/aspect, renders at exactly `target_in`
+    (default NODE_DIAM_IN) physical inches in diameter -- the deck-wide node size, point 2
+    of FIXES_R8_CIRCLE.md.
+
+    Measured against the real renderer (a probe conversion via data_units_per_point), not
+    computed from subplot-margin/width_ratio/letterboxing algebra -- those differ figure to
+    figure (single panel vs. gridspec vs. custom width_ratios all use a different fraction
+    of the figure for their axes box), and re-deriving that fraction by hand per figure is
+    exactly the kind of guess this whole fix removes. This works identically whether `ax` is
+    the only axes in `fig` or one panel of several.
+
+    Call once every axes that will carry a node -- `ax` -- has its xlim/ylim/aspect at their
+    FINAL values (nothing needs to be drawn on it yet: a Circle's rendered size depends only
+    on the transform, not on what's drawn), and BEFORE any width-keyed styling (fs(), mostly)
+    that assumes the figure's final physical size. Returns the figure's new width in inches,
+    for exactly that purpose -- e.g. `W = fit_node_scale(fig, ax)`.
+    """
+    fig.canvas.draw()
+    dx, dy = data_units_per_point(ax)
+    cur_diam_in = 2 * r / (72.0 * ((dx + dy) / 2))
+    target = NODE_DIAM_IN if target_in is None else target_in
+    factor = target / cur_diam_in
+    w, h = fig.get_size_inches()
+    fig.set_size_inches(w * factor, h * factor)
+    fig.canvas.draw()
+    return fig.get_size_inches()[0]
+
+
+NODE_GID = "deck-node"  # tags every node Circle patch, so save()/save_fit()/save_fixed()
+                         # can find and verify them without every caller asserting by hand.
+
+
+def draw_node(ax, center, color=INK, r=NODE_R, zorder=3):
+    """THE canonical node marker -- a Circle patch of DATA-unit radius `r` (default
+    NODE_R), never an ax.scatter marker (see the module note above `NODE_R`)."""
+    c = mpatches.Circle(center, r, facecolor=color, edgecolor="none", zorder=zorder)
+    c.set_gid(NODE_GID)
+    ax.add_patch(c)
+    return c
+
+
+def draw_nodes(ax, centers, colors=None, r=NODE_R, zorder=3):
+    """Draw one draw_node() per entry of `centers`.
+
+    `centers`: a list of (x, y), or a dict name -> (x, y).
+    `colors`: a list matching `centers`' iteration order, a dict matching `centers`' keys
+    (only meaningful if `centers` is a dict), a single colour applied to every node, or None
+    (defaults every node to INK).
+    """
+    if isinstance(centers, dict):
+        keys = list(centers.keys())
+        pts = [centers[k] for k in keys]
+        cs = [colors.get(k, INK) for k in keys] if isinstance(colors, dict) else colors
+    else:
+        pts = list(centers)
+        cs = colors
+    if cs is None:
+        cs = [INK] * len(pts)
+    elif isinstance(cs, str):
+        cs = [cs] * len(pts)
+    return [draw_node(ax, p, color=c, r=r, zorder=zorder) for p, c in zip(pts, cs)]
+
+
+def draw_ring(ax, center, k=1.6, r=NODE_R, color=ACCENT2, lw=None, zorder=5, node_obstacles=(),
+              edge_obstacles=(), name="ring"):
+    """A ring meant to ENCLOSE a node (e.g. "this node was revisited") -- drawn at `k * r`,
+    k > 1 asserted, so a ring can never again be drawn smaller than the disc it encircles
+    (FIXES_R8_CIRCLE.md point 3; the concrete bug that motivated this: a ring hand-radius'd
+    against a stale/guessed node size landed INSIDE the disc it was meant to surround)."""
+    assert k > 1.0, (
+        f"draw_ring: {name!r} k={k} must be > 1 -- a ring must enclose its node, not sit "
+        f"inside or flush with its rim."
+    )
+    pts = _circle_points(center, k * r)
+    return draw_annotation_stroke(ax, pts, color=color, lw=lw, zorder=zorder,
+                                   node_obstacles=node_obstacles, edge_obstacles=edge_obstacles,
+                                   name=name)
+
+
+def _arrow_tip_gap_pt(ax, mutation_scale, lw, rad=0.0, arrowstyle="-|>"):
+    """Measured (not guessed) gap, in points, between a FancyArrowPatch's rendered TIP and
+    its nominal (shrinkA=shrinkB=0) endpoint -- draws a disposable probe patch on `ax`,
+    measures where the real renderer actually puts the tip relative to the endpoint it was
+    given, and removes it. FIXES_R8_CIRCLE.md point 3 / the R4-R5 history in
+    draw_arrow_edge's own docstring: this gap is real (matplotlib's arrowhead geometry does
+    not put the tip exactly at the path's nominal endpoint) and previous rounds either
+    ignored it or hand-guessed a correction that drifted; self-calibrating it against the
+    actual renderer, every time, is what makes draw_arrow_edge's shrink exact instead of a
+    guess that can go stale under a matplotlib version bump.
+
+    `lw` matters: measured directly (sweeping linewidth 0-8pt), the gap is proportional to
+    the stroke's OWN linewidth (~1.12pt of gap per 1pt of linewidth -- the head's stroked
+    outline extends past its mathematical apex by an amount set by the miter join, which
+    scales with linewidth), not a fixed constant independent of it. The probe must be drawn
+    at the SAME `lw` the real arrow will use, or this calibration is measuring the wrong
+    patch (the R8 bug this shipped with: linewidth=1's ~1.12pt gap doesn't hold at
+    linewidth=4.2, off by over 3pt -- exactly the campus arrows' own stroke weight).
+    """
+    a, b = (0.0, 0.0), (1.0, 0.0)
+    probe = FancyArrowPatch(a, b, arrowstyle=arrowstyle, mutation_scale=mutation_scale,
+                             shrinkA=0, shrinkB=0, linewidth=lw, connectionstyle=f"arc3,rad={rad}")
+    ax.add_patch(probe)
+    ax.figure.canvas.draw()
+    verts_data = probe.get_path().vertices
+    d = np.hypot(verts_data[:, 0] - b[0], verts_data[:, 1] - b[1])
+    tip = verts_data[np.argmin(d)]
+    gap_data = np.hypot(tip[0] - b[0], tip[1] - b[1])
+    probe.remove()
+    dx, dy = data_units_per_point(ax)
+    return gap_data / ((dx + dy) / 2)
+
+
+def draw_arrow_edge(ax, u, v, mutation_scale, rad=0.0, color=MUTED, lw=EDGE_W, zorder=1,
+                     r=NODE_R, name="arrow-edge"):
+    """A directed edge from `u` to `v` (data coords) whose ARROWHEAD TIP lands, by
+    construction and verified against the real renderer, exactly on `v`'s rim (distance `r`
+    from `v`'s centre) -- FIXES_R8_CIRCLE.md point 3 ("arrowheads inset by exactly NODE_R
+    plus the head length ... without a hand-picked standoff"). shrinkA/shrinkB are derived
+    from `node_radius_pt` MINUS the measured tip gap (`_arrow_tip_gap_pt`, at this SAME
+    `lw`) so the head's true tip -- not the path's nominal, pre-head endpoint -- reaches the
+    rim; this is what replaces the R4/R5 hand-picked `NODE_RADIUS_PT_REF - 4` constant tuned
+    by eye against one figure's own edges.
+    """
+    gap_pt = _arrow_tip_gap_pt(ax, mutation_scale, lw, rad=rad)
+    shrink = node_radius_pt(ax, r) - gap_pt
+    patch = FancyArrowPatch(u, v, connectionstyle=f"arc3,rad={rad}", arrowstyle="-|>",
+                             mutation_scale=mutation_scale, shrinkA=shrink, shrinkB=shrink,
+                             color=color, linewidth=lw, zorder=zorder)
+    ax.add_patch(patch)
+    ax.figure.canvas.draw()
+    verts_data = patch.get_path().vertices
+    d_to_v = np.hypot(verts_data[:, 0] - v[0], verts_data[:, 1] - v[1])
+    tip = verts_data[np.argmin(d_to_v)]
+    dist = np.hypot(tip[0] - v[0], tip[1] - v[1])
+    dx, dy = data_units_per_point(ax)
+    eps = 1.5 * ((dx + dy) / 2)  # ~1.5pt tolerance, in data units
+    assert abs(dist - r) < eps, (
+        f"draw_arrow_edge: {name!r} tip lands {dist:.4f} data units from {v} (target "
+        f"{r:.4f}) -- off by {(dist - r) / ((dx + dy) / 2):+.2f}pt, outside the 1.5pt "
+        f"tolerance. The arrowhead does not arrive."
+    )
+    return patch
+
+
+def _assert_node_diameters(fig, name, tol=0.06):
+    """Point 2 of FIXES_R8_CIRCLE.md: every node in `fig`, measured against the real
+    renderer, must be within `tol` of the deck-wide NODE_DIAM_IN target at this figure's own
+    dpi -- run from every save*() below, against every Circle draw_node()/draw_nodes() ever
+    tagged NODE_GID, so a figure that skipped fit_node_scale() fails the build instead of
+    shipping an inconsistent node size for a human to catch by eye."""
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    target = NODE_DIAM_IN * fig.dpi
+    diam_seen = None
+    for ax in fig.axes:
+        for p in ax.patches:
+            if p.get_gid() != NODE_GID:
+                continue
+            bb = p.get_window_extent(renderer)
+            d_px = (bb.width + bb.height) / 2
+            diam_seen = d_px
+            assert abs(d_px - target) / target < tol, (
+                f"{name}: node diameter {d_px:.1f}px != deck target {target:.1f}px at "
+                f"dpi={fig.dpi} (off by {(d_px - target) / target * 100:+.1f}%) -- this "
+                f"figure's axes was not sized via fit_node_scale() before drawing its nodes."
+            )
+    if diam_seen is not None:
+        print(f"  node-diam {name}: {diam_seen:.1f}px (native, dpi={fig.dpi})")
 
 
 # ---------------------------------------------------------------------------
@@ -119,47 +332,13 @@ def _finalize(ax):
     return ax.figure.canvas.get_renderer()
 
 
-def data_units_per_point(ax):
-    """(dx, dy): data units spanned by one point (1/72 in) along each axis, at ax's
-    CURRENT transform. Valid only once xlim/ylim/aspect are at their final values."""
-    _finalize(ax)
-    inv = ax.transData.inverted()
-    ppp = ax.figure.dpi / 72.0  # display px per point
-    x0, y0 = inv.transform((0, 0))
-    x1, _ = inv.transform((ppp, 0))
-    _, y1 = inv.transform((0, ppp))
-    return abs(x1 - x0), abs(y1 - y0)
-
-
-def node_radius_data(ax, size_pt2):
-    """Radius, in DATA units, of an `ax.scatter(..., s=size_pt2)` marker at ax's current
-    transform -- the geometric radius implied by the marker's own area, not a hand-measured
-    guess (see fig_selfloop's R5 fix for what a stale guess costs)."""
-    r_pt = (size_pt2 / np.pi) ** 0.5
-    dx, dy = data_units_per_point(ax)
-    return r_pt * dx, r_pt * dy
-
-
-def scatter_bbox_px(ax, centers, size_pt2):
-    """Display-space (x0, y0, x1, y1) bbox covering every marker of an `s=size_pt2` scatter
-    at `centers` (data coords) -- collection.get_window_extent() does not compute this (an
-    isolated repro returns an all-inf box for a PathCollection built from `s=`), so this
-    derives it from the marker's own known geometry instead."""
-    r_pt = (size_pt2 / np.pi) ** 0.5
-    r_px = r_pt * ax.figure.dpi / 72.0
-    xs, ys = [], []
-    for (x, y) in centers:
-        px, py = ax.transData.transform((x, y))
-        xs += [px - r_px, px + r_px]
-        ys += [py - r_px, py + r_px]
-    return min(xs), min(ys), max(xs), max(ys)
-
-
-def _content_px_bbox(ax, extra_scatter=()):
+def _content_px_bbox(ax):
     """(x0, y0, x1, y1), display pixels: the true rendered union of every line/patch/text
-    currently in `ax` (measured with the real renderer) plus any scatter markers passed as
-    `extra_scatter=[(center, size_pt2), ...]` (collections don't self-report their extent --
-    see scatter_bbox_px). Shared by save_fit and place_label's obstacle geometry."""
+    currently in `ax` (measured with the real renderer). Nodes are Circle patches now (see
+    NODE_R above), so they are already covered by the `ax.patches` pass below -- unlike the
+    old ax.scatter markers, which needed a separate scatter_bbox_px reconstruction because a
+    PathCollection built from `s=` doesn't self-report a usable get_window_extent(). Shared
+    by save_fit and place_label's obstacle geometry."""
     renderer = _finalize(ax)
     boxes = []
     for artist_list in (ax.lines, ax.patches, ax.texts):
@@ -167,8 +346,6 @@ def _content_px_bbox(ax, extra_scatter=()):
             bb = a.get_window_extent(renderer)
             if np.isfinite([bb.x0, bb.y0, bb.x1, bb.y1]).all():
                 boxes.append((bb.x0, bb.y0, bb.x1, bb.y1))
-    for center, size in extra_scatter:
-        boxes.append(scatter_bbox_px(ax, [center], size))
     assert boxes, "_content_px_bbox: nothing drawn to fit"
     x0 = min(b[0] for b in boxes); y0 = min(b[1] for b in boxes)
     x1 = max(b[2] for b in boxes); y1 = max(b[3] for b in boxes)
@@ -365,7 +542,7 @@ def place_label(ax, xy, text, obstacles=(), *, color=MUTED, fontsize=ANNOT_FS,
 def place_annotation(ax, xy, text, xytext, obstacles=(), *, color=MUTED, fontsize=ANNOT_FS,
                       ha="center", va="center", clearance_pt=5.0, zorder=6, max_iter=100,
                       push_pt=2.5, name=None, lw=1.2, arrowstyle="-", mutation_scale=None,
-                      **kwargs):
+                      node_obstacles=(), edge_obstacles=(), rim_clearance_pt=2.0, **kwargs):
     """Like place_label, but for a labelled leader: `text` starts near `xytext` and is
     nudged clear of `obstacles` exactly as place_label does, then a thin `color` leader is
     drawn from the settled label to the `xy` target it explains. Use this (not a bare
@@ -375,14 +552,32 @@ def place_annotation(ax, xy, text, xytext, obstacles=(), *, color=MUTED, fontsiz
 
     `arrowstyle`, default "-" (a bare leader line): pass e.g. "-|>" for an arrowhead pointing
     at `xy`.
+
+    R7 fix ("the one thing to fix first"): `obstacles` only ever kept the TEXT clear -- the
+    leader matplotlib draws from the settled text to `xy` was never checked against anything,
+    which is exactly how konigsberg-bombed's "destroyed" leader crossed a live bridge and
+    campus-walk's "same edge, twice" leader crossed two red strokes on its way to landing in
+    the gap between them. Pass `node_obstacles`/`edge_obstacles` (same shapes
+    draw_annotation_stroke takes) to run the SAME crossing/clearance assertion against the
+    leader's actual path -- sampled densely from the settled label position to `xy`, which is
+    a strict superset of the visible arrow (matplotlib clips the arrow to the text's own
+    bbox edge, a sub-segment of this line), so passing this check guarantees the visible
+    stroke passes it too.
     """
     arrowprops = dict(arrowstyle=arrowstyle, color=color, lw=lw)
     if mutation_scale is not None:
         arrowprops["mutation_scale"] = mutation_scale
     t = ax.annotate(text, xy=xy, xytext=xytext, color=color, fontsize=fontsize, ha=ha, va=va,
                      zorder=zorder, arrowprops=arrowprops, **kwargs)
-    return _settle_text(ax, t, obstacles, color=color, clearance_pt=clearance_pt,
-                         push_pt=push_pt, max_iter=max_iter, name=name or text, text=text)
+    result = _settle_text(ax, t, obstacles, color=color, clearance_pt=clearance_pt,
+                           push_pt=push_pt, max_iter=max_iter, name=name or text, text=text)
+    if node_obstacles or edge_obstacles:
+        anchor = result.get_position()
+        leader_pts = np.linspace(np.asarray(anchor, dtype=float), np.asarray(xy, dtype=float), 40)
+        _check_stroke_clear(ax, leader_pts, node_obstacles=node_obstacles,
+                             edge_obstacles=edge_obstacles, rim_clearance_pt=rim_clearance_pt,
+                             name=f"place_annotation: {name or text!r}")
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -396,12 +591,51 @@ def place_annotation(ax, xy, text, xytext, obstacles=(), *, color=MUTED, fontsiz
 # extra edges/attachments rather than annotations -- three of round 6's Blockers trace back
 # to this one gap. Every stroke in this file that is NOT a graph edge should be drawn
 # through this function instead of a bare ax.plot/add_patch.
+def _check_stroke_clear(ax, pts, *, node_obstacles=(), edge_obstacles=(), rim_clearance_pt=2.0,
+                         name="stroke"):
+    """Shared assertion core for draw_annotation_stroke and place_annotation's leader check:
+    `pts` (a data-coord polyline) must clear every disc in `node_obstacles` by at least
+    `rim_clearance_pt` points beyond its TRUE rendered rim, and must not cross any edge in
+    `edge_obstacles`. Factored out so BOTH an explicitly-drawn stroke (draw_annotation_stroke)
+    and a matplotlib-rendered annotation arrow (place_annotation) run through the identical
+    geometric test -- one assertion, not two hand-written copies that could drift apart.
+    """
+    pts = np.asarray(pts, dtype=float)
+    renderer = _finalize(ax)
+    dpi_scale = ax.figure.dpi / 72.0
+    px = np.array([ax.transData.transform(p) for p in pts])
+    clear_px = rim_clearance_pt * dpi_scale
+
+    for obs in node_obstacles:
+        ocx, ocy = ax.transData.transform(obs["center"])
+        r_px = obs["r_pt"] * dpi_scale
+        d = np.hypot(px[:, 0] - ocx, px[:, 1] - ocy)
+        mind = d.min()
+        assert mind >= r_px + clear_px - 1e-6, (
+            f"{name!r} comes within {mind - r_px:.1f}px of a node disc's rim (needs >= "
+            f"{clear_px:.1f}px clearance) -- it terminates on or inside a disc it was not "
+            f"meant to touch."
+        )
+
+    for i in range(len(px) - 1):
+        a, b = px[i], px[i + 1]
+        for eobs in edge_obstacles:
+            epts = np.array([ax.transData.transform(p) for p in eobs["pts"]])
+            for j in range(len(epts) - 1):
+                d = _seg_seg_dist(a, b, epts[j], epts[j + 1])
+                assert d > 0.5, (
+                    f"{name!r} crosses a live edge it was not meant to touch -- reroute it or "
+                    f"exclude that edge if the crossing is intended."
+                )
+    return pts
+
+
 def draw_annotation_stroke(ax, pts, *, color=MUTED, lw=None, dashed=False, zorder=5,
                             node_obstacles=(), edge_obstacles=(), rim_clearance_pt=2.0,
                             name="stroke"):
-    """Draw `pts` (a data-coord polyline -- 2 points for a straight leader, or the sampled
-    output of something like _bracket_points for an arc) as an annotation stroke, then
-    verify by construction that it reads as one:
+    """Draw `pts` (a data-coord polyline -- 2 points for a straight leader, a sampled arc from
+    something like _bracket_points, or a sampled closed ring from _circle_points) as an
+    annotation stroke, then verify by construction that it reads as one:
 
     - `lw` defaults to 40% of EDGE_W and is asserted to never exceed that -- an annotation
       stroke must never be drawn at (or near) edge weight. Pass `dashed=True` for a dashed
@@ -409,7 +643,9 @@ def draw_annotation_stroke(ax, pts, *, color=MUTED, lw=None, dashed=False, zorde
     - every sampled point on the stroke is asserted to clear every disc in `node_obstacles`
       (circle_obstacle(...)) by at least `rim_clearance_pt` points beyond its TRUE rendered
       rim -- a pairing arc must float clear of every node, including the ones its own edges
-      connect to, never landing on or inside a neighbouring disc.
+      connect to, never landing on or inside a neighbouring disc. (A ring MEANT to encircle
+      its own node still satisfies this: its sampled radius is larger than the node's true
+      rim, so every sampled point still clears it.)
     - the stroke is asserted not to cross any edge in `edge_obstacles` (line_obstacle(...)),
       checked segment-by-segment via the same _seg_seg_dist machinery the label guard uses.
       Pass only the edges this stroke has no business touching -- e.g. a bracket pairing two
@@ -426,47 +662,72 @@ def draw_annotation_stroke(ax, pts, *, color=MUTED, lw=None, dashed=False, zorde
     if dashed:
         style["linestyle"] = (0, (3, 2))
     ax.plot(pts[:, 0], pts[:, 1], **style)
-
-    renderer = _finalize(ax)
-    dpi_scale = ax.figure.dpi / 72.0
-    px = np.array([ax.transData.transform(p) for p in pts])
-    clear_px = rim_clearance_pt * dpi_scale
-
-    for obs in node_obstacles:
-        ocx, ocy = ax.transData.transform(obs["center"])
-        r_px = obs["r_pt"] * dpi_scale
-        d = np.hypot(px[:, 0] - ocx, px[:, 1] - ocy)
-        mind = d.min()
-        assert mind >= r_px + clear_px - 1e-6, (
-            f"draw_annotation_stroke: {name!r} comes within {mind - r_px:.1f}px of a node "
-            f"disc's rim (needs >= {clear_px:.1f}px clearance) -- it terminates on or inside "
-            f"a disc it was not meant to touch."
-        )
-
-    for i in range(len(px) - 1):
-        a, b = px[i], px[i + 1]
-        for eobs in edge_obstacles:
-            epts = np.array([ax.transData.transform(p) for p in eobs["pts"]])
-            for j in range(len(epts) - 1):
-                d = _seg_seg_dist(a, b, epts[j], epts[j + 1])
-                assert d > 0.5, (
-                    f"draw_annotation_stroke: {name!r} crosses a live edge it was not meant "
-                    f"to touch -- reroute it or exclude that edge if the crossing is intended."
-                )
+    _check_stroke_clear(ax, pts, node_obstacles=node_obstacles, edge_obstacles=edge_obstacles,
+                         rim_clearance_pt=rim_clearance_pt, name=f"draw_annotation_stroke: {name!r}")
     return pts
 
 
+def _circle_points(center, r, n=72):
+    """Sampled (x, y) polyline tracing a full circle of DATA-unit radius `r` around `center`,
+    closed (first point repeated at the end) -- shared by every ring-style annotation (a node
+    a route revisits, a component boundary) so each one is checkable by draw_annotation_stroke
+    exactly like a bracket or a leader, instead of being a bare add_patch(Circle(...)) no
+    assertion ever looks at.
+    """
+    cx, cy = center
+    t = np.linspace(0, 2 * np.pi, n)
+    return np.column_stack([cx + r * np.cos(t), cy + r * np.sin(t)])
+
+
+def draw_annotation_badge(ax, center, r_pt, *, edgecolor=MUTED, facecolor="white", lw=1.4,
+                           text=None, text_color=None, text_fontsize=None, node_obstacles=(),
+                           rim_clearance_pt=2.0, zorder=6, name="badge"):
+    """Draw a small FILLED circular badge (radius `r_pt`, points -- like a node marker, not a
+    data-unit ring) at `center`, then assert by construction that its fill never overlaps any
+    node disc in `node_obstacles`: unlike a stroke (which only needs its PATH to clear a disc),
+    a filled badge's entire interior is opaque ink, so the check is circle-circle separation
+    (centre-to-centre distance >= badge radius + disc radius + clearance) rather than
+    path-to-rim distance. This is the guard round 6's badges skipped -- they filled straight
+    through the node they were meant to mark (R7 Blocker 2).
+
+    Pass `text`/`text_color`/`text_fontsize` to also draw a centred numeral/label on the badge.
+    """
+    renderer = _finalize(ax)
+    dpi_scale = ax.figure.dpi / 72.0
+    ccx, ccy = ax.transData.transform(center)
+    r_px = r_pt * dpi_scale
+    clear_px = rim_clearance_pt * dpi_scale
+    for obs in node_obstacles:
+        ocx, ocy = ax.transData.transform(obs["center"])
+        d = np.hypot(ccx - ocx, ccy - ocy)
+        or_px = obs["r_pt"] * dpi_scale
+        assert d >= r_px + or_px + clear_px - 1e-6, (
+            f"draw_annotation_badge: {name!r} (fill) overlaps a node disc by "
+            f"{r_px + or_px + clear_px - d:.1f}px -- a filled badge must sit entirely OUTSIDE "
+            f"every node disc it is not itself drawn on, never gouge into one."
+        )
+    # Radius is specified in POINTS (matches node/marker convention) -- convert to a data-unit
+    # patch radius via the same points-per-data-unit factor used elsewhere in this file.
+    dpp_x, dpp_y = data_units_per_point(ax)
+    dpp = (dpp_x + dpp_y) / 2
+    ax.add_patch(mpatches.Circle(center, r_pt * dpp, facecolor=facecolor, edgecolor=edgecolor,
+                                  linewidth=lw, zorder=zorder))
+    if text is not None:
+        ax.text(center[0], center[1], text, ha="center", va="center",
+                color=text_color or edgecolor, fontsize=text_fontsize, zorder=zorder + 1)
+
+
 def save(fig, name, dpi=200):
+    _assert_node_diameters(fig, name)
     path = OUT / name
     fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor="white", pad_inches=0.15)
     plt.close(fig)
     print("wrote", path.name)
 
 
-def save_fit(fig, ax, name, extra_scatter=(), pad_frac=0.08, pad_min_in=0.04, out_dpi=None):
+def save_fit(fig, ax, name, pad_frac=0.08, pad_min_in=0.04, out_dpi=None):
     """Save `fig`, cropped EXACTLY to the true rendered extent of everything drawn in `ax`
-    (measured with the real renderer, via _content_px_bbox) plus any
-    `extra_scatter=[(center, size_pt2), ...]` markers, with a small margin. The crop is
+    (measured with the real renderer, via _content_px_bbox), with a small margin. The crop is
     computed directly as an inches Bbox passed to `bbox_inches`, NOT via xlim/ylim + the
     string "tight".
 
@@ -492,8 +753,9 @@ def save_fit(fig, ax, name, extra_scatter=(), pad_frac=0.08, pad_min_in=0.04, ou
     inches bbox itself is always computed from `fig.dpi` (what the measurement actually
     used) regardless of `out_dpi` -- only the final pixel density changes.
     """
+    _assert_node_diameters(fig, name)
     measure_dpi = fig.dpi
-    x0, y0, x1, y1 = _content_px_bbox(ax, extra_scatter=extra_scatter)
+    x0, y0, x1, y1 = _content_px_bbox(ax)
     padx = max((x1 - x0) * pad_frac, pad_min_in * measure_dpi)
     pady = max((y1 - y0) * pad_frac, pad_min_in * measure_dpi)
     bbox_in = mtransforms.Bbox([[(x0 - padx) / measure_dpi, (y0 - pady) / measure_dpi],
@@ -512,6 +774,7 @@ def save_fixed(fig, name, dpi=200):
     # wider and the graph visibly shifted between frames). Saving the full, uncropped
     # canvas at exactly figsize*dpi guarantees identical dimensions for every frame that
     # shares the same figsize.
+    _assert_node_diameters(fig, name)
     path = OUT / name
     fig.savefig(path, dpi=dpi, facecolor="white")
     plt.close(fig)
@@ -529,11 +792,10 @@ def clean(ax, equal=True):
 # ---------------------------------------------------------------------------
 GRAPH5_POS = {0: (0, 1), 1: (1, 1), 2: (0, 0), 3: (1, 0), 4: (0.5, -0.9)}
 GRAPH5_EDGES = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4), (3, 4)]
-NODE_SIZE_5 = 2200
 
 
 def draw_graph5(ax, edge_color=MUTED, highlight_edges=(), highlight_color=ACCENT2,
-                 node_colors=None, highlight_nodes=(), size=NODE_SIZE_5, label_fs=LABEL_FS):
+                 node_colors=None, highlight_nodes=(), r=NODE_R, label_fs=LABEL_FS):
     pos = GRAPH5_POS
     he = {frozenset(e) for e in highlight_edges}
     for u, v in GRAPH5_EDGES:
@@ -546,10 +808,8 @@ def draw_graph5(ax, edge_color=MUTED, highlight_edges=(), highlight_color=ACCENT
             ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=highlight_color,
                      linewidth=EDGE_W + 1, zorder=2, solid_capstyle="round")
     nodes = list(pos.keys())
-    xs = [pos[n][0] for n in nodes]
-    ys = [pos[n][1] for n in nodes]
     colors = [(node_colors or {}).get(n, ACCENT2 if n in highlight_nodes else INK) for n in nodes]
-    ax.scatter(xs, ys, s=size, c=colors, zorder=3, linewidths=0)
+    draw_nodes(ax, [pos[n] for n in nodes], colors=colors, r=r, zorder=3)
     for n in nodes:
         x, y = pos[n]
         ax.text(x, y, str(n), ha="center", va="center", color="white",
@@ -619,9 +879,6 @@ KEDGES = [
     ("SB", "S", "B", 0.0),
     ("AB", "A", "B", 0.0),
 ]
-NODE_SIZE_K = 2400
-
-
 def kedge_degrees(removed=()):
     deg = {n: 0 for n in "NSAB"}
     for eid, u, v, _rad in KEDGES:
@@ -686,12 +943,10 @@ def draw_kedges(ax, removed=(), removed_color=MUTED, color=MUTED, width=EDGE_W):
                                           arrowstyle="-", color=color, linewidth=width, zorder=1))
 
 
-def draw_knodes(ax, colors=None, labels_inside=None, size=NODE_SIZE_K):
+def draw_knodes(ax, colors=None, labels_inside=None, r=NODE_R):
     order = ["N", "S", "A", "B"]
-    xs = [KPOS[n][0] for n in order]
-    ys = [KPOS[n][1] for n in order]
     cs = [(colors or {}).get(n, INK) for n in order]
-    ax.scatter(xs, ys, s=size, c=cs, zorder=3, linewidths=0)
+    draw_nodes(ax, [KPOS[n] for n in order], colors=cs, r=r, zorder=3)
     for n in order:
         x, y = KPOS[n]
         txt = (labels_inside or {}).get(n, n)
@@ -709,14 +964,14 @@ def k_limits(ax, pad=0.85, xpad=None):
     clean(ax)
 
 
-def k_obstacles(size, node_colors=None, edge_color=MUTED):
+def k_obstacles(ax, node_colors=None, edge_color=MUTED, r=NODE_R):
     # Every node disc (true rendered radius) and every one of the seven bridge curves --
     # kept or dashed, they're all real ink on the figure -- as obstacles for place_label /
     # place_annotation. Shared by every Konigsberg-family figure that adds a label on top of
     # draw_kedges/draw_knodes, so a label placed near this graph is checked against the SAME
     # geometry regardless of which figure draws it.
     node_colors = node_colors or {}
-    r_pt = (size / np.pi) ** 0.5
+    r_pt = node_radius_pt(ax, r)
     obs = [circle_obstacle(KPOS[n], r_pt, color=node_colors.get(n, INK)) for n in "NSAB"]
     for eid, u, v, rad in KEDGES:
         pts = _arc3_points(KPOS[u], KPOS[v], rad, n=40) if rad else [KPOS[u], KPOS[v]]
@@ -836,49 +1091,56 @@ def fig_abstraction_1_map():
 def fig_abstraction_2_nodes():
     # R3 fix (Major 10): NO edges -- the slide's own text is "Four landmasses. Four dots."
     # Drawing all seven bridges here (as before) made 009->010 a no-op except edge colour.
-    W = 5.4
-    fig, ax = plt.subplots(figsize=(W, W))
-    draw_knodes(ax, size=node_s(W))
+    fig, ax = plt.subplots(figsize=(5.4, 5.4))
     k_limits(ax, xpad=1.1)
+    fit_node_scale(fig, ax)
+    draw_knodes(ax)
     save(fig, "abstraction-2-nodes.png")
 
 
 def fig_abstraction_3_graph():
     # Edges introduced here, in the standard graph colour (MUTED) -- this frame is the one
     # that earns the slide title "each bridge becomes an edge".
-    W = 5.4
-    fig, ax = plt.subplots(figsize=(W, W))
-    draw_kedges(ax, color=MUTED, width=EDGE_W)
-    draw_knodes(ax, size=node_s(W))
+    fig, ax = plt.subplots(figsize=(5.4, 5.4))
     k_limits(ax, xpad=1.1)
+    fit_node_scale(fig, ax)
+    draw_kedges(ax, color=MUTED, width=EDGE_W)
+    draw_knodes(ax)
     save(fig, "abstraction-3-graph.png")
 
 
 def fig_multigraph():
     # Minor fix: nodes were labelled P/Q, but the slide text says "Konigsberg has two
     # bridges between the same pair of landmasses" -- relabel to the deck's own N/A.
-    W = 4.6
-    # R4 fix (Policy 2): ylim/figsize height cut to match the arcs' actual peak height
-    # (+-0.18 data units, at rad=0.30 over a 1.2-unit chord) plus the node radius -- was
-    # 26% ink in height, wrapping a flat two-node graph in a figure sized for something
-    # much taller.
     #
-    # R5 fix (Policy 2): that hand-picked xlim/ylim still only bought 63%x45% ink (measured)
-    # -- save_fit (see fig_selfloop) crops to the real rendered extent instead of a guess.
-    fig, ax = plt.subplots(figsize=(W, 1.4))
+    # R7 fix (Major 21): the slide's own claim is about a MATRIX ENTRY (a multigraph's cell
+    # counts parallel edges, not just 0/1), but the figure used to draw only the two discs
+    # and two arcs -- no matrix anywhere, so the thing the slide is about was never actually
+    # shown. A 2x2 matrix panel, N/A labelled to match the pair on the left, with the "2"
+    # cell (both directions -- the matrix is symmetric) highlighted the same way every other
+    # matrix figure in the deck highlights its point cell.
+    fig, axes = plt.subplots(1, 2, figsize=(6.2, 2.5), gridspec_kw={"width_ratios": [1.5, 1]})
+    ax = axes[0]
     ax.set_xlim(-1.15, 1.15)
-    ax.set_ylim(-0.34, 0.34)
+    ax.set_ylim(-0.85, 0.85)
     clean(ax)
+    W = fit_node_scale(fig, ax)
     P, Q = (-0.6, 0.0), (0.6, 0.0)
     for rad in (0.30, -0.30):
         ax.add_patch(FancyArrowPatch(P, Q, connectionstyle=f"arc3,rad={rad}", arrowstyle="-",
                                       color=MUTED, linewidth=EDGE_W, zorder=1))
-    ax.scatter([P[0], Q[0]], [P[1], Q[1]], s=node_s(W), c=INK, zorder=3, linewidths=0)
+    draw_nodes(ax, [P, Q], colors=INK, zorder=3)
     for (x, y), t in zip([P, Q], ["N", "A"]):
         ax.text(x, y, t, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
     # "two bridges, two edges" removed -- it is the figcaption verbatim (duplicated-caption fix).
-    save_fit(fig, ax, "multigraph.png", extra_scatter=[(P, node_s(W)), (Q, node_s(W))],
-             pad_frac=0.10, pad_min_in=0.05)
+
+    ax2 = axes[1]
+    M = np.array([[0, 2], [2, 0]])
+    matrix_fs = fs(20, W / 2)
+    draw_matrix(ax2, M, cell_highlight=[(0, 1), (1, 0)], cell_fs=matrix_fs)
+    ax2.set_xticklabels(["N", "A"], fontsize=matrix_fs, color=INK)
+    ax2.set_yticklabels(["N", "A"], fontsize=matrix_fs, color=INK)
+    save(fig, "multigraph.png")
 
 
 # R4 fix (Policy 2): figsize shrunk (5.6 -> 3.0 square) so the loop+node fill a much
@@ -886,15 +1148,29 @@ def fig_multigraph():
 # doesn't do this on its own (Axes.get_tightbbox() still reports close to the full
 # declared xlim/ylim). Was 23% x 40% ink.
 SELFLOOP_W = 3.0
+# This whole figure is saved at out_dpi=1200 (see _build_selfloop_fig below), six times the
+# 200dpi every OTHER figure in this file uses -- the true content here (one node plus its
+# loop) is still physically small even at the deck's now-uniform NODE_DIAM_IN, so the extra
+# native resolution keeps the crop crisp once the deck displays it at its usual on-slide
+# width. R8 fix: this used to also need a SEPARATE, scaled-down edge width
+# (SELFLOOP_EDGE_W = EDGE_W * 200/1200) because the node itself was physically tiny at the
+# OLD, scatter-derived radius (~0.04 data units at this figsize) -- a stroke declared in
+# POINTS (a physical unit) read as disproportionately thick next to a disproportionately
+# small node. Now that every node in the deck (this one included, via fit_node_scale) shares
+# the same PHYSICAL diameter (NODE_DIAM_IN), a stroke declared in points is automatically the
+# same proportion of the node everywhere -- plain EDGE_W is correct here with no rescaling,
+# and out_dpi is free to stay high purely for crispness, decoupled from that proportion.
+SELFLOOP_OUT_DPI = 1200
 
 
-def _draw_selfloop(ax, r, number_badges=False, badge_fs=11.5):
-    # r: the node's TRUE radius in DATA units at ax's CURRENT transform (see
-    # node_radius_data) -- not a hand-measured guess. R5 fix (Blocker 2/3): the previous
-    # version hard-coded r=0.135 "measured from a render", which had gone stale against the
-    # actual node_s()-derived marker size -- the true radius at this figsize was ~0.04, a
-    # 3x mismatch -- so the loop's legs were rooted 13-19px above the disc they were meant
-    # to visibly meet, and the tick marks (also placed at the wrong r) floated with them.
+def _draw_selfloop(ax, r=NODE_R, number_badges=False, badge_fs=11.5):
+    # r: NODE_R, the deck-wide canonical node radius in DATA units -- exact by construction
+    # (Circle patches, not a scatter marker's guessed radius; see the module note above
+    # NODE_R). R5 fix (Blocker 2/3, historical): the previous version hard-coded r=0.135
+    # "measured from a render", which went stale against the marker size then in use -- a 3x
+    # mismatch that rooted the loop's legs 13-19px off the disc. That whole class of bug
+    # (a radius measured/guessed once, then drifting out of sync with what's actually drawn)
+    # is what NODE_R being a single source of truth removes.
     #
     # R3 fix (Major 14): the old loop sat *behind* the node (zorder=1 under the node's
     # zorder=3) so both attachment points were covered by the disc, and it read as a
@@ -939,43 +1215,64 @@ def _draw_selfloop(ax, r, number_badges=False, badge_fs=11.5):
     )
 
     if number_badges:
-        # R6 fix (Blocker 2): badges now centre ON the rim, at the two points the legs
-        # actually attach to (previously offset onto the (deleted) tick marks, 100px from
-        # the real attachment point) -- same small ring-plus-digit token as before, just
-        # anchored where the answer is actually pointing.
+        # R7 fix (Blocker 2, a regression R6 introduced): R6 centred an OPAQUE white disc ON
+        # the rim -- a badge of radius 0.42r straddling a point that sits exactly AT radius r
+        # from centre puts roughly half its fill INSIDE the node. Confirmed directly: a
+        # topmost-black-row scan found the node's own rendered top edge dropping 15-30px at
+        # both badge x-positions -- two bites out of the node's shoulders, reading as a
+        # three-lobed blob, and hiding the two attachment points the badges exist to mark on
+        # the one slide whose whole point is that the loop attaches twice.
+        #
+        # Badges now sit OUTSIDE the node entirely -- bare numerals, no disc/fill (this
+        # function's own documented fallback: "or drop the discs and set bare numerals in
+        # annotation gray") -- offset radially outward from each attachment point, with a
+        # hairline leader that stops short of the rim. Routed through draw_annotation_stroke
+        # so clearance from the node disc AND from the loop's own path is asserted against
+        # the real renderer, not eyeballed -- exactly the guard R6 built but never called from
+        # here.
+        loop_pts = _arc3_points(leave, ret, -2.6, n=60)
+        node_obs = [circle_obstacle((cx, cy), node_radius_pt(ax, r))]
+        loop_obs = [line_obstacle(loop_pts, EDGE_W, color=MUTED)]
         for i, (x, y) in enumerate((leave, ret), start=1):
-            ax.add_patch(mpatches.Circle((x, y), r * 0.42, facecolor="white", edgecolor=MUTED,
-                                          linewidth=1.4, zorder=6))
-            ax.text(x, y, str(i), ha="center", va="center", color=MUTED,
-                    fontsize=badge_fs, zorder=7)
-    ax.scatter([cx], [cy], s=node_s(SELFLOOP_W), c=INK, zorder=3, linewidths=0)
-    ax.text(cx, cy, "X", ha="center", va="center", color="white",
-            fontsize=fs(LABEL_FS, SELFLOOP_W), zorder=4)
+            ang = np.arctan2(y - cy, x - cx)
+            u = np.array([np.cos(ang), np.sin(ang)])
+            leader_pts = np.array([np.array([x, y]) + u * r * 0.22, np.array([x, y]) + u * r * 0.55])
+            # lw left at draw_annotation_stroke's own default (40% of EDGE_W) -- an
+            # annotation stroke must stay visibly thinner than the loop it sits beside, and
+            # the loop is now plain EDGE_W (see the module note above _draw_selfloop).
+            draw_annotation_stroke(ax, leader_pts, node_obstacles=node_obs, edge_obstacles=loop_obs,
+                                    zorder=6, name=f"selfloop-answer:leader-{i}")
+            tx, ty = np.array([x, y]) + u * r * 0.85
+            ax.text(tx, ty, str(i), ha="center", va="center", color=MUTED,
+                    fontsize=badge_fs, fontweight="bold", zorder=7)
+    draw_node(ax, (cx, cy), color=INK, r=r, zorder=3)
+    # LABEL_FS, not fs()-scaled: this is a node-INTERIOR letter, the same convention every
+    # other node-interior digit/letter label in the deck uses (draw_knodes/draw_graph5) --
+    # and since every node now shares one PHYSICAL diameter (NODE_DIAM_IN, deck-wide), a
+    # fixed point size is automatically the same proportion of the node everywhere, with no
+    # per-figure scale needed.
+    ax.text(cx, cy, "X", ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
 
 
 def _build_selfloop_fig(name, number_badges, show_k=False):
-    # R5 fix (Blocker 2/3, Policy 2): draw against ANY reasonable, generous xlim/ylim (its
-    # exact value no longer matters -- see save_fit) so node_radius_data resolves a real
-    # r, build the geometry off that r, then crop directly to the true rendered pixel
-    # extent via save_fit. (A first attempt tightened xlim/ylim to content and re-measured
-    # r each pass -- since a scatter marker's DATA-unit radius depends on the current
-    # xlim/ylim, that feedback loop had no stable fixed point and spiralled to zero.)
-    W = SELFLOOP_W
-    fig, ax = plt.subplots(figsize=(W, W))
+    # Draw against ANY reasonable, generous xlim/ylim (its exact value no longer matters --
+    # see save_fit) at NODE_R -- a Circle's data-unit radius is exact and does not depend on
+    # xlim/ylim (unlike the old scatter marker, whose apparent DATA-unit radius depended on
+    # the CURRENT xlim/ylim -- see the module note above NODE_R for what that cost across six
+    # rounds), so there is no feedback loop to worry about here at all.
+    fig, ax = plt.subplots(figsize=(SELFLOOP_W, SELFLOOP_W))
     ax.set_xlim(-1.0, 1.0)
     ax.set_ylim(-1.0, 1.0)
     clean(ax)
-    rx, ry = node_radius_data(ax, node_s(W))
-    r = (rx + ry) / 2
-    _draw_selfloop(ax, r, number_badges=number_badges)
+    fit_node_scale(fig, ax)
+    _draw_selfloop(ax, NODE_R, number_badges=number_badges)
     if show_k:
-        ax.text(0, -1.55 * r, "k = 2", ha="center", va="top", color=MUTED, fontsize=13, zorder=6)
+        ax.text(0, -1.55 * NODE_R, "k = 2", ha="center", va="top", color=MUTED, fontsize=13, zorder=6)
     # out_dpi bumped well above the file default: this crop is physically small (well under
-    # 1in across) and the deck displays it at the same ~520px column width as every other
+    # 1.5in across) and the deck displays it at the same ~520px column width as every other
     # figure regardless of source size, so a low native pixel count here would upscale and
     # go soft on-slide in a way none of the wider figures do.
-    save_fit(fig, ax, name, extra_scatter=[((0, 0), node_s(W))], pad_frac=0.10, pad_min_in=0.05,
-             out_dpi=1200)
+    save_fit(fig, ax, name, pad_frac=0.10, pad_min_in=0.05, out_dpi=SELFLOOP_OUT_DPI)
 
 
 def fig_selfloop():
@@ -1004,17 +1301,10 @@ def _star_positions(k, r=1.0, start=90):
 
 
 def fig_degree_definition():
-    # Plain scatter + straight lines only (no data-unit patches) -- safe to let width and
-    # height scale independently so the crop hits a landscape aspect without adding padding.
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.2))
+    fig, ax = plt.subplots(figsize=(4.8, 4.2))
     pos = _star_positions(4)
     for i in range(1, 5):
         ax.plot([pos[0][0], pos[i][0]], [pos[0][1], pos[i][1]], color=MUTED, linewidth=EDGE_W, zorder=1)
-    leaf_xy = [pos[i] for i in range(1, 5)]
-    s = node_s(W)
-    ax.scatter([p[0] for p in leaf_xy], [p[1] for p in leaf_xy], s=s, c=INK, zorder=3, linewidths=0)
-    ax.scatter([pos[0][0]], [pos[0][1]], s=s, c=INK, zorder=3, linewidths=0)
     # Minor fix: the in-node "4" was dropped -- with no other node in the deck carrying a
     # number, it read as a node ID rather than a degree count, and it was one of three
     # places "k = 4" appeared (also below the figure, also in the figcaption). The
@@ -1025,15 +1315,35 @@ def fig_degree_definition():
     # not the centre hub the "4" actually counts -- and the figcaption repeated it besides.
     # A leader ties the label to the hub explicitly, routed through the empty lower-right
     # quadrant so it doesn't cross either the bottom or right leaf.
-    ax.annotate("k = 4", xy=(0, -0.16), xytext=(0.85, -1.25), fontsize=ANNOT_FS, color=MUTED,
-                ha="center", va="center", arrowprops=dict(arrowstyle="-", color=MUTED, lw=1.2))
     ax.set_xlim(-1.35, 1.35)
     ax.set_ylim(-1.72, 1.3)
-    clean(ax, equal=False)
+    clean(ax)  # finalize limits BEFORE measuring the hub's true rendered radius
+    fit_node_scale(fig, ax)
+    leaf_xy = [pos[i] for i in range(1, 5)]
+    draw_nodes(ax, leaf_xy, colors=INK, zorder=3)
+    draw_node(ax, pos[0], color=INK, zorder=3)
+    # R7 fix (item 1 of the fix-first table, slide 015): the old bare ax.annotate aimed its
+    # leader at (0, -0.16) -- 13.7px INSIDE the hub's own disc, not at its rim -- and drew at
+    # 4px against 7px edges (57% of edge weight), both because nothing ever measured the
+    # hub's TRUE rendered radius or checked the leader against it. Routed through
+    # place_annotation with node_obstacles=[hub] and edge_obstacles=[every leaf edge]: the
+    # target now sits just past the hub's real rim along the same lower-right bearing toward
+    # the label (clear of the bottom/right leaf edges, which the corridor was always meant to
+    # dodge), and the assertion -- not a hand-picked (x, y) -- is what guarantees it.
+    ang = np.deg2rad(-55)  # lower-right bearing toward the label, between the bottom (-90) and
+    tip = (NODE_R * 1.18 * np.cos(ang), NODE_R * 1.18 * np.sin(ang))  # right (0) leaf edges
+    node_r_pt = node_radius_pt(ax)
+    hub_obstacle = [circle_obstacle(pos[0], node_r_pt, color=INK)]
+    leaf_edges = [line_obstacle([pos[0], pos[i]], EDGE_W, color=MUTED) for i in range(1, 5)]
+    place_annotation(ax, tip, "k = 4", xytext=(0.85, -1.25), obstacles=hub_obstacle,
+                      node_obstacles=hub_obstacle, edge_obstacles=leaf_edges,
+                      color=MUTED, fontsize=ANNOT_FS, ha="center", va="center",
+                      clearance_pt=4.0, lw=1.2, name="degree-definition:k=4")
     save(fig, "degree-definition.png")
 
 
-def _bracket(ax, center, p1, p2, color=MUTED, gap_deg=16, lw=None, zorder=5, n=40):
+def _bracket(ax, center, p1, p2, color=MUTED, gap_deg=16, lw=None, zorder=5, n=40,
+             node_obstacles=(), edge_obstacles=(), name="bracket"):
     # R3 fix (Blocker 1): auto-picked the arc's curvature sign so it bulges AWAY from
     # `center` -- hand-picking the sign is what had left parity-even's lower bracket
     # bulging back *into* the node.
@@ -1047,9 +1357,19 @@ def _bracket(ax, center, p1, p2, color=MUTED, gap_deg=16, lw=None, zorder=5, n=4
     # touches a circle centred on that same point at the matching angle, and both edges'
     # angles are excluded from the swept range by construction, so the bracket can never
     # sit on top of either edge, regardless of how the two edges are laid out.
-    lw = EDGE_W if lw is None else lw
+    #
+    # R7 fix ("the one thing to fix first"): this used to `ax.plot` the arc directly, at a
+    # default lw of a full EDGE_W -- the SAME token as the edges it sits beside (parity-odd's
+    # bracket, and one of parity-even's two, were both still at this default, undetected
+    # because nothing ever checked a bracket's own weight or its clearance from the hub disc
+    # it is centred on). Routed through draw_annotation_stroke -- default lw is now 40% of
+    # EDGE_W (asserted, not assumed) and the arc's clearance from `node_obstacles` /
+    # crossing of `edge_obstacles` is verified against the real renderer.
+    lw = (EDGE_W * 0.4) if lw is None else lw
     pts = _bracket_points(center, p1, p2, gap_deg=gap_deg, n=n)
-    ax.plot(pts[:, 0], pts[:, 1], color=color, linewidth=lw, zorder=zorder, solid_capstyle="round")
+    draw_annotation_stroke(ax, pts, color=color, lw=lw, zorder=zorder,
+                            node_obstacles=node_obstacles, edge_obstacles=edge_obstacles,
+                            name=name)
 
 
 def _bracket_points(center, p1, p2, gap_deg=16, n=40):
@@ -1067,11 +1387,11 @@ def _bracket_points(center, p1, p2, gap_deg=16, n=40):
 
 
 def fig_parity_even():
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.4))
+    fig, ax = plt.subplots(figsize=(4.8, 4.4))
     ax.set_xlim(-1.5, 1.5)
     ax.set_ylim(-1.28, 1.28)
-    clean(ax, equal=False)
+    clean(ax)
+    fit_node_scale(fig, ax)
     pos = _star_positions(4, start=45)
     # deck-wide structural edge colour is MUTED (R4 Minor: Part Three drew edges black
     # while Parts Five-Seven drew them annotation gray; MUTED is what the majority of the
@@ -1084,18 +1404,24 @@ def fig_parity_even():
             for i in range(1, 5)}
     # R5 fix (Major 12): the bracket used the SAME token as the edges it ties together --
     # EDGE_W gray -- so it read as a fifth edge crossing the middle, not a mark distinct
-    # from the graph. Distinctly lighter (about half the weight) settles it as annotation,
-    # not structure -- same "half-weight, not same-weight" move as the self-loop's ticks.
-    bracket_lw = EDGE_W * 0.5
-    node_r_pt = (node_s(W) / np.pi) ** 0.5
-    obstacles = [circle_obstacle(pos[i], node_r_pt, color=INK) for i in pos]
-    for i in range(1, 5):
-        obstacles.append(line_obstacle([pos[0], pos[i]], EDGE_W, color=MUTED))
+    # from the graph. Distinctly lighter settles it as annotation, not structure -- same
+    # move as the self-loop's ticks.
+    #
+    # R7 fix ("the one thing to fix first"): was EDGE_W*0.5 -- OVER draw_annotation_stroke's
+    # 40%-of-EDGE_W cap (this bracket now routes through it, below), and one of the two
+    # (bottom) had never actually been checked against the hub disc it curves around.
+    bracket_lw = EDGE_W * 0.4
+    node_r_pt = node_radius_pt(ax)
+    node_obs = [circle_obstacle(pos[i], node_r_pt, color=INK) for i in pos]
+    edge_obs = {i: line_obstacle([pos[0], pos[i]], EDGE_W, color=MUTED) for i in range(1, 5)}
+    obstacles = node_obs + list(edge_obs.values())
 
     top_pts = _bracket_points(pos[0], near[1], near[2])
-    _bracket(ax, pos[0], near[1], near[2], lw=bracket_lw)
+    _bracket(ax, pos[0], near[1], near[2], lw=bracket_lw, node_obstacles=node_obs,
+             edge_obstacles=[edge_obs[3], edge_obs[4]], name="parity-even:bracket-top")
     bot_pts = _bracket_points(pos[0], near[3], near[4])
-    _bracket(ax, pos[0], near[3], near[4], lw=bracket_lw)
+    _bracket(ax, pos[0], near[3], near[4], lw=bracket_lw, node_obstacles=node_obs,
+             edge_obstacles=[edge_obs[1], edge_obs[2]], name="parity-even:bracket-bot")
     # R5 fix (Major 12): each "in-out" now anchors at ITS OWN bracket's peak (with the arc
     # itself as an obstacle, plus every node/edge) instead of sitting ~95px away at the
     # frame's top/bottom edge with a node in between -- bring the label to the mark it names.
@@ -1109,18 +1435,21 @@ def fig_parity_even():
                 obstacles=obstacles + [line_obstacle(bot_pts, bracket_lw, color=MUTED)],
                 color=MUTED, fontsize=ANNOT_FS, ha="center", va="top", clearance_pt=3.0,
                 zorder=6, name="parity-even:in-out-bot")
-    xs = [pos[0][0]] + [pos[i][0] for i in range(1, 5)]
-    ys = [pos[0][1]] + [pos[i][1] for i in range(1, 5)]
-    ax.scatter(xs, ys, s=node_s(W), c=INK, zorder=3, linewidths=0)
+    draw_nodes(ax, [pos[i] for i in range(5)], colors=INK, zorder=3)
     # title removed -- duplicated the figcaption verbatim
     save(fig, "parity-even.png")
 
 
 def fig_parity_odd():
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.4))
+    fig, ax = plt.subplots(figsize=(4.8, 4.4))
     # leaves at 60 / 180 / 300 deg so none sits under the bracket label at the top
     pos = _star_positions(3, start=60)
+    # xlim/ylim/aspect finalized BEFORE any place_label/draw_annotation_stroke call, since
+    # both measure the real (post-aspect) data<->pixel transform.
+    ax.set_xlim(-1.6, 1.95)
+    ax.set_ylim(-1.45, 1.25)
+    clean(ax)
+    fit_node_scale(fig, ax)
     # 1,2 = bracketed pair (upper-right / left); 3 = leftover (lower-right). MUTED, not
     # INK -- deck-wide structural edge colour (see fig_parity_even).
     ax.plot([pos[0][0], pos[1][0]], [pos[0][1], pos[1][1]], color=MUTED, linewidth=EDGE_W, zorder=1)
@@ -1130,24 +1459,35 @@ def fig_parity_odd():
     ax.plot([pos[0][0], pos[3][0]], [pos[0][1], pos[3][1]], color=ACCENT2, linewidth=4.5, zorder=1)
     near = {i: (pos[0][0] + 0.55 * (pos[i][0] - pos[0][0]), pos[0][1] + 0.55 * (pos[i][1] - pos[0][1]))
             for i in range(1, 4)}
-    _bracket(ax, pos[0], near[1], near[2])
+    # R7 fix ("the one thing to fix first"): this bracket used to draw at the bare default
+    # (full EDGE_W -- exactly edge weight) with no clearance/crossing check at all. Routed
+    # through _bracket's node/edge obstacles like parity-even's pair.
+    node_r_pt_odd = node_radius_pt(ax)
+    odd_node_obs = [circle_obstacle(pos[i], node_r_pt_odd, color=INK) for i in pos]
+    odd_leftover_edge = line_obstacle([pos[0], pos[3]], 4.5, color=ACCENT2)
+    _bracket(ax, pos[0], near[1], near[2], node_obstacles=odd_node_obs,
+             edge_obstacles=[odd_leftover_edge], name="parity-odd:bracket")
     # label sits on the bisector of the bracketed pair, clear of every node
     bisector = np.deg2rad((60 + 180) / 2)
     lx, ly = 1.05 * np.cos(bisector), 1.05 * np.sin(bisector)
     ax.text(lx, ly, "in–out", ha="center", va="center", color=MUTED, fontsize=ANNOT_FS, zorder=6)
-    xs = [pos[0][0], pos[1][0], pos[2][0], pos[3][0]]
-    ys = [pos[0][1], pos[1][1], pos[2][1], pos[3][1]]
-    ax.scatter(xs, ys, s=node_s(W), c=INK, zorder=3, linewidths=0)
+    draw_nodes(ax, [pos[0], pos[1], pos[2], pos[3]], colors=INK, zorder=3)
     # R3 fix (Blocker 2): anchored just past leaf 3 (not at the edge midpoint) with
     # ha="left", va="top" so the text grows away from both the centre disc and the
     # accent-2 stroke instead of centering back over them; annotation gray, not
     # accent-2-on-accent-2 (the exact defect already fixed for the Euler examples).
-    # Minor fix: 0.16/0.14 left the "l" grazing the disc; a bit more clearance settles it.
-    lox, loy = pos[3][0] + 0.22, pos[3][1] - 0.19
-    ax.text(lox, loy, "left over", ha="left", va="top", color=MUTED, fontsize=ANNOT_FS, zorder=6)
-    ax.set_xlim(-1.6, 1.95)
-    ax.set_ylim(-1.45, 1.25)
-    clean(ax, equal=False)
+    #
+    # R7 fix (Minor, slide 019): a hand-picked (0.22, -0.19) offset still left the "l"
+    # ascender grazing the disc rim (0.8px clearance, measured) -- routed through place_label
+    # against the real node discs and edges so the settle loop -- not another hand-picked
+    # number -- is what guarantees clearance.
+    node_obs_odd = [circle_obstacle(pos[i], node_r_pt_odd, color=INK) for i in pos]
+    edge_obs_odd = [line_obstacle([pos[0], pos[1]], EDGE_W, color=MUTED),
+                     line_obstacle([pos[0], pos[2]], EDGE_W, color=MUTED),
+                     odd_leftover_edge]
+    place_label(ax, (pos[3][0] + 0.22, pos[3][1] - 0.19), "left over",
+                obstacles=node_obs_odd + edge_obs_odd, color=MUTED, fontsize=ANNOT_FS,
+                ha="left", va="top", clearance_pt=3.0, zorder=6, name="parity-odd:left-over")
     save(fig, "parity-odd.png")
 
 
@@ -1170,37 +1510,25 @@ def fig_parity_bound():
     path = ["S", "P1", "P2", "P3", "P4", "E"]
     pos = {"S": (0, 0), "P1": (0.85, 0.55), "P2": (1.7, 0), "P3": (2.55, 0.55), "P4": (3.4, 0), "E": (4.25, 0.55)}
     edges = list(zip(path, path[1:]))
-    W = 5.6
-    fig, ax = plt.subplots(figsize=(W, 3.6))
+    fig, ax = plt.subplots(figsize=(5.6, 3.6))
     ax.set_xlim(-0.55, 4.8)
     ax.set_ylim(-1.15, 1.35)
     clean(ax)
+    fit_node_scale(fig, ax)
     for u, v in edges:
         ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
                  linewidth=EDGE_W, zorder=1, solid_capstyle="round")
 
-    # R6 fix (Blocker 3, root cause): this is a 6-node chain drawn at the SAME node_s(W)
-    # reference every other (compact, 3-5 node) figure in the deck uses. At full size the
-    # marker's fixed in-inches radius covered ~48% of the ~1.01-data-unit spacing between
-    # adjacent nodes -- discs nearly touching, only a ~0.037-data-unit (~6px) sliver of each
-    # edge exposed outside both rims. Every "even" pairing arc's endpoint (62% of the way
-    # along its edge) landed 0.10+ data units INSIDE the far node's own disc no matter how
-    # thin the arc was drawn or how far its tip was pushed -- confirmed directly (measured
-    # every arc's minimum distance to every node at the old size: -0.044 data units of
-    # penetration into the worst-case neighbour, i.e. inside its rim, not just close to it).
-    # There was no room for the fix the review asked for ("float clear of every disc") until
-    # the discs themselves shrink. NODE_SCALE (all six nodes, uniformly -- the "same size
-    # unless the slide explains an encoding" rule stays intact) restores a ~29% exposed gap,
-    # matching parity-even's own ~27% (same measurement, see fig_parity_even's node radius),
-    # verified below by draw_annotation_stroke's own clearance assertions rather than eyeballed.
-    NODE_SCALE = 0.55
-    s = node_s(W) * NODE_SCALE
+    # R6 fix (Blocker 3, historical): this 6-node chain used to need a hand-picked
+    # NODE_SCALE=0.55 shrink because the old scatter-derived node size, tuned against a
+    # DIFFERENT figure's own xlim, covered ~48% of this chain's ~1.01-data-unit spacing --
+    # discs nearly touching. NODE_R (0.12 data units, deck-wide, see the module note above
+    # it) was picked with exactly this chain's spacing as one of its constraints, so it
+    # already leaves real daylight here with no per-figure scale-down.
     colors = {n: (ACCENT2 if n in ("S", "E") else INK) for n in pos}
-    xs = [pos[n][0] for n in pos]
-    ys = [pos[n][1] for n in pos]
-    ax.scatter(xs, ys, s=s, c=[colors[n] for n in pos], zorder=3, linewidths=0)
+    draw_nodes(ax, pos, colors=colors, zorder=3)
 
-    node_r_pt = (s / np.pi) ** 0.5
+    node_r_pt = node_radius_pt(ax)
     obstacles = [circle_obstacle(pos[n], node_r_pt, color=colors[n]) for n in pos]
     for u, v in edges:
         obstacles.append(line_obstacle([pos[u], pos[v]], EDGE_W, color=MUTED))
@@ -1253,20 +1581,33 @@ def fig_parity_bound():
         draw_annotation_stroke(ax, arc_pts, node_obstacles=node_discs, edge_obstacles=other_edges,
                                 lw=EDGE_W * 0.4, zorder=5, name=f"parity-bound:even-arc-{node}")
         is_peak = hy > 0.4  # P1/P3 (peaks, y=0.55): bracket bulges BELOW; P2/P4 (valleys): above
-        ly = hy - 0.40 if is_peak else hy + 0.40
         va = "top" if is_peak else "bottom"
-        place_label(ax, (hx, ly), "even", obstacles=obstacles, color=MUTED,
-                    fontsize=ANNOT_FS - 4, ha="center", va=va, clearance_pt=3.0, zorder=6,
-                    name=f"parity-bound:even-{node}")
+        # R7 fix (item 16, slide 020): the old fixed (hx, hy +/- 0.40) anchor sat INSIDE the
+        # arc's own radius (~0.62 of an ~1.0-unit edge), on the SAME angular bisector the arc
+        # bulges toward -- i.e. directly under the ink, not beside it -- and the arc was never
+        # even passed as an obstacle, so place_label had no way to know to move. Struck
+        # through on all four, on the one slide whose entire point is parity. Anchored instead
+        # at the arc's own peak sample (its true rendered midpoint) and pushed further out
+        # along that SAME radial bearing -- beyond the arc, not under it -- with the arc itself
+        # now a real obstacle so the settle loop, not another hand-picked offset, guarantees
+        # clearance.
+        peak_pt = arc_pts[len(arc_pts) // 2]
+        d = np.array(peak_pt) - np.array((hx, hy))
+        d = d / np.linalg.norm(d)
+        anchor = (hx + d[0] * 1.0, hy + d[1] * 1.0)
+        place_label(ax, anchor, "even",
+                    obstacles=obstacles + [line_obstacle(arc_pts, EDGE_W * 0.4, color=MUTED)],
+                    color=MUTED, fontsize=ANNOT_FS - 4, ha="center", va=va, clearance_pt=4.0,
+                    zorder=6, name=f"parity-bound:even-{node}")
     save(fig, "parity-bound.png")
 
 
 def fig_konigsberg_blank():
-    W = 5.2
-    fig, ax = plt.subplots(figsize=(W, W))
-    draw_kedges(ax)
-    draw_knodes(ax, size=node_s(W))
+    fig, ax = plt.subplots(figsize=(5.2, 5.2))
     k_limits(ax, xpad=1.1)
+    fit_node_scale(fig, ax)
+    draw_kedges(ax)
+    draw_knodes(ax)
     save(fig, "konigsberg-blank.png")
 
 
@@ -1282,13 +1623,13 @@ def fig_konigsberg_degrees():
     deg = kedge_degrees()
     assert {n: str(d) for n, d in deg.items()} == labels, f"degrees {deg} != labels {labels}"
     assert all(d % 2 == 1 for d in deg.values()), "all four Konigsberg landmasses must be odd"
-    W = 5.2
-    fig, ax = plt.subplots(figsize=(W, 5.6))
+    fig, ax = plt.subplots(figsize=(5.2, 5.6))
     # xlim/ylim/aspect finalized BEFORE any place_label call, since label placement measures
     # the real (post-aspect) data<->pixel transform.
     ax.set_xlim(-2.15, 2.15)
     ax.set_ylim(-1.95, 1.85)
     clean(ax)
+    fit_node_scale(fig, ax)
     draw_kedges(ax)
     # R3 fix (Major 12/13): keep the N/A/B/S letters INSIDE each node (every other
     # Konigsberg figure -- 008-011, 021 -- uses those letters, and slide 021 has students
@@ -1297,13 +1638,13 @@ def fig_konigsberg_degrees():
     # to match the node fill. The old bottom "all four odd" annotation is dropped -- it
     # repeated the figcaption, which repeats the bullet list (duplicate-caption fix).
     node_colors = {n: ACCENT2 for n in "NSAB"}
-    draw_knodes(ax, colors=node_colors, size=node_s(W))
+    draw_knodes(ax, colors=node_colors)
     # R5 fix (Major 9): these degree numerals are ACCENT2 sitting right outside an ACCENT2
     # disc -- exactly the "recurring failure" pattern the review flagged five times. Routed
     # through place_label: it starts at the same 0.34-out offset as before, but is now
     # measured against the disc's TRUE rendered radius and nudged/raises rather than
     # trusting the hand-picked 0.34 to still clear it.
-    obstacles = k_obstacles(node_s(W), node_colors=node_colors)
+    obstacles = k_obstacles(ax, node_colors=node_colors)
     for n, d in labels.items():
         ox, oy = K_OUTWARD[n]
         ha, va = K_OUTWARD_ALIGN[n]
@@ -1326,11 +1667,11 @@ def fig_konigsberg_bombed():
     # Fixed at the source (_arc3_points); this assertion is the regression guard so it can
     # never silently come back.
     assert_dashed_distinct_from_live(removed)
-    W = 5.2
-    fig, ax = plt.subplots(figsize=(W, W))
+    fig, ax = plt.subplots(figsize=(5.2, 5.2))
     ax.set_xlim(-2.15, 2.15)
     ax.set_ylim(-1.85, 1.85)
     clean(ax)
+    fit_node_scale(fig, ax)
     draw_kedges(ax, removed=removed)
     # R4 fix (Blocker 4): this used to swap the N/A/B/S letters for the bare degree VALUES
     # inside the disc -- but slide 026 (the question this slide answers, konigsberg-degrees
@@ -1342,8 +1683,8 @@ def fig_konigsberg_bombed():
     # A/B, MUTED (now even) for N/S -- accent-2 keeps its one meaning in this figure,
     # "still odd after the bombing."
     node_colors = {"N": INK, "S": INK, "A": ACCENT2, "B": ACCENT2}
-    draw_knodes(ax, colors=node_colors, size=node_s(W))
-    obstacles = k_obstacles(node_s(W), node_colors=node_colors)
+    draw_knodes(ax, colors=node_colors)
+    obstacles = k_obstacles(ax, node_colors=node_colors)
     for n, d in labels.items():
         ox, oy = K_OUTWARD[n]
         ha, va = K_OUTWARD_ALIGN[n]
@@ -1351,24 +1692,33 @@ def fig_konigsberg_bombed():
         place_label(ax, (KPOS[n][0] + 0.34 * ox, KPOS[n][1] + 0.34 * oy), d, obstacles=obstacles,
                     color=color, fontsize=ANNOT_FS, ha=ha, va=va, fontweight="bold", zorder=5,
                     clearance_pt=3.0, name=f"konigsberg-bombed:degree-{n}")
-    # R5 fix (Blocker 1): "destroyed" now gets ONE leader PER removed bridge (there are two),
-    # each anchored on that bridge's own dashed curve at its peak -- previously a single
-    # leader pointed at a spot that, because of the sign bug above, sat on the solid A-N
-    # curve instead. Both labels sit in the open exterior margin so the leader approaches
-    # each dash head-on rather than running near-parallel to any live edge.
+    # R5 fix (Blocker 1): "destroyed" now gets ONE label PER removed bridge (there are two).
+    #
+    # R7 fix ("the one thing to fix first", table row 027): R5's version used a leader from
+    # the open exterior margin (xytext=(-1.65, +-1.05)) to each dash's own peak -- but NA2/SA2
+    # are the INNER of each parallel pair (rad=-0.30, curving back toward the centre; NA1/SA1
+    # at rad=+0.30 bulge further OUT). Checked with a real crossing assertion for the first
+    # time this round: NA1 sits physically between the exterior margin and NA2 for its ENTIRE
+    # length, so no straight leader from outside the diamond can reach NA2 without crossing
+    # it (confirmed by sweeping several exterior anchors -- all fail the same way; this is a
+    # geometric dead end, not a bad offset). Per the spec's fallback: no leader. Each label
+    # sits directly beside its own dash, inside the diamond where NA2/SA2 actually curve,
+    # settled by place_label against every node and every bridge (live and dashed) so it
+    # can't drift onto anything else instead.
     na2_xy = tuple(_arc3_points(KPOS["N"], KPOS["A"], -0.30, n=101)[50])
     sa2_xy = tuple(_arc3_points(KPOS["S"], KPOS["A"], -0.30, n=101)[50])
-    place_annotation(ax, na2_xy, "destroyed", xytext=(-1.65, 1.05), obstacles=obstacles,
-                      color=MUTED, fontsize=ANNOT_FS, ha="center", va="center",
-                      clearance_pt=4.0, name="konigsberg-bombed:destroyed-NA2")
-    place_annotation(ax, sa2_xy, "destroyed", xytext=(-1.65, -1.05), obstacles=obstacles,
-                      color=MUTED, fontsize=ANNOT_FS, ha="center", va="center",
-                      clearance_pt=4.0, name="konigsberg-bombed:destroyed-SA2")
+    place_label(ax, (na2_xy[0] - 0.27, na2_xy[1] + 0.27), "destroyed", obstacles=obstacles,
+                color=MUTED, fontsize=ANNOT_FS, ha="right", va="center", clearance_pt=4.0,
+                name="konigsberg-bombed:destroyed-NA2")
+    place_label(ax, (sa2_xy[0] - 0.27, sa2_xy[1] - 0.27), "destroyed", obstacles=obstacles,
+                color=MUTED, fontsize=ANNOT_FS, ha="right", va="center", clearance_pt=4.0,
+                name="konigsberg-bombed:destroyed-SA2")
     # "two odd -> now possible" removed -- it is the figcaption verbatim.
     save(fig, "konigsberg-bombed.png")
 
 
-def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_label=None, width_in=5.2):
+def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_label=None, width_in=5.2,
+                  xlim=None, ylim=None):
     # Label color is annotation gray, not ACCENT2 -- the traced route and the node fills
     # are already ACCENT2, so ACCENT2 text sitting on an ACCENT2 edge was unreadable
     # (F3 fix). Offsets are per-node so a label never sits on top of an incident edge.
@@ -1378,16 +1728,24 @@ def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_lab
     # family accent-2 now means exactly one thing: an ODD-degree node (the two ends of a
     # path). A node passed as `hub_label` is EVEN (Euler-circuit's start=end node has
     # degree 4) and must not be coloured accent-2 for that -- see fig_euler_circuit_example.
-    W = width_in
-    fig, ax = plt.subplots(figsize=(W, 4.6))
+    fig, ax = plt.subplots(figsize=(width_in, 4.6))
+    # R7 fix (found routing the hub ring through draw_annotation_stroke): both callers used
+    # to set xlim/ylim on the returned `ax` AFTER this function returned -- so the ring drawn
+    # below (when hub_label is given) measured its own clearance against matplotlib's
+    # autoscaled DEFAULT view, not the view the caller actually saves. Both callers now pass
+    # `xlim`/`ylim` in directly (required -- see the assert below) so every measurement in
+    # this function, including fit_node_scale's, uses the real FINAL transform throughout.
+    assert xlim is not None and ylim is not None, "_trace_graph: pass the final xlim/ylim in"
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    clean(ax)  # aspect must be locked before any measurement below (see comment above)
+    fit_node_scale(fig, ax)
     for u, v in edges:
         ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
                  linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     nodes = list(pos.keys())
     colors = [ACCENT2 if n in (odd_labels or {}) else INK for n in nodes]
-    xs = [pos[n][0] for n in nodes]
-    ys = [pos[n][1] for n in nodes]
-    ax.scatter(xs, ys, s=node_s(W), c=colors, zorder=3, linewidths=0)
+    draw_nodes(ax, pos, colors=dict(zip(nodes, colors)), zorder=3)
     if odd_labels:
         for n, txt in odd_labels.items():
             x, y = pos[n]
@@ -1400,11 +1758,17 @@ def _trace_graph(pos, edges, trail, odd_labels=None, label_offsets=None, hub_lab
         # "odd" colour. The ring marks "this is the node that's both start and end"; the
         # text sits well clear of the disc and of the edges the ring itself sits inside of.
         x, y = pos[hub_label]
-        # Radius matches the ring convention used elsewhere at this same node/data scale
-        # (circuit.png's "revisited" ring): a touch larger than the node disc so it reads
-        # as a ring around the node, not a second, smaller disc on top of it.
-        ax.add_patch(mpatches.Circle((x, y), 0.2, facecolor="none", edgecolor=ACCENT2,
-                                      linewidth=3, zorder=5))
+        # R7 fix ("the one thing to fix first"): routed through draw_annotation_stroke (as a
+        # sampled circle) instead of a bare add_patch -- its clearance from the node disc it
+        # encircles, and from every edge, is now asserted against the real renderer instead
+        # of assumed from "a touch larger than the node disc". lw capped at 40% of EDGE_W
+        # (was a flat 3pt, at or above edge weight for some callers' figsizes).
+        node_r_pt_hub = node_radius_pt(ax)
+        hub_edges = [line_obstacle([pos[u], pos[v]], EDGE_W, color=MUTED)
+                     for (u, v) in edges if hub_label not in (u, v)]
+        draw_ring(ax, (x, y), k=1.7, color=ACCENT2, zorder=5,
+                  node_obstacles=[circle_obstacle((x, y), node_r_pt_hub)],
+                  edge_obstacles=hub_edges, name="trace-graph:hub-ring")
         dx, dy = (label_offsets or {}).get(hub_label, (0, -0.55))
         ax.text(x + dx, y + dy, "start = end", ha="center", va="top", color=MUTED,
                 fontsize=ANNOT_FS, zorder=4)
@@ -1418,9 +1782,8 @@ def fig_euler_path_example():
     # TL's incident edges run straight down and straight right from it, so a label
     # placed *below* TL sits on the TL-BL edge; offset sideways instead. Same for TR.
     fig, ax = _trace_graph(pos, edges, None, odd_labels={"TL": "start", "TR": "end"},
-                            label_offsets={"TL": (-0.34, 0), "TR": (0.34, 0)})
-    ax.set_xlim(-0.85, 1.85)
-    ax.set_ylim(-0.25, 1.9)
+                            label_offsets={"TL": (-0.34, 0), "TR": (0.34, 0)},
+                            xlim=(-0.85, 1.85), ylim=(-0.25, 1.9))
     save(fig, "euler-path-example.png")
 
 
@@ -1432,9 +1795,8 @@ def fig_euler_circuit_example():
     # extends to keep it inside the frame.
     pos = {"C": (0, 0), "L1": (-1, 0.65), "L2": (-1, -0.65), "R1": (1, 0.65), "R2": (1, -0.65)}
     edges = [("C", "L1"), ("L1", "L2"), ("L2", "C"), ("C", "R1"), ("R1", "R2"), ("R2", "C")]
-    fig, ax = _trace_graph(pos, edges, None, hub_label="C", label_offsets={"C": (0, -0.62)})
-    ax.set_xlim(-1.55, 1.55)
-    ax.set_ylim(-1.35, 1.15)
+    fig, ax = _trace_graph(pos, edges, None, hub_label="C", label_offsets={"C": (0, -0.62)},
+                            xlim=(-1.55, 1.55), ylim=(-1.35, 1.15))
     save(fig, "euler-circuit-example.png")
 
 
@@ -1443,10 +1805,17 @@ def fig_euler_circuit_example():
 # ===========================================================================
 CAMPUS_POS = {"Dorm": (0, 1), "Cafe": (1, 1), "Lib": (1, 0), "Gym": (0, 0)}
 CAMPUS_EDGES = [("Dorm", "Cafe"), ("Cafe", "Lib"), ("Lib", "Gym"), ("Gym", "Dorm"), ("Cafe", "Gym")]
-NODE_SIZE_C = node_s(4.7)  # matches CAMPUS_FIGSIZE width, defined below
 
 
 def draw_campus_base(ax, skip_edges=()):
+    # R7 fix (found alongside the node-label clearance check below): every caller used to
+    # call campus_axes(ax) (which finalizes xlim/ylim/aspect) AFTER draw_campus_base, so any
+    # measurement taken IN here -- like the label-clearance assertion below -- would have run
+    # against an unfinalized autoscale view. campus_axes' own xlim/ylim are fixed constants
+    # (not dependent on anything drawn), so calling it here, first, is always safe and makes
+    # every later call in a caller a harmless no-op repeat.
+    campus_axes(ax)
+    fit_node_scale(ax.figure, ax)
     skip = {frozenset(e) for e in skip_edges}
     for u, v in CAMPUS_EDGES:
         if frozenset((u, v)) in skip:
@@ -1454,16 +1823,29 @@ def draw_campus_base(ax, skip_edges=()):
         ax.plot([CAMPUS_POS[u][0], CAMPUS_POS[v][0]], [CAMPUS_POS[u][1], CAMPUS_POS[v][1]],
                  color=MUTED, linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     nodes = list(CAMPUS_POS.keys())
-    xs = [CAMPUS_POS[n][0] for n in nodes]
-    ys = [CAMPUS_POS[n][1] for n in nodes]
-    ax.scatter(xs, ys, s=NODE_SIZE_C, c=INK, zorder=3, linewidths=0)
+    draw_nodes(ax, CAMPUS_POS, colors=INK, zorder=3)
+    node_r_px = node_radius_pt(ax) * ax.figure.dpi / 72.0
     for n in nodes:
         x, y = CAMPUS_POS[n]
-        # 4-letter names (Dorm, Cafe) run edge-to-edge inside the disc at the full label
-        # size; give them interior margin by dropping a couple of points (F4/F3 fix).
-        label_fs = LABEL_FS if len(n) <= 3 else LABEL_FS - 3
-        ax.text(x, y, n, ha="center", va="center", color="white", fontsize=label_fs, zorder=4,
-                fontfamily="serif")
+        # R7 fix (Minor, slides 029-032): 4-letter names sized down (18 -> 15) still reached
+        # the disc RIM with real corner-to-corner margin under 4px (measured against the
+        # true node radius, not the bounding-box-vs-diameter comparison an earlier round
+        # used, which misses that a text box's CORNERS reach further than its width alone
+        # once its height is accounted for) -- and 3-letter names at the un-shrunk 18pt were
+        # nearly as tight. Sized down further and checked against the disc's true radius,
+        # with a real clearance margin, instead of trusting a size that merely fit the
+        # diameter.
+        label_fs = LABEL_FS - 2 if len(n) <= 3 else LABEL_FS - 5
+        t = ax.text(x, y, n, ha="center", va="center", color="white", fontsize=label_fs,
+                    zorder=4, fontfamily="serif")
+        renderer = _finalize(ax)
+        bb = t.get_window_extent(renderer)
+        halfdiag_px = np.hypot(bb.width / 2, bb.height / 2)
+        assert halfdiag_px <= node_r_px - 6.0, (
+            f"draw_campus_base: {n!r} at {label_fs}pt reaches within "
+            f"{node_r_px - halfdiag_px:.1f}px of the disc rim (need >= 6px clearance) -- "
+            f"shrink label_fs further."
+        )
 
 
 # One shared figsize + axis extent for all four campus frames -- previously base used a
@@ -1505,9 +1887,8 @@ def fig_campus_walk():
     route = [(dx, dy, cx, cy), (cx, cy, gx, gy), (gx, gy, cx, cy), (cx, cy, lx, ly)]
     for i, (x0, y0, x1, y1) in enumerate(route):
         rad = 0.18 if i in (1, 2) else 0.0
-        ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), connectionstyle=f"arc3,rad={rad}",
-                                      arrowstyle="-|>", mutation_scale=22, shrinkA=24, shrinkB=24,
-                                      color=ACCENT2, linewidth=4.2, zorder=2))
+        draw_arrow_edge(ax, (x0, y0), (x1, y1), mutation_scale=22, rad=rad, color=ACCENT2,
+                         lw=4.2, zorder=2, name=f"campus-walk:route-{i}")
     # R3 fix (Major 24): "x2" was accent-2 text sitting ON the accent-2 return curve (the
     # multiplication sign got sliced by the stroke and read as "<2"), and nothing said what
     # it meant.
@@ -1521,8 +1902,8 @@ def fig_campus_walk():
     # also routed through it -- the label drifted onto that straight arrow, which struck
     # through "twice". Routed through place_annotation with every base edge, every route
     # arrow (incl. the two curves it's actually labelling), and every node as obstacles.
-    campus_axes(ax)  # finalize xlim/ylim/aspect before place_annotation measures anything
-    node_r_pt = (NODE_SIZE_C / np.pi) ** 0.5
+    campus_axes(ax)  # finalize xlim/ylim/aspect before place_label measures anything
+    node_r_pt = node_radius_pt(ax)
     obstacles = [circle_obstacle(CAMPUS_POS[n], node_r_pt, color=INK) for n in CAMPUS_POS]
     for u, v in CAMPUS_EDGES:
         if frozenset((u, v)) == frozenset(("Cafe", "Gym")):
@@ -1530,12 +1911,24 @@ def fig_campus_walk():
         obstacles.append(line_obstacle([CAMPUS_POS[u], CAMPUS_POS[v]], EDGE_W, color=MUTED))
     for i, (x0, y0, x1, y1) in enumerate(route):
         rad = 0.18 if i in (1, 2) else 0.0
-        pts = _arc3_points((x0, y0), (x1, y1), rad, n=30) if rad else [(x0, y0), (x1, y1)]
+        pts = _arc3_points((x0, y0), (x1, y1), rad, n=30) if rad else np.array([(x0, y0), (x1, y1)])
         obstacles.append(line_obstacle(pts, 4.2, color=ACCENT2))
-    place_annotation(ax, ((cx + gx) / 2 + 0.08, (cy + gy) / 2 - 0.02), "same edge,\ntwice",
-                      xytext=(1.12, 0.45), obstacles=obstacles, color=MUTED,
-                      fontsize=ANNOT_FS - 2, ha="center", va="center", clearance_pt=4.0,
-                      zorder=5, name="campus-walk:same-edge-twice")
+    # R7 fix (Blocker 1): the old target sat at the plain midpoint between Cafe and Gym --
+    # in the white gap between the two red arcs, on NEITHER of them -- reached by a leader
+    # from the column right of Lib (x=1.12) that had to cross the Cafe-Lib vertical (x=1,
+    # spanning y in [0,1]) to get there, and grazed the OTHER Cafe-Gym arc along the way:
+    # reading right-to-left, the first stroke the eye met was Cafe-Lib (crossed once), not
+    # Cafe-Gym (crossed twice), on the slide whose whole point is the double crossing. A
+    # straight leader from ANY point right of x=1 to ANY point on the arc pair (which lives
+    # entirely at x<1, near the Dorm/Cafe/Gym diagonal) is geometrically forced to cross that
+    # same x=1 wall -- there is no routing fix from that side of the frame.
+    #
+    # Per the spec's second option: no leader. Anchored below Gym -- the node the doubled
+    # Cafe<->Gym crossing actually returns to -- settled by place_label against every node,
+    # base edge, and route arrow; nothing to cross because there is no leader to cross with.
+    place_label(ax, (0.5, -0.32), "same edge, twice", obstacles=obstacles, color=MUTED,
+                fontsize=ANNOT_FS - 2, ha="center", va="center", clearance_pt=4.0, zorder=5,
+                name="campus-walk:same-edge-twice")
     # title removed -- duplicated the figcaption verbatim
     save_fixed(fig, "campus-walk.png")
 
@@ -1544,13 +1937,17 @@ def fig_campus_trail():
     fig, ax = plt.subplots(figsize=CAMPUS_FIGSIZE)
     draw_campus_base(ax)
     seq = ["Lib", "Gym", "Dorm", "Cafe", "Gym"]
+    campus_axes(ax)  # finalize xlim/ylim/aspect before the arrows/ring below measure anything
     for a, b in zip(seq, seq[1:]):
-        x0, y0 = CAMPUS_POS[a]
-        x1, y1 = CAMPUS_POS[b]
-        ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>", mutation_scale=22,
-                                      shrinkA=24, shrinkB=24, color=ACCENT2, linewidth=4.2, zorder=2))
+        draw_arrow_edge(ax, CAMPUS_POS[a], CAMPUS_POS[b], mutation_scale=22, color=ACCENT2,
+                         lw=4.2, zorder=2, name=f"campus-trail:{a}-{b}")
     gx, gy = CAMPUS_POS["Gym"]
-    ax.add_patch(mpatches.Circle((gx, gy), 0.19, facecolor="none", edgecolor=ACCENT2, linewidth=3, zorder=5))
+    node_r_pt_c = node_radius_pt(ax)
+    trail_edges = [line_obstacle([CAMPUS_POS[u], CAMPUS_POS[v]], EDGE_W, color=MUTED)
+                   for (u, v) in CAMPUS_EDGES if "Gym" not in (u, v)]
+    draw_ring(ax, (gx, gy), k=1.7, color=ACCENT2, zorder=5,
+              node_obstacles=[circle_obstacle((gx, gy), node_r_pt_c)],
+              edge_obstacles=trail_edges, name="campus-trail:visited-ring")
     # R3 fix (Major 25): the ring around Gym had no label -- a student saw one ringed node
     # and one word ("start", at Lib) and couldn't tell which one the ring meant. Gym's
     # incident edges run up (Dorm), upper-right (Cafe) and right (Lib) -- all at y >= 0 --
@@ -1563,7 +1960,6 @@ def fig_campus_trail():
     lx, ly = CAMPUS_POS["Lib"]
     ax.text(lx + 0.3, ly, "start", ha="left", va="center", color=ACCENT2, fontsize=ANNOT_FS, zorder=5)
     # title removed -- duplicated the figcaption verbatim
-    campus_axes(ax)
     save_fixed(fig, "campus-trail.png")
 
 
@@ -1571,13 +1967,11 @@ def fig_campus_path():
     fig, ax = plt.subplots(figsize=CAMPUS_FIGSIZE)
     draw_campus_base(ax)
     seq = ["Lib", "Cafe", "Dorm", "Gym"]
+    campus_axes(ax)  # finalize xlim/ylim/aspect before the arrows below measure anything
     for a, b in zip(seq, seq[1:]):
-        x0, y0 = CAMPUS_POS[a]
-        x1, y1 = CAMPUS_POS[b]
-        ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>", mutation_scale=22,
-                                      shrinkA=24, shrinkB=24, color=ACCENT2, linewidth=4.2, zorder=2))
+        draw_arrow_edge(ax, CAMPUS_POS[a], CAMPUS_POS[b], mutation_scale=22, color=ACCENT2,
+                         lw=4.2, zorder=2, name=f"campus-path:{a}-{b}")
     # title removed -- duplicated the figcaption verbatim
-    campus_axes(ax)
     save_fixed(fig, "campus-path.png")
 
 
@@ -1622,18 +2016,17 @@ def fig_circuit_vs_cycle():
     save(fig, "circuit-vs-cycle.png")
 
 
-def _circuit_cycle_base(ax, width_in):
+def _circuit_cycle_base(fig, ax):
     pos = {"C": (0, 0), "L1": (-1, 0.65), "L2": (-1, -0.65), "R1": (1, 0.65), "R2": (1, -0.65)}
     edges = [("C", "L1"), ("L1", "L2"), ("L2", "C"), ("C", "R1"), ("R1", "R2"), ("R2", "C")]
-    for u, v in edges:
-        ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
-                 linewidth=EDGE_W, zorder=1, solid_capstyle="round")
-    xs = [pos[n][0] for n in pos]
-    ys = [pos[n][1] for n in pos]
-    ax.scatter(xs, ys, s=node_s(width_in), c=INK, zorder=3, linewidths=0)
     ax.set_xlim(-1.55, 1.55)
     ax.set_ylim(-1.15, 1.15)
     clean(ax)
+    fit_node_scale(fig, ax)
+    for u, v in edges:
+        ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
+                 linewidth=EDGE_W, zorder=1, solid_capstyle="round")
+    draw_nodes(ax, pos, colors=INK, zorder=3)
     return pos
 
 
@@ -1644,14 +2037,19 @@ def _circuit_cycle_base(ax, width_in):
 # circuit.png / cycle.png are single-panel, with no baked-in title -- the figcaption now
 # carries what each one is.
 def fig_circuit():
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.6))
-    pos = _circuit_cycle_base(ax, W)
+    fig, ax = plt.subplots(figsize=(4.8, 4.6))
+    pos = _circuit_cycle_base(fig, ax)
     route = ["L1", "L2", "C", "R1", "R2", "C", "L1"]
     for a, b in zip(route, route[1:]):
         ax.plot([pos[a][0], pos[b][0]], [pos[a][1], pos[b][1]], color=ACCENT2,
                  linewidth=4.5, zorder=2, solid_capstyle="round")
-    ax.add_patch(mpatches.Circle(pos["C"], 0.2, facecolor="none", edgecolor=ACCENT2, linewidth=3, zorder=5))
+    node_r_pt_cc = node_radius_pt(ax)
+    base_edges_cc = [("C", "L1"), ("L1", "L2"), ("L2", "C"), ("C", "R1"), ("R1", "R2"), ("R2", "C")]
+    circuit_edges = [line_obstacle([pos[u], pos[v]], EDGE_W, color=MUTED)
+                      for (u, v) in base_edges_cc if "C" not in (u, v)]
+    draw_ring(ax, pos["C"], k=1.7, color=ACCENT2, zorder=5,
+              node_obstacles=[circle_obstacle(pos["C"], node_r_pt_cc)],
+              edge_obstacles=circuit_edges, name="circuit:visited-ring")
     # Minor fix: this ring had no label, while campus-trail's identical ring (same meaning
     # -- a node the route revisits) already carries one; C sits at positions 2 and 5 of the
     # 6-step route. Straight down is the one direction clear of all four of C's edges.
@@ -1661,9 +2059,8 @@ def fig_circuit():
 
 
 def fig_cycle():
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.6))
-    pos = _circuit_cycle_base(ax, W)
+    fig, ax = plt.subplots(figsize=(4.8, 4.6))
+    pos = _circuit_cycle_base(fig, ax)
     route = ["L1", "L2", "C", "L1"]
     for a, b in zip(route, route[1:]):
         ax.plot([pos[a][0], pos[b][0]], [pos[a][1], pos[b][1]], color=ACCENT2,
@@ -1673,15 +2070,12 @@ def fig_cycle():
 
 def fig_graph_labeled():
     # GRAPH5_POS spans y:[-0.9,1.0] but only x:[0,1] -- content is inherently portrait.
-    # draw_graph5 uses only scatter markers (fixed point-size) and straight lines, so
-    # dropping the equal-aspect constraint lets the box hit a landscape ratio without
-    # adding dead space: nodes stay perfectly round, only line angles skew slightly.
-    W = 5.4
-    fig, ax = plt.subplots(figsize=(W, 4.5))
-    draw_graph5(ax, label_fs=fs(LABEL_FS, W), size=node_s(W))
+    fig, ax = plt.subplots(figsize=(5.4, 4.5))
     ax.set_xlim(-0.35, 1.35)
     ax.set_ylim(-1.15, 1.2)
-    clean(ax, equal=False)
+    clean(ax)
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax)
     save(fig, "graph-labeled.png")
 
 
@@ -1689,18 +2083,18 @@ def fig_adjacency_matrix():
     # Left panel: the graph itself, with one edge and its two symmetric matrix cells tied
     # together in ACCENT2 -- the slide is titled "Writing a graph as a matrix" and the old
     # figure showed only the matrix (F4 Blocker fix).
-    W = 9.2
-    fig, axes = plt.subplots(1, 2, figsize=(W, 4.7))
+    fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.7))
     hi_edge = (1, 3)
     ax = axes[0]
-    # node_s() keyed to this panel's own share of W, not the whole 2-panel figure -- GRAPH5
-    # nodes sit only ~1 data-unit apart, so scaling by the FULL figure width (as fs() does
-    # for the label, fine since text stays small either way) massively over-sized and
-    # overlapped them here.
-    draw_graph5(ax, highlight_edges=[hi_edge], label_fs=fs(LABEL_FS, W), size=node_s(W / 2))
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
+    # fit_node_scale measures THIS panel's own axes box directly (see its own docstring), so
+    # it is exact for a multi-panel figure without needing to guess the panel's share of W
+    # the way node_s(W/2) used to (a guess that happened to be right for a 1:1 layout and
+    # would have been wrong for any other width_ratios).
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax, highlight_edges=[hi_edge])
 
     ax = axes[1]
     A = graph5_adjacency()
@@ -1716,14 +2110,14 @@ def fig_adjacency_squared():
     # the figcaption asserting "2 two-step routes from 1 to 4" -- neither route was drawn.
     # Left panel adds both: 1-2-4 and 1-3-4, each its own color, so the matrix entry has a
     # visible reason behind it instead of just an assertion.
-    W = 9.4
-    fig, axes = plt.subplots(1, 2, figsize=(W, 4.4))
+    fig, axes = plt.subplots(1, 2, figsize=(9.4, 4.4))
     ax = axes[0]
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
-    # node_s() keyed to this panel's own share of W -- see fig_adjacency_matrix.
-    draw_graph5(ax, label_fs=fs(LABEL_FS, W), size=node_s(W / 2))
+    # fit_node_scale measures this panel's own axes box directly -- see fig_adjacency_matrix.
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax)
     route_a = [(1, 2), (2, 4)]
     route_b = [(1, 3), (3, 4)]
     for u, v in route_a:
@@ -1732,36 +2126,15 @@ def fig_adjacency_squared():
     for u, v in route_b:
         ax.plot([GRAPH5_POS[u][0], GRAPH5_POS[v][0]], [GRAPH5_POS[u][1], GRAPH5_POS[v][1]],
                  color=ACCENT3, linewidth=EDGE_W + 1.5, zorder=2, solid_capstyle="round")
-    # R5 fix (Major 16): neither route colour was ever named in the figure itself (only the
-    # figcaption's "2 two-step routes" hinted at them), so a reader had to guess which
-    # colour was which path. Captioned directly beside each route, in its own colour.
-    node_r_pt = (node_s(W / 2) / np.pi) ** 0.5
-    graph_obstacles = [circle_obstacle(GRAPH5_POS[n], node_r_pt, color=INK) for n in GRAPH5_POS]
-    for u, v in GRAPH5_EDGES:
-        hl = ACCENT2 if (u, v) in route_a or (v, u) in route_a else (
-            ACCENT3 if (u, v) in route_b or (v, u) in route_b else MUTED)
-        graph_obstacles.append(line_obstacle([GRAPH5_POS[u], GRAPH5_POS[v]], EDGE_W + 1.5, color=hl))
-    # Fixed, not fs()-scaled: fs(16, W) with W=9.4 (the FULL two-panel figure width) sizes
-    # for a single panel filling 9.4in, but each panel here is under half that -- the
-    # literal fs() scale (~29pt) was wide enough that both captions pushed past their own
-    # panel's xlim into the MATRIX panel's space next door, where nothing in this panel's
-    # obstacle list could see (or avoid) the matrix's own row labels (same failure the deck
-    # already documents for fig_connected_vs_not / fig_circuit_vs_cycle's panel_fs, and for
-    # fig_memory_payoff's title_fs above). Stacked below node 4 -- shared by both routes,
-    # with real open space beneath it -- instead of beside nodes 2/3, which sit close enough
-    # to the panel boundary that any real caption width runs into it.
-    route_fs = 15
-    n4x, n4y = GRAPH5_POS[4]
-    label_a = place_label(ax, (n4x, n4y - 0.28), "1→2→4", obstacles=graph_obstacles,
-                           color=ACCENT2, fontsize=route_fs, ha="center", va="top", clearance_pt=4.0,
-                           zorder=5, name="adjacency-squared:route-a")
-    # Pre-offset a second line's worth below route_a's own anchor (not the same point) --
-    # place_label nudges away from overlap, but two labels started exactly on top of each
-    # other have no "away" that clears both at once within a few points per nudge.
-    place_label(ax, (n4x, n4y - 0.28 - 0.22), "1→3→4",
-                obstacles=graph_obstacles + [text_obstacle(label_a, color=None)],
-                color=ACCENT3, fontsize=route_fs, ha="center", va="top", clearance_pt=4.0,
-                zorder=5, name="adjacency-squared:route-b")
+    # R7 fix (Major 17): the route-name captions this used to print here ("1->2->4" /
+    # "1->3->4") rendered at 9-10px once the deck downscaled this figure to its usual
+    # display width -- under the 20px matrix digits and 23px body text beside them, and the
+    # gold one (ACCENT3, #DAB167) sat directly on white at that size, close to unreadable.
+    # The figcaption already states both routes; the two colours (also tied to their own
+    # matrix-adjacent labels below) already distinguish which edge belongs to which route.
+    # Deleted rather than resized -- this file's own documented fallback -- instead of
+    # fighting two further constraints (panel width, colour contrast) for a sentence the
+    # caption already carries.
 
     ax = axes[1]
     A = graph5_adjacency()
@@ -1793,27 +2166,27 @@ def fig_adjacency_squared():
 # Part 5 -- connectivity
 # ===========================================================================
 def fig_connected_vs_not():
-    W = 10.0
     pos = {0: (-1, 0.5), 1: (-1, -0.5), 2: (-0.15, 0), 3: (0.8, 0), 4: (1.7, 0)}
     all_edges = [(0, 1), (1, 2), (2, 0), (2, 3), (3, 4)]
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.6))
+    for ax in axes:
+        ax.set_xlim(-1.5, 2.1)
+        ax.set_ylim(-0.9, 0.95)
+        clean(ax)
+    fit_node_scale(fig, axes[0])  # both panels share the same pos/xlim/ylim -- one probe suffices
 
     def panel(ax, edges, title):
         for u, v in edges:
             ax.plot([pos[u][0], pos[v][0]], [pos[u][1], pos[v][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1, solid_capstyle="round")
-        xs = [pos[n][0] for n in pos]
-        ys = [pos[n][1] for n in pos]
-        ax.scatter(xs, ys, s=1700, c=INK, zorder=3, linewidths=0)
+        draw_nodes(ax, pos, colors=INK, zorder=3)
         # Minor fix (slide 039): fs(TITLE_FS, W) scales by the FULL 10in figure width, but
         # each panel is only half of it -- same over-scale circuit-vs-cycle already avoids
         # with a fixed panel_fs. The literal fs() scale rendered these titles ~50px against
         # 27px body text, inverting the deck's own type hierarchy; fixed instead.
         ax.set_title(title, fontsize=21, color=INK, pad=10)
-        ax.set_xlim(-1.5, 2.1)
-        ax.set_ylim(-0.9, 0.95)
-        clean(ax)
 
-    fig, axes = plt.subplots(1, 2, figsize=(W, 3.6))
     panel(axes[0], all_edges, "connected")
     panel(axes[1], [e for e in all_edges if e != (2, 3)], "not connected")
     save(fig, "connected-vs-not.png")
@@ -1835,18 +2208,14 @@ PAIR_POS = {"R0": (6.4, 0.3)}
 PAIR_EDGES = []
 BAND_POS = {**LADDER_POS, **TRI_POS, **PAIR_POS}
 BAND_EDGES = LADDER_EDGES + TRI_EDGES + PAIR_EDGES
-NODE_SIZE_BAND = 900
 
 
 def draw_band(ax, node_colors=None, default_color=INK):
     for u, v in BAND_EDGES:
         ax.plot([BAND_POS[u][0], BAND_POS[v][0]], [BAND_POS[u][1], BAND_POS[v][1]],
                  color=MUTED, linewidth=EDGE_W, zorder=1, solid_capstyle="round")
-    nodes = list(BAND_POS.keys())
-    xs = [BAND_POS[n][0] for n in nodes]
-    ys = [BAND_POS[n][1] for n in nodes]
-    colors = [(node_colors or {}).get(n, default_color) for n in nodes]
-    ax.scatter(xs, ys, s=NODE_SIZE_BAND, c=colors, zorder=3, linewidths=0)
+    colors = {n: (node_colors or {}).get(n, default_color) for n in BAND_POS}
+    draw_nodes(ax, BAND_POS, colors=colors, zorder=3)
 
 
 BAND_W = 10.4
@@ -1856,6 +2225,7 @@ def band_axes(ax, with_labels=True):
     ax.set_xlim(-0.4, 7.2)
     ax.set_ylim(-0.85, 1.3)
     clean(ax)
+    fit_node_scale(ax.figure, ax)
     if with_labels:
         # NOT a literal fs() scale: the three labels sit at fixed x-positions only ~3.2
         # units apart, so the full ~36pt scale (correct for this figure's 10.4in width in
@@ -1866,11 +2236,46 @@ def band_axes(ax, with_labels=True):
         ax.text(6.4, -0.62, "component 3", color=MUTED, fontsize=label_fs, ha="center")
 
 
+# R7 fix (Major 4): fig_components_band used to draw the SAME ladder+triangle+singleton
+# graph the "run the sweep" exercise (slides 043/044) is about, WITH its component sizes
+# printed on the figure ("sizes 8, 3, and 1") -- so the teaching slide answered the
+# exercise's own question (how many components, how big) before the thinking beat started.
+# A different graph teaches the same concept (multiple components, sizes vary, a singleton
+# counts) without spending the ladder/triangle/singleton graph the exercise needs fresh.
+TEACH_BAND_POS = {
+    "T0": (0.0, 0.0), "T1": (0.8, 0.0), "T2": (0.8, 0.9), "T3": (0.0, 0.9),
+    "T4": (3.4, 0.3), "T5": (4.0, 0.3), "T6": (4.6, 0.3),
+    "T7": (6.4, 0.3),
+}
+TEACH_BAND_EDGES = [("T0", "T1"), ("T1", "T2"), ("T2", "T3"), ("T3", "T0"),
+                     ("T4", "T5"), ("T5", "T6")]
+
+
+def draw_teach_band(ax):
+    for u, v in TEACH_BAND_EDGES:
+        ax.plot([TEACH_BAND_POS[u][0], TEACH_BAND_POS[v][0]],
+                 [TEACH_BAND_POS[u][1], TEACH_BAND_POS[v][1]],
+                 color=MUTED, linewidth=EDGE_W, zorder=1, solid_capstyle="round")
+    draw_nodes(ax, TEACH_BAND_POS, colors=INK, zorder=3)
+
+
 def fig_components_band():
     fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
-    draw_band(ax)
+    draw_teach_band(ax)
     band_axes(ax)
     save(fig, "components-band.png")
+
+
+# R7 fix (Major 4, requested by the deck agent): the intro slide needs its OWN figure, no
+# numbering/size labels at all (the deck agent is writing the caption) -- same teach-graph
+# as fig_components_band above (a 4-cycle + a 3-path + a singleton, distinct from the
+# ladder+triangle+singleton graph the 043/044 exercise needs to stay fresh), just without
+# the "component 1/2/3" captions baked in.
+def fig_components_intro():
+    fig, ax = plt.subplots(figsize=(BAND_W, 3.4))
+    draw_teach_band(ax)
+    band_axes(ax, with_labels=False)
+    save(fig, "components-intro.png")
 
 
 def fig_components_bare():
@@ -1950,6 +2355,7 @@ def fig_sweep_3():
     ax.set_xlim(-0.6, 7.3)
     ax.set_ylim(-1.25, 1.65)
     clean(ax)
+    fit_node_scale(fig, ax)
     draw_band(ax)
 
     ladder_order = ["L0", "L1", "L2", "L3", "L7", "L6", "L5", "L4"]
@@ -1983,39 +2389,48 @@ def fig_sweep_3():
     for xmin, xmax, ymin, ymax in enclosures:
         _band_enclosure(ax, xmin, xmax, ymin, ymax, xpad=xpad, ypad=ypad)
 
-    node_r_pt = (NODE_SIZE_BAND / np.pi) ** 0.5
-    obstacles = [circle_obstacle(BAND_POS[n], node_r_pt, color=INK) for n in BAND_POS]
-    for u, v in BAND_EDGES:
-        obstacles.append(line_obstacle([BAND_POS[u], BAND_POS[v]], EDGE_W, color=MUTED))
-    for xmin, xmax, ymin, ymax in enclosures:
-        x0, x1, y0, y1 = xmin - xpad, xmax + xpad, ymin - ypad, ymax + ypad
-        obstacles.append(line_obstacle([(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)],
-                                        1.6, color=MUTED))
-
-    # R5 fix (Blocker 5): 15pt measured at 11px on-slide, below the 13px page number and far
-    # under the 21px body copy -- bumped to a size that actually reads from the back row.
-    label_fs = 18
-    for i, n in enumerate(ladder_order, start=1):
-        x, y = BAND_POS[n]
-        above = y > 0.5  # top row (y=0.9) vs bottom row (y=0.0)
-        va = "bottom" if above else "top"
-        anchor = (x, y + 0.30) if above else (x, y - 0.30)
-        place_label(ax, anchor, str(i), obstacles=obstacles, color=MUTED, fontsize=label_fs,
-                    ha="center", va=va, clearance_pt=3.0, zorder=4, name=f"sweep3-ladder-{i}")
-    for i, n in enumerate(tri_order, start=1):
-        x, y = BAND_POS[n]
-        above = y > 0.4  # M2 (apex) vs M0/M1 (base)
-        va = "bottom" if above else "top"
-        anchor = (x, y + 0.30) if above else (x, y - 0.30)
-        place_label(ax, anchor, str(i), obstacles=obstacles, color=MUTED, fontsize=label_fs,
-                    ha="center", va=va, clearance_pt=3.0, zorder=4, name=f"sweep3-tri-{i}")
-    for i, n in enumerate(pair_order, start=1):
-        x, y = BAND_POS[n]
-        place_label(ax, (x, y + 0.30), str(i), obstacles=obstacles, color=MUTED,
-                    fontsize=label_fs, ha="center", va="bottom", clearance_pt=3.0, zorder=4,
-                    name=f"sweep3-pair-{i}")
+    # R7 fix (Major 12, slide 044/F1): these numbers used to sit BESIDE each node, which is
+    # the deck's own convention for DEGREE everywhere else it prints a number outside a disc
+    # (019-022, 026, 027, konigsberg-degrees, recap) -- so "2" here read as "degree 2" to a
+    # reader trained by every earlier slide, when it actually means "visited second" (node
+    # L2/M1 here has degree 3, not 2). Moved INSIDE each disc instead -- white-on-black, the
+    # same node-interior pattern graph5's node IDs and Konigsberg's N/A/B/S letters already
+    # use elsewhere in this deck, which is unambiguous (a number ONLY ever means "the node's
+    # identity/order" in that position, never degree) and needs no obstacle-avoidance at all
+    # (interior labels sit on the shape they're coloured to contrast against).
+    # Fixed, not fs()-scaled: fs() scales for the DECK's usual downscale-to-display-width
+    # (assumes a label sized relative to the whole figure), but this label is constrained by
+    # the disc it must fit INSIDE. Every node in the deck (this band included, now that it
+    # draws at NODE_R like every other figure -- see the module note above NODE_R) shares one
+    # physical diameter, so LABEL_FS -- the same size every other node-interior digit/letter
+    # in the deck uses -- clears it with real margin (every visit number here is a single
+    # digit; the longest component has 8 nodes).
+    label_fs = LABEL_FS
+    for order in (ladder_order, tri_order, pair_order):
+        for i, n in enumerate(order, start=1):
+            x, y = BAND_POS[n]
+            ax.text(x, y, str(i), ha="center", va="center", color="white",
+                    fontsize=label_fs, zorder=4, fontweight="bold")
 
     save(fig, "sweep-3.png")
+
+
+def _assert_panel_key_fits(ax, text_artist, name):
+    """R7 fix (Major 18): fig_giant_scale's panel keys were resized twice across earlier
+    rounds by guesswork (18pt, then 22pt) and STILL rendered under the page number once
+    measured against this specific figure's own native-to-display ratio -- a deck-wide fs()
+    scale assumes every figure shares one ratio, which this two-panel, very-wide figure does
+    not (see fs()'s own docstring). Measures the text's real rendered width against its own
+    axes' true pixel width and fails loudly if it overflows, instead of shipping another
+    guess that only gets caught by a human re-reading the PNG.
+    """
+    renderer = _finalize(ax)
+    bb = text_artist.get_window_extent(renderer)
+    ax_bb = ax.get_window_extent(renderer)
+    assert bb.width <= ax_bb.width * 0.98, (
+        f"{name}: key text is {bb.width:.0f}px wide, wider than its own panel "
+        f"({ax_bb.width:.0f}px) -- shrink fontsize or break onto more/shorter lines."
+    )
 
 
 def fig_giant_scale():
@@ -2041,8 +2456,12 @@ def fig_giant_scale():
     rx = rng.uniform(-frame, frame, n_rest)
     ry = rng.uniform(-frame, frame, n_rest)
 
+    # R7 fix (Major 18, Minor): the pale background dots were #e6e6e6 -- inside the review's
+    # measured "barely visible" #d9-#f0 range -- darkened to a value that still reads as
+    # background (lighter than MUTED) but is actually distinguishable from white.
+    PALE_DOT = "#c7c7c7"
     ax = axes[0]
-    ax.scatter(rx, ry, s=4, color="#e6e6e6", zorder=1)
+    ax.scatter(rx, ry, s=4, color=PALE_DOT, zorder=1)
     ax.scatter(bx, by, s=4, color=ACCENT, zorder=2)
     ax.add_patch(mpatches.Rectangle((-frame, -frame), 2 * frame, 2 * frame, fill=False,
                                      edgecolor=RULE, linewidth=1.6, zorder=3))
@@ -2058,9 +2477,23 @@ def fig_giant_scale():
     # even the R4 bump (ANNOT_FS+1 = 18pt fixed, since W/2 here equals FONT_REF_WIDTH
     # exactly) renders at ~12px on-slide, back below the page number. Bumped again to a size
     # that actually clears it at the real display width.
-    key_fs = 22
-    ax.text(0.5, -0.05, "pale: 200 more nodes\n1 dot = 1 node", ha="center",
-            va="top", color=MUTED, fontsize=key_fs, transform=ax.transAxes)
+    #
+    # R7 fix (Major 18): still measured well under the 26px body text once this specific
+    # figure's own native-width/display-width ratio (not the deck-wide fs() calibration,
+    # which assumes a DIFFERENT ratio -- see fs()'s own docstring) was accounted for --
+    # confirmed the same way: rendering this exact key at the old size and checking its
+    # width against this panel's own axes box, in real pixels, not assumed. Bumped again,
+    # and "blue" -- used on the RIGHT panel's key but never defined on this, its first
+    # appearance -- is named here too.
+    # Fixed, not fs()-scaled: fs(15.5, W) at this figure's W=10.4 sizes for the FULL figure
+    # width, but each panel is under half that -- same over-scale class of bug fs()'s own
+    # docstring and several other two-panel figures in this file already document. Sized by
+    # the _assert_panel_key_fits check below, not by the literal fs() formula.
+    key_fs = 18
+    left_key = ax.text(0.5, -0.06, "blue: this component\npale: 200 more nodes\n1 dot = 1 node",
+                        ha="center", va="top", color=MUTED, fontsize=key_fs, zorder=2,
+                        transform=ax.transAxes)
+    _assert_panel_key_fits(ax, left_key, name="giant-scale:left-key")
 
     # Right panel drawn to the SAME scale as the left: a network of 10,000,000 nodes at
     # the left panel's density would fill a frame this much larger. Filling it with a
@@ -2073,7 +2506,7 @@ def fig_giant_scale():
     ax = axes[1]
     ax.add_patch(mpatches.Rectangle((-frame2, -frame2), 2 * frame2, 2 * frame2,
                                      facecolor="#fbfaf9", edgecolor=RULE, linewidth=1.6, zorder=0))
-    ax.scatter(fx, fy, s=4, color="#e6e6e6", zorder=1)
+    ax.scatter(fx, fy, s=4, color=PALE_DOT, zorder=1)
     ax.scatter(bx, by, s=4, color=ACCENT, zorder=2)
     ax.set_xlim(-frame2 * 1.05, frame2 * 1.05)
     ax.set_ylim(-frame2 * 1.05, frame2 * 1.05)
@@ -2098,9 +2531,19 @@ def fig_giant_scale():
     # kept short (not the fuller "0.01% of the area" phrasing) so it doesn't grow past the
     # wspace budget and collide with the left panel's key again (see the R4/R5 fixes above).
     per_dot = round((10_000_000 - 1000) / n_field, -2)
-    ax.text(0.5, -0.05, f"blue: still 1,000 -- one dot at this scale\n"
-            f"pale: ~9,999,000 more, 1 dot ≈ {per_dot:,.0f}",
-            ha="center", va="top", color=MUTED, fontsize=key_fs - 4, transform=ax.transAxes)
+    # R7 fix (Major 18, Minor): three clauses on one line ("blue: still 1,000 -- one dot at
+    # this scale") is what forced the old undersized fontsize in the first place -- broken
+    # across two shorter lines instead, at the SAME size as the left panel's key (was 4pt
+    # smaller for no stated reason, making the secondary panel's key the smallest text on the
+    # slide the review flagged) so the two keys read as one consistent system, not two
+    # different sizes. "--" replaced with the deck's own em dash.
+    right_key = ax.text(0.5, -0.06, f"blue: still 1,000\n"
+                         f"(one dot, this scale)\n"
+                         f"pale: ~9,999,000 more\n"
+                         f"1 dot ≈ {per_dot:,.0f}",
+                         ha="center", va="top", color=MUTED, fontsize=key_fs, zorder=2,
+                         transform=ax.transAxes)
+    _assert_panel_key_fits(ax, right_key, name="giant-scale:right-key")
 
     # "same 1,000 nodes" removed -- near-duplicate of the figcaption; the per-panel note
     # above now explains the gray dots directly instead.
@@ -2110,52 +2553,44 @@ def fig_giant_scale():
 DIR_POS = {"A": (0.0, 0.75), "B": (0.87, -0.375), "C": (-0.87, -0.375)}
 
 
-def _draw_directed(ax, edges, width_in):
+# Arrowhead size, in points -- fixed, not fs()-scaled. Since every node in the deck (this
+# family included) now shares one PHYSICAL diameter (NODE_DIAM_IN), a fixed point size for
+# an arrowhead tied to that node is automatically the same proportion of it everywhere, the
+# same reasoning fs()-scaled node-adjacent sizing no longer needs (see the module note above
+# _draw_selfloop). 28pt matches the deck's own earlier per-figure values (30 at the
+# then-reference width for this family, 26 for the parity counterexample) closely enough
+# that the visual doesn't jump.
+ARROW_MSCALE = 28
+
+
+def _draw_directed(ax, edges, xlim=(-1.08, 1.08), ylim=(-0.85, 0.95)):
     # R3 fix (Major 23): DIR_POS is not quite equilateral (B-C is longer than A-B/C-A), so
     # networkx's node_size-based arrow shrink -- a single heuristic shared across all edges
     # of a call -- landed inconsistently (A->B arrowhead ~10px short of B, C->A flush).
-    # FancyArrowPatch's shrinkA/shrinkB (points, applied per edge, same mechanism already
-    # used for the campus arrows) equalises the gap regardless of edge length or curvature.
     #
-    # R4 fix (Major 18): that "equalises" claim didn't hold for directed-indegree -- the
-    # shrink constant (24pt) undershot the marker's true radius (26.46pt, see
-    # NODE_RADIUS_PT_REF), so `shrink` was bumped to radius+3pt on the theory that a curved
-    # edge's shrink acts along its local tangent and needs a buffer to still land on the
-    # disc after that skew.
+    # R8 fix: the R3-R5 history of hand-calibrated shrink constants (24pt, then radius+3pt,
+    # then radius-4pt, each tuned by eye or by a one-off sweep against THIS figure) is gone
+    # -- draw_arrow_edge derives the exact shrink from NODE_R and a freshly measured
+    # arrowhead-tip gap every time it's called, so the tip lands on the rim by construction
+    # and by assertion, not by a constant that drifts as soon as the geometry it was tuned
+    # against changes.
     #
-    # R5 fix (Major 14): that theory was never actually measured against the renderer, and
-    # it was backwards. Measured directly (FancyArrowPatch.get_window_extent vs. the target
-    # node's true centre, swept over shrink 0-40pt, for every edge in this triangle): the
-    # tangent-skew effect is small (the gap still closes at ~2.75px per point of shrink,
-    # against a theoretical 1:1 of dpi/72=2.78px/pt) -- the real reason radius+3 undershot is
-    # that arrowstyle "-|>"'s own head geometry doesn't reach the connector's raw endpoint
-    # even at shrink=0 (an baked-in ~11-25px gap, varying per edge angle). Net effect: the
-    # right correction is radius MINUS a few points, not plus. NODE_RADIUS_PT_REF - 4 is the
-    # smallest shrink that closed EVERY edge in the calibration sweep (the tightest edge,
-    # A-C/B-C, needed radius-3.9pt almost exactly); the slightly-shorter A-B edge overshoots
-    # a few px into the disc at this value, which reads as flush, not as a gap.
-    s = node_s(width_in)
-    shrink = fs(NODE_RADIUS_PT_REF - 4, width_in)
-    mscale = fs(30, width_in)
+    # `xlim`/`ylim`: fig_directed_indegree needs more room (for its "in 1 / out 1" labels)
+    # than the tight default arrows/strong/weak use -- passed in and set HERE, before
+    # fit_node_scale, since that view (not whatever a caller sets afterward) is what the
+    # node-size calibration below must be measured against.
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    clean(ax)
+    fit_node_scale(ax.figure, ax)
     for u, v in edges:
-        ax.add_patch(FancyArrowPatch(DIR_POS[u], DIR_POS[v], connectionstyle="arc3,rad=0.12",
-                                      arrowstyle="-|>", mutation_scale=mscale, shrinkA=shrink,
-                                      shrinkB=shrink, color=MUTED, linewidth=EDGE_W, zorder=1))
-    xs = [DIR_POS[n][0] for n in "ABC"]
-    ys = [DIR_POS[n][1] for n in "ABC"]
-    ax.scatter(xs, ys, s=s, c=INK, zorder=3, linewidths=0)
+        draw_arrow_edge(ax, DIR_POS[u], DIR_POS[v], mutation_scale=ARROW_MSCALE, rad=0.12,
+                         color=MUTED, lw=EDGE_W, zorder=1, name=f"directed:{u}-{v}")
+    draw_nodes(ax, [DIR_POS[n] for n in "ABC"], colors=INK, zorder=3)
     for n in "ABC":
         ax.text(*DIR_POS[n], n, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
     # no title -- see fig_directed_strong/fig_directed_weak: baked-in titles were stripped
     # deck-wide in an earlier round; the figcaption is the single caption channel.
-    #
-    # R4 fix (Policy 2): tightened from (-1.35,1.35)/(-1.05,1.15) -- directed-strong/weak
-    # now save with save_fixed() (no tight-bbox crop, see fig_directed_strong), so this
-    # margin is exactly what ends up as dead canvas. Still clears the widest content
-    # (node B/C at x=+-0.87 plus their own radius, ~0.17 data units at this figsize).
-    ax.set_xlim(-1.08, 1.08)
-    ax.set_ylim(-0.85, 0.95)
-    clean(ax)
 
 
 def fig_directed_arrows():
@@ -2171,9 +2606,8 @@ def fig_directed_arrows():
     # different scales across consecutive slides (804x680 vs 960x900, node radius ~36px vs
     # ~27px). save_fixed() -- what strong/weak already use -- pins this to the SAME
     # uncropped canvas so all three read as the same three nodes throughout Part Five.
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.5))
-    _draw_directed(ax, [("A", "B"), ("A", "C"), ("B", "C")], W)
+    fig, ax = plt.subplots(figsize=(4.8, 4.5))
+    _draw_directed(ax, [("A", "B"), ("A", "C"), ("B", "C")])
     save_fixed(fig, "directed-arrows.png")
 
 
@@ -2189,17 +2623,15 @@ def fig_directed_strong():
     # graph visibly shifted scale between the two slides. save_fixed() (same fix already
     # used for the campus walk/trail/path/base family) pins both to the SAME uncropped
     # canvas so the graph renders at the same size on both slides.
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.5))
-    _draw_directed(ax, [("A", "B"), ("B", "C"), ("C", "A")], W)
+    fig, ax = plt.subplots(figsize=(4.8, 4.5))
+    _draw_directed(ax, [("A", "B"), ("B", "C"), ("C", "A")])
     save_fixed(fig, "directed-strong.png")
 
 
 def fig_directed_weak():
     # save_fixed(), not save() -- see fig_directed_strong.
-    W = 4.8
-    fig, ax = plt.subplots(figsize=(W, 4.5))
-    _draw_directed(ax, [("A", "B"), ("B", "C")], W)
+    fig, ax = plt.subplots(figsize=(4.8, 4.5))
+    _draw_directed(ax, [("A", "B"), ("B", "C")])
     save_fixed(fig, "directed-weak.png")
 
 
@@ -2211,9 +2643,8 @@ def fig_directed_indegree():
     outdeg = {n: sum(1 for u, _ in edges if u == n) for n in "ABC"}
     assert all(indeg[n] == 1 and outdeg[n] == 1 for n in "ABC"), \
         f"3-cycle should be in=out=1 everywhere; got in={indeg} out={outdeg}"
-    W = 5.4
-    fig, ax = plt.subplots(figsize=(W, 4.7))
-    _draw_directed(ax, edges, W)
+    fig, ax = plt.subplots(figsize=(5.4, 4.7))
+    _draw_directed(ax, edges, xlim=(-2.05, 2.05), ylim=(-1.15, 1.5))
     # R3 fix (Major 23): node A's disc overlapped the baseline of its own label (raised
     # further here) and the "in 1 / out 1" strings weren't yet clear of the discs.
     offsets = {"A": (0.0, 0.44), "B": (0.55, -0.16), "C": (-0.55, -0.16)}
@@ -2223,9 +2654,43 @@ def fig_directed_indegree():
         dx, dy = offsets[n]
         ax.text(x + dx, y + dy, "in 1 / out 1", ha=ha[n], va="center", color=MUTED,
                 fontsize=ANNOT_FS, zorder=5)
-    ax.set_xlim(-2.05, 2.05)
-    ax.set_ylim(-1.15, 1.5)
     save(fig, "directed-indegree.png")
+
+
+# NEW (Major 9, requested by the deck agent): the directed Euler condition ("in-degree =
+# out-degree at every node") needs a counterexample where a naive, UNDIRECTED-style parity
+# check (total degree even) passes everywhere but the real directed condition fails. Two
+# parallel A->B edges: A has out=2, in=0 (total 2, even); B has in=2, out=0 (total 2, even)
+# -- both nodes pass the wrong test, and neither has in=out.
+def fig_directed_parity_counterexample():
+    A, B = (-0.6, 0.0), (0.6, 0.0)
+    indeg = {"A": 0, "B": 2}
+    outdeg = {"A": 2, "B": 0}
+    for n in ("A", "B"):
+        assert indeg[n] != outdeg[n], f"node {n}: in-degree must differ from out-degree"
+        assert (indeg[n] + outdeg[n]) % 2 == 0, f"node {n}: total degree must be even"
+    fig, ax = plt.subplots(figsize=(4.8, 3.0))
+    ax.set_xlim(-1.3, 1.3)
+    ax.set_ylim(-0.95, 0.95)
+    clean(ax)
+    fit_node_scale(fig, ax)
+    for i, rad in enumerate((0.30, -0.30)):
+        draw_arrow_edge(ax, A, B, mutation_scale=26, rad=rad, color=MUTED, lw=EDGE_W,
+                         zorder=1, name=f"directed-parity:arrow-{i}")
+    draw_nodes(ax, [A, B], colors=INK, zorder=3)
+    for (x, y), t in zip((A, B), ("A", "B")):
+        ax.text(x, y, t, ha="center", va="center", color="white", fontsize=LABEL_FS, zorder=4)
+    node_r_pt = node_radius_pt(ax)
+    obstacles = [circle_obstacle(A, node_r_pt), circle_obstacle(B, node_r_pt)]
+    # "in X / out Y" order, matching directed-indegree.png's own convention exactly (that
+    # figure always prints "in 1 / out 1" -- in first, never the other way round per node).
+    place_label(ax, (A[0], A[1] - 0.5), "in 0 / out 2", obstacles=obstacles, color=MUTED,
+                fontsize=ANNOT_FS - 1, ha="center", va="top", clearance_pt=4.0, zorder=5,
+                name="directed-parity:A")
+    place_label(ax, (B[0], B[1] - 0.5), "in 2 / out 0", obstacles=obstacles, color=MUTED,
+                fontsize=ANNOT_FS - 1, ha="center", va="top", clearance_pt=4.0, zorder=5,
+                name="directed-parity:B")
+    save(fig, "directed-parity-counterexample.png")
 
 
 # ===========================================================================
@@ -2240,20 +2705,19 @@ def fig_store_edgelist():
     # plain equal-width subplots, equal-aspect centers each panel's box inside its cell,
     # leaving a dead gap between them that a global tight-bbox crop can't remove. A
     # GridSpec sized to each panel's own content aspect closes that gap.
-    W = 8.4
     node1_edges = [(1, 0), (1, 2), (1, 3)]
     hi = {frozenset(e) for e in node1_edges}
-    fig = plt.figure(figsize=(W, 5.0))
+    fig = plt.figure(figsize=(8.4, 5.0))
     gs = fig.add_gridspec(1, 2, width_ratios=[1.5, 1.0], wspace=0.25)
 
     ax = fig.add_subplot(gs[0, 0])
-    # node_s() keyed to this panel's own share of W (1.5 of the 2.5 gridspec units) --
-    # see fig_adjacency_matrix.
-    draw_graph5(ax, highlight_edges=node1_edges, highlight_nodes={1}, label_fs=fs(LABEL_FS, W),
-                size=node_s(W * 1.5 / 2.5))
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
+    # fit_node_scale measures this panel's own axes box directly -- correct regardless of
+    # the gridspec's width_ratios -- see fig_adjacency_matrix.
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax, highlight_edges=node1_edges, highlight_nodes={1})
 
     ax = fig.add_subplot(gs[0, 1])
     y0 = 5
@@ -2276,21 +2740,22 @@ def fig_store_edgelist():
 
 def fig_store_adjlist():
     adj = {0: [1, 2], 1: [0, 2, 3], 2: [0, 1, 4], 3: [1, 4], 4: [2, 3]}
-    W = 10.6
-    fig, axes = plt.subplots(1, 2, figsize=(W, 5.0))
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, 5.0))
     ax = axes[0]
-    # node_s() keyed to this panel's own share of W -- see fig_adjacency_matrix.
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, label_fs=fs(LABEL_FS, W),
-                size=node_s(W / 2))
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1})
 
     ax = axes[1]
     y0 = 5
     for i, n in enumerate(range(5)):
         y = y0 - i
-        text = f"{n} → " + ", ".join(str(m) for m in adj[n])
+        # R7 fix (Minor, slide 055): "->" reads as direction -- a claim this deck elsewhere
+        # establishes explicitly for directed graphs -- but this is a plain adjacency list
+        # for an UNDIRECTED graph. A colon carries no directional claim.
+        text = f"{n}: " + ", ".join(str(m) for m in adj[n])
         hl = n == 1
         edgecolor = ACCENT2 if hl else "none"
         lw = 2.6 if hl else 0
@@ -2308,30 +2773,24 @@ def fig_store_adjlist():
 
 
 def fig_store_matrix():
-    W = 9.6
-    fig, axes = plt.subplots(1, 2, figsize=(W, 5.0))
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 5.0))
     ax = axes[0]
-    # node_s() keyed to this panel's own share of W -- see fig_adjacency_matrix.
-    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1}, label_fs=fs(LABEL_FS, W),
-                size=node_s(W / 2))
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-1.4, 1.4)
     clean(ax)
+    W = fit_node_scale(fig, ax)
+    draw_graph5(ax, highlight_edges=[(1, 0), (1, 2), (1, 3)], highlight_nodes={1})
 
     ax = axes[1]
     A = graph5_adjacency()
     # title removed -- duplicated the figcaption verbatim
     draw_matrix(ax, A, row_highlight=1, cell_fs=fs(18, W))
-    # R5 fix (Major 17): red (node 1, its three edges, and the matrix row) was never
-    # explained anywhere on the slide -- the body talks only about n x n and O(n^2), and the
-    # figcaption just counts cells, so a reader had no way to connect the colour to what it
-    # marks. States it directly, tied to the row it's pointing at.
-    cols = [j for j in range(A.shape[0]) if A[1, j]]
-    cols_txt = ", ".join(str(c) for c in cols)
-    place_label(ax, (2, A.shape[0] - 0.1), f"row 1 (red) is node 1's row: 1s at columns {cols_txt}",
-                obstacles=[text_obstacle(t) for t in ax.get_xticklabels() + ax.get_yticklabels()],
-                color=ACCENT2, fontsize=fs(14, W), ha="center", va="top", clearance_pt=4.0,
-                zorder=5, name="store-matrix:row-caption")
+    # R7 fix (Major 20): the "row 1 (red) is node 1's row: 1s at columns ..." sentence this
+    # used to print here was baked-in AND repeated verbatim as the deck's own figcaption --
+    # L2 bans duplicate captions the same as it bans tables. The red row/edges/node already
+    # carry the connection visually (same red on the graph panel's highlighted node/edges and
+    # this panel's highlighted row); the sentence explaining it belongs in exactly one place,
+    # the figcaption, not baked into the PNG a second time.
     save(fig, "store-matrix.png")
 
 
@@ -2510,6 +2969,24 @@ def fig_memory_payoff():
     # aspect ratio stops forcing any letterboxing (measured the same way).
     fig, ax = plt.subplots(figsize=(W, 5.0))
     cell = 0.92
+    gap = 2.6
+    x0 = n * cell + gap
+    # R7 fix (found alongside Blocker 3): xlim/ylim/aspect finalized HERE, before a single
+    # artist is placed -- previously they were only set at the very end (right before
+    # save_fit), so every get_window_extent measurement in this function (the panel-title
+    # overlap assertion, the caption's own place_label call) ran against matplotlib's
+    # autoscaled DEFAULT view, not the view actually saved. That mismatch is exactly how the
+    # title-overlap assertion kept passing in a render where the titles visibly collided --
+    # it was checking a different zoom level than the one on disk. The y-range here is
+    # deliberately generous (real content bottoms out well above -4.6) rather than tightened
+    # to the bars below: save_fit crops to the true rendered CONTENT extent regardless of
+    # ylim (see its own docstring), and x already sets the binding constraint under equal
+    # aspect at this figsize (measured: x needs ~0.457in/unit, y even at its tightest
+    # plausible range needs less), so a generous ylim costs nothing and never needs a second,
+    # later call that could reopen this exact bug.
+    ax.set_xlim(-0.3, x0 + nnz * cell + 0.3)
+    ax.set_ylim(-5.4, n * cell + 1.0)
+    clean(ax)
     # Fixed, not fs()-scaled: fs() scales by the FULL figure width, correct for a single
     # panel filling that width, but this figure is two panels of very different widths (the
     # 5-wide dense grid vs. the 12-wide CSR strip) sharing one figure -- the literal fs()
@@ -2546,8 +3023,8 @@ def fig_memory_payoff():
     # hitting the matrix's right edge at x=n*cell -- it was rendering ON TOP of the matrix's
     # last column, not beside it. This gap/offset/font combination is verified below (not
     # just chosen by eye) via the same renderer-measurement the label-placement guard uses.
-    gap = 2.6
-    x0 = n * cell + gap
+    # (gap/x0 already set above, alongside xlim/ylim, so every measurement in this function
+    # uses the SAME finalized transform.)
     box_w, box_h = cell, 0.68
     row_fs = 15
     label_fs = 12
@@ -2580,10 +3057,28 @@ def fig_memory_payoff():
                      f"CSR: {csr_total} numbers ({len(data)} + {len(indices)} + {len(indptr)})",
                      ha="center", va="bottom", color=INK, fontsize=title_fs, fontweight="bold", zorder=2)
 
-    # R6 fix: measured, not eyeballed -- the two titles' own rendered bboxes must not overlap
-    # (this exact failure -- two panel titles colliding mid-word -- is what R6 found here and
-    # what fig_connected_vs_not/fig_circuit_vs_cycle's panel_fs comment already documents as
-    # a recurring class of bug in this file).
+    # Caption sits below both blocks -- checked against the lower of the matrix's own bottom
+    # row and the CSR block's bottom (indices) row.
+    bottom_y = min(0.0, row_ys["indices"] - box_h / 2)
+    obstacles = [line_obstacle([(0, bottom_y), (x0 + nnz * cell, bottom_y)], EDGE_W, color=None)]
+    caption_t = place_label(ax, ((n * cell + x0 + nnz * cell) / 2, bottom_y - 0.25),
+                             f"CSR pays for indices + indptr on top of data -- {csr_total} numbers here, "
+                             f"more than dense's {dense}",
+                             obstacles=obstacles, color=MUTED, fontsize=14, ha="center", va="top",
+                             clearance_pt=4.0, name="memory-payoff:caption")
+
+    # R7 fix (found alongside Blocker 3): both this assertion and the caption's placement
+    # above USED to run before xlim/ylim/aspect were finalized (they're set only at the very
+    # end, right before save_fit) -- so both were measured against matplotlib's autoscaled
+    # default view, not the view actually saved. That mismatch is exactly what let the two
+    # panel titles visibly collide in a real render while this same assertion kept passing
+    # (confirmed: it passed at both W=8.6 and W=7.8, even though only one of those renders
+    # was actually free of the overlap) and let the bars below land right on top of the
+    # caption's own true (larger, wrapped) bbox. `_finalize` here now runs AFTER every
+    # artist above is placed but BEFORE xlim/ylim are touched further, so `get_window_extent`
+    # reflects what a later `ax.set_xlim/ylim` call cannot retroactively change (aspect is
+    # already locked in by `clean(ax)` at the top of this function) -- it is safe to measure
+    # now and stays valid through save_fit.
     renderer = _finalize(ax)
     b_dense = t_dense.get_window_extent(renderer)
     b_csr = t_csr.get_window_extent(renderer)
@@ -2591,44 +3086,89 @@ def fig_memory_payoff():
         f"fig_memory_payoff: panel titles overlap ({b_dense.x1:.0f}px vs {b_csr.x0:.0f}px) -- "
         f"shorten the wording, shrink title_fs, or widen the panel gap."
     )
+    cap_bbox = mtext.Text.get_window_extent(caption_t, renderer)
+    caption_bottom_data = ax.transData.inverted().transform((0, cap_bbox.y0))[1]
 
-    # Caption sits below both blocks -- checked against the lower of the matrix's own bottom
-    # row and the CSR block's bottom (indices) row.
-    bottom_y = min(0.0, row_ys["indices"] - box_h / 2)
-    obstacles = [line_obstacle([(0, bottom_y), (x0 + nnz * cell, bottom_y)], EDGE_W, color=None)]
-    place_label(ax, ((n * cell + x0 + nnz * cell) / 2, bottom_y - 0.25),
-                f"CSR pays for indices + indptr on top of data -- {csr_total} numbers here, "
-                f"more than dense's {dense}",
-                obstacles=obstacles, color=MUTED, fontsize=14, ha="center", va="top",
-                clearance_pt=4.0, name="memory-payoff:caption")
-
-    # R6 fix (Blocker 8, continued): the toy example is the honest COUNTEREXAMPLE, not the
-    # whole story -- show where the asymptotic O(n^2) vs O(nnz) claim actually kicks in.
-    # Both larger rows come from _csr_vs_dense_counts (same formula as the n=5 row above,
-    # just evaluated at a bigger n), not hand-typed numbers.
-    dense_1k, csr_1k = _csr_vs_dense_counts(1_000, 6)
+    # R7 fix (Blocker 3): this used to be a 3-row monospace table -- L2 bans tables outright,
+    # and putting one inside a PNG doesn't exempt it. Worse, the table's wide strings (up to
+    # ~70 characters, in a monospace font, regardless of what xlim declared) rendered well
+    # past the intended data window -- save_fit crops to the TRUE rendered content extent
+    # (see its own docstring), not to xlim, so that unclipped text is what silently inflated
+    # this PNG to 4544px native against ~1600-1700px for the neighbouring CSR figures, an
+    # 8.7x downscale at the deck's usual w:520 display width that made the table (and the
+    # line above it) render at ~7px.
+    #
+    # Replaced with a two-bar comparison -- same "shorter bar wins" reading, at both real
+    # ends of the crossover this slide is about: n=5 (dense wins, barely) and n=100,000
+    # (CSR wins by ~7,700x). Every bar's DRAWN width is explicitly capped at `frame_w` (the
+    # dense bar at n=100,000 is truncated with a visible break-mark, never rendered past
+    # what's shown) so a patch's own get_window_extent() -- unclipped by design, the exact
+    # mechanism that inflated the old table's crop -- can never blow this crop out either.
     dense_100k, csr_100k = _csr_vs_dense_counts(100_000, 6)
-    assert (dense_1k, csr_1k) == (1_000_000, 13_001), (dense_1k, csr_1k)
     assert (dense_100k, csr_100k) == (10_000_000_000, 1_300_001), (dense_100k, csr_100k)
 
-    table_x = 0.0
-    table_top = bottom_y - 0.95
-    table_fs = 13
-    rows = [
-        (f"n = 5          (avg degree 2.4):  dense {dense:,}"
-         f"  ·  CSR {csr_total:,}  (dense wins here)"),
-        (f"n = 1,000      (avg degree 6):    dense {dense_1k:,}"
-         f"  ·  CSR {csr_1k:,}  (CSR wins ~{dense_1k / csr_1k:.0f}×)"),
-        (f"n = 100,000    (avg degree 6):    dense {dense_100k:,}"
-         f"  ·  CSR {csr_100k:,}  (CSR wins ~{dense_100k / csr_100k:,.0f}×)"),
-    ]
-    for i, line in enumerate(rows):
-        ax.text(table_x, table_top - i * 0.5, line, ha="left", va="top",
-                color=MUTED, fontsize=table_fs, family="monospace", zorder=2)
+    bars_x0 = 0.0
+    frame_w = 4.4
+    bar_h = 0.40
+    pair_gap = 0.12
+    group_gap = 0.62
+    group_label_fs = 16
+    val_fs = 13
 
-    ax.set_xlim(-0.3, x0 + nnz * cell + 0.3)
-    ax.set_ylim(table_top - len(rows) * 0.5 - 0.2, n * cell + 1.0)
-    clean(ax)
+    def bar(y, length, color, text, truncated=False, bold=False):
+        w = min(max(length, 0.05), frame_w)
+        ax.add_patch(mpatches.Rectangle((bars_x0, y), w, bar_h, facecolor=color,
+                                         edgecolor="none", zorder=2))
+        if truncated:
+            bx = bars_x0 + frame_w
+            for off in (-0.05, 0.05):
+                ax.plot([bx + off, bx + off], [y - 0.05, y + bar_h + 0.05], color="white",
+                         linewidth=2.4, zorder=3, solid_capstyle="butt")
+            label = f"{text} →"
+        else:
+            label = text
+        ax.text(bars_x0 + w + 0.14, y + bar_h / 2, label, ha="left", va="center", color=MUTED,
+                fontsize=val_fs, fontweight="bold" if bold else "normal", zorder=2)
+
+    def group_label(y_above, text):
+        # R7 fix (found alongside Blocker 3): "n = 5"'s own vertical gap from the caption
+        # above it used to be a flat hand-picked offset from bottom_y, which ignored how tall
+        # the caption's wrapped text actually rendered and left the two overlapping. Routed
+        # through place_label (against the caption's real bbox) and then measured itself, so
+        # the bars below start from THIS label's true rendered bottom edge, not a guess.
+        t = place_label(ax, (bars_x0, y_above), text, obstacles=[text_obstacle(caption_t)],
+                         color=INK, fontsize=group_label_fs, ha="left", va="top",
+                         clearance_pt=5.0, zorder=2, name=f"memory-payoff:{text}",
+                         fontweight="bold")
+        renderer = _finalize(ax)
+        bb = mtext.Text.get_window_extent(t, renderer)
+        return ax.transData.inverted().transform((0, bb.y0))[1]
+
+    # Group 1: n = 5 -- the honest counterexample; dense wins (fewer numbers stored).
+    y = group_label(caption_bottom_data - 0.15, "n = 5") - 0.12
+    scale5 = frame_w / (max(dense, csr_total) * 1.12)
+    y -= bar_h
+    bar(y, dense * scale5, INK, f"dense: {dense}", bold=True)
+    y -= bar_h + pair_gap
+    bar(y, csr_total * scale5, ACCENT3, f"CSR: {csr_total} (loses here)")
+    y -= group_gap
+
+    # Group 2: n = 100,000 -- CSR wins by ~7,700x; at any scale that keeps the CSR bar
+    # visible, dense cannot fit, so it is drawn capped at the frame and marked truncated.
+    y = group_label(y + 0.16, "n = 100,000") - 0.12
+    scale100k = (frame_w * 0.14) / csr_100k
+    y -= bar_h
+    bar(y, dense_100k * scale100k, INK, f"dense: {dense_100k:,}", truncated=True, bold=True)
+    y -= bar_h + pair_gap
+    bar(y, csr_100k * scale100k, ACCENT3, f"CSR: {csr_100k:,} (wins)")
+    bars_bottom = y
+    assert bars_bottom - 0.3 >= ax.get_ylim()[0], (
+        f"fig_memory_payoff: bars_bottom {bars_bottom:.2f} runs past the generous ylim set "
+        f"at the top of this function ({ax.get_ylim()[0]:.2f}) -- widen it there, not here "
+        f"(xlim/ylim/aspect must stay fixed for every measurement above to stay valid)."
+    )
+    # xlim/ylim are NOT re-set here -- see the comment where they were finalized, at the top
+    # of this function. save_fit crops to the true rendered content extent regardless.
     save_fit(fig, ax, "csr-memory.png", pad_frac=0.05, pad_min_in=0.08)
 
 
@@ -2698,34 +3238,28 @@ def fig_format_regimes():
 # ===========================================================================
 # Part 7 -- edge cases
 # ===========================================================================
-# R4 fix (Policy 2): bbox_inches="tight" turns out NOT to crop a bare `ax.scatter()` down
-# to the marker's own footprint -- Axes.get_tightbbox() still reports (close to) the full
-# declared xlim/ylim extent even with the axis off, confirmed by an isolated repro. At the
-# old figsize=(3.3, 2.85) with xlim/ylim (-0.7,0.7)/(-0.6,0.6), that left a ~33px dot on a
-# 571x498 canvas -- 15% x 17% ink. A small, closely-matched xlim/ylim (not a bigger marker)
-# is what actually controls the saved canvas size here; the marker keeps a fixed,
-# legible point-size (matching the reference node size used everywhere else, node_s at
-# FONT_REF_WIDTH) instead of shrinking with the now-small figsize.
+# R4 fix (Policy 2): bbox_inches="tight" turns out NOT to crop a bare marker down to its own
+# footprint -- Axes.get_tightbbox() still reports (close to) the full declared xlim/ylim
+# extent even with the axis off, confirmed by an isolated repro. save_fit (see fig_selfloop's
+# R5 fix) replaces that guess with a crop measured directly off the real rendered content.
+# out_dpi bumped for the same reason as the self-loop family: the true content here is tiny
+# in inches, so a low native pixel count would go soft once the deck scales it back up to its
+# usual on-slide width.
 #
-# R5 fix (Policy 2): that hand-picked xlim/ylim still only bought 45-49% ink (measured) --
-# save_fit (see fig_selfloop's R5 fix) replaces the guess with a crop measured directly off
-# the real rendered content, same as the self-loop family. out_dpi bumped for the same
-# reason too: the true content here is tiny in inches, so a low native pixel count would go
-# soft once the deck scales it back up to its usual on-slide width.
-EDGE_SINGLE_FIGSIZE = (1.48, 1.3)
-EDGE_SINGLE_NODE_S = node_s(FONT_REF_WIDTH)
+# R8 fix: figsize is square now (was 1.48x1.3, landscape) -- a lone node is Circle-drawn now
+# (see the module note above NODE_R), and a Circle needs equal aspect to render round; the
+# old landscape figsize relied on ax.scatter's aspect-independence, which no longer applies.
+EDGE_SINGLE_FIGSIZE = (1.4, 1.4)
 
 
 def fig_edge_single_node():
-    # A lone scatter marker -- safe to drop equal-aspect for a landscape crop; the dot
-    # itself stays perfectly round either way (scatter markers are sized in points).
     fig, ax = plt.subplots(figsize=EDGE_SINGLE_FIGSIZE)
     ax.set_xlim(-0.55, 0.55)
-    ax.set_ylim(-0.48, 0.48)
-    clean(ax, equal=False)
-    ax.scatter([0], [0], s=EDGE_SINGLE_NODE_S, c=INK, zorder=2, linewidths=0)
-    save_fit(fig, ax, "edge-single-node.png", extra_scatter=[((0, 0), EDGE_SINGLE_NODE_S)],
-             pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
+    ax.set_ylim(-0.55, 0.55)
+    clean(ax)
+    fit_node_scale(fig, ax)
+    draw_node(ax, (0, 0), color=INK, zorder=2)
+    save_fit(fig, ax, "edge-single-node.png", pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
 
 
 def fig_edge_single_node_answer():
@@ -2735,19 +3269,30 @@ def fig_edge_single_node_answer():
     # "answer" frame from the "question" frame it was previously identical to.
     fig, ax = plt.subplots(figsize=EDGE_SINGLE_FIGSIZE)
     ax.set_xlim(-0.55, 0.55)
-    ax.set_ylim(-0.48, 0.48)
-    clean(ax, equal=False)
-    ax.add_patch(mpatches.Circle((0, 0), 0.32, facecolor="none", edgecolor=MUTED, linewidth=2.2, zorder=1))
-    ax.scatter([0], [0], s=EDGE_SINGLE_NODE_S, c=INK, zorder=2, linewidths=0)
-    save_fit(fig, ax, "edge-single-node-answer.png", extra_scatter=[((0, 0), EDGE_SINGLE_NODE_S)],
-             pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
+    ax.set_ylim(-0.55, 0.55)
+    clean(ax)
+    fit_node_scale(fig, ax)
+    node_r_pt_es = node_radius_pt(ax)
+    draw_ring(ax, (0, 0), k=1.7, color=MUTED, lw=0.65, zorder=1,
+              node_obstacles=[circle_obstacle((0, 0), node_r_pt_es)],
+              name="edge-single-node-answer:ring")
+    draw_node(ax, (0, 0), color=INK, zorder=2)
+    save_fit(fig, ax, "edge-single-node-answer.png", pad_frac=0.14, pad_min_in=0.05, out_dpi=1200)
 
 
 def fig_edge_disconnected():
-    W = 6.0
-    fig, ax = plt.subplots(figsize=(W, 3.2))
+    fig, ax = plt.subplots(figsize=(6.0, 3.2))
     t1 = {"a": (-1.3, 0.55), "b": (-1.95, -0.4), "c": (-0.65, -0.4)}
     t2 = {"d": (1.3, 0.55), "e": (0.65, -0.4), "f": (1.95, -0.4)}
+    # R5 fix (Major 15, historical): the old xlim/ylim margin around the outermost node
+    # centres (b/f at x=+-1.95) was narrower than the scatter marker's own true radius, so
+    # the outermost discs got flat-clipped at the frame boundary. NODE_R (0.12 data units)
+    # is small enough, deck-wide, that this margin (0.47 data units to the frame edge) clears
+    # it with real room to spare -- no clip_on=False guard needed any more.
+    ax.set_xlim(-2.42, 2.42)
+    ax.set_ylim(-0.87, 0.97)
+    clean(ax)
+    fit_node_scale(fig, ax)
     for tri in (t1, t2):
         keys = list(tri.keys())
         for i in range(3):
@@ -2755,58 +3300,83 @@ def fig_edge_disconnected():
             ax.plot([tri[u][0], tri[v][0]], [tri[u][1], tri[v][1]], color=MUTED,
                      linewidth=EDGE_W, zorder=1, solid_capstyle="round")
     allpos = {**t1, **t2}
-    xs = [p[0] for p in allpos.values()]
-    ys = [p[1] for p in allpos.values()]
-    # R5 fix (Major 15): the old xlim/ylim margin around the outermost node CENTRES (b/f at
-    # x=+-1.95, a/d at y=0.55, b/c/e/f at y=-0.4) was 0.30-0.35 data units -- less than the
-    # marker's own true radius (~0.42, measured -- see node_radius_data). scatter markers
-    # clip to the AXES limits at render time (clip_on=True by default), so every outermost
-    # disc got a flat edge exactly at the frame boundary: two flat tops, one flat left, one
-    # flat bottom. clip_on=False is a belt-and-suspenders second guard -- even if a future
-    # edit narrows the margin again, the marker still won't visibly guillotine (though the
-    # tight crop below could still cut close, so the margin fix is the one actually load-
-    # bearing here).
-    ax.scatter(xs, ys, s=node_s(W), c=INK, zorder=3, linewidths=0, clip_on=False)
+    draw_nodes(ax, allpos, colors=INK, zorder=3)
     # "every degree even" removed -- it is the figcaption verbatim on this slide's first use.
-    ax.set_xlim(-2.42, 2.42)
-    ax.set_ylim(-0.87, 0.97)
-    clean(ax)
     save(fig, "edge-disconnected.png")
+
+
+# R7 fix (Major 5, requested by the deck agent): slide 068 used to reuse edge-disconnected.png
+# (the two-triangles figure above) under the SAME figcaption slide 039 already used it under,
+# 29 slides earlier -- the class works through the identical picture twice, and 039's own beat
+# is pre-spoiled by the time 068 shows up. A different disconnected, all-even-degree graph:
+# two separate 4-cycles (squares), same "two pieces, every node even" point, new picture.
+def fig_edge_disconnected_2():
+    fig, ax = plt.subplots(figsize=(6.0, 3.2))
+    sq1 = {"a": (-1.75, 0.45), "b": (-0.85, 0.45), "c": (-0.85, -0.45), "d": (-1.75, -0.45)}
+    sq2 = {"e": (0.85, 0.45), "f": (1.75, 0.45), "g": (1.75, -0.45), "h": (0.85, -0.45)}
+    # Same margin reasoning as fig_edge_disconnected above.
+    ax.set_xlim(-2.3, 2.3)
+    ax.set_ylim(-0.9, 0.9)
+    clean(ax)
+    fit_node_scale(fig, ax)
+    for sq in (sq1, sq2):
+        keys = list(sq.keys())
+        for i in range(4):
+            u, v = keys[i], keys[(i + 1) % 4]
+            ax.plot([sq[u][0], sq[v][0]], [sq[u][1], sq[v][1]], color=MUTED,
+                     linewidth=EDGE_W, zorder=1, solid_capstyle="round")
+    allpos = {**sq1, **sq2}
+    draw_nodes(ax, allpos, colors=INK, zorder=3)
+    save(fig, "edge-disconnected-2.png")
 
 
 # ===========================================================================
 # Wrap-up
 # ===========================================================================
 def fig_recap():
-    W = 6.6
-    fig, ax = plt.subplots(figsize=(W, 5.6))
+    fig, ax = plt.subplots(figsize=(6.6, 5.6))
+    ax.set_xlim(-2.85, 2.15)
+    ax.set_ylim(-2.15, 2.25)
+    clean(ax)  # xlim/ylim/aspect finalized before any place_label call below
+    fit_node_scale(fig, ax)
     draw_kedges(ax)
-    draw_knodes(ax, size=node_s(W))
-    # R3 fix (Major 22): the label sat close enough to the dashed "one component" bracket
-    # that "parity" clipped it, and the solid leader crossed the dashed arc right beside the
-    # text. Kept in the upper-left (clearly outside the radius-1.5 dashed circle even once
-    # the text's own width is accounted for) but lowered below "one component"'s own row so
-    # the two labels no longer collide with each other either; the leader now points at
-    # node A's left side, not its centre.
-    #
-    # R4 fix (Minor, slide 065): -0.16 landed the arrow tip INSIDE node A's own disc
-    # (radius ~0.37 data-units at this figsize) -- the leader ran past the boundary it was
-    # supposed to stop at. -0.42 clears it.
-    ax.annotate("degree → parity", xy=(KPOS["A"][0] - 0.42, KPOS["A"][1]), xytext=(-2.6, 1.35),
-                 fontsize=ANNOT_FS, color=MUTED, ha="left",
-                 arrowprops=dict(arrowstyle="-", color=MUTED, lw=1.3))
-    # "one component" and "A: 4x4 matrix" are both global facts about the whole graph, not
-    # facts about any single node or edge -- the old leaders crossed the N-B edge and
-    # landed on node B respectively (F2 fix). A dashed bracket enclosing all four nodes
-    # replaces the "one component" leader; "A: 4x4 matrix" is a plain floating label.
+    # R7 fix (Major 15, slide 069): "degree -> parity" pointed at bare node A with no degree
+    # anywhere on the figure -- the label had no visible referent, and its leader overlapped
+    # the dashed "one component" bracket for ~60px before landing 18px outside A, on nothing.
+    # Same degree treatment as konigsberg-degrees.png/konigsberg-bombed.png (the deck's own
+    # established convention: letters inside, degree numerals outside in accent-2 for odd) --
+    # Konigsberg's four degrees (3, 3, 5, 3) are ALL odd, so all four nodes colour accent-2
+    # here too, same as konigsberg-degrees.png.
+    node_colors = {n: ACCENT2 for n in "NSAB"}
+    draw_knodes(ax, colors=node_colors)
+    obstacles = k_obstacles(ax, node_colors=node_colors)
+    deg = kedge_degrees()
+    for n, d in deg.items():
+        ox, oy = K_OUTWARD[n]
+        ha, va = K_OUTWARD_ALIGN[n]
+        place_label(ax, (KPOS[n][0] + 0.34 * ox, KPOS[n][1] + 0.34 * oy), str(d),
+                    obstacles=obstacles, color=ACCENT2, fontsize=ANNOT_FS, ha=ha, va=va,
+                    fontweight="bold", zorder=5, clearance_pt=3.0, name=f"recap:degree-{n}")
+    # "degree -> parity" now sits beside the degree numerals it names, no leader (the spec's
+    # documented fallback -- see campus-walk/konigsberg-bombed for the same move) rather than
+    # a leader that would have to cross the dashed bracket to reach them.
+    place_label(ax, (-1.55, 1.55), "degree → parity", obstacles=obstacles, color=MUTED,
+                fontsize=ANNOT_FS, ha="center", va="center", clearance_pt=4.0,
+                name="recap:degree-parity-label")
+    # "one component" and "adjacency matrix, 4 x 4" are both global facts about the whole
+    # graph, not facts about any single node or edge -- the old leaders crossed the N-B edge
+    # and landed on node B respectively (F2 fix). A dashed bracket enclosing all four nodes
+    # replaces the "one component" leader; the matrix label is a plain floating label.
     bracket = mpatches.Ellipse((0, 0), 3.0, 3.0, fill=False, edgecolor=MUTED, linewidth=1.4,
                                 linestyle=(0, (5, 4)), zorder=1)
     ax.add_patch(bracket)
     ax.text(0, 1.72, "one component", ha="center", va="bottom", color=MUTED, fontsize=ANNOT_FS)
-    ax.text(0, -1.72, "A: 4 × 4 matrix", ha="center", va="top", color=MUTED, fontsize=ANNOT_FS)
-    ax.set_xlim(-2.85, 2.15)
-    ax.set_ylim(-2.15, 2.25)
-    clean(ax)
+    # R7 fix (Major 15): "A:" doubled as both the node-A letter (drawn inside node A, 3cm
+    # away) and a prefix here meaning "the adjacency matrix" -- one glyph, two meanings on the
+    # same figure. Renamed to name the thing directly instead of abbreviating it onto a letter
+    # that already means something else on this slide.
+    ax.text(0, -1.72, "adjacency matrix, 4 × 4", ha="center", va="top", color=MUTED,
+            fontsize=ANNOT_FS)
     save(fig, "recap.png")
 
 
@@ -2817,15 +3387,23 @@ def fig_smallworld_teaser():
     # triangles -- a counterexample to "high clustering", not an example of it).
     # (b) shortcuts use varied chord lengths, not four exact diameters that all cross the
     # center and read as a hub that doesn't exist (F2/F4 fix).
-    # R3 fix (Major 20): at n=20 the node discs touched each other, sitting at zorder=3
-    # over the edges' zorder=1, so BOTH the i-i+1 and i-i+2 edges were fully occluded and
-    # the ring rendered as a smooth gray annulus. Fewer, more widely spaced nodes (n=12-14)
-    # and much smaller discs (s ~ 180, not 620) give every second-neighbor chord room to
-    # clear the discs it passes near.
+    # R3 fix (Major 20, historical): at n=20 the node discs touched each other, sitting at
+    # zorder=3 over the edges' zorder=1, so BOTH the i-i+1 and i-i+2 edges were fully
+    # occluded and the ring rendered as a smooth gray annulus. Fewer, more widely spaced
+    # nodes (n=13) still give every second-neighbor chord room to clear the discs it passes
+    # near, even at the deck-wide NODE_R this figure now draws at like every other one (R8
+    # fix -- this was the deck's most undersized node, 9px, against 148px on the Konigsberg
+    # figures the review picked as the target; see the module note above NODE_R).
     n = 13
     fig, ax = plt.subplots(figsize=(5.6, 5.6))
     angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
     pts = {i: (np.cos(a), np.sin(a)) for i, a in enumerate(angles)}
+    # "a few shortcuts change everything" removed -- it is the figcaption verbatim.
+    # A touch of extra x-room (the ring itself stays circular) lands the crop <=0.95.
+    ax.set_xlim(-1.5, 1.5)
+    ax.set_ylim(-1.3, 1.3)
+    clean(ax)
+    fit_node_scale(fig, ax)
     for i in range(n):
         for step in (1, 2):
             j = (i + step) % n
@@ -2833,14 +3411,7 @@ def fig_smallworld_teaser():
                      linewidth=EDGE_W, zorder=1)
     for u, v in [(0, 4), (2, 7), (5, 11), (9, 12)]:
         ax.plot([pts[u][0], pts[v][0]], [pts[u][1], pts[v][1]], color=ACCENT2, linewidth=EDGE_W, zorder=2)
-    xs = [pts[i][0] for i in range(n)]
-    ys = [pts[i][1] for i in range(n)]
-    ax.scatter(xs, ys, s=180, c=INK, zorder=3, linewidths=0)
-    # "a few shortcuts change everything" removed -- it is the figcaption verbatim.
-    # A touch of extra x-room (the ring itself stays circular) lands the crop <=0.95.
-    ax.set_xlim(-1.5, 1.5)
-    ax.set_ylim(-1.3, 1.3)
-    clean(ax)
+    draw_nodes(ax, pts, colors=INK, zorder=3)
     save(fig, "smallworld-teaser.png")
 
 
@@ -2877,6 +3448,7 @@ if __name__ == "__main__":
 
     fig_connected_vs_not()
     fig_components_band()
+    fig_components_intro()
     fig_components_bare()
     fig_sweep_1()
     fig_sweep_2()
@@ -2886,6 +3458,7 @@ if __name__ == "__main__":
     fig_directed_strong()
     fig_directed_weak()
     fig_directed_indegree()
+    fig_directed_parity_counterexample()
 
     fig_store_edgelist()
     fig_store_adjlist()
@@ -2898,6 +3471,7 @@ if __name__ == "__main__":
     fig_edge_single_node()
     fig_edge_single_node_answer()
     fig_edge_disconnected()
+    fig_edge_disconnected_2()
 
     fig_recap()
     fig_smallworld_teaser()
