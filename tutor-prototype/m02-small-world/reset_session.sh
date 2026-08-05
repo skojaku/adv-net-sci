@@ -58,6 +58,14 @@ move "$ART/student_signal.txt" "student_signal-${STAMP}.txt"
 move "$ART/session_log.jsonl" "session_log-${STAMP}.jsonl"
 move "$ART/session_summary.md" "session_summary-${STAMP}.md"
 move assets/uploads "uploads-${STAMP}"
+# The archived notebook keeps its photo cells' relative paths
+# (assets/uploads/<w>_view.jpg), which resolve from session_artifacts/ where
+# it now lives — so leave a copy there or every archived keepsake opens with
+# a FileNotFoundError where the student's own page should be.
+if [ -d "$ART/uploads-${STAMP}" ]; then
+  mkdir -p "$ART/assets/uploads"
+  cp -R "$ART/uploads-${STAMP}/." "$ART/assets/uploads/" 2>/dev/null || true
+fi
 # The student's saved exercise code is their work too — and the coding cell
 # renders whatever it finds under "The code I wrote and ran", so a file left
 # here would greet the next student as their own.

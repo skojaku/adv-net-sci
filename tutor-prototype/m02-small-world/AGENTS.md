@@ -321,7 +321,9 @@ actual words, or the literal `(no answer — moved on)` when there are none.
 And `nb_add_exercise`, like `nb_add_template`, refuses a build for a
 checkpoint that comes after the open one.
 
-It can refuse for four more reasons, and every refusal names its own fix: the checkpoint's scripted **build never
+It can refuse for a handful of other reasons too — an unrecognised
+`judgment`, a note with fewer fills than slots (above), and these four.
+Every refusal names its own fix: the checkpoint's scripted **build never
 happened** (run the nb_add_template your script's `build:` line names);
 a **paper checkpoint with no photo** (ask for the page and wait — or, if
 they have told you they cannot photograph, say so in `notes` and call
