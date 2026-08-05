@@ -1490,7 +1490,7 @@ And $\langle k \rangle = 1$ is precisely where Module 02's giant component was b
 <div class="fig">
 
 ![w:520](figures/er1-a.png)
-<figcaption>m02's result, rediscovered</figcaption>
+<figcaption>the birth of m02's giant component, rediscovered</figcaption>
 
 </div>
 </div>

@@ -155,6 +155,12 @@ Assertions caught, each of them before a human ever looked:
 - a ring-lattice whose second-neighbour chords passed 0.005 units inside the discs they
   crossed, hiding every triangle on a slide claiming high clustering
 
+**Round percentages in decimal, not in binary.** A measured 0.575 is 57.49999999999999 as
+a float, so `f"{x*100:.0f}"` prints 57 while the deck's prose says 58 — one slide, two
+numbers, and the figure was regenerated twice before anyone looked at the float. Format
+through `Decimal(repr(x)) * 100` with `ROUND_HALF_UP`; `repr` is the shortest string that
+round-trips, so the multiply happens in decimal.
+
 Assert the arithmetic too. Compute every number a figure prints from the data, never
 hardcode it. Module 01 shipped a figure claiming CSR stored 12 numbers against a dense 25
 when CSR actually needs 30 — it counted one of three arrays.

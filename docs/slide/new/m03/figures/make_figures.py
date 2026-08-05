@@ -252,8 +252,19 @@ def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=Non
 
 
 def pct(x, d=0):
-    """A percentage with the % escaped -- a bare % is a TeX comment."""
-    return f"{x * 100:.{d}f}\\%"
+    """A percentage with the % escaped -- a bare % is a TeX comment.
+
+    Rounds half UP. With %.0f the measured 0.575 printed "57" (the float is
+    57.4999...) while the deck's prose said 58, so one slide carried both numbers.
+    """
+    from decimal import Decimal, ROUND_HALF_UP
+    # Decimal(str(x * 100)) is not enough: 0.575 * 100 is 57.49999999999999 in
+    # binary, so half-up still gave 57 while the deck's prose said 58. repr(x)
+    # is the shortest string that round-trips -- "0.575" -- so the multiply
+    # happens in decimal and the rounding sees the value the author meant.
+    q = (Decimal(repr(float(x))) * 100).quantize(
+        Decimal("1") if d == 0 else Decimal("0.1"), rounding=ROUND_HALF_UP)
+    return f"{q}\\%"
 
 
 def fill_poly(pts, color="accenttwo", opacity=0.25):
@@ -1781,9 +1792,10 @@ def fig_robust_fragile():
     s += sim_curve(("er", "targeted"), "accentthree", dash=DASH)
     s += sim_curve(("sf", "random"), "accenttwo")
     s += sim_curve(("sf", "targeted"), "accenttwo", dash=DASH)
-    s += text(LAB_X, Y(0.80), "hubs,\\\\random", color="accenttwo", anchor="west")
-    s += text(LAB_X, Y(0.20), "hubs,\\\\attacked", color="accenttwo", anchor="west")
-    s += text(X(0.30), Y(0.78), "same network", color="black")
+    s += text(LAB_X, Y(0.86), "hubs,\\\\random", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.52), "random net,\\\\random", color="accentthree",
+              anchor="west")
+    s += text(LAB_X, Y(0.20), "attacked\\\\(dashed)", color="black", anchor="west")
     return s
 
 
@@ -1898,8 +1910,7 @@ def _er1_case(show):
     pos = ring_pos(14, r=1.0, ry=0.68, start=0.0)
     s, _ = small_graph({i: pos[i] for i in ER1}, list(ER1.edges()), (260, 200),
                        scale=200, node=SMALLNODE)
-    s += text(260, 30, "$\\langle k \\rangle = 1$" if not show
-              else "$\\kappa = 2$: the birth of the giant component",
+    s += text(260, 30, "$\\langle k \\rangle = 1$" if not show else "$\\kappa = 2$",
               color="annot" if not show else "accenttwo")
     return s
 

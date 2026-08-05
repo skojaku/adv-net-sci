@@ -1082,7 +1082,7 @@ Set $\langle k \rangle^L = n$ and solve: $L_{\mathrm{rand}} \approx \ln n / \ln 
 <div class="cols">
 <div>
 
-Randomness hands you short routes for nothing — and hands you no triangles at all.
+Randomness hands you short routes for nothing — and hands you almost no triangles, because $C_{\mathrm{rand}} = \langle k \rangle/(n-1)$ goes to zero as the network grows.
 
 That is why the two properties together are surprising, and why $\bar L$ alone proves nothing.
 
@@ -1240,13 +1240,15 @@ Crossing a ring lattice means walking around it, two nodes at a time.
 
 Same nodes, same number of edges, shuffled.
 
-Routes get short immediately — and the clustering collapses with them, from 0.5 to almost nothing.
+Routes get short immediately — and the clustering falls with them, from 0.50 to 0.24.
+
+At sixteen nodes that is only a halving. Grow the network and $\langle k \rangle/(n-1)$ takes it to nothing, while the ring stays at 0.50 forever.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/random-graph.png)
-<figcaption>short routes, and almost nothing closed</figcaption>
+<figcaption>short routes, and a quarter of the closure</figcaption>
 
 </div>
 </div>

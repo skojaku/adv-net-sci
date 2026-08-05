@@ -253,7 +253,31 @@ def dot(x, y, color="accent", d=DOT):
     return f"\\fill[{color}] ({x},{y}) circle ({d / 2}bp);\n"
 
 
+_LABEL_BOX = {}
+DISC_TEXT_PAD = 2      # bp of fill kept between the glyph's corner and the disc edge
+
+
+def _label_box_bp(label):
+    """Ink box of a disc label at FONT pt, measured once per distinct label."""
+    if label not in _LABEL_BOX:
+        im = _render("label-fit", text(260, 100, label), 520, 200)
+        ys, xs = np.where(np.array(im.convert("L")) < 200)
+        _LABEL_BOX[label] = ((xs.max() - xs.min() + 1) / PXBP,
+                             (ys.max() - ys.min() + 1) / PXBP)
+    return _LABEL_BOX[label]
+
+
 def disc(x, y, label="", fill="accent", name=None, size=NODE, text="white"):
+    # Size and containment are two checks, not one.  Raising m01's type until the size
+    # assertion went green pushed digits out of their cells and rendered "10" and "12" as
+    # a single "1012" -- garbled text is worse than small text, because small text gets
+    # skipped and garbled text gets misread.  If a label stops fitting, grow the disc.
+    if label:
+        w, h = _label_box_bp(label)
+        need = 2 * (math.hypot(w / 2, h / 2) + DISC_TEXT_PAD)
+        assert need <= size, (
+            f"label {label!r} is {w:.0f}x{h:.0f}bp and needs a {need:.0f}bp disc, but this "
+            f"one is {size}bp -- grow the disc, never shrink the type")
     nm = f"({name})" if name else ""
     opt = f"disc,fill={fill},minimum size={size}bp"
     if text != "white":
@@ -548,7 +572,9 @@ def fig_milgram_arrivals():
         if i < 64:
             s += dot(x, y, "accenttwo")
         else:
-            s += f"\\draw[line width=2bp,draw=annot] ({x},{y}) circle (13bp);\n"
+            # same diameter as the filled dots: one object drawn at two sizes reads as
+            # an encoding, and 160 packets are all the same packet
+            s += f"\\draw[line width=2bp,draw=annot] ({x},{y}) circle ({DOT / 2}bp);\n"
     s += text(20, 12, "64 arrived", color="accenttwo", anchor="south west")
     s += text(1080, 12, "96 never did", color="annot", anchor="south east")
     return s
@@ -778,17 +804,18 @@ def _dotplot(counts, mean):
     The mean rule is clipped to the dots it summarises: at full canvas width it ran 112bp
     past the last dot and struck through the `d = 2` row label like a deletion mark."""
     x0, dx, ytop, dy = 168, 40, 300, 46
-    s = ""
-    xr = x0
+    xr = max(x0 + (counts.get(d, 1) - 1) * dx for d in range(1, 7))
+    ym = ytop - (float(mean) - 1) * dy
+    # the rule goes down FIRST, so the discs cover it: the mean falls between two rows and
+    # at 1.81 it lands inside the d = 2 discs, where a line drawn on top reads as a
+    # strikethrough rather than as a level
+    s = seg((x0 - DOT / 2 - 12, ym), (xr + DOT / 2 + 8, ym), color="accenttwo", w=3.4,
+            dash="dash pattern=on 10bp off 7bp")
     for d in range(1, 7):
         y = ytop - (d - 1) * dy
         s += text(132, y, f"$d={d}$", color="annot", anchor="east")
         for k in range(counts.get(d, 0)):
             s += dot(x0 + k * dx, y, "accent")
-            xr = max(xr, x0 + k * dx)
-    ym = ytop - (float(mean) - 1) * dy
-    s += seg((x0 - DOT / 2 - 12, ym), (xr + DOT / 2 + 12, ym), color="accenttwo", w=3.4,
-             dash="dash pattern=on 10bp off 7bp")
     s += text(260, 12, f"all {sum(counts.values())} pairs, mean "
                         f"${mean.numerator}/{mean.denominator} = {float(mean):.2f}$",
               color="accenttwo", anchor="south")
@@ -1331,7 +1358,8 @@ RING_EDGES = sorted({(min(i, (i + d) % RING_N), max(i, (i + d) % RING_N))
                      for i in range(RING_N) for d in (1, 2)})
 assert len(RING_EDGES) == RING_N * RING_K // 2 == 32
 _R16 = nx.Graph(RING_EDGES)
-assert Fraction(nx.average_clustering(_R16)).limit_denominator(100) == Fraction(1, 2)
+RING_CBAR = Fraction(nx.average_clustering(_R16)).limit_denominator(100)
+assert RING_CBAR == Fraction(1, 2)
 RING_DIA = nx.diameter(_R16)
 RING_L = apl(_R16)
 assert RING_DIA == 4, RING_DIA
@@ -1407,16 +1435,32 @@ def fig_ring_distance():
     return s
 
 
-# seed 117541, not 2: at m = 32 a triangle-free connected draw exists but is rare (8 in the
-# first 400,000 seeds), and seed 2 carried three triangles under a caption saying it had
-# none.  The `< 0.10` assertion was too weak to notice; this one cannot be satisfied by a
-# graph with a single closed triplet in it.
-RND16 = nx.gnm_random_graph(RING_N, len(RING_EDGES), seed=117541)
+# A TYPICAL draw, not a flattering one.  At n = 16 a random graph's expected clustering is
+# p = 32/120 = 0.267, so both the old seed 2 (three triangles, C = 0.054) and the
+# triangle-free seed that replaced it (8 exist in the first 400,000) sit at the 0th
+# percentile of the connected draws.  Picking either to make "random graphs have no
+# triangles" look true at n = 16 is choosing the evidence.  Seed 275 sits at the median,
+# and the figure prints the number it actually has.
+RND16 = nx.gnm_random_graph(RING_N, len(RING_EDGES), seed=275)
 assert nx.is_connected(RND16)
-assert sum(nx.triangles(RND16).values()) == 0, "the shuffled graph must be triangle-free"
 RND16_C = nx.average_clustering(RND16)
 RND16_L = nx.average_shortest_path_length(RND16)
-assert RND16_C == 0.0 and RND16_L < float(RING_L), (RND16_C, RND16_L, float(RING_L))
+assert RND16_L < float(RING_L), (RND16_L, float(RING_L))
+
+
+def _typical_clustering(n, m, trials=300):
+    """The clustering of a G(n,m) draw, sampled -- so the chosen seed cannot drift back
+    into being a flattering one without the build noticing."""
+    cs = sorted(nx.average_clustering(g) for g in
+                (nx.gnm_random_graph(n, m, seed=s) for s in range(trials))
+                if nx.is_connected(g))
+    return cs[len(cs) // 4], cs[3 * len(cs) // 4]
+
+
+_Q1, _Q3 = _typical_clustering(RING_N, len(RING_EDGES))
+assert _Q1 <= RND16_C <= _Q3, (
+    f"the shuffled graph has C = {RND16_C:.3f}, outside the middle half of the draws "
+    f"[{_Q1:.3f}, {_Q3:.3f}] -- pick a typical seed, not a flattering one")
 
 
 def fig_random_graph():
@@ -1443,8 +1487,10 @@ def fig_lattice_vs_random():
     for p2 in (lp, rp):
         for i2 in p2:
             s += disc(p2[i2][0], p2[i2][1], "", fill="accent")
-    s += text(280, 34, "lattice: triangles, long routes", color="black", anchor="north")
-    s += text(820, 34, "random: short routes, no triangles", color="black", anchor="north")
+    s += text(280, 46, f"lattice: long routes, $\\bar C = {float(RING_CBAR):.2f}$",
+              color="black", anchor="north")
+    s += text(820, 46, f"random: short routes, $\\bar C = {RND16_C:.2f}$",
+              color="black", anchor="north")
     return s
 
 

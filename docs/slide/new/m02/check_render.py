@@ -118,6 +118,31 @@ def components(mask, min_px=120, step=2):
     return out
 
 
+def _flood_from_border(mask):
+    """Everything in `mask` reachable from the image border, four-connected."""
+    H, W = mask.shape
+    out = np.zeros_like(mask)
+    q = deque()
+    for x in range(W):
+        for y in (0, H - 1):
+            if mask[y, x] and not out[y, x]:
+                out[y, x] = True
+                q.append((y, x))
+    for y in range(H):
+        for x in (0, W - 1):
+            if mask[y, x] and not out[y, x]:
+                out[y, x] = True
+                q.append((y, x))
+    while q:
+        cy, cx = q.popleft()
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            ny, nx = cy + dy, cx + dx
+            if 0 <= ny < H and 0 <= nx < W and mask[ny, nx] and not out[ny, nx]:
+                out[ny, nx] = True
+                q.append((ny, nx))
+    return out
+
+
 def node_discs(rgb):
     """Filled circles: near-square bounding box, fill ratio near pi/4.
 
@@ -134,6 +159,10 @@ def node_discs(rgb):
     # the glyphs sitting in it read as small discs. Any row the mask fills more than
     # halfway across is a band, not a drawing.
     mask[(mask.mean(axis=1) > 0.5)] = False
+    # Fill the holes. A disc carrying a white letter is an annulus in the colour mask,
+    # and the letter cuts it into crescents -- which is how a 41px disc was reported as
+    # a 12px one. Anything the background cannot reach from outside is interior.
+    mask = ~_flood_from_border(~mask)
     out = []
     for h, w, area in components(mask):
         if h < 8 or w < 8:
