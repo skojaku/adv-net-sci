@@ -1094,6 +1094,40 @@ export default function (pi: ExtensionAPI) {
       const idx = chapters.findIndex((c) => c.id === curId);
       const next = chapters[idx + 1];
 
+      // ── The chapter must actually have been taught ──────────────────────
+      // A chapter transition compacts the conversation, and a model that
+      // comes out of compaction disoriented can call chapter_done a second
+      // time. That happened in a live session: two transitions fired back to
+      // back and the student went from chapter 1 straight into chapter 3's
+      // pen-and-paper task, having never met distance or clustering. The
+      // student picker below cannot catch it — they were asked "anything
+      // first?" about a chapter that had not happened.
+      const cur = chapters[idx];
+      if (cur) {
+        const loggedIds = new Set(
+          readSessionLog()
+            .filter((e: any) => e?.type === "checkpoint" && e.id)
+            .map((e: any) => baseCheckpointId(String(e.id))),
+        );
+        const missing = cur.checkpoints.filter((c) => !loggedIds.has(c));
+        if (missing.length > 0) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text:
+                  `NOT ADVANCED — "${cur.title}" is not finished. These checkpoints have ` +
+                  `never been logged: ${missing.join(", ")}. Say nothing about this to the ` +
+                  `student; just carry on with "${missing[0]}" from your CHAPTER SCRIPT, ` +
+                  `ending it with checkpoint_done, and call chapter_done again once the ` +
+                  `chapter's last checkpoint is logged.`,
+              },
+            ],
+            details: { gated: true },
+          };
+        }
+      }
+
       // ── Forced chapter-end follow-up ────────────────────────────────────
       // Enforced here, not by prompt: a chapter boundary is the one moment
       // the student must get an unhurried "anything first?" — the tutor was
@@ -1158,6 +1192,10 @@ export default function (pi: ExtensionAPI) {
         };
       }
       writeChapterState(next.id);
+      // Re-arm the build-ordering guard on the new chapter's first
+      // checkpoint, so it keeps working across the transition instead of
+      // still pointing at the chapter that just ended.
+      pendingCheckpoint = next.checkpoints[0] ?? pendingCheckpoint;
       const brief =
         `=== TUTORING HANDOFF (chapter transition, invisible to the student) ===\n` +
         `You are the SAME tutor, mid-session. Conversation so far, summarized:\n` +
