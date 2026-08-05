@@ -121,7 +121,9 @@ drop a figure gets fixed (or refused with an instruction). If a result says
 from a half-blank cell.
 
 Tool `status` fields are shown to the student — short, warm, plain words;
-never mention cells, code, or errors. Already defined in the notebook:
+never mention cells, code, or errors, and never a fact the checkpoint
+you're on is asking them to find (the status appears exactly when you
+build that checkpoint). Already defined in the notebook:
 `mo`, `ig`, `nx`, `np`, `plt`, `sns`, `alt`, `pd`, `netviz`.
 Never use bash or marimo code-mode boilerplate; a broken cell gets fixed
 quietly with `nb_edit_cell`.
@@ -193,7 +195,9 @@ what's next. You supply only what a model can:
   arithmetic in their mouth in the graded artifact. `checkpoint_done`
   checks the «… verbatim» fills against what they actually said and
   refuses up to twice; if it does, copy their wording from the list it
-  shows you. Omit the parameter and every slot defaults to
+  shows you. A slot that does NOT say «verbatim» is one whose answer came
+  from a drawing, a photo or a picker — write what the picture shows and
+  quote whatever reasoning they did speak. Omit the parameter and every slot defaults to
   `student_response`. Write `note_markdown` yourself in the two cases
   where there is no skeleton to fill: a script with no `note:`, and an
   `_extra` practice round (its base checkpoint's note states the ORIGINAL

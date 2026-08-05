@@ -43,11 +43,12 @@ Two windows appear:
 | **Terminal** (tutor) | Where you and your tutor talk — questions and answers happen here. |
 | **Browser** (notebook) | The whiteboard: pictures, interactive experiments, and photo uploads appear here when needed. When you finish an interactive step, just tell your tutor in the terminal — no button to click. |
 
-Say hello in the terminal and follow along. Have **pen and paper** ready: one
-step asks you to draw (you photograph it with your phone, or just describe it
-in words).
+Say hello in the terminal and follow along. Have **pen and paper** ready:
+three steps happen off-screen — a distance table, a drawing, and a
+derivation — and you photograph each with your phone, or just describe it in
+words.
 
-A session takes about 45–60 minutes. You can stop anytime and pick up later —
+A session takes about 60–90 minutes. You can stop anytime and pick up later —
 your progress is saved.
 
 ### What gets turned in
@@ -70,7 +71,7 @@ detours counts in your favor — it's the whole point.
 
 | File | Role |
 |---|---|
-| `lesson/` | The curriculum, split into 5 chapters (`index.json` + `chN-*.yaml`): 9 checkpoints + 1 optional stretch, each with build spec, question, accept criteria, and starter hints. **The tutor holds only the current chapter in context** — the extension (the deterministic "lead agent") injects one CHAPTER SCRIPT at a time, and at each `chapter_done` builds a handoff brief (progress + verbatim quotes + the tutor's own notes), loads the next script, and trims the old conversation via pi compaction with the brief as the summary. Same session, same visible transcript, fresh LLM context per chapter (`.pi/settings.json` keeps only ~3k recent tokens on compaction). **Edit these files to change the lesson.** |
+| `lesson/` | The curriculum, split into 5 chapters (`index.json` + `chN-*.yaml`): 12 checkpoints + 1 optional stretch, each with build spec, question, accept criteria, and starter hints. **The tutor holds only the current chapter in context** — the extension (the deterministic "lead agent") injects one CHAPTER SCRIPT at a time, and at each `chapter_done` builds a handoff brief (progress + verbatim quotes + the tutor's own notes), loads the next script, and trims the old conversation via pi compaction with the brief as the summary. Same session, same visible transcript, fresh LLM context per chapter (`.pi/settings.json` keeps only ~3k recent tokens on compaction). **Edit these files to change the lesson.** |
 | `AGENTS.md` | The tutor's behavior contract (auto-loaded by pi; Claude Code loads it via `CLAUDE.md`). Pedagogy, logging schema, hard rules. Lesson-independent. |
 | `notebook.template.py` | Pristine starter: visually blank (only hidden import/helper cells). `notebook.py` is the working copy (gitignored), created from the template on first run. When a previous session exists, the extension injects an invisible progress brief and the tutor **asks the student** — continue where we left off, or start fresh? Fresh → `nb_fresh_start` archives the old notebook + log to `session_artifacts/` and clears the whiteboard; continue → the tutor resumes at the right checkpoint with no re-teaching or duplicate cells. |
 | `run_tutor.sh` | Launcher: installs the marimo-pair skill, starts marimo (`--no-token`), starts the agent (pi runs with bash disabled). |
@@ -91,10 +92,12 @@ detours counts in your favor — it's the whole point.
   the terminal and the tutor reads the widget values — no in-notebook button
   (an earlier Done button competed with the terminal for keyboard focus).
 - **Interaction modalities on purpose:** prediction (cp1, cp6), calculation
-  (cp2, cp3), pen-and-paper drawing with photo upload (cp4), concept
-  articulation (cp3, cp5, cp8), exploration with a widget (cp2, cp6), and a
-  red-team critique of a flawed AI analysis (cp7) — the last one previews the
-  course's process-over-product grading philosophy.
+  (cp2, cp3), three off-screen pen-and-paper steps with photo upload
+  (cp2_paperwork, cp4, cp5_ring_formula), a real coded experiment at large N
+  (cp6_large_n_experiment), concept articulation (cp3, cp5_tension, cp8),
+  exploration with a widget (cp2, cp5, cp6), and a red-team critique of a
+  flawed AI analysis (cp7) — the last one previews the course's
+  process-over-product grading philosophy.
 - **Templates are self-describing (notebook design principle).** Every
   template in `cells/` carries a `# describe:` line — one factual sentence
   about what the student sees. `nb_add_template` returns it on insert, and
