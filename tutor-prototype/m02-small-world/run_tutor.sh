@@ -60,9 +60,30 @@ fi
 
 mkdir -p session_artifacts
 
-# 2. Make sure a notebook exists (first run). Continue-or-fresh is decided IN
-#    the session: when a previous session log exists, the tutor asks the
-#    student and calls nb_fresh_start if they want a clean slate.
+# 2. Continue or start over — asked HERE, before anything loads.
+#    A reset done at file level cannot half-succeed. The in-session
+#    nb_fresh_start has to delete cells one at a time through a live kernel,
+#    and one failure there leaves the "clean slate" opening on the middle of
+#    the module (seen in production: archived log, stale chapter_state
+#    "ch3", notebook whose first cell was chapter 3's heading).
+#    Nothing is ever deleted — reset_session.sh archives into
+#    session_artifacts/ and puts a fresh notebook in place.
+if [ "${1:-}" = "--fresh" ]; then
+  ./reset_session.sh
+elif [ "$(./reset_session.sh --check)" = "session-exists" ]; then
+  say "You have a session in progress here."
+  if [ -t 0 ]; then
+    printf '\n      \033[1mc\033[0m = carry on where you left off   \033[1mf\033[0m = start fresh (your old work is archived, never deleted)\n'
+    printf '      Which? [c/f] '
+    read -r _choice || _choice=c
+    case "$_choice" in
+      [Ff]*) ./reset_session.sh ;;
+      *) say "Carrying on. Your tutor will pick up where you stopped." ;;
+    esac
+  else
+    say "(not a terminal — carrying on; run ./run_tutor.sh --fresh for a clean slate)"
+  fi
+fi
 [ -f notebook.py ] || cp notebook.template.py notebook.py
 # Working copies predating the current template lack netviz/igraph/exercises.
 if ! grep -q '"igraph"' notebook.py; then

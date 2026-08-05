@@ -976,8 +976,17 @@ export default function (pi: ExtensionAPI) {
       if (chapters.length > 0) {
         const entries = readSessionLog();
         const cps = entries.filter((e: any) => e.type === "checkpoint" && e.id);
+        // An empty log means the module has NOT started, whatever
+        // chapter_state.json says — that file outlives the log it belongs
+        // to. A fresh start archives the log; if the saved chapter were
+        // still trusted after that, the "clean slate" session would open in
+        // the middle of the module, on top of whatever cells the wipe left
+        // behind. Seen exactly that way: no log, chapter_state "ch3", and a
+        // notebook whose first cell was chapter 3's heading.
         let chapter =
-          chapters.find((c) => c.id === currentChapterId()) ?? chapters[0];
+          cps.length > 0
+            ? (chapters.find((c) => c.id === currentChapterId()) ?? chapters[0])
+            : chapters[0];
         pendingCheckpoint = chapter.checkpoints[0] ?? null;
         let moduleFinished = false;
         if (cps.length > 0) {
@@ -1888,6 +1897,10 @@ export default function (pi: ExtensionAPI) {
         // outlives its log and describes checkpoints the new session never did.
         const sum = path.join(dir, "session_summary.md");
         if (fs.existsSync(sum)) fs.renameSync(sum, path.join(dir, `session_summary-${stamp}.md`));
+        // Delete, don't rewrite: the saved chapter belongs to the log that
+        // was just archived, and anything left in that file would be read
+        // back as progress this session never made.
+        fs.rmSync(chapterStatePath(), { force: true });
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
       }
@@ -1919,7 +1932,13 @@ export default function (pi: ExtensionAPI) {
         `async with cm.get_context() as ctx:\n` +
         `    for _c in list(ctx.cells):\n` +
         `        if _c.name and _c.name != "_":\n` +
-        `            ctx.delete_cell(_c.id)\n`;
+        `            ctx.delete_cell(_c.id)\n` +
+        // Say out loud what survived. A wipe that silently leaves a cell
+        // behind is how a "clean slate" notebook opens on the middle of the
+        // module — the tutor must know before it starts building.
+        `    _left = [c.name for c in ctx.cells if c.name and c.name != "_"]\n` +
+        `    if _left:\n` +
+        `        print("STILL THERE (delete failed):", ", ".join(_left))\n`;
       // Same kernel call as the wipe so the chapter header lands first,
       // before any cp0/cp1 build cells.
       try {
