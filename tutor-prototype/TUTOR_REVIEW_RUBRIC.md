@@ -208,6 +208,15 @@ Review `lesson/ch*.yaml`, `lesson/index.json`, `cells/*.py` against
   volunteered typed answer counts) and as an explicit last resort for a
   student who says they cannot photograph. The hand-made page IS the
   artifact; a script that offers the easier path forfeits it.
+- **C12 Questions are concrete, never vague.** Every `ask` (and every
+  `fresh_variant`) names a specific object and a specific deliverable — a
+  number, a count, a choice, a location on a drawing, a sentence about a
+  named thing — so the student always knows what shape an answer takes.
+  Subjective or open phrasings ("what's good about living there?") pass
+  only when anchored to a concrete referent and mapped to judgeable
+  meanings in `accept`. Operational test: answer each question yourself
+  using only the chapter so far — if you hesitate about what is being
+  asked (not about the answer), the student will too. File it.
 
 ## Part P — Session process
 
@@ -247,6 +256,12 @@ the student or the past session (see Fix targets).
   typed fallback is offered only after the student says they cannot
   photograph. Check transcripts and E2E runs for "or just tell/type…"
   phrasing while the photo ask is open.
+- **P12 Improvised questions stay concrete.** Hints, extra practice
+  rounds, and detour follow-ups the tutor invents live meet the C12
+  standard: each is a smaller AND concrete question — never a bare "so
+  what do you think?". Failure signatures in transcripts/E2E: the student
+  asks what is being asked, answers a different question than the one
+  posed, or stalls right after an abstract or feelings-based prompt.
 
 ## Part D — Dynamic E2E gate
 
