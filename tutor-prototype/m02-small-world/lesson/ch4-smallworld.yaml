@@ -119,7 +119,12 @@ checkpoints:
       alt.Chart(df).mark_line(point=True).encode(
           x=alt.X("p:O", title="rewiring probability p"),
           y=alt.Y("ratio:Q", title="ratio to p=0 baseline"),
-          color=alt.Color("measure:N", scale=alt.Scale(range=["#B4552D", "#35577F"])),
+          color=alt.Color(
+              "measure:N",
+              # Rust = L/L0, navy = C/C0. The domain MUST be bound: without
+              # it Vega sorts the categories and swaps the two colours.
+              scale=alt.Scale(domain=["L/L0", "C/C0"], range=["#B4552D", "#35577F"]),
+          ),
       ).properties(title=f"N={N}, k={k}")
       ```
 
@@ -127,6 +132,13 @@ checkpoints:
       (zero blanks, N=2000, `L = nx.average_shortest_path_length(G)`,
       `C = nx.average_clustering(G)` already written) — they press ▶ Run
       and read the chart rather than writing anything.
+
+      The `instructions` you pass MUST end with the chart's reading guide,
+      because this is the only figure in the module the student meets with
+      no caption of its own: "Two lines, both measured against the untouched
+      ring: **rust is L/L₀, the average distance; navy is C/C₀, the
+      clustering.** Left to right is more rewiring." Do not describe which
+      line does what — that is the question.
     ask: |
       "Press ▶ Run — it takes a few seconds on a network this size. Run it as
       many times as you like; when the chart looks right, press 📨 Send my

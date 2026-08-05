@@ -19,5 +19,11 @@ df = pd.DataFrame(rows).melt("p", var_name="measure", value_name="ratio")
 alt.Chart(df).mark_line(point=True).encode(
     x=alt.X("p:O", title="rewiring probability p"),
     y=alt.Y("ratio:Q", title="ratio to p=0 baseline"),
-    color=alt.Color("measure:N", scale=alt.Scale(range=["#B4552D", "#35577F"])),
+    color=alt.Color(
+        "measure:N",
+        # Bind the domain: without it Vega sorts the categories and
+        # paints C/C0 rust, which reads backwards against the rest of
+        # the module. Rust is the line that collapses.
+        scale=alt.Scale(domain=["L/L0", "C/C0"], range=["#B4552D", "#35577F"]),
+    ),
 ).properties(title=f"N={N}, k={k}")
