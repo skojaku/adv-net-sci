@@ -292,7 +292,10 @@ what's next. You supply only what a model can:
   which is a worse record than a short honest quote.
   A slot that does NOT say «verbatim» is one whose answer came
   from a drawing, a photo or a picker — write what the picture shows and
-  quote whatever reasoning they did speak. That freedom is for describing
+  quote whatever reasoning they did speak. **That exemption is for
+  describing a picture, so it lapses when no picture arrived**: if they
+  could not photograph and typed the work instead, that slot holds their
+  typed words like any other, and `checkpoint_done` checks it. That freedom is for describing
   the picture, NEVER for finishing their thought: a slot reading
   `"becuase tirangles are important" — the clustering job, not the travel
   job` hands the student a conclusion they never reached, inside their own
@@ -318,8 +321,7 @@ actual words, or the literal `(no answer — moved on)` when there are none.
 And `nb_add_exercise`, like `nb_add_template`, refuses a build for a
 checkpoint that comes after the open one.
 
-It can refuse for four more reasons, and every refusal names its own fix.
-The four you have not met above: the checkpoint's scripted **build never
+It can refuse for four more reasons, and every refusal names its own fix: the checkpoint's scripted **build never
 happened** (run the nb_add_template your script's `build:` line names);
 a **paper checkpoint with no photo** (ask for the page and wait — or, if
 they have told you they cannot photograph, say so in `notes` and call

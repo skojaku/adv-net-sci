@@ -682,6 +682,20 @@ let pickedMark = 0;
  */
 let awaitingResumeChoice = false;
 
+/**
+ * A sentence the DIALOG produced, not the student. The package has more
+ * than one: "User declined to answer questions" when it is dismissed, and
+ * "User wants to chat about this. Continue the conversation to help them
+ * decide." when the student takes the chat row, which sits in every
+ * single-select nav cycle. Stored, either printed in the submitted record
+ * as the student's own *You chose:* line — and the chat one also made the
+ * picker check refuse twice and stamp a false quoting warning on the row.
+ * Every one of them opens with "User ", which no option label here does.
+ */
+const isDialogSentinel = (s: string): boolean =>
+  /^user (declined to answer|wants to chat)/i.test(s.trim()) ||
+  /^\(no input\)$/i.test(s.trim());
+
 function recordPickedAnswer(event: any): void {
   try {
     if (!/ask.?user.?question/i.test(String(event?.toolName ?? ""))) return;
@@ -695,6 +709,7 @@ function recordPickedAnswer(event: any): void {
     let picked = text;
     try {
       const parsed = JSON.parse(text);
+      if (parsed?.cancelled) return;
       const answers = parsed?.answers ?? parsed;
       const flat = Array.isArray(answers)
         ? answers
@@ -703,9 +718,9 @@ function recordPickedAnswer(event: any): void {
           : [];
       const joined = flat
         .map((a: any) => (typeof a === "string" ? a : (a?.answer ?? a?.value ?? "")))
-        .filter(Boolean)
+        .filter((v: string) => v && !isDialogSentinel(v))
         .join(" · ");
-      if (joined) picked = joined;
+      picked = joined;
     } catch {
       // Not JSON. The dialog package hands back a sentence of plumbing —
       //   User has answered your questions: "How do you feel about
@@ -717,7 +732,7 @@ function recordPickedAnswer(event: any): void {
       // was left blank must still record the one that was answered.
       const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)]
         .map((m) => m[2].trim())
-        .filter((v) => v && !/^\(no input\)$/i.test(v));
+        .filter((v) => v && !isDialogSentinel(v));
       picked = pairs.length ? pairs.join(" · ") : "";
     }
     // The continue-or-fresh answer is session mechanics, not a lesson
@@ -733,7 +748,7 @@ function recordPickedAnswer(event: any): void {
     // And it does NOT answer the resume question, so the flag stays armed:
     // clearing it here meant the RE-ASKED continue-or-fresh answer was
     // stored instead, which is the same leak one dialog later.
-    if (!picked || /declined to answer/i.test(picked)) return;
+    if (!picked || isDialogSentinel(picked)) return;
     if (awaitingResumeChoice && /continue|fresh|left off|pick (things )?up/i.test(picked)) {
       awaitingResumeChoice = false;
       return;
@@ -795,7 +810,7 @@ function slotTokens(s: string): string[] {
 }
 
 /**
- * A "figure": 7/6, 1.17, 4.74, 0.61, 9:30 — a compound or multi-digit
+ * A "figure": 7/6, 1.17, 4.74, 0.61 — a compound or multi-digit
  * number. Bare single digits are NOT figures: they are how a subscript
  * ($L_0$ → "l", "0") and an ordinary label ("dot 1 to dot 5") tokenize, and
  * flagging those refused faithful records.
@@ -1266,6 +1281,12 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
     // not walk forward through the transcript is the signature of a fill set
     // filled shifted by one — not decidable automatically (see the comment
     // in checkpoint_done), so it is put in front of the person marking.
+    if (Array.isArray(e.figures_not_quoted) && e.figures_not_quoted.length) {
+      out.push(
+        `Numbers they typed that no slot quotes: ${e.figures_not_quoted.join(", ")} ` +
+          `(may be a self-correction or an aside — worth a glance)`,
+      );
+    }
     if (Array.isArray(e.slot_sources) && e.slot_sources.some((v: unknown) => v !== null)) {
       out.push(
         `Slot → which of their messages: ${e.slot_sources
@@ -1519,9 +1540,12 @@ export default function (pi: ExtensionAPI) {
                     `${gaps.length > 1 ? "them" : "it"}; carry on from where the module is now, and the ` +
                     `closing summary will show ${gaps.length > 1 ? "them" : "it"} as missing.\n`
                   : "") +
-                `FIRST, greet the student and ask with ask_user_question: continue where you left ` +
-                `off, or start fresh? If they choose fresh: call nb_fresh_start and follow ` +
-                `its instructions (chapter 1 reloads automatically — do not improvise). ` +
+                `FIRST, greet the student and ask with ask_user_question, using EXACTLY these ` +
+                `two option labels: "Continue where we left off" and "Start fresh" — the ` +
+                `extension recognises those words and keeps this housekeeping answer out of ` +
+                `the graded record, so do not reword them. If they choose fresh: call ` +
+                `nb_fresh_start and follow its instructions (chapter 1 reloads ` +
+                `automatically — do not improvise). ` +
                 (finished
                   ? (fs.existsSync(path.join(process.cwd(), "session_artifacts", "session_summary.md"))
                       ? `If they continue: they already FINISHED this module — do not re-run any ` +
@@ -2009,34 +2033,21 @@ export default function (pi: ExtensionAPI) {
       // precisely so the keepsake quotes the ANSWER and not whichever
       // fragment came last — under-filling turns that back into one sentence
       // repeated under three labels.
-      // A number the student said that reaches no slot. Not an attribution
-      // guess — it does not care WHICH slot — just: they typed 0.2, and the
-      // note their work is graded from does not contain it. Live runs
-      // dropped "2 out of 10, so thats 0.2" and a C/C₀ reading this way.
-      if (
-        markers.some((m) => /verbatim/i.test(m)) &&
-        slots.some((f) => f.trim()) &&
-        (slotDriftWarned.get(`${id}:figures`) ?? 0) < 1
-      ) {
-        const inFills = new Set(slots.flatMap(slotTokens).filter(isFigure));
-        const dropped = [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter(
-          (f) => !inFills.has(f),
-        );
-        if (dropped.length) {
-          slotDriftWarned.set(`${id}:figures`, 1);
-          return toResult({
-            out:
-              `NOT LOGGED — they typed ${dropped.map((f) => `"${f}"`).join(", ")} and no ` +
-              `slot quotes ${dropped.length > 1 ? "them" : "it"}. Those are the numbers ` +
-              `this checkpoint asked for, in their own words, and the note is what their ` +
-              `work is graded from.\n` +
-              `In order, they said: ${said.map((x, i) => `[${i + 1}] "${x.slice(0, 90)}"`).join("  ")}\n` +
-              `Put each part of their answer in the slot that asked for it, then call ` +
-              `checkpoint_done again.`,
-            failed: false,
-          });
-        }
-      }
+      // Numbers the student typed that reach no slot. RECORDED, not
+      // enforced — for the fourth time in this file, a guard that tried to
+      // decide which words belong in which slot had to be withdrawn.
+      // `said` holds every message since the last checkpoint (detour
+      // questions included, because log_detour peeks without consuming), so
+      // "they typed 6/7 and no slot quotes it" fires on a student who
+      // self-corrected to 7/6, on an aside asking "was that 1967?", on a
+      // follow-up echoing a number the reveal just gave them, and on a
+      // tutor who quoted 1.17 where they wrote 7/6. And the refusal told
+      // the tutor to put those into the graded note. So it goes in the log
+      // beside slot_sources, where a person can weigh it.
+      const inFills = new Set(slots.flatMap(slotTokens).filter(isFigure));
+      const figuresDropped = [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter(
+        (f) => !inFills.has(f),
+      );
       const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
       // No note_markdown exemption: the renderer ignores note_markdown
       // whenever a skeleton exists, so taking that escape hatch discarded the
@@ -2181,8 +2192,9 @@ export default function (pi: ExtensionAPI) {
         slotDriftWarned.set(id, strikes + 1);
         return toResult({
           out:
-            `NOT LOGGED — student_response and every «verbatim» note slot are the ` +
-            `student's own words, and these are not in anything they said: ` +
+            `NOT LOGGED — student_response and every note slot quoting them are the ` +
+            `student's own words (a photo slot too, when no photo arrived and the answer ` +
+            `was typed), and these are not in anything they said: ` +
             `${problems.join("; ")}.\n` +
             `What they actually typed: ${said.map((s) => `"${s}"`).join(", ")}.\n` +
             `Quote them, don't polish — no figure they didn't give, no sentence built out ` +
@@ -2250,6 +2262,7 @@ export default function (pi: ExtensionAPI) {
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(photoMissing ? { photo_missing: true } : {}),
         ...(slotSources.some((v) => v !== null) ? { slot_sources: slotSources } : {}),
+        ...(figuresDropped.length ? { figures_not_quoted: figuresDropped } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
 
@@ -3242,10 +3255,10 @@ export default function (pi: ExtensionAPI) {
       "top-level bindings discarded). Use for: appending to the session log, saving uploaded " +
       "photo bytes to session_artifacts/, timestamps (datetime), quick computations. " +
       "NOT for creating/editing cells — use nb_add_cell/nb_edit_cell for that. " +
-      "AND NEVER TO PRE-SOLVE THE OPEN CHECKPOINT: a live run worked out '250 hops' here " +
-      "and said it in the next breath, so the student never answered the question they " +
-      "were asked. If a number is what the checkpoint is asking for, you may not be the " +
-      "one who says it — ask, end your turn, wait.",
+      "AND NEVER TO PRE-SOLVE THE OPEN CHECKPOINT: a live run worked out a checkpoint's " +
+      "own arithmetic here and said the answer in the next breath, so the student never " +
+      "answered the question they were asked. If a number is what the checkpoint is " +
+      "asking for, you may not be the one who says it — ask, end your turn, wait.",
     promptSnippet: "Run scratchpad Python in the notebook kernel (logging, file saves, checks)",
     parameters: Type.Object({
       status: STATUS_PARAM,
