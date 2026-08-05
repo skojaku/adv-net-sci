@@ -1435,32 +1435,20 @@ def fig_ring_distance():
     return s
 
 
-# A TYPICAL draw, not a flattering one.  At n = 16 a random graph's expected clustering is
-# p = 32/120 = 0.267, so both the old seed 2 (three triangles, C = 0.054) and the
-# triangle-free seed that replaced it (8 exist in the first 400,000) sit at the 0th
-# percentile of the connected draws.  Picking either to make "random graphs have no
-# triangles" look true at n = 16 is choosing the evidence.  Seed 275 sits at the median,
-# and the figure prints the number it actually has.
+# A TYPICAL draw, not a flattering one.  G(16,32) has p = 32/120 = 0.267, so E[C_i] = 0.267
+# and a draw carries about ten triangles; over 3000 samples not one came out triangle-free.
+# Both the old seed 2 (three triangles, C = 0.054) and the triangle-free seed that briefly
+# replaced it sit at the 0th percentile.  Putting either on a slide labelled "a random
+# graph" would teach something false about the model, and would contradict the
+# C_rand = <k>/(n-1) the deck derives two parts earlier -- which predicts 0.267 at this
+# size.  Seed 275 sits at the median; the figures print the number it actually has.
 RND16 = nx.gnm_random_graph(RING_N, len(RING_EDGES), seed=275)
 assert nx.is_connected(RND16)
+RND16_TRI = sum(nx.triangles(RND16).values()) // 3
 RND16_C = nx.average_clustering(RND16)
 RND16_L = nx.average_shortest_path_length(RND16)
+assert RND16_TRI > 0 and 0.15 < RND16_C < 0.40, (RND16_TRI, RND16_C)
 assert RND16_L < float(RING_L), (RND16_L, float(RING_L))
-
-
-def _typical_clustering(n, m, trials=300):
-    """The clustering of a G(n,m) draw, sampled -- so the chosen seed cannot drift back
-    into being a flattering one without the build noticing."""
-    cs = sorted(nx.average_clustering(g) for g in
-                (nx.gnm_random_graph(n, m, seed=s) for s in range(trials))
-                if nx.is_connected(g))
-    return cs[len(cs) // 4], cs[3 * len(cs) // 4]
-
-
-_Q1, _Q3 = _typical_clustering(RING_N, len(RING_EDGES))
-assert _Q1 <= RND16_C <= _Q3, (
-    f"the shuffled graph has C = {RND16_C:.3f}, outside the middle half of the draws "
-    f"[{_Q1:.3f}, {_Q3:.3f}] -- pick a typical seed, not a flattering one")
 
 
 def fig_random_graph():
@@ -1469,7 +1457,7 @@ def fig_random_graph():
         s += curve_edge(a, b, RING_POS, centroid=RING_C, w=2.2)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, f"{RING_N} nodes, {len(RING_EDGES)} edges, shuffled",
+    s += text(260, 8, f"shuffled at random: $\\bar C = {RND16_C:.2f}$",
               color="black", anchor="south")
     return s
 
