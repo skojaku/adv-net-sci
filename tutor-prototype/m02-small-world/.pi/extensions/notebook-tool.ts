@@ -730,7 +730,11 @@ function recordPickedAnswer(event: any): void {
       // only the answers: every "question"="answer" pair's right-hand side.
       // Per ANSWER, not per sentence: a dialog with two questions where one
       // was left blank must still record the one that was answered.
-      const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)]
+      // The value is matched lazily up to the quote that ends the pair (the
+      // envelope puts a "." or the end of the sentence after it), so an
+      // answer containing its own quotation marks survives instead of being
+      // stored truncated to its first word.
+      const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([\s\S]*?)"(?=\s*[.,]|\s*$)/g)]
         .map((m) => m[2].trim())
         .filter((v) => v && !isDialogSentinel(v));
       picked = pairs.length ? pairs.join(" · ") : "";
@@ -2044,10 +2048,14 @@ export default function (pi: ExtensionAPI) {
       // tutor who quoted 1.17 where they wrote 7/6. And the refusal told
       // the tutor to put those into the graded note. So it goes in the log
       // beside slot_sources, where a person can weigh it.
+      // Only where a slot could have quoted them. `note: none` checkpoints
+      // and `_extra` rounds have no skeleton, so every number the student
+      // typed was being listed as un-quoted against a note that does not
+      // exist.
       const inFills = new Set(slots.flatMap(slotTokens).filter(isFigure));
-      const figuresDropped = [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter(
-        (f) => !inFills.has(f),
-      );
+      const figuresDropped = markers.length
+        ? [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter((f) => !inFills.has(f))
+        : [];
       const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
       // No note_markdown exemption: the renderer ignores note_markdown
       // whenever a skeleton exists, so taking that escape hatch discarded the
@@ -2910,7 +2918,21 @@ export default function (pi: ExtensionAPI) {
           ["uploads", `uploads-${stamp}`],
         ] as const) {
           const src = path.join(process.cwd(), "assets", rel);
-          if (fs.existsSync(src)) fs.renameSync(src, path.join(dir, label));
+          if (!fs.existsSync(src)) continue;
+          fs.renameSync(src, path.join(dir, label));
+          // The archived notebook sits in session_artifacts/ and still
+          // points at assets/uploads/<w>_view.jpg, so leave a copy there —
+          // otherwise every archived keepsake opens with a broken image
+          // where the student's own page should be.
+          if (rel === "uploads") {
+            try {
+              fs.cpSync(path.join(dir, label), path.join(dir, "assets", "uploads"), {
+                recursive: true,
+              });
+            } catch {
+              // convenience only
+            }
+          }
         }
       } catch {
         // archiving is best-effort; clearing the notebook is what matters
