@@ -38,6 +38,26 @@ def _renders(node):
     return False
 
 
+# A LaTeX command, matched in the SOURCE text (before Python decodes it).
+# Naming them one by one is the only way to tell `\times` from a tab and
+# `\nu` from a newline: `\\[a-zA-Z]` cannot, and flagging that pattern
+# refused every ordinary "line one\n\nline two" markdown in the module.
+_LATEX_CMD = re.compile(
+    r"\\(frac|dfrac|tfrac|text|mathrm|mathbb|mathcal|times|cdot|to|rightarrow"
+    r"|leftarrow|leftrightarrow|approx|sim|propto|neq|leq|geq|ll|gg|infty"
+    r"|alpha|beta|gamma|delta|epsilon|varepsilon|zeta|eta|theta|vartheta|iota"
+    r"|kappa|lambda|mu|nu|xi|rho|varrho|sigma|tau|upsilon|phi|varphi|chi|psi"
+    r"|omega|Gamma|Delta|Theta|Lambda|Sigma|Phi|Psi|Omega"
+    r"|sum|prod|int|sqrt|binom|log|ln|exp|min|max|langle|rangle|lvert|rvert"
+    r"|bar|hat|tilde|vec|dot|underline|overline|left|right|quad|qquad"
+    r"|begin|end|ldots|cdots|dots|forall|exists|in|notin|subset|cup|cap)\b"
+)
+# Characters no markdown ever wants, and the unmistakable fingerprint of a
+# swallowed backslash: \a \b \f \v \0. A LaTeX command outside the list
+# above still trips this one.
+_EATEN = re.compile(r"[\x00\x07\x08\x0b\x0c]")
+
+
 def _unraw_markdown(tree, src):
     """An mo.md(...) literal holding LaTeX that is not a raw string.
 
@@ -45,8 +65,11 @@ def _unraw_markdown(tree, src):
     `\\f` is a formfeed, `\\a` a bell, `\\r` a carriage return. The cell
     renders `C_i = rac{a}{b}` and nothing downstream can recover the text.
     The extension's own note cells are emitted raw for exactly this reason;
-    an improvised cell has to ask for the same. Refuse rather than rewrite:
-    adding an `r` to a literal that meant `\\n` as a newline would change it.
+    an improvised cell has to ask for the same.
+
+    Ordinary escapes are left alone: `"**A**\\n\\n<span>"` is how half the
+    shipped templates write a two-line caption, and making that raw would
+    put the two characters backslash-n into the keepsake instead.
 
     Returns the line number of the first offender, or None.
     """
@@ -61,13 +84,16 @@ def _unraw_markdown(tree, src):
             if not isinstance(arg, (ast.Constant, ast.JoinedStr)):
                 continue
             seg = ast.get_source_segment(src, arg) or ""
-            prefix = re.match(r"[A-Za-z]*", seg).group(0).lower()
-            if "r" in prefix:
+            if "r" in re.match(r"[A-Za-z]*", seg).group(0).lower():
                 continue
-            # A backslash before a letter is LaTeX here — markdown that wants
-            # a newline uses a real one.
-            if re.search(r"\\[a-zA-Z]", seg):
+            if _LATEX_CMD.search(seg):
                 return arg.lineno
+            try:
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                    if _EATEN.search(arg.value):
+                        return arg.lineno
+            except Exception:
+                pass
     return None
 
 
@@ -99,10 +125,12 @@ def _nb_review(src):
             src,
             "",
             "CELL NOT INSERTED — the mo.md(...) text on line "
-            f"{unraw} has a backslash command in a NON-raw string, so Python "
-            "eats it before marimo ever sees it (\\f, \\a, \\r, \\t) and the "
-            'formula renders as "rac{...}". Write it raw — mo.md(r\"\"\"...\"\"\"), '
-            'or rf\"\"\"...\"\"\" for an f-string — and call nb_add_cell again.',
+            f"{unraw} has a LaTeX command in a NON-raw string, so Python eats "
+            "the backslash before marimo ever sees it (\\f, \\a, \\r, \\t) and "
+            '$\\frac{a}{b}$ renders as "rac{a}{b}". Write it raw — '
+            'mo.md(r\"\"\"...\"\"\"), or rf\"\"\"...\"\"\" for an f-string — with REAL '
+            "line breaks inside the triple quotes, not \\n. Then call "
+            "nb_add_cell again.",
         )
 
     lines = src.split("\n")

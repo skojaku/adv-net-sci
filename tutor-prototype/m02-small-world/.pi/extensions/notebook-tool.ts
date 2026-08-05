@@ -654,10 +654,7 @@ let awaitingResumeChoice = false;
 function recordPickedAnswer(event: any): void {
   try {
     if (!/ask.?user.?question/i.test(String(event?.toolName ?? ""))) return;
-    if (awaitingResumeChoice) {
-      awaitingResumeChoice = false;
-      return;
-    }
+
     const text = (event?.content ?? [])
       .filter((c: any) => c?.type === "text" && typeof c.text === "string")
       .map((c: any) => c.text)
@@ -687,6 +684,18 @@ function recordPickedAnswer(event: any): void {
       // only the answers: every "question"="answer" pair's right-hand side.
       const pairs = [...text.matchAll(/"([^"]*)"\s*=\s*"([^"]*)"/g)].map((m) => m[2].trim());
       if (pairs.length) picked = pairs.filter(Boolean).join(" · ");
+    }
+    // The continue-or-fresh answer is session mechanics, not a lesson
+    // answer. Match it by CONTENT rather than "whatever dialog comes first
+    // after a resume": if the tutor asks continue-or-fresh in plain text,
+    // the flag would otherwise swallow the next real prediction instead —
+    // and a re-asked resume dialog would slip the original one through.
+    if (
+      awaitingResumeChoice &&
+      /continue|fresh|left off|pick (things )?up|no input/i.test(picked)
+    ) {
+      awaitingResumeChoice = false;
+      return;
     }
     pickedAnswers.push(picked.slice(0, 300));
   } catch {
@@ -992,7 +1001,11 @@ function souvenirGap(src: string, question: string): string {
       .replace(/[“”]/g, '"')
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
-  const needle = flat(question).slice(0, 40).replace(/\s+\S*$/, "");
+  // Strip the word the 40-char slice cut in half — but ONLY when it did cut
+  // one. Doing it unconditionally shrank a short question ("Why triangles?")
+  // to the single word "why", which any prose souvenir contains by accident.
+  const asked = flat(question);
+  const needle = asked.length > 40 ? asked.slice(0, 40).replace(/\s+\S*$/, "") : asked;
   const quotes = needle.length > 0 && flat(src).includes(needle);
   if (!shows && !quotes) return "is prose only, and never quotes their question";
   if (!shows) return "is prose only — nothing to look at or play with";
@@ -1155,6 +1168,8 @@ export default function (pi: ExtensionAPI) {
   // once, then accepted, so a detour that genuinely has no picture in it can
   // still be recorded.
   const detourTextOnlyWarned = new Set<string>();
+  // Improvised-cell review refusals, per cell name — capped like the rest.
+  const cellReviewWarned = new Map<string, number>();
 
   pi.on("tool_result", async (event: any) => {
     recordPickedAnswer(event);
@@ -1762,6 +1777,9 @@ export default function (pi: ExtensionAPI) {
       // Off-script ids (a stretch, a typo) must NOT null it out: that would
       // switch the ordering guard off for the rest of the session.
       if (isScriptedCheckpoint(id)) pendingCheckpoint = nextCheckpointId(id);
+      // The resume window closes with the first checkpoint: past this point
+      // every dialog answer is a lesson answer.
+      awaitingResumeChoice = false;
       studentSaidSince(ctx, true);
       pickedSince(true);
 
@@ -2004,18 +2022,32 @@ export default function (pi: ExtensionAPI) {
       // displays marimo would silently drop before the student sees a cell
       // with a missing figure.
       const review = reviewSource();
+      // Two refusals per cell name, then it goes in with the complaint
+      // attached — the same backstop every other guard here has. A review
+      // the model cannot satisfy must never be able to strand the student
+      // in a retry loop; a cell with one bad formula is the smaller harm,
+      // and nb_edit_cell can still fix it.
+      const strikes = cellReviewWarned.get(params.name) ?? 0;
+      const enforce = review && strikes < 2;
+      if (review && !enforce) cellReviewWarned.delete(params.name);
+      else if (review) cellReviewWarned.set(params.name, strikes + 1);
       const code =
         `import marimo._code_mode as cm\n` +
         (review ? review + "\n" : "") +
         `_code = ${py(stripRedundantImports(params.code))}\n` +
         (review
           ? `_code, _note, _fatal = _nb_review(_code)\n` +
-            `if _fatal:\n` +
-            `    print(_fatal)\n` +
-            `else:\n` +
-            indentBlock(inner, 4) +
-            `    if _note:\n` +
-            `        print(_note)\n`
+            (enforce
+              ? `if _fatal:\n` +
+                `    print(_fatal)\n` +
+                `else:\n` +
+                indentBlock(inner, 4) +
+                `    if _note:\n` +
+                `        print(_note)\n`
+              : indentBlock(inner, 0) +
+                `if _fatal or _note:\n` +
+                `    print("INSERTED ANYWAY (third attempt) —", _fatal or _note, ` +
+                `"Fix it with nb_edit_cell rather than retrying.")\n`)
           : inner);
       return toResult(await runKernel(code, signal));
     },
@@ -2245,7 +2277,7 @@ export default function (pi: ExtensionAPI) {
     parameters: Type.Object({
       status: STATUS_PARAM,
     }),
-    async execute(_id, params, signal) {
+    async execute(_id, params, signal, _onUpdate, ctx: any) {
       const stamp = new Date()
         .toISOString()
         .replace(/[-:]/g, "")
@@ -2287,6 +2319,11 @@ export default function (pi: ExtensionAPI) {
           pickedAnswers.length = 0;
           pickedMark = 0;
           awaitingResumeChoice = false;
+          cellReviewWarned.clear();
+          // Same rewind for the transcript mark: without it, whatever the
+          // student typed before choosing "start fresh" is filed as the new
+          // cp0's own words.
+          studentSaidSince(ctx, true);
           pi.sendMessage(
             {
               customType: "chapter-script",
