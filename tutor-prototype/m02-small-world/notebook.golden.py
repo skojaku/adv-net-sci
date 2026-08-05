@@ -637,7 +637,7 @@ def cp3_clustering_note(mo):
     so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
     network's clustering $C$ — typically HIGH in social networks.
 
-    > **What the two pictures differ by:** count the friend-pairs that are friends themselves and divide by all possible pairs.
+    > **What the two pictures differ by:** in the second one the friends are all connected to each other too, not just to Alice — it's more tightly knit.
     >
     > **What I counted, and out of how many:** two rust lines — B–F and C–E — so 2 out of 10 = 0.2.
     """)
@@ -947,8 +947,8 @@ def cp5_ring_formula_note(mo):
 
     On a ring where everyone has $k$ friends ($k/2$ per side),
     $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-    $k=2$ gives $C=0$, $k=4$ gives $C=0.5$, the value I counted out. Every
-    neighbourhood is identical, so node 0's $C_0$ is the ring's $C$.
+    $k=2$ gives $C=0$, $k=4$ gives $C=0.5$. Every neighbourhood is
+    identical, so node 0's $C_0$ is the ring's $C$.
 
     Path length grows with the crowd instead: the farthest trip is about
     $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
@@ -1081,12 +1081,12 @@ def cp6_watts_strogatz_note(mo):
     other). $L_0$ and $C_0$ are the same two on the untouched ring, so the
     ratios read "compared to before".
 
-    Rewiring only about 1% of a ring's links ($p \approx 0.01$) already
-    pulls distance down hard — here $L/L_0$ falls to about $0.6$ — while
-    clustering barely moves ($C/C_0 \approx 1$). Those few rewires are the
-    long cables from my drawing: rare enough to keep the communities, long
-    enough to shortcut the whole ring. That's the small-world recipe, and
-    it's why six degrees works.
+    Rewiring about 1% of a ring's links ($p \approx 0.01$) already pulls
+    distance down hard — $L/L_0$ falls to about $0.6$ — while clustering
+    barely moves ($C/C_0 \approx 1$). Those few rewires are the long cables
+    from my drawing: rare enough to keep the communities, long enough to
+    shortcut the ring. That's the small-world recipe, and it's why six
+    degrees works.
 
     > **My prediction:** distance drops a lot, clustering barely changes → **what I actually saw:**
     L/L₀ fell off a cliff around p ≈ 0.01 — down to 0.61 — while C/C₀ was still 0.97. Called it, but the cliff came earlier than I expected.
@@ -1131,7 +1131,12 @@ alt.Chart(df).mark_line(point=True).encode(
     mo.vstack([
         mo.md(
             "Fill the three `...` blanks, then press ▶ Run. Run it as often as "
-            "you like — nothing breaks."
+            "you like — nothing breaks.\n\n"
+            "<span style='color:#6A6D75;font-size:13px'>Two lines, both measured "
+            "against the untouched ring: **rust is L/L₀** — the average distance "
+            "between two people, compared to before — and **navy is C/C₀**, the "
+            "clustering, how often two of your friends know each other, compared "
+            "to before. Left to right is more rewiring.</span>"
         ),
         cp6_large_n_ed,
         cp6_large_n_run,

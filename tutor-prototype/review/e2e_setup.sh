@@ -22,6 +22,7 @@ done
 SANDBOX=$(mktemp -d "${TMPDIR:-/tmp}/tutor-e2e-XXXXXX")
 rsync -a --exclude session_artifacts --exclude __marimo__ --exclude .skill-cache \
   --exclude notebook.py --exclude '.pi/extensions/__pycache__' \
+  --exclude '.pi/skills' --exclude '.claude/skills' \
   "$MODULE_DIR/" "$SANDBOX/"
 cp "$SANDBOX/notebook.template.py" "$SANDBOX/notebook.py"
 mkdir -p "$SANDBOX/session_artifacts"

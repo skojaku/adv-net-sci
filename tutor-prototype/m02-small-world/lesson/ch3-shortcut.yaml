@@ -134,7 +134,11 @@ checkpoints:
       (1) k=2 -> C=0, with a reason (node 0's two friends aren't directly
       connected to each other — no triangle possible).
       (2)-(3) k=4 -> 3 of the 6 possible friendships already exist ->
-      C₀ = 3/6 = 0.5 (must show the counting, not just the number).
+      C₀ = 3/6 = 0.5. They must show the counting, and the counting must add
+      up: if they name fewer connected pairs than the total they claim, ask
+      which pair they missed before accepting — a live run passed
+      "-2&-1 connected, 1&2 connected ... so 3 out of 6" without noticing
+      the third pair was never named.
       (4) Explicit statement that C does NOT depend on N (only on k).
       (5) The farthest trip is about N/k hops — half a ring (N/2 places)
       at k/2 places per hop. Accept 250 for N=1000, k=4, or "N over k".
@@ -176,20 +180,20 @@ checkpoints:
 
       On a ring where everyone has $k$ friends ($k/2$ per side),
       $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-      $k=2$ gives $C=0$, $k=4$ gives $C=0.5$, the value I counted out. Every
-      neighbourhood is identical, so node 0's $C_0$ is the ring's $C$.
+      $k=2$ gives $C=0$, $k=4$ gives $C=0.5$. Every neighbourhood is
+      identical, so node 0's $C_0$ is the ring's $C$.
 
       Path length grows with the crowd instead: the farthest trip is about
       $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
       about half that, $L \approx N/(2k)$.
 
-      > **The counting:** «what they said about k=2 and their k=4 count, in
-      their own words»
+      > **The counting:** «what they said about k=2 and their k=4 count,
+      verbatim»
       >
-      > **Does C depend on N?** «their answer, in their own words»
+      > **Does C depend on N?** «their answer, verbatim»
       >
-      > **The two formulas:** «how they got to the farthest trip and to L, in
-      their own words»
+      > **The two formulas:** «how they got to the farthest trip and to L,
+      verbatim»
       >
       > **On paper:** «what their photo of the derivation shows — a
       photographed answer never reaches the transcript, so this slot is NOT
