@@ -1252,6 +1252,17 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
       out.push(`Typed by the student: ${JSON.stringify(e.student_said_verbatim)}`);
     }
     if (e.notes) out.push(`Tutor's note: ${String(e.notes).trim()}`);
+    // Which typed message each quoted slot came from. A note whose slots do
+    // not walk forward through the transcript is the signature of a fill set
+    // filled shifted by one — not decidable automatically (see the comment
+    // in checkpoint_done), so it is put in front of the person marking.
+    if (Array.isArray(e.slot_sources) && e.slot_sources.some((v: unknown) => v !== null)) {
+      out.push(
+        `Slot → which of their messages: ${e.slot_sources
+          .map((v: unknown, i: number) => `slot ${i + 1}→${v === null ? "?" : `msg ${v}`}`)
+          .join(", ")}`,
+      );
+    }
     out.push("");
   }
   if (missing.length) {
@@ -1331,6 +1342,10 @@ export default function (pi: ExtensionAPI) {
   const cellReviewWarned = new Map<string, number>();
   // chapter_done's "was this chapter actually taught?" refusals, per chapter.
   const chapterGateWarned = new Map<string, number>();
+  // The build-ordering refusal, per checkpoint. It was the last uncapped
+  // guard in the file: whenever the open checkpoint ended up wrong, every
+  // build refused forever and the only escape it named wrote a duplicate row.
+  const buildOrderWarned = new Map<string, number>();
   // Checkpoints an EARLIER session left unlogged. Reported to the tutor at
   // resume and then treated as settled: the brief says not to go back for
   // them, so nothing downstream may order it to.
@@ -2140,7 +2155,19 @@ export default function (pi: ExtensionAPI) {
       // nothing — that is what keeps its note cell ahead of the next build.
       // Off-script ids (a stretch, a typo) must NOT null it out: that would
       // switch the ordering guard off for the rest of the session.
-      if (isScriptedCheckpoint(id)) pendingCheckpoint = nextCheckpointId(id);
+      // Monotonic. Closing an out-of-order practice round — a
+      // `cp2_distance_extra` logged from chapter 3 — used to move the open
+      // checkpoint BACKWARDS, and the build guard it arms then refused every
+      // remaining build with "close cp2_paperwork first": a checkpoint that
+      // already has a row and a note, so obeying wrote a duplicate into the
+      // graded record. The session's position only ever goes forward.
+      if (isScriptedCheckpoint(id)) {
+        const ord = checkpointOrder();
+        const advanced = nextCheckpointId(id);
+        const here = pendingCheckpoint ? ord.indexOf(pendingCheckpoint) : -1;
+        const there = advanced ? ord.indexOf(advanced) : ord.length;
+        if (there >= here) pendingCheckpoint = advanced;
+      }
       // The resume window closes with the first checkpoint: past this point
       // every dialog answer is a lesson answer.
       awaitingResumeChoice = false;
@@ -2494,6 +2521,7 @@ export default function (pi: ExtensionAPI) {
       }
       const exCpId = String(params.checkpoint ?? "").trim();
       if (exCpId && pendingCheckpoint && isAheadOf(exCpId, pendingCheckpoint)) {
+        buildOrderWarned.set(exCpId, (buildOrderWarned.get(exCpId) ?? 0) + 1);
         return toResult({
           out:
             `NOT INSERTED — '${exCpId}' comes after '${pendingCheckpoint}', which is still ` +
@@ -2688,7 +2716,12 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      if (pendingCheckpoint && isAheadOf(cpId, pendingCheckpoint)) {
+      if (
+        pendingCheckpoint &&
+        isAheadOf(cpId, pendingCheckpoint) &&
+        (buildOrderWarned.get(cpId) ?? 0) < 2
+      ) {
+        buildOrderWarned.set(cpId, (buildOrderWarned.get(cpId) ?? 0) + 1);
         return toResult({
           out:
             `NOT INSERTED — '${cpId}' comes after '${pendingCheckpoint}', which is still ` +
@@ -2832,6 +2865,7 @@ export default function (pi: ExtensionAPI) {
           awaitingResumeChoice = false;
           cellReviewWarned.clear();
           chapterGateWarned.clear();
+          buildOrderWarned.clear();
           resumeGaps.clear();
           viewedPhotos.clear();
           // Same rewind for the transcript mark: without it, whatever the

@@ -52,9 +52,12 @@ checkpoints:
       reach a specific stockbroker in Boston; rule — you may only forward it
       to someone you know on a first-name basis. Then ask for a guess with
       ask_user_question: for the letters that made it, how many hands on average?
-      Options: "about 6" / "about 20" / "about 60" / "over 200" — bare labels,
-      no descriptions: a description that calls one of them "surprisingly few"
-      hands over the answer while the question is still open.
+      Options: "about 6" / "about 20" / "about 60" / "over 200". Each option
+      needs a `description` (the field is required — omitting it fails
+      validation and prints the rejected payload into the student's
+      terminal), and each description REPEATS ITS LABEL and nothing more: a
+      description that calls one of them "surprisingly few" hands over the
+      answer while the question is still open.
       THEN give the reveal below, and finish with ONE typed question:
       "How does that compare with what you guessed?" Their picker choice never
       reaches the transcript, so this line is the only thing the notebook can
