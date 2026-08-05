@@ -58,21 +58,25 @@ move "$ART/student_signal.txt" "student_signal-${STAMP}.txt"
 move "$ART/session_log.jsonl" "session_log-${STAMP}.jsonl"
 move "$ART/session_summary.md" "session_summary-${STAMP}.md"
 move assets/uploads "uploads-${STAMP}"
-# The archived notebook keeps its photo cells' relative paths
-# (assets/uploads/<w>_view.jpg), which no longer exist once the directory is
-# archived under a stamp — so point the archived copy at its own uploads.
-# A shared session_artifacts/assets/uploads/ was tried first and was worse:
-# the second reset overwrote it, so session 1's keepsake rendered session 2's
-# photograph as that student's own hand-worked page.
-if [ -f "$ART/notebook-${STAMP}.py" ] && [ -d "$ART/uploads-${STAMP}" ]; then
-  sed "s#assets/uploads/#uploads-${STAMP}/#g" "$ART/notebook-${STAMP}.py" \
+repoint_archive() { # repoint_archive <assets-subdir>
+  # The archived notebook keeps its relative paths — assets/uploads/<w>_view.jpg
+  # for a photographed page, assets/exercises/<name>.py for code the student
+  # wrote — and neither exists once the directory is archived under a stamp. So
+  # point the archived COPY at its own. (A shared session_artifacts/assets/
+  # was tried first and was worse: the second reset overwrote it, so session
+  # 1's keepsake rendered session 2's photograph as that student's own page.)
+  [ -f "$ART/notebook-${STAMP}.py" ] || return 0
+  [ -d "$ART/$1-${STAMP}" ] || return 0
+  sed "s#assets/$1/#$1-${STAMP}/#g" "$ART/notebook-${STAMP}.py" \
     >"$ART/notebook-${STAMP}.py.tmp" &&
     mv "$ART/notebook-${STAMP}.py.tmp" "$ART/notebook-${STAMP}.py"
-fi
+}
 # The student's saved exercise code is their work too — and the coding cell
 # renders whatever it finds under "The code I wrote and ran", so a file left
 # here would greet the next student as their own.
 move assets/exercises "exercises-${STAMP}"
+repoint_archive uploads
+repoint_archive exercises
 
 # The saved chapter belongs to the log just archived. Left behind, it is read
 # back as progress the new session never made.
