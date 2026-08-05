@@ -289,6 +289,8 @@ spend a fix round on them.
 - **pi's startup banner** listing the machine's global skills and slash
   commands. It prints before the tutor's first word, survives
   `--no-extensions`, and belongs to the CLI.
+- **pi's "Package Updates Available" notice**, listing installed extension
+  packages at session start and on resume. Same place, same reason.
 
 Both are grey one-liners that leak no answer and precede or sit between
 teaching turns. They would be worth revisiting only if pi grows a quiet
