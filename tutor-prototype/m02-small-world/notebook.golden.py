@@ -1196,9 +1196,9 @@ def cp6_large_n_out(cp6_large_n_ed, cp6_large_n_run, mo, run_student_code):
 
 @app.cell(hide_code=True)
 def cp6_large_n_sent(cp6_large_n_send, mo):
-    if cp6_large_n_send.value:
-        from pathlib import Path as _P
+    from pathlib import Path as _P
 
+    if cp6_large_n_send.value:
         _P("session_artifacts").mkdir(exist_ok=True)
         with open("session_artifacts/student_signal.txt", "a") as _f:
             _f.write("cp6_large_n_ed\n")
@@ -1207,6 +1207,8 @@ def cp6_large_n_sent(cp6_large_n_send, mo):
         _sent = mo.md(
             "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "
             "chart looks right — that is what hands your code in.*</span>"
+            if _P("assets/golden/cp6_large_n.py").exists()
+            else ""
         )
     _sent
     return

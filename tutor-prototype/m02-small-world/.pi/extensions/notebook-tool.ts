@@ -958,12 +958,27 @@ function slotMarkers(skeleton: string): string[] {
   return skeleton.match(/«[^»]*»/g) ?? [];
 }
 
+/**
+ * Fill a note skeleton's «slots» in order.
+ *
+ * An unsupplied slot falls back to `student_response` — but only the FIRST
+ * one. Padding every empty slot with it printed the same sentence under
+ * three different labels once the skeletons were split into a slot per part
+ * ("The ring world: …", "The random world: <same sentence>", "Which one I
+ * live in: <same sentence>"), which reads as the student saying something
+ * they never said. checkpoint_done nudges for the missing fills before it
+ * ever gets here; this is the shape when it has nudged twice and given up.
+ */
 function fillSlots(skeleton: string, slots: string[], fallback: string): string {
   let i = 0;
+  let usedFallback = false;
   return skeleton.replace(/«[^»]*»/g, () => {
-    const v = slots[i] ?? fallback;
+    const supplied = slots[i];
     i += 1;
-    return v;
+    if (supplied !== undefined && supplied !== "") return supplied;
+    if (usedFallback) return "*(not answered)*";
+    usedFallback = true;
+    return fallback;
   });
 }
 
@@ -1350,26 +1365,22 @@ export default function (pi: ExtensionAPI) {
         let moduleFinished = false;
         if (cps.length > 0) {
           const order = chapters.flatMap((c) => c.checkpoints);
-          // Scan BACKWARDS for the last id the script actually knows. The
-          // newest entry can be off-script — a stretch (cs1_code), a typo —
-          // and indexOf(-1)+1 would silently resolve to cp0_welcome, walking
-          // a student who finished four chapters back to the welcome.
-          const lastScripted = [...cps]
-            .reverse()
-            .map((e: any) => baseCheckpointId(String(e.id ?? "")))
-            .find((id: string) => order.includes(id));
-          // No next id means the module is already finished. Do NOT fall back
-          // to the last checkpoint: that tells the tutor to re-run cp8, whose
-          // re-close silently skips the existing session_record while
-          // overwriting session_summary.md — the two then disagree.
-          const nextId = lastScripted ? order[order.indexOf(lastScripted) + 1] : order[0];
-          // "Finished" must mean EVERY checkpoint, not just that the last one
-          // was reached: a log with cp7 skipped and cp8 logged scanned as
-          // finished, so the brief said "do not re-run any checkpoint" while
-          // chapter_done replied "carry on with cp7_redteam" — two orders in
-          // one turn.
+          // Where to pick up = the FIRST checkpoint with no log row, not the
+          // one after the last row. Two earlier shapes of this both failed:
+          // "after the last logged" walked a student who had a gap in the
+          // middle past it, and answering "is the last one logged?" separately
+          // from "where next?" produced a brief that said "continue at
+          // checkpoint undefined". One question, asked once — and off-script
+          // rows (a stretch, a typo) simply are not in `order`, so they can no
+          // longer drag the answer anywhere.
           const doneIds = new Set(cps.map((e: any) => baseCheckpointId(String(e.id))));
-          const finished = !nextId && order.every((o: string) => doneIds.has(o));
+          const nextId = order.find((o: string) => !doneIds.has(o));
+          // No next id means every scripted checkpoint has a row: the module
+          // is finished. Do NOT fall back to the last checkpoint — that tells
+          // the tutor to re-run cp8, whose re-close silently skips the
+          // existing session_record while overwriting session_summary.md, and
+          // the two then disagree.
+          const finished = !nextId;
           moduleFinished = finished;
           chapter = (nextId && chapters.find((c) => c.checkpoints.includes(nextId))) || chapter;
           pendingCheckpoint = nextId ?? null;
@@ -1856,6 +1867,34 @@ export default function (pi: ExtensionAPI) {
       const pool = [...said, ...picked, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
       const problems: string[] = [];
+      // One fill per slot. The skeletons ask for a slot per part of the ask
+      // precisely so the keepsake quotes the ANSWER and not whichever
+      // fragment came last — under-filling turns that back into one sentence
+      // repeated under three labels.
+      const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
+      if (
+        markers.length > 1 &&
+        !String(params.note_markdown ?? "").trim() &&
+        slots.length < markers.length &&
+        slotStrikes < 2
+      ) {
+        slotDriftWarned.set(`${id}:slots`, slotStrikes + 1);
+        return toResult({
+          out:
+            `NOT LOGGED — this checkpoint's note has ${markers.length} slots and you sent ` +
+            `${slots.length}. One fill each, in this order:\n` +
+            markers
+              .map(
+                (m, i) =>
+                  `  ${i + 1}. ${m.replace(/[«»]/g, "").replace(/\s+/g, " ").trim()}`,
+              )
+              .join("\n") +
+            `\nQuote them for each part separately — the slots exist so the notebook holds ` +
+            `their ANSWER and not just whichever fragment came last. Then call ` +
+            `checkpoint_done again.`,
+          failed: false,
+        });
+      }
       // A skeleton that asks for the student's own words, on a checkpoint
       // where the student never typed any, means the question that was
       // supposed to get those words was skipped. cp1 is the case that
@@ -1967,13 +2006,17 @@ export default function (pi: ExtensionAPI) {
       // not dishonesty, just two fields the model has to keep agreeing, so
       // the extension makes them agree. Hints are never penalised; the point
       // is that the record says what happened.
-      const hintsOut = Math.max(0, Number(params.hints_used ?? 0) || 0);
+      let hintsOut = Math.max(0, Math.round(Number(params.hints_used ?? 0) || 0));
+      // The two fields must agree, whichever way round they were typed. A
+      // `guided` checkpoint is by definition one the tutor walked them
+      // through, so zero hints there is a miscount, not a cleaner record.
       const judgmentOut =
         judgment === "pass" && hintsOut > 0
           ? "pass_with_hints"
           : judgment === "pass_with_hints" && hintsOut === 0
             ? "pass"
             : judgment;
+      if (judgmentOut === "guided" && hintsOut === 0) hintsOut = 1;
       const logged = appendLog({
         type: "checkpoint",
         id,
@@ -2350,8 +2393,8 @@ export default function (pi: ExtensionAPI) {
         `    _res = mo.md("*Press ▶ Run when you're ready.*")\n` +
         `_res`;
       const sentBody =
+        `from pathlib import Path as _P\n` +
         `if ${name}_send.value:\n` +
-        `    from pathlib import Path as _P\n` +
         `\n` +
         `    _P("session_artifacts").mkdir(exist_ok=True)\n` +
         `    with open("session_artifacts/student_signal.txt", "a") as _f:\n` +
@@ -2360,9 +2403,15 @@ export default function (pi: ExtensionAPI) {
         `else:\n` +
         // Not mo.md(""): an empty markdown node is a blank cell in the
         // keepsake, and reopening it always lands on this branch.
+        // Only once the button is actually on screen — before the first
+        // ▶ Run the out cell renders "Press ▶ Run when you're ready" and no
+        // 📨 button at all, and pointing at it then is one more thing for a
+        // nervous beginner to hunt for.
         `    _sent = mo.md(\n` +
         `        "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "\n` +
         `        "chart looks right — that is what hands your code in.*</span>"\n` +
+        `        if _P(${py(savedPath)}).exists()\n` +
+        `        else ""\n` +
         `    )\n` +
         `_sent`;
       let code =
