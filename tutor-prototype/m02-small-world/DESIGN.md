@@ -44,9 +44,12 @@ notebook re-learnable.
 ## Principles
 
 1. **Terminal for words, notebook for everything visual.** Questions, hints,
-   and reactions are speech (1–3 sentences). Anything worth remembering is
-   rendered: a figure, a widget, an `mo.md` note. Never explain in a
-   paragraph what a picture can carry. *(AGENTS.md)*
+   and reactions are speech (1–3 sentences); an answer that wants a fourth
+   sentence is a cell. Anything worth remembering is rendered: a figure, a
+   widget, an `mo.md` note. Never explain in a paragraph what a picture can
+   carry. And the student's own questions shape the notebook: every detour
+   leaves a souvenir cell — a 🧭 tip, a demo, a playable experiment — so a
+   curious student's notebook ends up visibly their own. *(AGENTS.md)*
 
 2. **The student's verbatim words are the centerpiece.** Every note cell
    quotes their answer word for word (`> **You worked out:** "…"`), and the
