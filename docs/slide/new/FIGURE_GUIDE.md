@@ -56,6 +56,13 @@ at authoring time:
 
 - **In-figure text ≥ 21px on the slide** (body is 30px type ≈ 15px x-height). The
   lecturer raised this four times on m01; it is a build failure now, not a taste note.
+- **And assert that the text still fits.** Size and containment are two checks, not one.
+  Raising m01's type until the size assertion went green pushed digits out of their matrix
+  cells: the dense inset became a mass of overlapping glyphs and `indptr` rendered "10" and
+  "12" as a single "1012", on the slide that teaches what those boundaries mean. That is
+  worse than the small type it replaced, because small text gets skipped and garbled text
+  gets misread. Where a cell cannot hold text at the floor, **the cell grows** — never
+  shrink the type back.
 - **Node discs 26–52px on the slide** — uniform enough that the same graph does not
   change size between consecutive slides.
 - **Drawing ≥ 150px rendered**, **per-axis margin ≤ 30%**, ink fraction ≥ 15% of the box
