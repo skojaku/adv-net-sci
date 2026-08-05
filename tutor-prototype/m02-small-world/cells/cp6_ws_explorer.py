@@ -8,11 +8,12 @@
 # describe: A legend defining the symbols (L = average distance, C = clustering, L0/C0 = the p=0 ring baseline), a rewiring-probability slider p, and a drag-able 60-dot ring sketch where rewired shortcut edges are rust lines; the caption shows live L/L0 and C/C0 measured on a 200-person ring rewired the same way, and says so.
 # --- cell: cp6_legend ---
 mo.md(
-    r"""**Reading the dials:** $L$ = average distance — how many steps apart a
-typical pair is. $C$ = clustering — how often two of your friends know each
-other. $L_0$ and $C_0$ are those same numbers for the untouched ring
-($p=0$), so $L/L_0 = 1$ means "unchanged" and $L/L_0 = 0.2$ means distances
-shrank to a fifth."""
+    r"""**Reading the dials:** $p$ = the fraction of the ring's links picked
+up and reconnected to someone chosen at random — the slider below. $L$ =
+average distance — how many steps apart a typical pair is. $C$ = clustering
+— how often two of your friends know each other. $L_0$ and $C_0$ are those
+same numbers for the untouched ring ($p=0$), so $L/L_0 = 1$ means
+"unchanged" and $L/L_0 = 0.2$ means distances shrank to a fifth."""
 )
 # --- cell: cp6_p ---
 cp6_p = mo.ui.slider(

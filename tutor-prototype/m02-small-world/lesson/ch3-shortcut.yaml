@@ -1,11 +1,14 @@
-# Chapter 3 of 5 — The Power of One Cable (cp4, cp5_ring_formula, cp5_tension).
+# Chapter 3 of 5 — One Extra Line (cp4, cp5_ring_formula, cp5_tension).
+# The chapter title is deliberately vague: it is rendered as a visible
+# notebook header and a terminal divider BEFORE cp4 asks where to put the
+# cable, so it must not assert the chapter's conclusion.
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
 # "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
 # After logging the last checkpoint, call chapter_done with short handoff notes.
 
 chapter:
   id: ch3
-  title: "The Power of One Cable"
+  title: "One Extra Line"
   goal: Student discovers that WHERE a link goes matters more than HOW MANY,
         derives on paper how clustering and path length scale with N and k on
         a ring, and can articulate the resulting tension.
@@ -35,7 +38,7 @@ checkpoints:
       moment (see reveal_after). Judge the reasoning, not the artwork.
     hints:
       - "Try your cable between two dots that are already close. Who benefits? Now try it between dots that are far apart. Who benefits now?"
-      - "Pick the two dots that are FARTHEST apart on your ring — how many steps between them right now? Now put the cable there: how many steps is it?"
+      - "Which pair on your ring has the longest trip right now — and does your cable do anything at all for that pair?"
       - "Forget the whole ring for a second. Just you and the dot straight across: does your cable make YOUR trip to it shorter, or not?"
     fresh_variants: |
       If the answer slips out, run it again on a ring of 10 dots (opposite
@@ -47,17 +50,25 @@ checkpoints:
       nb_add_template("cp4_compare") — a radio-driven comparison: choosing
       "no cable / short cable / long cable" redraws the 8-ring and updates
       the average distance in the title.
-      Terminal — the punchline, referencing THEIR cable: a SHORT extra link
-      creates a triangle (clustering up, distances barely move); a LONG one is
-      a SHORTCUT (distances drop for everyone). One cable, two very different
-      effects. This plain ring (each dot connects only to ITS TWO neighbors)
-      has ZERO triangles before the cable — remember that, it matters next.
+      Terminal — the punchline, referencing THEIR cable, using the three
+      numbers on screen (2.29 with no cable, 2.07 short, 1.96 long): ONE
+      line either way, but the long one buys about half again as much. And
+      the two do different jobs — a SHORT link closes a triangle
+      (clustering up), a LONG one is a SHORTCUT that shortens trips right
+      across the ring. On 8 dots the gap is modest; ask them what they'd
+      expect on 800. This plain ring (each dot connects only to ITS TWO
+      neighbors) has ZERO triangles before the cable — remember that, it
+      matters next.
     note: |
       ### 🔌 One cable, two very different effects
-      A cable between nearby dots closes a **triangle**: clustering goes up,
-      distances barely move. A cable across the ring is a **shortcut**:
-      distances drop for everyone at once. WHERE a link goes matters more
-      than HOW MANY links there are.
+      Same single line, two jobs. Between nearby dots it closes a
+      **triangle** — clustering goes up. Across the ring it is a
+      **shortcut** — trips get shorter for everyone at once. On this
+      8-dot ring the average distance goes $2.29 \rightarrow 2.07$ with a
+      short cable and $2.29 \rightarrow 1.96$ with a long one: about half
+      again as much travel saved, from one line placed differently. WHERE
+      a link goes matters more than HOW MANY links there are — and the
+      bigger the ring, the wider that gap gets.
 
       > **My cable:** «which dots they connected + their why, verbatim»
 
@@ -89,11 +100,14 @@ checkpoints:
       4. "Now imagine this same k=4 ring has 1000 people instead of 12,
          everyone still with exactly 4 friends. Would C₀ change? Write it
          down: does clustering depend on N?"
-      5. "But to reach someone on the OPPOSITE side of a 1000-person ring,
-         about how many hops would it take, if each hop reaches k new
-         people? Write down how L relates to N and to k — does it grow,
-         shrink, or stay the same as each one changes?"
-      6. "Photograph that page of working and upload it in the notebook —
+      5. "Now the OTHER measure. One hop along this ring carries you at most
+         k/2 places around the circle — with k=4, two places. So on a
+         1000-person ring, how many hops to reach the person straight
+         across from you, half the ring away?"
+      6. "That's the FARTHEST anyone has to go. The average trip, over all
+         pairs, works out to about half of it. Write down how L relates to
+         N and to k — does it grow, shrink, or stay put as each changes?"
+      7. "Photograph that page of working and upload it in the notebook —
          then tell me here when it's up. Or just type your reasoning to me,
          whichever is easier." (Then nb_view_image with widget
          "cp5_ring_paperwork_photo".)
@@ -103,26 +117,38 @@ checkpoints:
       (2)-(3) k=4 -> 3 of the 6 possible friendships already exist ->
       C₀ = 3/6 = 0.5 (must show the counting, not just the number).
       (4) Explicit statement that C does NOT depend on N (only on k).
-      (5) Qualitative: L grows as N grows, L shrinks as k grows (exact
-      constant not required — "roughly N divided by k" or "proportional to
-      N/k" both pass).
+      (5) The farthest trip is about N/k hops — half a ring (N/2 places)
+      at k/2 places per hop. Accept 250 for N=1000, k=4, or "N over k".
+      (6) L is about half of that: L ≈ N/(2k). Qualitative is enough —
+      "grows with N, shrinks with k", or "roughly N over 2k". A student who
+      only gets to N/k in (5) and stalls on the halving still passes (6) if
+      they see L must be smaller than the farthest trip.
       Photo of their paper work (cells/cp5_ring_paperwork.py), or typed
-      reasoning as a fallback — same as cp4's photo/typed fallback.
+      reasoning as a fallback — same as the drawing's photo/typed fallback.
     hints:
       - "At k=2, node 0's only two friends are its immediate left and right neighbor. Are THEY directly connected to each other, or two steps apart?"
       - "At k=4, node 0's friends are the two people on each side. Look only at pairs AMONG those 4 — ignore node 0 itself. Which pairs are close enough (1 or 2 steps apart) to already be friends?"
       - "If you swapped N=12 for N=1000 but kept k=4, would node 0's LOCAL neighborhood (its 4 friends) look any different?"
-      - "Each hop reaches about k new people. To cross half the ring (about N/2 people), how many hops of size k does that take?"
+      - "Take it in two steps. First: half the ring is how many places? Second: one hop covers how many places? Now put the two together."
+      - "You have the farthest trip. Most pairs are much closer than that — someone right next door is 1 hop. If the longest is that number and the shortest is 1, roughly where does the average sit?"
     fresh_variants: |
-      If an answer slips out, re-check with k=6 instead of k=4: 9 of the 15
-      possible friendships already exist -> C₀ = 9/15 = 0.6.
+      Careful: the reveal puts the closed form C(k) = 3(k-2)/(4(k-1)) on
+      screen, so asking for a ring's C at some new k is no longer a
+      problem — it is substitution. A fresh round must ask for the COUNT
+      instead: "the formula says C = 0.6 at k=6. Show me the counting
+      behind it — how many friendships among node 0's 6 friends, out of how
+      many possible?" (9 of 15.) Or move off the ring entirely and use the
+      earlier clustering picture: Alice with 4 friends and 1 friendship
+      among them -> 1 of 6.
     reveal_after: |
       Terminal: name the closed forms, crediting their own derivation —
       "you just found the k=4 term of a general formula": for a ring where
       everyone has k friends, clustering is C(k) = 3(k-2) / (4(k-1)) —
-      independent of N — while path length is L(N,k) ≈ N / (2k), which
-      DOES grow with N. That mismatch (C bounded, L unbounded as N grows)
-      is exactly the puzzle the next checkpoint names.
+      independent of N — while the average path length is L(N,k) ≈ N/(2k),
+      half the farthest trip they just worked out. (Check, N=1000 and k=4:
+      farthest 250, average 125.4 — their N/k and N/2k both land.) That
+      mismatch (C bounded, L unbounded as N grows) is exactly the puzzle
+      the next checkpoint names.
     note: |
       ### 🔺 Clustering and path length on a ring — as formulas
       Three letters, in plain words: $N$ is how many people are in the ring,
@@ -132,10 +158,13 @@ checkpoints:
 
       On a ring where everyone has $k$ friends ($k/2$ per side), clustering
       is $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-      $k=2$ gives $C=0$ (no triangles possible — the plain ring I drew); $k=4$
-      gives $C=0.5$; $k=6$ gives $C=0.6$. Path length is different: it
-      grows with the crowd, $L(N,k) \approx N / (2k)$ — more people, more
-      hops, even though $k$ stays fixed.
+      $k=2$ gives $C=0$ (no triangles possible — the plain ring I drew) and
+      $k=4$ gives $C=0.5$, the value I counted out.
+
+      Path length is different: it grows with the crowd. The farthest trip
+      is about $N/k$ hops — half a ring at $k/2$ places per hop — and the
+      average over all pairs is about half of that, $L \approx N/(2k)$.
+      More people, more hops, even though $k$ stays fixed.
 
       > **My work:** «their answers, verbatim»
 
