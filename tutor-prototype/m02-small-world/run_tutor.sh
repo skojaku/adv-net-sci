@@ -64,6 +64,12 @@ mkdir -p session_artifacts
 #    the session: when a previous session log exists, the tutor asks the
 #    student and calls nb_fresh_start if they want a clean slate.
 [ -f notebook.py ] || cp notebook.template.py notebook.py
+# Working copies predating the current template lack netviz/igraph/exercises.
+if ! grep -q '"igraph"' notebook.py; then
+  say "NOTE: your notebook.py predates the current template (no igraph/netviz)."
+  say "      To upgrade (archives the old one):"
+  say "      mv notebook.py \"session_artifacts/notebook-old-\$(date +%Y%m%d%H%M).py\" && ./run_tutor.sh"
+fi
 
 # 3. Start the marimo server (background). --no-token lets the skill discover
 #    it; --headless because we open the browser ourselves in app view below.
