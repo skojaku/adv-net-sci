@@ -1145,12 +1145,26 @@ async function prependQuestionToCell(
   const src = await readCellSource(name, signal);
   if (!src) return false;
   const quote = `mo.md(r"""> 🧭 **You asked:** “${question.replace(/"""/g, '"')}”""")`;
-  const wrapped = /^\s*mo\.vstack\(\s*\[/.test(src)
-    ? src.replace(/^(\s*mo\.vstack\(\s*\[)/, `$1\n    ${quote},`)
-    : `mo.vstack([\n    ${quote},\n${src
+  // Wrap ONLY the cell's final display expression. Wrapping the whole body
+  // produced invalid Python the moment a souvenir computed something first
+  // — `_edges = [...]` then `mo.vstack([...])`, which is the shape
+  // nb_review.py itself emits — and marimo rejected the edit, so the quote
+  // never went in for the commonest case.
+  const srcLines = src.split("\n");
+  let last = srcLines.length - 1;
+  while (last >= 0 && !srcLines[last].trim()) last -= 1;
+  if (last < 0) return false;
+  let start = last;
+  while (start > 0 && /^\s/.test(srcLines[start])) start -= 1;
+  const tail = srcLines.slice(start).join("\n");
+  const head = srcLines.slice(0, start).join("\n");
+  const body = /^\s*mo\.vstack\(\s*\[/.test(tail)
+    ? tail.replace(/^(\s*mo\.vstack\(\s*\[)/, `$1\n    ${quote},`)
+    : `mo.vstack([\n    ${quote},\n${tail
         .split("\n")
         .map((l) => `    ${l}`)
         .join("\n")},\n])`;
+  const wrapped = head ? `${head}\n${body}` : body;
   const r = await runKernel(
     `import marimo._code_mode as cm\n` +
       `async with cm.get_context() as ctx:\n` +
@@ -1348,7 +1362,7 @@ function buildSessionRecord(entries: any[]): string {
     stillParked = fs
       .readdirSync(parkedDir())
       .filter((f) => f.endsWith(".md"))
-      .map((f) => f.replace(/\.md$/, ""));
+      .map((f) => f.replace(/\.md$/, "").replace(/^[^-]*--/, ""));
   } catch {
     stillParked = [];
   }
@@ -2168,7 +2182,9 @@ export default function (pi: ExtensionAPI) {
       // never asked for at all, on a checkpoint whose script says "THE PAGE
       // IS THE POINT". So the exemption is scoped to where it was said: they
       // may repeat it in one word, but the ask has to happen.
-      const cameraSaidHere = said.some((m) => /camera|photo|picture|scan|phone/i.test(m));
+      const cameraSaidHere = studentSaidSince(ctx, false).some((m) =>
+        /camera|photo|picture|scan|phone/i.test(m),
+      );
       const photoStrikes = slotDriftWarned.get(`${id}:photo`) ?? 0;
       if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2)) {
         slotDriftWarned.set(`${id}:photo`, photoStrikes + 1);
@@ -2635,7 +2651,7 @@ export default function (pi: ExtensionAPI) {
           out:
             `NOT LOGGED YET — the souvenir cell "${cellName}" ${gap}. Fix it with ` +
             `nb_edit_cell so it is ONE cell holding both: their question quoted ` +
-            `("${question.slice(0, 60)}") and something to see or try —\n` +
+            `("${snappedQ.slice(0, 60)}") and something to see or try —\n` +
             `  mo.vstack([mo.md(r"""> 🧭 **You asked:** “…”\n\n…"""), netviz(edges, highlight=[…])])\n` +
             `— or an nb_add_exercise box if the idea is playable. Then call log_detour ` +
             `again with the same cell_name.\n` +

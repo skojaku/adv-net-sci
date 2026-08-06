@@ -125,6 +125,16 @@ student's answers (its banner says so). Compare session notebooks against
 it for structure (S7, S10, S12); never treat it as a session artifact, and
 skip S9's verbatim cross-check on it (there is no transcript behind it).
 
+**Typecheck the extension with `tsc`, not only `esbuild`.** esbuild strips
+types without analysing them, so it happily bundles a temporal-dead-zone
+read — `const x = said.some(...)` twenty lines above `const said = ...` —
+which throws on every call at runtime. One such line once made every
+checkpoint in the module unclosable and passed an esbuild check:
+`npx -p typescript tsc --noEmit --skipLibCheck --target es2022 --module esnext
+--moduleResolution bundler .pi/extensions/notebook-tool.ts`, then ignore the
+`Cannot find name 'process'/'console'/'setInterval'` and `Cannot find module`
+lines (no ambient Node types) and read everything else.
+
 - **S1 Every figure renders.** No cell whose display is silently dropped
   (marimo shows only the last expression — multi-display cells need
   `mo.vstack`). No error cells, no blank outputs.
