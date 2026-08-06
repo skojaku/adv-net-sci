@@ -592,7 +592,7 @@ Wait for someone to say "the worst case". That is the whole of the next slide.
 
 <hr>
 
-Score a city by its **longest** shortest path instead of its average one: $c_i = 1/\max_j d(i,j)$.
+Score a city by its **longest** shortest path, not its average one.
 
 <div class="fig tall">
 
@@ -602,7 +602,7 @@ Score a city by its **longest** shortest path instead of its average one: $c_i =
 </div>
 
 <!--
-Massilia and Mediolanum have three roads each and Rome has five, and all three reach everything in three steps. The first crack: a ruler coarse enough to tie is a ruler that cannot rank.
+The definition is one over the largest distance: c_i = 1 / max_j d(i,j). Massilia and Mediolanum have three roads each and Rome has five, and all three reach everything in three steps. The first crack: a ruler coarse enough to tie is a ruler that cannot rank.
 -->
 
 ---
@@ -991,14 +991,16 @@ That theorem is the licence to say "the" eigenvector centrality. Without it the 
 
 <hr>
 
-Everyone starts at 1. Add up your neighbours. Rescale. Repeat.
-
 <div class="fig tall">
 
 ![w:1080](figures/power-iteration.gif)
-<figcaption>no eigenvalue solver anywhere — just addition, over and over</figcaption>
+<figcaption>everyone starts at 1 — add up your neighbours, rescale, repeat</figcaption>
 
 </div>
+
+<!--
+No eigenvalue solver anywhere: just addition, over and over. Watch the crown appear at step 1 and never move.
+-->
 
 ---
 
@@ -1071,7 +1073,7 @@ Power iteration counts walks and lets the long ones dominate — so eigenvector 
 <div class="fig">
 
 ![w:537](figures/walks-arrive.png)
-<figcaption>three walks of length 3, arriving</figcaption>
+<figcaption>one of the fourteen walks of length 3 that end at the ringed node</figcaption>
 
 </div>
 </div>

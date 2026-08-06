@@ -3,6 +3,8 @@
 **Verdict:** NEEDS WORK
 **Slides:** 102 · **Blockers:** 0 · **Majors:** 2 · **Minors:** 3
 
+*(Gate re-run after the round's fixes: `checked 102 rendered slides / node diameter 26-52px (spread 2.0x) across 398 discs / all checks pass`, exit 0.)*
+
 `check_render.py` exits 0 on the current render: 102 slides, node diameter
 26–52 px across 398 discs, no content below the frame, no container mismatch, no
 math inside a figcaption. That is the build gate, not the review.
@@ -108,5 +110,9 @@ student activity; see the open item below.
 - `hits-collapses.png` rendered byte-identical to `roma-eigenvector.png` — which
   is the theorem, not a bug. The Part 7 slide reuses the Part 5 figure and says so.
 - Two slides shared a figure with a different explanation; both now have their own.
-- A caption claimed two marked edges where the figure marks one.
+- A caption claimed two marked edges where the figure marks one; another said three
+  walks where the figure draws one of fourteen.
+- Two slides landed their caption on the frame's content line, which the render
+  crosses or clears depending on a pixel of font variance between runs. Both now
+  carry a line less.
 - The club summary marked its third student with a blue ring on a blue disc.
