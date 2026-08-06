@@ -25,8 +25,8 @@ import math
 import networkx as nx
 import numpy as np
 
-from figlib import (EDGE_W, FONT, NODE, Axes, assert_planar_drawing, clearance_bad,
-                    crossings, disc, dot, emit, polyline, pct, seg, text)
+from figlib import (EDGE_W, FONT, NODE, SMALLNODE, Axes, assert_planar_drawing,
+                    clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
 from feld import ABOVE, BELOW, EQUAL, degree
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
@@ -134,7 +134,9 @@ def fig_individual_vs_average():
         b += seg((x, 172), (x, 196), color="annot", w=2.2)
         b += text(x, 218, name, anchor="south")
         b += text(x, 263, pct(share, 1), color="accenttwo", anchor="south")
-        b += dot(x, 158, color="accenttwo", d=26)
+        # SMALLNODE, not 26: check_render measures the rendered disc and a 26bp circle
+        # lands 25.5px, under the band's floor -- and its own message rounds that to "26".
+        b += dot(x, 158, color="accenttwo", d=SMALLNODE)
     emit("individual-vs-average", b, container="full", h=400)
 
 
@@ -315,9 +317,9 @@ def fig_assortativity_real():
         assert lo < r < hi, f"{name}: r = {r} is off the axis"
         col = "accent" if r > 0 else "accenttwo"
         b += text(300, y, name, anchor="east")
-        b += polyline([(316, y), (X(r) - 16, y)], color="annot", w=1.8,
+        b += polyline([(316, y), (X(r) - 17, y)], color="annot", w=1.8,
                       dash="dash pattern=on 3bp off 7bp")
-        b += dot(X(r), y, color=col, d=26)
+        b += dot(X(r), y, color=col, d=SMALLNODE)
         b += text(930, y, _signed(r), color=col, anchor="west")
     emit("assortativity-real", b, container="full", h=420)
 
@@ -383,7 +385,7 @@ def fig_scale_free_debate():
              (540, "2011", "Ugander et al.", "the doubt"),
              (880, "2019", "Broido \\& Clauset", "the audit")]
     for x, year, who, what in marks:
-        b += dot(x, 190, color="accent", d=26)
+        b += dot(x, 190, color="accent", d=SMALLNODE)
         b += text(x, 245, year, anchor="south", size=48)
         b += text(x, 155, who, anchor="north")
         b += text(x, 105, what, color="annot", anchor="north")
