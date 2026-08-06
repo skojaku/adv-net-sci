@@ -5,7 +5,7 @@
 cp4_choice = mo.ui.radio(
     options=["no extra cable", "short cable (2 apart)", "long cable (opposite)"],
     value="no extra cable",
-    label="Where does your one cable go?",
+    label="Compare three placements",
 )
 cp4_choice
 # --- cell: cp4_compare_fig ---

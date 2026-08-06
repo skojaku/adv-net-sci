@@ -12,7 +12,10 @@ checkpoints:
 
   - id: cp7_redteam
     goal: Student can catch a plausible-but-wrong small-world claim.
-    build: none
+    build: |
+      nb_add_template("cp7_claim") — puts the AI's claim on the page, so the
+      notebook holds the thing being reviewed and not just the review. Build
+      it as you quote it, then ask.
     ask: |
       Quote this as a message from an AI assistant:
         "I analyzed your network. Its average clustering coefficient is 0.61,
