@@ -318,10 +318,22 @@ CROWN_WORDS = {"degree": "most roads", "closeness": "closest on average",
 
 
 def fig_crown_summary():
-    """One panel per measure, identical geometry, emitted as a six-step build."""
-    for i, m in enumerate(CROWN_ORDER, start=1):
-        cr = ROMA_CROWNS[m]
-        _map(f"crown-summary-{i}", scores=ROMA_C[m], crown_cities=cr)
+    """Every crown at once, on one map.
+
+    A six-panel build was drawn first and cut: the deck has already shown each of
+    these maps on its own slide, so replaying them adds five slides and no
+    information. What the closing slide actually needs is the one fact the six
+    have in common — Rome holds them all outright, and the only crown it cannot
+    hold outright is shared with two three-road cities.
+    """
+    outright = [m for m in CROWN_ORDER if ROMA_CROWNS[m] == ["Roma"]]
+    shared = [m for m in CROWN_ORDER if ROMA_CROWNS[m] != ["Roma"]]
+    assert outright and shared == ["eccentricity"], (outright, shared)
+    co = [c for c in ROMA_CROWNS["eccentricity"] if c != "Roma"]
+    assert co == ["Massilia", "Mediolanum"], co
+    extra = "".join(F.ring(*R.NODE_XY[c], size=F.NODE, color=ACCENT3, w=5.0, grow=22)
+                    for c in co)
+    _map("crown-summary", scores=ROMA_C["degree"], crown_cities=["Roma"], extra=extra)
 
 
 def _redraw_panel(name, G, C_, tag):
