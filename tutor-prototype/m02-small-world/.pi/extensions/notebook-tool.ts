@@ -2769,7 +2769,7 @@ export default function (pi: ExtensionAPI) {
       // "it" reworded — and the souvenir quoted that.
       const saidNow = studentSaidSince(ctx, false);
       const snapped = snapToTranscript(question, saidNow);
-      const snappedQ = snapped ?? question;
+      let snappedQ = snapped ?? question;
       // Mark the message they asked it in, so the next checkpoint's note
       // quotes their answer and not their question — the souvenir already
       // holds the question, word for word.
@@ -2834,6 +2834,14 @@ export default function (pi: ExtensionAPI) {
           (bestScore >= 0.9 || (bestScore >= 0.6 && looksAsked))
         ) {
           detourAsked.add(normMsg(asked));
+          // Whatever the note leaves out, the souvenir says in full — and in
+          // THEIR words. A live run logged the question with the student's
+          // lead-in trimmed off ("Wait, quick question first —"), and the
+          // souvenir quoted the trim. snapToTranscript cannot repair that: a
+          // question the message CONTAINS is, to a repair function, already
+          // fine. We have just decided this message is the question, so use
+          // it.
+          if (normMsg(asked) !== normMsg(snappedQ)) snappedQ = asked;
         }
         if (snapped) detourAsked.add(normMsg(snapped));
       }
