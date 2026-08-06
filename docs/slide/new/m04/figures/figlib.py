@@ -289,6 +289,24 @@ def polyline(pts, color="accent", w=3.4, dash="", record=True, what="a curve"):
     return "\\draw[%s] %s;\n" % (",".join(o), " -- ".join("(%.2f,%.2f)" % p for p in pts))
 
 
+def rect(x0, y0, x1, y1, color="annot", w=2.2, rounded=0, record=True, what="a frame"):
+    """A rectangle, with its four sides recorded as rules.
+
+    R4 B4-8: a frame border drew through the last letter of an annotation on three
+    consecutive slides and the gate said nothing, because a rectangle drawn as one TikZ
+    path is not a `seg()` and never entered the scene. Any figure that draws a box around
+    something should draw it with this.
+    """
+    if record:
+        c = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+        for a, b in zip(c, c[1:] + c[:1]):
+            _scene["rule"].append((a, b, what))
+    o = [f"line width={w}bp", f"draw={color}"]
+    if rounded:
+        o.append(f"rounded corners={rounded}bp")
+    return f"\\draw[{','.join(o)}] ({x0:.1f},{y0:.1f}) rectangle ({x1:.1f},{y1:.1f});\n"
+
+
 def fill_poly(pts, color="accenttwo", opacity=0.25, record=True, what=None):
     """A filled area.  `record=False` for one a label is MEANT to sit on.
 
