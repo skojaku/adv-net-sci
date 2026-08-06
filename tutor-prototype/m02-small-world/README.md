@@ -48,6 +48,12 @@ three steps happen off-screen — a distance table, a drawing, and a
 derivation — and you photograph each with your phone and drop it into the
 notebook.
 
+If you and your tutor ever get properly stuck — you think an answer should
+count, you want a fresh try, or you'd rather just move on — open the
+**⚖️ Stuck with your tutor?** box at the top of the notebook, say so, and
+press the button. A second, stronger model reviews the whole situation and
+makes a call your tutor has to follow. Using it is never held against you.
+
 A session takes about 60–90 minutes. You can stop anytime and pick up later —
 your progress is saved.
 

@@ -25,6 +25,13 @@ TUTOR_MODEL="${TUTOR_MODEL:-deepseek/deepseek-v4-flash-0731}"
 # describe the drawing in words instead.
 export TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-openrouter/google/gemini-3.6-flash}"
 
+# The ⚖️ "Tutor gets stuck" button in the notebook appeals over the tutor's
+# head to a STRONGER referee model, whose ruling is binding (redo the problem,
+# count the work shown, move on...). Default: GLM-5.2 via OpenRouter (needs
+# OPENROUTER_API_KEY, same as the vision default). Unreachable -> the tutor
+# is told to resolve the appeal itself, generously.
+export TUTOR_REFEREE_MODEL="${TUTOR_REFEREE_MODEL:-openrouter/z-ai/glm-5.2}"
+
 say() { printf '\n\033[1;36m[tutor]\033[0m %s\n' "$*"; }
 die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
 
