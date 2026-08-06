@@ -942,18 +942,16 @@ def cp5_ring_paperwork_photo_view(mo):
 def cp5_ring_formula_note(mo):
     mo.md(r"""
     ### 🔺 Clustering and path length on a ring — as formulas
-    Four letters: $N$ = people in the ring, $k$ = friends each person
-    has, $C$ = clustering (how often two of your friends know each
+    $N$ = people in the ring, $k$ = friends each person has ($k/2$ per
+    side), $C$ = clustering (how often two of your friends know each
     other), $L$ = average distance (typical steps between two people).
 
-    On a ring where everyone has $k$ friends ($k/2$ per side),
-    $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$.
-    $k=2$ gives $C=0$, $k=4$ gives $C=0.5$. Every neighbourhood is
-    identical, so node 0's $C_0$ is the ring's $C$.
-
-    Path length grows with the crowd instead: the farthest trip is about
-    $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
-    about half that, $L \approx N/(2k)$.
+    $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$
+    ($k=2$ gives $C=0$, $k=4$ gives $C=0.5$). Every neighbourhood is
+    identical, so counting around one node gives the whole ring. $L$
+    grows with the crowd instead: the farthest trip is about $N/k$ hops
+    — half a ring at $k/2$ places per hop — and the average is about
+    half of that, $L \approx N/(2k)$.
 
     > **My work:** "at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0" · "at k=4, of the 6 possible pairs 3 already exist" · "3/6 is 0.5" · "swapping in 1000 people changes nothing near me — C stays 0.5" · "farthest trip is about 1000/4 = 250 hops, and the average is about half that, so L is about N/(2k)"
     >
@@ -1243,8 +1241,10 @@ def cp7_redteam_note(mo):
     mo.md(r"""
     ### 🕵️ Reviewing an AI's claim
     "High clustering ⇒ small world" is NOT enough: small-world means BOTH
-    high clustering AND short paths. My counterexample: the $p=0$ ring —
-    very clustered, yet enormous distances. The proper check is the
+    high clustering AND short paths. My counterexample: the ring with
+    nothing rewired ($p = 0$, where $p$ is the fraction of links picked
+    up and reconnected at random) — very clustered, yet enormous
+    distances. The proper check is the
     small-world index $\sigma$, one number that compares both $C$
     (clustering — how often two of your friends know each other) and $L$
     (average distance — the typical number of steps between two people)

@@ -179,17 +179,16 @@ checkpoints:
       the next checkpoint names.
     note: |
       ### 🔺 Clustering and path length on a ring — as formulas
-      Four letters: $N$ = people in the ring, $k$ = friends each person
-      has, $C$ = clustering (how often two of your friends know each
+      $N$ = people in the ring, $k$ = friends each person has ($k/2$ per
+      side), $C$ = clustering (how often two of your friends know each
       other), $L$ = average distance (typical steps between two people).
 
-      On a ring where everyone has $k$ friends ($k/2$ per side),
       $C(k) = \frac{3(k-2)}{4(k-1)}$ — a function of $k$ ONLY, never $N$
-      ($k=2$ gives $C=0$; $k=4$ gives $C=0.5$). Every neighbourhood is
-      identical, so counting around one node gives the whole ring. Path
-      length grows with the crowd instead: the farthest trip is about $N/k$
-      hops — half a ring at $k/2$ places per hop — and the average about
-      half that, $L \approx N/(2k)$.
+      ($k=2$ gives $C=0$, $k=4$ gives $C=0.5$). Every neighbourhood is
+      identical, so counting around one node gives the whole ring. $L$
+      grows with the crowd instead: the farthest trip is about $N/k$ hops
+      — half a ring at $k/2$ places per hop — and the average is about
+      half of that, $L \approx N/(2k)$.
 
       > **My work:** «their answers, verbatim»
       >
