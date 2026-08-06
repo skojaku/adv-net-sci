@@ -146,10 +146,35 @@ is not free:
   of this by routing the flow *past* the label rather than into it — which turned out to be a
   better figure — but it is a dodge, and the next labelled flow will hit the same wall.
 
-The fix is the one this guide already prescribes for type size: **measure the compiled glyph**
-the way `calibrate()` measures x-height, rather than computing what the author intended. A
-figure generator that estimates its own ink will be wrong in whichever direction its constants
-were guessed.
+The fix is the one this guide already prescribes two sections down for type size: **measure the
+compiled string** the way `calibrate()` measures x-height. The collision gate is a computed
+assertion — three numbers the author already knew — and "a computed assertion can only restate
+the author's intention" is not a new rule, it is this one not yet applied to the newest gate.
+
+**Do not take the obvious middle path.** Stripping the TeX markup and dropping `CHAR_W` to the
+measured 0.43 looks like the cheap version of the same idea. Measured, it is worse than the bug:
+
+    $\langle k^2\rangle$   today, 0.55 em x 20 source chars : 408.0 bp   4.8x OVER
+                           strip markup, 0.43 em x 3 chars  :  58.4 bp    31% UNDER
+                           measured ink                      :  85.0 bp
+
+Plain text is fine under either scheme; the whole error lives in math and escapes, and naive
+stripping turns `k^2` into two characters where it renders as a letter plus a raised digit. So
+today's estimate is wrong in the **safe** direction — it refuses good layouts, which is annoying
+and visible — and the cheap fix makes it wrong in the direction the gate exists to prevent: a
+missed collision, invisible until a reviewer finds it two rounds later.
+
+Two notes for whoever implements it. The measurement is a pure function of (string, size, font)
+and never changes between builds, so a JSON cache keyed by a hash means the first build pays for
+pdflatex and no later build does. And an ink box is *tighter* than a typographic box, so two
+labels 2bp apart would pass — add a small explicit pad, but pad a measured box, not a guessed
+one, or the two errors compound.
+
+**Resist the escape hatch.** The tempting alternative is a "label anchor" primitive that arrows
+are allowed to reach. It fixes one symptom, leaves the over-estimate that costs real content
+elsewhere, and — once authors know a way to tell the gate an object is legal — it will silence
+true positives as readily as false ones. The gate's whole value is that it fires without the
+author thinking about it.
 
 ## Place labels with a solver, not by hand
 
