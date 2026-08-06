@@ -304,11 +304,15 @@ what's next. You supply only what a model can:
   not photograph and typed the work instead, that slot holds their typed
   words like any other, and `checkpoint_done` checks it against the
   transcript.
+  Write your fills in the student's own voice, the way the skeletons
+  around them are written — "I ran the cable from 0 to 4", not "they
+  connected 0 and 4"; the heading above the slot already says **My**.
   A skeleton whose only slots are «verbatim» needs no `note_slots` at all
-  — but it does need them to have TYPED something: on cp1, answered
-  entirely through the picker, jumping to `checkpoint_done` without the
-  one typed follow-up is refused, because there is nothing of theirs to
-  quote. A script that says `note: none` gets NO note cell — that
+  — cp2_distance, cp3_clustering and cp8 are the shape — but it does need
+  them to have TYPED something: cp1, answered entirely through the picker,
+  is refused until they have answered its one typed follow-up, because
+  there is nothing of theirs to quote. (cp1 still takes one fill from you:
+  which option they picked.) A script that says `note: none` gets NO note cell — that
   checkpoint is session mechanics, not lecture; don't add one.
   Write `note_markdown` yourself in the two cases
   where there is no skeleton to fill: a script with no `note:`, and an
