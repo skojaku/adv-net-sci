@@ -959,7 +959,9 @@ def cp5_ring_formula_note(mo):
     $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
     about half that, $L \approx N/(2k)$.
 
-    > **The counting:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist, so C₀ = 3/6 = 0.5.
+    > **The counting:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist.
+    >
+    > **So C₀ at k=4 is:** 3/6 = 0.5
     >
     > **Does C depend on N?** swapping in 1000 people changes nothing near me — C stays 0.5.
     >

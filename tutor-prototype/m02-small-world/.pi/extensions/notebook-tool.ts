@@ -1131,6 +1131,36 @@ async function readCellSource(name: string, signal?: AbortSignal): Promise<strin
   return src.trim() ? src : null;
 }
 
+/**
+ * Put the student's own question at the top of a souvenir cell the tutor
+ * built. The bounce asks for it once; if the retry still paraphrases, the
+ * quote is one line and we have it — better in the keepsake by machine than
+ * absent forever, which is what "bounce once, then accept" left behind.
+ */
+async function prependQuestionToCell(
+  name: string,
+  question: string,
+  signal?: AbortSignal,
+): Promise<boolean> {
+  const src = await readCellSource(name, signal);
+  if (!src) return false;
+  const quote = `mo.md(r"""> 🧭 **You asked:** “${question.replace(/"""/g, '"')}”""")`;
+  const wrapped = /^\s*mo\.vstack\(\s*\[/.test(src)
+    ? src.replace(/^(\s*mo\.vstack\(\s*\[)/, `$1\n    ${quote},`)
+    : `mo.vstack([\n    ${quote},\n${src
+        .split("\n")
+        .map((l) => `    ${l}`)
+        .join("\n")},\n])`;
+  const r = await runKernel(
+    `import marimo._code_mode as cm\n` +
+      `async with cm.get_context() as ctx:\n` +
+      `    ctx.edit_cell(${py(name)}, ${py(wrapped)})\n` +
+      `    ctx.run_cell(${py(name)})\n`,
+    signal,
+  );
+  return !r.failed;
+}
+
 /** What a souvenir cell is missing, or "" when it honours the contract. */
 function souvenirGap(src: string, question: string): string {
   if (!src) return "does not exist in the notebook";
@@ -2132,8 +2162,16 @@ export default function (pi: ExtensionAPI) {
       const photoMissing =
         wantPhotos.length > 0 &&
         !wantPhotos.some((w) => viewedPhotos.has(w) || uploadedOnDisk(w));
-      if (photoMissing && (slotDriftWarned.get(`${id}:photo`) ?? 0) < 1) {
-        slotDriftWarned.set(`${id}:photo`, 1);
+      // Did they say ANYTHING about a camera at THIS checkpoint? A live run
+      // carried "camera's broken" forward from cp2_paperwork and opened cp4
+      // with "well, thinking time, since your camera's still out" — the page
+      // never asked for at all, on a checkpoint whose script says "THE PAGE
+      // IS THE POINT". So the exemption is scoped to where it was said: they
+      // may repeat it in one word, but the ask has to happen.
+      const cameraSaidHere = said.some((m) => /camera|photo|picture|scan|phone/i.test(m));
+      const photoStrikes = slotDriftWarned.get(`${id}:photo`) ?? 0;
+      if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2)) {
+        slotDriftWarned.set(`${id}:photo`, photoStrikes + 1);
         return toResult({
           out:
             `NOT LOGGED — this is a pen-and-paper checkpoint and no photo has reached ` +
@@ -2142,9 +2180,14 @@ export default function (pi: ExtensionAPI) {
             `turn. Never end a turn on this without speaking: a silent turn is a frozen ` +
             `screen, and in a live run it left a student waiting ten minutes. Their 📨 ` +
             `Send press starts the next turn, and you read it with nb_view_image.\n` +
-            `If they have already told you they cannot photograph, that is fine and their ` +
-            `typed work counts — say so in notes ("camera broken, typed instead") and ` +
-            `call checkpoint_done again; it will log.`,
+            (cameraSaidHere
+              ? `They have said something about a camera here, so if that was "I can't", ` +
+                `their typed work counts — say so in notes ("camera broken, typed ` +
+                `instead") and call checkpoint_done again; it will log.`
+              : `They have said NOTHING about a camera at this checkpoint. An answer they ` +
+                `gave two checkpoints ago is not an answer here: ask for the page, and if ` +
+                `they tell you again that they cannot, that is fine and their typed work ` +
+                `counts.`),
           failed: false,
         });
       }
@@ -2570,10 +2613,21 @@ export default function (pi: ExtensionAPI) {
       // that path was the hole: every detour in the failing session arrived
       // as a cell_name, and every one of them was prose that never quoted
       // the question it answered.
+      // The question as the STUDENT typed it, not as the tutor remembers it.
+      // A live run logged a tidied paraphrase — "wait whats this called," gone,
+      // "it" reworded — and the souvenir quoted that.
+      const saidNow = studentSaidSince(ctx, false);
+      const snappedQ = snapToTranscript(question, saidNow) ?? question;
       let gap = "";
       if (cellName) {
         const src = await readCellSource(cellName, signal);
-        if (src !== null) gap = souvenirGap(src, question);
+        if (src !== null) gap = souvenirGap(src, snappedQ);
+        // A second call that still does not quote them is not left to a third:
+        // the quote is one line and the extension has it, so it goes in.
+        if (gap.includes("quote") && (detourTextOnlyWarned.has(question) || !src)) {
+          const ok = await prependQuestionToCell(cellName, snappedQ, signal);
+          if (ok) gap = "";
+        }
       }
       if (gap && !detourTextOnlyWarned.has(question)) {
         detourTextOnlyWarned.add(question);
