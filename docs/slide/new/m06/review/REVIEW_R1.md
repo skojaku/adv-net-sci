@@ -116,3 +116,16 @@ student activity; see the open item below.
   crosses or clears depending on a pixel of font variance between runs. Both now
   carry a line less.
 - The club summary marked its third student with a blue ring on a blue disc.
+- **Slide 9 had no map on it.** It asks the room to point at a city and the map
+  was on the slide before. It carries the map now.
+- **Slide 10 showed no clubs.** It asks students to join two people who share a
+  club and named only the thirteen students and the eight club names — the
+  memberships had gone with the roster bullets when the slide went full width, so
+  the exercise could not be done from the slide. The clubs are drawn on the figure
+  now, as gold hulls. The first version drew a band between every pair of
+  clubmates, which is the set of lines the student is being asked to draw; a hull
+  says who shares a club and nothing more.
+- Ethan and Ava sat 38 bp apart with 40 bp discs — two overlapping circles on both
+  club figures. `_assert_club_geometry()` now fails the build on it.
+- Slides 10 and 12 share one layout, so what the room draws is the picture the
+  answer slide reveals.

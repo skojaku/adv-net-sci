@@ -8,6 +8,8 @@ Each is 537 bp wide, because each sits beside a formula panel or a block of text
 that has to stay next to it.
 """
 
+import math
+
 import networkx as nx
 
 import figlib as F
@@ -130,14 +132,24 @@ FIGURES = [
 CLUB_XY = {
     "Sarah": (70.0, 300.0), "Mike": (70.0, 110.0), "Emma": (185.0, 205.0),
     "Alex": (325.0, 205.0), "Olivia": (325.0, 62.0), "James": (445.0, 110.0),
-    "Sophia": (470.0, 275.0), "Ethan": (620.0, 358.0), "Ava": (625.0, 320.0),
+    "Sophia": (470.0, 275.0), "Ethan": (596.0, 392.0), "Ava": (648.0, 300.0),
     "Noah": (775.0, 265.0), "Lily": (900.0, 352.0), "Lucas": (940.0, 285.0),
     "Henry": (890.0, 175.0),
 }
 CLUB_MARK = None
 
 
+def _assert_club_geometry():
+    """Discs must not touch. The first layout put Ethan 38bp from Ava, and a 40bp
+    disc 38bp from another one is two overlapping circles on both club figures."""
+    import itertools
+    close = [(a, b) for a, b in itertools.combinations(CLUB_XY, 2)
+             if math.dist(CLUB_XY[a], CLUB_XY[b]) < F.NODE + 14]
+    assert not close, f"club discs overlap or nearly touch: {close}"
+
+
 def fig_club_three_answers():
+    _assert_club_geometry()
     """One network, three marks, three questions -- the whole of Part 1's payoff."""
     import itertools
     edges = [tuple(e) for e in CLUB.edges()]
@@ -204,23 +216,49 @@ CLUB_LABEL_SPOTS = [(anc, dx, dy)
                     for dx, dy in ((ux * r, uy * r),)]
 
 
+def _hull(pts):
+    """Convex hull, counter-clockwise. Andrew's monotone chain, deduplicated."""
+    pts = sorted(set((round(x, 3), round(y, 3)) for x, y in pts))
+    if len(pts) <= 2:
+        return pts
+
+    def half(seq):
+        out = []
+        for p in seq:
+            while len(out) >= 2 and ((out[-1][0] - out[-2][0]) * (p[1] - out[-2][1])
+                                     - (out[-1][1] - out[-2][1]) * (p[0] - out[-2][0])) <= 0:
+                out.pop()
+            out.append(p)
+        return out[:-1]
+
+    return half(pts) + half(pts[::-1])
+
+
 def fig_club_clubs():
     import itertools
     from verify_numbers import CLUBS
     assert set(CLUB_XY) == set(CLUB)
 
+    _assert_club_geometry()
     b = ""
-    # Each club is a blob: a round-capped stroke between every pair of its members,
-    # plus a disc at each member. Overlaps read as darker gold, which is true --
-    # Noah really is in four clubs at once.
+    # Each club is the rounded HULL of its members, not a band between every pair.
+    # The pairwise version was drawn first and gave the exercise away: a spoke
+    # between every two clubmates is the set of lines the student is being asked
+    # to draw. A hull says "these people share a club" and nothing more.
     for members in CLUBS.values():
-        for u, v in itertools.combinations(members, 2):
-            b += (f"\\draw[line width={2 * CLUB_BLOB_R}bp,draw={ACCENT3},opacity=0.30,"
-                  f"line cap=round] ({CLUB_XY[u][0]},{CLUB_XY[u][1]}) -- "
-                  f"({CLUB_XY[v][0]},{CLUB_XY[v][1]});\n")
-        for m in members:
-            b += (f"\\fill[{ACCENT3},opacity=0.30] ({CLUB_XY[m][0]},{CLUB_XY[m][1]}) "
+        pts = [CLUB_XY[m] for m in members]
+        hull = _hull(pts)
+        if len(hull) == 1:
+            b += (f"\\fill[{ACCENT3},opacity=0.34] ({hull[0][0]},{hull[0][1]}) "
                   f"circle ({CLUB_BLOB_R}bp);\n")
+        elif len(hull) == 2:
+            b += (f"\\draw[line width={2 * CLUB_BLOB_R}bp,draw={ACCENT3},opacity=0.34,"
+                  f"line cap=round] ({hull[0][0]},{hull[0][1]}) -- "
+                  f"({hull[1][0]},{hull[1][1]});\n")
+        else:
+            path = " -- ".join(f"({x:.1f},{y:.1f})" for x, y in hull)
+            b += (f"\\filldraw[{ACCENT3},opacity=0.34,line width={2 * CLUB_BLOB_R}bp,"
+                  f"draw={ACCENT3},line join=round,line cap=round] {path} -- cycle;\n")
 
     for n, (x, y) in CLUB_XY.items():
         b += (f"\\draw[line width=1.6bp,draw=black,fill=accent] ({x},{y}) "

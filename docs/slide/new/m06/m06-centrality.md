@@ -175,8 +175,8 @@ Draw a line between two students who share a club.
 
 <div class="fig tall">
 
-![w:1080](figures/club-blank.png)
-<figcaption>Drama · Art · Volunteer · Sailing · Chess · Debate · Math · Tennis</figcaption>
+![w:1080](figures/club-clubs.png)
+<figcaption>each gold shape is a club — thirteen students, eight clubs</figcaption>
 
 </div>
 
