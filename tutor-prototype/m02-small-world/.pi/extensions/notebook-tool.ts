@@ -1144,35 +1144,49 @@ async function prependQuestionToCell(
 ): Promise<boolean> {
   const src = await readCellSource(name, signal);
   if (!src) return false;
+  // The rewrite is done by Python, in the kernel, with `ast` — the cell's
+  // last top-level statement is a thing only a parser can find. String
+  // surgery on "the last unindented line" put the quote UNDER the picture
+  // for a souvenir whose vstack closes on its own line, and produced
+  // unparseable source for a multi-line netviz(...) call. Both are shapes
+  // nb_review.py itself emits.
   const quote = `mo.md(r"""> 🧭 **You asked:** “${question.replace(/"""/g, '"')}”""")`;
-  // Wrap ONLY the cell's final display expression. Wrapping the whole body
-  // produced invalid Python the moment a souvenir computed something first
-  // — `_edges = [...]` then `mo.vstack([...])`, which is the shape
-  // nb_review.py itself emits — and marimo rejected the edit, so the quote
-  // never went in for the commonest case.
-  const srcLines = src.split("\n");
-  let last = srcLines.length - 1;
-  while (last >= 0 && !srcLines[last].trim()) last -= 1;
-  if (last < 0) return false;
-  let start = last;
-  while (start > 0 && /^\s/.test(srcLines[start])) start -= 1;
-  const tail = srcLines.slice(start).join("\n");
-  const head = srcLines.slice(0, start).join("\n");
-  const body = /^\s*mo\.vstack\(\s*\[/.test(tail)
-    ? tail.replace(/^(\s*mo\.vstack\(\s*\[)/, `$1\n    ${quote},`)
-    : `mo.vstack([\n    ${quote},\n${tail
-        .split("\n")
-        .map((l) => `    ${l}`)
-        .join("\n")},\n])`;
-  const wrapped = head ? `${head}\n${body}` : body;
   const r = await runKernel(
-    `import marimo._code_mode as cm\n` +
-      `async with cm.get_context() as ctx:\n` +
-      `    ctx.edit_cell(${py(name)}, ${py(wrapped)})\n` +
-      `    ctx.run_cell(${py(name)})\n`,
+    `import ast\n` +
+      `import marimo._code_mode as cm\n` +
+      `_src = ${py(src)}\n` +
+      `_quote = ${py(quote)}\n` +
+      `_tree = ast.parse(_src)\n` +
+      `_lines = _src.split("\\n")\n` +
+      `if not _tree.body or not isinstance(_tree.body[-1], ast.Expr):\n` +
+      `    print("NOT_A_DISPLAY")\n` +
+      `else:\n` +
+      `    _last = _tree.body[-1]\n` +
+      `    _head = "\\n".join(_lines[: _last.lineno - 1])\n` +
+      `    _tail = "\\n".join(_lines[_last.lineno - 1 : _last.end_lineno])\n` +
+      `    _v = _last.value\n` +
+      `    _is_vstack = (\n` +
+      `        isinstance(_v, ast.Call)\n` +
+      `        and isinstance(_v.func, ast.Attribute)\n` +
+      `        and _v.func.attr == "vstack"\n` +
+      `        and _v.args\n` +
+      `        and isinstance(_v.args[0], ast.List)\n` +
+      `    )\n` +
+      `    if _is_vstack:\n` +
+      `        _open = _tail.index("[") + 1\n` +
+      `        _body = _tail[:_open] + "\\n    " + _quote + "," + _tail[_open:]\n` +
+      `    else:\n` +
+      `        _indented = "\\n".join("    " + _l for _l in _tail.split("\\n"))\n` +
+      `        _body = "mo.vstack([\\n    " + _quote + ",\\n" + _indented + ",\\n])"\n` +
+      `    _new = (_head + "\\n" + _body) if _head else _body\n` +
+      `    ast.parse(_new)\n` +
+      `    async with cm.get_context() as ctx:\n` +
+      `        ctx.edit_cell(${py(name)}, _new)\n` +
+      `        ctx.run_cell(${py(name)})\n` +
+      `    print("QUOTED")\n`,
     signal,
   );
-  return !r.failed;
+  return !r.failed && r.out.includes("QUOTED");
 }
 
 /** What a souvenir cell is missing, or "" when it honours the contract. */
@@ -1532,7 +1546,10 @@ export default function (pi: ExtensionAPI) {
   // Same idea for the souvenir contract: a text-only detour cell is bounced
   // once, then accepted, so a detour that genuinely has no picture in it can
   // still be recorded.
-  const detourTextOnlyWarned = new Set<string>();
+  // Keyed by the CELL, and counted. It was keyed by the question STRING, so
+  // a retry that reworded the question was a fresh key: four bounces, four
+  // rewordings, and the detour never reached the record at all.
+  const detourTextOnlyWarned = new Map<string, number>();
   // Improvised-cell review refusals, per cell name — capped like the rest.
   const cellReviewWarned = new Map<string, number>();
   // chapter_done's "was this chapter actually taught?" refusals, per chapter.
@@ -2640,13 +2657,15 @@ export default function (pi: ExtensionAPI) {
         if (src !== null) gap = souvenirGap(src, snappedQ);
         // A second call that still does not quote them is not left to a third:
         // the quote is one line and the extension has it, so it goes in.
-        if (gap.includes("quote") && (detourTextOnlyWarned.has(question) || !src)) {
+        const bounceKey = cellName || question;
+        if (gap.includes("quote") && ((detourTextOnlyWarned.get(bounceKey) ?? 0) > 0 || !src)) {
           const ok = await prependQuestionToCell(cellName, snappedQ, signal);
           if (ok) gap = "";
         }
       }
-      if (gap && !detourTextOnlyWarned.has(question)) {
-        detourTextOnlyWarned.add(question);
+      const gapKey = cellName || question;
+      if (gap && (detourTextOnlyWarned.get(gapKey) ?? 0) < 2) {
+        detourTextOnlyWarned.set(gapKey, (detourTextOnlyWarned.get(gapKey) ?? 0) + 1);
         return toResult({
           out:
             `NOT LOGGED YET — the souvenir cell "${cellName}" ${gap}. Fix it with ` +
@@ -2660,8 +2679,8 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      if (!cellName && md0 && !detourTextOnlyWarned.has(question)) {
-        detourTextOnlyWarned.add(question);
+      if (!cellName && md0 && (detourTextOnlyWarned.get(question) ?? 0) < 2) {
+        detourTextOnlyWarned.set(question, (detourTextOnlyWarned.get(question) ?? 0) + 1);
         return toResult({
           out:
             `NOT LOGGED YET — a text-only souvenir is the weakest kind of keepsake. Build ` +
