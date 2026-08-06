@@ -2384,7 +2384,12 @@ export default function (pi: ExtensionAPI) {
           const text = inner.trim();
           let best = "";
           let score = 0;
-          for (const msg of said) {
+          // The SAME pool the sibling drift check uses. Comparing against
+          // `said` alone accused a student of inventing their own picker
+          // answer — a choice never reaches the transcript — and that is the
+          // second time this file has learned it: two refusals mid-lesson,
+          // then a false "⚠ Quoting check" on the notebook they submit.
+          for (const msg of pool) {
             const d = bigramDice(text, msg);
             if (d > score) {
               score = d;
@@ -2405,7 +2410,7 @@ export default function (pi: ExtensionAPI) {
         /verbatim/i.test(m) ? verbatimFill : fixQuotes(modelFill(i)),
       );
       const problems: string[] = [];
-      if (said.length > 0 && quotesInvented.length > 0) {
+      if (pool.some((m) => m.trim()) && quotesInvented.length > 0) {
         problems.push(
           `these are in quotation marks in a note slot but the student never said them: ` +
             quotesInvented.map((q) => `"${q}"`).join(", "),
