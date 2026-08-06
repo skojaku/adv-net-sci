@@ -580,6 +580,18 @@ def collisions(limit=6):
 
 
 def assert_no_collisions(name):
+    """Fail the build, and offer exactly two ways out.
+
+    The message says *shorten the note or move the panel*, and the third option a
+    generator reaches for on its own -- make the type smaller until it fits -- is
+    deliberately not on the list. This deck has shipped that fix twice. m02 set its
+    labels at 24.88pt to keep them inside their cells and shipped a whole deck 17% under
+    the floor; m01 shrank a matrix's digits until "10" and "12" rendered as "1012" on the
+    slide that teaches what those boundaries mean. Both times a reviewer found it, and
+    both times nobody had noticed the drawing had changed, because a figure that fits is
+    not obviously a figure that got worse. Small text gets skipped; garbled text gets
+    misread. Where the words do not fit, the words are too long or the panel is too big.
+    """
     bad = collisions()
     assert not bad, (
         f"{name}: {len(bad)} in-figure collision(s) --\n    "
