@@ -172,37 +172,55 @@ assert nx.check_planarity(CLUB)[0], "the club network must be drawable without a
 F.assert_planar_drawing(CLUB_EDGES, CLUB_XY, "club network")
 assert not F.crossings(CLUB_EDGES, CLUB_XY)
 
+# The crown is drawn ON the layout, so it is part of the layout problem: solving the
+# names first and adding the glyph afterwards drew the crown straight through the
+# word "Noah". Same for the note -- a corner is reserved before the names are placed
+# rather than hunted for afterwards, which is why all three king figures can carry
+# the note in the same spot.
+CLUB_NOTE_RECT = (4.0, 294.0, 266.0, 352.0)
+CLUB_NOTE_AT = (14.0, 322.0)
+CLUB_NOTE_ANCHOR = "west"
+
 CLUB_SIDES, CLUB_BOXES = F.place_labels(
-    {c: c for c in CLUB_XY}, CLUB_XY, CLUB_EDGES, bounds=CLUB_BAND, gap=3.0)
+    {c: c for c in CLUB_XY}, CLUB_XY, CLUB_EDGES,
+    blockers=[crown_blocker(*CLUB_XY[k]) for k in (CLUB_SPREAD[0], CLUB_CLOSE[0],
+                                                   CLUB_BROKER[0])] + [CLUB_NOTE_RECT],
+    bounds=CLUB_BAND, gap=3.0)
+
+
+def _unambiguous(xy, boxes, margin=22.0):
+    """Every name must be nearest to its own disc, by a clear margin.
+
+    `place_labels` only asks that a label collide with nothing, which in a graph
+    whose discs are 100 bp apart is not the same as the label belonging to the right
+    one: an earlier layout put "Ava" beside Ethan's disc and "James" beside Alex's
+    triangle, both collision-free and both wrong.
+    """
+    bad = []
+    for n, b in boxes.items():
+        c = ((b[0] + b[2]) / 2, (b[1] + b[3]) / 2)
+        d0 = math.dist(c, xy[n])
+        near = [m for m, p in xy.items() if m != n and math.dist(c, p) < d0 + margin]
+        if near:
+            bad.append((n, near))
+    return bad
+
+
+_amb = _unambiguous(CLUB_XY, CLUB_BOXES)
+assert not _amb, f"a club name sits nearer another student's disc: {_amb}"
 
 
 def club_labels(color="black"):
     return F.draw_labels({c: c for c in CLUB_XY}, CLUB_XY, CLUB_SIDES, color=color)
 
 
-# The one hole left in a thirteen-name drawing. Placing the note beside its own
-# crown would be better and is not possible: a sweep of every position on the canvas
-# says the largest note that clears the discs, the edges, the thirteen solved name
-# boxes and all three crown glyphs is thirteen characters, and only in this pocket.
-# So the note sits here in all three figures -- same place, same colour as the ring,
-# and the three drawings differ by exactly the crown and these words.
-CLUB_NOTE_AT = (210.0, 314.0)
-CLUB_NOTE_ANCHOR = "west"
-
-
 def club_note(words):
-    """The question this figure's crown answers, asserted clear of everything drawn."""
+    """The question this figure's crown answers, asserted inside the reserved corner."""
     b = F.label_box(*CLUB_NOTE_AT, words, CLUB_NOTE_ANCHOR)
-    assert (CLUB_BAND[0] <= b[0] and b[2] <= CLUB_BAND[2]
-            and CLUB_BAND[1] <= b[1] and b[3] <= CLUB_BAND[3]), \
-        f"the note {words!r} runs off the canvas -- shorten it"
-    assert not any(F.box_hits_disc(b, *p) for p in CLUB_XY.values()), words
-    assert not any(F.boxes_overlap(b, o) for o in CLUB_BOXES.values()), \
-        f"the note {words!r} lands on a name -- shorten it (numbers only; prose goes " \
-        f"in the figcaption)"
-    assert not any(F.box_hits_segment(b, CLUB_XY[a], CLUB_XY[c]) for a, c in CLUB_EDGES), words
-    assert not any(F.boxes_overlap(b, crown_blocker(*CLUB_XY[k]))
-                   for _, k, _ in CLUB_KINGS), words
+    r = CLUB_NOTE_RECT
+    assert r[0] <= b[0] and b[2] <= r[2] and r[1] <= b[1] and b[3] <= r[3], \
+        (f"the note {words!r} does not fit the corner reserved for it -- shorten it "
+         f"(notes carry the question; prose goes in the figcaption)")
     return T(*CLUB_NOTE_AT, words, color=RED, anchor=CLUB_NOTE_ANCHOR)
 
 
@@ -265,17 +283,20 @@ KING_ROWS = [(CLUB_SPREAD[0], "tell first"),
 
 def fig_club_three_kings():
     start_log()
+    deg = dict(CLUB.degree())
+    # The figure's whole claim is that the three answers differ and that the last two
+    # kings hold FEWER friends than the first -- checked, not drawn and hoped for.
+    assert deg[CLUB_SPREAD[0]] == max(deg.values())
+    assert deg[CLUB_CLOSE[0]] < deg[CLUB_SPREAD[0]]
+    assert deg[CLUB_BROKER[0]] < deg[CLUB_SPREAD[0]]
     b = ""
     for i, (name, role) in enumerate(KING_ROWS):
         y = 300 - 90 * i
-        k = CLUB.degree(name)
-        assert k == dict(CLUB.degree())[name]
-        b += F.disc(58, y, str(k), fill="accenttwo", size=52)
-        _DRAWN.append(str(k))
+        b += F.disc(58, y, str(deg[name]), fill="accenttwo", size=52)
+        _DRAWN.append(str(deg[name]))
         b += T(96, y, name, anchor="west")
         b += T(288, y, role, color=DIM, anchor="west")
     b += T(20, 42, "in the disc: how many friends", color=DIM, anchor="west")
-    assert CLUB.degree(CLUB_SPREAD[0]) == 6 and CLUB.degree(CLUB_BROKER[0]) == 4
     F.emit("club-three-kings", b, container="col", h=390)
 
 

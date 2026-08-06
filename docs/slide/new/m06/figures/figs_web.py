@@ -574,28 +574,32 @@ def fig_pagerank_split():
     assert all(abs(s - 1.0 / WEB.out_degree(src)) < 1e-12 for s in share)
     p0 = (110.0, 180.0)
     ys = [300.0, 220.0, 140.0, 60.0]
+    tx = 700.0
     body, boxes = "", []
     b, bb = pagebox(*p0, src, name="S")
     body += b
     boxes.append(bb)
     for i, (n, y) in enumerate(zip(outs, ys)):
-        b, bb = pagebox(520.0, y, n, name=f"t{i}")
+        b, bb = pagebox(tx, y, n, name=f"t{i}")
         body += b
         boxes.append(bb)
     for i in range(d):
         body += f"\\draw[ed,{ARROW}] (S) -- (t{i});\n"
-    # The fraction rides beside its own arrow, out where the fan has opened.
+    # The fraction rides ON its own arrow in a white chip, out where the fan has
+    # opened: offset beside the line it belongs to, four arrows 58 bp apart, is
+    # how m03's edge weights ended up next to the wrong edge.
     chips = []
     for i, y in enumerate(ys):
-        t = 0.66
-        cx, cy = p0[0] + t * (520.0 - p0[0]), p0[1] + t * (y - p0[1])
-        cy += 32 if y > p0[1] else -32
+        t = 0.72
+        cx, cy = p0[0] + t * (tx - p0[0]), p0[1] + t * (y - p0[1])
         txt = f"$1/{d}$"
-        cb = F.label_box(cx, cy, txt, "center")
+        cb = F.label_box(cx, cy, txt, "center", pad=4)
         for o in chips + boxes:
             assert not F.boxes_overlap(cb, o), f"the {txt} chip collides at {cb}"
         chips.append(cb)
-        body += F.text(cx, cy, txt, color=A2)
+        body += (f"\\node[fill=white,inner sep=4bp,text={A2},"
+                 f"font=\\fontsize{{{F.FONT}}}{{{int(F.FONT * 1.15)}}}\\selectfont] "
+                 f"at ({cx:.1f},{cy:.1f}) {{{txt}}};\n")
     tot = f"${d} \\times 1/{d} = 1$"
     tb = F.label_box(1062, 180, tot, "east")
     for o in chips + boxes:

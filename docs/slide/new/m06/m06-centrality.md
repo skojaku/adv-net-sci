@@ -76,7 +76,7 @@ Rome decided who mattered, and wrote it in bronze
 
 <hr>
 
-Augustus, newly commissioner of roads, raises the **Milliarium Aureum** at the head of the Forum.
+Augustus raises the **Milliarium Aureum** at the head of the Forum.
 
 <div class="fig tall">
 
@@ -86,7 +86,7 @@ Augustus, newly commissioner of roads, raises the **Milliarium Aureum** at the h
 </div>
 
 <!--
-20 BC. He takes the road commission and the first thing he builds is a measuring point. The gilding is long gone; the core survives.
+20 BC. Newly made curator viarum — commissioner of roads — and the first thing he builds is a measuring point. The gilding is long gone; the marble core survives.
 -->
 
 ---
@@ -756,14 +756,18 @@ This is the first time in the deck that fewer connections beat more, and it is t
 
 <hr>
 
-Two tight groups, joined through one node with **two** edges. It is nobody by degree, and every one of the sixteen crossing pairs goes through it.
+Two tight groups, joined through one node holding **two** edges.
 
 <div class="fig tall">
 
 ![w:1080](figures/broker.png)
-<figcaption>degree 2, and the whole traffic</figcaption>
+<figcaption>degree 2, and all sixteen crossing pairs</figcaption>
 
 </div>
+
+<!--
+It is nobody by degree. Burt called the gap it sits in a structural hole; Module 05 cuts networks apart at exactly these edges.
+-->
 
 ---
 
@@ -917,14 +921,18 @@ Let the objection stand for a moment. It is a good objection. The answer is that
 
 <hr>
 
-Write that one line for all twelve cities at once and it becomes $\lambda c = A c$. **Eigenvector centrality** is the vector that comes back unchanged, up to scale.
+Twelve cities at once, and the recursion is $\lambda c = A c$.
 
 <div class="fig tall">
 
 ![w:1080](figures/eigen-equation.png)
-<figcaption>the matrix acting on the scores</figcaption>
+<figcaption>the matrix acting on the scores, and handing them back rescaled</figcaption>
 
 </div>
+
+<!--
+Eigenvector centrality is the vector that comes back unchanged, up to scale. Say the words "eigenvector centrality" here for the first time.
+-->
 
 ---
 
@@ -1007,14 +1015,18 @@ The crown is decided after a single step. Everything after that is sorting out t
 
 <hr>
 
-Multiplying by $A$ multiplies each eigenvector piece by its own $\lambda$, so every piece but the leading one shrinks like $|\lambda_i/\lambda_1|^t$. The slowest here is **0.80**.
+Every mode but the leading one decays. The slowest here is **0.80**.
 
 <div class="fig tall">
 
 ![w:1080](figures/decay.png)
-<figcaption>every other mode, dying</figcaption>
+<figcaption>every other mode, dying as lambda-i over lambda-1 to the t</figcaption>
 
 </div>
+
+<!--
+Write the starting vector in the eigenbasis: multiplying by A multiplies each piece by its own eigenvalue, so every piece except the leading one shrinks geometrically.
+-->
 
 ---
 
@@ -1076,14 +1088,18 @@ Steer nobody. If someone says "a network with one dense clump", they have it exa
 
 <hr>
 
-A tight cluster feeds itself, and everything outside it is starved. The far end of this tail scores **0.0045** of the top — not small, *invisible*.
+A tight cluster feeds itself, and the far end of the tail is *invisible*.
 
 <div class="fig tall">
 
 ![w:1080](figures/localization.png)
-<figcaption>five nodes take almost everything</figcaption>
+<figcaption>five nodes take almost everything; the ringed node scores 0.0045 of the top</figcaption>
 
 </div>
+
+<!--
+0.0045 is not "small", it is below anything a ranking can distinguish. This is the failure Katz was written to repair, and Part Six opens on it.
+-->
 
 ---
 
@@ -1209,7 +1225,7 @@ Katz counts **every walk of every length**, discounting a walk of length $t$ by 
 
 <hr>
 
-Turn $\lambda$ down and Katz becomes **degree**; turn it up and it becomes **eigenvector centrality**. Everything useful is in between.
+Small $\lambda$ is **degree**. Large $\lambda$ is **eigenvector centrality**.
 
 <div class="fig tall">
 
@@ -1217,6 +1233,10 @@ Turn $\lambda$ down and Katz becomes **degree**; turn it up and it becomes **eig
 <figcaption>the top of the ranking, at three settings of lambda</figcaption>
 
 </div>
+
+<!--
+Everything useful is in between. Turning the dial down keeps only the shortest walks; turning it up lets long walks count as much as short ones.
+-->
 
 ---
 
