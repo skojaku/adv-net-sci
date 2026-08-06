@@ -642,7 +642,7 @@ Closed if the third edge is there, open if it is not.
 
 </div>
 
-Which is why the global coefficient counts each triangle three times over.
+Which is why counting triangles network-wide multiplies each one by three.
 
 ---
 
