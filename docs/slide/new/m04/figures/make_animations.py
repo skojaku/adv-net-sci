@@ -19,8 +19,9 @@ it -- an assertion tells you about the property it measures and nothing else.
 
 So the drift guard is now split in two.  What must stay identical is the *graph*: same
 generator, same m, same n, same edge set, asserted.  What must differ is the *drawing*:
-the GIF's layout is solved for a wide box and mirrored, and the build asserts the two
-normalised layouts are far apart rather than close.
+the GIF takes a different one of `growth_layout`'s ranked spring solutions, and the
+build asserts the two normalised layouts are far apart -- counting reflections of the
+quiz's layout as near, since a flip is not a difference a room cannot undo.
 
 Every frame is cropped to the *same* box -- the union of the ink across frames -- so the
 drawing never jumps, and the floors are then asserted once against that box, exactly as
@@ -45,7 +46,7 @@ from figs_tail import (  # noqa: E402
     GROWTH_N, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_layout, growth_pos,
 )
 
-MS = 200            # ms per frame; 43 frames runs a shade under nine seconds
+MS = 280            # ms per frame; 23 growth frames runs about six and a half seconds
 HOLD = 10           # frames of pause on the finished state before the loop restarts
 
 # The graph gets the width.  It used to sit in a 312bp box -- the size of a *quiz
@@ -128,19 +129,42 @@ def _unit(p):
     return {k: ((v[0] - min(xs)) / w, (v[1] - min(ys)) / hgt) for k, v in p.items()}
 
 
+def _apart_from_quiz(pos):
+    """How far this arrangement is from `quiz.png`'s, counting reflections as near.
+
+    A flip is not a difference a room cannot undo, so scoring only the identity lets a
+    mirror image score 1.0 and pass. All four reflections of the square are compared and
+    the smallest distance wins.
+    """
+    ua = _unit(pos)
+    ub = _unit(growth_pos(True, QUIZ_B))
+    best = None
+    for fx in (False, True):
+        for fy in (False, True):
+            flip = {k: (1.0 - x if fx else x, 1.0 - y if fy else y)
+                    for k, (x, y) in ub.items()}
+            d = max(abs(ua[k][0] - flip[k][0]) + abs(ua[k][1] - flip[k][1]) for k in ua)
+            best = d if best is None else min(best, d)
+    return best
+
+
 def gif_layout():
     """The GIF's own arrangement of the quiz's preferential graph.
 
-    Two changes from `quiz.png`'s panel, both of them the point.  `growth_layout(...,
-    stretch=True)` solves the positions for a box four times wider than it is tall --
-    its own docstring recommends exactly this for a full-width GIF -- and then the whole
-    thing is mirrored in x.  The relaxation runs inside `growth_layout`, so the two
-    clearance gates hold in the shape actually drawn; mirroring is an isometry, so they
-    survive it.
+    `pick=1` takes the second-best of `growth_layout`'s ranked spring solutions, so this
+    is a genuinely different arrangement rather than the quiz's one rearranged.
+
+    It used to be `stretch=True` plus a mirror, and figs-tail measured what that was
+    really worth: stretching alone leaves the layout 0.049 from `QUIZ_B`'s in normalised
+    coordinates -- the same picture, wider -- and mirroring it leaves a mirror image,
+    which a room matches by eye without difficulty.  My own assertion passed anyway,
+    because reflecting every x to 1 - x makes the numeric distance large while changing
+    nothing a viewer cannot undo.  That is the round's lesson landing on my own code:
+    the assertion measured its quantity faithfully and knew nothing about what the
+    quantity was standing in for.  Hence `_apart_from_quiz` below, which now scores the
+    quiz layout's reflections too.
     """
-    pos = growth_layout(True, box=BOX, node=GIF_NODE, stretch=True)
-    x0, x1 = BOX[0], BOX[2]
-    return {i: (x0 + x1 - x, y) for i, (x, y) in pos.items()}
+    return growth_layout(True, box=BOX, node=GIF_NODE, stretch=True, pick=1)
 
 
 def ba_growth_frames():
@@ -161,14 +185,13 @@ def ba_growth_frames():
             == {frozenset(e) for e in growth_edges(True)}), \
         "the GIF is animating a different graph from the one the quiz freezes"
 
-    # What MUST differ: the drawing. This assertion is the old one negated. Slide 076
-    # showed the quiz's answer node for node because the two were held equal; a
-    # picture-matching student needs no tail to read.
-    ua, ub = _unit(pos), _unit(growth_pos(True, QUIZ_B))
-    apart = max(abs(ua[k][0] - ub[k][0]) + abs(ua[k][1] - ub[k][1]) for k in ua)
+    # What MUST differ: the drawing. This assertion is the old equality one negated.
+    # Slide 076 showed the quiz's answer node for node because the two were held equal;
+    # a picture-matching student needs no tail to read.
+    apart = _apart_from_quiz(pos)
     assert apart > 0.25, (
-        f"the GIF's layout is within {apart:.3f} of quiz.png's preferential panel -- "
-        f"slide 076 would be giving away slide 077's answer")
+        f"the GIF's layout is within {apart:.3f} of quiz.png's preferential panel, or "
+        f"of a reflection of it -- slide 076 would be giving away slide 077's answer")
 
     out = []
     for fr in frames:
@@ -179,15 +202,10 @@ def ba_growth_frames():
         assert sum(deg.values()) == 2 * len(fr["edges"])
         top = max(deg, key=lambda v: (deg[v], -v))
 
-        # `ba_frames` emits one frame per EDGE, so its `new_edges` holds only the edge
-        # just added and the finished frame lit one of the arrival's two edges red and
-        # left the other black -- under a slide that says an arrival brings two. A newly
-        # arrived node's only edges are the ones it brought, so its whole set is the
-        # highlight.
-        v = fr["new_node"]
-        fr = dict(fr, new_edges=[e for e in fr["edges"] if v in e] if v is not None
-                  else [])
-        assert v is None or 1 <= len(fr["new_edges"]) <= 2
+        # C2-3 -- the arriving node's edges coming out in two colours -- is fixed inside
+        # `ba_frames()` now, which asserts the last arrival keeps all GROWTH_M of them.
+        # I had recomputed the highlight here as well; two mechanisms agreeing today is
+        # how they disagree later, so this one is gone and figs_tail's is the only one.
 
         # Ring first: drawn after `draw_growth` it sat on top of the hub's fifteen
         # spokes and cut every one of them, leaving stubs between ring and disc.
