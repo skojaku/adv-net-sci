@@ -126,3 +126,41 @@ Every slide has now been read by someone. What remains open is listed under "Liv
 fixed this round" above, minus the CSS item, which the lecturer authorised and which is
 fixed: `section.mid` now out-specifies `.formula:last-child`, so question slides centre
 their body instead of hanging it on the floor.
+
+---
+
+# Round 8 — the remaining reviewer findings
+
+1. **Slide 15 showed 292 km before slide 20 asked for it** (rev-1-23 B2). Resolved without
+   restructuring: the MST definition still *shows* which tree is cheapest; only the number
+   waits for slide 21. The definition keeps its job and the worksheet gets its answer back.
+2. **Slide 87 ringed the degree-2 bridge — the answer to slide 88** (rev-70-92 M1). The
+   ring now appears only on the answer.
+3. **Slide 53 printed "scattered pools" at p ≈ 0.9** (rev-47-69 M12), over the region its
+   own sentence says one puddle owns. Moved to the flat left half.
+4. **Slide 68's f_c annotation printed on top of the 0.75 axis tick** (rev-47-69 M9),
+   making the one number the slide teaches unreadable.
+5. **The yard never did what the text claimed** (rev-47-69 M13). A 46×12 strip is 552
+   cells; at p = 0.65 two yards read 24 % and 17 % under the words "the same answer", and
+   the assertion (< 0.20) was loose enough to allow it. The yard is now 88×24 = 2112 cells,
+   which gives 2 % → 24 % → 59 % → 81 % across p — the sentence the slides actually make —
+   and the paired yards sit above the threshold where they agree to two points, asserted
+   at < 0.08.
+6. **The sweep opened below the still before it** (rev-47-69 m19): p = 0.30 under a title
+   reading "turning p up", after slide 51 had shown 0.40. It starts at 0.40 now.
+7. **Slide 7 erased a map that was never drawn** (rev-1-23 M5) — slides 5 and 7 were
+   pixel-identical but for a corner note. Slide 5 is now an actual map: the Morava and the
+   Dyje, the southern border, and towns sized by population. Geography is drawn in
+   annotation gray, never accent, so blue still means exactly one thing; slide 7 then takes
+   all of it away and the abstraction happens on screen.
+8. **`κ = ?`** set with no space before the question mark (rev-47-69 m25).
+
+## Still open
+
+- **P2 progressive disclosure** — fragments are on the slides that stack two body blocks,
+  but a full slide-by-slide pass over 92 slides has not been done.
+- **Edge crossings on slides 77 and 85** (rev-70-92 M9, m1). Slide 85's forest is planar
+  and could be laid out crossing-free; slide 77's C₇(1,2) genuinely is not planar, so some
+  crossings are unavoidable there.
+- **Speaker notes** are on ~20 of 92 slides. The ones that exist carry the interaction;
+  the rest are the lecturer's to write.

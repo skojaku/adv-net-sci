@@ -14,6 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 import make_figures as F
@@ -23,7 +24,7 @@ FRAME_MS = 620
 HOLD = 5          # frames held at the end so the last state is readable
 
 
-def _render(body, w, hmax):
+def _render(body, w, hmax, name="frame"):
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
         (td / "f.tex").write_text(F._tex(body, w, hmax))
@@ -35,7 +36,25 @@ def _render(body, w, hmax):
                        cwd=td, check=True)
         im = Image.open(td / "f.png").convert("RGB")
         im.load()
+        _assert_inside(name, im, w, hmax)
         return im
+
+
+def _assert_inside(name, im, w, hmax):
+    """The page IS the bounding box, so ink at its edge is ink being cut off.
+
+    `emit()` has had this check since the first build and `make_animations.py` did not,
+    so the GIF's caption shipped clipped at BOTH ends on every frame -- it rendered as
+    `ewired so far: 0 of the 32 lattice edge`, six ink pixels in column 0 and seven in
+    the last, and nothing in the build said a word.
+    """
+    a = np.array(im.convert("L"))
+    ys, xs = np.where(a < 200)
+    assert len(ys), f"{name}: blank frame"
+    for side, hit in (("top", ys.min() <= 1), ("bottom", ys.max() >= a.shape[0] - 2),
+                      ("left", xs.min() <= 1), ("right", xs.max() >= a.shape[1] - 2)):
+        assert not hit, (f"{name}: ink runs off the {side} of the {w}x{hmax}bp canvas -- "
+                         f"it is being clipped, shorten the label or widen the drawing")
 
 
 def rewire_frames():
@@ -69,14 +88,16 @@ def main():
     frames = rewire_frames()
     lattice = set(F.RING_EDGES)
     imgs = []
-    for edges, old, new in frames:
-        s = ""
+    for k, (edges, old, new) in enumerate(frames):
+        # the surviving lattice straight, on the same antiprism the static ring uses;
+        # rewired ends bowed clear of whatever they now pass
+        s = F._lattice_edges(edges=[e for e in edges if e in lattice],
+                             name=f"ws-rewire frame {k}")
         for a, b in edges:
-            fresh = (a, b) not in lattice
-            s += F.curve_edge(a, b, F.RING_POS,
-                              color="accenttwo" if fresh else "black",
-                              w=F.HEAVY_W if fresh else F.EDGE_W, centroid=F.RING_C,
-                              clear=F.NODE / 2 + 3 if fresh else F.RING_CLEAR)
+            if (a, b) in lattice:
+                continue
+            s += F.curve_edge(a, b, F.RING_POS, color="accenttwo", w=F.HEAVY_W,
+                              centroid=F.RING_C, clear=F.NODE / 2 + 3)
         if old:
             s += F.curve_edge(old[0], old[1], F.RING_POS, color="annot", w=2.2,
                               dash="dash pattern=on 8bp off 7bp", centroid=F.RING_C,
@@ -84,9 +105,12 @@ def main():
         for i in F.RING_POS:
             s += F.disc(F.RING_POS[i][0], F.RING_POS[i][1], "", fill="accent")
         n_new = sum(1 for e in edges if e not in lattice)
-        s += F.text(260, 8, f"rewired so far: {n_new} of the {len(lattice)} lattice edges",
+        # short enough to fit: the old label was ~6% wider than the canvas and the crop
+        # is full-width, so it was clipped at both ends on every frame
+        s += F.text(260, 8, f"rewired: {n_new} of {len(lattice)}",
                     color="accenttwo", anchor="south")
-        imgs.append(_render(s, F.DESIGN["col"], int(F.DESIGN["col"] * 0.70)))
+        imgs.append(_render(s, F.DESIGN["col"], int(F.DESIGN["col"] * 0.70),
+                            name=f"ws-rewire frame {k}"))
 
     # crop every frame to the same box, so the ring does not jump between frames
     w, h = imgs[0].size

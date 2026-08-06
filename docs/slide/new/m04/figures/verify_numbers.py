@@ -108,6 +108,45 @@ def check_feld(verbose=True):
     return m, fm, float(per_person)
 
 
+# ========================================================== Feld's whole Marketville set
+# Feld Figure 3, the 146 girls "who have any mutual friends" -- NOT every girl in the
+# school; isolates are excluded, and a slide that says "all 146 girls in the school" is
+# wrong. Counts read off Figure 3a/3b in the scanned paper at 400 dpi; the paper itself
+# prints only the two means. They are trusted because they close on their own: the counts
+# sum to exactly 146, and the means they imply round to the 2.7 and 3.4 Feld printed.
+MARKETVILLE_PK = {1: 29, 2: 53, 3: 26, 4: 20, 5: 14, 6: 3, 7: 1}
+MARKETVILLE_BELOW, MARKETVILLE_ABOVE, MARKETVILLE_EQUAL = 80, 41, 25
+
+
+def check_marketville(verbose=True):
+    n = sum(MARKETVILLE_PK.values())
+    sum_k = sum(k * c for k, c in MARKETVILLE_PK.items())
+    sum_k2 = sum(k * k * c for k, c in MARKETVILLE_PK.items())
+    k1 = Fraction(sum_k, n)
+    k2 = Fraction(sum_k2, n)
+    var = k2 - k1 * k1
+    friend = k2 / k1
+
+    assert n == 146 == MARKETVILLE_BELOW + MARKETVILLE_ABOVE + MARKETVILLE_EQUAL
+    assert sum_k == 388 and sum_k % 2 == 0        # 194 mutual pairs
+    assert sum_k2 == 1302
+    assert abs(float(k1) - 2.7) < 0.05, float(k1)       # Feld prints 2.7
+    assert abs(float(friend) - 3.4) < 0.05, float(friend)   # Feld prints 3.4
+    assert k1 + var / k1 == friend                      # the theorem, on Feld's own data
+
+    if verbose:
+        print("\n--- Feld Figure 3: all 146 girls with at least one mutual friend --------")
+        print(f"  degree counts {MARKETVILLE_PK}  ->  N = {n}")
+        print(f"  sum k = {sum_k} (= {sum_k//2} mutual pairs)   sum k^2 = {sum_k2}")
+        print(f"  <k> = {float(k1):.4f}  (Feld prints 2.7)")
+        print(f"  <k^2>/<k> = {float(friend):.4f}  (Feld prints 3.4)")
+        print(f"  Var = {float(var):.4f}   gap = {float(var/k1):.4f}   "
+              f"{float(k1):.4f} + {float(var/k1):.4f} = {float(friend):.4f}  [theorem]")
+        print(f"  {MARKETVILLE_BELOW} below / {MARKETVILLE_ABOVE} above / "
+              f"{MARKETVILLE_EQUAL} equal  ({MARKETVILLE_BELOW/n*100:.1f}% below)")
+    return {"N": n, "k1": k1, "k2": k2, "var": var, "friend": friend, "gap": var / k1}
+
+
 # =========================================================================== toy graphs
 def check_toys(verbose=True):
     star, ring, comp = nx.star_graph(3), nx.cycle_graph(6), nx.complete_graph(5)
@@ -208,6 +247,48 @@ def paradox_share(g):
     hit = [np.mean([g.degree(u) for u in g.neighbors(v)]) > g.degree(v)
            for v in g.nodes() if g.degree(v) > 0]
     return float(np.mean(hit))
+
+
+def top_share(g, p):
+    """(count, share of all edge ends) held by the top p fraction of nodes by degree."""
+    d = np.sort(np.array([x for _, x in g.degree()]))[::-1]
+    n = int(round(len(d) * p))
+    return n, float(d[:n].sum() / d.sum())
+
+
+def immunization_curves(g, fractions, seed=5):
+    """Giant-component share left after immunising f of the nodes, three ways.
+
+    random        : uniformly chosen nodes
+    acquaintance  : choose a node uniformly, immunise ONE of its neighbours (Cohen,
+                    Havlin & ben-Avraham 2003) -- the degree bias does the targeting
+    degree        : the true top-degree nodes, which needs the whole map
+    """
+    rng = np.random.default_rng(seed)
+    N = g.number_of_nodes()
+    nodes = list(g.nodes())
+    by_degree = [v for v, _ in sorted(g.degree(), key=lambda t: -t[1])]
+
+    def gcc(removed):
+        h = g.copy()
+        h.remove_nodes_from(removed)
+        if h.number_of_nodes() == 0:
+            return 0.0
+        return max((len(c) for c in nx.connected_components(h)), default=0) / N
+
+    out = {"f": list(fractions), "random": [], "acquaintance": [], "degree": []}
+    for f in fractions:
+        m = int(N * f)
+        out["random"].append(gcc(rng.choice(nodes, m, replace=False) if m else []))
+        chosen, guard = set(), 0
+        while len(chosen) < m and guard < 60 * N:
+            guard += 1
+            nb = list(g.neighbors(nodes[rng.integers(N)]))
+            if nb:
+                chosen.add(nb[rng.integers(len(nb))])
+        out["acquaintance"].append(gcc(list(chosen)))
+        out["degree"].append(gcc(by_degree[:m]))
+    return out
 
 
 def check_real(verbose=True):
@@ -327,10 +408,30 @@ LITERATURE = r"""
   Coleman, James S. 1961. The Adolescent Society. New York: Free Press.
       the survey Feld re-analysed; "Marketville" is the school's pseudonym
 
-  Feld, Scott L. 1991. AJS 96(6):1464-1477.
-      Figure 1, eight girls : <k> = 2.5,  mean friend degree = 3.0   [recomputed above]
-      Marketville, 146 girls: 80 below / 41 above / 25 equal  (= 146)
-                              mean degree 2.7, mean friend degree 3.4
+  Feld, Scott L. 1991. AJS 96(6):1464-1477.        [verified against the JSTOR scan]
+      "In The Adolescent Society, Coleman (1961) collected data on friendships among
+       the students in 12 high schools."             <- twelve, not the nine or ten
+                                                        that several secondary sources
+                                                        report
+      "...found among eight girls in 'Marketville,' one of the high schools included
+       in the study."
+      "The names are fictitious."
+      "There are a total of 20 friends (obviously counting some of the eight girls more
+       than once) having a total of 60 friends, with a mean of 3.0 friends per friend."
+      "Of the 146 girls who have any mutual friends, 80 have fewer friends than the
+       mean among their friends while 41 have more; 25 have the same as the mean among
+       their friends."                               <- "who have any mutual friends":
+                                                        isolates are excluded, so this
+                                                        is NOT the whole school
+      Figure 3 sub-captions: "(a) The mean is 2.7."  "(b) The mean is 3.4"
+      p.1470: "mean number of friends of friends = (sum x^2)/(sum x)
+                                                 = mean(x) + variance(x)/mean(x)"
+      Table 1 gives Pam's friends' degrees summing to 10, mean 3.3 -- which only works
+      for {Carol 2, Sue 4, Alice 4}. The widely-copied "Carol, Sue, Dale" gives 9 and
+      contradicts Feld's own table.
+      Not confirmed: that "Marketville" is Coleman's own pseudonym. Feld only puts it
+      in quotes, and Coleman's book could not be opened. Say "the school Feld called
+      Marketville".
 
   Ugander, Karrer, Backstrom, Marlow 2011.  arXiv:1111.4503   [verified in the PDF]
       "we characterize the entire social network of active members of Facebook in
@@ -362,6 +463,7 @@ LITERATURE = r"""
 
 if __name__ == "__main__":
     check_feld()
+    check_marketville()
     check_toys()
     check_real()
     check_models()

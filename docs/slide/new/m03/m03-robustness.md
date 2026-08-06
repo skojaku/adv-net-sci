@@ -80,7 +80,7 @@ Czechoslovakia is one year old, its eastern lands dark, and every crown of cable
 <div class="fig">
 
 ![w:1100](figures/moravia-dark.png)
-<figcaption>eight towns, no grid, no budget</figcaption>
+<figcaption>rivers, the border, towns by population — no grid, no budget</figcaption>
 
 </div>
 
@@ -122,12 +122,12 @@ We come back to how *he* solved it at the end of Part Two.
 
 <hr>
 
-Rivers, roads, borders, town size — none of it changes which cables to lay.
+Rivers, the border, how big each town is — none of it changes which cables to lay.
 
 <div class="fig">
 
 ![w:1100](figures/abstract-1.png)
-<figcaption>eight dots is all the geography we need</figcaption>
+<figcaption>all of that gone; eight dots is the whole geography</figcaption>
 
 </div>
 

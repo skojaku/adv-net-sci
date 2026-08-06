@@ -921,8 +921,41 @@ def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
     return text(x, y, s, color=color, anchor=anchor, size=size)
 
 
+# Rough populations (thousands), used only to size the discs on the map slide so
+# that "town size" is something the next slide can visibly throw away.
+POP = {"Brno": 380, "Olomouc": 100, "Zlin": 75, "Jihlava": 51,
+       "Prostejov": 44, "Trebic": 35, "Znojmo": 34, "Hodonin": 25}
+_pmin, _pmax = min(POP.values()) ** 0.5, max(POP.values()) ** 0.5
+MAP_SIZE = {n: 28 + (v ** 0.5 - _pmin) / (_pmax - _pmin) * 22 for n, v in POP.items()}
+assert all(NODE_MIN_PX <= d <= NODE_MAX_PX for d in MAP_SIZE.values())
+
+
 def fig_moravia_dark():
-    return moravia()
+    """An actual map: rivers, the southern border, towns sized by population.
+
+    Slide 7 says "rivers, roads, borders, town size -- none of it changes which
+    cables to lay", and then erases them. With slide 5 drawing eight bare dots the
+    two figures were pixel-identical apart from a corner note, so the abstraction
+    step -- the whole point of that slide -- never happened on screen.
+    """
+    s = ""
+    # Geography is drawn in annotation gray, never in accent: accent is the towns,
+    # and one colour may not mean two things in the same drawing. Gray is also
+    # exactly what the next slide throws away.
+    # the Morava, running south past Olomouc and Hodonin
+    s += polyline([(800, 340), (784, 290), (770, 232), (758, 172), (744, 116)],
+                  color="annot", w=2.6)
+    # the Dyje, running east UNDER the Znojmo label (box y 53..109), not through it
+    s += polyline([(190, 62), (330, 42), (560, 36), (700, 56)],
+                  color="annot", w=2.6)
+    # the southern border
+    s += polyline([(150, 24), (400, 14), (700, 16), (1010, 26)],
+                  color="annot", w=2.0, dash=DASH_LONG)
+    for n, (x, y) in POS.items():
+        s += disc(x, y, "", fill="accent", size=MAP_SIZE[n])
+    for n, (anc, dx, dy) in LABEL_SIDE.items():
+        s += text(POS[n][0] + dx, POS[n][1] + dy, NAME[n], anchor=anc)
+    return s
 
 
 def fig_abstract_1():
@@ -978,8 +1011,7 @@ def fig_mst_def():
     return moravia(faint=[e for e in ALL_CABLES if not is_tree_edge(e)],
                    edges=MST_PAIRS,
                    heavy={e: "accenttwo" for e in MST_PAIRS},
-                   weights=MST_PAIRS,
-                   extra_text=note(f"{MST_TOTAL} km"))
+                   weights=MST_PAIRS)
 
 
 # ===========================================================================
@@ -1421,7 +1453,7 @@ def fig_demo_still():
 # ===========================================================================
 #                                Part 4
 # ===========================================================================
-PUD_COLS, PUD_ROWS, PUD_CELL = 46, 12, 23
+PUD_COLS, PUD_ROWS, PUD_CELL = 88, 24, 12
 PUD_FIELD = np.random.default_rng(5).random((PUD_ROWS, PUD_COLS))
 PC_LITERATURE = 0.5927          # 2D site percolation, square lattice
 
@@ -1482,11 +1514,11 @@ def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
 
 
 def fig_puddle_low():
-    return puddle_body(0.40, PUD_FIELD[:10], 80)[0]
+    return puddle_body(0.40, PUD_FIELD[:22], 66)[0]
 
 
 def fig_puddle_widget():
-    s, _ = puddle_body(0.60, PUD_FIELD[:9], 96)
+    s, _ = puddle_body(0.65, PUD_FIELD[:16], 108)
     x0, x1, y = 300, 800, 44
     s += seg((x0, y), (x1, y), color="annot", w=3.0)
     s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=28)
@@ -1494,17 +1526,23 @@ def fig_puddle_widget():
     return s
 
 
-_SMALL = (5, PUD_COLS)
+_SMALL = (9, PUD_COLS)
 FIELD_A = np.random.default_rng(5).random(_SMALL)
 FIELD_B = np.random.default_rng(23).random(_SMALL)
 
 
 def fig_order_irrelevant():
-    """Two different yards, the same fraction wet -- the same answer."""
-    p = 0.65
-    a, fa = puddle_body(p, FIELD_A, 248, label="one yard")
-    b, fb = puddle_body(p, FIELD_B, 66, label="another yard")
-    assert abs(fa - fb) < 0.20, (fa, fb)
+    """Two different yards, the same fraction wet -- the same answer.
+
+    At p = 0.65 on the old small yards this drew 24% beside 17% under the words
+    "the same answer", and the assertion (< 0.20) was loose enough to allow it.
+    Well above the threshold the two agree to ~2 points, which is the claim; near
+    p_c the finite-size scatter is real and this slide must not stand there.
+    """
+    p = 0.75
+    a, fa = puddle_body(p, FIELD_A, 206, label="one yard", cell=10)
+    b, fb = puddle_body(p, FIELD_B, 40, label="another yard", cell=10)
+    assert abs(fa - fb) < 0.08, f"the two yards disagree: {fa:.0%} vs {fb:.0%}"
     return a + b
 
 
@@ -1545,9 +1583,9 @@ def fig_phase_transition():
               color="annot", anchor="east")
     s += polyline([(X(p), Y(v)) for p, v in zip(PERC_P, PERC_S)],
                   color="accenttwo", w=4.0)
-    s += text(LAB_X, Y(0.86), "one puddle\\\\spans the yard", color="accenttwo",
+    s += text(LAB_X, Y(0.72), "one puddle\\\\spans the yard", color="accenttwo",
               anchor="west")
-    s += text(LAB_X, Y(0.16), "scattered\\\\pools", color="annot", anchor="west")
+    s += text(X(0.36), Y(0.62), "scattered\\\\pools", color="annot")
     return s
 
 
@@ -1767,7 +1805,7 @@ def _kappa_row(show):
         # extra sentence here pushed the drawing past the height budget
         col = ("accenttwo" if kv == 2 else "black") if show else "annot"
         val = f"{float(kv):g}" if kv.denominator != 1 else str(kv)
-        s += text(cx, 40, f"$\\kappa = {val}$" if show else "$\\kappa = ?$",
+        s += text(cx, 40, f"$\\kappa = {val}$" if show else "$\\kappa = \\;?$",
                   color=col)
     return s
 
@@ -1799,7 +1837,8 @@ def fig_fc_formula():
                   color="accenttwo", w=4.0)
     s += seg((X(fc), Y0), (X(fc), Y(1)), color="accenttwo", w=2.6, dash=DASH)
     s += dot(X(fc), Y(1), "accenttwo", d=20)
-    s += text(X(fc), Y0 - 16, f"$f_c = {fc:.2f}$", color="accenttwo", anchor="north")
+    s += text(X(fc) + 16, Y(1.9), f"$f_c = {fc:.2f}$", color="accenttwo",
+              anchor="west")
     s += text(LAB_X, Y(2.6), f"$\\kappa = {kappa:g}$", color="accenttwo", anchor="west")
     s += text(LAB_X, Y(0.7), "1 = break-even", color="annot", anchor="west")
     return s
@@ -2000,7 +2039,7 @@ def _ring_case(show, cut=False):
             s += seg((X - 12, Y + 12), (X + 12, Y - 12), color="accenttwo", w=3.6)
         else:
             s += disc(X, Y, "" if cut else "2", fill="accent")
-    s += text(260, 190, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = ?$",
+    s += text(260, 190, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = \\;?$",
               color="accenttwo" if show else "annot")
     return s
 
@@ -2057,7 +2096,7 @@ assert BW_G.degree(BW_BRIDGE) == 2 and nx.is_connected(BW_G)
 assert BW_G.degree(BW_HUB) >= 6 and not clearance_bad(BW_EDGES, BW_POS)
 
 
-def _bw(removed=(), note_text=None, degrees=True):
+def _bw(removed=(), note_text=None, degrees=True, ring_bridge=True):
     """Degrees are printed inside the discs: no external label, no spare height."""
     s = "".join(seg(BW_POS[a], BW_POS[b], color="black", w=EDGE_W)
                 for a, b in BW_EDGES if a not in removed and b not in removed)
@@ -2068,14 +2107,16 @@ def _bw(removed=(), note_text=None, degrees=True):
             s += seg((x - 12, y + 12), (x + 12, y - 12), color="accenttwo", w=3.6)
         else:
             s += disc(x, y, str(BW_G.degree(n)) if degrees else "", fill="accent")
-    s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], color="accenttwo")
+    if ring_bridge:
+        s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], color="accenttwo")
     if note_text:
         s += text(550, 30, note_text, color="accenttwo")
     return s
 
 
 def fig_betweenness_q():
-    return _bw()
+    """No ring. The ringed node was the answer to the NEXT slide."""
+    return _bw(ring_bridge=False)
 
 
 def fig_betweenness_a():

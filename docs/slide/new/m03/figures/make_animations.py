@@ -167,8 +167,8 @@ def profile_frames():
 
 
 def puddle_frames():
-    return [puddle_body(p, PUD_FIELD[:10], 80)[0]
-            for p in (0.30, 0.40, 0.48, 0.54, 0.58, 0.62, 0.66, 0.72, 0.80)]
+    return [puddle_body(p, PUD_FIELD[:22], 66)[0]
+            for p in (0.40, 0.48, 0.54, 0.58, 0.62, 0.65, 0.70, 0.75, 0.80)]
 
 
 ANIMS = [

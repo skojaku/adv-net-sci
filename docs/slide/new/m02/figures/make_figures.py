@@ -91,7 +91,7 @@ SMALLNODE = 26     # only where a figure draws dozens of dots (arrival grid, rin
 FONT = 37          # pt
 EDGE_W = 2.6
 HEAVY_W = 5.0
-PAD = 12           # bp of white kept around the ink when the height is cropped
+PAD = 6            # bp of white kept around the ink when the height is cropped
 
 NODE_MIN_PX, NODE_MAX_PX = 26, 52
 XHEIGHT_MIN_PX = 15.5        # the floor check_render.py enforces on the rendered slide
@@ -1164,7 +1164,9 @@ def fig_triangle_triplet():
         s += seg(TRI_R[a], TRI_R[b], color="black", w=EDGE_W)
     for i in TRI_R:
         s += disc(TRI_R[i][0], TRI_R[i][1], "", fill="accent")
-    s += text(125, 55, "closed: a triangle", color="accenttwo", anchor="north")
+    # 134, not the panel centre 125: the label measures 251bp and centring it on the
+    # panel ran its first glyph off the left edge of the canvas
+    s += text(134, 55, "closed: a triangle", color="accenttwo", anchor="north")
     s += text(395, 55, "open", color="black", anchor="north")
     s += text(260, 320, "three nodes, two edges or three", color="annot",
               anchor="south")
@@ -1259,8 +1261,11 @@ def fig_a3_walks():
     colour.  Direction is the thing that differs, so direction is what carries it.
     """
     s = "".join(seg(TRI[a], TRI[b], color="black", w=EDGE_W) for a, b in TRI_EDGES)
-    s += _walk_loop((0, 1, 2), 0.64, "accenttwo", 3.4)     # i -> j -> l -> i
-    s += _walk_loop((0, 2, 1), 0.34, "accenttwo", 3.4)     # i -> l -> j -> i
+    # the two loops break on OPPOSITE edges: written to start at the same node they both
+    # opened next to node i, and two open ends 30bp apart read as one spiral rather than
+    # as two closed walks
+    s += _walk_loop((0, 1, 2), 0.68, "accenttwo", 3.4)     # i -> j -> l -> i, opens left
+    s += _walk_loop((1, 0, 2), 0.32, "accenttwo", 3.4)     # j -> i -> l -> j, opens right
     for i, lab in ((0, "$i$"), (1, "$j$"), (2, "$\\ell$")):
         s += disc(TRI[i][0], TRI[i][1], lab, fill="accent")
     s += text(260, 20, "two ways round: $(A^3)_{ii} = 2$", color="accenttwo",
@@ -1468,7 +1473,9 @@ def fig_er_coin():
         s += seg(ER6[a], ER6[b], color="accenttwo", w=HEAVY_W)
     for i2 in ER6:
         s += disc(ER6[i2][0], ER6[i2][1], "", fill="accent")
-    s += text(260, 20, "every pair: heads with probability $p$", color="accenttwo",
+    # 531bp of type on a 520bp canvas clipped the first word; this says the same thing
+    # in 426, and in the words $G(n,p)$ is introduced with two parts later
+    s += text(260, 20, "one coin per pair: heads at $p$", color="accenttwo",
               anchor="south")
     return s
 
@@ -1555,7 +1562,9 @@ def fig_fanout_solve():
         s += text(X(L), ya - 14, str(L), color="annot", anchor="north")
     s += text(589, ya - 52, "steps from you, at 150 friends each", color="annot",
               anchor="north")
-    s += text(400, 318, "$L = \\ln n / \\ln \\langle k \\rangle = 4.55$",
+    # under the curve, not above the plot: at y = 318 this label was the tallest ink in
+    # the figure and it alone pushed a `fig tight` slide past the theme's 320px cap
+    s += text(600, 120, "$L = \\ln n / \\ln \\langle k \\rangle = 4.55$",
               color="accenttwo", anchor="south west")
     return s
 
@@ -1804,32 +1813,41 @@ assert RND16_L < float(RING_L), (RND16_L, float(RING_L))
 
 
 def fig_random_graph():
+    """"this draw", not "shuffled at random": two lines below this figure the deck names
+    the formula $C_{\\mathrm{rand}} = \\langle k \\rangle/(n-1)$, which predicts 0.27 at
+    this size, so a caption reading "at random: 0.24" reads as the formula's answer
+    rather than as what one draw happened to give."""
     s = ""
     for a, b in RND16.edges():
         s += curve_edge(a, b, RING_POS, centroid=RING_C, w=2.2)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
-    s += text(260, 8, f"shuffled at random: $\\bar C = {RND16_C:.2f}$",
+    s += text(260, 8, f"this draw: $\\bar C = {RND16_C:.2f}$",
               color="black", anchor="south")
     return s
 
 
+# Both panels carry the same ring as the single-panel figures do -- same 1.45:1 aspect,
+# same node discs -- so the eye compares edges and not shapes.  They cannot also match on
+# SIZE: the slide is a `fig tight`, whose 320px cap leaves 250px for two rings and their
+# labels where a column figure gives one ring 380px, so the ring here is 85% of the one
+# on slides 65-67.  Aspect and disc size were the mismatches that read as encoding.
+LVR_RX, LVR_RY = 181, 115
+LVR_L, LVR_R = (260, 180), (840, 180)
+
+
 def fig_lattice_vs_random():
-    lp = ellipse_pos(RING_N, 280, 205, 118, 118, start=90)
-    rp = ellipse_pos(RING_N, 820, 205, 118, 118, start=90)
-    s = ""
-    paths = []
-    for a, b in RING_EDGES:
-        s += curve_edge(a, b, lp, centroid=(280, 205), clear=RING_CLEAR, paths=paths)
-    assert_triangles_open("lattice-vs-random (left panel)", lp, paths)
+    lp = antiprism_pos(RING_N, *LVR_L, LVR_RX, LVR_RY, RING_INNER)
+    rp = antiprism_pos(RING_N, *LVR_R, LVR_RX, LVR_RY, RING_INNER)
+    s = _lattice_edges(lp, name="lattice-vs-random (left panel)")
     for a, b in RND16.edges():
-        s += curve_edge(a, b, rp, centroid=(820, 205), w=2.2)
+        s += curve_edge(a, b, rp, centroid=LVR_R, w=2.2)
     for p2 in (lp, rp):
         for i2 in p2:
             s += disc(p2[i2][0], p2[i2][1], "", fill="accent")
-    s += text(280, 46, f"lattice: long routes, $\\bar C = {float(RING_CBAR):.2f}$",
+    s += text(LVR_L[0], 42, f"lattice: long routes, $\\bar C = {float(RING_CBAR):.2f}$",
               color="black", anchor="north")
-    s += text(820, 46, f"random: short routes, $\\bar C = {RND16_C:.2f}$",
+    s += text(LVR_R[0], 42, f"random: short routes, $\\bar C = {RND16_C:.2f}$",
               color="black", anchor="north")
     return s
 
@@ -1841,11 +1859,8 @@ assert REWIRE_OLD in RING_EDGES and REWIRE_NEW not in RING_EDGES
 def fig_ws_rewire_step():
     """Each annotation is drawn in the colour of the thing it names, next to that thing.
     The red sentence used to name the gray edge and the gray figcaption the red one."""
-    s = ""
-    for a, b in RING_EDGES:
-        if (a, b) == REWIRE_OLD:
-            continue
-        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    s = _lattice_edges(edges=[e for e in RING_EDGES if e != REWIRE_OLD],
+                       name="ws-rewire-step")
     s += curve_edge(*REWIRE_OLD, RING_POS, color="annot", w=2.2,
                     dash="dash pattern=on 8bp off 7bp", centroid=RING_C,
                     clear=RING_CLEAR)
@@ -1953,7 +1968,7 @@ assert math.log10(BAND_HI) - math.log10(BAND_LO) >= 2.0, "the band must span two
 def _sweep_frame(band=False):
     """Both curves are fractions of the lattice value, so the vertical axis has to be
     ticked and named -- two slides assert how far each curve has fallen."""
-    x0, x1, y0, y1 = 200, 1050, 110, 320
+    x0, x1, y0, y1 = 200, 1050, 110, 280      # y1 280: `fig tight` caps the image at 320px
     def X(p):
         return x0 + (math.log10(p) + 4) / 4 * (x1 - x0)
     def Y(v):
@@ -1964,17 +1979,21 @@ def _sweep_frame(band=False):
               f"({X(BAND_HI)},{y1 + 10});\n")
     s += seg((x0 - 20, y0), (x1 + 20, y0), color="annot", w=2.2)
     s += seg((x0, y0), (x0, y1 + 10), color="annot", w=2.2)
+    # one convention across the five ticks: the axis used to run $10^{-4}$, $10^{-3}$,
+    # 0.01, 0.1, 1, which asks the room to convert notations mid-axis
     for k in range(5):
         x = x0 + k / 4 * (x1 - x0)
         s += seg((x, y0 - 9), (x, y0 + 9), color="annot", w=2.0)
-        s += text(x, y0 - 12, ["$10^{-4}$", "$10^{-3}$", "0.01", "0.1", "1"][k],
+        s += text(x, y0 - 12, ["0.0001", "0.001", "0.01", "0.1", "1"][k],
                   color="annot", anchor="north")
     s += text(625, y0 - 52, "rewiring probability $p$", color="annot", anchor="north")
     for v, lab in ((0.0, "0"), (0.5, "0.5"), (1.0, "1")):
         s += seg((x0 - 9, Y(v)), (x0 + 9, Y(v)), color="annot", w=2.0)
         s += text(x0 - 16, Y(v), lab, color="annot", anchor="east")
-    s += text(x0, y1 + 20, "fraction of the lattice value", color="annot",
-              anchor="south west")
+    # rotated onto the axis it labels, not stacked above the plot: the band annotation
+    # needs that row, and a y-axis title belongs beside its own ticks anyway
+    s += text(90, (y0 + y1) / 2, "fraction of the\\\\lattice value", color="annot",
+              rotate=90)
     for key, col, lab, ly, lx in (("C", "accenttwo", "$C(p)/C(0)$", 0.84, 360),
                                   ("L", "accent", "$L(p)/L(0)$", 0.30, 30)):
         base = SWEEP[key + "0"]
@@ -1990,8 +2009,14 @@ def fig_ws_sweep():
 
 
 def fig_ws_band():
+    """The annotation names the gold band, so it sits over the gold band and is drawn in
+    annotation gray.  It was accent-2 -- which already labels the C curve in this same
+    figure -- and it sat entirely to the right of the band it was naming."""
     s = _sweep_frame(band=True)
-    s += text(1050, 340, "both at once", color="accenttwo", anchor="south east")
+    mid = (BAND_LO * BAND_HI) ** 0.5           # the band's midpoint on a log axis
+    x = 200 + (math.log10(mid) + 4) / 4 * 850
+    assert abs(x - 625) < 1, x
+    s += text(round(x, 1), 296, "both at once", color="annot", anchor="south")
     return s
 
 
@@ -2000,12 +2025,13 @@ def fig_ws_widget():
     adj = _ws_adj(RING_N, RING_K, 0.14, rng)
     edges = sorted({(min(i, j), max(i, j)) for i, a in enumerate(adj) for j in a})
     lattice = set(RING_EDGES)
-    s = ""
+    # the surviving lattice straight, the rewired ends bowed clear of whatever they pass
+    s = _lattice_edges(edges=[e for e in edges if e in lattice], name="ws-widget")
     for a, b in edges:
-        new = (a, b) not in lattice
-        s += curve_edge(a, b, RING_POS, color="accenttwo" if new else "black",
-                        w=HEAVY_W if new else EDGE_W, centroid=RING_C,
-                        clear=NODE / 2 + 3 if new else RING_CLEAR)
+        if (a, b) in lattice:
+            continue
+        s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C,
+                        clear=NODE / 2 + 3)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
     s += text(260, 8, "drag $p$: the red shortcuts appear",
@@ -2025,17 +2051,18 @@ assert nx.average_clustering(_RS) > 0.42, nx.average_clustering(_RS)
 def fig_shortcut_effect():
     """Node 0 is what the gold rings are measured *from*, so it is named and ringed too --
     unnamed, the rings encoded 'closer to' with no second term."""
-    s = ""
-    for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    s = _lattice_edges(name="shortcut-effect")
     s += curve_edge(*SHORTCUT_EDGE, RING_POS, color="accenttwo", w=HEAVY_W,
                     centroid=RING_C)
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "0" if i2 == 0 else "", fill="accent")
     for v in [0] + SHORTENED:
         s += ring(RING_POS[v][0], RING_POS[v][1], color="accentthree", w=4.0)
+    # annotation gray: the legend describes the GOLD rings, and accent-2 is already the
+    # shortcut chord in this same drawing.  Not accent-3 either -- gold type is 2.0:1
+    # against white where the floor is 3:1.
     s += text(260, 8, f"gold: node 0 and the {len(SHORTENED)} now closer",
-              color="accenttwo", anchor="south")
+              color="annot", anchor="south")
     return s
 
 
@@ -2064,9 +2091,9 @@ def fig_disconnected():
 
 
 def fig_disconnected_answer():
+    """No connector.  The figure drew a line between the one pair it says has no route
+    between them, which is the only claim on the slide; the gap carries it."""
     s = _twocomp()
-    s += seg((115, 105), (440, 165), color="accenttwo", w=2.4,
-             dash="dash pattern=on 9bp off 8bp")
     s += text(260, 40, "$d = \\infty$: no route at all", color="accenttwo",
               anchor="north")
     return s
@@ -2107,6 +2134,34 @@ def fig_sigma_lt_1_q():
     return s
 
 
+# The answer slide used to show the question slide's file unchanged -- the same ring
+# under an in-figure line reading "joined to its 4 nearest neighbours", written for a
+# slide eighteen earlier.  Its own arithmetic, computed from the two baselines the deck
+# derives in Part Four, is the thing that settles the question.
+SIGMA_LT_1 = {
+    "C": float(RING_CBAR),
+    "C_rand": Fraction(RING_K, RING_N - 1),          # <k>/(n-1), slide 55
+    "L": float(RING_L),
+    "L_rand": math.log(RING_N) / math.log(RING_K),   # ln n / ln <k>, slide 58
+}
+SIGMA_LT_1["sigma"] = ((SIGMA_LT_1["C"] / float(SIGMA_LT_1["C_rand"]))
+                       / (SIGMA_LT_1["L"] / SIGMA_LT_1["L_rand"]))
+assert abs(SIGMA_LT_1["sigma"] - 1.5625) < 1e-9, SIGMA_LT_1
+assert abs(SIGMA_LT_1["L_rand"] - 2.0) < 1e-12, SIGMA_LT_1
+
+
+def fig_sigma_lt_1_answer():
+    d = SIGMA_LT_1
+    s = _ring()
+    # both ratios as ratios, which is what sigma is -- and 482bp, which fits the column
+    # where the "0.50 vs 0.27" phrasing measured 605
+    s += text(260, 8, f"$C$ {d['C']:.2f}/{float(d['C_rand']):.2f}, "
+                      f"$L$ {d['L']:.1f}/{d['L_rand']:.1f}, "
+                      f"$\\sigma = {d['sigma']:.2f}$",
+              color="accenttwo", anchor="south")
+    return s
+
+
 GRID_POS = {(c, r): (60 + c * 100, 78 + r * 82) for c in range(5) for r in range(4)}
 GRID_EDGES = [((c, r), (c + 1, r)) for c in range(4) for r in range(4)] + \
              [((c, r), (c, r + 1)) for c in range(5) for r in range(3)]
@@ -2127,8 +2182,10 @@ def fig_grid_no_triangles():
     return s
 
 
-GNM_POS = ellipse_pos(6, 250, 190, 190, 100, start=0)
-GNP_POS = ellipse_pos(6, 840, 190, 190, 100, start=0)
+# ry 84 and cy 178, not 100 and 190: the slide is a `fig tight` and the theme's 320px cap
+# bound the scale at the old spread
+GNM_POS = ellipse_pos(6, 250, 178, 190, 84, start=0)
+GNP_POS = ellipse_pos(6, 840, 178, 190, 84, start=0)
 # (1,3) forced a crossing on what is a 5-edge tree; (1,2) draws planar on the hexagon and
 # the graph is the same shape of object.  Asserted below, not eyeballed.
 GNM_EDGES = [(0, 1), (1, 2), (2, 4), (3, 4), (0, 5)]
@@ -2159,15 +2216,15 @@ def _gnm_gnp(mark=False):
 
 def fig_gnm_gnp():
     s = _gnm_gnp()
-    s += text(545, 324, "same graphs? same mathematics?", color="accenttwo",
+    s += text(545, 280, "same graphs? same mathematics?", color="accenttwo",
               anchor="south")
     return s
 
 
 def fig_gnm_gnp_answer():
     s = _gnm_gnp()
-    s += text(250, 324, "edges are coupled", color="annot", anchor="south")
-    s += text(840, 324, "edges are independent", color="accenttwo", anchor="south")
+    s += text(250, 280, "edges are coupled", color="annot", anchor="south")
+    s += text(840, 280, "edges are independent", color="accenttwo", anchor="south")
     return s
 
 
@@ -2199,7 +2256,8 @@ def fig_universality():
         n = f"{WS98_N[nm]:,}".replace(",", "{,}")
         s += text(430, y, f"{nm}, $n = {n}$", color="black", anchor="east")
         s += dot(round(X(sg), 1), y, "accenttwo")
-    s += text(740, 272, f"{WS98_ORDERS} orders of magnitude apart --- one signature",
+    # 710: the line measures 723bp, so centring it on the plot ran it off the canvas
+    s += text(710, 272, f"{WS98_ORDERS} orders of magnitude apart --- one signature",
               color="accenttwo", anchor="south")
     return s
 
@@ -2208,32 +2266,41 @@ def fig_sw_map():
     """Panel 3 is the same lattice rewired at p = 1, not a fresh random graph, so "red:
     the rewired edges" is true of it: at the far end of the p arrow every edge has moved,
     and the panel used to draw all 24 of them black."""
-    cs = [(180, 232), (550, 232), (920, 232)]
+    cs = [(170, 210), (550, 210), (930, 210)]
     labs = ["lattice", "small world", "random"]
-    rng = random.Random(5)
-    lat = sorted({(min(i, (i + d) % 12), max(i, (i + d) % 12))
-                  for i in range(12) for d in (1, 2)})
+    # 10 nodes, not 12: the three panels share a `fig tight` slot capped at 320px, and at
+    # p = 1 twelve nodes leave no bow that clears every disc -- the chords have to pass
+    # through the discs, which is the m01 defect this file exists to prevent.
+    n = 10
+    lat = sorted({(min(i, (i + d) % n), max(i, (i + d) % n))
+                  for i in range(n) for d in (1, 2)})
     mids = sorted({(min(i, j), max(i, j))
-                   for i, a in enumerate(_ws_adj(12, 4, 0.12, rng)) for j in a})
+                   for i, a in enumerate(_ws_adj(n, 4, 0.12, random.Random(1))) for j in a})
     full = sorted({(min(i, j), max(i, j))
-                   for i, a in enumerate(_ws_adj(12, 4, 1.0, random.Random(11))) for j in a})
-    assert sum((e not in lat) for e in full) >= 18, "p = 1 must move most of the lattice"
+                   for i, a in enumerate(_ws_adj(n, 4, 1.0, random.Random(1))) for j in a})
+    assert 2 <= sum((e not in lat) for e in mids) <= 4, "the middle panel needs a few"
+    assert sum((e not in lat) for e in full) >= 14, "p = 1 must move most of the lattice"
     s = ""
     for k, (cx, cy) in enumerate(cs):
-        pos = ellipse_pos(12, cx, cy, 92, 92, start=90)
+        # the same antiprism the 16-node lattice uses on slides 65-83: one object, one
+        # drawing.  C_n(1,2) is the (n/2)-antiprism, so it is the same construction here.
+        pos = antiprism_pos(n, cx, cy, 94, 94, 0.44)
         ed = (lat, mids, full)[k]
+        s += _lattice_edges(pos, [e for e in ed if e in lat], name=f"sw-map panel {k}")
         for a, b in ed:
-            new = k > 0 and (a, b) not in lat
-            s += curve_edge(a, b, pos, color="accenttwo" if new else "black",
-                            w=HEAVY_W if new else EDGE_W, centroid=(cx, cy),
-                            clear=NODE / 2 + 3 if new else RING_CLEAR)
+            if (a, b) in lat:
+                continue
+            s += curve_edge(a, b, pos, color="accenttwo", w=HEAVY_W, centroid=(cx, cy),
+                            clear=NODE / 2 + 3)
         for i2 in pos:
             s += disc(pos[i2][0], pos[i2][1], "", fill="accent")
-        s += text(cx, 104, labs[k], color="accenttwo" if k == 1 else "black",
+        s += text(cx, 86, labs[k], color="accenttwo" if k == 1 else "black",
                   anchor="north")
-    s += seg((80, 56), (1020, 56), color="annot", w=2.4,
+    # the axis label rides the arrow's own row instead of taking a second one: this slide
+    # is a `fig tight`, and two annotation rows under three rings overran the 320px cap
+    s += text(20, 40, "rewiring probability $p$", color="annot", anchor="west")
+    s += seg((360, 40), (1020, 40), color="annot", w=2.4,
              arrow="-{Stealth[length=11bp]}")
-    s += text(550, 38, "rewiring probability $p$", color="annot", anchor="north")
     return s
 
 
@@ -2243,9 +2310,7 @@ assert all(e not in RING_EDGES for e in RECAP_CHORDS)
 
 def fig_recap():
     # two chords, because the caption on this slide says "a few shortcuts"
-    s = ""
-    for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    s = _lattice_edges(name="recap")
     for a, b in RECAP_CHORDS:
         s += curve_edge(a, b, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C)
     for i2 in RING_POS:
@@ -2276,9 +2341,7 @@ def fig_m03_teaser():
     sep = math.dist(mids[cut[0]], mids[cut[1]])
     assert sep >= 80, f"the two X marks are {sep:.0f}bp apart -- they will read as one"
 
-    s = ""
-    for a, b in RING_EDGES:
-        s += curve_edge(a, b, RING_POS, centroid=RING_C, clear=RING_CLEAR)
+    s = _lattice_edges(name="m03-teaser")
     for e in shortcuts:
         s += curve_edge(*e, RING_POS, color="accenttwo", w=HEAVY_W, centroid=RING_C,
                         dash="dash pattern=on 13bp off 10bp" if e in cut else "")
@@ -2355,6 +2418,7 @@ FIGURES = [
     ("degree-one", fig_degree_one, "col"),
     ("degree-one-answer", fig_degree_one_answer, "col"),
     ("sigma-lt-1-q", fig_sigma_lt_1_q, "col"),
+    ("sigma-lt-1-answer", fig_sigma_lt_1_answer, "col"),
     ("grid-no-triangles", fig_grid_no_triangles, "col"),
     ("gnm-gnp", fig_gnm_gnp, "full"),
     ("gnm-gnp-answer", fig_gnm_gnp_answer, "full"),
