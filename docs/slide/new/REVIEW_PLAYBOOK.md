@@ -42,6 +42,29 @@ The underlying cause is that fix agents keep working after reporting. Prefer to 
 reviewers only once every fix agent has gone idle, and re-run the check immediately before
 you launch them.
 
+**And do not infer idleness from silence — look.** Module 04 held all three of its figure agents,
+confirmed every one of them idle and every file committed, rendered, measured zero figures newer
+than the render, and had a build running the whole time from a *fourth* session nobody had thought
+to hold. It was found because one agent went looking rather than reporting itself clean:
+
+    ps -o pid=,ppid=,command= -ax | grep -E 'make_figures|make_animations|pdflatex' | grep -v grep
+
+That is cheap, gives a definite answer, and names the owning process, so it distinguishes "my
+agents are done" from "nothing is writing to this directory" — which are different claims, and only
+the second one is the one the render depends on. Run it immediately before rendering, not after.
+
+**When you do find a race, resolve it on content, not on timestamps.** `find -newer` reports that a
+build touched a file; it cannot tell you whether the file changed. A build re-run over unchanged
+sources rewrites every PNG with a new mtime and identical bytes, and treating that as staleness
+throws away a review round for nothing. `git status` on the figure paths answers the question that
+actually matters.
+
+The recovery, meanwhile, is narrower than it looks: tell the reviewers to keep reading and hold
+their reports. Their images cannot change under them — only the lead re-renders — so their text,
+layout, narrative and arithmetic observations are all safe. The single thing at risk is that a
+defect correctly reported against the render has already been superseded on disk, which sends a
+fixer after something that is no longer there.
+
 ### "A caveat on the answer" and "the answer cannot be computed yet" are different sentences
 
 A fix agent, asked to write a number into a slide, sent back three candidate values with a
