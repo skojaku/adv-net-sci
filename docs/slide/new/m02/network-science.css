@@ -27,6 +27,11 @@ section h2 {
   font-size: 40px;
   font-weight: 700;
   line-height: 1.12;
+  /* A KaTeX line box is taller than a text one, so the eight headings containing math
+     pushed their own title and rule 16px below every other slide's -- measured across
+     the deck: title ink at y=42 and rule at y=103 everywhere except those eight, which
+     sat at 47 and 119. Pinning the height stops maths growing the box. */
+  height: 45px;
   letter-spacing: -0.02em;
   color: #000000;
   flex: none;

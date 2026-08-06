@@ -126,7 +126,14 @@ def main():
     # would not, because most viewers read that as "repeat once more", i.e. twice.
     # The last frame's own delay is long so the end state is also readable in any viewer
     # that ignores the absent extension and loops anyway.
-    durations = [FRAME_MS] * (len(imgs) - 1) + [FINAL_MS]
+    # Lead with the frame that carries the claim. A GIF's FIRST frame is what the PNG
+    # export, the PDF and the printed handout show, and frame 0 was the untouched
+    # lattice: the static slide showed zero rewired chords under a body reading "six
+    # edges move ... a handful of long chords now cut across it", and was structurally
+    # the same drawing as the ring-lattice figure six slides earlier. Put the end state
+    # first, then replay the build.
+    imgs = [imgs[-1]] + imgs
+    durations = [FINAL_MS] + [FRAME_MS] * (len(imgs) - 2) + [FINAL_MS]
     imgs[0].save(OUT / "ws-rewire.gif", save_all=True, append_images=imgs[1:],
                  duration=durations, optimize=True)
     print(f"  ws-rewire.gif  {imgs[0].size[0]}x{imgs[0].size[1]}  {len(imgs)} frames, "

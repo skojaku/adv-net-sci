@@ -75,13 +75,20 @@ Post-war Moravia has no electricity and no money
 
 <hr>
 
+<div class="cols">
+<div>
+
 Czechoslovakia is one year old, its eastern lands dark, and every crown of cable is a crown not spent on a hospital.
 
+* Eight towns in **Moravia** need connecting, and the republic cannot afford a spare metre.
+
+</div>
 <div class="fig">
 
-![w:1100](figures/moravia-dark.png)
-<figcaption>rivers, the border, towns by population — no grid, no budget</figcaption>
+![w:520](figures/moravia-dark.png)
+<figcaption>the eight towns, where they actually are</figcaption>
 
+</div>
 </div>
 
 <!--
@@ -117,7 +124,7 @@ A friend at the West Moravian Power Company carries the question to **Otakar Bor
 
 <hr>
 
-Rivers, the border, how big each town is — none of it changes which cables to lay.
+The border, the rivers, where exactly each town sits — none of it changes which cables to lay.
 
 <div class="fig">
 

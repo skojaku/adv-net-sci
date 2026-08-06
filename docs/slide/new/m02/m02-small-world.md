@@ -476,7 +476,7 @@ For the plain chain: $\bar L = 8/3 = 2.67$.
 <div class="fig">
 
 ![w:1000](figures/chain-shortcut.png)
-<figcaption>black: the chord from two slides ago — red: the new long edge</figcaption>
+<figcaption>black: the chord from Part Two's first shortcut — red: the new long edge</figcaption>
 
 </div>
 
@@ -532,7 +532,7 @@ The **diameter** is the largest distance in the network — the worst case, not 
 <div class="fig">
 
 ![w:1000](figures/worksheet-a.png)
-<figcaption>the acquaintance network, unlabelled</figcaption>
+<figcaption>the acquaintance network, no distances marked</figcaption>
 
 </div>
 
@@ -852,7 +852,7 @@ Would you call this network 92% clustered?
 
 <hr>
 
-Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\, \#\text{triplets}$.
+Count objects instead of averaging nodes. **Global clustering**, or **transitivity**: $C = 3 \times \#\text{triangles} \,/\, \#\text{triplets}$.
 
 <div class="fig tight">
 
@@ -1063,8 +1063,8 @@ $$ C_{\mathrm{rand}} = \frac{\langle k \rangle}{n-1} $$
 </div>
 <div class="fig">
 
-![w:520](figures/er-coin.png)
-<figcaption>the same coins, counted one node at a time</figcaption>
+![w:520](figures/er-degree.png)
+<figcaption>gold: one node — red: its coins that came up heads</figcaption>
 
 </div>
 </div>
@@ -1113,7 +1113,7 @@ Set $\langle k \rangle^L = n$ and solve: $L_{\mathrm{rand}} \approx \ln n / \ln 
 <div class="fig tight">
 
 ![w:1000](figures/fanout-solve.png)
-<figcaption>red: the world’s population, at 150 friends each</figcaption>
+<figcaption>red: the world’s population, 8 billion</figcaption>
 
 </div>
 
@@ -1268,7 +1268,7 @@ Crossing a ring lattice means walking around it, two nodes at a time.
 <div class="fig">
 
 ![w:520](figures/ring-distance.png)
-<figcaption>red: the longest shortest route</figcaption>
+<figcaption>four hops, and every one of them around the ring</figcaption>
 
 </div>
 </div>
@@ -1674,7 +1674,7 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 <div class="fig">
 
 ![w:520](figures/grid-answer.png)
-<figcaption>red: the four edges whose pairs are the six triplets</figcaption>
+<figcaption>red: the four edges, whose six pairs are the triplets — dashed: the closing edge that is not there</figcaption>
 
 </div>
 </div>
@@ -1720,7 +1720,7 @@ Fix $m$ and the edges stop being independent: using one up makes the rest less l
 <div class="fig tight">
 
 ![w:1000](figures/universality.png)
-<figcaption>the three networks of Watts and Strogatz, by domain</figcaption>
+<figcaption>the three networks of Watts and Strogatz, largest to smallest</figcaption>
 
 </div>
 

@@ -99,7 +99,16 @@ INK = 200      # any mark
 # Masking on the fill colour also solves the problem that made a luminance test
 # unworkable in the first place: edges are black, so they are not in the mask and
 # cannot merge two discs into one component.
-NODE_FILLS = [(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)]
+# Annotation gray belongs here too, and its absence was a silent hole. Two round-4 fixes
+# recoloured discs to gray -- the quiz sketches, so a disc could be told from its edge,
+# and the non-hub nodes on `assortativity` -- and both quietly left the size gate. The
+# run still printed a confident "435 discs, 27-40px" while 28 discs on one slide and 15
+# on another were not among them, including the ones whose clearance had been a Blocker
+# two rounds earlier. Nothing was actually out of band, which is the point: the number
+# was true and the coverage it implied was not.
+#
+# Black cannot be added -- the edges are black, and a graph would come back as one disc.
+NODE_FILLS = [(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34), (0x6b, 0x6b, 0x6b)]
 FILL_TOL = 46
 
 # A disc at the bottom of the band covers ~530px2. A filled-in letter "o" at the type

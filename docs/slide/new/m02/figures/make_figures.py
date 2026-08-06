@@ -1062,7 +1062,7 @@ def fig_milgram_chain():
     s += _names(highlight=6, paths=_edge_paths(CHAIN_EDGES, CHAIN_POS))
     s += text(CHAIN_POS[0][0], 196, "Omaha", color="annot", anchor="south")
     s += text(CHAIN_POS[6][0], 196, "Boston", color="accenttwo", anchor="south")
-    s += text(550, 250, "six hands, Omaha to Boston", color="accenttwo", anchor="south")
+    s += text(550, 250, "six links, Omaha to Boston", color="accenttwo", anchor="south")
     return s
 
 
@@ -1201,7 +1201,7 @@ def _dotplot(counts, mean):
     # against the labels' measured boxes, padded by the casing's own half-width, rather
     # than against a hand-picked 20bp gap that knew nothing about either.
     assert_labels_clear("dotplot mean rule", row_labels, [rule], pad=casing / 2 + 4)
-    s += text(260, 12, f"all {sum(counts.values())} pairs, mean "
+    s += text(260, 12, f"dashed line = mean of {sum(counts.values())} pairs: "
                         f"${mean.numerator}/{mean.denominator} = {float(mean):.2f}$",
               color="accenttwo", anchor="south")
     return s
@@ -1248,8 +1248,9 @@ def fig_diameter():
     # shortcut, and the arc crossed "teacher" and "printer" at 62 and 114 red pixels.
     P = []
     s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot=hot, out_paths=P)
-    note = (f"one of the {len(DIA_TIES)} worst pairs --- "
-            f"{nx.diameter(G_FULL)} edges")
+    # No count here: worksheet A asks for the diameter on the next slide, and
+    # printing it now turns one of its four questions into recall.
+    note = f"one of the {len(DIA_TIES)} worst pairs"
     s += text(550, 285, note, color="accenttwo", anchor="south")
     assert_labels_clear("diameter", {note: text_box(550, 285, note, anchor="south")}, P)
     return s
@@ -1777,6 +1778,31 @@ def fig_er_coin():
     # in 426, and in the words $G(n,p)$ is introduced with two parts later
     s += text(260, 20, "one coin per pair: heads at $p$", color="accenttwo",
               anchor="south")
+    return s
+
+
+def fig_er_degree():
+    """Slide 57's own figure. It used to borrow slide 54's `er-coin.png` -- the only
+    reuse in the deck -- so the drawing said "one coin per pair" while the slide's point
+    is that ONE NODE holds n-1 of those coins. Nothing in the borrowed picture singled
+    out a node, and the figcaption claimed a per-node reading it did not support."""
+    hub = 0
+    s = ""
+    for a, b in itertools.combinations(range(6), 2):
+        if hub in (a, b):
+            continue
+        s += seg(ER6[a], ER6[b], color="annot", w=1.4,
+                 dash="dash pattern=on 5bp off 8bp")
+    for b in range(1, 6):
+        drawn = (min(hub, b), max(hub, b)) in ER6_EDGES
+        s += seg(ER6[hub], ER6[b], color="accenttwo" if drawn else "annot",
+                 w=HEAVY_W if drawn else 2.2,
+                 dash="" if drawn else "dash pattern=on 6bp off 7bp")
+    for i2 in ER6:
+        s += disc(ER6[i2][0], ER6[i2][1], "", fill="accent")
+    s += ring(ER6[hub][0], ER6[hub][1], color="accentthree", w=4.0)
+    s += text(260, 20, f"this node: $n-1 = {len(ER6) - 1}$ coins",
+              color="accenttwo", anchor="south")
     return s
 
 
@@ -3026,6 +3052,7 @@ FIGURES = [
     ("paradox", fig_paradox, "full"),
     ("complete-graph", fig_complete_graph, "col"),
     ("er-coin", fig_er_coin, "col"),
+    ("er-degree", fig_er_degree, "col"),
     ("er-clustering", fig_er_clustering, "col"),
     ("fanout", fig_fanout, "full"),
     ("fanout-solve", fig_fanout_solve, "full"),

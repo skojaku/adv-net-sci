@@ -22,6 +22,7 @@ table in review/DECK_SPEC.md.  Nothing is typed in twice.
 """
 
 import itertools
+import json
 import math
 import re
 import subprocess
@@ -216,6 +217,23 @@ def ring(x, y, size=NODE, color="accenttwo", w=4.0, grow=11):
 
 def dot(x, y, color="accent", d=DOT):
     return f"\\fill[{color}] ({x},{y}) circle ({d / 2}bp);\n"
+
+
+def square(x, y, label="", fill="accenttwo", size=SMALLNODE + 8, text_col="white"):
+    """A SQUARE marker. Circles are graph nodes and nothing else.
+
+    Step badges were drawn as accent-2 discs, which is the same shape as a node --
+    so on the slide that counts cables, seven of the marks the room had just
+    learned to read as towns were not towns. Squares say "annotation" at a glance,
+    and the render gate's corner test excludes them from the node-size band too.
+    """
+    h = size / 2
+    s = (f"\\fill[{fill}] ({x - h:.1f},{y - h:.1f}) rectangle "
+         f"({x + h:.1f},{y + h:.1f});\n")
+    if label:
+        s += (f"\\node[font=\\fontsize{{{FONT}}}{{{FONT}}}\\selectfont,"
+              f"text={text_col},anchor=center] at ({x:.1f},{y:.1f}) {{{label}}};\n")
+    return s
 
 
 def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None):
@@ -852,7 +870,7 @@ def moravia(edges=None, faint=None, heavy=None, weights=None, labels=True,
             ey = (POS[key[0]][1] + POS[key[1]][1]) / 2
             s += seg((mx, my), (ex, ey), color="annot", w=1.2,
                      dash="dash pattern=on 2bp off 4bp")
-        s += disc(mx, my, tag, fill="accenttwo", size=SMALLNODE + 8)
+        s += square(mx, my, tag)
 
     for n, (x, y) in POS.items():
         if n in removed:
@@ -921,40 +939,63 @@ def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
     return text(x, y, s, color=color, anchor=anchor, size=size)
 
 
-# Rough populations (thousands), used only to size the discs on the map slide so
-# that "town size" is something the next slide can visibly throw away.
-POP = {"Brno": 380, "Olomouc": 100, "Zlin": 75, "Jihlava": 51,
-       "Prostejov": 44, "Trebic": 35, "Znojmo": 34, "Hodonin": 25}
-_pmin, _pmax = min(POP.values()) ** 0.5, max(POP.values()) ** 0.5
-MAP_SIZE = {n: 28 + (v ** 0.5 - _pmin) / (_pmax - _pmin) * 22 for n, v in POP.items()}
-assert all(NODE_MIN_PX <= d <= NODE_MAX_PX for d in MAP_SIZE.values())
+# --- the real map ----------------------------------------------------------
+# Natural Earth 1:10m admin-0 outlines, simplified to ~1.3 km with Douglas-Peucker
+# and committed as figures/cz-outline.json so the build needs no network.
+# 1919 Czechoslovakia is approximated by Czechia + Slovakia: Carpathian Ruthenia,
+# then its far-eastern province, is not in either and is not drawn. The caption
+# says "the Czech and Slovak lands" rather than claiming the 1919 border.
+_OUTLINE = json.loads((OUT / "cz-outline.json").read_text())
+assert set(_OUTLINE) == {"Czechia", "Slovakia"}
+
+_olons = [x for r in _OUTLINE.values() for x, _ in r]
+_olats = [y for r in _OUTLINE.values() for _, y in r]
+_OLAT0 = (min(_olats) + max(_olats)) / 2
+_KMDEG = 111.32 * math.cos(math.radians(_OLAT0))
+
+
+def _map_km(lon, lat):
+    return (lon - min(_olons)) * _KMDEG, (lat - min(_olats)) * 110.574
+
+
+_MAP_W = (max(_olons) - min(_olons)) * _KMDEG
+_MAP_H = (max(_olats) - min(_olats)) * 110.574
+# ISOTROPIC: one scale for both axes, or a real coastline comes out sheared. The
+# eight-town diagram elsewhere in the deck is deliberately stretched to fill its
+# frame; a map may not be.
+MAP_SCALE = min(500 / _MAP_W, 300 / _MAP_H)
+MAP_OX, MAP_OY = 10, 46
+
+
+def _map_xy(lon, lat):
+    kx, ky = _map_km(lon, lat)
+    return MAP_OX + kx * MAP_SCALE, MAP_OY + ky * MAP_SCALE
 
 
 def fig_moravia_dark():
-    """An actual map: rivers, the southern border, towns sized by population.
+    """A real map: Natural Earth outlines, the towns as square pins inside Moravia.
 
-    Slide 7 says "rivers, roads, borders, town size -- none of it changes which
-    cables to lay", and then erases them. With slide 5 drawing eight bare dots the
-    two figures were pixel-identical apart from a corner note, so the abstraction
-    step -- the whole point of that slide -- never happened on screen.
+    The first version drew three freehand strokes and called them rivers and a
+    border. This one is the actual shape of the Czech and Slovak lands, projected
+    isotropically, with the eight towns where they really are.
     """
     s = ""
-    # Geography is drawn in annotation gray, never in accent: accent is the towns,
-    # and one colour may not mean two things in the same drawing. Gray is also
-    # exactly what the next slide throws away.
-    # the Morava, running south past Olomouc and Hodonin
-    s += polyline([(800, 340), (784, 290), (770, 232), (758, 172), (744, 116)],
-                  color="annot", w=2.6)
-    # the Dyje, running east UNDER the Znojmo label (box y 53..109), not through it
-    s += polyline([(190, 62), (330, 42), (560, 36), (700, 56)],
-                  color="annot", w=2.6)
-    # the southern border
-    s += polyline([(150, 24), (400, 14), (700, 16), (1010, 26)],
-                  color="annot", w=2.0, dash=DASH_LONG)
-    for n, (x, y) in POS.items():
-        s += disc(x, y, "", fill="accent", size=MAP_SIZE[n])
-    for n, (anc, dx, dy) in LABEL_SIDE.items():
-        s += text(POS[n][0] + dx, POS[n][1] + dy, NAME[n], anchor=anc)
+    for name, ring in _OUTLINE.items():
+        pts = [_map_xy(lon, lat) for lon, lat in ring]
+        s += "\\draw[line width=2.0bp,draw=annot] %s -- cycle;\n" % (
+            " -- ".join("(%.1f,%.1f)" % q for q in pts))
+    # the eight towns, as SQUARES: these are map pins, not graph nodes
+    xs, ys = [], []
+    for n, (lat, lon) in TOWNS_LATLON.items():
+        x, y = _map_xy(lon, lat)
+        xs.append(x)
+        ys.append(y)
+        s += square(x, y, fill="accenttwo", size=11)
+    # to the LEFT of the cluster, in the empty interior of Bohemia: placed above it
+    # the word sat on the Czech-Slovak border line.
+    s += text(min(xs) - 16, sum(ys) / 8, "Moravia", color="accenttwo", anchor="east")
+    s += text(MAP_OX + 4, MAP_OY + _MAP_H * MAP_SCALE + 22,
+              "the Czech and Slovak lands", color="annot", anchor="west")
     return s
 
 
@@ -2221,7 +2262,7 @@ def fig_m04_teaser():
 
 
 FIGURES = [
-    ("moravia-dark", fig_moravia_dark, "full", FULL_H),
+    ("moravia-dark", fig_moravia_dark, "col", 360),
     ("abstract-1", fig_abstract_1, "full", FULL_H),
     ("abstract-2", fig_abstract_2, "full", FULL_H),
     ("abstract-3", fig_abstract_3, "full", FULL_H),
