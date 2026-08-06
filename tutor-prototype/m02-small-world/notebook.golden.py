@@ -417,15 +417,62 @@ def detour_lost_letters(alt, mo, pd):
 
 
 @app.cell(hide_code=True)
+def cp1_routing_fig(mo, netviz):
+    _edges = [
+        (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6),
+        (6, 7), (7, 8), (8, 9), (9, 10), (10, 11), (11, 0),
+        (0, 2), (3, 5), (7, 9),
+    ]
+    _colors = {0: "#B4552D", 1: "#C98A2D", 2: "#C98A2D", 11: "#C98A2D", 6: "#35577F"}
+    mo.vstack([
+        mo.md("**The letter-holder's view**"),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>The **rust** dot is "
+            "whoever holds the letter right now, and the **rust lines** are the "
+            "only friendships they can actually see — the ones running to their "
+            "own **amber** friends. The **navy** dot on the far side is the "
+            "Boston target. Every **grey** dot and line exists, but the holder "
+            "has no idea who out there knows whom: they pick ONE amber friend "
+            "and hope. Dots are drag-able.</span>"
+        ),
+        netviz(
+            _edges,
+            highlight=[(0, 1), (0, 2), (0, 11)],
+            node_colors={_n: _colors.get(_n, "#E4E6EA") for _n in range(12)},
+        ),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def cp1_routing_note(mo):
+    mo.md(r"""
+    ### 🧭 Existing vs. findable
+    A short path **existing** somewhere in a network is a fact about the
+    whole network — you'd need the full map to even check it. A short
+    path being **found**, by ordinary people each using only who THEY
+    personally knew, is a much stronger claim. Milgram's letter-holders
+    never saw the social network as a whole; they just kept forwarding to
+    whoever seemed "closer" to the target. That they succeeded, in about
+    6 hops, is the surprising part.
+
+    > **My answer:** "No — knowing a path exists doesn't hand it to you. On each page you only see that page's links, so you'd still be guessing which click gets you closer."
+    """)
+    return
+
+
+@app.cell(hide_code=True)
 def ch2_header(mo):
     mo.md("""
     ## Chapter 2 of 5 — Measuring Smallness
 
     "Small" needs a number before it means anything. This chapter builds
-    the module's two measuring sticks. First **distance** — how many steps
-    separate two people — on a four-person network, and then again by hand
-    on paper. Then a second measure that distance cannot see at all, about
-    the shape of one person's own circle of friends.
+    the module's measuring sticks. First **distance** — how many steps
+    separate two people — on a four-person network, together with the
+    worst-case trip hiding in the same chart, and then distance again by
+    hand on paper. Then a second family of measures that distance cannot
+    see at all, about the shape of one person's circle of friends — one
+    person's own corner first, then the whole network at once.
     """)
     return
 
@@ -524,6 +571,23 @@ def cp2_distance_note(mo):
     on a whole country.
 
     > **I worked out:** "A to D is 2 — you have to go through B or C." · "five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17."
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def cp2_diameter_note(mo):
+    mo.md(r"""
+    ### 📐 Diameter — the worst-case trip
+    **Average path length** ($L$) is the typical trip; the **diameter**
+    is the single LONGEST shortest-path trip anywhere in the network —
+    the worst case, not the average. Here every pair sits at distance 1
+    except A–D, so the diameter is **2**. A ring or lattice can have a
+    diameter that keeps growing as the network grows; a small-world
+    network's diameter stays small even as it gets bigger — that's part
+    of what "small" means.
+
+    > **I worked out:** "the tallest bar is A–D at 2. Every other pair is a direct link, so 2 is the worst trip in the whole network."
     """)
     return
 
@@ -673,9 +737,57 @@ def cp3_clustering_note(mo):
     $C_i = \frac{\text{friendships among } i\text{'s friends}}{\text{possible ones}}$.
     A has 5 friends, so up to 10 friendships could exist among them; 2 do,
     so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
-    network's clustering $C$ — typically HIGH in social networks.
+    network's average clustering $\overline{C}$ — typically HIGH in
+    social networks.
 
     > **I worked out:** "in the second one the friends are all connected to each other too, not just to Alice" · "two rust lines — B–F and C–E — so 2 out of 10 = 0.2"
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def cp3_triplets_fig(mo, netviz):
+    _edges = [("P", "Q"), ("Q", "R"), ("R", "P"), ("X", "Y"), ("X", "Z")]
+    mo.vstack([
+        mo.md("**Closed triplet (left) — open triplet (right)**"),
+        mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>Two trios. Left: P, Q "
+            "and R, with **all three friendships there (rust)** — a **closed** "
+            "triplet, better known as a triangle. Right: X knows Y and Z, but Y "
+            "and Z never met — still a triplet, just **open**: one line short "
+            "of a triangle. A triplet is named by its middle person — on the "
+            "right that is X; in a triangle every corner takes a turn in the "
+            "middle, which is why one triangle shows up three times in a "
+            "triplet count. Dots are drag-able.</span>"
+        ),
+        netviz(
+            _edges,
+            highlight=[("P", "Q"), ("Q", "R"), ("R", "P")],
+            layout={
+                "P": (0.25, 0.15), "Q": (0.08, 0.80), "R": (0.42, 0.80),
+                "X": (0.75, 0.15), "Y": (0.58, 0.80), "Z": (0.92, 0.80),
+            },
+        ),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def cp3_global_clustering_note(mo):
+    mo.md(r"""
+    ### 🔺 Global clustering — one number for the whole network
+    A **triplet** is three people joined by at least two friendships,
+    counted by the person in the middle — open and closed alike. A
+    **triangle** is a triplet whose third friendship also exists. Someone
+    with $k$ friends centers $k(k-1)/2$ triplets: Alice ($k=5$) centers
+    10, her friends center 1 each, D centers none — 14 in all, holding 2
+    triangles. The **global clustering coefficient** is
+    $C = \frac{3 \times \text{triangles}}{\text{triplets}} = 6/14 \approx 0.43$
+    — the 3 because each triangle is counted once per corner. People who
+    center more triplets get more say, so this number listens to hubs;
+    the node-averaged $\overline{C}$ gives everyone one equal vote.
+
+    > **I worked out:** "all three lines are there — that's just a triangle" · "2 triangles, one hanging off each rust line" · "B only makes one pair, so B, C, E and F give 1 each and D gives none — 14 with Alice's 10" · "3 × 2 over 14 ≈ 0.43" · "Alice is in the middle of 10 of the 14, so the global number mostly listens to her"
     """)
     return
 

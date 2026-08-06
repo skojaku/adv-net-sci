@@ -69,9 +69,9 @@ checkpoints:
       - "Scan the six bars in the chart — which one stands tallest?"
       - "You already worked out all six distances for the average. Which single one was the biggest?"
     fresh_variants: |
-      Reuse cp2_distance's fresh-variant networks: the 4-person star (longest
-      trip is 2, between any two leaves) or the A-B-C-D-A square (longest
-      trip is 2, along either diagonal).
+      If the answer slips out, draw a fresh network whose diameter is NOT
+      2 (the star and the square both land on 2 again): a 4-person LINE
+      A-B-C-D drawn with nb_add_cell — longest trip A to D, 3 edges.
     reveal_after: |
       Terminal: name it — this worst-case number is the **diameter**.
       Average path length tells you the TYPICAL trip; diameter tells you
@@ -200,63 +200,78 @@ checkpoints:
   - id: cp3_global_clustering
     goal: |
       Student distinguishes a triangle (a closed triplet) from an open
-      triplet, and understands global clustering as a network-wide,
-      hub-weighted ratio — different from the node-averaged local
-      clustering just learned.
-    build: none
+      triplet, computes the global clustering coefficient of Alice's own
+      network, and sees why the network-wide count listens to hubs while
+      the node-averaged version gives everyone one equal vote.
+    build: |
+      nb_add_template("cp3_triplets") — but only AFTER question 1 below is
+      answered: its caption names both shapes, and naming the closed one
+      is question 1's job.
     ask: |
-      Stay on Alice's picture, still on screen from cp3_clustering.
+      Stay on Alice's picture, still on screen from cp3_clustering, and go
       ONE piece at a time:
       1. "Pick Alice and any two of her friends who are NOT connected to
-         each other. Two of the three possible friendships exist — both
-         run back to Alice — but the third one doesn't. We call that shape
-         an OPEN triplet, 'open' because one edge is missing. Now pick
-         Alice and two friends who ARE connected to each other too, so all
-         three edges exist. What would you call THAT shape, if not open?"
-      2. "So a triangle really is just a triplet with all three edges — a
-         CLOSED triplet. Now zoom out to the whole network, not just
-         Alice's corner of it: say the whole network has 2 triangles in
-         it, and 30 triplets total once you count the open ones too. Since
-         each triangle gets counted three times — once centered on each of
-         its three corners — the formula is 3 times the triangles, divided
-         by the triplets. What number does that give you?"
-      3. "Now think about WHO those triplets belong to. Alice's local score
-         only ever looks at Alice's own five friends. This network-wide
-         number doesn't care whose neighborhood a triplet sits in — it just
-         counts every triplet in the whole network. Someone with 2 friends
-         contributes very few possible triplets; someone with 200 friends
-         contributes a lot. Does that make this network-wide number MORE
-         sensitive to ordinary people, or to a few super-connected hubs?"
+         each other. Two of the three possible friendships are there —
+         both run back to Alice — and the third is missing. We call that
+         shape an OPEN triplet. Now pick Alice and two friends who ARE
+         connected to each other too, so all three friendships are there.
+         What would you call THAT shape, if not open?"
+      2. Build the triplet figure, then: "Back to Alice's picture: how
+         many triangles does this whole network hold? Look for trios where
+         all three friendships are drawn."
+      3. "Triplets get counted by the person in the middle — open and
+         closed alike. Alice's number you've already met: her 5 friends
+         make 10 possible pairs, so 10 triplets have Alice in the middle.
+         B, C, E and F have exactly 2 friends each, and D has 1. Work out
+         how many triplets each of them centers, and the network's total."
+      4. "The global clustering coefficient is 3 × triangles ÷ total
+         triplets. What does this network score?"
+      5. "Alice's own local score was 0.2, and B, C, E and F each score a
+         perfect 1. Yet your whole-network number landed much nearer
+         Alice's end. Why does Alice get so much of the say?"
     accept: |
-      (1) triangle = closed triplet, all three edges present, vs. an open
-      triplet that is missing one edge.
-      (2) 3x2/30 = 0.2.
-      (3) hubs — high-degree nodes contribute disproportionately, unlike
-      the node-averaged local version where everyone counts equally.
+      (1) triangle = closed triplet, all three friendships present — either
+      name passes.
+      (2) 2 triangles (each rust friendship closes one through Alice:
+      A-B-F and A-C-E — but let THEM find that).
+      (3) B, C, E, F center 1 each, D centers 0 -> 10 + 4 = 14 total.
+      (4) 3x2/14 = 6/14 = 3/7 ≈ 0.43 (accept 6/14, 3/7, 0.43, "about 0.4").
+      (5) Alice centers 10 of the 14 triplets — the global count weighs
+      each person by how many triplets they center, so the hub dominates;
+      the node-averaged version gave everyone one equal vote.
     hints:
-      - "A triangle needs all three possible edges. Does your open triplet have all three, or just two?"
-      - "3 times 2 is 6. What's 6 divided by 30?"
-      - "If Alice has 2 friends, how many possible triplets can even be centered on her? Now what if she had 200?"
+      - "A triangle has all three of its lines. Your open triplet has how many?"
+      - "Take one rust line. Its two ends are both friends of Alice — so those two plus Alice make a trio. How many of THEIR three friendships exist?"
+      - "B knows exactly two people, A and F. How many pairs can you make out of two people?"
+      - "You have Alice's 10, one count each for B, C, E and F, and D's. Add them up."
+      - "Of your 14 triplets, how many have Alice in the middle? Who owns the rest?"
     fresh_variants: |
-      If the answer slips out, re-check with new counts: 3 triangles and
-      45 triplets total -> 9/45 = 0.2; or 1 triangle and 10 triplets ->
-      3/10 = 0.3.
+      If the answer slips out, re-check the ratio on fresh counts: a
+      network with 3 triangles and 45 triplets -> 9/45 = 0.2; or 1
+      triangle and 10 triplets -> 3/10 = 0.3. For the hub point, ask on a
+      star: one center with 6 friends, none of whom know each other — who
+      centers ALL the triplets, and what is the global score? (The
+      center; 0.)
     reveal_after: |
-      Terminal: name it — the **global clustering coefficient** (also
-      called transitivity): 3 x triangles / triplets, one number for the
-      WHOLE network. Unlike the local-clustering average, which treats
-      every node equally, hub or leaf, this one gets pulled around by
-      whoever has the most friends. The two numbers can disagree quite a
-      bit on the same network — the lecture notes go further into when
-      that happens.
+      Terminal: name it — the **global clustering coefficient**, also
+      called transitivity: 3 × triangles / triplets, one number for the
+      WHOLE network. The 3 is because every triangle got counted three
+      times inside their 14 — once per corner, exactly as the triplet
+      figure's caption says. One network, two honest clustering numbers
+      that disagree, because the global one weighs people by the triplets
+      they center while the average gives everyone one vote. The lecture
+      notes go further into when the two drift apart.
     note: |
       ### 🔺 Global clustering — one number for the whole network
-      A **triplet** is any three people with at least two friendships among
-      them; if the third friendship is ALSO there, it's a **triangle** — a
-      "closed" triplet. The **global clustering coefficient**
-      $C = \frac{3 \times \text{triangles}}{\text{triplets}}$ counts every
-      triplet in the network, not just one person's neighborhood — so
-      people with more friends contribute more triplets, and pull this
-      number around more than the node-averaged $\overline{C}$ does.
+      A **triplet** is three people joined by at least two friendships,
+      counted by the person in the middle — open and closed alike. A
+      **triangle** is a triplet whose third friendship also exists. Someone
+      with $k$ friends centers $k(k-1)/2$ triplets: Alice ($k=5$) centers
+      10, her friends center 1 each, D centers none — 14 in all, holding 2
+      triangles. The **global clustering coefficient** is
+      $C = \frac{3 \times \text{triangles}}{\text{triplets}} = 6/14 \approx 0.43$
+      — the 3 because each triangle is counted once per corner. People who
+      center more triplets get more say, so this number listens to hubs;
+      the node-averaged $\overline{C}$ gives everyone one equal vote.
 
       > **I worked out:** «their answers, verbatim»
