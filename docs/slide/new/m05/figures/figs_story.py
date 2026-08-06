@@ -314,17 +314,21 @@ def _cutdef():
     return out
 
 
-def _pentagon(nodes, cx, cy, r, facing):
-    """Five mutual friends on a circle, rotated to bring `facing` nearest the middle.
+def _pentagon(nodes, cx, cy, r, facing, start=None):
+    """Five mutual friends on a circle, rotated to bring `facing` nearest the other five.
 
     A clique of five has no crossing-free drawing, but it must still not run an edge
     through somebody else's disc -- which is exactly what happened when the bridge left
     from whichever node the default angle happened to put at the back.
+
+    `start` is the angle the facing member sits at. It defaults to the horizontal pair
+    (the two cliques side by side); pass 270 and 90 when they are stacked instead, or
+    the two rings come out aligned and their nearest members end up 6bp apart.
     """
     i = nodes.index(facing)
-    start = 180.0 if cx > 540 else 0.0
-    order = nodes[i:] + nodes[:i]
-    return ring_positions(5, cx, cy, r, r, start=start, order=order)
+    if start is None:
+        start = 180.0 if cx > 540 else 0.0
+    return ring_positions(5, cx, cy, r, r, start=start, order=nodes[i:] + nodes[:i])
 
 
 @fig("two-cliques", h=380)

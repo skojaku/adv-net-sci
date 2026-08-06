@@ -16,8 +16,8 @@ import numpy as np
 import verify_numbers as V
 from figlib import Axes, FONT, disc, dot, emit, seg, text
 from kfig import (
-    CHI, COFF, arrow, cell_grid, club, dot_strip, karate, number_line, ring_positions,
-    small, split_fill,
+    CHI, COFF, arrow, blob, cell_grid, club, dot_strip, karate, number_line, relax,
+    ring_positions, small, split_fill,
 )
 from figs_story import _pentagon
 
@@ -52,56 +52,70 @@ def _tcsplit():
     return out
 
 
-def _big_pos():
-    """The two five-cliques on the left, the forty-node community filling the right."""
-    pos = {}
-    pos.update(_pentagon(list(range(5)), 132, 292, 84, 0))
-    pos.update(_pentagon(list(range(5, 10)), 132, 96, 84, 6))
-    rng = np.random.default_rng(3)
-    for i, n in enumerate(range(10, 50)):
-        r, c = divmod(i, 8)
-        pos[n] = (420 + c * 84 + rng.uniform(-14, 14), 60 + r * 68 + rng.uniform(-12, 12))
-    return pos
+def _assert_same_cliques():
+    """The two demo networks must contain the same pair of five-cliques.
+
+    Not the same edge list: the small network joins them at (0,6) and the big one at
+    (0,5), which relabels one endpoint and nothing else. What the argument actually
+    needs -- and what is checked here -- is that both cliques are complete on the same
+    members in both networks, and that exactly one friendship joins them in each.
+    """
+    for g, name in ((V.two_cliques(), "two-cliques"),
+                    (V.two_cliques_big(), "two-cliques-big-clique")):
+        for c in (V.CLIQUE_A, V.CLIQUE_B):
+            assert g.subgraph(c).number_of_edges() == 10, \
+                f"{name}: {sorted(c)} is not complete"
+        joins = [e for e in g.edges()
+                 if {e[0] in V.CLIQUE_A, e[1] in V.CLIQUE_A} == {True, False}
+                 and max(e) < 10]
+        assert len(joins) == 1, f"{name}: {len(joins)} friendships join the two cliques"
+
+
+def _clique_pair(cx, cy_top, cy_bot, r):
+    """The two cliques stacked, each rotated so its bridge member faces the other."""
+    g = V.two_cliques_big()
+    a, b = [e for e in g.edges() if (e[0] < 5) != (e[1] < 5) and max(e) < 10][0]
+    return {**_pentagon(list(range(5)), cx, cy_top, r, a, start=270),
+            **_pentagon(list(range(5, 10)), cx, cy_bot, r, b, start=90)}
 
 
 @fig("big-clique-net", h=380)
 def _bignet():
-    """The same two cliques, and a forty-person community that has nothing to do with them."""
+    """The same two cliques, and a forty-person community with nothing to do with them."""
+    _assert_same_cliques()
     g = V.two_cliques_big()
-    small_g = V.two_cliques()
-    for a in range(10):
-        for b in range(a + 1, 10):
-            assert g.has_edge(a, b) == small_g.has_edge(a, b), (
-                "the two demo networks must agree on every pair among the first ten -- "
-                "that identity is the entire resolution-limit argument")
-    pos = _big_pos()
-    e = [tuple(x) for x in g.edges()]
-    return small(pos, e, node=28, what="big-clique-net", planar=False,
-                 fill={n: (CHI if n < 5 else COFF if n < 10 else "annot") for n in pos},
-                 edge_w=1.6)
+    pos = _clique_pair(180, 276, 112, 72)
+    e = [tuple(x) for x in g.edges() if max(x) < 10]
+    out = small(pos, e, node=32, what="big-clique-net", planar=False,
+                fill={n: (CHI if n < 5 else COFF) for n in pos})
+    out += blob(740, 194, 300, 150)
+    out += text(740, 196, "forty more", color="black", anchor="center", size=44)
+    link = [x for x in g.edges() if (min(x) < 10) != (max(x) < 10)]
+    assert len(link) == 1, link
+    out += seg(pos[min(link[0])], (446, 220), color="black", w=2.6)
+    return out
 
 
 @fig("resolution-limit", h=380)
 def _reslimit():
     """Before and after: nothing about the cliques changed, and the answer did."""
     f = V.facts()
-    pos, g = _two_clique_pos(cx_left=132, cx_right=132, cy=292, r=84)
+    _assert_same_cliques()
+    assert f["tcb"]["Q_merged"] > f["tcb"]["Q_split"], "in company they must merge"
+    assert f["tc"]["Q_split"] > f["tc"]["Q_merged"], "alone they must stay apart"
+    g = V.two_cliques()
     out = ""
-    left = {**_pentagon(list(range(5)), 148, 292, 88, 0),
-            **_pentagon(list(range(5, 10)), 148, 92, 88, 6)}
-    bridge = [e for e in g.edges() if (e[0] < 5) != (e[1] < 5)]
-    out += small(left, list(g.edges()), node=30, what="reslimit-before", planar=False,
-                 fill={n: (CHI if n < 5 else COFF) for n in left})
-    out += text(148, 30, "two answers", color="accenttwo", anchor="north", size=FONT)
-    big = V.two_cliques_big()
-    right = {n: (x + 560, y) for n, (x, y) in left.items()}
-    right.update({n: (700 + (i % 7) * 54, 78 + (i // 7) * 52)
-                  for i, n in enumerate(range(10, 50))})
-    e = [tuple(x) for x in big.edges()]
-    out += small(right, e, node=26, what="reslimit-after", planar=False, edge_w=1.4,
-                 fill={n: (CHI if n < 10 else "annot") for n in right})
-    out += text(628, 30, "one", color="accenttwo", anchor="north", size=FONT)
-    assert f["tcb"]["Q_merged"] > f["tcb"]["Q_split"]
+    left = _clique_pair(120, 282, 116, 68)
+    out += small(left, list(g.edges()), node=28, what="reslimit-before",
+                 planar=False, fill={n: (CHI if n < 5 else COFF) for n in left})
+    out += text(120, 40, "two groups", color="accenttwo", anchor="north", size=FONT)
+    right = {n: (x + 420, y) for n, (x, y) in left.items()}
+    out += small(right, list(g.edges()), node=28, what="reslimit-after",
+                 planar=False, fill={n: "accentthree" for n in right})
+    out += blob(884, 200, 162, 146)
+    out += text(884, 200, "forty", color="black", anchor="center", size=44)
+    out += seg((584, 224), (722, 212), color="black", w=2.6)
+    out += text(540, 40, "one group", color="accenttwo", anchor="north", size=FONT)
     return out
 
 
@@ -130,15 +144,16 @@ def _nonlocal():
     """Two identical groups, two different fates, decided somewhere else entirely."""
     out = ""
     for x0, crowd in ((40, 0), (560, 26)):
-        pos = {**_pentagon(list(range(5)), x0 + 110, 268, 76, 0),
-               **_pentagon(list(range(5, 10)), x0 + 110, 100, 76, 6)}
-        g = V.two_cliques()
-        out += small(pos, list(g.edges()), node=28, what=f"non-local-{x0}", planar=False,
+        g0 = V.two_cliques()
+        a, b = [e for e in g0.edges() if (e[0] < 5) != (e[1] < 5)][0]
+        pos = {**_pentagon(list(range(5)), x0 + 110, 252, 60, a, start=270),
+               **_pentagon(list(range(5, 10)), x0 + 110, 96, 60, b, start=90)}
+        out += small(pos, list(g0.edges()), node=28, what=f"non-local-{x0}", planar=False,
                      fill={n: (CHI if n < 5 else COFF) for n in pos})
         rng = np.random.default_rng(x0)
         for i in range(crowd):
-            out += disc(x0 + 250 + (i % 6) * 40 + rng.uniform(-6, 6),
-                        70 + (i // 6) * 60 + rng.uniform(-6, 6), fill="annot", size=26)
+            out += disc(x0 + 252 + (i % 6) * 42 + rng.uniform(-5, 5),
+                        62 + (i // 6) * 56 + rng.uniform(-5, 5), fill="annot", size=26)
     return out
 
 
@@ -169,7 +184,8 @@ def _rnd():
     """Forty people wired together at random. No groups were put in."""
     g = V.random_net()
     assert g.number_of_edges() == 41
-    pos = _spring(g, 1040, 330, seed=5)
+    pos = relax(_spring(g, 1040, 330, seed=5), list(g.edges()), node=30,
+                box=(26, 46, 1054, 350))
     return small(pos, list(g.edges()), node=30, what="random-net", planar=False,
                  fill={n: "annot" for n in pos}, edge_w=2.2)
 
@@ -271,10 +287,12 @@ def _disagree():
     return out
 
 
-SIX = ring_positions(6, 540, 208, 380, 128, start=90)
+# start=0 puts two members at the horizontal extremes; at 90 the widest
+# points of the ellipse carry nobody and the drawing loses 10% of its span.
+SIX = ring_positions(6, 540, 190, 424, 122, start=0)
 
 
-@fig("pairs-15", h=340)
+@fig("pairs-15", h=360)
 def _pairs():
     """Six people make fifteen pairs, and every score below counts those pairs."""
     n = 6
@@ -293,11 +311,11 @@ def _mi():
                                          (104, "what the method said", "accent"))):
         labels = V.WORKSHEET_TRUTH if row == 0 else V.WORKSHEET_FOUND
         for i, g in enumerate(labels):
-            out += disc(200 + i * 128, y, size=48,
+            out += disc(118 + i * 169, y, size=48,
                         fill=(col if g == 0 else "annot"))
         out += text(96, y, lab, color=col, anchor="east", size=FONT) if False else ""
     for i in range(6):
-        out += seg((200 + i * 128, 268), (200 + i * 128, 132), color="annot", w=2.6)
+        out += seg((118 + i * 169, 268), (118 + i * 169, 132), color="annot", w=2.6)
     out += text(540, 44, f"they agree about five of the six", color="black",
                 anchor="north", size=FONT)
     assert abs(s["I"] - 0.3183) < 5e-5
@@ -311,7 +329,7 @@ def _nmiform():
     total = (s["H_true"] + s["H_found"]) / 2
     share = s["I"] / total
     assert abs(2 * s["I"] / (s["H_true"] + s["H_found"]) - s["nmi"]) < 1e-12
-    x0, x1, y = 150, 970, 210
+    x0, x1, y = 116, 1004, 210
     out = seg((x0, y), (x1, y), color="annot", w=26)
     out += seg((x0, y), (x0 + (x1 - x0) * share, y), color="accenttwo", w=26)
     out += text(x0 + (x1 - x0) * share / 2, y - 30, "shared", color="accenttwo",
@@ -321,7 +339,7 @@ def _nmiform():
     return out
 
 
-def _six_row(labels, y, cols, size=48, x0=200, dx=128):
+def _six_row(labels, y, cols, size=48, x0=118, dx=169):
     out = ""
     for i, g in enumerate(labels):
         out += disc(x0 + i * dx, y, size=size, fill=cols[g])
@@ -334,7 +352,7 @@ def _wsnmi():
     out = _six_row(V.WORKSHEET_TRUTH, 268, {0: "accenttwo", 1: "annot"})
     out += _six_row(V.WORKSHEET_FOUND, 108, {0: "accent", 1: "annot"})
     for i in range(6):
-        out += seg((200 + i * 128, 240), (200 + i * 128, 136), color="annot", w=2.2)
+        out += seg((118 + i * 169, 240), (118 + i * 169, 136), color="annot", w=2.2)
     for token in ("0.47", "0.32", "10/15", "NMI"):
         assert token not in out, f"{token!r} leaks the answer onto the question slide"
     return out
@@ -348,7 +366,7 @@ def _wsnmia():
     out = _six_row(V.WORKSHEET_TRUTH, 288, {0: "accenttwo", 1: "annot"})
     out += _six_row(V.WORKSHEET_FOUND, 158, {0: "accent", 1: "annot"})
     for i in range(6):
-        out += seg((200 + i * 128, 260), (200 + i * 128, 186), color="annot", w=2.2)
+        out += seg((118 + i * 169, 260), (118 + i * 169, 186), color="annot", w=2.2)
     out += text(370, 74, f"{s['nmi']:.2f}", color="accenttwo", anchor="north", size=56)
     out += text(370, 118, "shared", color="annot", anchor="north", size=FONT)
     out += text(760, 74, f"{s['rand'].numerator * 5}/15", color="accent",
@@ -454,7 +472,7 @@ def _apps():
     out += small(pos, e, node=34, what="applications",
                  fill={n: cols[n // 4] for n in pos})
     for g, lab in enumerate(labels):
-        out += text(148 + g * 262, 108, lab.replace(" ", "\\\\", 2), color="annot",
+        out += text(148 + g * 262, 116, lab.replace(" ", "\\\\", 2), color="annot",
                     anchor="north", size=FONT)
     return out
 
