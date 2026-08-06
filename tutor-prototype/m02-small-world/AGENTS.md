@@ -284,50 +284,32 @@ what's next. You supply only what a model can:
   numbers a widget showed) in `notes`.
 - `judgment` — `pass` | `pass_with_hints` | `guided` | `prediction`
 - `hints_used`, `notes` (one line: what their answer showed)
-- `note_slots` — the «slot» fills for the script's note skeleton, in
-  order. **Their words only.** Quote, don't polish, don't join their
-  fragments into a sentence of your own, and never add a number they
-  never gave you — a slot reading "A–D = 2, and the average over all 6
-  pairs = 7/6 ≈ 1.17" from a student who typed "2" and "7/6" puts your
-  arithmetic in their mouth in the graded artifact. `checkpoint_done`
-  checks the «… verbatim» fills against what they actually said and
-  refuses up to twice; if it does, copy their wording from the list it
-  shows you. **Quote the whole answer, not the first half.** Live runs put
-  the framing ("count how many of her friends know each other") in a slot
-  labelled "What I counted, and out of how many" while their actual
-  "2 out of 10, so thats 0.2" never reached the notebook, and quoted a
-  student's L/L₀ reading while dropping the C/C₀ reading they typed in the
-  same breath. If they said a number the checkpoint asked for, that number
-  is in the note in their words. **One fill per «slot», in order** — most
-  skeletons have
-  several, a slot per part of the ask, so the notebook holds the ANSWER and
-  not just whichever fragment came last. **Slot N is the answer to ask step
-  N**: walk their replies in the order they typed them and pair each one
-  with the part it answered. A live run filled three checkpoints shifted by
-  one — every quote genuinely theirs, every quote under the wrong heading,
-  and the last answer (the one the checkpoint exists for) dropped
-  altogether. Nothing checks this for you: a shift and a student who
-  answered two steps in one breath look identical to any string comparison,
-  so two guards that tried were withdrawn for refusing honest records. What
-  `checkpoint_done` DOES enforce is one fill per slot, and it records which
-  message each fill came from so a grader can see a shift. Getting the
-  pairing right is yours. Sending fewer is refused twice and
-  then the unfilled ones print as "(not answered)" in the graded notebook,
-  which is a worse record than a short honest quote.
-  A slot that does NOT say «verbatim» is one whose answer came
-  from a drawing, a photo or a picker — write what the picture shows and
-  quote whatever reasoning they did speak. **That exemption is for
-  describing a picture, so it lapses when no picture arrived**: if they
-  could not photograph and typed the work instead, that slot holds their
-  typed words like any other, and `checkpoint_done` checks it. That freedom is for describing
-  the picture, NEVER for finishing their thought: a slot reading
-  `"becuase tirangles are important" — the clustering job, not the travel
-  job` hands the student a conclusion they never reached, inside their own
-  blockquote, on a checkpoint you judged `guided`. Describe and quote;
-  the lesson is already in the skeleton's prose around the slot.
-  Omitting the parameter still works on a one-slot skeleton; on the rest it
-  is a refusal. A script that says `note: none` gets NO note cell —
-  that checkpoint is session mechanics, not lecture; don't add one.
+- `note_slots` — the «slot» fills the transcript CANNOT supply, in order.
+  A slot marked «… verbatim» is filled with the student's own typed words
+  by the extension — you do not write those, and anything you send for
+  them is discarded. (Pairing answers with labelled slots by hand failed
+  five different ways across five live runs: halves dropped, quotes
+  shifted by one heading, punctuation tidied inside their own blockquote.
+  The words are in the transcript; the machine copies them.)
+  What is left for you is every slot whose answer no transcript holds —
+  **what their drawing shows, which option they picked, the numbers a
+  widget displayed**. Send one entry for each of those, in the order they
+  appear in the skeleton; the refusal, if it comes, lists exactly which
+  ones and in what order. Describe and quote — never finish their
+  thought. A slot reading `"becuase tirangles are important" — the
+  clustering job, not the travel job` hands the student a conclusion they
+  never reached, inside their own blockquote, on a checkpoint you judged
+  `guided`. The lesson is already in the skeleton's prose around the slot.
+  **The picture exemption lapses when no picture arrived**: if they could
+  not photograph and typed the work instead, that slot holds their typed
+  words like any other, and `checkpoint_done` checks it against the
+  transcript.
+  A skeleton whose only slots are «verbatim» needs no `note_slots` at all
+  — but it does need them to have TYPED something: on cp1, answered
+  entirely through the picker, jumping to `checkpoint_done` without the
+  one typed follow-up is refused, because there is nothing of theirs to
+  quote. A script that says `note: none` gets NO note cell — that
+  checkpoint is session mechanics, not lecture; don't add one.
   Write `note_markdown` yourself in the two cases
   where there is no skeleton to fill: a script with no `note:`, and an
   `_extra` practice round (its base checkpoint's note states the ORIGINAL
