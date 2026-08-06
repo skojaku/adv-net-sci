@@ -18,9 +18,10 @@ import networkx as nx
 import numpy as np
 
 from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean, solve_names
-from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, SMALLNODE, Axes,
+from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, PXBP, SMALLNODE, Axes,
                     assert_planar_drawing, clearance_bad, disc, dot, draw_labels, emit,
-                    pct, place_labels, polyline, render, ring, seg, text)
+                    pct, place_labels, polyline, render, ring, scene_clear, seg,
+                    text)
 from verify_numbers import (FELD_EDGES, FELD_ORDER, LITERATURE, MARKETVILLE_ABOVE,
                             MARKETVILLE_BELOW, MARKETVILLE_EQUAL, MARKETVILLE_PK,
                             condmat, immunization_curves, internet_as, moments,
@@ -607,61 +608,104 @@ def fig_qk_formula():
 # from the letters font, which does scale, so the operator is built from that instead.
 SUM_K = r"\mathop{\scalebox{1.35}{$\Sigma$}}\limits_{k}"
 
+# Every heavy sub-expression gets a macro, and the equations are written in terms of
+# them.  The expansion is identical -- TeX draws exactly what it drew before -- but the
+# string figlib's collision gate measures is no longer mostly markup.  `visible()`
+# counts a control word as one glyph and everything inside its braces as text, so
+# \mathrm{friend} measured "nfriend" and \scalebox{1.35} measured "n1.35": line one
+# modelled 1115bp against a rendered 492bp and was flagged against a gloss it clears by
+# 58bp.  With the macros the model reads 541bp, which is a fair over-estimate rather
+# than a doubling, and the gate can do its job on this figure instead of crying wolf.
+_MACROS = (r"\def\dsp{\displaystyle}"
+           r"\def\kf{\langle k\rangle_{\mathrm{friend}}}"
+           r"\def\kk{\langle k\rangle}"
+           r"\def\ksq{\langle k^2\rangle}"
+           r"\def\sk{" + SUM_K + r"}"
+           r"\def\vk{\mathrm{Var}(k)}" + "\n")
+
 # R1 A-14 / R2 Major 1: line one used to make three moves at once -- sum, substitute,
 # and name a symbol the deck had never written down -- on a build whose whole premise is
 # one new idea per line. Four states now: q(k) goes in, then the numerator gets its name.
 _DERIV = [
-    r"$\displaystyle \langle k\rangle_{\mathrm{friend}} = " + SUM_K + r" k\,q(k) "
-    r"= " + SUM_K + r" k\cdot\frac{k\,p(k)}{\langle k\rangle}$",
-    r"$\displaystyle \phantom{\langle k\rangle_{\mathrm{friend}}} "
-    r"= \frac{\langle k^2\rangle}{\langle k\rangle}$",
-    r"$\displaystyle \langle k^2\rangle = \mathrm{Var}(k) + \langle k\rangle^2$",
-    r"$\displaystyle \langle k\rangle_{\mathrm{friend}} = \langle k\rangle "
-    r"+ \frac{\mathrm{Var}(k)}{\langle k\rangle}$",
+    r"$\dsp \kf = \sk k\,q(k) = \sk k\cdot\frac{k\,p(k)}{\kk}$",
+    r"$\dsp \phantom{\kf} = \frac{\ksq}{\kk}$",
+    r"$\dsp \ksq = \vk + \kk^2$",
+    r"$\dsp \kf = \kk + \frac{\vk}{\kk}$",
 ]
 _GLOSS = [r"substitute $q(k)$", "name the numerator",
-          r"rewrite $\langle k^2\rangle$", "the theorem"]
+          r"rewrite $\ksq$", "the theorem"]
 _DERIV_Y = [300, 226, 152, 78]
+_EQ_X, _GLOSS_X = 150, 700
+
+
+@lru_cache(maxsize=None)
+def _ink_width(s):
+    """The width one text node really occupies, measured off a render.
+
+    The collision gate models a box from the source string, and for these lines the
+    model runs 10% UNDER the truth as often as it runs over (line three: 244bp modelled,
+    297bp drawn).  A model that can under-estimate cannot be the only check on a column
+    that has to clear another column, so the equations are measured.
+    """
+    body = _MACROS + text(30, 120, s, anchor="west")
+    a = np.asarray(render(body, 1900, 300).convert("L"))
+    ys, xs = np.where(a < 200)
+    return (xs.max() - xs.min() + 1) / PXBP
 
 
 def _derivation(upto):
-    """One figure in three states: the same frame, the same left margin, one line more.
+    """One figure in four states: the same frame, the same left margin, one line more.
 
     Each state's body is a prefix of the next, so everything above the added line is
     identical by construction rather than by inspection.
     """
-    b = rect(58, 26, 1022, 356, draw="annot", w=2.4, rounded=10)
+    b = _MACROS + rect(58, 20, 1022, 356, draw="annot", w=2.4, rounded=10)
     for i in range(upto):
-        b += text(110, _DERIV_Y[i], str(i + 1), color="annot")
+        assert _EQ_X + _ink_width(_DERIV[i]) < _GLOSS_X - 20, (
+            f"derivation line {i + 1} is drawn to x="
+            f"{_EQ_X + _ink_width(_DERIV[i]):.0f} and the gloss column starts at "
+            f"{_GLOSS_X}. Shorten the line or move the column; do not shrink the type.")
+        b += text(100, _DERIV_Y[i], str(i + 1), color="annot")
         if i == 3:
             b += (f"\\node[font=\\fontsize{{{FONT}}}{{{int(FONT*1.15)}}}\\selectfont,"
                   f"text=black,anchor=west,align=center] (eqthree) at "
-                  f"(178,{_DERIV_Y[i]}) {{{_DERIV[i]}}};\n"
+                  f"({_EQ_X},{_DERIV_Y[i]}) {{{_DERIV[i]}}};\n"
                   f"\\node[draw=accenttwo,line width=3.4bp,rounded corners=8bp,"
-                  f"fit=(eqthree),inner sep=13bp] {{}};\n")
+                  f"fit=(eqthree),inner sep=9bp] {{}};\n")
         else:
-            b += text(178, _DERIV_Y[i], _DERIV[i], anchor="west")
-        b += text(680, _DERIV_Y[i], _GLOSS[i], color="annot", anchor="west")
+            b += text(_EQ_X, _DERIV_Y[i], _DERIV[i], anchor="west")
+        b += text(_GLOSS_X, _DERIV_Y[i], _GLOSS[i], color="annot", anchor="west")
     return b
 
 
+def _emit_derivation(n):
+    """Check the prefix property, then draw the state ONCE.
+
+    `_derivation()` records into figlib's collision scene, so building state n-1 to
+    compare against it left a second copy of every earlier line in the scene and the
+    gate reported each of them overlapping itself.  The scene is reset after the
+    comparison so only the emitted body is measured.
+    """
+    if n > 1:
+        assert _derivation(n).startswith(_derivation(n - 1))
+    scene_clear()
+    emit(f"derivation-{n}", _derivation(n), container="full", h=FULL_H)
+
+
 def fig_derivation_1():
-    emit("derivation-1", _derivation(1), container="full", h=FULL_H)
+    _emit_derivation(1)
 
 
 def fig_derivation_2():
-    assert _derivation(2).startswith(_derivation(1))
-    emit("derivation-2", _derivation(2), container="full", h=FULL_H)
+    _emit_derivation(2)
 
 
 def fig_derivation_3():
-    assert _derivation(3).startswith(_derivation(2))
-    emit("derivation-3", _derivation(3), container="full", h=FULL_H)
+    _emit_derivation(3)
 
 
 def fig_derivation_4():
-    assert _derivation(4).startswith(_derivation(3))
-    emit("derivation-4", _derivation(4), container="full", h=FULL_H)
+    _emit_derivation(4)
 
 
 def fig_gap_nonneg():
@@ -669,8 +713,9 @@ def fig_gap_nonneg():
     b = seg((30, 200), (zero, 200), color="annot", w=3.0, dash=DASH)
     b += seg((zero, 200), (505, 200), color="accenttwo", w=5.0, arrow=ARROW)
     b += seg((zero, 186), (zero, 214), color="black", w=3.0)
-    b += text(zero, 186, "0", anchor="north")
-    b += text(190, 90, "all degrees\\\\equal", color="annot")
+    # clear of the zero tick, which is a rule and now records itself
+    b += text(zero, 178, "0", anchor="north")
+    b += text(190, 86, "all degrees\\\\equal", color="annot")
     b += text(95, 250, "never", color="annot")
     b += text(345, 250, "always here", color="accenttwo")
     b += text(300, 310, r"$\mathrm{Var}(k)/\langle k\rangle$")
@@ -826,9 +871,9 @@ def fig_fb_twitter():
 
 _SB = nx.Graph()
 _SB.add_edges_from([("H", i) for i in range(6)] + [(0, 1), (2, 3), (4, 5)])
-_SB_POS = {"H": (250, 205)}
+_SB_POS = {"H": (250, 235)}
 _SB_POS.update({i: (250 + 165 * math.cos(math.radians(a)),
-                    205 + 90 * math.sin(math.radians(a)))
+                    235 + 90 * math.sin(math.radians(a)))
                 for i, a in enumerate(range(0, 360, 60))})
 
 
@@ -842,7 +887,7 @@ def fig_sampling_bias():
     b = "".join(seg(_SB_POS[a], _SB_POS[c]) for a, c in _SB.edges())
     b += "".join(disc(*_SB_POS[i], fill="accent") for i in range(6))
     b += disc(*_SB_POS["H"], fill="accenttwo")
-    b += text(250, 60, "the hub", color="accenttwo")
+    b += text(250, 90, "the hub", color="accenttwo")
     # 28bp marks, not 13: these are objects the room is asked to count and compare, and
     # the floor for a countable disc on the slide is 26px. Eighteen of them will not fit
     # on one row at that size, so the row wraps -- the drawing grows, the mark does not
@@ -860,8 +905,9 @@ def fig_sampling_bias():
                   f"${hit}$ of ${tot}$", color="accenttwo", anchor="west")
         b += text(560, ytop - 46 - (rows - 1) * PITCH - 40, unit, color="annot",
                   anchor="north west", size=FONT)
-    b += text(560, 60, f"the hub turns up ${num(factor,1)}\\times$ more often",
-              color="accenttwo", anchor="west")
+    # under the graph, not under the tally: at the foot of the right column it sat
+    # on the "one edge end" unit label and 2bp into the bottom row of dots.
+    b += text(250, 40, f"${num(factor,1)}\\times$ more often", color="accenttwo")
     emit("sampling-bias", b, container="full", h=FULL_H)
 
 
@@ -1009,16 +1055,19 @@ def fig_immunization_curves():
     assert IMM_F[-1] == 0.10
     assert at10["random"] > at10["acquaintance"] > at10["degree"]
 
-    # The plot box starts at 170, not 124: a rotated y title is drawn 100bp left of
-    # the axis, and at 124 it ran off the page -- a clip, not a crop. And the title is
-    # two words, because rotated text is bounded by the axis HEIGHT, not its width.
-    ax = Axes((170, 132, 330, 312), (0, 0.10), (0.001, 1), ylog=True,
+    # The axis title is horizontal, above the frame, and carries the scale with it.
+    # Rotated it cannot fit: a 537bp column has to hold a 99bp "100\%" tick label, the
+    # plot, and a right gutter of curve labels, and `Axes` draws a rotated title 100bp
+    # left of the axis -- which put it through the tick labels at x=54..67.  The
+    # "log scale" mark had the same problem in the other direction: inside the frame at
+    # the top left it sat on the random curve, its first data dot, and the "random 87\%"
+    # label.  One line above the plot says both things and touches nothing.
+    ax = Axes((170, 132, 330, 300), (0, 0.10), (0.001, 1), ylog=True,
               xticks=[0, 0.05, 0.10], yticks=[0.001, 0.01, 0.1, 1],
               xfmt=lambda v: f"{v:g}", yfmt=lambda v: pct(v, 1 if v < 0.01 else 0),
-              xlabel="fraction immunised", ylabel="component left")
+              xlabel="fraction immunised")
     b = ax.frame()
-    # An unannounced change of ruler is the whole argument of Part Five, one slide later.
-    b += text(ax.x0 + 8, ax.y1 - 4, "log scale", color="annot", anchor="north west")
+    b += text(268, 348, "component left (log scale)")
     series = [("random", "accent", f"random {pct(at10['random'])}"),
               ("acquaintance", "accenttwo", f"named {pct(at10['acquaintance'])}"),
               ("degree", "annot", "targeted")]

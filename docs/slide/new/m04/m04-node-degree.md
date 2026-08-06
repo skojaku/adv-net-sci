@@ -196,7 +196,7 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 <div class="cols">
 <div>
 
-* The eight girls average 2.5 friends.
+* The eight girls average <span class="accent">2.5</span> friends.
 * Their friends average **3.0**.
 * Not an insult, and not about being unpopular — every one of those ten friendships was counted twice, once from each end.
 
@@ -1438,6 +1438,8 @@ Real networks have hubs and random ones do not. What are real networks doing tha
 
 </div>
 
+Thirty seconds with your neighbour, then shout your best guess.
+
 <!--
 Fish for "they grow" and for "popular things get more popular". You need both.
 -->
@@ -1508,11 +1510,11 @@ Do not let anyone off with "the left one looks clumpier". Ask what in the tail t
 <div class="fig">
 
 ![w:1080](figures/quiz-answer.png)
-<figcaption>largest degree 315 with preference, 29 without · sketches: 24 nodes · tails: 20 000 nodes</figcaption>
+<figcaption>largest degree 315 with preference, 29 without</figcaption>
 
 </div>
 
-Same growth, same average degree. Take preference away and the tail is gone.
+Take preference away and the tail is gone.
 
 <!--
 And neither ingredient works alone: uniform growth gives an exponential tail, preference on a fixed set of nodes ends up connecting everything to everything. Module 08 asks whether degree is even the right thing to prefer.

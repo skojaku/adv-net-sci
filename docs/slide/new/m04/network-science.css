@@ -319,6 +319,13 @@ section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
 section .steps-list .i { font-size: 25px; color: #3959A6; flex: none; }
 
 /* secondary accents — use only where a contrast carries meaning */
+/* The theme had accent-2 and accent-3 but no way to say accent in body text, so a slide
+   whose figure encodes "each girl" in blue and "her friends" in red could only match
+   half of it: the body set both numbers red, and a student holding the figure's key
+   read the blue quantity as the red one. `strong` is accent-2 by design, so a bolded
+   number is always the red one -- this is the class for the other side of a two-colour
+   encoding. Body text only; in-figure colour lives in the generators. */
+.accent   { color: #3959A6; }
 .accent-2 { color: #B14434; }
 .accent-3 { color: #DAB167; }
 

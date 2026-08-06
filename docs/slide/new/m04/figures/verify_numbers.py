@@ -467,7 +467,18 @@ LITERATURE = r"""
 
   Cohen, Havlin, ben-Avraham 2003. PRL 91:247901.   acquaintance immunization
   Barabasi & Albert 1999. Science 286:509-512.      preferential attachment, gamma = 3
-  Broido & Clauset 2019. Nat. Commun. 10:1017.      "Scale-free networks are rare"
+  Broido, Anna D. and Aaron Clauset 2019. Nat. Commun. 10:1017.  [abstract verified]
+      "Scale-free networks are rare"
+      "Here we test the universality of scale-free structure by applying state-of-the-art
+       statistical tools to a large corpus of nearly 1000 network data sets drawn from
+       social, biological, technological, and informational sources."
+      "...with only 4% exhibiting the strongest-possible evidence of scale-free
+       structure."
+      NOT verified: the corpus size 927, which is widely quoted and appears in the paper
+      body rather than the abstract, and which I could not open. The slide says "nearly
+      1000" for that reason. 4% is quoted verbatim above and may be used as it stands.
+      This is the slide that teaches the room not to believe a claim it has only eyeballed;
+      it is not the place to print a number on the strength of remembering it.
 """
 
 if __name__ == "__main__":
