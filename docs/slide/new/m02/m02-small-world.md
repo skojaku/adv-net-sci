@@ -25,7 +25,7 @@ Open with Omaha, not with definitions. The paradox — clustered *and* short —
 
 <!-- _class: mid -->
 
-## Today's question
+## Today’s question
 
 <hr>
 
@@ -46,7 +46,7 @@ Why is a stranger on the other side of the world only about six handshakes away?
 <div class="steps-list">
 
 <div><div class="i">01</div><div>The claim — a letter from Omaha, and 160 envelopes</div></div>
-<div><div class="i">02</div><div>Measuring "six" — distance, average path length, diameter</div></div>
+<div><div class="i">02</div><div>Measuring “six” — distance, average path length, diameter</div></div>
 <div><div class="i">03</div><div>The other half — triangles and clustering</div></div>
 <div><div class="i">04</div><div>The yardstick — a random baseline and the index sigma</div></div>
 <div><div class="i">05</div><div>The mechanism — Watts–Strogatz rewiring</div></div>
@@ -81,7 +81,7 @@ Each packet names one target: a stockbroker who works in Boston.
 <div class="fig">
 
 ![w:520](figures/milgram-route.png)
-<figcaption>one packet's actual route across the country</figcaption>
+<figcaption>Milgram’s experiment: starters in the Midwest, one target near Boston</figcaption>
 
 </div>
 </div>
@@ -154,7 +154,7 @@ Of the 160 packets that went out, 64 reached the target. The rest stalled somewh
 <div class="fig">
 
 ![w:1000](figures/milgram-chain.png)
-<figcaption>one packet's route, hop by hop</figcaption>
+<figcaption>one packet’s route, hop by hop</figcaption>
 
 </div>
 
@@ -164,7 +164,7 @@ The median completed chain ran through roughly six links. Not sixty.
 
 <!-- _class: mid -->
 
-## Milgram never said "six degrees"
+## Milgram never said “six degrees”
 
 <hr>
 
@@ -249,7 +249,7 @@ Average distance between two users: **4.74**.
 <div class="fig">
 
 ![w:520](figures/replication-facebook.png)
-<figcaption>eight hundred times the people, still under five</figcaption>
+<figcaption>red: the new measurement, eight hundred times the people</figcaption>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ Is *finding* a short route the same as one *existing*?
 
 ---
 
-## What Milgram's subjects actually did
+## What Milgram’s subjects actually did
 
 <hr>
 
@@ -307,7 +307,7 @@ Is *finding* a short route the same as one *existing*?
 
 </div>
 
-Milgram's subjects had no map. They **routed** on local knowledge alone, which is a harder thing than short routes merely existing.
+Milgram’s subjects had no map. They **routed** on local knowledge alone, which is a harder thing than short routes merely existing.
 
 ---
 
@@ -315,7 +315,7 @@ Milgram's subjects had no map. They **routed** on local knowledge alone, which i
 
 <div class="band"><span>Part Two</span><span class="count">02 / 06</span></div>
 
-## Measuring "six"
+## Measuring “six”
 
 Turn the chain into a graph and count
 
@@ -334,7 +334,7 @@ Turn the chain into a graph and count
 
 </div>
 
-Each person becomes a **node**; "knows on a first-name basis" becomes an **edge**. Everything else about them is gone.
+Each person becomes a **node**; “knows on a first-name basis” becomes an **edge**. Everything else about them is gone.
 
 ---
 
@@ -355,7 +355,7 @@ Not kilometres. Not people. Edges.
 <div class="fig">
 
 ![w:520](figures/distance-def.png)
-<figcaption>the same number in either direction</figcaption>
+<figcaption>one shortest route, its edges numbered</figcaption>
 
 </div>
 </div>
@@ -392,7 +392,7 @@ Not kilometres. Not people. Edges.
 
 </div>
 
-Six edges, seven people. That is the number you wrote down at the start — and the shape the phrase "six degrees" describes.
+Six edges, seven people. That is the number you wrote down at the start — and the shape the phrase “six degrees” describes.
 
 ---
 
@@ -426,7 +426,7 @@ Distance takes the **minimum**. The longer route still exists; it just does not 
 <div class="fig">
 
 ![w:520](figures/two-routes.png)
-<figcaption>red: the shortest route — dashed gray: the route it replaces</figcaption>
+<figcaption>red: the shorter route</figcaption>
 
 </div>
 </div>
@@ -521,7 +521,7 @@ Notice which pairs moved: the far ones. The neighbours were already close.
 <div class="fig">
 
 ![w:1000](figures/diameter.png)
-<figcaption>red: the worst pair in the network</figcaption>
+<figcaption>red: one of the four worst pairs</figcaption>
 
 </div>
 
@@ -620,16 +620,29 @@ Two edges meeting at a node form a **triplet**, counted at that shared **centre*
 
 Closed if the third edge is there, open if it is not.
 
-So one triangle holds three closed triplets — one centred at each corner.
-
 </div>
 <div class="fig">
 
 ![w:520](figures/triangle-triplet.png)
-<figcaption>closed and open, side by side</figcaption>
+<figcaption>ringed: the centre node of each triplet</figcaption>
 
 </div>
 </div>
+
+---
+
+## Counting a triangle’s triplets
+
+<hr>
+
+<div class="fig">
+
+![w:1000](figures/triplet-three-corners.png)
+<figcaption>the same triangle three times, a different centre each time</figcaption>
+
+</div>
+
+Every corner is the centre of a closed triplet of its own. So one triangle holds three closed triplets, not one.
 
 ---
 
@@ -642,7 +655,7 @@ So one triangle holds three closed triplets — one centred at each corner.
 
 Node $A$ has five friends.
 
-The question is not about $A$'s edges. It is about the edges among those five.
+The question is not about $A$’s edges. It is about the edges among those five.
 
 </div>
 <div class="fig">
@@ -662,7 +675,7 @@ The question is not about $A$'s edges. It is about the edges among those five.
 <div class="cols">
 <div>
 
-Every dashed line is a friendship that *could* exist among $A$'s five friends.
+Every dashed line is a friendship that *could* exist among $A$’s five friends.
 
 *Take 20 seconds — no formula, just count.*
 
@@ -689,8 +702,6 @@ With $k$ friends there are
 $$ \binom{k}{2} = \frac{k(k-1)}{2} $$
 
 possible edges among them.
-
-* Here: $5 \times 4 / 2 = 10$.
 
 </div>
 <div class="fig">
@@ -760,7 +771,7 @@ A closed 3-walk from $i$ can only be a triangle through $i$ — and every triang
 <div class="fig">
 
 ![w:520](figures/a3-walks.png)
-<figcaption>red one way round, gold the other</figcaption>
+<figcaption>two closed walks, one arrow each way round</figcaption>
 
 </div>
 </div>
@@ -850,10 +861,9 @@ Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\,
 <div class="fig tight">
 
 ![w:1000](figures/transitivity-def.png)
+<figcaption>every triplet counted once, at its centre node</figcaption>
 
 </div>
-
-* For the windmill that comes to $15/55 = 0.27$.
 
 ---
 
@@ -864,6 +874,7 @@ Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\,
 <div class="fig">
 
 ![w:1000](figures/windmill-split.png)
+<figcaption>red: the hub’s share of the triplets</figcaption>
 
 </div>
 
@@ -897,9 +908,9 @@ On paper: the local clustering coefficient of the three nodes named above. *Four
 
 </div>
 
-* $C_A = 1$ — both of $A$'s friends know each other
-* $C_B = 1/3$ — one of $B$'s three pairs is closed
-* $C_D = 0$ — $D$'s friends are strangers
+* $C_A = 1$ — both of $A$’s friends know each other
+* $C_B = 1/3$ — one of $B$’s three pairs is closed
+* $C_D = 0$ — $D$’s friends are strangers
 
 ---
 
@@ -1015,13 +1026,13 @@ What fraction of those pairs do you expect to be linked?
 <div class="cols">
 <div>
 
-Each neighbour pair is its own independent coin with the same $p$, so the expected fraction is $p$ — whatever the degree.
+Each neighbour pair is its own independent coin, with the same $p$ as every other pair.
 
-A node has $n-1$ coins of its own, so its **average degree** is $\langle k \rangle = p(n-1)$:
+So the fraction of them you expect to be linked is just $p$ — whatever the degree.
 
 <div class="formula">
 
-$$ C_{\mathrm{rand}} = p = \frac{\langle k \rangle}{n-1} $$
+$$ C_{\mathrm{rand}} = p $$
 
 </div>
 
@@ -1030,6 +1041,34 @@ $$ C_{\mathrm{rand}} = p = \frac{\langle k \rangle}{n-1} $$
 
 ![w:520](figures/er-clustering.png)
 <figcaption>ten pairs, ten independent coins</figcaption>
+
+</div>
+</div>
+
+---
+
+## From $p$ to a number you can measure
+
+<hr>
+
+<div class="cols">
+<div>
+
+A node has $n-1$ coins of its own, one for every other node, so its **average degree** is $\langle k \rangle = p(n-1)$.
+
+Turn that around and the baseline is written in something you can count on a real network:
+
+<div class="formula">
+
+$$ C_{\mathrm{rand}} = \frac{\langle k \rangle}{n-1} $$
+
+</div>
+
+</div>
+<div class="fig">
+
+![w:520](figures/er-coin.png)
+<figcaption>the same coins, counted one node at a time</figcaption>
 
 </div>
 </div>
@@ -1069,7 +1108,7 @@ In a sparse random graph you almost never come back to someone you have met, so 
 
 ---
 
-## Four and a half steps
+## Where the fan-out meets eight billion
 
 <hr>
 
@@ -1078,7 +1117,7 @@ Set $\langle k \rangle^L = n$ and solve: $L_{\mathrm{rand}} \approx \ln n / \ln 
 <div class="fig tight">
 
 ![w:1000](figures/fanout-solve.png)
-<figcaption>red: the world's population, at 150 friends each</figcaption>
+<figcaption>red: the world’s population, at 150 friends each</figcaption>
 
 </div>
 
@@ -1115,11 +1154,11 @@ That is why the two properties together are surprising, and why $\bar L$ alone p
 <div class="cols">
 <div>
 
-Normalise both halves against that random baseline:
+Normalise both halves against that random baseline. The $\bar C$ here is the average local clustering, not the transitivity.
 
 <div class="formula">
 
-$$ \sigma = \frac{C/C_{\mathrm{rand}}}{L/L_{\mathrm{rand}}} $$
+$$ \sigma = \frac{\bar C / C_{\mathrm{rand}}}{\bar L / L_{\mathrm{rand}}} $$
 
 </div>
 
@@ -1172,7 +1211,7 @@ Path length is barely 1.2–1.5 times the random baseline. Clustering is 6 to 30
 
 ## The mechanism
 
-"What I cannot create, I do not understand" — Feynman
+“What I cannot create, I do not understand” — Feynman
 
 ---
 
@@ -1250,13 +1289,13 @@ Crossing a ring lattice means walking around it, two nodes at a time.
 Same nodes, same number of edges, shuffled.
 
 * Routes get short immediately, and the clustering falls with them: 0.50 to 0.24 — at sixteen nodes, only a halving.
-* Grow the network and $\langle k \rangle/(n-1)$ takes it to nothing, while the ring stays at 0.50 forever.
+* Grow the network and the random baseline goes to nothing, while the ring stays at 0.50 forever.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/random-graph.png)
-<figcaption>short routes, and a quarter of the closure</figcaption>
+<figcaption>short routes, and half the closure</figcaption>
 
 </div>
 </div>
@@ -1312,7 +1351,7 @@ Walk the lattice edge by edge. With probability $p$, detach one end and reattach
 <div class="fig">
 
 ![w:520](figures/ws-rewire-step.png)
-<figcaption>one edge moved; every other edge stays exactly where it was</figcaption>
+<figcaption>one edge moved, the rest untouched</figcaption>
 
 </div>
 </div>
@@ -1480,8 +1519,7 @@ $\bar L$ averages $d(i,j)$ over every pair. This network has pairs with no route
 
 One unreachable pair makes $\bar L$ infinite, however short everything else is.
 
-* In practice: measure on the **largest connected component**.
-* Or average the reciprocals $1/d$ instead, which treats $\infty$ as 0.
+So in practice we measure on the **largest connected component**, and say that we did.
 
 </div>
 <div class="fig">
@@ -1491,6 +1529,10 @@ One unreachable pair makes $\bar L$ infinite, however short everything else is.
 
 </div>
 </div>
+
+<!--
+The other convention is the harmonic mean — average 1/d instead of d, so an unreachable pair contributes 0 rather than infinity. That quantity is called efficiency. Mention it only if someone asks; it needs a visual we do not have here.
+-->
 
 ---
 
@@ -1574,7 +1616,7 @@ The ring lattice has the long routes. Is it enough?
 <div class="cols">
 <div>
 
-$\sigma > 1$: the ring lattice's clustering advantage beats its distance penalty.
+$\sigma > 1$: the ring lattice’s clustering advantage beats its distance penalty.
 
 $\sigma \approx 5$ for a ring of a thousand nodes; even the 16-node ring scores 1.56.
 
@@ -1617,7 +1659,7 @@ Count the triplets centred on one intersection. How many are closed?
 
 ---
 
-## Counted together
+## Six triplets at every intersection
 
 <hr>
 
@@ -1648,7 +1690,7 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 <div class="fig tight">
 
 ![w:1000](figures/gnm-gnp.png)
-<figcaption>two recipes for "a random graph"</figcaption>
+<figcaption>two recipes for “a random graph”</figcaption>
 
 </div>
 
@@ -1663,7 +1705,7 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 <div class="fig tight">
 
 ![w:1000](figures/gnm-gnp-answer.png)
-<figcaption>fixing the edge count couples the edges to each other</figcaption>
+<figcaption>red: independent edges — gray: coupled ones</figcaption>
 
 </div>
 
@@ -1682,7 +1724,7 @@ Fix $m$ and the edges stop being independent: using one up makes the rest less l
 
 </div>
 
-Film collaborations, a power grid, and a worm's nervous system. Nothing social connects them — and all three are small worlds.
+Film collaborations, a power grid, and a worm’s nervous system. Nothing social connects them — and all three are small worlds.
 
 ---
 
