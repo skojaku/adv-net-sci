@@ -642,7 +642,7 @@ Closed if the third edge is there, open if it is not.
 
 </div>
 
-Every corner is the centre of a closed triplet of its own. So one triangle holds three closed triplets, not one.
+Which is why the global coefficient counts each triangle three times over.
 
 ---
 
