@@ -243,7 +243,10 @@ async function describeImage(
 ): Promise<{ text: string; model?: string; failed: boolean }> {
   const noVisionAdvice =
     "Ask the student to describe their drawing in words instead (e.g. which dots " +
-    "they connected and why), then judge their words — that is a perfectly valid pass.";
+    "they connected and why), then judge their words — that is a perfectly valid pass. " +
+    "Say NOTHING to them about the picture not being readable: a live run announced " +
+    "\"the page viewer's being stubborn today\", which is your plumbing and not their " +
+    "problem. Just ask them to talk you through the page.";
   const model = resolveVisionModel(ctx);
   if (!model) {
     return {
@@ -697,8 +700,16 @@ function tutorAwaitingAnswer(ctx: any): string {
       // A tool-only assistant turn is not the tutor speaking.
       if (!text) continue;
       if (role === "user") return "";
-      const last = text.split(/\n+/).filter(Boolean).pop() ?? "";
-      return last.trim().endsWith("?") ? last.trim() : "";
+      const last = (text.split(/\n+/).filter(Boolean).pop() ?? "").trim();
+      // Not only a trailing "?": a live run asked "does that mean your camera's
+      // working now?" and then added "Just so I know for the next paper page."
+      // — so the line ended in a full stop, the guard stayed quiet, and the
+      // picker ate the answer exactly as before. Take the last sentence that
+      // IS a question.
+      if (!last.includes("?")) return "";
+      const upTo = last.slice(0, last.lastIndexOf("?") + 1);
+      const sentences = upTo.split(/(?<=[.!?])\s+/).filter(Boolean);
+      return (sentences.pop() ?? upTo).trim();
     }
   } catch {
     /* a transcript we cannot read never blocks a close */
@@ -1090,7 +1101,13 @@ const ACK_WORDS = new Set(
   ("ok okay k kk yep yup yeah ya sure right true ready im i m ive got it gotcha see ah oh ohh " +
     "hm hmm mm uh huh thanks thanku thank you cool nice great awesome perfect makes sense " +
     "understood understand lets go going next continue done finished fine alright allright " +
-    "sounds good please well so and then ill let s").split(" "),
+    "sounds good please well so and then ill let s " +
+    // A whole turn answering the tutor's own offer — "yeah, a quick note would
+    // be nice" — is not the student's work, and a live run left it sitting in
+    // the note between two real answers. `yes` and `no` stay OUT: they can be
+    // the answer to a lesson question.
+    "would could should will do does did a an the be is are quick note maybe bit little " +
+    "one that this these those").split(" "),
 );
 const normMsg = (m: string) =>
   m
@@ -1103,7 +1120,10 @@ function isFillerMessage(m: string): boolean {
   const t = normMsg(m);
   if (!t || /\d/.test(t)) return false;
   const words = t.split(" ");
-  if (words.length > 5) return false;
+  // Eight, not five: the live example ran seven. Still short enough that a
+  // real answer is safe — and one that is not is rescued by matching
+  // student_response.
+  if (words.length > 8) return false;
   return words.every((w) => ACK_WORDS.has(w));
 }
 
@@ -2029,6 +2049,9 @@ export default function (pi: ExtensionAPI) {
         `You are the SAME tutor, mid-session. Conversation so far, summarized:\n` +
         `Progress:\n${progressBrief(readSessionLog())}\n` +
         `Tutor's notes: ${params.handoff}\n` +
+        `Anything above about a camera, a phone or a photo belongs to the checkpoint it ` +
+        `happened at — it is NOT a standing fact about this student. Every paper ` +
+        `checkpoint in this chapter asks for the photo, in one line, and waits.\n` +
         `The notebook already contains every cell built so far — never rebuild them. ` +
         `Continue warmly with the same voice; your new CHAPTER SCRIPT message has the curriculum.`;
       pendingHandoffBrief = brief;
@@ -3453,9 +3476,14 @@ export default function (pi: ExtensionAPI) {
           .filter((c) => /\bmo\.ui\.file\s*\(/.test(c.code))
           .map((c) => c.name);
         const uploadLine = uploads.length
-          ? `Ask for the photo, then WAIT — never ask whether it is up. Their 📨 Send ` +
-            `to my tutor press starts your turn; then call ` +
-            `nb_view_image(widget="${uploads[0]}", …).\n`
+          ? `ASK FOR THE PHOTO NOW, in one line, and then WAIT — never ask whether it is ` +
+            `up. Their 📨 Send to my tutor press starts your turn; then call ` +
+            `nb_view_image(widget="${uploads[0]}", …).\n` +
+            `Say NOTHING about typing instead, and nothing about a camera, unless they ` +
+            `have mentioned one at THIS checkpoint. A camera that was out an hour ago ` +
+            `is not a fact about now: a live run opened here with "your camera was out ` +
+            `before — so just tell me which two dots", to a student who had a working ` +
+            `camera and had said nothing. The drawing is the point of this checkpoint.\n`
           : "";
         result.out =
           `Inserted. The student now sees: ${describe}\n` +
