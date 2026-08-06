@@ -782,6 +782,7 @@ async function insertChapterHeader(
         focusCellCode("_cid", "        "),
       signal,
     );
+    await pinAppealToBottom(signal);
     return true;
   } catch {
     // headers are cosmetic — never block the lesson
@@ -1645,7 +1646,7 @@ async function insertMarkdownCell(
   // outage lands in its own place rather than after the cells written while
   // the notebook was down.
   const body = `mo.md(${pyMd(markdown)})`;
-  return runKernel(
+  const r = await runKernel(
     `import marimo._code_mode as cm\n` +
       `async with cm.get_context() as ctx:\n` +
       `    _names = [c.name for c in ctx.cells]\n` +
@@ -1657,6 +1658,34 @@ async function insertMarkdownCell(
       focusCellCode("_cid", "        "),
     signal,
   );
+  if (!r.failed) await pinAppealToBottom(signal);
+  return r;
+}
+
+/**
+ * Keep the ⚖️ "Tutor gets stuck" box the LAST thing on the page: every
+ * insert lands above it, so the student always finds the appeal box at the
+ * bottom, right under the newest material. The box's two cells are
+ * anonymous on purpose (nb_fresh_start's wipe deletes every NAMED cell),
+ * so they are found by their code instead of a name. Moves are visual only
+ * — no cell re-executes. Purely cosmetic: a failure never blocks an insert.
+ */
+async function pinAppealToBottom(signal?: AbortSignal): Promise<void> {
+  try {
+    await runKernel(
+      `import marimo._code_mode as cm\n` +
+        `async with cm.get_context() as ctx:\n` +
+        `    _app = [c.id for c in ctx.cells if "tutor_stuck_send" in c.code]\n` +
+        `    _ids = [c.id for c in ctx.cells]\n` +
+        `    if len(_app) == 2 and _ids[-2:] != _app:\n` +
+        `        ctx.move_cell(_app[0], after=_ids[-1])\n` +
+        `        ctx.move_cell(_app[1], after=_app[0])\n` +
+        `    print("ok")\n`,
+      signal,
+    );
+  } catch {
+    /* cosmetic — never let pinning break an insert */
+  }
 }
 
 /** The closing record + summary are DERIVED from the log, never retyped. */
@@ -3433,7 +3462,9 @@ export default function (pi: ExtensionAPI) {
                 `    print("INSERTED ANYWAY (third attempt) —", _fatal or _note, ` +
                 `"Fix it with nb_edit_cell rather than retrying.")\n`)
           : inner);
-      return toResult(await runKernel(code, signal));
+      const addCellResult = await runKernel(code, signal);
+      if (!addCellResult.failed) await pinAppealToBottom(signal);
+      return toResult(addCellResult);
     },
     ...quietRender,
   });
@@ -3638,6 +3669,7 @@ export default function (pi: ExtensionAPI) {
         `        ctx.run_cell(_cid)\n`;
       code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
+      if (!result.failed) await pinAppealToBottom(signal);
       if (!result.failed) {
         result.out =
           `Exercise inserted. The student sees your instructions, a runnable code box, a ` +
@@ -3768,6 +3800,7 @@ export default function (pi: ExtensionAPI) {
       }
       code += focusCellCode("_first", "        ");
       const result = await runKernel(code, signal);
+      if (!result.failed) await pinAppealToBottom(signal);
       if (!result.failed && describe) {
         // Upload widgets are named per template (cp4_photo, cp2_paperwork_photo,
         // cp5_ring_paperwork_photo…). The tutor cannot know which one it just
@@ -3947,6 +3980,7 @@ export default function (pi: ExtensionAPI) {
         // header is cosmetic
       }
       const result = await runKernel(code, signal);
+      if (!result.failed) await pinAppealToBottom(signal);
       if (!result.failed) {
         result.out =
           `Fresh start complete. The Chapter 1 script arrives next — END YOUR TURN NOW ` +
@@ -4165,6 +4199,7 @@ export default function (pi: ExtensionAPI) {
         `    print("B64:" + _b64.b64encode(_out.getvalue()).decode())\n`;
       const result = await runKernel(code, signal);
       if (result.failed) return toResult(result);
+      await pinAppealToBottom(signal);
       if (result.out.includes("NO_IMAGE")) {
         return toResult({
           out:
