@@ -117,10 +117,22 @@ def _looks_like_ascii_art(lines):
     # pipes and no connectors, which is what keeps it out of this net.
     connectors = "-_/\\─—–"
     pure = re.compile(r"^[\s" + re.escape(chars) + r"]{3,}$")
+    def _table_row(t):
+        # "| p | L/L0 | C/C0 |" — pipes around cells that have words in them.
+        # A diagram's "|   |" and "|______|" have no letters between the pipes,
+        # so they are not exempt. Without this, a results table headed with
+        # this module's own notation (L/L0, C/C0, N/k) read as two connectors
+        # and got flagged as hand-drawn.
+        return t.startswith("|") and t.endswith("|") and t.count("|") >= 2 and any(
+            c.isalnum() for c in t
+        )
+
     hits = 0
     for ln in lines:
         t = ln.strip()
         if not t:
+            continue
+        if _table_row(t):
             continue
         if pure.match(ln):
             hits += 1
