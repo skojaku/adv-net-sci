@@ -346,7 +346,8 @@ def curve_label(ax, s, ats, own, boxes, others=(), color="black", size=FONT, pad
     # has to be one a reader would infer, and a 24-direction sweep finds pockets the
     # 8-direction one steps over. `max 315` sits in one of them.
     best = None
-    for at, r, deg in ((a, r, d) for a in ats for r in (46, 60, 78, 98, 122, 150, 180)
+    for at, r, deg in ((a, r, d) for a in ats
+                       for r in (46, 60, 78, 98, 122, 150, 180, 215, 255, 300)
                        for d in range(0, 360, 15)):
         a = math.radians(deg)
         cx, cy = at[0] + r * math.cos(a), at[1] + r * math.sin(a)
@@ -1529,9 +1530,14 @@ def fig_ba_growth():
 # The quiz panels: two sketches on the left, one CCDF panel on the right.  A and B are
 # identities, not answers -- the room needs them to say which tail belongs to which
 # picture, and neither letter says which rule built it.
-QUIZ_A = (8, 66, 320, 340)          # uniform growth
-QUIZ_B = (330, 66, 642, 340)        # preferential attachment
-QUIZ_FRAME = (818, 145, 1058, 356)
+# R4 C4-5: the CCDF panel was 240bp wide, which is narrower than the label "largest 315"
+# and left the solver 284 feasible spots none of which a leader could reach without
+# crossing the other curve. The sketches lose 32bp each -- the layout solves to the same
+# 46bp clearance and the same five crossings at 280 as at 312 -- and the panel carrying
+# the evidence gains 58.
+QUIZ_A = (8, 66, 288, 340)          # uniform growth
+QUIZ_B = (300, 66, 580, 340)        # preferential attachment
+QUIZ_FRAME = (760, 145, 1058, 356)
 
 
 def _quiz_body(labels, fills, dashes):
@@ -1573,7 +1579,7 @@ def _quiz_body(labels, fills, dashes):
               xticks=[1, 10, 100], yticks=CCDF_YTICKS, xfmt=dec)
     body += ax.frame()
     body += text((ax.x0 + ax.x1) / 2, 79, "degree $k$", anchor="north")
-    body += text(676, (ax.y0 + ax.y1) / 2, "$P(k' > k)$", rot=90)
+    body += text(618, (ax.y0 + ax.y1) / 2, "$P(k' > k)$", rot=90)
     drawn, anchors, curves = [], [], []
     for d, col, dash, fracs in ((ua, fills[0], dashes[0], (0.85, 0.7, 0.95, 0.55)),
                                 (ba, fills[1], dashes[1], (0.75, 0.6, 0.9, 0.45))):
@@ -1641,12 +1647,18 @@ def fig_quiz_answer():
     boxes = [label_box(ax.X(v), ax.y0 - 17, dec(v), "north") for v in (1, 10, 100)]
     # The preferential tail reaches the frame's bottom-right corner, so it is the
     # constrained one and claims its spot first.
+    # A leader is the other half of C4-5's fix and it is not available here: the
+    # preferential tail ends in the frame's bottom-right corner and every free box sits
+    # up and to the left, so a line to it crosses the other curve -- which is the thing a
+    # leader exists to rule out. So the reviewer's other exit: the number is glossed, the
+    # way slide 073 glosses its own, and can no longer be read as a coordinate.
     for (col, pts), d in sorted(zip(curves, (ua, ba)), key=lambda z: -int(z[1].max())):
-        body += curve_label(ax, f"max {int(d.max())}",
-                            [pts[-1], pts[-6], pts[-14], pts[-26]], pts, boxes,
+        anchors_ = [pts[min(int(len(pts) * f), len(pts) - 1)]
+                    for f in (0.98, 0.92, 0.85, 0.78, 0.7, 0.6, 0.5)]
+        body += curve_label(ax, f"max {int(d.max())}", anchors_, pts, boxes,
                             others=[q for c, p in curves if c != col for q in p],
-                            color=col, floor=14, margin=1.1, force_leader=True,
-                            bounds=(700, ax.y0 + 6, 1070, ax.y1 - 6))
+                            color=col, floor=14, margin=1.1,
+                            bounds=(ax.x0 + 6, ax.y0 + 6, 1070, ax.y1 - 6))
     emit("quiz-answer", body, container="full", h=H)
 
 
