@@ -243,12 +243,17 @@ def fig_feld_friendmeans():
         shown = (float(chip[n]) > degree(n)) - (float(chip[n]) < degree(n))
         assert exact == shown, f"{n}: rounding {fm[n]} to {chip[n]} flips the comparison"
 
-    colour = {}
-    for n in FELD_ORDER:
-        colour[n] = ("accenttwo" if n in BELOW else "accent" if n in ABOVE else "annot")
-    assert sum(v == "accenttwo" for v in colour.values()) == len(BELOW) == 5
-    assert sum(v == "accent" for v in colour.values()) == len(ABOVE) == 2
-    assert sum(v == "annot" for v in colour.values()) == len(EQUAL) == 1
+    # R3 A3-1: accent-2 is the node we are counting, or the hub -- the role it carries
+    # on 014, 023, 026 and 027.  It used to mark the five girls whose friends have more,
+    # which put Sue and Alice, the two hubs, in accent one slide before 023 drew them in
+    # accent-2; the deck then had to state the opposite key twice.  Above the line is
+    # filled accent-2, below is a hollow disc, and equal stays gray, so this figure
+    # spends no colour on a meaning any other figure has taken.
+    assert ABOVE == ["Sue", "Alice"], ABOVE
+    colour = {n: ("accenttwo" if n in ABOVE else "annot" if n in EQUAL else None)
+              for n in FELD_ORDER}
+    assert sum(v == "accenttwo" for v in colour.values()) == len(ABOVE) == 2
+    assert sum(v is None for v in colour.values()) == len(BELOW) == 5
 
     # Sixteen labels sharing eight coordinates: the name and the chip are solved as
     # independent labels of the same disc, so each finds its own free side.
@@ -260,11 +265,20 @@ def fig_feld_friendmeans():
     chosen, _ = place_labels(lab, pos2, FELD_EDGES, bounds=LABEL_BAND)
 
     b = feld_body()
-    b += "".join(disc(*POS[n], str(degree(n)), fill=colour[n]) for n in FELD_ORDER)
+    for n in FELD_ORDER:
+        if colour[n] is None:
+            # the count rides inside the disc node, as it does everywhere else -- a
+            # separate text() would be recorded and the edges under it are rules.
+            b += disc(*POS[n], str(degree(n)), fill="white", text_col="black")
+            # ink, not gray: the deck's key names red and names Carol, so gray has
+            # to stay Carol's. A hollow ink disc reads as "a node, not red".
+            b += ring(*POS[n], size=NODE, color="black", w=3.0, grow=0)
+        else:
+            b += disc(*POS[n], str(degree(n)), fill=colour[n])
     for key, (anc, dx, dy) in chosen.items():
         n = key.rstrip("#")
         b += text(POS[n][0] + dx, POS[n][1] + dy, lab[key], anchor=anc,
-                  color=colour[n] if key.endswith("#") else "black")
+                  color=(colour[n] or "black") if key.endswith("#") else "black")
     emit("feld-friendmeans", b, container="full", h=FULL_H)
 
 
@@ -276,12 +290,19 @@ def fig_feld_two_numbers():
     # build spends accent on a role (the hub, the node being counted), and a
     # second encoding of 2.5 as "blue" collided with it. Only the number this
     # slide is about is coloured.
-    rows = [(280, num(own, 1), "black", "each girl", 320),
-            (120, num(friends, 1), "accenttwo", "her friends", 280)]
-    for y, v, col, lab, lead_x1 in rows:
+    # The labels name the SAMPLING, not the object. "her friends" was true of both
+    # numbers -- the room's 2.99 is the mean of eight per-girl means and Feld's 3.0 is
+    # the mean over the twenty friendships -- so it labelled the one thing that does not
+    # tell them apart. Same distinction `two-averages.png` draws in Part Three.
+    # Labels left-aligned at a common x, so the two leaders are the same length. Hung
+    # off the right edge instead, one came out 135bp and the other 20bp and the pair
+    # read as a broken rule rather than as two rows of one table.
+    rows = [(280, num(own, 1), "black", "per girl"),
+            (120, num(friends, 1), "accenttwo", "per friendship")]
+    for y, v, col, lab in rows:
         b += text(25, y, v, color=col, anchor="west", size=92)
-        b += text(512, y, lab, color="annot", anchor="east")
-        b += seg((195, y), (lead_x1, y), color="annot", w=2.0, dash=DASH)
+        b += text(270, y, lab, color="annot", anchor="west")
+        b += seg((195, y), (255, y), color="annot", w=2.0, dash=DASH)
     emit("feld-two-numbers", b, container="col", h=COL_H)
 
 
@@ -564,53 +585,57 @@ def fig_rosters():
 
 # ========================================================================= Part Three
 def fig_bag_of_hands():
-    """R1 A-12: the initials get a key, and accent-2 keeps the meaning slide 024 gave it.
+    """Twenty edge ENDS, drawn with the deck's end glyph (R3 A3-5).
 
-    Red marked "the two degree-4 hubs" on `rosters.png` and then "Sue only" here, so
-    Alice's four hands went blue one slide after she was red. Both hubs are red now, and
-    the three-name key under the bag says what a letter in a disc is.
+    This slide's single point is that you do not pick a person, you pick one end of one
+    edge -- and it drew the ends as the 40px lettered disc that has meant a person on
+    every slide since 006.  Red ticks now, the same mark 016, 017 and 027 use, each
+    labelled with its owner's initial.  Discs stay for people.
     """
     owners = []
     for v in FELD_ORDER:
         owners += [v] * degree(v)
     assert len(owners) == 2 * M["M"] == 20
-    hubs = [v for v in FELD_ORDER if degree(v) == max(degree(u) for u in FELD_ORDER)]
-    assert hubs == ["Sue", "Alice"]
-    held = sum(1 for v in owners if v in hubs)
-    assert held == sum(degree(v) for v in hubs) == 8
+    assert len({v[0] for v in FELD_ORDER}) == len(FELD_ORDER), "initials are not unique"
 
-    b = rect(45, 75, 492, 283, draw="annot", w=3.4, rounded=20)
+    b = rect(30, 40, 480, 285, draw="annot", w=3.4, rounded=20)
     for i, v in enumerate(owners):
-        x, y = 90 + (i % 5) * 88, 241 - (i // 5) * 48
-        b += disc(x, y, v[0], fill="accenttwo" if v in hubs else "accent")
-    b += text(268, 325, f"{len(owners)} ends: "
-                        f"\\textcolor{{accenttwo}}{{{' and '.join(hubs)} hold {held}}}")
-    b += text(268, 38, ", ".join(f"{v[0]} = {v}" for v in ("Sue", "Alice", "Betty")),
-              color="annot")
+        x, y = 60 + (i % 5) * 88, 250 - (i // 5) * 60
+        b += end_mark(x, y)
+        b += text(x + 16, y, v[0], color="annot", anchor="west")
+    b += text(268, 330, f"{len(owners)} ends, and whose they are")
     emit("bag-of-hands", b, container="col", h=COL_H)
 
 
 def fig_qk_formula():
-    """All eight hand-counts, so the room sees the draw chance rise with k (R1 A-6).
+    """q(k) drawn per DEGREE, because that is what q(k) is (R3 A3-4).
 
-    The first version was 20 tallies with 4 of them red -- the same count, the same
-    colour meaning and the same fraction as `bag-of-hands.png` on the slide before, in a
-    different glyph, while the slide's actual claim (the chance is proportional to k)
-    had no picture at all.  Sorted ascending, the eight rows ARE that claim.
+    Eight per-girl rows put "4 of 20 = 0.2" under a formula whose value at k = 4 is
+    0.4: two girls sit at degree four and q(k) collects both of them.  One row per
+    degree, all that degree's hands in it, and the fraction beside it -- which is now
+    q(k) itself and is asserted equal to k*p(k)/<k>.
     """
-    order = sorted(FELD_ORDER, key=lambda v: (degree(v), FELD_ORDER.index(v)))
-    assert [degree(v) for v in order] == [1, 1, 2, 2, 3, 3, 4, 4]
+    from fractions import Fraction
+    piles = {}
+    for v in FELD_ORDER:
+        piles.setdefault(degree(v), []).append(v)
+    ends, n = 2 * M["M"], M["N"]
     b, marks = "", 0
-    for i, v in enumerate(order):
-        col_x, row = (110, i) if i < 4 else (380, i - 4)
-        y = 250 - row * 60
-        b += text(col_x, y, v, anchor="east")
-        for j in range(degree(v)):
-            b += end_mark(col_x + 20 + j * 26, y)
+    for i, k in enumerate(sorted(piles)):
+        hands = k * len(piles[k])
+        q = Fraction(hands, ends)
+        assert q == Fraction(k) * Fraction(len(piles[k]), n) / M["k1"], (k, q)
+        y = 80 + i * 70
+        b += text(120, y, f"$k={k}$", color="annot", anchor="east")
+        for j in range(hands):
+            b += end_mark(146 + j * 26, y)
             marks += 1
-    assert marks == 2 * M["M"] == 20
-    b += text(268, 310, f"{marks} ends in all")
+        b += text(146 + 8 * 26, y, f"${hands}/{ends}$", color="accenttwo", anchor="west")
+    assert marks == ends == 20
+    b += text(268, 350, f"$q(k)$: share of the {ends} hands")
     emit("qk-formula", b, container="col", h=COL_H)
+
+
 
 
 # lmex10 -- the math EXTENSION font -- does not scale with \fontsize in this preamble:
@@ -841,13 +866,17 @@ def _worksheet(values=None):
     b += "".join(disc(*_STAR_POS[n], lab(n), fill="accent") for n in _STAR)
     lab2 = (lambda n: str(_RING.degree(n))) if values else (lambda n: "")
     b += "".join(disc(*_RING_POS[n], lab2(n), fill="accent") for n in _RING)
-    half = _ink_width(_WS_Q) / 2
+    # Both states anchor the prompt at the same LEFT edge and let the answer grow to the
+    # right, so the formula does not slide sideways between the two slides. The value is
+    # appended inside the same node through a macro rather than a second node: it keeps
+    # the two parts on one baseline, and it keeps the colour name out of the string
+    # figlib's collision gate measures.
+    b = "\\def\\ans#1{\\textcolor{accenttwo}{#1}}\n" + b
+    left = _ink_width(_WS_Q) / 2
     for i, cx in enumerate(_WS_CX):
-        b += text(cx, 78, _WS_Q)
+        q = _WS_Q if not values else _WS_Q[:-1] + f" \\ans{{{{}}= {values[i]}}}$"
+        b += text(cx - left, 78, q, anchor="west")
         b += seg((cx - 100, 32), (cx + 100, 32), color="accenttwo", w=5.0)
-        if values:
-            b += text(cx + half + 16, 78, f"$= {values[i]}$", color="accenttwo",
-                      anchor="west")
     return b
 
 
@@ -874,19 +903,35 @@ def _condmat_stats():
 
 
 def fig_coauthor_gap():
-    s, share = _condmat_stats()
-    assert s["N"] == 23133
-    assert num(s["k1"], 1) == "8.1" and num(s["friend"], 1) == "22.1"
-    b = text(250, 300, num(s["k1"], 1), color="accent", size=88)
-    b += text(830, 300, num(s["friend"], 1), color="accenttwo", size=88)
-    b += seg((420, 300), (660, 300), color="annot", w=3.4, arrow=ARROW)
-    b += text(250, 228, "each author", color="annot")
-    b += text(830, 228, "their coauthors", color="annot")
-    x0, x1 = 90, 990
-    b += strip(x0, x1, 140, share)
-    b += text(x0 + (x1 - x0) * share - 24, 140, pct(share, 1), color="white",
-              anchor="east")
-    b += text(x0, 68, "below their coauthors' average", color="annot", anchor="west")
+    """R3 A3-8: the last bar in the deck becomes the objects it was encoding.
+
+    Slide 040's three bars became a hundred discs for exactly this rule and this strip
+    was left behind, so 82.8% was the one quantity in the module still drawn as a length
+    to be decoded against a scale.  The field is 4 x 25 rather than 040's 10 x 10 so the
+    two slides do not read as the same picture twice.
+    """
+    s_, share = _condmat_stats()
+    assert s_["N"] == 23133
+    assert num(s_["k1"], 1) == "8.1" and num(s_["friend"], 1) == "22.1"
+    hit = round(share * 100)
+    assert hit == 83, hit
+
+    b = text(250, 330, num(s_["k1"], 1), color="accent", size=88)
+    b += text(830, 330, num(s_["friend"], 1), color="accenttwo", size=88)
+    b += seg((420, 330), (660, 330), color="annot", w=3.4, arrow=ARROW)
+    b += text(250, 258, "each author", color="annot")
+    b += text(830, 258, "their coauthors", color="annot")
+
+    PITCH, MARK, PER_ROW = 38, 26, 25
+    field, red = "", 0
+    for i in range(100):
+        row, col = divmod(i, PER_ROW)
+        field += dot(71 + col * PITCH, 205 - row * PITCH, d=MARK,
+                     color="accenttwo" if i < hit else "accent")
+        red += i < hit
+    assert red == hit == field.count("accenttwo"), (red, hit)
+    b += field
+    b += text(540, 40, f"{pct(share, 1)} below their coauthors' average", color="annot")
     emit("coauthor-gap", b, container="full", h=FULL_H)
 
 
@@ -1133,21 +1178,24 @@ def fig_immunization_curves():
     # "log scale" mark had the same problem in the other direction: inside the frame at
     # the top left it sat on the random curve, its first data dot, and the "random 87\%"
     # label.  One line above the plot says both things and touches nothing.
-    ax = Axes((170, 132, 330, 300), (0, 0.10), (0.001, 1), ylog=True,
+    # x0 = 140, not 170: "nominated" is four glyphs longer than "named" and the
+    # gutter label ran off the right edge of a 537bp column. The plot moves left
+    # and gives the gutter the room; the type does not move.
+    ax = Axes((140, 132, 300, 300), (0, 0.10), (0.001, 1), ylog=True,
               xticks=[0, 0.05, 0.10], yticks=[0.001, 0.01, 0.1, 1],
               xfmt=lambda v: f"{v:g}", yfmt=lambda v: pct(v, 1 if v < 0.01 else 0),
               xlabel="fraction immunised")
     b = ax.frame()
-    b += text(268, 348, "component left (log scale)")
+    b += text(250, 348, "component left (log scale)")
     series = [("random", "accent", f"random {pct(at10['random'])}"),
-              ("acquaintance", "accenttwo", f"named {pct(at10['acquaintance'])}"),
+              ("acquaintance", "accenttwo", f"nominated {pct(at10['acquaintance'])}"),
               ("degree", "annot", "targeted")]
     for key, col, lab in series:
         ys = c[key]
         b += ax.line(IMM_F, ys, color=col, w=3.6,
                      dash=DASH if key == "degree" else "")
         b += ax.points(IMM_F, ys, color=col, d=11)
-        b += text(338, ax.Y(ys[-1]), lab, color=col, anchor="west")
+        b += text(308, ax.Y(ys[-1]), lab, color=col, anchor="west")
     emit("immunization-curves", b, container="col", h=COL_H)
 
 

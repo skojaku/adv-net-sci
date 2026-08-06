@@ -172,12 +172,12 @@ This is the whole module in one instruction. Do not answer it, do not hint, and 
 
 <hr>
 
-Red: she has fewer friends than her friends average. Blue: more. Gray: exactly equal.
+**Red**: she has more friends than her friends average. Everyone else has fewer — except Carol, exactly equal.
 
 <div class="fig">
 
 ![w:1080](figures/feld-friendmeans.png)
-<figcaption>five red, two blue, and Carol the only gray</figcaption>
+<figcaption>her own count in the disc, her friends' average beside it</figcaption>
 
 </div>
 
@@ -189,7 +189,7 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 
 <!-- _class: mid -->
 
-## Feld's number
+## Feld’s number
 
 <hr>
 
@@ -197,17 +197,21 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 <div>
 
 * The eight girls average <span class="accent">2.5</span> friends.
-* Their friends average **3.0**.
-* Not an insult, and not about being unpopular — every one of those ten friendships was counted twice, once from each end.
+* Your eight answers average **2.99**; Feld’s own number is **3.0**.
+* Not an insult, and not about being unpopular — we will find out why in a moment.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/feld-two-numbers.png)
-<figcaption>two averages over the same ten friendships</figcaption>
+<figcaption>the same eight girls, counted two ways</figcaption>
 
 </div>
 </div>
+
+<!--
+Do not explain the 2.99 yet — Part Three's "Careful: which average?" is built for it. If someone asks, say only that there is more than one way to average and we will pin it down.
+-->
 
 ---
 
@@ -215,7 +219,7 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 
 <hr>
 
-So Feld ran it on every girl in the survey with at least one friend — all 146 of them.
+So Feld ran it on every girl in that school with at least one friend — all 146 of them.
 
 <div class="fig">
 
@@ -282,7 +286,7 @@ Let them add: 1 + 4 + 4 + 2 + 3 + 3 + 2 + 1. Ask for the number before you ask f
 
 ---
 
-## Twenty, and never odd
+## Count the ends instead
 
 <hr>
 
@@ -321,7 +325,7 @@ You never have to count degrees one by one. Count the edges and double them.
 <div class="fig">
 
 ![w:537](figures/mean-degree.png)
-<figcaption>twenty ends shared out among eight girls</figcaption>
+<figcaption>the shortcut that works for every graph there is</figcaption>
 
 </div>
 </div>
@@ -352,7 +356,7 @@ Let them try. Walk round. Somebody will get to four odd, or two, and be unable t
 
 <hr>
 
-Odd degrees pair off; one is always left holding a loose end.
+Ends pair off; one is always left holding a loose end.
 
 <div class="fig">
 
@@ -404,7 +408,7 @@ Two girls at each of one, two, three and four friends.
 
 </div>
 
-* A quarter of them at every degree — about as flat as a degree distribution gets.
+* About as flat as a degree distribution gets.
 
 <!--
 Flat and narrow. Hold that thought: this is why the gap in this network turns out to be small. Real networks are not this polite, and Part Five shows one.
@@ -432,11 +436,11 @@ Fish for "popular people get counted more". Do not supply it.
 
 ---
 
-## Hubs are on everybody's list
+## Hubs are on everybody’s list
 
 <hr>
 
-Sue and Alice appear on four lists each; Betty and Tina on one.
+**Red**: Sue and Alice, on four lists each. <span class="accent">Blue</span>: Betty and Tina, on one.
 
 <div class="fig">
 
@@ -459,7 +463,7 @@ This is the mechanism. Everything after this is turning it into a number.
 
 ## The exact gap
 
-Not "more" — how much more
+Not “more” — how much more
 
 ---
 
@@ -518,7 +522,7 @@ The same bag we used in Module 03 to follow an edge. Say so — this is the seco
 <div class="cols">
 <div>
 
-A girl with degree $k$ owns $k$ of the ends, so the chance of drawing her is proportional to $k$:
+Each girl owns as many ends as she has friends, so the chance that the end you draw belongs to a girl of degree $k$ is proportional to $k\,p(k)$:
 
 <div class="formula">
 
@@ -530,7 +534,7 @@ $$q(k) = \frac{k\,p(k)}{\langle k\rangle}$$
 <div class="fig">
 
 ![w:537](figures/qk-formula.png)
-<figcaption>four hands out of twenty belong to Sue</figcaption>
+<figcaption>twenty ends, and how they divide up among the eight</figcaption>
 
 </div>
 </div>
@@ -584,9 +588,11 @@ This is the only new notation in the whole derivation. Say the words "second mom
 <div class="fig">
 
 ![w:1080](figures/derivation-3.png)
-<figcaption>the second moment, rewritten</figcaption>
+<figcaption>an identity — true of any list of numbers at all</figcaption>
 
 </div>
+
+The second moment splits in two: the square of the mean, plus the **variance** — how spread out the degrees are.
 
 <!--
 Nothing new here — it is the definition of variance, rearranged. Substitute it on the next slide.
@@ -601,7 +607,7 @@ Nothing new here — it is the definition of variance, rearranged. Substitute it
 <div class="fig">
 
 ![w:1080](figures/derivation-4.png)
-<figcaption>mean friend degree equals mean degree plus variance over mean</figcaption>
+<figcaption>nothing in these four lines is an approximation</figcaption>
 
 </div>
 
@@ -648,11 +654,11 @@ This is the strongest sentence in the module. It is not a tendency, it is an ide
 <div class="fig">
 
 ![w:1080](figures/feld-check.png)
-<figcaption>variance one and a quarter, mean two and a half, gap one half</figcaption>
+<figcaption>two routes that could not look less alike</figcaption>
 
 </div>
 
-$2.5 + 0.5 = 3.0$ — and counting the sixty friends of the twenty friends by hand gave exactly the same.
+$2.5 + 0.5 = 3.0$ — and so does walking the twenty ends and adding up the sixty friends they lead to.
 
 <!--
 Two completely different routes, one number. That is the moment to pause.
@@ -667,7 +673,7 @@ Two completely different routes, one number. That is the moment to pause.
 <div class="fig">
 
 ![w:1080](figures/two-averages.png)
-<figcaption>draw an edge end, and you get three point zero; draw a person, and you get two point nine nine</figcaption>
+<figcaption>a difference of about one part in three hundred, and it decides Part Seven</figcaption>
 
 </div>
 
@@ -705,7 +711,7 @@ Star: degrees 3, 1, 1, 1. Ring: 2, 2, 2, 2, 2, 2. Make them predict first — th
 <div class="fig">
 
 ![w:1080](figures/worksheet-answer.png)
-<figcaption>star: gap one half. Ring: gap zero</figcaption>
+<figcaption>predict before you count — half the room expects a gap on the ring</figcaption>
 
 </div>
 
@@ -754,7 +760,7 @@ Take three suggestions from the room before moving on.
 <div class="fig">
 
 ![w:1080](figures/coauthor-gap.png)
-<figcaption>23,133 physicists: 8.1 coauthors each, and their coauthors have 22.1</figcaption>
+<figcaption>23,133 physicists, and the same identity as the eight girls</figcaption>
 
 </div>
 
@@ -924,14 +930,14 @@ Live demo: docs/lecture-note/assets/vis/vaccination-game.html. Let two students 
 
 Immunise one node in ten of the Internet's autonomous systems.
 
-* At random, **87%** of it stays connected. By naming a friend, **2%**.
+* At random, **87%** of it stays connected. Nominated, **2%**.
 * *For Thursday: the gap is the variance. So how big is the variance in a real network?*
 
 </div>
 <div class="fig">
 
 ![w:537](figures/immunization-curves.png)
-<figcaption>random, nominated, and the fully-informed strategy that needs the map</figcaption>
+<figcaption>the third strategy needs the whole map; nomination needs one question</figcaption>
 
 </div>
 </div>
@@ -952,14 +958,14 @@ We left off asking how spread out degrees really are
 
 ---
 
-## Here is that variance
+## Here is that gap
 
 <hr>
 
 <div class="fig">
 
 ![w:1080](figures/linear-axes.png)
-<figcaption>the 122 distinct coauthor counts among 23,133 authors, and how common each one is</figcaption>
+<figcaption>a fat tail, before we knew to call it one</figcaption>
 
 </div>
 
@@ -998,7 +1004,7 @@ None of these are answerable from that picture, which is the point.
 <div class="fig">
 
 ![w:1080](figures/fat-tail-reveal.png)
-<figcaption>78% of authors have ten coauthors or fewer; 28 of them run out past a hundred</figcaption>
+<figcaption>everything interesting is squashed into the first inch</figcaption>
 
 </div>
 
@@ -1124,7 +1130,7 @@ Nobody ever asks this and it changes everything downstream.
 <div class="fig">
 
 ![w:1080](figures/binning-1.png)
-<figcaption>bin width 1 — the choice we made without noticing</figcaption>
+<figcaption>the choice we made without noticing we were making it</figcaption>
 
 </div>
 
@@ -1139,11 +1145,11 @@ Out in the tail most bins hold one author, or none. That is where the scatter co
 <div class="fig">
 
 ![w:1080](figures/binning-2.png)
-<figcaption>bin width 8 — same data, same axes</figcaption>
+<figcaption>the second of three choices, all three equally defensible</figcaption>
 
 </div>
 
-Fewer points and less scatter. Nothing was recomputed; the bins were only drawn wider.
+Fewer points and less scatter. The degrees are unchanged; only the buckets are wider, so each holds eight times as many.
 
 ---
 
@@ -1154,7 +1160,7 @@ Fewer points and less scatter. Nothing was recomputed; the bins were only drawn 
 <div class="fig">
 
 ![w:1080](figures/binning-3.png)
-<figcaption>bin width 32 — same data, same axes</figcaption>
+<figcaption>none of the three is wrong, which is what makes it a problem</figcaption>
 
 </div>
 
@@ -1253,7 +1259,7 @@ Half the room will say yes. It is the single most common error in this material.
 </div>
 
 <!--
-The CCDF is the integral of the PDF, so its exponent is one smaller. On a log-log plot that is a slope of 1 - gamma.
+Integrating k^-gamma gives k^(1-gamma): the exponent moves UP by one, from -gamma to 1-gamma, which is the shallower slope you measure. Say it the same way round as the panel does.
 -->
 
 ---
@@ -1288,7 +1294,7 @@ Hands up for 1.3, hands up for 2.3. Count both before revealing.
 
 </div>
 
-$1 - \gamma = -1.3$. Off by one, and your network changes character completely.
+Off by one, and your network changes character completely.
 
 <!--
 Between gamma = 2 and gamma = 3 the variance diverges. That is not a rounding error, that is a different physics — and Module 03's f_c depended on it.
@@ -1337,7 +1343,7 @@ A tail that long has to be built by something
 <div class="fig">
 
 ![w:1080](figures/hubs-share.png)
-<figcaption>the top 1% of Internet nodes hold 33.8% of all edge ends</figcaption>
+<figcaption>this is what Module 03’s targeted attack was aiming at</figcaption>
 
 </div>
 
@@ -1356,7 +1362,7 @@ Sixty-five machines out of six thousand. That is what Module 03's targeted attac
 <div class="fig">
 
 ![w:1080](figures/universality.png)
-<figcaption>physicists, Internet routers, and yeast proteins on one pair of axes</figcaption>
+<figcaption>hold on to the word qualitative until Part Eight</figcaption>
 
 </div>
 
@@ -1395,7 +1401,7 @@ Module 02's random graph. Ask them to predict the shape before answering.
 <div class="fig">
 
 ![w:1080](figures/poisson-ccdf.png)
-<figcaption>the same 23,133 nodes and the same average as the physicists, wired at random</figcaption>
+<figcaption>the tail is not smaller here — it is absent</figcaption>
 
 </div>
 
@@ -1414,11 +1420,11 @@ Same mean degree as before. The tail is not smaller, it is absent: the largest d
 <div class="fig">
 
 ![w:1080](figures/three-ccdfs.png)
-<figcaption>the physicists' coauthorship, a random graph, and a ring lattice, on the same axes</figcaption>
+<figcaption>Module 02’s ring lattice, and the physicists from Tuesday</figcaption>
 
 </div>
 
-The wiring rule sets the tail: randomness cuts it short, a lattice flattens it, the physicists stretch it out.
+The wiring rule sets the tail: randomness cuts it short, a lattice collapses it to one degree, the physicists stretch it out.
 
 <!--
 Module 02's ring lattice. Three networks, three shapes, and the shape is the whole difference.
@@ -1445,6 +1451,8 @@ Fish for "they grow" and for "popular things get more popular". You need both.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## First ingredient: growth
 
@@ -1491,7 +1499,7 @@ Barabási-Albert, 1999. Rich get richer. Run the loop twice. The exponent that c
 <div class="fig">
 
 ![w:1080](figures/quiz.png)
-<figcaption>two networks, same average degree, and their two tails · sketches: 24 nodes · tails: 20 000 nodes</figcaption>
+<figcaption>two networks, same average degree, and their two tails</figcaption>
 
 </div>
 
@@ -1510,7 +1518,7 @@ Do not let anyone off with "the left one looks clumpier". Ask what in the tail t
 <div class="fig">
 
 ![w:1080](figures/quiz-answer.png)
-<figcaption>largest degree 315 with preference, 29 without</figcaption>
+<figcaption>same growth, same average degree, and only one of them has hubs</figcaption>
 
 </div>
 
@@ -1552,7 +1560,7 @@ The honest answer is no, and the gap between "on average" and "for you" is worth
 
 ---
 
-## "On average" is not "for you"
+## “On average” is not “for you”
 
 <hr>
 
@@ -1561,11 +1569,11 @@ If you are a hub it runs the other way: Sue and Alice beat theirs.
 <div class="fig">
 
 ![w:1080](figures/individual-vs-average.png)
-<figcaption>five of the eight girls below, two above, one exactly equal</figcaption>
+<figcaption>the theorem is about the average, and Sue is not the average</figcaption>
 
 </div>
 
-Their **mean**, or their **median**? Hands up if you think it matters.
+* Their **mean**, or their **median**? Hands up if you think it matters.
 
 <!--
 The theorem is a statement about the average, not about any one person. The two above the line are the two with four friends each — name them. Take the hands-up count out loud before moving on.
@@ -1600,11 +1608,13 @@ Ugander et al. 2011, 721 million users. 92.7% below the mean of their friends, 8
 
 <div class="formula">
 
-Build me a network where nobody's friends have more friends than they do.
+Build me a network where nobody’s friends have more friends than they do.
 
 </div>
 
-Open docs/lecture-note/assets/vis/friendship-paradox-game.html and try. Two minutes.
+Open the builder and try. Two minutes.
+
+docs/lecture-note/assets/vis/friendship-paradox-game.html
 
 <!--
 docs/lecture-note/assets/vis/friendship-paradox-game.html. Let them fail a few times first — every irregular attempt has a positive gap.
@@ -1619,7 +1629,7 @@ docs/lecture-note/assets/vis/friendship-paradox-game.html. Let them fail a few t
 <div class="fig">
 
 ![w:1080](figures/vanishing.png)
-<figcaption>ring, complete graph, lattice — every node the same degree, so the variance is zero</figcaption>
+<figcaption>regularity is the price, which is why no real network pays it</figcaption>
 
 </div>
 
@@ -1658,7 +1668,7 @@ Two degrees now, in and out. Ask which one they think tilts.
 <div class="fig">
 
 ![w:1080](figures/directed.png)
-<figcaption>in-degree and out-degree, counted separately on the same network</figcaption>
+<figcaption>Hodas et al. confirm all four versions of this on Twitter</figcaption>
 
 </div>
 
@@ -1697,7 +1707,7 @@ Most of the room will say yes, because we have spent an hour treating p(k) as th
 <div class="fig">
 
 ![w:1080](figures/assortativity.png)
-<figcaption>the same degrees wired three ways: hubs together, hubs apart, hubs indifferent</figcaption>
+<figcaption>the degree distribution cannot tell these three apart</figcaption>
 
 </div>
 
@@ -1709,7 +1719,7 @@ Same p(k) for all three. Completely different networks.
 
 ---
 
-## And it changes Module 03's answer
+## And it changes Module 03’s answer
 
 <hr>
 
@@ -1765,7 +1775,7 @@ Count the hands. Say you are counting them. Then show the next slide.
 <div class="fig">
 
 ![w:1080](figures/lognormal-trap.png)
-<figcaption>a power law and a log-normal, drawn on top of each other</figcaption>
+<figcaption>multiply enough random factors together and you get the red one</figcaption>
 
 </div>
 
@@ -1790,7 +1800,7 @@ The log-normal. It arises from multiplying random factors — which is at least 
 
 </div>
 
-The paper that gave us Facebook's 92.7% also says its own degree distribution shows *substantial curvature* on these axes.
+The paper that gave us Facebook’s 92.7% also says its own degree distribution shows *substantial curvature* on log-log axes.
 
 <!--
 Ugander et al. 2011, in the same section we quoted for the paradox. Broido and Clauset 2019 fit 927 networks properly and find strong scale-free evidence in about 4% of them. This argument is live.
