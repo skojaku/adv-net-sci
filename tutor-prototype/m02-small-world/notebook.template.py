@@ -123,13 +123,21 @@ function render({ model, el }) {
   // labels were invisible, including the D the question is about, and on
   // cp5's ring the amber friends were the least legible nodes in the figure.
   const inkFor = (hex) => {
-    const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
-    if (!m) return "#FFFFFF";
-    const n = parseInt(m[1], 16);
-    const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
-    const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
-    // Contrast against white vs against the module's text ink.
-    return (1.05 / (L + 0.05)) >= 4.5 ? "#FFFFFF" : "#35373C";
+    const lum = (h) => {
+      const m = /^#?([0-9a-f]{6})$/i.exec(h || "");
+      if (!m) return null;
+      const n = parseInt(m[1], 16);
+      const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+      return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+    };
+    const bg = lum(hex);
+    if (bg == null) return "#1D1E21";
+    // Take whichever ink reads better, rather than thresholding on white:
+    // amber is the mid-luminance fill where white fails (2.93:1) and so does
+    // a mid-grey ink — #1D1E21 clears it at 5.68:1, and this also covers any
+    // fill added later.
+    const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    return ratio(bg, lum("#FFFFFF")) >= ratio(bg, lum("#1D1E21")) ? "#FFFFFF" : "#1D1E21";
   };
   node.append("text")
     .text(d => d.label ?? d.id)

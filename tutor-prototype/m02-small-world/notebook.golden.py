@@ -132,10 +132,29 @@ function render({ model, el }) {
     .attr("r", d => d.r || 16)
     .attr("fill", d => d.color || "#35577F")
     .attr("stroke", "#1D1E21").attr("stroke-width", 1);
+  // Label ink follows the fill. White was hardcoded, which is 1.25:1 on the
+  // neutral #E4E6EA and 2.93:1 on amber.
+  const inkFor = (hex) => {
+    const lum = (h) => {
+      const m = /^#?([0-9a-f]{6})$/i.exec(h || "");
+      if (!m) return null;
+      const n = parseInt(m[1], 16);
+      const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+      return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+    };
+    const bg = lum(hex);
+    if (bg == null) return "#1D1E21";
+    // Take whichever ink reads better, rather than thresholding on white:
+    // amber is the mid-luminance fill where white fails (2.93:1) and so does
+    // a mid-grey ink — #1D1E21 clears it at 5.68:1, and this also covers any
+    // fill added later.
+    const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    return ratio(bg, lum("#FFFFFF")) >= ratio(bg, lum("#1D1E21")) ? "#FFFFFF" : "#1D1E21";
+  };
   node.append("text")
     .text(d => d.label ?? d.id)
     .attr("text-anchor", "middle").attr("dy", "0.35em")
-    .attr("fill", "#FFFFFF")
+    .attr("fill", d => inkFor(d.color || "#35577F"))
     .style("font", "600 12px 'IBM Plex Sans', sans-serif")
     .style("pointer-events", "none");
 
@@ -1281,6 +1300,24 @@ def ch5_header(mo):
     me to sign off on it. Then a friend asks the question this module
     opened with, and I have to answer it in my own words.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def cp7_claim(mo):
+    mo.md(
+        r"""
+        ### 🤖 The analysis I was asked to sign off on
+
+        > I analyzed your network. Its average clustering coefficient is
+        > **0.61**, far higher than a random network's (**0.01**). Therefore
+        > this is a small-world network.
+
+        <span style='color:#6A6D75;font-size:13px'>One measurement, one
+        comparison, one conclusion. Read it as the reviewer who has to sign
+        underneath.</span>
+        """
+    )
     return
 
 
