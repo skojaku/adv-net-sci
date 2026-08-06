@@ -1351,8 +1351,8 @@ def fig_r_index():
     s += profile_axes()
     s += polyline(pts, color="accenttwo", w=4.0)
     s += "".join(dot(x, y, "accenttwo") for x, y in pts)
-    s += text(LAB_X, Y(0.55), f"targeted\\\\$R = {float(R_ATTACK):.2f}$",
-              color="accenttwo", anchor="west")
+    s += legend([("accenttwo", "", f"targeted\\\\$R = {float(R_ATTACK):.2f}$")],
+                y0=Y(0.60))
     return s
 
 
@@ -1362,8 +1362,8 @@ def fig_profile_random():
     s += polyline(pts, color="accentthree", w=4.0)
     s += "".join(dot(x, y, "accentthree") for x, y in pts)
     X, Y = _XY()
-    s += text(LAB_X, Y(0.55), f"random\\\\$R = {float(R_RANDOM):.2f}$",
-              color="black", anchor="west")
+    s += legend([("accentthree", "", f"random\\\\$R = {float(R_RANDOM):.2f}$")],
+                y0=Y(0.60))
     return s
 
 
@@ -1375,8 +1375,8 @@ def fig_profile_both():
         pts = profile_points(prof)
         s += polyline(pts, color=col, w=4.0)
         s += "".join(dot(x, y, col) for x, y in pts)
-        s += text(LAB_X, Y(ly), f"{lab}\\\\$R = {float(r_index(prof)):.2f}$",
-                  color="black" if col == "accentthree" else col, anchor="west")
+    s += legend([("accentthree", "", f"random\\\\$R = {float(R_RANDOM):.2f}$"),
+                 ("accenttwo", "", f"targeted\\\\$R = {float(R_ATTACK):.2f}$")])
     s += text(X(0.52), Y(0.36),
               f"{float(R_RANDOM / R_ATTACK):.1f}$\\times$ the damage", color="black")
     return s
@@ -1448,6 +1448,29 @@ assert SF_RAND_C > ER_RAND_C, (SF_RAND_C, ER_RAND_C)
 assert ER_FIXED_C > ER_TARG_C, (ER_FIXED_C, ER_TARG_C)
 
 
+def legend(entries, x=846, y0=None, dy=None, sample=40):
+    """A real legend: a sample of the line, then its name in ink.
+
+    The labels used to be tinted to match their curve, which stopped working the
+    moment accent-3 came out of the text palette for contrast -- a gold curve with
+    a black label, beside a red curve with a red label, is not a legend, it is a
+    guess. Drawing a piece of the actual line removes the guess.
+    """
+    _, Y = _XY()
+    y = PLOT["y1"] - 26 if y0 is None else y0
+    # Row pitch has to clear the tallest entry: a fixed 54bp let two-line entries
+    # print on top of each other on slide 47.
+    rows = max(len(t.split("\\\\")) for _, _, t in entries)
+    if dy is None:
+        dy = 46 * rows + 20
+    out = ""
+    for colour, dash, lines in entries:
+        out += seg((x, y), (x + sample, y), color=colour, w=4.0, dash=dash)
+        out += text(x + sample + 10, y, lines, color="black", anchor="west")
+        y -= dy
+    return out
+
+
 def sim_axes(xlab="fraction of nodes removed", ylab="giant component"):
     X, Y = _XY()
     return axes(PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"], xlab, ylab,
@@ -1467,10 +1490,8 @@ def fig_fixed_vs_adaptive():
     s = sim_axes()
     s += sim_curve(("er", "fixed"), "accentthree")
     s += sim_curve(("er", "targeted"), "accenttwo")
-    s += text(LAB_X, Y(0.74), "fixed list\\\\gone at " + pct(ER_FIXED_C),
-              color="black", anchor="west")
-    s += text(LAB_X, Y(0.26), "re-ranked\\\\gone at " + pct(ER_TARG_C),
-              color="accenttwo", anchor="west")
+    s += legend([("accentthree", "", "fixed list\\\\" + pct(ER_FIXED_C) + " gone"),
+                 ("accenttwo", "", "re-ranked\\\\" + pct(ER_TARG_C) + " gone")])
     return s
 
 
@@ -1959,10 +1980,8 @@ def fig_sim_random():
     s = sim_axes()
     s += sim_curve(("er", "random"), "accentthree")
     s += sim_curve(("sf", "random"), "accenttwo")
-    s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_RAND_C), color="accenttwo",
-              anchor="west")
-    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_RAND_C), color="black",
-              anchor="west")
+    s += legend([("accenttwo", "", "hubs\\\\" + pct(SF_RAND_C) + " gone"),
+                 ("accentthree", "", "random net\\\\" + pct(ER_RAND_C) + " gone")])
     return s
 
 
@@ -1971,10 +1990,8 @@ def fig_sim_targeted():
     s = sim_axes()
     s += sim_curve(("er", "targeted"), "accentthree")
     s += sim_curve(("sf", "targeted"), "accenttwo")
-    s += text(LAB_X, Y(0.72), "hubs\\\\" + pct(SF_TARG_C), color="accenttwo",
-              anchor="west")
-    s += text(LAB_X, Y(0.30), "random net\\\\" + pct(ER_TARG_C), color="black",
-              anchor="west")
+    s += legend([("accenttwo", "", "hubs\\\\" + pct(SF_TARG_C) + " gone"),
+                 ("accentthree", "", "random net\\\\" + pct(ER_TARG_C) + " gone")])
     return s
 
 
@@ -1985,10 +2002,9 @@ def fig_robust_fragile():
     s += sim_curve(("er", "targeted"), "accentthree", dash=DASH)
     s += sim_curve(("sf", "random"), "accenttwo")
     s += sim_curve(("sf", "targeted"), "accenttwo", dash=DASH)
-    s += text(LAB_X, Y(0.86), "hubs,\\\\random", color="accenttwo", anchor="west")
-    s += text(LAB_X, Y(0.52), "random net,\\\\random", color="black",
-              anchor="west")
-    s += text(LAB_X, Y(0.20), "attacked\\\\(dashed)", color="black", anchor="west")
+    s += legend([("accenttwo", "", "hubs"),
+                 ("accentthree", "", "random net"),
+                 ("annot", DASH, "attacked")])
     return s
 
 

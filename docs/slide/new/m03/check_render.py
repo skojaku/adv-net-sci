@@ -180,6 +180,18 @@ def figure_containers(deck="m03-robustness.md"):
     return out
 
 
+def em_dashes(deck="m03-robustness.md"):
+    """No em-dash anywhere in the deck.
+
+    Beside a formula it reads as a minus sign: "Set the branching to 1 — (1-f)
+    (k-1) = 1 — and solve" parses as "1 minus ...". The lecturer asked for them
+    out, so this is a build failure rather than a style note.
+    """
+    with open(deck) as fh:
+        text = fh.read()
+    return [line.strip()[:60] for line in text.splitlines() if "\u2014" in line]
+
+
 def figcaption_math(deck="m03-robustness.md"):
     """KaTeX does not process <figcaption>, or any other raw HTML block.
 
@@ -310,6 +322,8 @@ def main():
 
     # Source-level gates. These do not need a render, and both of them shipped a
     # defect to the rendered deck of m02 before they existed.
+    for snippet in em_dashes():
+        fails.append(f"deck: em-dash reads as a minus sign: {snippet!r}")
     for kind, snippet in figcaption_math():
         fails.append(f"deck: math inside a {kind} — KaTeX will print it literally: {snippet!r}")
     for n, src, container in figure_containers():
