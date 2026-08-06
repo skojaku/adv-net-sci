@@ -362,8 +362,6 @@ Not kilometres. Not people. Edges.
 
 ---
 
-<!-- _class: mid -->
-
 ## What is $d(A,G)$?
 
 <hr>
@@ -378,8 +376,6 @@ Not kilometres. Not people. Edges.
 *Count the edges out loud, together.*
 
 ---
-
-<!-- _class: mid -->
 
 ## Count them, edge by edge
 
@@ -638,7 +634,7 @@ Closed if the third edge is there, open if it is not.
 <div class="fig">
 
 ![w:1000](figures/triplet-three-corners.png)
-<figcaption>the same triangle three times, a different centre each time</figcaption>
+<figcaption>ringed: the triplet’s centre</figcaption>
 
 </div>
 
@@ -815,7 +811,7 @@ $$ C_i = \frac{(\mathbf{A}^3)_{ii}}{k_i(k_i-1)} $$
 
 </div>
 
-The **average local clustering** $\bar C = \frac{1}{n}\sum_i C_i$ gives every node the same weight — hub or leaf.
+The **average local clustering** $\bar C = \frac{1}{n}\sum_i C_i$ gives every node the same weight — hub or leaf. $G$ has one friend and so no pairs at all; we count it as zero here.
 
 ---
 
@@ -861,7 +857,7 @@ Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\,
 <div class="fig tight">
 
 ![w:1000](figures/transitivity-def.png)
-<figcaption>every triplet counted once, at its centre node</figcaption>
+<figcaption>each shaded wedge is one triangle; the 3 counts it once per corner</figcaption>
 
 </div>
 
@@ -874,7 +870,7 @@ Count objects instead of averaging nodes: $C = 3 \times \#\text{triangles} \,/\,
 <div class="fig">
 
 ![w:1000](figures/windmill-split.png)
-<figcaption>red: the hub’s share of the triplets</figcaption>
+<figcaption>gray: the node-weighted answer — red: the triplet-weighted one</figcaption>
 
 </div>
 
@@ -1538,7 +1534,7 @@ The other convention is the harmonic mean — average 1/d instead of d, so an un
 
 <!-- _class: mid -->
 
-## What is $C_i$ for a node with one friend?
+## The zero we have been using
 
 <hr>
 
@@ -1547,7 +1543,9 @@ The other convention is the harmonic mean — average 1/d instead of d, so an un
 
 $C_i$ divides by $k_i(k_i-1)/2$ — the number of pairs among the neighbours.
 
-*30 seconds with your neighbour before we write anything down.*
+We have been counting degree-one nodes as zero since Part Three.
+
+*Is that a fact, or a choice? 30 seconds with your neighbour.*
 
 </div>
 <div class="fig">
@@ -1705,7 +1703,7 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 <div class="fig tight">
 
 ![w:1000](figures/gnm-gnp-answer.png)
-<figcaption>red: independent edges — gray: coupled ones</figcaption>
+<figcaption>dashed: the pairs whose coin came up tails</figcaption>
 
 </div>
 
