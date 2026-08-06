@@ -187,6 +187,24 @@ Assert the arithmetic too. Compute every number a figure prints from the data, n
 hardcode it. Module 01 shipped a figure claiming CSR stored 12 numbers against a dense 25
 when CSR actually needs 30 — it counted one of three arrays.
 
+### Assert a drawn object against its data, never against itself
+
+Module 02's small-world band was drawn from two constants and guarded by
+`assert log10(BAND_HI / BAND_LO) >= 2.0` — an assertion that a rectangle is as wide as the
+two numbers that define it. It passed on every build while the band's left edge sat in a
+regime where the deck's own measured sweep says routes are only 22% shorter, i.e. where the
+claimed property does not hold at all.
+
+Worse is how it got there: the slide claimed "two orders of magnitude", the drawn band was
+1.39 decades, and the fix chosen was to widen the band. **That makes the figure fit the
+sentence.** Derive the object from the data under a criterion written down in the code,
+assert the derived value, print the criterion on the slide, and let the prose say whatever
+comes out. Under three defensible criteria that band is 0.33, 0.67 or 1.33 decades — never
+the number the sentence wanted.
+
+This is the same failure as picking a flattering random seed, one level up. Both choose the
+evidence.
+
 ### Measure the render. Never compute what you can measure.
 
 Module 02's generator asserted in-figure text size as `FONT * CAP_RATIO * scale` — three

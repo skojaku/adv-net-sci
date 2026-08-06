@@ -227,6 +227,41 @@ def figure_containers(deck="m02-small-world.md"):
     return out
 
 
+def caption_colours(deck="m02-small-world.md"):
+    """A caption that names a colour the figure does not contain.
+
+    This defect has now shipped twice: a route recoloured from accent-3 to annotation
+    gray left its figcaption reading "gold: the route it replaces" with zero gold pixels
+    on the slide, and a pair of walks drawn in one colour left a caption asking the room
+    to tell them apart as "red one way round, gold the other". Both times the FIGURE was
+    right and the hand-written caption was stale -- the generator cannot see the deck, and
+    the deck cannot see the drawing, so nothing but this check spans the two.
+    """
+    words = {"gold": (0xDA, 0xB1, 0x67), "red": (0xB1, 0x44, 0x34),
+             "blue": (0x39, 0x59, 0xA6), "gray": (0x6b, 0x6b, 0x6b),
+             "grey": (0x6b, 0x6b, 0x6b)}
+    with open(deck) as fh:
+        parts = fh.read().split("\n---\n")
+    bad = []
+    for i, chunk in enumerate(parts[1:], start=1):
+        caps = re.findall(r"<figcaption>(.*?)</figcaption>", chunk, re.S)
+        figs = re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk)
+        if not caps or not figs:
+            continue
+        named = {w for cap in caps for w in words if re.search(rf"\b{w}\b", cap, re.I)}
+        if not named:
+            continue
+        try:
+            im = np.array(Image.open(figs[0]).convert("RGB"), dtype=np.int16)
+        except OSError:
+            continue
+        for w in sorted(named):
+            hit = (np.abs(im - np.array(words[w], dtype=np.int16)).max(axis=-1) <= 40).sum()
+            if hit < 200:
+                bad.append((i, figs[0], w, int(hit)))
+    return bad
+
+
 def figcaption_math(deck="m02-small-world.md"):
     """KaTeX does not process <figcaption>, or any other raw HTML block.
 
@@ -355,6 +390,10 @@ def main():
 
     # Source-level gates. These do not need a render, and both of them shipped a
     # defect to the rendered deck of m02 before they existed.
+    for n, src, word, hit in caption_colours():
+        fails.append(
+            f"slide {n:03d}: the figcaption says {word!r} but {src} has {hit} such pixels — "
+            f"the drawing was recoloured and the caption was not")
     for kind, snippet in figcaption_math():
         fails.append(f"deck: math inside a {kind} — KaTeX will print it literally: {snippet!r}")
     for n, src, container, hcap, mod in figure_containers():

@@ -294,6 +294,87 @@ assert _bt["M"] == 16.0, _bt["M"]
 BROKER_PAIRS = int(_bt["M"])
 
 # =============================================================================
+# 6b. The club network  (c01) -- the same roster as the take-home exercise
+# =============================================================================
+# Straight out of docs/lecture-note/m06-centrality/pen-and-paper/exercise.tex, so
+# the network the room draws in Part 1 is the network the handout asks about at
+# the end of the day. Each club is a clique over its members.
+CLUBS = {
+    "Drama": ["Sarah", "Mike", "Emma"],
+    "Art": ["Emma", "Alex"],
+    "Volunteer": ["Alex", "Olivia", "James"],
+    "Sailing": ["Alex", "Sophia"],
+    "Chess": ["Sophia", "Ethan", "Ava", "Noah"],
+    "Debate": ["Noah", "Lily"],
+    "Math": ["Noah", "Lucas"],
+    "Tennis": ["Noah", "Henry"],
+}
+CLUB = nx.Graph()
+for _members in CLUBS.values():
+    CLUB.add_nodes_from(_members)
+    CLUB.add_edges_from(itertools.combinations(_members, 2))
+CLUB_C = centralities(CLUB)
+
+assert CLUB.number_of_nodes() == 13, CLUB.number_of_nodes()
+assert nx.is_connected(CLUB)
+# The whole point of Part 1: the two questions the handout asks first, without any
+# calculation, already have two different answers.
+CLUB_SPREAD = crown(CLUB_C["degree"])          # "who do you tell first?"
+CLUB_BROKER = crown(CLUB_C["betweenness"])     # "who coordinates between clubs?"
+assert CLUB_SPREAD == ["Noah"], CLUB_SPREAD
+assert CLUB_BROKER == ["Alex"], CLUB_BROKER
+assert CLUB_SPREAD != CLUB_BROKER, "Part 1 needs these to disagree"
+assert CLUB.degree("Noah") == 6 and CLUB.degree("Alex") == 4
+# Closeness names a THIRD student, which is the whole of Part 3 in advance.
+CLUB_CLOSE = crown(CLUB_C["closeness"])
+assert CLUB_CLOSE == ["Sophia"], CLUB_CLOSE
+assert len({CLUB_SPREAD[0], CLUB_BROKER[0], CLUB_CLOSE[0]}) == 3, \
+    "three questions, three different students -- this is slide 12's whole content"
+# And Alex brokers with two friends fewer than Noah.
+assert CLUB_C["betweenness"]["Alex"] > CLUB_C["betweenness"]["Noah"]
+assert CLUB.degree("Alex") < CLUB.degree("Noah")
+assert CLUB.number_of_edges() == 17 and nx.diameter(CLUB) == 5
+CLUB_PLANAR = nx.check_planarity(CLUB)[0]
+assert CLUB_PLANAR, "the club network must be drawable without a crossing"
+
+
+# =============================================================================
+# 6c. Attacking the map: by degree, or by betweenness  (M03 recall)
+# =============================================================================
+def attack(G, metric, k):
+    """Remove k nodes, recomputing the metric after each removal (adaptive)."""
+    H = G.copy()
+    removed = []
+    for _ in range(k):
+        if H.number_of_nodes() <= 1:
+            break
+        c = centralities(H)[metric]
+        target = max(sorted(c), key=lambda n: c[n])
+        H.remove_node(target)
+        removed.append(target)
+    giant = max((len(c) for c in nx.connected_components(H)), default=0)
+    return removed, giant / G.number_of_nodes()
+
+
+ATTACK_CURVE = {m: [attack(ROMA, m, k)[1] for k in range(0, 7)]
+                for m in ("degree", "betweenness")}
+# The two strategies agree on the first strike and part company on the second, so
+# that is the number the slide names. Quoting a k where they happen to tie would
+# have been a false claim dressed as an M03 callback.
+ATTACK_K = 2
+ATTACK_DEGREE = attack(ROMA, "degree", ATTACK_K)
+ATTACK_BETWEEN = attack(ROMA, "betweenness", ATTACK_K)
+assert ATTACK_DEGREE[0][0] == ATTACK_BETWEEN[0][0] == "Roma", "both open on Rome"
+assert ATTACK_BETWEEN[1] < ATTACK_DEGREE[1], (ATTACK_DEGREE, ATTACK_BETWEEN)
+assert ATTACK_DEGREE[0][1] == "Alexandria" and ATTACK_BETWEEN[0][1] == "Tarraco"
+# ...and the city betweenness reaches for second has two roads, against four.
+assert ROMA.degree("Tarraco") == 2 and ROMA.degree("Alexandria") == 4
+ATTACK_SURVIVORS = {m: int(round(v[ATTACK_K] * ROMA.number_of_nodes()))
+                    for m, v in ATTACK_CURVE.items()}
+assert ATTACK_SURVIVORS == {"degree": 7, "betweenness": 5}, ATTACK_SURVIVORS
+
+
+# =============================================================================
 # 7. Eigenvector localization  (c15) and the Katz floor  (c16, c17, c18)
 # =============================================================================
 # A dense clique with a long thin tail: the tail's eigenvector score collapses.
@@ -726,6 +807,19 @@ def main():
     print(f"  localization: tail node scores {LOCAL_TAIL_FRACTION:.4f} of the top on "
           f"eigenvector, {LOCAL_KATZ_FRACTION:.3f} on Katz")
     print(f"  sigma demo: sigma_ST = {SIG_ST}, A and B earn 1/2 each")
+
+    print("\n" + "=" * 78)
+    print("THE CLUB NETWORK   13 students, 17 edges (the take-home roster)")
+    print("=" * 78)
+    print(f"  tell first (degree)     {CLUB_SPREAD[0]}  ({CLUB.degree(CLUB_SPREAD[0])} friends)")
+    print(f"  closest to everyone     {CLUB_CLOSE[0]}  ({CLUB.degree(CLUB_CLOSE[0])} friends)")
+    print(f"  coordinates (between)   {CLUB_BROKER[0]}  ({CLUB.degree(CLUB_BROKER[0])} friends)")
+    print(f"  attacking the road map: {ATTACK_K} strikes by degree leave "
+          f"{ATTACK_SURVIVORS['degree']} cities joined, by betweenness "
+          f"{ATTACK_SURVIVORS['betweenness']}")
+    print(f"     degree takes      {', '.join(ATTACK_DEGREE[0])}")
+    print(f"     betweenness takes {', '.join(ATTACK_BETWEEN[0])}  "
+          f"({ATTACK_BETWEEN[0][1]} has {ROMA.degree(ATTACK_BETWEEN[0][1])} roads)")
 
     print("\n" + "=" * 78)
     print("HOW MUCH OF THE ANSWER IS THE MAP WE CHOSE TO DRAW?")

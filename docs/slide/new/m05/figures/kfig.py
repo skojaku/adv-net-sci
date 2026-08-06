@@ -21,9 +21,9 @@ import numpy as np
 
 import layout
 from figlib import (
-    ACCENT, ACCENT2, ACCENT3, FONT, GRAY, NODE, Axes, assert_planar_drawing,
-    boxes_overlap, clearance_bad, disc, dot, draw_labels, label_box, place_labels,
-    polyline, ring, seg, text,
+    ACCENT, ACCENT2, ACCENT3, FONT, GRAY, NODE, Axes, boxes_overlap, clearance_bad,
+    crossings, disc, dot, draw_labels, label_box, place_labels, polyline, ring, seg,
+    text,
 )
 
 FULL_W, COL_W = 1080, 537
@@ -172,11 +172,15 @@ def small(pos, edges, fill=None, heavy=(), heavy_color="accenttwo", rings=(),
     edges = list(edges) + [e for e in (edges_all or []) if _k(e) in dashes
                            and _k(e) not in {_k(x) for x in edges}]
     drawn = [e for e in edges if _k(e) not in dashes]
+    # The clearance radius has to follow the disc actually being drawn. figlib's default
+    # is half of ITS node size, which on a 28bp figure rejects drawings that are fine and
+    # on a 52bp one would pass drawings that are not.
+    r = node / 2 + 3
     if planar:
-        assert_planar_drawing(drawn, pos, what)
-    else:
-        bad = clearance_bad(drawn, pos)
-        assert not bad, f"{what}: edge passes through a disc it does not end at -- {bad[:3]}"
+        x = crossings(drawn, pos)
+        assert not x, f"{what}: {len(x)} edge crossing(s) in a planar graph -- {x[:3]}"
+    bad = clearance_bad(drawn, pos, r=r)
+    assert not bad, f"{what}: edge passes through a disc it does not end at -- {bad[:3]}"
     out = ""
     for e in edges:
         k = _k(e)
@@ -195,6 +199,67 @@ def small(pos, edges, fill=None, heavy=(), heavy_color="accenttwo", rings=(),
         chosen, _ = place_labels(labels, pos, drawn, size=label_size)
         out += draw_labels(labels, pos, chosen, size=label_size)
     return out
+
+
+def relax(pos, edges, node=NODE, box=None, sweeps=260, seed=0):
+    """Push a spring layout until no disc overlaps and no edge crosses a stranger's disc.
+
+    `nx.spring_layout` optimises edge lengths and knows nothing about disc radius, so on
+    a forty-node graph it reliably parks somebody on top of an edge they have no part in.
+    This is the same repair the club's own layout does, in miniature: repel overlapping
+    pairs, and push a disc off any edge that is running through it.
+    """
+    keys = sorted(pos)
+    P = np.array([pos[k] for k in keys], float)
+    idx = {k: i for i, k in enumerate(keys)}
+    E = np.array([[idx[a], idx[b]] for a, b in edges])
+    sep, clear = node * 1.30, node / 2 + 5
+    lo = np.array([box[0], box[1]]) if box else P.min(0)
+    hi = np.array([box[2], box[3]]) if box else P.max(0)
+    rng = np.random.default_rng(seed)
+    for _ in range(sweeps):
+        D = P[:, None, :] - P[None, :, :]
+        d = np.linalg.norm(D, axis=-1)
+        np.fill_diagonal(d, np.inf)
+        bad = d < sep
+        if bad.any():
+            push = np.where(bad[..., None], D / np.maximum(d, 1e-6)[..., None]
+                            * (sep - np.minimum(d, sep))[..., None] * 0.5, 0.0).sum(1)
+            P += push
+        A, B = P[E[:, 0]], P[E[:, 1]]
+        seg_d = _seg_point_dist_np(A, B, P)
+        for r in range(len(E)):
+            seg_d[r, E[r, 0]] = seg_d[r, E[r, 1]] = np.inf
+        hits = np.argwhere(seg_d < clear)
+        for r, k in hits:
+            a, b = P[E[r, 0]], P[E[r, 1]]
+            t = a - b
+            nvec = np.array([-t[1], t[0]])
+            nvec = nvec / max(np.linalg.norm(nvec), 1e-6)
+            if rng.random() < 0.5:
+                nvec = -nvec
+            P[k] += nvec * (clear - seg_d[r, k] + 2.0)
+        P = np.clip(P, lo, hi)
+    return {k: (float(P[i, 0]), float(P[i, 1])) for i, k in enumerate(keys)}
+
+
+def _seg_point_dist_np(A, B, P):
+    d = B - A
+    L2 = np.maximum((d * d).sum(1), 1e-9)
+    t = np.clip(((P[None, :, :] - A[:, None, :]) * d[:, None, :]).sum(-1) / L2[:, None],
+                0.0, 1.0)
+    foot = A[:, None, :] + t[:, :, None] * d[:, None, :]
+    return np.linalg.norm(foot - P[None, :, :], axis=-1)
+
+
+def blob(cx, cy, rx, ry, color="accentthree", opacity=0.30, edge="annot", lw=2.6):
+    """A crowd drawn as a crowd. Forty people with 252 friendships between them is a
+    hairball at any size that fits a slide, and the slide's point is the two cliques
+    beside it -- so the crowd is one shape, and the figcaption says how many are in it."""
+    return (f"\\fill[{color},opacity={opacity}] ({cx},{cy}) ellipse "
+            f"({rx}bp and {ry}bp);\n"
+            f"\\draw[line width={lw}bp,draw={edge}] ({cx},{cy}) ellipse "
+            f"({rx}bp and {ry}bp);\n")
 
 
 def ring_positions(n, cx, cy, rx, ry, start=90.0, order=None):

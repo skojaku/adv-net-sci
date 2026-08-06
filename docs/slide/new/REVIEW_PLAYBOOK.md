@@ -42,6 +42,21 @@ The underlying cause is that fix agents keep working after reporting. Prefer to 
 reviewers only once every fix agent has gone idle, and re-run the check immediately before
 you launch them.
 
+### Wait for the report, not for silence
+
+Polling a fix agent's file mtimes until they go quiet does **not** tell you it has
+finished. It tells you the agent is thinking, reading, or between two edits of a long
+pass — and a half-applied generator fails in ways indistinguishable from a broken
+hand-off. In Module 02 this cost three round-trips: the lead measured a mid-edit tree,
+reported the build as abandoned, and was wrong twice in the same hour on the same file.
+
+A fix agent's build is only meaningful **after it reports done**. Until then, whatever you
+measure is a snapshot of work in progress. Ask for the report; do not infer it.
+
+The corollary still holds and is not in tension with this: once the agent has reported,
+re-measure before trusting the report, and re-run `find figures -newer review/slide.001.png`
+immediately before launching reviewers.
+
 ### A gate that cannot fire is worse than no gate
 
 `check_render.py`'s node-diameter band was inert for the whole of Module 02's first build.

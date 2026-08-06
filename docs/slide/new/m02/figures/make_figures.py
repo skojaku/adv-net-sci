@@ -584,24 +584,108 @@ def assert_drawn_planar(name, edges, pos, paths=()):
     assert_planar(name, _edge_paths(edges, pos, paths))
 
 
-def assert_text_clear(name, box, segs, pad=6):
-    """No drawn stroke may run through a block of type.
+def _polyline(obj, n=200):
+    """One drawn thing as an (N,2) polyline: a two-point segment gets sampled, an
+    already-sampled curve passes through.
+
+    Sampling matters: a two-point path makes every containment test below vacuously
+    true except at the endpoints, which is how a chord drawn straight through the word
+    "printer" passed a gate that only looked at where it started and stopped.
+    """
+    a = np.asarray(obj, float)
+    assert a.ndim == 2 and a.shape[1] == 2, f"not a path: {obj!r}"
+    if len(a) == 2:
+        t = np.linspace(0, 1, n)[:, None]
+        return a[0] + t * (a[1] - a[0])
+    return a
+
+
+def text_box(x, y, s, anchor="center", size=None, rotate=0):
+    """The box a `text()` call's ink lands in -- measured off a render, not computed.
+
+    Ink box, not node box: the node box carries the font's ascender and descender space,
+    and every question these gates answer (does a stroke cross the glyphs, do two labels
+    read as one block) is about ink.  `text()` writes the anchor, so this reads the same
+    anchor back and there is nothing to keep in sync.
+    """
+    w, h = ink_box_bp(s, size)
+    if rotate % 180:
+        w, h = h, w
+    parts = anchor.split()
+    x0 = x if "west" in parts else (x - w if "east" in parts else x - w / 2)
+    y0 = y if "south" in parts else (y - h if "north" in parts else y - h / 2)
+    return (x0, y0, x0 + w, y0 + h)
+
+
+def paths_hitting_box(box, paths, pad=6):
+    """Which of `paths` enter `box`.  Items are (a, b, polyline) or a bare polyline."""
+    x0, y0, x1, y1 = box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad
+    hit = []
+    for p in paths:
+        keyed = isinstance(p, tuple) and len(p) == 3
+        pts = _polyline(p[2] if keyed else p)
+        if np.any((pts[:, 0] >= x0) & (pts[:, 0] <= x1)
+                  & (pts[:, 1] >= y0) & (pts[:, 1] <= y1)):
+            hit.append(frozenset(p[:2]) if keyed else None)
+    return hit
+
+
+def assert_labels_clear(name, boxes, paths, pad=6):
+    """No drawn path may run through a block of type.
 
     The accent-2 edge of the $A^3$ triangle ran through the numerator of $(A^3)_{ii}$
-    and struck out the **3** -- the one symbol that slide exists to teach.  The box is
-    measured off a render, so this is the glyphs' real ink and not their advance width.
+    and struck out the **3** -- the one symbol that slide exists to teach.  This version
+    takes a dict of boxes and a list of *sampled* paths, so it can be wired to a whole
+    figure in one line instead of to one label at a time; it was written for one figure
+    and left there for a build, during which a red chord shipped through two occupation
+    labels on two slides.
     """
-    x0, y0, x1, y1 = box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad
-    for p, q in segs:
-        t = np.linspace(0, 1, 200)[:, None]
-        pts = np.array(p, float) + t * (np.array(q, float) - np.array(p, float))
-        hit = ((pts[:, 0] >= x0) & (pts[:, 0] <= x1)
-               & (pts[:, 1] >= y0) & (pts[:, 1] <= y1))
-        assert not hit.any(), (
-            f"{name}: the stroke {tuple(round(v) for v in p)}--{tuple(round(v) for v in q)} "
-            f"runs through the type at "
-            f"({box[0]:.0f},{box[1]:.0f})-({box[2]:.0f},{box[3]:.0f}) -- move the drawing "
-            f"or the label, a struck-through glyph is worse than no glyph")
+    for lab, box in boxes.items():
+        hit = paths_hitting_box(box, paths, pad)
+        assert not hit, (
+            f"{name}: {len(hit)} drawn path(s) {sorted(map(sorted, (h for h in hit if h)))} "
+            f"run through the type {lab!r} at ({box[0]:.0f},{box[1]:.0f})-"
+            f"({box[2]:.0f},{box[3]:.0f}) -- move the drawing or drop the label, "
+            f"a struck-through glyph is worse than no glyph")
+
+
+def assert_boxes_clear(name, boxes, pad=8):
+    """No two blocks of type may sit within `pad` of each other.
+
+    A note placed at a fixed corner and a label placed against the drawing are written by
+    different lines and drift into each other as either grows: slide 89's axis title sat
+    5px under a panel label against a body leading of 44px, so the two read as one
+    two-line caption for the wrong panel.
+    """
+    for (na, a), (nb, b) in itertools.combinations(sorted(boxes.items()), 2):
+        if (a[0] - pad < b[2] and b[0] - pad < a[2]
+                and a[1] - pad < b[3] and b[1] - pad < a[3]):
+            raise AssertionError(
+                f"{name}: the type {na!r} at ({a[0]:.0f},{a[1]:.0f})-({a[2]:.0f},{a[3]:.0f})"
+                f" comes within {pad}bp of {nb!r} at ({b[0]:.0f},{b[1]:.0f})-"
+                f"({b[2]:.0f},{b[3]:.0f}) -- two blocks of type that close read as one; "
+                f"move one of them or shorten it")
+
+
+def assert_marks_own_edge(name, marks, paths, pad=4):
+    """Each mark's box may touch the one path it marks, and nothing else.
+
+    The two X's on `m03-teaser` were gated against *each other* -- 80bp apart, which
+    passed -- while one of them sat on the last 26px of the chord the figure says it does
+    NOT cut.  A mark checked against the thing it marks is a different question from a
+    mark checked against its twin, and only the first one is the claim.
+    """
+    for key, box in marks.items():
+        hit = set(paths_hitting_box(box, paths, pad))
+        assert hit == {frozenset(key)}, (
+            f"{name}: the mark on {tuple(key)} touches "
+            f"{sorted(map(sorted, (h for h in hit if h)))} -- a mark that lands on an edge "
+            f"it does not mark says the opposite of what the drawing means")
+
+
+def assert_text_clear(name, box, segs, pad=6):
+    """One box against a list of straight segments -- `assert_labels_clear` for one label."""
+    assert_labels_clear(name, {"the label": box}, list(segs), pad)
 
 
 def clearance_ok(edges, pos, r=NODE / 2 + 3, paths=()):
@@ -1181,10 +1265,40 @@ def fig_triangle_triplet():
         s += disc(TRI_R[i][0], TRI_R[i][1], "", fill="accent")
     # 134, not the panel centre 125: the label measures 251bp and centring it on the
     # panel ran its first glyph off the left edge of the canvas
-    s += text(134, 55, "closed: a triangle", color="accenttwo", anchor="north")
+    s += ring(*TRI_L[1], color="accentthree", w=4.0)
+    s += ring(*TRI_R[1], color="accentthree", w=4.0)
+    s += text(134, 55, "closed", color="accenttwo", anchor="north")
     s += text(395, 55, "open", color="black", anchor="north")
-    s += text(260, 320, "three nodes, two edges or three", color="annot",
+    # The heading used to read "three nodes, two edges or three" -- the node-SET
+    # definition, under which the windmill has 45 triplets against the 55 that slides
+    # 45 and 46 print. The centre node is the whole content of the definition the deck
+    # now uses, so it is ringed in both panels rather than only described.
+    s += text(260, 320, "two edges, one centre node", color="annot",
               anchor="south")
+    return s
+
+
+TRI_C = [{0: (40 + 370 * k, 120), 1: (145 + 370 * k, 285), 2: (250 + 370 * k, 120)}
+         for k in range(3)]
+
+
+def fig_triplet_three_corners():
+    """One triangle drawn three times, a different corner ringed each time.
+
+    This is what makes the deck's 3 x 5 add up: a triplet is counted at its centre, so a
+    triangle holds three closed triplets, one centred at each corner -- and 3 x 5 / 55 is
+    the number slide 45 derives. Stating that in prose and not drawing it was how the
+    windmill's 45-vs-55 contradiction survived two rounds.
+    """
+    s = ""
+    for k, p3 in enumerate(TRI_C):
+        for a, b in ((0, 1), (1, 2), (0, 2)):
+            s += seg(p3[a], p3[b], color="accenttwo", w=HEAVY_W)
+        for i in p3:
+            s += disc(p3[i][0], p3[i][1], "", fill="accent")
+        s += ring(*p3[k], color="accentthree", w=4.0)
+    s += text(550, 22, "one triangle, three closed triplets --- one centred at each corner",
+              color="annot", anchor="south")
     return s
 
 
@@ -2007,8 +2121,41 @@ assert abs(SWEEP["C0"] - 0.6428571) < 1e-4, SWEEP["C0"]
 assert abs(SWEEP["L0"] - 25.4386) < 1e-3, SWEEP["L0"]
 
 
-BAND_LO, BAND_HI = 0.001, 0.1
-assert math.log10(BAND_HI) - math.log10(BAND_LO) >= 2.0, "the band must span two decades"
+# The band is DERIVED from the measured sweep, under a criterion written down here and
+# printed on the slide -- it is not two constants with an assertion that they are as far
+# apart as they are.
+#
+# It used to be exactly that. The slide claimed "two orders of magnitude", the drawn band
+# was 1.39 decades, and the fix taken in round 2 was to widen the band to p=0.001 so the
+# sentence came true -- which put the band's left edge in a regime where this deck's own
+# data says routes are only 22% shorter (L/L0 = 0.781 there). That is choosing the
+# evidence, one level up from choosing a flattering random seed, and the assertion
+# guarding it -- log10(BAND_HI/BAND_LO) >= 2 -- could only ever compare the rectangle
+# with itself.
+#
+# Criterion: clustering still at least four fifths of the lattice's, paths at most half.
+BAND_C_MIN, BAND_L_MAX = 0.80, 0.50
+BAND_RULE = "paths at most half the lattice's, clustering still four fifths of it"
+
+
+def _derive_band():
+    ok = [p for p, c, l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"])
+          if c / SWEEP["C0"] >= BAND_C_MIN and l / SWEEP["L0"] <= BAND_L_MAX]
+    assert ok, "no p satisfies the band criterion -- the sweep or the criterion is wrong"
+    return min(ok), max(ok)
+
+
+BAND_LO, BAND_HI = _derive_band()
+BAND_DECADES = math.log10(BAND_HI / BAND_LO)
+# Sanity, against the data rather than against the band: every p inside the band must
+# actually satisfy the criterion, and the p just outside each edge must fail it.
+for _p, _c, _l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"]):
+    _inside = BAND_LO <= _p <= BAND_HI
+    _meets = _c / SWEEP["C0"] >= BAND_C_MIN and _l / SWEEP["L0"] <= BAND_L_MAX
+    assert _inside == _meets, (
+        f"p={_p} is {'inside' if _inside else 'outside'} the drawn band but "
+        f"{'meets' if _meets else 'fails'} the criterion -- the band is not the data")
+assert abs(BAND_DECADES - 0.67) < 0.02, BAND_DECADES     # what n=400, k=8 actually gives
 
 
 def _sweep_frame(band=False):
@@ -2061,7 +2208,10 @@ def fig_ws_band():
     s = _sweep_frame(band=True)
     mid = (BAND_LO * BAND_HI) ** 0.5           # the band's midpoint on a log axis
     x = 200 + (math.log10(mid) + 4) / 4 * 850
-    assert abs(x - 625) < 1, x
+    # The label follows the derived band; it is no longer pinned to a hardcoded x.
+    lo_x = 200 + (math.log10(BAND_LO) + 4) / 4 * 850
+    hi_x = 200 + (math.log10(BAND_HI) + 4) / 4 * 850
+    assert lo_x < x < hi_x, (lo_x, x, hi_x)
     s += text(round(x, 1), 296, "both at once", color="annot", anchor="south")
     return s
 
@@ -2215,16 +2365,43 @@ _G54 = nx.Graph(GRID_EDGES)
 assert nx.transitivity(_G54) == 0
 
 
-def fig_grid_no_triangles():
+GRID_HUB = (2, 1)                      # an INTERIOR intersection: degree 4
+assert sum(1 for e in GRID_EDGES if GRID_HUB in e) == 4, "the ringed node must have 4 neighbours"
+GRID_HUB_TRIPLETS = math.comb(4, 2)
+assert GRID_HUB_TRIPLETS == 6
+
+
+def _grid(ring_hub=False, triplets=False):
     s = ""
     for a, b in GRID_EDGES:
-        s += seg(GRID_POS[a], GRID_POS[b], color="black", w=EDGE_W)
+        hot = triplets and GRID_HUB in (a, b)
+        s += seg(GRID_POS[a], GRID_POS[b], color="accenttwo" if hot else "black",
+                 w=HEAVY_W if hot else EDGE_W)
     for q in GRID_POS.values():
         s += disc(q[0], q[1], "", fill="accent")
-    # below the grid, where every other figure in the deck puts its annotation -- at
-    # y = 340 it sat on the top row of discs
-    s += text(260, 8, "a street grid: no triangle, $C = 0$", color="accenttwo",
+    if ring_hub:
+        s += ring(*GRID_POS[GRID_HUB], color="accentthree", w=4.0)
+    return s
+
+
+def fig_grid_q():
+    """The QUESTION half. One file per slide: the answer used to be burned into the single
+    shared figure, printed beside the question it was asking, which killed the only
+    in-class activity in Part Six.
+
+    The ringed node is interior on purpose -- 14 of the 20 intersections have degree 2 or
+    3, so a student who picks a corner counts one triplet instead of six and concludes
+    they are wrong."""
+    s = _grid(ring_hub=True)
+    s += text(260, 8, "how many of its triplets close?", color="black",
               anchor="south")
+    return s
+
+
+def fig_grid_answer():
+    s = _grid(ring_hub=True, triplets=True)
+    s += text(260, 8, f"{GRID_HUB_TRIPLETS} triplets here, none closed",
+              color="accenttwo", anchor="south")
     return s
 
 
@@ -2427,6 +2604,7 @@ FIGURES = [
     ("worksheet-a-answer", fig_worksheet_a_answer, "full"),
     ("triangle-only", fig_triangle_only, "col"),
     ("triangle-triplet", fig_triangle_triplet, "col"),
+    ("triplet-three-corners", fig_triplet_three_corners, "full"),
     ("ego-graph", fig_ego_graph, "col"),
     ("ego-pairs", fig_ego_pairs, "col"),
     ("ego-pairs-count", fig_ego_pairs_count, "col"),
@@ -2465,7 +2643,8 @@ FIGURES = [
     ("degree-one-answer", fig_degree_one_answer, "col"),
     ("sigma-lt-1-q", fig_sigma_lt_1_q, "col"),
     ("sigma-lt-1-answer", fig_sigma_lt_1_answer, "col"),
-    ("grid-no-triangles", fig_grid_no_triangles, "col"),
+    ("grid-q", fig_grid_q, "col"),
+    ("grid-answer", fig_grid_answer, "col"),
     ("gnm-gnp", fig_gnm_gnp, "full"),
     ("gnm-gnp-answer", fig_gnm_gnp_answer, "full"),
     ("universality", fig_universality, "full"),

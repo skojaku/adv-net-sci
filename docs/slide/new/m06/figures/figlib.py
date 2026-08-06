@@ -47,7 +47,7 @@ PXBP = DPI / 72                      # 4 raster px per bp
 #   .fig.tight img   { max-height: 320px }
 #   .fig.stack img   { max-height: 190px }
 COL_W, FULL_W = 537, 1080
-FIG_H = {"": 380, "tight": 320, "stack": 190}
+FIG_H = {"": 380, "tight": 320, "stack": 190, "tall": 400}
 
 DESIGN = {"col": COL_W, "full": FULL_W}
 CONTAINER = {"col": COL_W, "full": FULL_W}       # authored 1:1, so the scale is 1.000

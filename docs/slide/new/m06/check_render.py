@@ -59,7 +59,7 @@ INK_FRACTION_WANT = 0.35
 #   section .fig img        { max-height: 380px }
 #   section .fig.tight img  { max-height: 320px }   <- 16 slides use this
 #   section .fig.stack img  { max-height: 190px }
-FIG_H = {"": 380, "tight": 320, "stack": 190}
+FIG_H = {"": 380, "tight": 320, "stack": 190, "tall": 400}
 MAX_FIG_H = FIG_H[""]
 
 # Content must stop before the frame does. The theme's bottom padding is 60px,
@@ -227,7 +227,7 @@ def figure_containers(deck="m06-centrality.md"):
     for i, chunk in enumerate(parts[1:], start=1):
         in_cols = 'class="cols"' in chunk
         mod = ""
-        for m in ("tight", "stack"):
+        for m in ("tight", "stack", "tall"):
             if f'class="fig {m}"' in chunk:
                 mod = m
         for f in re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk):
@@ -306,7 +306,7 @@ def smallest_text(src_path):
     return float(real[0]) if real else None
 
 
-def drawing_extent(src_path, container_w):
+def drawing_extent(src_path, container_w, hcap=None):
     """How big the drawing lands on the slide, and what share of its box it fills.
 
     Measured on the *source* PNG, not the render. The ink fraction is invariant
@@ -326,7 +326,7 @@ def drawing_extent(src_path, container_w):
     ink_h = ys.max() - ys.min() + 1
     sh, sw = im.shape
     # Whichever of the width directive and the CSS max-height binds first.
-    scale = min(container_w / sw, MAX_FIG_H / sh, 1.0)
+    scale = min(container_w / sw, (hcap or MAX_FIG_H) / sh, 1.0)
     frac = (ink_w * ink_h) / float(sw * sh)
     return ink_w * scale, ink_h * scale, sw * scale, sh * scale, frac
 
@@ -349,7 +349,11 @@ def slides_with_figures(deck="m06-centrality.md"):
         # checking only the first leaves the second unexamined.
         hits = re.findall(r"!\[[^\]]*\]\((figures/[^)]+)\)", chunk)
         if hits:
-            out[i] = (hits, 'class="cols"' in chunk)
+            mod = ""
+            for m in ("tight", "stack", "tall"):
+                if f'class="fig {m}"' in chunk:
+                    mod = m
+            out[i] = (hits, 'class="cols"' in chunk, FIG_H[mod])
     return out
 
 
@@ -419,10 +423,10 @@ def main():
                 )
 
         if n in figs:
-          srcs, in_cols = figs[n]
+          srcs, in_cols, hcap = figs[n]
           for src in srcs:
             container = COL_W if in_cols else FULL_IMG_W
-            ext = drawing_extent(src, container)
+            ext = drawing_extent(src, container, hcap)
             if ext is None:
                 fails.append(f"slide {n:03d}: {src} is blank")
                 continue
@@ -435,7 +439,7 @@ def main():
                 continue
             im = np.array(Image.open(src).convert("L"))
             sh, sw = im.shape
-            scale = min(container / sw, MAX_FIG_H / sh, 1.0)
+            scale = min(container / sw, hcap / sh, 1.0)
 
             # In-figure text at body size on the slide.
             # Text size. The generator computes this exactly -- it knows the

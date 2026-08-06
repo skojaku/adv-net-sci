@@ -288,6 +288,15 @@ section .fig img {
 section .fig.tight img { max-height: 320px; }
 /* modifier: use on the deck's one .fig holding two stacked images */
 section .fig.stack img { max-height: 190px; }
+/* modifier: title + figure + caption and NOTHING else on the slide.
+   Module 06's working graph is twelve cities with names like "Thessalonica",
+   and at the 36pt in-figure type floor those labels do not fit beside a
+   1080x356 drawing -- three cities have zero collision-free sides before any
+   other label is placed. The choice was a taller figure or smaller type, and
+   FIGURE_GUIDE is explicit that type never gives way. 440 is what fits: the
+   content box ends at y=660, the heading and rule take ~150, and the caption
+   takes ~40. check_render.py fails the build if anything overflows. */
+section .fig.tall img { max-height: 400px; }
 
 /* three-up statistic row */
 section .stats {

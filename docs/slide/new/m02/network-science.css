@@ -258,7 +258,12 @@ section .cols {
      minimum to 0 keeps both columns at (1120 - 46) / 2 = 537px always. */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 46px;
-  align-items: start;
+  /* center, not start: a text column two lines shorter than the figure beside it
+     left an empty wedge bottom-left on eight slides of m02, measured at 150-208px.
+     `_class: mid` cannot fix that -- it centres the whole body block, so both
+     columns move together and the wedge moves with them. The columns have to be
+     centred against each other. */
+  align-items: center;
 }
 section .cols3 {
   display: grid;

@@ -50,7 +50,7 @@ Do not answer this. Part Three answers it exactly, in one line. Do not say the w
 <div class="steps-list">
 
 <div><div class="i">01</div><div>Marketville, 1961 — eight girls, and a number that offends everyone</div></div>
-<div><div class="i">02</div><div>Counting ends — degree, the handshake, and how common each degree is</div></div>
+<div><div class="i">02</div><div>Counting ends — degree, the handshake, and how common each is</div></div>
 <div><div class="i">03</div><div>The exact gap — how much more, in one line</div></div>
 <div><div class="i">04</div><div>Using the bias — coauthors, Facebook, and finding hubs blindfolded</div></div>
 <div><div class="i">05</div><div>Reading the tail — linear axes fail, log axes talk</div></div>
@@ -614,11 +614,9 @@ Nothing new here — it is the definition of variance, rearranged. Substitute it
 
 $$\langle k\rangle_{\text{friend}} = \langle k\rangle + \frac{\mathrm{Var}(k)}{\langle k\rangle}$$
 
-<div class="note">
-
-Feld writes it out himself on page 1470 — and it closes on his full 146-girl data too: $2.6575 + 0.6981 = 3.3557$.
-
-</div>
+<!--
+Feld writes this out himself on page 1470, and it closes on his full 146-girl data too: 2.6575 + 0.6981 = 3.3557.
+-->
 
 ---
 

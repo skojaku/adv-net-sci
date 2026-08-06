@@ -208,6 +208,18 @@ def node_discs(rgb):
                    filled[y0 + h - 1 - c, x0 + c], filled[y0 + h - 1 - c, x0 + w - 1 - c]]
         if any(corners):
             continue
+        # ...and an ANNULUS survives all of the above: a highlight ring and a bold "o"
+        # set in accent-2 are both round, both have empty corners, and hole-filling
+        # turns both into solid blobs. What separates them from a disc is how much of
+        # the blob the fill had to invent. Measured over all 457 candidates in this
+        # deck: a real disc reaches 0.075 at worst (the white numeral punched out of
+        # it), while the ring on the worksheet scored 0.303 and the "o" in the title
+        # "Does it hold for you?" scored 0.283 -- with NOTHING between 0.15 and 0.25.
+        # The threshold sits in that empty gap. This narrows what counts as a disc; it
+        # does not soften the band, and the 23.5px marks it was meant to catch still
+        # fail (they score 0.0).
+        if (filled[y0:y0 + h, x0:x0 + w] & ~mask[y0:y0 + h, x0:x0 + w]).mean() > 0.15:
+            continue
         out.append((h + w) / 2)
     return out
 
