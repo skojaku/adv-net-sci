@@ -170,23 +170,13 @@ Take a show of hands for two or three cities. Do not confirm anything, do not hi
 
 <hr>
 
-<div class="cols">
-<div>
-
 Draw a line between two students who share a club.
 
-* Drama — Sarah, Mike, Emma · Art — Emma, Alex
-* Volunteer — Alex, Olivia, James · Sailing — Alex, Sophia
-* Chess — Sophia, Ethan, Ava, Noah
-* Debate, Math, Tennis — Noah with Lily, Lucas, Henry
+<div class="fig tall">
 
-</div>
-<div class="fig">
+![w:1080](figures/club-blank.png)
+<figcaption>Drama · Art · Volunteer · Sailing · Chess · Debate · Math · Tennis</figcaption>
 
-![w:537](figures/club-blank.png)
-<figcaption>thirteen students, no lines yet</figcaption>
-
-</div>
 </div>
 
 <!--
@@ -683,22 +673,13 @@ $$c_i = \sum_{j<k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}$$
 
 <hr>
 
-<div class="cols">
-<div>
+$\sigma_{jk}$ counts the shortest $j$–$k$ paths; $\sigma_{jk}(i)$ counts the ones through $i$. **Ties are shared, never double counted.**
 
-$\sigma_{jk}$ is how many shortest $j$–$k$ paths there are.
+<div class="fig tall">
 
-$\sigma_{jk}(i)$ is how many of them use $i$.
-
-**Ties are shared, never double counted** — two equal routes mean half a point each.
-
-</div>
-<div class="fig">
-
-![w:537](figures/sigma-graph.png)
+![w:1080](figures/sigma-graph.png)
 <figcaption>S to D, two ways round</figcaption>
 
-</div>
 </div>
 
 ---
@@ -707,20 +688,13 @@ $\sigma_{jk}(i)$ is how many of them use $i$.
 
 <hr>
 
-<div class="cols">
-<div>
+How many shortest **S–D** routes are there? How many go through **A**? Through **T**?
 
-* How many shortest **S–D** routes are there?
-* How many of them go through **A**?
-* How many go through **T**?
+<div class="fig tall">
 
-</div>
-<div class="fig">
-
-![w:537](figures/sigma-blank.png)
+![w:1080](figures/sigma-blank.png)
 <figcaption>five nodes, count carefully</figcaption>
 
-</div>
 </div>
 
 <!--
@@ -733,22 +707,13 @@ Sixty seconds. Take all three numbers from the room before the next slide.
 
 <hr>
 
-<div class="cols">
-<div>
+$\sigma_{SD} = 2$. A carries one route and B the other, so each earns $\tfrac12$ — and T earns a whole one, because **every** route uses it.
 
-$\sigma_{SD} = 2$.
+<div class="fig tall">
 
-A carries one route and B carries the other, so each earns $\tfrac12$.
-
-T earns a whole one, because **every** route uses it.
-
-</div>
-<div class="fig">
-
-![w:537](figures/sigma-answer.png)
+![w:1080](figures/sigma-answer.png)
 <figcaption>one route in blue, one in red, and the credit each node earns</figcaption>
 
-</div>
 </div>
 
 ---
@@ -791,26 +756,13 @@ This is the first time in the deck that fewer connections beat more, and it is t
 
 <hr>
 
-<div class="cols">
-<div>
+Two tight groups, joined through one node with **two** edges. It is nobody by degree, and every one of the sixteen crossing pairs goes through it.
 
-Two tight groups, joined through one node with **two** edges.
+<div class="fig tall">
 
-It is nobody by degree. Every one of the sixteen crossing pairs goes through it.
-
-<div class="note">
-
-Burt called the gap it sits in a *structural hole*. Module 05 will cut networks apart at exactly these edges.
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:537](figures/broker.png)
+![w:1080](figures/broker.png)
 <figcaption>degree 2, and the whole traffic</figcaption>
 
-</div>
 </div>
 
 ---
@@ -965,26 +917,13 @@ Let the objection stand for a moment. It is a good objection. The answer is that
 
 <hr>
 
-<div class="cols">
-<div>
+Write that one line for all twelve cities at once and it becomes $\lambda c = A c$. **Eigenvector centrality** is the vector that comes back unchanged, up to scale.
 
-Write that one line for all twelve cities at once and the sum becomes a matrix product.
+<div class="fig tall">
 
-<div class="formula">
-
-$$\lambda\, c = A\, c$$
-
-</div>
-
-**Eigenvector centrality** is the vector that comes back unchanged, up to scale.
-
-</div>
-<div class="fig">
-
-![w:537](figures/eigen-equation.png)
+![w:1080](figures/eigen-equation.png)
 <figcaption>the matrix acting on the scores</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1015,20 +954,13 @@ No hints. The next slide names the theorem.
 
 <hr>
 
-<div class="cols">
-<div>
+One eigenvalue is larger than all the others, and its eigenvector is unique and **strictly positive**. Perron **1907**, Frobenius **1912**.
 
-For a connected network with non-negative $A$, **one** eigenvalue is larger than all the others, and its eigenvector is unique and **strictly positive**.
+<div class="fig tall">
 
-Perron proved it in **1907** for positive matrices; Frobenius extended it in **1912**.
+![w:1080](figures/spectrum.png)
+<figcaption>twelve eigenvalues, and the only one whose vector is all-positive</figcaption>
 
-</div>
-<div class="fig">
-
-![w:537](figures/spectrum.png)
-<figcaption>twelve eigenvalues, one usable</figcaption>
-
-</div>
 </div>
 
 <!--
@@ -1056,22 +988,13 @@ Everyone starts at 1. Add up your neighbours. Rescale. Repeat.
 
 <hr>
 
-<div class="cols">
-<div>
+Step 0 is flat. **Step 1 is exactly the degree ranking**, because the first sum is only a count. The order stops changing by step 4.
 
-Step 0 is flat: everybody equal.
+<div class="fig tall">
 
-**Step 1 is exactly the degree ranking**, because the first sum is just a count.
-
-After that the score starts arriving from further away, and the order stops changing by step 4.
-
-</div>
-<div class="fig">
-
-![w:537](figures/power-step-2.png)
+![w:1080](figures/power-step-2.png)
 <figcaption>two rounds of adding up neighbours</figcaption>
 
-</div>
 </div>
 
 <!--
@@ -1084,22 +1007,13 @@ The crown is decided after a single step. Everything after that is sorting out t
 
 <hr>
 
-<div class="cols">
-<div>
+Multiplying by $A$ multiplies each eigenvector piece by its own $\lambda$, so every piece but the leading one shrinks like $|\lambda_i/\lambda_1|^t$. The slowest here is **0.80**.
 
-Write the starting vector in terms of the eigenvectors. Multiplying by $A$ multiplies each piece by its own $\lambda$.
+<div class="fig tall">
 
-So every piece except the leading one shrinks like $|\lambda_i/\lambda_1|^t$.
-
-Here the slowest of them is **0.80**, and after a dozen steps there is nothing left of it.
-
-</div>
-<div class="fig">
-
-![w:537](figures/decay.png)
+![w:1080](figures/decay.png)
 <figcaption>every other mode, dying</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1108,20 +1022,13 @@ Here the slowest of them is **0.80**, and after a dozen steps there is nothing l
 
 <hr>
 
-<div class="cols">
-<div>
+$A^t$ counts **walks of length $t$**, so eigenvector centrality answers "where do most walks end up?"
 
-$A^t$ counts **walks of length $t$**.
+<div class="fig tall">
 
-Power iteration counts walks and lets the long ones dominate — so eigenvector centrality answers "where do most walks end up?"
+![w:1080](figures/walks-arrive.png)
+<figcaption>three walks of length 3, arriving at one node</figcaption>
 
-</div>
-<div class="fig">
-
-![w:537](figures/walks-arrive.png)
-<figcaption>three walks of length 3, arriving</figcaption>
-
-</div>
 </div>
 
 ---
@@ -1169,20 +1076,13 @@ Steer nobody. If someone says "a network with one dense clump", they have it exa
 
 <hr>
 
-<div class="cols">
-<div>
+A tight cluster feeds itself, and everything outside it is starved. The far end of this tail scores **0.0045** of the top — not small, *invisible*.
 
-A tight cluster feeds itself. Score entering the cluster stays there, and everything outside is starved.
+<div class="fig tall">
 
-The far end of this tail scores **0.0045** of the top — not small, *invisible*.
-
-</div>
-<div class="fig">
-
-![w:537](figures/localization.png)
+![w:1080](figures/localization.png)
 <figcaption>five nodes take almost everything</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1309,22 +1209,13 @@ Katz counts **every walk of every length**, discounting a walk of length $t$ by 
 
 <hr>
 
-<div class="cols">
-<div>
+Turn $\lambda$ down and Katz becomes **degree**; turn it up and it becomes **eigenvector centrality**. Everything useful is in between.
 
-Turn $\lambda$ down and only the shortest walks survive: Katz becomes **degree**.
+<div class="fig tall">
 
-Turn it up and long walks matter as much as short ones: Katz becomes **eigenvector centrality**.
+![w:1080](figures/katz-dial.png)
+<figcaption>the top of the ranking, at three settings of lambda</figcaption>
 
-Everything useful is in between.
-
-</div>
-<div class="fig">
-
-![w:537](figures/katz-dial.png)
-<figcaption>the top of the ranking, at three settings</figcaption>
-
-</div>
 </div>
 
 ---
@@ -1353,22 +1244,13 @@ Collect two or three predictions. "It grows" is the common one. "It stops workin
 
 <hr>
 
-<div class="cols">
-<div>
+The series converges only while $\lambda < 1/\lambda_{\max}$ — here **0.299**. Set $\lambda = 0.344$ and **eleven of the twelve scores go negative**.
 
-The series only converges while $\lambda < 1/\lambda_{\max}$.
+<div class="fig tall">
 
-Here $\lambda_{\max} = 3.35$, so the ceiling is **0.299**.
+![w:1080](figures/katz-diverge.png)
+<figcaption>scores against lambda, crossing zero past the ceiling</figcaption>
 
-Set $\lambda = 0.344$ and **eleven of the twelve scores go negative**.
-
-</div>
-<div class="fig">
-
-![w:537](figures/katz-diverge.png)
-<figcaption>scores against lambda, crossing zero</figcaption>
-
-</div>
 </div>
 
 ---
@@ -1442,22 +1324,13 @@ Both answers are defensible and that is the point. Do not resolve it.
 
 <hr>
 
-<div class="cols">
-<div>
+A good **hub** points at good authorities. A good **authority** is pointed at by good hubs. Two scores per page, each defined through the other.
 
-A good **hub** points at good authorities.
+<div class="fig tall">
 
-A good **authority** is pointed at by good hubs.
-
-Two scores per page, each defined through the other.
-
-</div>
-<div class="fig">
-
-![w:537](figures/hub-authority.png)
+![w:1080](figures/hub-authority.png)
 <figcaption>the two roles a page can play</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1663,26 +1536,13 @@ Follow the links at random. Sooner or later you land on a page with nothing to c
 
 <hr>
 
-<div class="cols">
-<div>
+With probability $\beta$ the walker ignores the links and jumps to a random page. PageRank is **where the walker spends its time** in the long run.
 
-With probability $\beta$ the walker ignores the links and jumps to a random page.
+<div class="fig tall">
 
-PageRank is **where the walker spends its time** in the long run.
+![w:1080](figures/teleport.png)
+<figcaption>the only way out of a dead end — without it, every drop of score drains away</figcaption>
 
-<div class="note">
-
-Without the jump, every drop of score drains into the dead end and the total goes to zero.
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:537](figures/teleport.png)
-<figcaption>the only way out of a dead end</figcaption>
-
-</div>
 </div>
 
 ---
@@ -1930,20 +1790,13 @@ Star: everyone says yes, and they are right. Path: the interesting one.
 
 <hr>
 
-<div class="cols">
-<div>
+In a star **every** measure crowns the hub, because there is only one shape of node to argue about.
 
-In a star, **every** measure crowns the hub: most edges, closest to everything, on every path, best neighbours.
+<div class="fig tall">
 
-There is nothing to argue about, because there is only one shape of node.
-
-</div>
-<div class="fig">
-
-![w:537](figures/star-vs-path-1.png)
+![w:1080](figures/star-vs-path-1.png)
 <figcaption>one node wins everything</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1952,26 +1805,13 @@ There is nothing to argue about, because there is only one shape of node.
 
 <hr>
 
-<div class="cols">
-<div>
+In a path, degree cannot separate the five interior nodes at all. Betweenness ranks them completely and crowns exactly one.
 
-In a path, degree cannot separate the five interior nodes at all — they all have two edges.
+<div class="fig tall">
 
-Betweenness ranks them completely, and crowns exactly one.
-
-<div class="note">
-
-The Roman network is far closer to a star than to a path, because one authority built it around one node. The networks you will study were not built by anyone.
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:537](figures/star-vs-path-2.png)
+![w:1080](figures/star-vs-path-2.png)
 <figcaption>five tie on degree; one wins on betweenness</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1995,20 +1835,13 @@ Module 04's friendship paradox, used deliberately: ask a random person to name a
 
 <hr>
 
-<div class="cols">
-<div>
+The defender reads the attacker's ranking. **Betweenness** names the substations whose loss splits the grid, not the ones with the most cables.
 
-Module 03 showed that a network dies fastest when the attacker chooses well.
+<div class="fig tall">
 
-The defender reads the same ranking. **Betweenness** names the substations whose loss splits the grid, not the ones with the most cables.
-
-</div>
-<div class="fig">
-
-![w:537](figures/applications-2.png)
+![w:1080](figures/applications-2.png)
 <figcaption>the nodes worth hardening first</figcaption>
 
-</div>
 </div>
 
 ---
@@ -2017,20 +1850,13 @@ The defender reads the same ranking. **Betweenness** names the substations whose
 
 <hr>
 
-<div class="cols">
-<div>
+Regulators score institutions on their **position**, not their balance sheet. A bank that is not large can still be the one every exposure runs through.
 
-A bank that is not large can still be the one every exposure runs through.
+<div class="fig tall">
 
-Regulators score institutions on their **position**, not their balance sheet — which is a centrality, chosen for a purpose.
-
-</div>
-<div class="fig">
-
-![w:537](figures/applications-3.png)
+![w:1080](figures/applications-3.png)
 <figcaption>small bank, unavoidable position</figcaption>
 
-</div>
 </div>
 
 ---
@@ -2039,20 +1865,13 @@ Regulators score institutions on their **position**, not their balance sheet —
 
 <hr>
 
-<div class="cols">
-<div>
+That walker was not a metaphor. **PageRank is a random walk** — and next time the walker is the subject rather than the tool.
 
-We described PageRank as a walker following links at random and occasionally teleporting.
+<div class="fig tall">
 
-That was not a metaphor. **PageRank is a random walk**, and next time the walker is the subject rather than the tool.
-
-</div>
-<div class="fig">
-
-![w:537](figures/next-module.png)
+![w:1080](figures/next-module.png)
 <figcaption>the walker, mid-jump</figcaption>
 
-</div>
 </div>
 
 <!--

@@ -63,8 +63,18 @@ def start_log():
     _DRAWN.clear()
 
 
-def assert_no_digits(name):
+_NODE_TEXT = re.compile(r"\\node\[[^\]]*\](?:\s*\([^)]*\))?\s*at\s*\([^)]*\)\s*\{(.*?)\};")
+
+
+def assert_no_digits(name, body):
+    """Two independent checks, because one of them can be bypassed.
+
+    The log only sees strings that went through T() or discs_ink(); the regex reads
+    the TikZ that will actually be compiled, so a digit drawn by any other route
+    still fails the build.
+    """
     bad = [s for s in _DRAWN if re.search(r"[0-9]", s)]
+    bad += [s for s in _NODE_TEXT.findall(body) if re.search(r"[0-9]", s)]
     assert not bad, f"{name}: draws a digit -- {bad}"
 
 
@@ -197,8 +207,16 @@ def club_note(words):
 
 
 def fig_club_blank():
-    """Thirteen students, no edges -- the room draws the edges itself."""
+    """Thirteen students, no edges -- the room draws the edges itself.
+
+    The edges are absent from the picture and present in the gate: the layout is the
+    one `club-network` and the three king figures use, so it has to be crossing-free
+    here even though nothing is drawn to cross.
+    """
     start_log()
+    assert nx.check_planarity(CLUB)[0]
+    assert not F.crossings(CLUB_EDGES, CLUB_XY), \
+        "the layout this figure freezes must draw the club's 17 edges without a crossing"
     body = discs_ink(CLUB_XY) + club_labels()
     F.emit("club-blank", body, container="full", h=380)
 
@@ -366,7 +384,7 @@ def fig_sigma_blank():
     start_log()
     b = _sigma_base()
     b += T(550, 330, "S to D: how many shortest routes?", color=RED)
-    assert_no_digits("sigma-blank")
+    assert_no_digits("sigma-blank", b)
     F.emit("sigma-blank", b, container="full", h=390)
 
 

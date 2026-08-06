@@ -772,9 +772,13 @@ def fig_robustness():
     assert [m for m, _ in ROBUST] == sorted([m for m, _ in ROBUST],
                                             key=lambda m: -dict(ROBUST)[m])
     x0, x1, ay = 410.0, 930.0, 62.0
+    top = 100.0 + (len(ROBUST) - 1) * 38.0
     body = F.seg((x0, ay), (x1, ay), color="black", w=2.2)
+    # Gridlines, not bars: the dot's place on the axis carries the number, and a
+    # leader from the axis to each dot would be a bar chart with a thin bar.
     for v in (0.0, 0.5, 1.0):
         x = x0 + v * (x1 - x0)
+        body += F.seg((x, ay), (x, top + 20), color=GY, w=1.2, dash=F.DASH)
         body += F.seg((x, ay), (x, ay - 9), color="black", w=2.2)
         body += F.text(x, ay - 17, F.pct(v), color=GY, anchor="north")
     rows, boxes = [], []
@@ -782,10 +786,10 @@ def fig_robustness():
         y = 100.0 + (len(ROBUST) - 1 - i) * 38.0
         hot = m in ROBUST_MARK
         col = A2 if hot else "black"
-        body += F.text(350, y, m, color=col, anchor="east")
-        boxes.append(F.label_box(350, y, m, "east"))
-        body += F.seg((x0, y), (x0 + v * (x1 - x0), y), color=GY, w=1.4)
-        body += F.dot(x0 + v * (x1 - x0), y, color=A2 if hot else A1, d=18)
+        label = m.capitalize() if m == "katz" else m
+        body += F.text(350, y, label, color=col, anchor="east")
+        boxes.append(F.label_box(350, y, label, "east"))
+        body += F.dot(x0 + v * (x1 - x0), y, color=A2 if hot else A1, d=20)
         if hot:
             s = F.pct(v, 1) if v < 1 else F.pct(v)
             body += F.text(x0 + v * (x1 - x0) + 16, y, s, color=A2, anchor="west")
