@@ -1016,19 +1016,34 @@ def _dotplot(counts, mean):
     """21 pairs, one dot each, laid out in rows by distance -- so the tallest column of
     the two plots (9 pairs at d=2) still fits inside a column figure.
 
-    The mean rule is clipped to the dots it summarises: at full canvas width it ran 112bp
-    past the last dot and struck through the `d = 2` row label like a deletion mark."""
-    x0, dx, ytop, dy = 168, 40, 300, 46
-    xr = max(x0 + (counts.get(d, 1) - 1) * dx for d in range(1, 7))
+    The mean rule spans the dots it summarises and nothing else.  Two separate defects
+    came out of letting it run the full canvas width:
+
+    * it reached into the row-label column.  Measured on the render, the rule occupied
+      rows 230-243 while the `d = 2` label's glyphs occupied 257-519 in x on those very
+      rows -- 10bp of white between them -- so the red line read as a deletion mark
+      struck through the label.  It now starts a measured 20bp clear of the widest label.
+    * it overran the dots.  The mean falls BETWEEN two rows, so the rule is clipped to
+      the wider of those two rows; drawn to the widest row in the whole plot it ended
+      64bp past any dot at its own height, which is a level line pointing at nothing.
+    """
+    x0, dx, ytop, dy = 176, 39, 300, 46
+    lab_x = 128                                   # row labels, anchored east
     ym = ytop - (float(mean) - 1) * dy
+    lo, hi = math.floor(float(mean)), math.ceil(float(mean))
+    xr = max(x0 + (counts.get(d, 1) - 1) * dx for d in {lo, hi})
+    xl = x0 - DOT / 2 - 4
+    gap = xl - lab_x
+    assert gap >= 20, (f"the mean rule starts {gap:.0f}bp from the row labels -- under "
+                       f"20bp the red reads as a strikethrough on the label it passes")
     # the rule goes down FIRST, so the discs cover it: the mean falls between two rows and
     # at 1.81 it lands inside the d = 2 discs, where a line drawn on top reads as a
     # strikethrough rather than as a level
-    s = seg((x0 - DOT / 2 - 12, ym), (xr + DOT / 2 + 8, ym), color="accenttwo", w=3.4,
+    s = seg((xl, ym), (xr + DOT / 2 + 4, ym), color="accenttwo", w=3.4,
             dash="dash pattern=on 10bp off 7bp")
     for d in range(1, 7):
         y = ytop - (d - 1) * dy
-        s += text(132, y, f"$d={d}$", color="annot", anchor="east")
+        s += text(lab_x, y, f"$d={d}$", color="annot", anchor="east")
         for k in range(counts.get(d, 0)):
             s += dot(x0 + k * dx, y, "accent")
     s += text(260, 12, f"all {sum(counts.values())} pairs, mean "
@@ -1378,15 +1393,46 @@ def fig_windmill_split():
     return s
 
 
+# Every number this figure prints, derived rather than asserted.  A triplet is counted at
+# its CENTRE node -- the middle node of the two edges -- so a node of degree k contributes
+# C(k,2) of them and one triangle contains three closed triplets.  That is the deck's own
+# definition as of slide 34, and it is the only reading that produces the deck's 0.27.
+WM_HUB_K = 10                                     # the hub's degree
+WM_BLADE_K = 2                                    # every blade node's degree
+WM_HUB_TRIPLETS = math.comb(WM_HUB_K, 2)          # 45
+WM_BLADE_TRIPLETS = 10 * math.comb(WM_BLADE_K, 2)  # 10 nodes x 1
+WM_TRIANGLES = sum(nx.triangles(WINDMILL).values()) // 3
+WM_CLOSED = 3 * WM_TRIANGLES                      # three closed triplets per triangle
+WM_T = Fraction(WM_CLOSED, WM_HUB_TRIPLETS + WM_BLADE_TRIPLETS)
+assert sorted(dict(WINDMILL.degree()).values()) == [2] * 10 + [10]
+assert WM_HUB_TRIPLETS + WM_BLADE_TRIPLETS == TRIPLETS == 55
+assert WM_T == Fraction(3, 11) and abs(float(WM_T) - nx.transitivity(WINDMILL)) < 1e-12
+
+
 def fig_transitivity_def():
+    """The arithmetic, set as mathematics, next to the drawing it is counted from.
+
+    This figure used to print "5 triangles shaded / 55 triplets in all", which asserts
+    the 55 without deriving it -- and 55 is exactly the number that separates the deck's
+    definition of a triplet from the wrong one, so it is the number that has to be shown
+    being built.
+    """
     s = ""
     for b in range(5):
         p, q = WM[(b, 0)], WM[(b, 1)]
         s += (f"\\fill[accenttwo,opacity=0.24] ({WM_HUB[0]},{WM_HUB[1]}) -- "
               f"({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f}) -- cycle;\n")
     s += _windmill()
-    s += text(700, 250, "5 triangles shaded", color="accenttwo", anchor="west")
-    s += text(700, 130, "55 triplets in all", color="black", anchor="west")
+    x, total = 620, WM_HUB_TRIPLETS + WM_BLADE_TRIPLETS
+    s += text(x, 302, "each node: $\\binom{k_i}{2}$ triplets", color="black",
+              anchor="west")
+    s += text(x, 232, f"hub $\\binom{{{WM_HUB_K}}}{{2}} = {WM_HUB_TRIPLETS}$",
+              color="black", anchor="west")
+    s += text(x, 172, f"$+$ 10 blades $= {WM_BLADE_TRIPLETS}$, so ${total}$",
+              color="black", anchor="west")
+    s += text(x, 80, f"$C = \\dfrac{{3 \\times {WM_TRIANGLES}}}{{{total}}} = "
+                     f"\\dfrac{{{WM_T.numerator}}}{{{WM_T.denominator}}} "
+                     f"= {float(WM_T):.2f}$", color="accenttwo", anchor="west")
     return s
 
 
