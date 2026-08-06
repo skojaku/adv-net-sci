@@ -144,6 +144,18 @@ it, and three markers shipped at 25.5px against a 26px floor. One guaranteed a r
 the drawing and was blind to what it implied; the other guaranteed the author's intention and was
 blind to the drawing.
 
+### A mechanical edit must assert that it matched
+
+A fixer applying twenty wording changes reaches for `str.replace`, and a `str.replace` whose
+pattern was never in the file returns the file unchanged and reports success. That is
+indistinguishable from a landed fix, and it is one of the ways this project has twice reported a
+repair the render contradicted.
+
+Module 04's deck agent ran its edits as one script that **asserts each pattern matched exactly
+once** and aborts otherwise, printing "all 23 replacements applied, each matched exactly once".
+Exactly once, not at least once: a pattern that matches twice has found something the author did
+not know was there, which is worth stopping for.
+
 ### An assertion that is never called is not a check
 
 `assert_planar()` sat in Module 02's generator with a docstring reading "a figure whose claim

@@ -235,6 +235,35 @@ Two things that make an animation teach rather than decorate:
   geometry between an animation and its still is how the two drift; compute both from the
   one source and check.
 
+## A figcaption says what nothing else on the slide says — and survives the figure changing
+
+Two failure modes, and the second one is the interesting one.
+
+**The caption restates the drawing.** By module 04's fourth round this was the single most common
+Minor in the deck: a figure printing "78% of 23,133 authors sit at k ≤ 10" under a caption reading
+"78% of authors have ten coauthors or fewer", the same sentence twice, 120px apart. The division of
+labour is **numbers in the drawing, prose in the caption** — and the test is not "does the caption
+describe the figure" but "does the caption say something nothing else on the slide says".
+
+Run it as a **criterion over every captioned slide**, not as a list of slides. Module 04 fixed this
+class four times from four lists and it kept coming back, because each list was the slides someone
+had happened to look at. When it was finally run as a criterion it turned up a slide neither of two
+prior passes had caught, and cleared seven suspects that did not hold up once the render was
+actually opened.
+
+**The caption is orphaned by a fix to the figure it describes.** A caption written truthfully in
+round 3 read "twenty ends, and how they divide up among the eight". In round 4 the figure was
+regrouped **by degree** to fix a different defect. The caption did not change; the drawing moved
+under it, and a sentence that had been correct became false without anybody editing it.
+
+That one is not caught by reading captions, because nothing about the caption looks wrong. Two
+defences:
+
+- After changing a figure, **re-read the caption of every slide that uses it** — the same rule as
+  "check every slide that uses the figure", extended to the words underneath.
+- Prefer captions a regrouping cannot stale. The replacement here was "q(k) is a share of hands,
+  not a share of girls", which stays true however the hands are arranged.
+
 ## Keeping this current
 
 Same contract as the other three files: when building a deck teaches something new about
