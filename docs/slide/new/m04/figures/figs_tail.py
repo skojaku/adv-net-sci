@@ -34,7 +34,7 @@ from functools import lru_cache
 import networkx as nx
 import numpy as np
 
-from figlib import (DASH, DASH_LONG, FONT, NODE, Axes, boxes_overlap, clearance_bad,
+from figlib import (DASH, DASH_LONG, FONT, FULL_W, NODE, Axes, boxes_overlap, clearance_bad,
                     crossings, disc, dot, emit, fill_poly, label_box, pct, polyline,
                     seg, text, visible)
 from verify_numbers import (ba_graph, ccdf, ccdf_fit, condmat, internet_as, net_stats,
@@ -193,7 +193,7 @@ def ccdf_dense(d):
     return ks, su
 
 
-def ccdf_axes(xlim, xticks, ylim=None, yticks=None):
+def ccdf_axes(xlim, xticks, ylim=None, yticks=None, centre=False):
     """The module's one CCDF ruler: fixed bp per decade on BOTH axes.
 
     The box's height is fixed and its width follows the data's range, so every log-log
@@ -203,15 +203,30 @@ def ccdf_axes(xlim, xticks, ylim=None, yticks=None):
     x0, y0, _, y1 = CCDF_BOX
     x1 = x0 + math.log10(xlim[1] / xlim[0]) * CCDF_PX_PER_DECADE
     assert x1 <= CCDF_BOX[2] + 1e-6, f"x range {xlim} needs {x1 - x0:.0f}bp of frame"
+    if centre:
+        # R5 C5-2: B4-3 narrowed the frame to fix the ruler and left the canvas at full
+        # width, so a short x range put the drawing hard against the left edge with a
+        # fifth of the slide blank on the right and the figcaption centred under nothing.
+        # A figure with nothing in the margin gets centred; one with notes out there does
+        # not, or the notes would be pushed off the page.
+        # The ink starts at the rotated y title, not at the frame, so the centring is
+        # computed from where the ink actually begins.
+        ink_left = x0 - Y_TITLE_GAP - 20
+        shift = (FULL_W - x1 - ink_left) / 2
+        x0, x1 = x0 + shift, x1 + shift
     return Axes((x0, y0, x1, y1), xlim, ylim or CCDF_YLIM, xlog=True, ylog=True,
                 xticks=xticks, yticks=yticks or CCDF_YTICKS, xfmt=dec)
 
 
 # --------------------------------------------------------------------------- plot helpers
-def axis_titles(ax, xtitle, ytitle, ytx=30):
+Y_TITLE_GAP = 155       # from the frame's left edge to the rotated y title's centre
+
+
+def axis_titles(ax, xtitle, ytitle, ytx=None):
     """Both axis titles, placed by hand so neither can land on a tick label."""
     o = text((ax.x0 + ax.x1) / 2, ax.y0 - 66, xtitle, anchor="north")
-    o += text(ytx, (ax.y0 + ax.y1) / 2, ytitle, rot=90)
+    o += text(ax.x0 - Y_TITLE_GAP if ytx is None else ytx, (ax.y0 + ax.y1) / 2,
+              ytitle, rot=90)
     return o
 
 
@@ -369,7 +384,10 @@ def curve_label(ax, s, ats, own, boxes, others=(), color="black", size=FONT, pad
     if best is not None:
         _, cx, cy, b, lead = best
         boxes.append(b)
-        return (seg(lead[0], lead[1], color="annot", w=2.0, record=False)
+        # R5 C5-4: the leader was drawn in annotation gray, and on `three-ccdfs` gray is
+        # the lattice -- so the line joining the word "random" to the random curve was
+        # the colour of a third curve. It takes its label's colour.
+        return (seg(lead[0], lead[1], color=color, w=2.0, record=False)
                 + text(cx, cy, s, color=color, anchor="center", size=size))
 
     raise SystemExit(
@@ -759,7 +777,9 @@ def fig_powerlaw_def():
     ax = Axes((165, 145, 400, 356), (1, 100), (1e-6, 1), xlog=True, ylog=True,
               xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
     body = ax.frame()
-    body += axis_titles(ax, "$k$", "$p(k)$")
+    # A column figure's frame starts at 165, so the shared "155bp left of the frame"
+    # y-title offset would put this one off the page: it gets its own.
+    body += axis_titles(ax, "$k$", "$p(k)$", ytx=30)
     xs = np.logspace(0, 2, 400)
     drawn, ends = [], []
     for g, col in ((3.5, "accenttwo"), (2.0, "accent")):
@@ -1017,11 +1037,23 @@ def fig_ccdf_condmat():
     # arrived two slides before the poll asking whether the CCDF slope IS gamma -- it
     # answered the poll and showed the room the +1 rule that the next slide exists to
     # derive. It belongs after both, and it is not this figure's.
-    ax = ccdf_axes((1, 300), [1, 10, 100])
+    # R5 E5-1: 094 closes the deck on "cond-mat's p(k) gives gamma = 2.44, its CCDF gives
+    # 3.57" and had no drawn slope to point back at, so a room that has just been drilled
+    # on "add one to the CCDF slope" reads 2.44 -> 3.57 as that rule being obeyed. The
+    # number comes back -- number and window, no comparison, since the comparison is what
+    # made this the wrong slide in round 4. The window is the one `verify_numbers` fits
+    # and the one 094's 3.57 comes from; it is printed because it is not 054's.
+    a = ccdf_fit(ks, su, 10, 200)[0]
+    assert abs((1 - a) - 3.57) < 0.01, (a, 1 - a)
+
+    ax = ccdf_axes((1, 300), [1, 10, 100], centre=True)
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$P(k' > k)$")
     body += scatter(ax, [p[0] for p in plot], [p[1] for p in plot], color=HUBS, d=13,
                     expect=121)
+    body += text((ax.x0 + ax.x1) / 2, CCDF_NOTE_Y,
+                 f"fitted slope ${a:.2f}$ over $10 \\le k \\le 200$",
+                 color="accenttwo", anchor="north")
     emit("ccdf-condmat", body, container="full", h=H)
 
 
@@ -1317,27 +1349,30 @@ def fig_hubs_share():
                 dash=DASH)
     drawn = curve_pts(ax, ks, su)
 
-    # R4 B4-7: the headline number had neither a picture nor a sentence -- I chose the
-    # "deck body carries it" exit in round 3 and the body never received it. The shaded
-    # band is empty below the curve, so the share goes there as a length: one rule the
-    # full width of the frame, standing for all 25,144 edge ends, with the hubs' share of
-    # it in accent-2.
-    bar_y = ax.Y(1.35e-4)
-    body += seg((ax.x0, bar_y), (ax.x1, bar_y), color="annot", w=13)
-    body += seg((ax.x0, bar_y), (ax.x0 + share * (ax.x1 - ax.x0), bar_y),
-                color="accenttwo", w=13)
+    # R4 B4-7 asked for the share as a length and R5 C5-1 found where I had put it: on
+    # the P = 1e-4 gridline inside the frame, so its 33.8% boundary landed at k = 13 on
+    # the degree ruler while the hubs start at k = 36. A proportion scale drawn on a
+    # degree axis reads as a degree. It is a standalone strip above the frame now, in no
+    # coordinate system at all, with both ends named.
+    # Inset from the frame's edges as well as lifted out of it: ends that line up with
+    # the axis ends invite the reading C5-1 caught, which is that the split is at some k.
+    bar_y, bx0, bx1 = 318, ax.x0 + 14, ax.x1 - 14
+    body += seg((bx0, bar_y), (bx1, bar_y), color="annot", w=13)
+    body += seg((bx0, bar_y), (bx0 + share * (bx1 - bx0), bar_y), color="accenttwo", w=13)
     boxes = []
-    body += fixed_label([(ax.x1 - 8, CCDF_NOTE_Y)],
-                        f"{n_top} routers hold {pct(share, 1)} of all "
-                        f"{num(d.sum())} edge ends",
-                        drawn, boxes, color="accenttwo", anchor="north east")
+    body += fixed_label([(bx0, CCDF_NOTE_Y)], f"{n_top} routers: {pct(share, 1)}",
+                        drawn, boxes, color="accenttwo", anchor="north west")
+    body += fixed_label([(bx1, CCDF_NOTE_Y)],
+                        f"the rest: {pct(1 - share, 1)}",
+                        drawn, boxes, color="annot", anchor="north east")
     body += fixed_label([(ax.x1 - 8, 290), (ax.x1 - 8, 274)],
                         f"shaded: top {pct(0.01)}, $k \\ge {kstar}$",
                         drawn, boxes, color="annot", anchor="east")
     # The number is on the top line; down here the bar IS the number, and the label only
     # has to say whose share it is. Anything longer runs into the shaded band.
-    body += fixed_label([(ax.x0 + 6, 208), (ax.x0 + 6, 232)], "their share",
-                        drawn, boxes, color="accenttwo", anchor="north west")
+    body += fixed_label([(ax.x0 + 8, 170), (ax.x0 + 8, 194), (ax.x0 + 8, 150)],
+                        f"all {num(d.sum())} ends",
+                        drawn, boxes, color="annot", anchor="west")
     emit("hubs-share", body, container="full", h=H)
 
 
@@ -1441,7 +1476,7 @@ def fig_three_ccdfs():
     # The frame stops at 330 so the shared-mean note has a band above it: centred over
     # the panel it was crossed by the power-law curve, which is where a note goes when a
     # corner is chosen by hand instead of checked.
-    ax = ccdf_axes((1, 500), [1, 10, 100])
+    ax = ccdf_axes((1, 500), [1, 10, 100], centre=True)
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
     drawn, anchors = [], []
