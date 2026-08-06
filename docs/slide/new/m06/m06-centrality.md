@@ -307,7 +307,7 @@ Degree is the only measure today that a city could compute for itself.
 <div class="fig tall">
 
 ![w:1080](figures/degree-local.png)
-<figcaption>everything Rome can see from where it stands; the rest of the map is out of reach</figcaption>
+<figcaption>what Rome can see from where it stands; the rest is out of reach</figcaption>
 
 </div>
 
@@ -346,7 +346,7 @@ Two ways to see further: **distance** (Parts Three and Four) and **walks** (Part
 <div class="fig tall">
 
 ![w:1080](figures/two-roads-ahead.png)
-<figcaption>red is Rome, blue is one step away, gold is two — white is everything degree cannot see</figcaption>
+<figcaption>red Rome, blue one step, gold two — white is what degree cannot see</figcaption>
 
 </div>
 
@@ -1443,7 +1443,7 @@ With $A$ symmetric, $A^{\top}A = A^2$, so $A^{\top} A\, c = \lambda^2 c$: the sa
 <div class="fig tall">
 
 ![w:1080](figures/roma-eigenvector.png)
-<figcaption>this is the Part Five picture, unchanged — hub score and authority score are that same vector</figcaption>
+<figcaption>the Part Five picture, unchanged: hubs and authorities are that same vector</figcaption>
 
 </div>
 
@@ -1638,7 +1638,7 @@ Rome took every crown outright but one, and shares that one with two three-road 
 <div class="fig tall">
 
 ![w:1080](figures/crown-summary.png)
-<figcaption>red: the six crowns Rome holds alone. gold: the two cities that tie it on eccentricity</figcaption>
+<figcaption>red: six crowns held alone. gold: the two that tie it on eccentricity</figcaption>
 
 </div>
 
@@ -1728,7 +1728,7 @@ Betweenness crowns Rome — 0.50 against Mediolanum's 0.27.
 <div class="fig tall">
 
 ![w:1080](figures/redraw-1.png)
-<figcaption>darker means higher betweenness; the two edges about to change are marked red</figcaption>
+<figcaption>darker means higher betweenness; the road to be traded is red</figcaption>
 
 </div>
 
@@ -1743,7 +1743,7 @@ Trade the Thessaly road for the Balkan road and the Africa–Gaul lane. Every ro
 <div class="fig tall">
 
 ![w:1080](figures/redraw-2.png)
-<figcaption>betweenness now crowns Mediolanum; degree, closeness, eigenvector and Katz do not move at all</figcaption>
+<figcaption>betweenness now crowns Mediolanum; nothing else moves</figcaption>
 
 </div>
 
@@ -1778,7 +1778,7 @@ Degree reads the edges once. Closeness and betweenness need a shortest-path swee
 <div class="fig tall">
 
 ![w:1080](figures/cost.png)
-<figcaption>work against network size, on log axes — about 33,000 times the difference at a million nodes</figcaption>
+<figcaption>work against network size, log axes — 33,000x apart at a million nodes</figcaption>
 
 </div>
 

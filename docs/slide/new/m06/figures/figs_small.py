@@ -428,8 +428,9 @@ def fig_sigma_answer():
     b += route_ink(SIG_ROUTES, SIG_XY, [BLUE, RED])
     b += discs_ink(SIG_XY, labels={n: n for n in SIG_XY})
     sides, boxes = F.place_labels(words, SIG_XY, SIG_E, bounds=(4, 4, 1076, 300), gap=3.0)
-    for n, s in words.items():
-        _DRAWN.append(s)
+    amb = _unambiguous(SIG_XY, boxes)
+    assert not amb, f"a share is printed nearer another node: {amb}"
+    _DRAWN.extend(words.values())
     b += F.draw_labels(words, SIG_XY, sides, color=RED)
     b += F.note("each route earns 1, split where they tie", (550, 330),
                 color=DIM, anchor="center", boxes=boxes)
