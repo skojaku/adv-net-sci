@@ -12,8 +12,7 @@ mo.md(
     > **0.61**, far higher than a random network's (**0.01**). Therefore
     > this is a small-world network.
 
-    <span style='color:#6A6D75;font-size:13px'>One measurement, one
-    comparison, one conclusion. Read it as the reviewer who has to sign
-    underneath.</span>
+    <span style='color:#6A6D75;font-size:13px'>Read it as the reviewer who
+    has to sign underneath.</span>
     """
 )
