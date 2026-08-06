@@ -94,6 +94,24 @@ The corollary still holds and is not in tension with this: once the agent has re
 re-measure before trusting the report, and re-run `find figures -newer review/slide.001.png`
 immediately before launching reviewers.
 
+### Read the gate's own exit status, not a pipeline's
+
+Module 02's lead reported "gate exit=0" for several consecutive rounds from
+
+    python3 check_render.py 2>&1 | grep -E "all checks|problem"
+
+where `$?` is **grep's** status. The gate had been exiting 1. A verifier ran it unpiped
+and found the failure in one line.
+
+Every other entry in this file is about a check that measured the wrong thing. This one
+is the same disease one level up — the check was right and the *reading* of it was wrong,
+which is harder to notice because nothing looks broken. Run it bare, or capture properly:
+
+    python3 check_render.py > /tmp/gate.txt 2>&1; echo "exit=$?"
+
+and quote the exit status in the round's report, not the words "all checks pass" scraped
+out of the middle of the output.
+
 ### A gate that cannot fire is worse than no gate
 
 `check_render.py`'s node-diameter band was inert for the whole of Module 02's first build.
