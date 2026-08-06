@@ -43,7 +43,7 @@ from figlib import (  # noqa: E402
     PAD, PXBP, TEXT_MIN_PX, calibrate, render, ring, text,
 )
 from figs_tail import (  # noqa: E402
-    GROWTH_N, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_layout, growth_pos,
+    GROWTH_N, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_layout,
 )
 
 MS = 280            # ms per frame; 23 growth frames runs about six and a half seconds
@@ -137,7 +137,13 @@ def _apart_from_quiz(pos):
     the smallest distance wins.
     """
     ua = _unit(pos)
-    ub = _unit(growth_pos(True, QUIZ_B))
+    # `growth_layout(True, box=QUIZ_B)` is the call `figs_tail._quiz_body` makes, so
+    # this is the arrangement quiz.png actually draws. It used to be
+    # `growth_pos(True, QUIZ_B)`, which stopped being that when the quiz moved to
+    # solving in its own box -- leaving the guard comparing against a picture nobody
+    # drew. A guard on the wrong object is the failure this whole assertion exists to
+    # catch, so it is worth saying where the reference comes from.
+    ub = _unit(growth_layout(True, box=QUIZ_B))
     best = None
     for fx in (False, True):
         for fy in (False, True):
