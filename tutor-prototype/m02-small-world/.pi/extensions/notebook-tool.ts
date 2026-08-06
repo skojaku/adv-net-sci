@@ -2794,14 +2794,20 @@ export default function (pi: ExtensionAPI) {
             bestIdx = i;
           }
         });
-        // Below near-identity, the message also has to LOOK like a question:
-        // a one-word answer scores 0.5 against a question that contains it.
+        // Below near-identity, the message also has to LOOK like a question
+        // — and question shape is decided at the START of the utterance, not
+        // by a wh-word anywhere in it. A wh-word ANYWHERE deleted a student's
+        // real answer from their own note: "clustering is how often my
+        // friends know each other" scores 0.78 against the question "how
+        // often do friends know each other", and contains "how". Dropping
+        // their work from the graded artifact is far worse than leaving a
+        // question in it, so this errs toward keeping.
+        // `which`, `whether` and `if` are deliberately NOT openers: they lead
+        // declaratives at least as often ("which means C stays the same").
         const asked = bestIdx >= 0 ? saidNow[bestIdx] : "";
-        const looksAsked =
-          /\?/.test(asked) ||
-          /\b(what|whats|why|how|hows|when|where|which|who|explain|mean|means|meaning)\b/.test(
-            normMsg(asked),
-          );
+        const QUESTION_OPENER =
+          /^(?:(?:wait|hang on|hold on|sorry|ok|okay|hmm+|umm+|oh|but|and|also|quick|one more|side note|random|off topic)[ ]+)*(?:what|whats|why|how|hows|when|where|who|whos|is|are|isnt|arent|do|does|did|dont|doesnt|can|could|should|would|will)\b|^(?:i (?:dont|do not|didnt|cant) (?:get|understand|see|follow)|im (?:confused|lost)|i(?:m| am) not sure (?:what|why|how))\b/;
+        const looksAsked = /\?/.test(asked) || QUESTION_OPENER.test(normMsg(asked));
         if (bestIdx >= 0 && (bestScore >= 0.9 || (bestScore >= 0.6 && looksAsked))) {
           detourAsked.add(normMsg(asked));
         }
