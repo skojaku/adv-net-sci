@@ -8,6 +8,7 @@
 #     "seaborn",
 #     "altair",
 #     "anywidget",
+#     "traitlets",
 #     "numpy",
 #     "pandas",
 #     "pillow",
