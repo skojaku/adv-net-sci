@@ -2199,10 +2199,16 @@ export default function (pi: ExtensionAPI) {
       // never asked for at all, on a checkpoint whose script says "THE PAGE
       // IS THE POINT". So the exemption is scoped to where it was said: they
       // may repeat it in one word, but the ask has to happen.
-      const cameraSaidHere = studentSaidSince(ctx, false).some((m) =>
-        /camera|photo|picture|scan|phone/i.test(m),
-      );
+      // Has the ask been put to them here? Either they mentioned a camera in
+      // their own words, or — after the first refusal told the tutor to ask —
+      // they have typed something since. A live run refused three times
+      // because the student answered "still broken sorry, ill go with the
+      // typed version", which says nothing about a camera; they had answered
+      // the question, and the guard did not notice.
       const photoStrikes = slotDriftWarned.get(`${id}:photo`) ?? 0;
+      const cameraSaidHere =
+        studentSaidSince(ctx, false).some((m) => /camera|photo|picture|scan|phone/i.test(m)) ||
+        (photoStrikes > 0 && said.length > 0);
       if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2)) {
         slotDriftWarned.set(`${id}:photo`, photoStrikes + 1);
         return toResult({
@@ -2500,10 +2506,22 @@ export default function (pi: ExtensionAPI) {
 
       const suppressed = noteSuppressed(id);
       const skeleton = suppressed ? "" : noteSkeleton(id);
+      // A «verbatim» slot is filled from the transcript, by the extension.
+      // Asking the model to pair answers with labelled slots failed five
+      // different ways across five rounds — dropped halves, a fragment
+      // instead of the answer, quotes shifted by one, punctuation tidied —
+      // and every deterministic guard that tried to catch it had to be
+      // withdrawn for refusing honest records. The words are right here.
+      const verbatimFill = said.length
+        ? said.map((m) => `"${m.replace(/\n+/g, " ").trim()}"`).join(" · ")
+        : response;
+      const filledSlots = markers.map((m, i) =>
+        /verbatim/i.test(m) ? verbatimFill : (params.note_slots ?? [])[i] ?? "",
+      );
       const md = suppressed
         ? ""
         : skeleton
-          ? fillSlots(skeleton, params.note_slots ?? [], response)
+          ? fillSlots(skeleton, filledSlots, response)
           : String(params.note_markdown ?? "").trim();
       let noteLine: string;
       if (suppressed) {
@@ -2654,13 +2672,20 @@ export default function (pi: ExtensionAPI) {
       let gap = "";
       if (cellName) {
         const src = await readCellSource(cellName, signal);
-        if (src !== null) gap = souvenirGap(src, snappedQ);
-        // A second call that still does not quote them is not left to a third:
-        // the quote is one line and the extension has it, so it goes in.
-        const bounceKey = cellName || question;
-        if (gap.includes("quote") && ((detourTextOnlyWarned.get(bounceKey) ?? 0) > 0 || !src)) {
-          const ok = await prependQuestionToCell(cellName, snappedQ, signal);
-          if (ok) gap = "";
+        // The quote line is the extension's job, not the model's. Left to the
+        // model it tidied the student's punctuation ("whats" → "what's", a
+        // "?" appended) — a small edit to the one thing in the cell that is
+        // supposed to be theirs, word for word. It goes in unless their exact
+        // words are already there, and the gap check no longer asks the model
+        // for it at all.
+        if (src !== null) {
+          const flat = (x: string) => x.replace(/\s+/g, " ").trim();
+          if (!flat(src).includes(flat(snappedQ))) {
+            await prependQuestionToCell(cellName, snappedQ, signal);
+          }
+          const shows =
+            /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(/.test(src);
+          gap = shows ? "" : "is prose only — nothing to look at or play with";
         }
       }
       const gapKey = cellName || question;
@@ -2669,8 +2694,8 @@ export default function (pi: ExtensionAPI) {
         return toResult({
           out:
             `NOT LOGGED YET — the souvenir cell "${cellName}" ${gap}. Fix it with ` +
-            `nb_edit_cell so it is ONE cell holding both: their question quoted ` +
-            `("${snappedQ.slice(0, 60)}") and something to see or try —\n` +
+            `nb_edit_cell so it holds something to see or try (their question is ` +
+            `quoted for you, you do not need to add it) —\n` +
             `  mo.vstack([mo.md(r"""> 🧭 **You asked:** “…”\n\n…"""), netviz(edges, highlight=[…])])\n` +
             `— or an nb_add_exercise box if the idea is playable. Then call log_detour ` +
             `again with the same cell_name.\n` +

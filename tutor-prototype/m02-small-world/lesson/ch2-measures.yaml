@@ -48,9 +48,7 @@ checkpoints:
       $L = 7/6 \approx 1.17$. "Six degrees" is exactly this number, measured
       on a whole country.
 
-      > **A to D:** «their distance answer, verbatim»
-      >
-      > **The average over all six pairs:** «their average, verbatim»
+      > **I worked out:** «their answers, verbatim»
 
   - id: cp2_paperwork
     goal: |
@@ -105,8 +103,10 @@ checkpoints:
     goal: Student understands local clustering as "do my friends know each other?"
     build: |
       nb_add_template("cp3_clustering") (only AFTER the idea question below
-      is answered) — A with five friends; the two friendships among the
-      friends (B-F, C-E) are highlighted as rust lines.
+      is answered) — A with five friends, and the friendships among those
+      friends drawn as rust lines. Do NOT look up which pairs they are and
+      do NOT name them: counting them is the checkpoint, and a live run put
+      both pair names into its very first hint.
     ask: |
       ONE question at a time.
       1. Anchor it in two extremes before asking for anything — a bare
@@ -152,7 +152,4 @@ checkpoints:
       so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
       network's clustering $C$ — typically HIGH in social networks.
 
-      > **What the two pictures differ by:** «their answer, verbatim»
-      >
-      > **What I counted, and out of how many:** «their count and the
-      fraction, verbatim»
+      > **I worked out:** «their answers, verbatim»
