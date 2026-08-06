@@ -101,16 +101,20 @@ def kcore_frames():
     `verify_numbers` asserts.
     """
     g = V.karate()
-    frames = []
-    for k in (1, 2, 3, 4):
-        core = {n for n, c in nx.core_number(g).items() if c >= k}
+    cn = nx.core_number(g)
+
+    def frame(k):
+        core = {n for n, c in cn.items() if c >= k}
         assert core, f"the {k}-core came out empty"
-        frames.append(karate(fill={n: CHI for n in core},
-                             faint=[e for e in g.edges()
-                                    if e[0] not in core or e[1] not in core]))
-    final = {n for n, c in nx.core_number(g).items() if c >= 4}
+        return karate(fill={n: CHI for n in core},
+                      faint=[e for e in g.edges()
+                             if e[0] not in core or e[1] not in core])
+
+    final = {n for n, c in cn.items() if c >= 4}
     assert len(final) == 10 == len(V.facts()["max_core_nodes"])
-    return frames
+    # The 4-core leads AND closes: leading with k=1 leads with the untouched club, which
+    # is the slide-6 figure, so the static export repeated a picture and taught nothing.
+    return [frame(4)] + [frame(k) for k in (1, 2, 3, 4)]
 
 
 # --------------------------------------------------------------------------- the game

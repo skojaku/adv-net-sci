@@ -14,7 +14,7 @@ import networkx as nx
 import numpy as np
 
 import verify_numbers as V
-from figlib import Axes, FONT, disc, dot, emit, polyline, seg, text
+from figlib import Axes, FONT, disc, dot, emit, polyline, ring, seg, text
 from kfig import (
     CHI, COFF, arrow, bag, cell_grid, number_line, ring_positions, small, string,
 )
@@ -111,8 +111,13 @@ def _bag():
     slots = [(600 + (i % 5) * 100 + rng.uniform(-10, 10),
               100 + (i // 5) * 86 + rng.uniform(-8, 8)) for i in range(14)]
     order = [n for n in sorted(WS_POS) for _ in range(donors[n])]
+    hub = max(donors, key=donors.get)
+    assert donors[hub] == 3, donors
+    out += ring(*pos[hub], size=32, color="accentthree", w=4.4, grow=13)
     for (x, y), n in zip(slots, order):
         out += disc(x, y, fill=CHI if n in WS_LEFT else COFF, size=42)
+        if n == hub:
+            out += ring(x, y, size=42, color="accentthree", w=4.0, grow=11)
     return out
 
 
@@ -264,7 +269,9 @@ def _qk():
               yticks=[0, round(max(best.values()), 2)])
     out += ax.frame()
     for k, q in best.items():
-        out += dot(*ax.P(k, q), color="accenttwo" if k == peak else "annot", d=17)
+        out += dot(*ax.P(k, q), color="black" if k == peak else "annot", d=17)
+    px, py = ax.P(peak, best[peak])
+    out += text(px, py + 18, "best", color="black", anchor="south", size=FONT)
     return out
 
 

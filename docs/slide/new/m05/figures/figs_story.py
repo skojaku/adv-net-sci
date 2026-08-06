@@ -86,13 +86,18 @@ def _guesses():
     """
     pos, _ = club()
     hi, _ = V.factions()
-    lines = [(520.0, 0.00), (452.0, 0.62), (612.0, -0.52)]       # x at y=190, slope
+    # Full height, and three dash patterns the room can tell apart. The first version
+    # ran them from y=44 to y=346 in a drawing whose ink spans 26..368, so each line
+    # stopped short at both ends and read as a stray mark rather than a cut.
+    lines = [(520.0, 0.00, "on 20bp off 12bp"),
+             (452.0, 0.62, "on 8bp off 9bp"),
+             (612.0, -0.52, "on 34bp off 12bp on 6bp off 12bp")]
     parts = []
     out = ""
-    for x0, slope in lines:
-        pts = [(x0 + slope * (y - 190), y) for y in (44, 190, 346)]
-        out += "\\draw[line width=3.4bp,draw=annot,dash pattern=on 13bp off 10bp] " \
-               + " -- ".join(f"({x:.1f},{y:.1f})" for x, y in pts) + ";\n"
+    for x0, slope, dash in lines:
+        pts = [(x0 + slope * (y - 190), y) for y in (34, 190, 354)]
+        out += (f"\\draw[line width=3.8bp,draw=annot,dash pattern={dash}] "
+                + " -- ".join(f"({x:.1f},{y:.1f})" for x, y in pts) + ";\n")
         parts.append(frozenset(n for n, (px, py) in pos.items()
                                if px < x0 + slope * (py - 190)))
     assert len({parts[i] for i in range(3)}) == 3, "the three guesses must differ"
@@ -119,7 +124,8 @@ def _crossing():
     cross = [e for e in edges if (e[0] in hi) != (e[1] in hi)]
     inside = [e for e in edges if (e[0] in hi) == (e[1] in hi)]
     assert len(cross) == 11 and len(cross) + len(inside) == 78
-    return karate(fill=split_fill(hi), heavy=cross, heavy_color="black", faint=inside)
+    return karate(fill=split_fill(hi), heavy=cross, heavy_color="black",
+                  faint=inside)
 
 
 @fig("why-groups", h=214, hmod="stack")
@@ -264,21 +270,34 @@ def _ktruss():
     return out
 
 
-@fig("patterns-overlap", h=380)
+@fig("patterns-overlap", h=356)
 def _overlap():
-    """Four pattern-groups on the real club: they overlap, and they leave people out."""
-    f = V.facts()
-    g = V.karate()
-    core = set(f["max_core_nodes"])
-    groups = [set(f["max_cliques"][0]), set(f["max_cliques"][1]), core,
-              set(nx.node_connected_component(g.subgraph(
-                  [n for n in g if g.degree(n) >= 3]), 33))]
-    assert any(a & b and a != b for i, a in enumerate(groups) for b in groups[i + 1:]), \
-        "the groups must overlap -- that is the slide's point"
-    covered = set().union(*groups)
-    assert len(covered) < 34, "some members must belong to none of them"
-    fill = {n: (CHI if n in covered else "annot") for n in range(34)}
-    return karate(fill=fill, rings=sorted(groups[0] | groups[1]), ring_color="accentthree")
+    """Three definitions, three different groups, and two people in none of them.
+
+    Drawn on eleven people rather than on the club. The claim is that the groups OVERLAP
+    and leave members out, and thirty-four intermingled discs cannot show that -- the
+    first version rendered as one ringed set of six and no visible overlap at all.
+    """
+    p = {0: (128, 288), 1: (128, 128), 2: (272, 208), 3: (416, 288), 4: (416, 128),
+         5: (560, 208), 6: (704, 288), 7: (704, 128), 8: (848, 208),
+         9: (980, 300), 10: (980, 116)}
+    e = [(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (3, 5), (4, 5),
+         (5, 6), (5, 7), (6, 7), (6, 8), (7, 8), (8, 9), (9, 10)]
+    A, B, C = {0, 1, 2}, {2, 3, 4, 5}, {5, 6, 7, 8}
+    assert A & B and B & C and not (A & C), "the groups must overlap in a chain"
+    assert set(p) - (A | B | C) == {9, 10}, "two people must belong to none of them"
+    out = ""
+    for grp, col in ((A, "accent"), (B, "accenttwo"), (C, "accentthree")):
+        xs = [p[n][0] for n in grp]
+        ys = [p[n][1] for n in grp]
+        cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+        rx = (max(xs) - min(xs)) / 2 + 42
+        ry = (max(ys) - min(ys)) / 2 + 42
+        out += (f"\\draw[line width=4.6bp,draw={col},dash pattern=on 12bp off 9bp] "
+                f"({cx:.1f},{cy:.1f}) ellipse ({rx:.1f}bp and {ry:.1f}bp);\n")
+    out += small(p, e, node=34, what="patterns-overlap",
+                 fill={n: ("annot" if n in (9, 10) else "accent") for n in p})
+    return out
 
 
 # =========================================================================== Part 3

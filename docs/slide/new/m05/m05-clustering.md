@@ -133,12 +133,12 @@ Do not answer. Do not hint. Do not say which side anyone is on. The next slide i
 
 <hr>
 
-Draw the line on paper — thirty seconds. Then hands up: **who put the middle four people on the left?**
+Draw the line on paper — thirty seconds. Then hands up: **whose line cut more than fifteen friendships?**
 
 <div class="fig">
 
 ![w:1080](figures/karate-three-guesses.png)
-<figcaption>three lines this room will draw, and they are not the same line</figcaption>
+<figcaption>three lines this room will draw — and they are three different clubs</figcaption>
 
 </div>
 
@@ -296,7 +296,7 @@ One missing friendship and the whole thing is disqualified.
 <div class="fig">
 
 ![w:537](figures/clique-def.png)
-<figcaption>four mutual friends, and four who are one friendship short</figcaption>
+<figcaption>four mutual friends, and four one friendship short</figcaption>
 
 </div>
 </div>
@@ -397,7 +397,7 @@ A **k-core**: keep at least **k** friends *inside* the group. Peel away anyone w
 <div class="fig">
 
 ![w:1080](figures/kcore-peel.gif)
-<figcaption>peeling the club down — it stops at the 4-core, ten people</figcaption>
+<figcaption>peel away anyone below k, and it stops at the 4-core: ten people</figcaption>
 
 </div>
 
@@ -504,7 +504,7 @@ Each definition is a different answer to *what counts as a group*, so the proble
 <div class="fig">
 
 ![w:1080](figures/patterns-overlap.png)
-<figcaption>four pattern-groups on the same club — overlapping, and leaving people out</figcaption>
+<figcaption>three definitions, three groups, overlapping — and two people in none of them</figcaption>
 
 </div>
 
@@ -878,7 +878,7 @@ This destroys the network and keeps exactly one thing: how many balls each perso
 <div class="fig">
 
 ![w:1080](figures/bag-2m.png)
-<figcaption>a member with three friends drops in three balls</figcaption>
+<figcaption>the ringed member has three friends, so three of the balls are hers</figcaption>
 
 </div>
 
@@ -1712,7 +1712,7 @@ Two groupings agree about a pair when both put them together, or both keep them 
 <div class="fig">
 
 ![w:1080](figures/mutual-information.png)
-<figcaption>where each person really belonged, and where the method put her</figcaption>
+<figcaption>where each person belonged, and where the method put her — the colours are not comparable</figcaption>
 
 </div>
 

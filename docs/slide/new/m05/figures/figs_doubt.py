@@ -339,7 +339,7 @@ def _mi():
         out += text(96, y, lab, color=col, anchor="east", size=FONT) if False else ""
     for i in range(6):
         out += seg((118 + i * 169, 268), (118 + i * 169, 132), color="annot", w=2.6)
-    out += text(540, 44, f"they agree about five of the six", color="black",
+    out += text(540, 44, "one person is in the wrong group", color="black",
                 anchor="north", size=FONT)
     assert abs(s["I"] - 0.3183) < 5e-5
     return out
@@ -392,7 +392,7 @@ def _wsnmia():
         out += seg((118 + i * 169, 260), (118 + i * 169, 186), color="annot", w=2.2)
     out += text(370, 74, f"{s['nmi']:.2f}", color="accenttwo", anchor="north", size=56)
     out += text(370, 118, "shared", color="annot", anchor="north", size=FONT)
-    out += text(760, 74, f"{s['rand'].numerator * 5}/15", color="accent",
+    out += text(760, 74, f"{s['rand'].numerator * 5}/15", color="black",
                 anchor="north", size=56)
     out += text(760, 118, "pairs agreeing", color="annot", anchor="north", size=FONT)
     return out
@@ -466,14 +466,13 @@ def _nofree():
     e = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (0, 3)]
     out = small(p, e, node=32, what="no-free-lunch", planar=False,
                 fill={n: "annot" for n in p})
-    for x, lab, col in ((150, "two groups", "accent"), (540, "three", "accenttwo"),
-                        (930, "one", "accentthree")):
-        out += text(x, 96, lab, color=col if col != "accentthree" else "annot",
-                    anchor="north", size=FONT)
+    for x, lab in ((150, "two groups"), (540, "three"), (930, "one")):
+        out += text(x, 96, lab, color="accenttwo", anchor="north", size=FONT)
         out += arrow((x + (170 if x < 540 else -170 if x > 540 else 0),
                       160 if x != 540 else 150),
                      (x + (60 if x < 540 else -60 if x > 540 else 0), 118),
                      color="annot", w=3.0)
+    del lab
     return out
 
 

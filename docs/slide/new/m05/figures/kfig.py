@@ -70,7 +70,7 @@ def karate(fill=None, heavy=(), heavy_color="accentthree", rings=(),
         if k in heavy:
             out += seg(p, q, color=heavy_color, w=5.6)
         elif k in faint:
-            out += seg(p, q, color="black", w=2.0, opacity=0.16)
+            out += seg(p, q, color="black", w=2.2, opacity=0.30)
         elif k in dashes:
             out += seg(p, q, color=GRAY and "annot", w=2.4, dash="dash pattern=on 6bp off 5bp")
         else:
