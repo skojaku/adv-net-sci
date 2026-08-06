@@ -913,6 +913,7 @@ Half and half here, so the expected match rate is 1/2. Any grouping has such a n
 
 ---
 
+<!-- _class: mid -->
 ## Modularity is the gap
 
 <hr>
@@ -1723,6 +1724,7 @@ m05.c35, first half. If the method were perfect, knowing its label would tell yo
 
 ---
 
+<!-- _class: mid -->
 ## Divide by how much there was to know
 
 <hr>
@@ -1802,6 +1804,7 @@ Somebody will say "subtract what you would get by chance". That is exactly right
 
 ---
 
+<!-- _class: mid -->
 ## Subtract what chance would have given
 
 <hr>
@@ -1855,6 +1858,7 @@ Let that sit. Maximising the score does not find the event. The optimum is not t
 
 ---
 
+<!-- _class: mid -->
 ## And it matches reality less well than the 1977 answer
 
 <hr>
@@ -1939,6 +1943,7 @@ m05.c37. In every one of them the ground-truth problem from the last slide is li
 
 ---
 
+<!-- _class: mid -->
 ## Module 05 in one picture
 
 <hr>
