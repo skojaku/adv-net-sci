@@ -1317,7 +1317,7 @@ m05.c31. Worth pausing on: by every definition in Part Two, neither of these gro
 <div class="fig">
 
 ![w:1080](figures/sbm-inference.png)
-<figcaption>each candidate grouping scored by how likely it makes the network you actually saw</figcaption>
+<figcaption>five candidate groupings, scored by how likely each makes the network you saw</figcaption>
 
 </div>
 
@@ -1588,11 +1588,11 @@ skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreTyp
 <div class="fig">
 
 ![w:1080](figures/random-q-dots.png)
-<figcaption>two hundred random networks with the club's own thirty-four people and seventy-eight friendships</figcaption>
+<figcaption>two hundred random networks, each with the club's thirty-four people and seventy-eight friendships</figcaption>
 
 </div>
 
-Every one of the two hundred clears 0.3. Their average is **0.354**; the split that really happened scores **0.358**.
+Every one of them clears 0.3. Their average is **0.354**; the split that really happened scores **0.358**.
 
 <!--
 m05.c28 and c47. The rule of thumb dies here, on this club, by four thousandths. Q cannot be compared across networks, and a high score alone is not evidence of anything.
@@ -1614,14 +1614,14 @@ three methods, three answers
 
 <hr>
 
+The cut said two groups of seventeen. Modularity says **four**. Which is right?
+
 <div class="fig">
 
-![w:1080](figures/three-partitions.png)
-<figcaption>the grouping modularity likes best — four groups, not two</figcaption>
+![w:1080](figures/karate-louvain-four.png)
+<figcaption>colour marks Louvain's four groups here, not the two clubs</figcaption>
 
 </div>
-
-The cut said two groups of seventeen. Modularity says four. Which is right?
 
 <!--
 The honest answer is "it depends what you have to compare against", and that splits the rest of this part in two.
@@ -1677,11 +1677,11 @@ m05.c34. Internal-versus-external density is the same idea in its crudest form.
 <div class="fig">
 
 ![w:1080](figures/scores-disagree.png)
-<figcaption>conductance puts the real split first; modularity puts Louvain first</figcaption>
+<figcaption>0.147 against 0.23–0.42 on the left; 0.3582 against 0.4198 on the right</figcaption>
 
 </div>
 
-The two do not disagree about the facts. They disagree about **what a group is** — and neither of them failed an exam.
+They do not disagree about the facts. They disagree about **what a group is** — and neither failed an exam.
 
 <!--
 Conductance: real split 0.147 against Louvain's four groups at 0.23 to 0.42. Modularity: 0.4198 against 0.3582. Same network, same two candidates, opposite verdicts.
@@ -1809,7 +1809,7 @@ Somebody will say "subtract what you would get by chance". That is exactly right
 <div class="fig">
 
 ![w:1080](figures/ari.png)
-<figcaption>counting pairs says 0.67; after chance is taken out, 0.32</figcaption>
+<figcaption>counting pairs gives 0.67; taking chance out leaves 0.32</figcaption>
 
 </div>
 
@@ -1828,11 +1828,11 @@ m05.c36. Same correction, same spirit, as the k_i k_j / 2m in modularity. Compar
 <div class="fig">
 
 ![w:1080](figures/nmi-vs-ari.png)
-<figcaption>one grouping, one answer key, two different verdicts</figcaption>
+<figcaption>one grouping, one answer key, two verdicts: 0.48 and 0.32</figcaption>
 
 </div>
 
-Shared information is generous to methods that split things into many small groups. Pair counting is conservative. Neither is the true score, so both get reported.
+Shared information is generous to methods that make many small groups; pair counting is conservative. Report both.
 
 ---
 
@@ -1843,7 +1843,7 @@ Shared information is generous to methods that split things into many small grou
 <div class="fig">
 
 ![w:1080](figures/best-vs-real.png)
-<figcaption>the highest-scoring grouping of this club: four groups, Q = 0.4198</figcaption>
+<figcaption>four groups scoring 0.4198 — and the dashed line is where the club really broke</figcaption>
 
 </div>
 
@@ -1862,7 +1862,7 @@ Let that sit. Maximising the score does not find the event. The optimum is not t
 <div class="fig">
 
 ![w:1080](figures/nmi-comparison.png)
-<figcaption>scored against what really happened: Zachary's cut 0.84, the highest-scoring grouping 0.59</figcaption>
+<figcaption>scored against what really happened: 0.84 for the 1977 cut, 0.59 for the best-scoring grouping</figcaption>
 
 </div>
 

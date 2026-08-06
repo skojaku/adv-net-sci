@@ -41,6 +41,21 @@ What follows from it:
 - **The interaction he asked to strengthen: concrete first, then predict.** Have students
   compute one small case by hand ($A^2$, one entry), then *predict* the general one
   ($A^3$, $A^4$) without computing. Two slides, not one.
+- **State the restriction on the slide *before* the number that depends on it.** A number
+  is only as honest as the rule it was computed under, and the room can only check it if it
+  has the rule first. Module 02 does this twice well and once backwards, and the contrast is
+  the lesson: slide 24 fixes the denominator ("seven people make 21 pairs") one slide before
+  average path length is defined, and slide 8 marks the 64 completed chains as "the only ones
+  that carry data" one slide before slide 9 quotes their median. But `C̄ = 5/21` shipped in
+  Part Three while the convention it rests on — a degree-1 node's coefficient counts as
+  zero — was introduced as *new* forty slides later, in Part Six, on a slide that then asked
+  the room to think about it. A convention spent before it is stated turns a later question
+  into a formality.
+
+  Quoting someone else's published number under an unstated convention is a *different*
+  case and is fine — nothing on the slide computes it, so there is no arithmetic for the
+  reader to fail. Pay it back later: Module 02 names the largest-component rule in Part Six
+  and adds "it is the convention behind Facebook's 4.74" there.
 - **When figure + text do not fit side by side, stack two rows** — figure full width,
   text on its own line — rather than shrinking both into `cols`.
 

@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from figlib import (  # noqa: E402
     CONTAINER, DESIGN, FIG_H, FONT, INK_FILL_MIN, NODE_MAX_PX, NODE_MIN_PX, OUT, PAD,
-    PXBP, TEXT_MIN_PX, calibrate, render, text,
+    PXBP, TEXT_MIN_PX, calibrate, render, ring, text,
 )
 from figs_tail import (  # noqa: E402
     GROWTH_N, GROWTH_NODE, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_pos,
@@ -138,13 +138,23 @@ def ba_growth_frames():
             deg[a] = deg.get(a, 0) + 1
             deg[b] = deg.get(b, 0) + 1
         assert sum(deg.values()) == 2 * len(fr["edges"])
+        top = max(deg, key=lambda v: (deg[v], -v))
+
         body = draw_growth(fr, pos, fill="accent", size=GROWTH_NODE)
+        # The counter had no referent and its colour pointed at the wrong node: it was
+        # set in accent-2, which in the drawing marks the node that just ARRIVED, so the
+        # eye read "largest 15 edges" off a disc with one edge while the real hub sat
+        # unmarked in plain accent. The count is annotation now, and the node it counts
+        # carries an accent-3 ring -- legal as a ring, banned only as text and as a thin
+        # stroke. So: accent-2 = arriving now, accent-3 ring = the current biggest.
+        body += ring(pos[top][0], pos[top][1], size=GROWTH_NODE,
+                     color="accentthree", w=5.0, grow=13)
         body += text(LEFT_X, LABEL_Y,
                      f"${len(fr['nodes'])}$ nodes\\\\${len(fr['edges'])}$ edges",
                      color="annot", anchor="west")
         body += text(RIGHT_X, LABEL_Y,
-                     f"largest\\\\${max(deg.values())}$ edges",
-                     color="accenttwo", anchor="east")
+                     f"ringed: largest\\\\${deg[top]}$ edges",
+                     color="annot", anchor="east")
         out.append(body)
     return out
 

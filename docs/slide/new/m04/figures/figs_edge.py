@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """Parts 7-8: the four awkward questions, and the straight line that proves nothing.
 
-Ten figures, slides 78-92 of `m04-node-degree.md`.  Each carries the single claim of
-its slide:
+Eleven figures, slides 075-090 of `m04-node-degree.md`.  Each carries the single claim
+of its slide:
 
-    individual-vs-average   "on average" is not "for you" -- 5 of 8, and 92.7 vs 83.6
+    individual-vs-average   five of the eight sit below, two above, one exactly on it
+    mean-vs-median          which average you compare against moves the answer 9 points
     vanishing               Var(k) = 0 is the only escape, and it costs all structure
-    directed                in and out are two degrees, and both tilt
-    assortativity           one degree sequence, three wirings
+    directed                in and out are two degrees, and an arrow's far end tilts both
+    assortativity           one degree sequence, three wirings, three values of r
     assortativity-real      four measured r, social positive, the rest negative
-    lognormal-trap          straight to R^2 = 0.99 and not a power law at all
+    lognormal-trap          straight to R^2 = 0.99 over 2.3 decades, and not a power law
     scale-free-debate       1999 the claim, 2011 the doubt, 2019 the audit
     consequences            the second moment is what the earlier modules used
-    recap                   the four acts
+    recap                   the five things
     m05-teaser              two clumps
 
-Every number is computed from `verify_numbers`; the three quoted Facebook figures are
-checked against the verbatim sentences that module keeps from the paper, so a typo here
-fails the build rather than the review.
+Every number is computed from `verify_numbers`; the quoted figures are checked against
+the verbatim sentences that module keeps from the papers, so a typo here fails the build
+rather than the review.
 """
 
 import math
@@ -25,21 +26,28 @@ import math
 import networkx as nx
 import numpy as np
 
-from figlib import (EDGE_W, FONT, NODE, SMALLNODE, Axes, assert_planar_drawing,
+from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
 from feld import ABOVE, BELOW, EQUAL, degree
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
 
 # --------------------------------------------------------------------------- quoted
-# Nothing below is computable from the data we hold, so each is pinned to the sentence
+# Nothing here is computable from the data we hold, so each is pinned to the sentence
 # verify_numbers.LITERATURE keeps verbatim from the paper. Mistype one and the import
 # fails; the alternative is a number that only a reviewer with the PDF open can check.
 FB_BELOW_MEAN = 0.927        # Ugander et al. 2011, arXiv:1111.4503
 FB_BELOW_MEDIAN = 0.836
 FB_R = 0.226
-for _quote in ("92.7%", "83.6%", "721 million", "r = 0.226"):
+for _quote in ("92.7%", "83.6%", "721 million", "r = 0.226",
+               "gamma = 3", "substantial curvature"):
     assert _quote in LITERATURE, f"{_quote!r} is not in verify_numbers.LITERATURE"
+
+# The two exceptions, and the only numbers in this file LITERATURE cannot check.
+# Broido, A. D. & Clauset, A. "Scale-free networks are rare." Nat. Commun. 10:1017
+# (2019): a corpus of 927 network datasets, with "strongest" scale-free evidence in 4%
+# of them. Reported to the lead so the sentences can be added to verify_numbers.
+BC_NETWORKS, BC_STRONG = 927, 0.04
 
 
 def _dec(x, places):
@@ -51,7 +59,9 @@ def _dec(x, places):
 
 
 def _signed(x, places=3):
-    return ("$+" if x >= 0 else "$-") + _dec(abs(x), places) + "$"
+    if abs(x) < 0.5 * 10 ** -places:
+        return "$" + _dec(0, places) + "$"
+    return ("$+" if x > 0 else "$-") + _dec(abs(x), places) + "$"
 
 
 def _centre(pos, cx, cy):
@@ -92,56 +102,82 @@ def _arrow(p, q, color="black", w=EDGE_W, gap_tail=NODE / 2 + 4, gap_head=NODE /
 def _ccdf_fast(d):
     """Same quantity as verify_numbers.ccdf, computed in one pass.
 
-    ccdf() is O(distinct x n); the log-normal has 1221 distinct degrees over 144548
-    nodes and the power-law sample far more. Asserted equal to ccdf() on the real
-    array before either is drawn.
+    ccdf() is O(distinct x n); the power-law sample has tens of thousands of distinct
+    degrees. Asserted equal to ccdf() on the real array before either is drawn.
     """
     k, c = np.unique(np.asarray(d), return_counts=True)
     return k, 1.0 - np.cumsum(c) / c.sum()
 
 
+def _tail_sketch(x0, y0, x1, y1, color="accent"):
+    """A log-log CCDF as a pictogram: two spines and one straight descent."""
+    o = seg((x0, y0), (x0, y1), color="annot", w=2.4)
+    o += seg((x0, y0), (x1, y0), color="annot", w=2.4)
+    o += polyline([(x0 + 14, y1 - 12), (x1 - 12, y0 + 14)], color=color, w=5.0)
+    return o
+
+
 # ===========================================================================
-# slide 78 -- "on average" is not "for you"
+# slide 076 -- the eight girls, sorted.  Facebook moved to its own slide (C-6/D-1):
+# one slide was teaching the hub reversal on eight girls and mean-vs-median on
+# 721 million users at the same time.
 # ===========================================================================
 def fig_individual_vs_average():
     assert (len(BELOW), len(ABOVE), len(EQUAL)) == (5, 2, 1), "the Feld split moved"
     assert len(BELOW) + len(ABOVE) + len(EQUAL) == 8
 
-    b = ""
-    # left: the eight girls sorted into the three classes, each disc carrying her own k
-    rows = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 308),
-            (ABOVE, f"{len(ABOVE)} have more", "accent", 213),
-            (EQUAL, f"{len(EQUAL)} the same", "annot", 118)]
-    for girls, lab, fill, y in rows:
-        b += text(300, y, lab, anchor="east")
+    # "5 have fewer" never said fewer than WHAT. The header says it once, for all three
+    # groups, rather than three times in three row labels.
+    b = text(540, 322, "each girl against her friends' average", anchor="south")
+    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 220),
+              (ABOVE, f"{len(ABOVE)} have more", "accent", 640),
+              (EQUAL, f"{len(EQUAL)} the same", "annot", 960)]
+    for girls, lab, fill, cx in groups:
+        x0 = cx - 32 * (len(girls) - 1)
         for i, g in enumerate(girls):
-            b += disc(340 + 56 * i, y, str(degree(g)), fill=fill)
-    b += text(62, 48, "number in disc $=$ her $k$", color="annot", anchor="west")
-
-    # right: Facebook, the same comparison against a mean and against a median
-    x0, x1, lo, hi = 650, 1020, 80, 100
-    def X(v):
-        return x0 + (v - lo) / (hi - lo) * (x1 - x0)
-
-    b += text(835, 318, "Facebook, 721 M users")
-    b += seg((x0, 158), (x1, 158), color="annot", w=2.6)
-    for v in (80, 85, 90, 95, 100):
-        b += seg((X(v), 158), (X(v), 149), color="annot", w=2.6)
-        b += text(X(v), 142, f"{v}", color="annot", anchor="north")
-    b += text(820, 106, "\\% below their friends'", color="annot", anchor="north")
-    for share, name in ((FB_BELOW_MEDIAN, "median"), (FB_BELOW_MEAN, "mean")):
-        x = X(share * 100)
-        b += seg((x, 172), (x, 196), color="annot", w=2.2)
-        b += text(x, 218, name, anchor="south")
-        b += text(x, 263, pct(share, 1), color="accenttwo", anchor="south")
-        # SMALLNODE, not 26: check_render measures the rendered disc and a 26bp circle
-        # lands 25.5px, under the band's floor -- and its own message rounds that to "26".
-        b += dot(x, 158, color="accenttwo", d=SMALLNODE)
+            b += disc(x0 + 64 * i, 200, str(degree(g)), fill=fill)
+        b += text(cx, 140, lab, color=fill, anchor="north")
+    b += text(540, 74, "number in disc $=$ her own $k$", color="annot", anchor="north")
     emit("individual-vs-average", b, container="full", h=400)
 
 
 # ===========================================================================
-# slide 80 -- the only escape is a graph with no structure left
+# slide 076b -- which average you compare against, on Facebook's own numbers
+# ===========================================================================
+def fig_mean_vs_median():
+    lo, hi, x0, x1, ay = 80, 100, 150, 1030, 190
+
+    def X(v):
+        return x0 + (v - lo) / (hi - lo) * (x1 - x0)
+
+    gap = FB_BELOW_MEAN - FB_BELOW_MEDIAN
+    assert 0 < gap < 0.1
+
+    b = seg((x0, ay), (x1, ay), color="annot", w=2.6)
+    for v in (80, 85, 90, 95, 100):
+        b += seg((X(v), ay), (X(v), ay - 9), color="annot", w=2.6)
+        b += text(X(v), ay - 17, f"{v}", color="annot", anchor="north")
+    for share, tail in ((FB_BELOW_MEDIAN, "friends' median"),
+                        (FB_BELOW_MEAN, "friends' mean")):
+        x = X(share * 100)
+        b += seg((x, ay + 14), (x, ay + 44), color="annot", w=2.2)
+        b += text(x, 324, pct(share, 1), color="accenttwo", anchor="south")
+        b += text(x, 280, "are below their", anchor="south")
+        b += text(x, 236, tail, anchor="south")
+        b += dot(x, ay, color="accenttwo", d=SMALLNODE)
+    # the gap between the two is the point of the slide, so it is drawn, not left to
+    # the reader's arithmetic
+    xa, xb = X(FB_BELOW_MEDIAN * 100), X(FB_BELOW_MEAN * 100)
+    b += polyline([(xa, 140), (xa, 128), (xb, 128), (xb, 140)], color="annot", w=2.2)
+    b += text((xa + xb) / 2, 118, f"{_dec(gap * 100, 1)} points apart",
+              color="annot", anchor="north")
+    b += text(590, 74, "\\% of Facebook's 721 million users",
+              color="annot", anchor="north")
+    emit("mean-vs-median", b, container="full", h=400)
+
+
+# ===========================================================================
+# slide 078 -- the only escape is a graph with no structure left
 # ===========================================================================
 def _ring(n, rx, ry, phase=0.0):
     return {i: (rx * math.cos(math.radians(phase + 360 * i / n)),
@@ -156,22 +192,19 @@ def fig_vanishing():
     lat = nx.Graph((i, (i + s) % 8) for i in range(8) for s in (1, 2))
     assert nx.is_isomorphic(lat, nx.watts_strogatz_graph(8, 4, 0.0, seed=1))
 
-    pos_ring = _ring(6, 140, 88)
-    pos_k5 = _ring(5, 140, 88, phase=18)
-    pos_lat = {i: p for i, p in enumerate(
-        [(140 if i % 2 == 0 else 56) * math.cos(math.radians(45 * i)),
-         (88 if i % 2 == 0 else 36) * math.sin(math.radians(45 * i))] for i in range(8))}
-    pos_lat = {i: tuple(v) for i, v in pos_lat.items()}
+    pos_lat = {i: ((140 if i % 2 == 0 else 56) * math.cos(math.radians(45 * i)),
+                   (88 if i % 2 == 0 else 36) * math.sin(math.radians(45 * i)))
+               for i in range(8)}
 
     b = ""
-    panels = [("ring", ring6, pos_ring, 180),
-              ("complete graph", k5, pos_k5, 540),
+    panels = [("ring", ring6, _ring(6, 140, 88), 180),
+              ("complete graph", k5, _ring(5, 140, 88, phase=18), 540),
               ("ring lattice", lat, pos_lat, 900)]
     for title, g, pos, cx in panels:
         ks = {g.degree(n) for n in g.nodes()}
         assert len(ks) == 1, f"{title} is not regular: degrees {sorted(ks)}"
         assert moments(g)["var"] == 0, f"{title}: Var(k) is not exactly 0"
-        p = _centre(pos, cx, 200)
+        p = _centre(pos, cx, 205)
         if title == "complete graph":
             # K5 is Kuratowski's own non-planar graph, so zero crossings is impossible.
             # The convex drawing has exactly the five of the pentagram; assert that
@@ -182,19 +215,21 @@ def fig_vanishing():
             assert_planar_drawing(list(g.edges()), p, title)
         b += _graph(list(g.edges()), p, {n: "accent" for n in g.nodes()},
                     labels={n: g.degree(n) for n in g.nodes()})
-        b += text(cx, 335, title, anchor="south")
-        b += text(cx, 72, "Var$(k) = 0$", color="accenttwo", anchor="north")
+        b += text(cx, 340, title, anchor="south")
+    # Once, centred, for the row. It was set under each panel and again in the body --
+    # the same three characters four times on one slide.
+    b += text(540, 72, "Var$(k) = 0$ in all three", color="accenttwo", anchor="north")
     emit("vanishing", b, container="full", h=420)
 
 
 # ===========================================================================
-# slide 82 -- in and out are two degrees, and both of them tilt
+# slide 080 -- in and out are two degrees, and an arrow's far end tilts both
 # ===========================================================================
-# Eight arcs. C is the account four others watch and that watches only one, which is
-# the whole asymmetry; the underlying undirected graph is planar and drawn so.
+# Eight arcs. C is the account four others watch and that watches only one; the
+# underlying undirected graph is planar and drawn so.
 ARCS = [("A", "C"), ("B", "C"), ("D", "C"), ("E", "C"), ("C", "F"),
         ("A", "B"), ("D", "A"), ("E", "B")]
-DIR_POS = {"A": (-207, 65), "B": (-207, -65), "D": (-54, 90), "E": (-54, -90),
+DIR_POS = {"A": (-207, 56), "B": (-207, -56), "D": (-54, 78), "E": (-54, -78),
            "C": (99, 0), "F": (234, 0)}
 
 
@@ -204,32 +239,41 @@ def fig_directed():
     for a, c in ARCS:
         kout[a] += 1
         kin[c] += 1
-    M = len(ARCS)
+    M, N = len(ARCS), len(DIR_POS)
     assert sum(kin.values()) == sum(kout.values()) == M
-    assert kin["C"] == 4 and kout["C"] == 1, "C is meant to be the watched account"
+
+    def at_arrow_end(k):
+        """Mean degree of the account you reach by walking a random arrow.
+
+        Sum k^2 / sum k -- the same edge-end sampling the module has done since Part
+        Three, now on a directed graph. THIS is what "tilt" means; the figure used to
+        assert it in words (an arrow-conservation line the slide never used) instead
+        of comparing a node to the nodes at the other end of its arrows.
+        """
+        return sum(v * v for v in k.values()) / sum(k.values())
 
     b = ""
-    for title, counts, cx in (("in-degree (followers)", kin, 279),
-                              ("out-degree (following)", kout, 801)):
+    panels = [("in-degree (followers)", kin, "an arrow's head", 279),
+              ("out-degree (following)", kout, "an arrow's tail", 801)]
+    for title, counts, phrase, cx in panels:
+        mean = M / N
+        end = at_arrow_end(counts)
+        assert end > mean, f"{title}: the far end does not tilt up ({end} vs {mean})"
         p = _centre(DIR_POS, cx, 205)
         assert_planar_drawing([tuple(e) for e in ARCS], p, "directed")
         for a, c in ARCS:
             b += _arrow(p[a], p[c])
         for n, xy in p.items():
-            b += disc(xy[0], xy[1], str(counts[n]),
-                      fill="accenttwo" if n == "C" else "accent")
-        b += text(cx, 338, title, anchor="south")
-    # Written out rather than set as a sum: at 36pt an inline \sum and a \mathrm{in}
-    # subscript render at roughly 25pt, i.e. under the deck's x-height floor, and the
-    # gate cannot see it because it measures the surrounding text.
-    b += text(52, 72, f"{M} arrows $=$ {M} in $=$ {M} out", anchor="west")
-    b += text(1055, 72, f"marked: {kin['C']} in, {kout['C']} out",
-              color="accenttwo", anchor="east")
+            b += disc(xy[0], xy[1], str(counts[n]), fill="accent")
+        b += text(cx, 318, title, anchor="south")
+        b += text(cx, 86, f"an account at random: ${_dec(mean, 1)}$", anchor="north")
+        b += text(cx, 44, f"{phrase}: ${_dec(end, 1)}$", color="accenttwo",
+                  anchor="north")
     emit("directed", b, container="full", h=420)
 
 
 # ===========================================================================
-# slide 84 -- one degree sequence, three wirings
+# slide 082 -- one degree sequence, three wirings
 # ===========================================================================
 # Found by exhausting every 8-node graph with degrees 4,4,3,3,2,2,1,1: of the connected
 # planar ones, r runs from -0.700 to +0.300, and the three below are its top, its middle
@@ -244,16 +288,19 @@ WIRINGS = {
     "hubs indifferent": [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2),
                          (1, 3), (1, 5), (2, 4), (3, 6), (6, 7)],
 }
+# Laid out shallow. r is a fourth row of type now, so each graph has to live in about
+# 160bp of height or the 380bp cap binds and every label in the figure shrinks.
 LAYOUTS = {
-    # the K4 core {0,1,2,3} drawn as a triangle with 3 inside it, two 2-chains outside
-    "hubs together": {0: (-75, -40), 1: (75, -40), 2: (0, 85), 3: (0, 2),
-                      4: (-145, -35), 6: (-145, -105), 5: (145, -35), 7: (145, -105)},
+    # the K4 core {0,1,2,3} as a triangle with 3 inside it, the two 2-chains folded UP
+    # beside the apex rather than hanging below it
+    "hubs together": {0: (-70, -45), 1: (70, -45), 2: (0, 55), 3: (0, -12),
+                      4: (-145, 10), 6: (-145, 72), 5: (145, 10), 7: (145, 72)},
     # hub 0 left, hub 5 right, two disjoint paths between them, leaves on both
     "hubs apart": {0: (-85, 0), 1: (-142, 35), 2: (0, 68), 3: (-142, -35),
                    4: (0, -68), 5: (85, 0), 6: (142, 40), 7: (142, -40)},
     # the 4-cycle 0-2-1-3 with its diagonal, a triangle on 0, a leaf on 1, a tail on 3
-    "hubs indifferent": {0: (-55, 0), 1: (55, 0), 2: (0, 70), 3: (0, -70),
-                         4: (-105, 55), 5: (120, 55), 6: (65, -115), 7: (135, -85)},
+    "hubs indifferent": {0: (-50, 0), 1: (50, 0), 2: (0, 58), 3: (0, -58),
+                         4: (-105, 42), 5: (112, 40), 6: (75, -58), 7: (148, -58)},
 }
 
 
@@ -280,21 +327,25 @@ def fig_assortativity():
     for name, cx in (("hubs together", 180), ("hubs apart", 540),
                      ("hubs indifferent", 900)):
         g = graphs[name]
-        p = _centre(LAYOUTS[name], cx, 205)
+        p = _centre(LAYOUTS[name], cx, 200)
         assert_planar_drawing(WIRINGS[name], p, name)
         hubs = [n for n in g.nodes() if g.degree(n) == max(seq)]
         assert len(hubs) == 2
         b += _graph(WIRINGS[name], p,
                     {n: "accenttwo" if n in hubs else "accent" for n in g.nodes()},
                     labels={n: g.degree(n) for n in g.nodes()})
-        b += text(cx, 340, name, anchor="south")
-    b += text(540, 68, "all three: $k = " + ",".join(str(k) for k in seq) + "$",
+        b += text(cx, 320, name, anchor="south")
+        # r was invisible here while the next slide plotted four of them, so those dots
+        # encoded a quantity the deck had never named. Computed from the drawn graph.
+        b += text(cx, 96, "$r = " + _signed(rs[name], 2)[1:-1] + "$",
+                  color="accenttwo", anchor="north")
+    b += text(540, 50, "all three: $k = " + ",".join(str(k) for k in seq) + "$",
               anchor="north")
     emit("assortativity", b, container="full", h=420)
 
 
 # ===========================================================================
-# slide 85 -- four measured r on one axis
+# slide 083 -- four measured r on one axis
 # ===========================================================================
 def fig_assortativity_real():
     rows = [("Facebook", FB_R),
@@ -305,15 +356,25 @@ def fig_assortativity_real():
     assert [n for n, r in rows if r < 0] == ["Internet AS", "yeast proteins"]
     assert rows == sorted(rows, key=lambda t: -t[1]), "rows must run downward in r"
 
-    lo, hi, ax0, ax1 = -0.30, 0.30, 340, 900
+    # The window is +-0.30, not the full +-1: Internet AS and yeast differ by 0.028, and
+    # over the full range their 28bp discs would overlap and the row order would be
+    # unreadable. So the quantity is named, the ticks give the scale, and a note carries
+    # the range this window is a zoom of.
+    lo, hi, ax0, ax1, ay = -0.30, 0.30, 340, 900, 88
+
     def X(v):
         return ax0 + (v - lo) / (hi - lo) * (ax1 - ax0)
 
-    zero = X(0)
-    ys = [300, 235, 170, 105]
-    b = seg((zero, 76), (zero, 336), color="annot", w=2.4)
-    b += text(zero, 348, "$r = 0$", color="annot", anchor="south")
-    for (name, r), y in zip(rows, ys):
+    b = text(620, 345, "assortativity $r$", anchor="south")
+    b += text(20, 345, "$r$ runs $-1$ to $+1$", color="annot", anchor="west")
+    # stops at the top row, not above it: run to 326 and the title 19bp higher reads as
+    # a label for the rule instead of for the axis
+    b += seg((X(0), ay), (X(0), 310), color="annot", w=2.4)
+    b += seg((ax0, ay), (ax1, ay), color="annot", w=2.4)
+    for v in (-0.2, 0.0, 0.2):
+        b += seg((X(v), ay), (X(v), ay - 9), color="annot", w=2.4)
+        b += text(X(v), ay - 17, _signed(v, 1), color="annot", anchor="north")
+    for (name, r), y in zip(rows, (292, 232, 172, 112)):
         assert lo < r < hi, f"{name}: r = {r} is off the axis"
         col = "accent" if r > 0 else "accenttwo"
         b += text(300, y, name, anchor="east")
@@ -321,19 +382,36 @@ def fig_assortativity_real():
                       dash="dash pattern=on 3bp off 7bp")
         b += dot(X(r), y, color=col, d=SMALLNODE)
         b += text(930, y, _signed(r), color=col, anchor="west")
-    emit("assortativity-real", b, container="full", h=420)
+    emit("assortativity-real", b, container="full", h=430)
 
 
 # ===========================================================================
-# slide 88 -- straight to R^2 = 0.99, and not a power law at all
+# slide 086 -- straight to R^2 = 0.99, and not a power law at all
 # ===========================================================================
-def _powerlaw_sample(alpha, xmin, n=200000, seed=11):
-    """A Pareto(alpha) sample, floored to integers -- a genuine power law.
+KLO, KHI = 5, 1000          # the drawn range IS the fitted range, so one span is quoted
 
-    Its two parameters are chosen so that it lands on the same line as the log-normal;
-    that is what a modeller fitting a real degree sequence would produce, and the slide
-    only works if the two are actually on top of each other.
+
+def _minimax_powerlaw(ks, surv):
+    """The straight line lying closest to these points, in the max-gap sense.
+
+    The slide's claim is that you cannot tell the two apart, so the power law drawn is
+    the strongest version of that claim. For a fixed exponent the best intercept centres
+    the residuals, so the Chebyshev line is one scan over the exponent; a least-squares
+    line answers a different question.
     """
+    sel = (ks >= KLO) & (ks <= KHI) & (surv > 0)
+    x, y = np.log10(ks[sel]), np.log10(surv[sel])
+    best = None
+    for alpha in np.linspace(0.7, 1.5, 1601):
+        res = y + alpha * x
+        err = (res.max() - res.min()) / 2
+        if best is None or err < best[0]:
+            best = (float(err), float(alpha), float((res.max() + res.min()) / 2))
+    return best
+
+
+def _powerlaw_sample(alpha, xmin, n=300000, seed=11):
+    """A Pareto(alpha) sample floored to integers -- a genuine discrete power law."""
     u = np.random.default_rng(seed).random(n)
     d = np.floor(xmin * u ** (-1.0 / alpha)).astype(int)
     return d[d >= 1]
@@ -343,21 +421,27 @@ def fig_lognormal_trap():
     ln = lognormal_degrees()
     ks_ln, su_ln = ccdf(ln)
     assert np.allclose(_ccdf_fast(ln)[1], su_ln), "the fast CCDF disagrees with ccdf()"
-    slope, icept, r2, npts = ccdf_fit(ks_ln, su_ln, 3, 500)
+
+    # C-3. The deck said "three decades". Over a true three decades this log-normal fits
+    # to R^2 = 0.983 and -- worse for the slide -- the closest power law then stands
+    # 0.41 decades off it at k = 6, so the figure would show two curves the room CAN
+    # tell apart, which is the opposite of the point. The honest span is the drawn one,
+    # and it is printed on the figure rather than left to the prose.
+    decades = math.log10(KHI / KLO)
+    slope, _, r2, npts = ccdf_fit(ks_ln, su_ln, KLO, KHI)
     assert r2 > 0.98, f"the log-normal must look straight; R^2 = {r2:.4f}"
+    assert 2.2 < decades < 2.4 and slope < 0
 
-    alpha = -slope
-    pl = _powerlaw_sample(alpha, 10 ** (icept / alpha))
+    err, alpha, logc = _minimax_powerlaw(ks_ln, su_ln)
+    pl = _powerlaw_sample(alpha, 10 ** (logc / alpha))
     ks_pl, su_pl = _ccdf_fast(pl)
-    s_pl, _, r2_pl, _ = ccdf_fit(ks_pl, su_pl, 3, 500)
-    assert r2_pl > 0.99 and abs(s_pl - slope) < 0.06, (s_pl, r2_pl)
+    _, _, r2_pl, _ = ccdf_fit(ks_pl, su_pl, KLO, KHI)
+    assert r2_pl > 0.99, r2_pl
 
-    KLO, KHI = 5, 1000
-    # "indistinguishable" is the claim, so measure it: nowhere in the drawn range may
-    # the two curves stand more than a fifth of a decade apart.
-    grid = np.unique(np.round(np.logspace(math.log10(KLO), math.log10(KHI), 40)).astype(int))
+    # "indistinguishable" is the claim, so measure it on the two sampled curves
+    grid = np.unique(np.round(np.logspace(math.log10(KLO), math.log10(KHI), 60)).astype(int))
     gap = max(abs(math.log10(float((pl > k).mean()) / float((ln > k).mean()))) for k in grid)
-    assert gap < 0.22, f"the two CCDFs are {gap:.2f} decades apart -- not on top of each other"
+    assert gap < 0.16, f"the two CCDFs are {gap:.2f} decades apart -- not on top of each other"
 
     ax = Axes((185, 140, 1040, 335), (KLO, KHI), (1e-3, 1.0), xlog=True, ylog=True,
               xlabel="degree $k$", ylabel="CCDF",
@@ -369,40 +453,37 @@ def fig_lognormal_trap():
     idx = [int(np.argmin(np.abs(ks_ln - k))) for k in keep]
     b += ax.points(ks_ln[idx], su_ln[idx], color="accenttwo", d=13)
     b += text(1035, 320, "a true power law", color="accent", anchor="east")
-    b += text(200, 175, f"a log-normal, $R^2 = {_dec(r2, 2)}$",
+    b += text(200, 200, "a log-normal", color="accenttwo", anchor="west")
+    b += text(200, 158, f"$R^2 = {_dec(r2, 2)}$ across ${_dec(decades, 1)}$ decades",
               color="accenttwo", anchor="west")
     emit("lognormal-trap", b, container="full", h=400)
 
 
 # ===========================================================================
-# slide 89 -- the claim, the doubt, the audit
+# slide 087 -- the claim, the doubt, the audit
 # ===========================================================================
 def fig_scale_free_debate():
     b = seg((60, 190), (1005, 190), color="annot", w=3.0)
     b += seg((1005, 190), (1030, 190), color="annot", w=3.0,
              arrow="-{Stealth[length=16bp,width=12bp]}")
-    marks = [(200, "1999", "Barab\\'{a}si \\& Albert", "the claim"),
-             (540, "2011", "Ugander et al.", "the doubt"),
-             (880, "2019", "Broido \\& Clauset", "the audit")]
-    for x, year, who, what in marks:
+    # The 2019 dot carried no content and the timeline promised a test it never named.
+    # Each dot now says what its year actually contributed.
+    marks = [(200, "1999", "Barab\\'{a}si \\& Albert", "the claim", "$\\gamma = 3$"),
+             (540, "2011", "Ugander et al.", "the doubt", "curvature"),
+             (880, "2019", "Broido \\& Clauset", "the audit",
+              f"{pct(BC_STRONG)} of {BC_NETWORKS} networks")]
+    for x, year, who, role, what in marks:
         b += dot(x, 190, color="accent", d=SMALLNODE)
         b += text(x, 245, year, anchor="south", size=48)
         b += text(x, 155, who, anchor="north")
-        b += text(x, 105, what, color="annot", anchor="north")
+        b += text(x, 107, role, color="annot", anchor="north")
+        b += text(x, 59, what, anchor="north")
     emit("scale-free-debate", b, container="full", h=340)
 
 
 # ===========================================================================
-# slide 90 -- everything earlier came out of the second moment
+# slide 088 -- everything earlier came out of the second moment
 # ===========================================================================
-def _tail_sketch(x0, y0, x1, y1, color="accent"):
-    """A log-log CCDF as a pictogram: two spines and one straight descent."""
-    o = seg((x0, y0), (x0, y1), color="annot", w=2.4)
-    o += seg((x0, y0), (x1, y0), color="annot", w=2.4)
-    o += polyline([(x0 + 14, y1 - 12), (x1 - 12, y0 + 14)], color=color, w=5.0)
-    return o
-
-
 def fig_consequences():
     s = net_stats(condmat())
     kappa = s["k2"] / s["k1"]
@@ -411,13 +492,15 @@ def fig_consequences():
     assert 0.9 < fc < 1.0 and 0.03 < lam < 0.06, (fc, lam)
 
     b = _tail_sketch(32, 150, 292, 300)
-    b += text(162, 120, "the tail", color="annot", anchor="north")
+    # Both numbers below are cond-mat's, last drawn 32 slides earlier, and the figure
+    # named neither the network nor the fact that the third result is still to come.
+    b += text(162, 120, "cond-mat's tail", color="annot", anchor="north")
     b += _arrow((312, 225), (392, 225), color="annot", gap_tail=0, gap_head=0)
     b += text(452, 225, "$\\langle k^2\\rangle$", color="accenttwo", size=60)
     results = [(350, "Module 03: robustness", f"$f_c = {_dec(fc, 2)}$"),
                (225, "Module 02: distance", "shorter paths"),
-               (100, "spreading", f"$\\langle k\\rangle/\\langle k^2\\rangle "
-                                  f"= {_dec(lam, 3)}$")]
+               (100, "spreading: still to come",
+                f"$\\langle k\\rangle/\\langle k^2\\rangle = {_dec(lam, 3)}$")]
     for y, head, val in results:
         b += _arrow((516, 225), (616, y - 21), color="annot", gap_tail=0, gap_head=0)
         b += text(640, y, head, anchor="west")
@@ -426,48 +509,64 @@ def fig_consequences():
 
 
 # ===========================================================================
-# slide 91 -- the module on one page
+# slide 089 -- the module on one page
 # ===========================================================================
 def fig_recap():
-    m = moments(nx.Graph([tuple(e) for e in __import__("verify_numbers").FELD_EDGES]))
+    from verify_numbers import FELD_EDGES
+    m = moments(nx.Graph([tuple(e) for e in FELD_EDGES]))
     k1, gap, friend = float(m["k1"]), float(m["gap"]), float(m["friend"])
     assert k1 + gap == friend
 
     b = ""
-    # act one: the eight girls, five of them below their friends
-    cx = 135
-    for i in range(8):
-        x = cx - 63 + 42 * (i % 4)
-        y = 262 if i < 4 else 212
-        b += disc(x, y, fill="accenttwo" if i < len(BELOW) else "annot", size=28)
+    # Act one, in slide 076's key: 5 below, 2 above, 1 exactly equal. Drawn 5 red +
+    # 3 gray, it taught three ties against the key the deck had just given the room.
+    fills = ["accenttwo"] * len(BELOW) + ["accent"] * len(ABOVE) + ["annot"] * len(EQUAL)
+    assert len(fills) == 8
+    for i, fill in enumerate(fills):
+        b += disc(108 - 63 + 42 * (i % 4), 292 if i < 4 else 240,
+                  fill=fill, size=SMALLNODE)
 
-    # act two: 2.5 of your own, plus the gap the variance buys, makes 3.0
-    cx, x0, x1 = 405, 305, 505
+    # Act two: 2.5 of your own, plus the gap the variance buys. All gray -- accent-2
+    # means "her friends have more" in panel one and must not mean a second thing here.
+    x0, x1 = 224, 424
     xm = x0 + (k1 / friend) * (x1 - x0)
-    b += polyline([(x0, 237), (xm, 237)], color="annot", w=8.0)
-    b += polyline([(xm, 237), (x1, 237)], color="accenttwo", w=8.0)
+    b += polyline([(x0, 266), (x1, 266)], color="annot", w=8.0)
     for x in (x0, xm, x1):
-        b += seg((x, 222), (x, 252), color="annot", w=2.4)
+        b += seg((x, 250), (x, 282), color="annot", w=2.4)
 
-    # acts three and four: the same picture, honest and then not
-    b += _tail_sketch(600, 190, 750, 295)
-    b += _tail_sketch(870, 190, 1020, 295)
-    b += polyline([(884, 279), (1010, 202)], color="accenttwo", w=5.0,
+    # Act three: the tail we measured.  Act five: the same picture, not to be trusted.
+    b += _tail_sketch(465, 190, 615, 330)
+    b += _tail_sketch(897, 190, 1047, 330)
+    b += polyline([(911, 314), (1040, 203)], color="accenttwo", w=5.0,
                   dash="dash pattern=on 10bp off 8bp")
-    b += text(945, 300, "?", color="annot", anchor="south", size=48)
+    b += text(972, 332, "?", color="annot", anchor="south", size=48)
 
-    for cx, head, val in ((135, "eight girls", f"{len(BELOW)} of 8 below"),
-                          (405, "one identity",
-                           f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
-                          (675, "one tail", "$p(k)\\sim k^{-\\gamma}$"),
-                          (945, "one doubt", "straight $\\neq$ proof")):
-        b += text(cx, 148, head, anchor="north")
-        b += text(cx, 102, val, color="annot", anchor="north")
+    # Act four: Part Seven, which the recap dropped entirely. Two hubs touching, two
+    # leaves each -- symmetric, so it reads as "the hubs are adjacent" rather than as
+    # the four-node path an earlier diagonal placement produced.
+    hub = [(756 - 30, 286), (756 + 30, 286)]
+    leaf = [(660, 328), (660, 244), (852, 328), (852, 244)]
+    b += seg(hub[0], hub[1])
+    for i, p in enumerate(leaf):
+        b += seg(hub[0] if i < 2 else hub[1], p)
+    for p in leaf:
+        b += disc(p[0], p[1], fill="annot", size=SMALLNODE)
+    for p in hub:
+        b += disc(p[0], p[1], fill="accent", size=SMALLNODE)
+
+    for cx, head, val in (
+            (108, "eight girls", f"{len(BELOW)} of 8 below"),
+            (324, "one identity", f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
+            (540, "one tail", "$p(k)\\sim k^{-\\gamma}$"),
+            (756, "one wiring", "$r \\neq 0$"),
+            (972, "one doubt", "$R^2 = 0.99$")):
+        b += text(cx, 152, head, anchor="north")
+        b += text(cx, 106, val, color="annot", anchor="north")
     emit("recap", b, container="full", h=400)
 
 
 # ===========================================================================
-# slide 92 -- two clumps, unlabelled
+# slide 090 -- two clumps, unlabelled
 # ===========================================================================
 def fig_m05_teaser():
     g = nx.Graph()
@@ -491,6 +590,7 @@ def fig_m05_teaser():
 
 FIGURES = [
     ("individual-vs-average", fig_individual_vs_average),
+    ("mean-vs-median", fig_mean_vs_median),
     ("vanishing", fig_vanishing),
     ("directed", fig_directed),
     ("assortativity", fig_assortativity),

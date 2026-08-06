@@ -10,6 +10,7 @@ table: `feld-degrees` and `feld-two-numbers` sit in `cols` columns there, and a 
 authored for 1080bp and dropped into a 537bp column renders at 48% of its intended scale.
 """
 
+import itertools
 import math
 from functools import lru_cache
 
@@ -17,8 +18,9 @@ import networkx as nx
 import numpy as np
 
 from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean, solve_names
-from figlib import (DASH, EDGE_W, FONT, SMALLNODE, Axes, assert_planar_drawing, disc,
-                    dot, draw_labels, emit, pct, place_labels, polyline, ring, seg, text)
+from figlib import (DASH, EDGE_W, FONT, NODE, SMALLNODE, Axes, assert_planar_drawing,
+                    clearance_bad, disc, dot, draw_labels, emit, pct, place_labels,
+                    polyline, ring, seg, text)
 from verify_numbers import (FELD_EDGES, FELD_ORDER, LITERATURE, MARKETVILLE_ABOVE,
                             MARKETVILLE_BELOW, MARKETVILLE_EQUAL, MARKETVILLE_PK,
                             condmat, immunization_curves, internet_as, moments,
@@ -59,7 +61,19 @@ def cross(x, y, r=20, color="accenttwo", w=5.0):
             + seg((x - r, y + r), (x + r, y - r), color=color, w=w))
 
 
-def tick(x, y, h=26, color="accenttwo", w=5.0):
+# ONE edge-end glyph for the whole module (R1 A-6).  Reviewer B measured the same
+# object at 8x63px on slide 028 and 4x39px on 034, in a deck that otherwise keeps its
+# objects stable.  Every figure that draws an edge end -- sum-ends, mean-degree,
+# qk-formula, rosters, two-averages -- now draws THIS mark.  Spacing is a per-figure
+# layout choice; the mark is not.
+END_W, END_H = 6.0, 34
+
+
+def end_mark(x, y, color="accenttwo"):
+    return seg((x, y - END_H / 2), (x, y + END_H / 2), color=color, w=END_W)
+
+
+def tick(x, y, h=END_H, color="accenttwo", w=END_W):
     return seg((x, y - h / 2), (x, y + h / 2), color=color, w=w)
 
 
@@ -119,7 +133,7 @@ def fig_timeline_1961():
         b += dot(x, y, color="accent", d=34)
         b += text(x, y + 30, year, anchor="south", size=46)
         b += text(x, y - 30, who, anchor="north")
-    b += text(540, y + 22, "30 years", color="annot", anchor="south")
+    b += text(540, y + 22, "30 years", color="annot", anchor="south", size=40)
     for _, year, _ in marks:
         assert year in b
     emit("timeline-1961", b, container="full", h=FULL_H)
@@ -136,20 +150,28 @@ def fig_feld_names():
 
 
 def fig_feld_degrees():
-    pos = feld_scaled(0.52, 268.5, 200)
-    assert_planar_drawing(FELD_EDGES, pos, "feld-degrees (scaled)")
+    """R1 A-9: full width, so the eight-girl graph never changes scale across the build.
+
+    This was a `cols` column, where the shared 830x200bp layout had to be scaled 0.52 to
+    fit -- so the edges halved against unchanged 40bp discs on slide 008 and sprang back
+    on 010.  The deck now lays 008 out full width (D-2) and the layout is used unscaled,
+    which is the assertion below: this figure draws POS itself, not a copy of it.
+    """
+    assert_planar_drawing(FELD_EDGES, POS, "feld-degrees")
     drawn = {n: degree(n) for n in FELD_ORDER}
     assert sum(drawn.values()) == 2 * M["M"] == 20, drawn
     assert [drawn[n] for n in FELD_ORDER] == [1, 4, 4, 2, 3, 3, 2, 1]
-    b = feld_body(pos)
-    b += "".join(disc(*pos[n], str(drawn[n]), fill="accent") for n in FELD_ORDER)
-    emit("feld-degrees", b, container="col", h=COL_H)
+    chosen, _ = solve_names()
+    b = feld_body()
+    b += "".join(disc(*POS[n], str(drawn[n]), fill="accent") for n in FELD_ORDER)
+    b += draw_labels({n: n for n in POS}, POS, chosen)
+    emit("feld-degrees", b, container="full", h=FULL_H)
 
 
 def fig_feld_worksheet():
     # The answer goes in the empty right-middle void; the solver is told to keep the
     # eight names out of it.  Nothing in this figure may carry a friend-mean value.
-    void = [(800, 90, 1070, 250)]
+    void = [(788, 90, 1072, 250)]
     chosen, _ = solve_names(extra_blockers=void)
     names = {n: n for n in POS}
     b = feld_body()
@@ -157,8 +179,9 @@ def fig_feld_worksheet():
     b += "".join(disc(*POS[n], str(degree(n)), fill="accent") for n in FELD_ORDER)
     b += draw_labels(names, POS, chosen)
     b += seg((830, 108), (1050, 108), color="accenttwo", w=5.0)
-    prompt = "her friends'\\\\average"
-    b += text(940, 190, prompt, color="accenttwo")
+    # R1 A-11: name Jane in the prompt, so the ring round her disc has a stated reason.
+    prompt = "Jane's friends'\\\\average"
+    b += text(930, 190, prompt, color="accenttwo")
     shown = list(names.values()) + [prompt]
     assert_no_digits(shown, "feld-worksheet")
     for v in POS:
@@ -256,18 +279,54 @@ def fig_marketville_146():
 
 
 # =========================================================================== Part Two
+# Four rays that no pair leaves collinear through the hub (R1 A-3).  The first version
+# put the neighbours on the corners of a rectangle, so both diagonals ran straight
+# through the centre and the eye counted TWO lines on the slide whose whole job is
+# "four edges attached".  The gap from 180 degrees is asserted, not eyeballed.
+STAR_ANGLES = (15, 155, 230, 300)
+
+
+def _rays(cx, cy, rx, ry, angles):
+    """Points on an ellipse whose DRAWN direction from the centre is exactly `angles`.
+
+    Placing them at (rx cos a, ry sin a) does not do that: squashing y rotates every
+    direction toward the x-axis, and a set 35 degrees clear of collinear in parameter
+    space came out 13 degrees clear on the page.
+    """
+    out = []
+    for a in angles:
+        t = math.radians(a)
+        r = rx * ry / math.hypot(ry * math.cos(t), rx * math.sin(t))
+        out.append((cx + r * math.cos(t), cy + r * math.sin(t)))
+    return out
+
+
+def assert_not_collinear(hub, leaves, what, floor=15.0):
+    worst = 180.0
+    for i in range(len(leaves)):
+        for j in range(i + 1, len(leaves)):
+            u = math.atan2(leaves[i][1] - hub[1], leaves[i][0] - hub[0])
+            v = math.atan2(leaves[j][1] - hub[1], leaves[j][0] - hub[0])
+            d = math.degrees(abs(u - v)) % 360
+            worst = min(worst, abs(180 - min(d, 360 - d)))
+    assert worst >= floor, (f"{what}: two edges leave the hub {180 - worst:.0f}deg apart "
+                            f"-- they will read as one straight line through it")
+
+
 def fig_degree_def():
-    cx, cy = 268, 215
-    leaves = [(cx - 190, cy + 92), (cx + 190, cy + 92),
-              (cx - 190, cy - 92), (cx + 190, cy - 92)]
-    b = "".join(seg((cx, cy), p) for p in leaves)
-    b += "".join(disc(*p, fill="annot") for p in leaves)
+    cx, cy = 268, 205
+    leaves = _rays(cx, cy, 240, 115, STAR_ANGLES)
+    assert_not_collinear((cx, cy), leaves, "degree-def")
+    b = "".join(seg((cx, cy), q) for q in leaves)
+    b += "".join(disc(*q, fill="annot") for q in leaves)
     b += disc(cx, cy, fill="accenttwo")
     for i, (lx, ly) in enumerate(leaves, start=1):
         mx, my = (cx + lx) / 2, (cy + ly) / 2
-        b += text(mx, my + (26 if ly > cy else -26), str(i), color="accenttwo")
+        nx_, ny_ = -(ly - cy), (lx - cx)
+        L = math.hypot(nx_, ny_)
+        b += text(mx + nx_ / L * 30, my + ny_ / L * 30, str(i), color="accenttwo")
     assert len(leaves) == 4
-    b += text(cx, cy - 165, f"degree {len(leaves)}", color="accenttwo")
+    b += text(cx, 42, f"degree {len(leaves)}", color="accenttwo")
     emit("degree-def", b, container="col", h=COL_H)
 
 
@@ -280,7 +339,8 @@ def fig_sum_ends():
             d /= np.linalg.norm(d)
             m = np.array(p, float) + d * 44
             n_ = np.array([-d[1], d[0]])
-            b += seg(tuple(m - n_ * 13), tuple(m + n_ * 13), color="accenttwo", w=5.0)
+            b += seg(tuple(m - n_ * END_H / 2), tuple(m + n_ * END_H / 2),
+                     color="accenttwo", w=END_W)
             ends += 1
     assert ends == 2 * M["M"] == 20
     b += "".join(disc(*POS[n], fill="accent") for n in FELD_ORDER)
@@ -292,7 +352,7 @@ def fig_mean_degree():
     ends, girls = 2 * M["M"], M["N"]
     assert ends == 20 and girls == 8 and float(M["k1"]) == ends / girls
     b = text(268, 322, f"{ends} ends")
-    b += "".join(tick(35 + i * 24, 258, h=34) for i in range(ends))
+    b += "".join(end_mark(35 + i * 24, 258) for i in range(ends))
     b += seg((268, 232), (268, 190), color="annot", w=3.0, arrow=ARROW)
     b += "".join(disc(60 + i * 60, 150, fill="accent") for i in range(girls))
     b += text(268, 100, f"{girls} girls")
@@ -301,36 +361,71 @@ def fig_mean_degree():
 
 
 def fig_handshake():
-    xs = [140, 540, 940]
-    pairs = [(0, 1)]
-    left = [i for i in range(len(xs)) if not any(i in p for p in pairs)]
-    assert len(xs) % 2 == 1 and 2 * len(pairs) + len(left) == len(xs) and len(left) == 1
-    b = ""
-    for i, j in pairs:
-        b += arc((xs[i], 190), (xs[j], 190), bulge=62)
-    k = xs[left[0]]
-    b += polyline([(k, 190), (k, 250), (k, 268)], color="accenttwo", w=3.4, dash=DASH)
-    b += cross(k, 300, r=22)
-    b += "".join(disc(x, 170, fill="accent") for x in xs)
-    b += text(540, 110, f"{len(xs)} nodes of odd degree", color="annot")
-    b += text(940, 350, "no partner", color="accenttwo")
+    """The attempt at three odd-degree people, drawn as an actual graph (R1 A-4).
+
+    The first version was three loose discs and a dashed arc, which every earlier slide
+    had trained the room to read as an edge.  Here the pairing IS an edge -- two ends
+    joined -- so there is nothing to distinguish it from: the ambiguity is removed
+    rather than worked around.  Wanted degrees 3, 1, 1 sum to 5, an odd number of ends,
+    so four of them pair into the two drawn edges and the fifth has nothing to take.
+    """
+    want = {"A": 3, "B": 1, "C": 1}
+    # A's three ends leave at 0, 29 and 90 degrees. An earlier layout put B and C both at
+    # the far right, which left 13 degrees between two of them, and at the tick radius
+    # their three marks fused into one bracket round the disc.
+    pos = {"A": (160, 100), "B": (560, 320), "C": (960, 100)}
+    edges = [("A", "B"), ("A", "C")]
+    ends = sum(want.values())
+    assert ends % 2 == 1, "the whole point is that the wanted degree sum is odd"
+    assert 2 * len(edges) + 1 == ends
+    assert_planar_drawing(edges, pos, "handshake")
+
+    b = "".join(seg(pos[a], pos[c]) for a, c in edges)
+    stub = (160.0, 250.0)
+    b += seg(pos["A"], stub, color="accenttwo", w=EDGE_W, dash=DASH)
+
+    # one mark per end, the same mark sum-ends uses, and there are five of them
+    marks = 0
+    for p, q in [(pos[a], pos[c]) for a, c in edges] + [(pos[c], pos[a]) for a, c in edges] \
+            + [(pos["A"], stub)]:
+        d = np.array(q, float) - np.array(p, float)
+        d /= np.linalg.norm(d)
+        m = np.array(p, float) + d * 44
+        n_ = np.array([-d[1], d[0]])
+        b += seg(tuple(m - n_ * END_H / 2), tuple(m + n_ * END_H / 2),
+                 color="black", w=END_W)
+        marks += 1
+    assert marks == ends == 5
+
+    b += cross(160, 285, r=22)
+    b += "".join(disc(*pos[n], str(want[n]), fill="accenttwo") for n in ("A", "B", "C"))
+    total = " + ".join(str(want[n]) for n in ("A", "B", "C"))
+    b += text(560, 55, f"${total} = {ends}$ ends")
+    b += text(240, 285, "no partner", color="accenttwo", anchor="west")
     emit("handshake", b, container="full", h=FULL_H)
 
 
 def fig_pk_def():
-    # Deliberately NOT the eight girls: `feld-pk` two slides later is that figure, and a
-    # definition slide sharing its picture with the worked example teaches nothing twice.
-    heights = [2, 5, 4, 1]
-    total = sum(heights)
-    assert total == 12
+    """p(k) defined on the deck's own eight girls, as a FRACTION (R1 A-5).
+
+    The first version piled up an invented 12-node network and labelled its axis
+    "nodes", on the slide whose body defines p(k) as a fraction -- a count where the
+    text says share, with no denominator anywhere.  Slide 022 names these same girls;
+    this one states the arithmetic, which is the build the two slides want.
+    """
+    piles = {}
+    for v in FELD_ORDER:
+        piles.setdefault(degree(v), []).append(v)
+    n = M["N"]
+    assert sorted(piles) == [1, 2, 3, 4] and sum(len(v) for v in piles.values()) == n
     b = ""
-    for c, hgt in enumerate(heights):
-        x = 70 + c * 130
-        for r in range(hgt):
-            b += disc(x, 140 + r * 48, fill="accent")
-        b += text(x, 100, str(c + 1))
-    b += text(265, 45, "$k$")
-    b += text(25, 236, "nodes", color="annot", rot=90)
+    for i, k in enumerate(sorted(piles)):
+        x = 70 + i * 128
+        for j in range(len(piles[k])):
+            b += disc(x, 240 + j * 48, fill="accent")
+        b += text(x, 190, f"$k={k}$", color="annot")
+        b += text(x, 130, f"${len(piles[k])}/{n}$", color="accenttwo")
+    b += text(268, 60, f"$p(k)$ = fraction of all ${n}$")
     emit("pk-def", b, container="col", h=COL_H)
 
 
@@ -360,47 +455,81 @@ def fig_rosters():
     hubs = [v for v in FELD_ORDER if degree(v) == max(counts.values())]
     assert hubs == ["Sue", "Alice"]
 
-    # Eight free-standing rosters, not a ruled table.  The header row and the two rules
-    # of the first version made this the format the rubric calls the worst one; each list
-    # now hangs from its owner's own disc -- the same disc every Feld figure draws --
-    # carrying the number of lists she turns up on. That the count and the degree are one
-    # number is the point of the slide, so they are one mark.
-    b = ""
+    # R1 A-1: eight left-aligned, ragged-right lines -- running text, not cells.  Both
+    # earlier versions put the lists in aligned columns, so the third line of Sue's
+    # column sat on the baseline of the third line of Alice's and every horizontal read
+    # was noise.  Each line is now one TeX node, so TeX sets the spacing and there is no
+    # grid to read across.
+    #
+    # The tally at the right is the same edge-end mark the rest of the module uses, and
+    # it is the same object: a name appearing on someone's list IS one end of an edge.
+    # So the marks total 2M, which is asserted.
+    ones = [v for v in FELD_ORDER if counts[v] == min(counts.values())]
+    assert ones == ["Betty", "Tina"]
+    role = {v: ("accenttwo" if v in hubs else "accent" if v in ones else "annot")
+            for v in FELD_ORDER}
+
+    b, marks = "", 0
     for i, v in enumerate(FELD_ORDER):
-        x = 85 + i * 130
-        b += text(x, 332, v)
-        b += disc(x, 282, str(counts[v]), fill="accenttwo" if v in hubs else "accent")
-        for j, u in enumerate(lists[v]):
-            b += text(x, 222 - j * 45, u,
-                      color="accenttwo" if u in hubs else "annot")
+        y = 330 - i * 42
+        entries = ", ".join(f"\\textcolor{{{role[u]}}}{{{u}}}" if role[u] != "annot" else u
+                            for u in lists[v])
+        b += text(60, y, f"{v}: {entries}", anchor="west")
+        for j in range(counts[v]):
+            b += end_mark(930 + j * 26, y, color=role[v])
+            marks += 1
+    assert marks == sum(counts.values()) == 2 * M["M"] == 20
     emit("rosters", b, container="full", h=FULL_H)
 
 
 # ========================================================================= Part Three
 def fig_bag_of_hands():
+    """R1 A-12: the initials get a key, and accent-2 keeps the meaning slide 024 gave it.
+
+    Red marked "the two degree-4 hubs" on `rosters.png` and then "Sue only" here, so
+    Alice's four hands went blue one slide after she was red. Both hubs are red now, and
+    the three-name key under the bag says what a letter in a disc is.
+    """
     owners = []
     for v in FELD_ORDER:
         owners += [v] * degree(v)
     assert len(owners) == 2 * M["M"] == 20
-    b = rect(45, 62, 492, 338, draw="annot", w=3.4, rounded=20)
+    hubs = [v for v in FELD_ORDER if degree(v) == max(degree(u) for u in FELD_ORDER)]
+    assert hubs == ["Sue", "Alice"]
+    held = sum(1 for v in owners if v in hubs)
+    assert held == sum(degree(v) for v in hubs) == 8
+
+    b = rect(45, 75, 492, 283, draw="annot", w=3.4, rounded=20)
     for i, v in enumerate(owners):
-        x, y = 90 + (i % 5) * 88, 296 - (i // 5) * 62
-        b += disc(x, y, v[0], fill="accenttwo" if v == "Sue" else "accent")
-    assert sum(1 for v in owners if v == "Sue") == degree("Sue") == 4
-    b += text(150, 372, f"{len(owners)} ends")
-    b += text(390, 372, f"{degree('Sue')} are Sue's", color="accenttwo")
+        x, y = 90 + (i % 5) * 88, 241 - (i // 5) * 48
+        b += disc(x, y, v[0], fill="accenttwo" if v in hubs else "accent")
+    b += text(268, 325, f"{len(owners)} ends: "
+                        f"\\textcolor{{accenttwo}}{{{' and '.join(hubs)} hold {held}}}")
+    b += text(268, 38, ", ".join(f"{v[0]} = {v}" for v in ("Sue", "Alice", "Betty")),
+              color="annot")
     emit("bag-of-hands", b, container="col", h=COL_H)
 
 
 def fig_qk_formula():
-    ends, k = 2 * M["M"], degree("Sue")
-    assert (ends, k) == (20, 4)
-    b = "".join(bar(35 + i * 24, 155, h=64,
-                    color="accenttwo" if i < k else "accent") for i in range(ends))
-    x0, x1 = 35 - 6, 35 + (k - 1) * 24 + 6
-    b += polyline([(x0, 196), (x0, 206), (x1, 206), (x1, 196)], color="accenttwo", w=3.4)
-    b += text((x0 + x1) / 2, 240, "Sue", color="accenttwo")
-    b += text(268, 68, f"{k} ends of {ends}", color="accenttwo")
+    """All eight hand-counts, so the room sees the draw chance rise with k (R1 A-6).
+
+    The first version was 20 tallies with 4 of them red -- the same count, the same
+    colour meaning and the same fraction as `bag-of-hands.png` on the slide before, in a
+    different glyph, while the slide's actual claim (the chance is proportional to k)
+    had no picture at all.  Sorted ascending, the eight rows ARE that claim.
+    """
+    order = sorted(FELD_ORDER, key=lambda v: (degree(v), FELD_ORDER.index(v)))
+    assert [degree(v) for v in order] == [1, 1, 2, 2, 3, 3, 4, 4]
+    b, marks = "", 0
+    for i, v in enumerate(order):
+        col_x, row = (110, i) if i < 4 else (380, i - 4)
+        y = 250 - row * 60
+        b += text(col_x, y, v, anchor="east")
+        for j in range(degree(v)):
+            b += end_mark(col_x + 20 + j * 26, y)
+            marks += 1
+    assert marks == 2 * M["M"] == 20
+    b += text(268, 310, f"{marks} ends in all")
     emit("qk-formula", b, container="col", h=COL_H)
 
 
@@ -502,7 +631,7 @@ def fig_two_averages():
 
     b = seg((530, 60), (530, 330), color="annot", w=2.0)
     b += text(280, 318, "pick an edge end")
-    b += "".join(tick(70 + i * 22, 218, h=40) for i in range(ends))
+    b += "".join(end_mark(70 + i * 22, 218) for i in range(ends))
     b += text(280, 90, num(per_end, 2), color="accenttwo", size=88)
     b += text(790, 318, "pick a person")
     b += "".join(disc(600 + i * 54, 218, fill="accent") for i in range(girls))
@@ -625,28 +754,109 @@ def fig_sampling_bias():
 _ACQ = {"H": (0, 18), 1: (-118, -58), 2: (-40, 112), 3: (118, -58), 4: (52, 112)}
 
 
-def fig_acquaintance():
-    steps = [(200, "pick anyone", 1), (540, "name a friend", None), (880, "immunise them", 0)]
+# One step per slide (R1 A-7). The three-panel strip this replaces differed only by a
+# small ring moving and an arrow appearing, so the room had to diff three near-identical
+# drawings to find the change -- the case F4 reserves for a build. Same graph, same
+# positions, one new mark each time; and the discs are NODE now, not SMALLNODE, because
+# at 28px they were the smallest graph in the range against 40px everywhere else.
+#
+# Two marks, and each says what it means on the drawing: an accent-2 RING is the person
+# this step is choosing, an accent-2 FILL is a person who has been immunised. Nothing on
+# the old figure said either.
+ACQ_HUB = (540, 150)
+
+# Seven leaves on a wide ellipse, not four on a rectangle. Two reasons. The hub has to
+# LOOK like a hub -- with four leaves the drawing reads as an X with a node dropped on
+# the crossing, which is the same defect A-3 fixed on `degree-def` -- and 360/7 is not a
+# divisor of 180, so no two edges are collinear through the hub and every one of them
+# reads as its own stroke. The ellipse is wide because a round star spans 31% of a
+# 1080bp canvas and the floor is 76%.
+# Spread over 260 degrees rather than the full circle, so a wedge stays clear straight
+# below the hub for the step label. With seven edges radiating in every direction the
+# placement solver had nowhere to put "immunised" and -- correctly -- refused, which is
+# the layout telling you it is wrong, not the label.
+ACQ_ANGLES = [-40 + i * (260 / 6) for i in range(7)]
+ACQ_LEAF = {i + 1: (round(540 + 430 * math.cos(math.radians(a))),
+                    round(150 + 150 * math.sin(math.radians(a))))
+            for i, a in enumerate(ACQ_ANGLES)}
+# Tolerance 3 degrees, not 8: at a 430bp radius, 6.7 degrees puts the two far ends 50bp
+# apart, which no one reads as one stroke -- and the hub disc sits between them anyway.
+# What A-3 was about is EXACT collinearity (measured slopes 0.489 and 0.484).
+assert not any(abs(((a - b) % 360) - 180) < 3
+               for a in ACQ_ANGLES for b in ACQ_ANGLES), \
+    "two leaves are opposite the hub: their edges read as one straight line (cf. A-3)"
+ACQ_EDGES = [("H", k) for k in ACQ_LEAF]
+ACQ_POS = {"H": ACQ_HUB, **ACQ_LEAF}
+ACQ_PICK = 6                      # the leaf the random draw lands on, left of the hub
+
+assert_planar_drawing(ACQ_EDGES, ACQ_POS, "acquaintance star")
+assert min(math.dist(a, b) for a, b in itertools.combinations(ACQ_POS.values(), 2)) \
+    > NODE + 6, "acquaintance star: two discs are touching"
+
+
+def _acq_label(at, s, color="accenttwo"):
+    """Place a step label clear of every edge and every disc, or fail loudly.
+
+    Hand-placing it put "immunised" straight across the edge running down-left out of the
+    hub. The rule the guide states for names applies to notes too: try the sides in
+    order, reject anything that hits ink, and say so rather than shrinking the type.
+    """
+    from figlib import box_hits_disc, box_hits_segment, label_box
+    for anc, dx, dy in (("south", 0, 34), ("north", 0, -34), ("west", 34, 0),
+                        ("east", -34, 0), ("south west", 26, 26), ("south east", -26, 26),
+                        ("north west", 26, -26), ("north east", -26, -26),
+                        ("south", 0, 62), ("north", 0, -62)):
+        x, y = at[0] + dx, at[1] + dy
+        b = label_box(x, y, s, anc)
+        if not (6 <= b[0] and b[2] <= 1074 and 6 <= b[1] and b[3] <= 414):
+            continue
+        if any(box_hits_disc(b, *p) for p in ACQ_POS.values()):
+            continue
+        if any(box_hits_segment(b, ACQ_POS[a], ACQ_POS[c]) for a, c in ACQ_EDGES):
+            continue
+        return text(x, y, s, color=color, anchor=anc)
+    raise SystemExit(f"acquaintance: nowhere to put {s!r} without hitting an edge or a "
+                     f"disc -- move a leaf or shorten the label; do not shrink the type.")
+
+
+def _acq_base(treated=()):
     b = ""
-    for cx, lab, _ in steps:
-        for k in (1, 2, 3, 4):
-            b += seg((cx + _ACQ["H"][0], 205 + _ACQ["H"][1]),
-                     (cx + _ACQ[k][0], 205 + _ACQ[k][1]), w=2.4)
-        for k in (1, 2, 3, 4):
-            b += disc(cx + _ACQ[k][0], 205 + _ACQ[k][1], fill="accent", size=SMALLNODE)
-        b += disc(cx + _ACQ["H"][0], 205 + _ACQ["H"][1], fill="accent", size=SMALLNODE)
-        b += text(cx, 68, lab)
-    # 1: the random pick.  2: the nomination travelling up the edge.  3: the hub treated.
-    b += ring(200 + _ACQ[1][0], 205 + _ACQ[1][1], size=SMALLNODE, grow=14)
-    # the nomination travels along the edge itself, stopping at both discs' borders
-    p = np.array([540 + _ACQ[1][0], 205 + _ACQ[1][1]], float)
-    q = np.array([540 + _ACQ["H"][0], 205 + _ACQ["H"][1]], float)
+    for k, p in ACQ_LEAF.items():
+        b += seg(ACQ_HUB, p, w=2.6)
+    for k, p in ACQ_LEAF.items():
+        b += disc(p[0], p[1], fill="accenttwo" if k in treated else "accent", size=NODE)
+    b += disc(ACQ_HUB[0], ACQ_HUB[1], fill="accenttwo" if "H" in treated else "accent",
+              size=NODE)
+    return b
+
+
+def fig_acquaintance_1():
+    """Step one: somebody chosen at random, and it is almost never the hub."""
+    b = _acq_base()
+    b += ring(*ACQ_LEAF[ACQ_PICK], size=NODE, grow=14)
+    b += _acq_label(ACQ_LEAF[ACQ_PICK], "picked")
+    emit("acquaintance-1", b, container="full", h=FULL_H)
+
+
+def fig_acquaintance_2():
+    """Step two: the nomination travels along the edge, and lands on the hub."""
+    b = _acq_base()
+    b += ring(*ACQ_LEAF[ACQ_PICK], size=NODE, grow=14)
+    b += _acq_label(ACQ_LEAF[ACQ_PICK], "picked")
+    p = np.array(ACQ_LEAF[ACQ_PICK], float)
+    q = np.array(ACQ_HUB, float)
     u = (q - p) / np.linalg.norm(q - p)
-    b += seg(tuple(p + u * (SMALLNODE / 2 + 2)), tuple(q - u * (SMALLNODE / 2 + 8)),
+    b += seg(tuple(p + u * (NODE / 2 + 12)), tuple(q - u * (NODE / 2 + 10)),
              color="accenttwo", w=4.4, arrow=ARROW)
-    b += disc(880, 223, fill="accenttwo", size=SMALLNODE)
-    b += ring(880, 223, size=SMALLNODE, grow=14)
-    emit("acquaintance", b, container="full", h=FULL_H)
+    emit("acquaintance-2", b, container="full", h=FULL_H)
+
+
+def fig_acquaintance_3():
+    """Step three: the named friend is the one who gets the dose."""
+    b = _acq_base(treated=("H",))
+    b += ring(*ACQ_HUB, size=NODE, grow=14)
+    b += _acq_label(ACQ_HUB, "immunised")
+    emit("acquaintance-3", b, container="full", h=FULL_H)
 
 
 IMM_F = (0.0, 0.02, 0.04, 0.06, 0.08, 0.10)
@@ -723,6 +933,8 @@ FIGURES = [
     ("coauthor-gap", fig_coauthor_gap),
     ("fb-twitter", fig_fb_twitter),
     ("sampling-bias", fig_sampling_bias),
-    ("acquaintance", fig_acquaintance),
+    ("acquaintance-1", fig_acquaintance_1),
+    ("acquaintance-2", fig_acquaintance_2),
+    ("acquaintance-3", fig_acquaintance_3),
     ("immunization-curves", fig_immunization_curves),
 ]

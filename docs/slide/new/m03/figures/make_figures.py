@@ -1611,13 +1611,14 @@ def fig_reverse_percolation():
 # ===========================================================================
 # A small network used for q(k): degrees 4, 3, 2, 1, 1, 1 -- printed, not typed.
 QK_POS = {"h": (250, 225), "a": (70, 330), "b": (70, 120), "c": (430, 330),
-          "e": (430, 120), "d": (250, 120)}
+          "e": (250, 120), "d": (430, 120)}
 QK_EDGES = [("h", "a"), ("h", "b"), ("h", "c"), ("h", "e"), ("c", "d"), ("a", "b")]
 QK_G = nx.Graph(QK_EDGES)
 QK_DEG = dict(QK_G.degree())
 QK_KAPPA = kappa_of(QK_DEG.values())
 assert QK_DEG["h"] == 4 and sum(QK_DEG.values()) == 2 * len(QK_EDGES)
 assert not clearance_bad(QK_EDGES, QK_POS)
+assert not crossings(QK_EDGES, QK_POS), crossings(QK_EDGES, QK_POS)
 
 
 def qk_graph(highlight=None, show_deg=False):
@@ -2096,18 +2097,21 @@ def fig_er1_a():
 
 
 BW_BRIDGE = 6
-BW_POS = {0: (190, 200), 3: (320, 200), 1: (230, 310), 2: (85, 268),
-          4: (85, 132), 5: (230, 90),
+BW_POS = {0: (250, 200), 3: (150, 200), 1: (290, 310), 2: (145, 285),
+          4: (145, 115), 5: (290, 90),
           BW_BRIDGE: (550, 200),
-          7: (790, 200), 8: (920, 200), 9: (830, 310), 10: (685, 268),
-          11: (685, 132), 12: (830, 90)}
+          7: (850, 200), 8: (950, 200), 9: (810, 310), 10: (955, 285),
+          11: (955, 115), 12: (810, 90)}
 BW_EDGES = ([(0, i) for i in (1, 2, 3, 4, 5)]
-            + [(3, BW_BRIDGE), (BW_BRIDGE, 7)]
+            + [(0, BW_BRIDGE), (BW_BRIDGE, 7)]
             + [(7, i) for i in (8, 9, 10, 11, 12)])
 BW_G = nx.Graph(BW_EDGES)
 BW_HUB = max(BW_G.degree(), key=lambda kv: kv[1])[0]
 assert BW_G.degree(BW_BRIDGE) == 2 and nx.is_connected(BW_G)
 assert BW_G.degree(BW_HUB) >= 6 and not clearance_bad(BW_EDGES, BW_POS)
+# "the degree-2 node" is singular on the slide, so there must be exactly one.
+assert [n for n, d in BW_G.degree() if d == 2] == [BW_BRIDGE], \
+    "more than one degree-2 node: the slide's phrase is ambiguous"
 
 
 def _bw(removed=(), note_text=None, degrees=True, ring_bridge=True):

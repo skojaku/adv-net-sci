@@ -303,24 +303,52 @@ def cell_grid(x0, y0, n, cell, filled, fill_color="accent", empty="white",
     return out
 
 
-def number_line(x0, x1, y, lo, hi, marks, tick=11, size=FONT, fmt="{:.3f}"):
+def number_line(x0, x1, y, lo, hi, marks, tick=11, size=FONT, fmt="{:g}", rows=3,
+                row_h=None, what="number line"):
     """A single axis with named marks -- the deck's stand-in for a bar chart.
 
     FIGURE_GUIDE bans bars: they encode one number as a length and then need a scale to
-    decode it.  A position on a labelled line is the number.
+    decode it. A position on a labelled line is the number.
+
+    **Labels are placed, not just emitted.** The first version put every label at a fixed
+    offset from its own tick, and two marks half a unit apart printed straight through
+    each other -- "the rule of thumbthe real split" on one slide, "the real split" over
+    "Louvain" on another, both invisible in the source and both shipped past a green
+    gate. Each label now walks outward row by row on its own side of the axis and takes
+    the first row that collides with nothing: no other label, and neither end label. If
+    no assignment exists the build fails and says to shorten a label, because a label
+    too long to place is the bug.
     """
-    out = seg((x0, y), (x1, y), color="black", w=2.4)
+    row_h = row_h or size * 1.30
     X = lambda v: x0 + (v - lo) / (hi - lo) * (x1 - x0)                    # noqa: E731
+    out = seg((x0, y), (x1, y), color="black", w=2.4)
+
+    placed = []
+    for v in (lo, hi):
+        b = label_box(X(v), y - tick - 12, fmt.format(v), "north", size=size)
+        placed.append(b)
+        out += text(X(v), y - tick - 12, fmt.format(v), color="annot",
+                    anchor="north", size=size)
+
     for v, lab, col, side in marks:
-        assert lo <= v <= hi, f"mark {lab} at {v} is off the axis [{lo}, {hi}]"
+        assert lo <= v <= hi, f"{what}: mark {lab!r} at {v} is off the axis [{lo}, {hi}]"
         x = X(v)
         s = 1 if side == "up" else -1
         out += seg((x, y), (x, y + s * tick), color=col, w=3.6)
-        out += text(x, y + s * (tick + 12), lab, color=col,
-                    anchor="south" if s > 0 else "north", size=size)
-    for v in (lo, hi):
-        out += text(X(v), y - tick - 12, fmt.format(v), color="annot",
-                    anchor="north", size=size)
+        anchor = "south" if s > 0 else "north"
+        for r in range(rows):
+            ly = y + s * (tick + 12 + r * row_h)
+            b = label_box(x, ly, lab, anchor, size=size)
+            if any(boxes_overlap(b, o) for o in placed):
+                continue
+            placed.append(b)
+            out += text(x, ly, lab, color=col, anchor=anchor, size=size)
+            break
+        else:
+            raise SystemExit(
+                f"{what}: no free row for the mark {lab!r} at {v} -- it collides with a "
+                f"neighbouring label on every row. Shorten it, move the mark, or put the "
+                f"two marks on opposite sides of the axis; do not shrink the type.")
     return out
 
 

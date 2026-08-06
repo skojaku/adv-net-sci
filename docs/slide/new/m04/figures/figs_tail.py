@@ -37,8 +37,8 @@ import numpy as np
 
 from figlib import (DASH, FONT, NODE, SMALLNODE, Axes, boxes_overlap, clearance_bad,
                     disc, dot, emit, fill_poly, label_box, pct, polyline, seg, text)
-from verify_numbers import (ba_graph, ccdf, ccdf_fit, condmat, internet_as, top_share,
-                            uniform_growth_graph, yeast_ppi)
+from verify_numbers import (ba_graph, ccdf, ccdf_fit, condmat, internet_as, net_stats,
+                            top_share, uniform_growth_graph, yeast_ppi)
 
 H = 380                                  # every figure here is a plain `.fig` (380px cap)
 
@@ -75,6 +75,14 @@ def condmat_ccdf():
 # (a factor of 93, 1.97 decades) rather than FIGURE_SPEC's 10..200, which is 1.3.
 PDF_KMIN, PDF_KMAX = 3, 279
 
+# The two thresholds slide 49 annotates. Named, because the accent-3 band's left edge was
+# hardcoded at 96 and landed 23px left of the "100" the annotation beside it printed.
+SMALL_K, TAIL_K = 10, 100
+
+# How far above a log axis's floor a curve stops, in decades. A stroke that meets the
+# axis line reads as "the distribution ends here"; the floor is 1e-5, not zero.
+FLOOR_LIFT = 0.28
+
 
 @lru_cache(maxsize=None)
 def pdf_fit():
@@ -88,18 +96,28 @@ def pdf_fit():
 
 
 @lru_cache(maxsize=None)
-def er_graph():
-    """The random graph `check_models()` verifies: n=20000, <k>=4, Var/<k>=1, max k=15.
+def condmat_stats():
+    return net_stats(condmat())
 
-    Slide 67's presenter note names that largest degree, so this is the same graph and
-    not a fresh draw.
+
+@lru_cache(maxsize=None)
+def er_graph():
+    """A random graph matched to cond-mat: same N, same <k>, so only the SHAPE differs.
+
+    R1 B-11: slide 67's caption says "a random network with the same average" and never
+    says as what, and the figure printed <k> = 4.0 -- neither cond-mat's 8.08 nor the
+    Internet's 3.88, so the comparison had no referent.  Matching cond-mat exactly makes
+    slides 56 and 67 the same axes, the same N and the same mean with one difference
+    between them, and it makes the Var/<k> pair on those two figures comparable.
     """
-    return nx.gnp_random_graph(20000, 4 / 19999, seed=3)
+    s = condmat_stats()
+    return nx.gnp_random_graph(s["N"], s["k1"] / (s["N"] - 1), seed=3)
 
 
 @lru_cache(maxsize=None)
 def lattice_degrees():
-    g = nx.watts_strogatz_graph(2000, 4, 0.0, seed=1)
+    """A ring lattice at the same mean degree as cond-mat and the random graph."""
+    g = nx.watts_strogatz_graph(2000, 8, 0.0, seed=1)
     return tuple(int(d) for _, d in g.degree())
 
 
@@ -163,7 +181,10 @@ def curve(ax, xs, ys, color="accent", w=3.4, dash=""):
     return ax.line([p[0] for p in pts], [p[1] for p in pts], color=color, w=w, dash=dash)
 
 
-_TEX = re.compile(r"\\[a-zA-Z]+|\\[,;!]|[${}^_]")
+# The line break `\\` comes FIRST: without it the alternation matched the second
+# backslash plus the following word, so "\\values crowd at 1" measured as one line of a
+# two-line label and every multi-line box came out a line short and half a panel wide.
+_TEX = re.compile(r"\\\\|\\[a-zA-Z]+|\\[,;!]|[${}^_]")
 
 
 def visible(s):
@@ -173,10 +194,15 @@ def visible(s):
     "$\\langle k \\rangle = 4$" is 24 characters and eight glyphs, so measuring it raw
     reported collisions that are not there and moved two labels off the curves they
     belonged to.  Control words count as one glyph; braces, dollars and spacing count
-    as none.
+    as none; the line break is left alone so `label_box` can still split on it.
     """
-    return _TEX.sub(lambda m: "" if m.group(0)[0] in "${}^_" or len(m.group(0)) == 2
-                    else "n", s)
+    def sub(m):
+        t = m.group(0)
+        if t == "\\\\":
+            return t
+        return "" if t[0] in "${}^_" or len(t) == 2 else "n"
+
+    return _TEX.sub(sub, s)
 
 
 def label_at(x, y, s, color="black", anchor="center", size=FONT, boxes=None):
@@ -204,14 +230,24 @@ def curve_pts(ax, xs, ys, step=7.0):
 _SIDES = (270, 300, 240, 330, 210, 0, 180, 30, 150, 90)
 
 
-def curve_label(ax, s, at, curves, boxes, color="black", size=FONT, pad=7,
-                bounds=None):
-    """Place an in-place curve label near `at`, clear of every curve and every label.
+def _box_dist(b, p):
+    """Distance from the point `p` to the rectangle `b`, zero if inside."""
+    return math.hypot(max(b[0] - p[0], 0, p[0] - b[2]), max(b[1] - p[1], 0, p[1] - b[3]))
+
+
+def curve_label(ax, s, at, own, boxes, others=(), color="black", size=FONT, pad=7,
+                bounds=None, floor=34, margin=1.4):
+    """Place a label near `at` so that the nearest curve to it is the one it NAMES.
 
     FIGURE_GUIDE, "place labels with a solver, not by hand": on log-log axes a curve
-    sweeps the whole panel, so "just above the line" is not a position.  Every offset
-    chosen by eye here put at least one label straight through the curve it named --
-    `universality` had "physicists" written across the physicists' own tail.
+    sweeps the whole panel, so "just above the line" is not a position.
+
+    R1 B-9: the first solver only avoided ink, so it moved "physicists" off its own tail
+    and parked it 23px from the yeast curve and 50px from its own -- one defect traded
+    for another, with only the colour resolving it.  `own` is now the attractor and
+    `others` are blockers with a clearance `floor`; a position is rejected unless its own
+    curve is the nearest by `margin`.  That is the property the reviewer measured, so it
+    is the property the solver enforces.
     """
     # Default to the frame's interior: a label that drifts below the axis lands on the
     # tick labels, which is where "random" ended up on the first pass.
@@ -227,14 +263,20 @@ def curve_label(ax, s, at, curves, boxes, color="black", size=FONT, pad=7,
                 continue
             if any(boxes_overlap(b, o) for o in boxes):
                 continue
-            if any(b[0] - pad <= px <= b[2] + pad and b[1] - pad <= py <= b[3] + pad
-                   for px, py in curves):
+            if any(_box_dist(b, p) <= pad for p in own):
+                continue
+            if any(_box_dist(b, p) <= pad for p in others):
+                continue
+            d_own = min((_box_dist(b, p) for p in own), default=1e9)
+            d_oth = min((_box_dist(b, p) for p in others), default=1e9)
+            if d_oth < floor or d_oth < margin * d_own:
                 continue
             boxes.append(b)
             return text(cx, cy, s, color=color, anchor="center", size=size)
     raise SystemExit(
-        f"no clear spot for the curve label {s!r} -- move its anchor, shorten it or "
-        f"widen the panel; do not shrink the type.")
+        f"no clear spot for the curve label {s!r} -- it must end up nearer its own curve "
+        f"than any other by {margin:.2f}x. Move its anchor, shorten it or widen the "
+        f"panel; do not shrink the type.")
 
 
 def fixed_label(spots, s, curves, boxes, color="black", anchor="center", size=FONT,
@@ -448,19 +490,33 @@ def draw_growth(frame, pos, fill="accent", size=GROWTH_NODE, new_color="accenttw
 
 # --------------------------------------------------------------------------- Part 5
 def fig_linear_axes():
-    """Slide 47: p(k) on linear axes -- everything piled into the first few columns."""
+    """Slide 47: p(k) on linear axes -- everything piled into the first few columns.
+
+    Carries the variance the slide's title promises.  R1 B-3: Part Five opened on "here
+    is that variance" and Part Four ended by asking for it, and no variance number
+    appeared anywhere in the part; `poisson-ccdf` prints the same quantity for the random
+    graph so the two can be read against each other.
+    """
     ks, pk, N = condmat_pdf()
     assert int(ks.max()) == 279, ks.max()
     d = np.array(condmat_degrees())
     small = float((d <= 10).mean())
     assert small >= 0.78, f"only {small:.1%} of authors sit at k <= 10"
     assert len(ks) == 122, len(ks)
+    s = condmat_stats()
+    assert s["N"] == N and abs(s["gap"] - s["var"] / s["k1"]) < 1e-9
 
     ax = Axes(FRAME, (0, 288), (0, 0.15), xticks=[0, 100, 200],
               yticks=[0, 0.05, 0.10, 0.15], yfmt=lambda v: f"{v:g}")
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$p(k)$")
     body += scatter(ax, ks, pk, color="accent", d=13, expect=len(ks))
+    body += text(ax.x1 - 8, ax.Y(0.128),
+                 f"one dot per distinct $k$: {len(ks)} of them", color="annot",
+                 anchor="east")
+    body += text(ax.x1 - 8, ax.Y(0.104),
+                 f"$\\mathrm{{Var}}(k)/\\langle k \\rangle = {s['gap']:.1f}$",
+                 color="accenttwo", anchor="east")
     emit("linear-axes", body, container="full", h=H)
 
 
@@ -468,27 +524,29 @@ def fig_fat_tail_reveal():
     """Slide 49: the same axes, with both ends of the distribution named."""
     ks, pk, N = condmat_pdf()
     d = np.array(condmat_degrees())
-    small = float((d <= 10).mean())
-    far = int((d > 100).sum())
+    small = float((d <= SMALL_K).mean())
+    far = int((d > TAIL_K).sum())
     assert far == 28 and N == 23133, (far, N)
 
     ax = Axes(FRAME, (0, 288), (0, 0.15), xticks=[0, 100, 200],
               yticks=[0, 0.05, 0.10, 0.15], yfmt=lambda v: f"{v:g}")
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$p(k)$")
-    # accent-3 carries area, never a stroke and never text: the tail band is a fill.
-    body += fill_poly([ax.P(96, 0), ax.P(288, 0), ax.P(288, 0.018), ax.P(96, 0.018)],
-                      color="accentthree", opacity=0.75)
+    # accent-3 carries area, never a stroke and never text: the tail band is a fill. Its
+    # left edge is TAIL_K, the same constant the annotation prints -- R1 B-14: it was
+    # hardcoded at 96 and landed 23px left of the "100" tick the annotation named.
+    body += fill_poly([ax.P(TAIL_K, 0), ax.P(288, 0), ax.P(288, 0.018),
+                       ax.P(TAIL_K, 0.018)], color="accentthree", opacity=0.75)
     body += scatter(ax, ks, pk, color="accent", d=13, expect=len(ks))
 
     boxes = []
     body += label_at(ax.X(40), ax.Y(0.118),
-                     f"{pct(small)} of {N:,} authors\\\\sit at $k \\le 10$"
+                     f"{pct(small)} of {N:,} authors\\\\sit at $k \\le {SMALL_K}$"
                      .replace(",", "{,}"),
                      color="accenttwo", anchor="west", boxes=boxes)
     body += seg(ax.P(190, 0.044), ax.P(190, 0.022), color="accenttwo", w=3.0,
                 arrow="-{Latex[length=9bp]}")
-    body += label_at(ax.X(190), ax.Y(0.048), f"{far} run past $k = 100$",
+    body += label_at(ax.X(190), ax.Y(0.048), f"{far} run past $k = {TAIL_K}$",
                      color="accenttwo", anchor="south", boxes=boxes)
     emit("fat-tail-reveal", body, container="full", h=H)
 
@@ -526,8 +584,9 @@ def fig_loglog_line():
     assert all(ax.inside(x, y) for x, y in zip(fx, fy)), (fx, fy)
     assert fx[1] / fx[0] > 50, f"the drawn fit only covers a factor of {fx[1] / fx[0]:.0f}"
     body += ax.line(fx, fy, color="accenttwo", w=5.0)
-    body += label_at(ax.X(1.25), ax.Y(3.0e-4),
-                     f"slope $= {a:.2f}$\\\\$R^2 = {r2:.2f}$",
+    # R1 B-15: the R^2 was the only inferential statistic in Part Five and nothing on the
+    # slide or after it said what to do with it. The slope is what slide 52 picks up.
+    body += label_at(ax.X(1.25), ax.Y(3.0e-4), f"slope $= {a:.2f}$",
                      color="accenttwo", anchor="west")
     emit("loglog-line", body, container="full", h=H)
 
@@ -547,8 +606,12 @@ def fig_powerlaw_def():
     drawn, ends = [], []
     for g, col in ((3.5, "accenttwo"), (2.0, "accent")):
         ys = xs ** (-g)
-        body += ax.line(xs, ys, color=col, w=4.6)
-        pts = curve_pts(ax, xs, ys)
+        # R1 B-16: a curve that runs into the x axis reads as "the distribution ends
+        # here". On a log axis the floor is 1e-6, not zero, so the stroke stops short of
+        # it and the reader sees it leave the frame.
+        keep = ys > ax.ylim[0] * 10 ** FLOOR_LIFT
+        body += ax.line(xs[keep], ys[keep], color=col, w=4.6)
+        pts = curve_pts(ax, xs[keep], ys[keep])
         drawn += pts
         ends.append((pts[-1], col, g))
 
@@ -565,39 +628,95 @@ def fig_powerlaw_def():
     emit("powerlaw-def", body, container="col", h=H)
 
 
-def fig_binning():
-    """Slide 54: one tail, three bin widths, three shapes."""
-    d = np.array(condmat_degrees())
-    N = len(d)
-    widths = (1, 8, 32)
-    series, slopes = [], []
-    for w in widths:
-        e = np.arange(10, 282, w)
-        c, _ = np.histogram(d, bins=e)
-        ctr = (e[:-1] + e[1:] - 1) / 2
-        dens = c / (N * w)
-        m = c > 0
-        x, y = np.log10(ctr[m]), np.log10(dens[m])
-        aa, _ = np.polyfit(x, y, 1)
-        series.append((ctr[m], dens[m]))
-        slopes.append(float(aa))
-    counts = [len(s[0]) for s in series]
-    assert len(set(counts)) == 3, counts
-    assert max(slopes) - min(slopes) > 0.5, slopes      # the three tails genuinely differ
+BIN_WIDTHS = (1, 8, 32)
+BIN_LO, BIN_HI = 10, 282
 
-    body = ""
-    for i, (w, (cx, cy)) in enumerate(zip(widths, series)):
-        x0 = 168 + i * 302
-        ax = Axes((x0, 145, x0 + 250, 322), (9, 320), (1e-6, 1e-1), xlog=True, ylog=True,
-                  xticks=[10, 100], yticks=[1e-6, 1e-4, 1e-2] if i == 0 else [], xfmt=dec)
-        body += ax.frame()
-        # One colour, one meaning: the three panels are the same data, so they are the
-        # same colour and only the bin width changes.
-        body += scatter(ax, cx, cy, color="accent", d=13, expect=len(cx))
-        body += text(x0 + 125, 348, f"bin width {w}")
-        body += text(x0 + 125, 79, "$k$", anchor="north")
-    body += text(30, (145 + 322) / 2, "share of authors", rot=90)
-    emit("binning", body, container="full", h=H)
+
+def _binned(w):
+    """(centres, densities, count) of the cond-mat tail in bins of width w."""
+    d = np.array(condmat_degrees())
+    e = np.arange(BIN_LO, BIN_HI, w)
+    c, _ = np.histogram(d, bins=e)
+    ctr = (e[:-1] + e[1:] - 1) / 2
+    dens = c / (len(d) * w)
+    m = c > 0
+    return ctr[m], dens[m], c[m]
+
+
+def fig_binned_once():
+    """The new slide before 53: the same tail, expressed once, in bins of width 1.
+
+    R1 B-4: slides 50 and 51 plot one point per observed degree and are not binned, yet
+    slide 53 asks "that plot had bins -- what if I choose different ones?".  The question
+    had no referent.  This is the referent: the same authors, counted into bins, with one
+    bin drawn as a caliper so the width is a visible object rather than a word.
+    """
+    d = np.array(condmat_degrees())
+    ks = np.arange(1, int(d.max()) + 1)
+    cnt = np.bincount(d, minlength=int(d.max()) + 1)[1:]
+    m = cnt > 0
+    assert int(m.sum()) == 122 and int(cnt.sum()) == len(d) == 23133
+
+    ax = Axes(FRAME, (0.8, 400), (0.6, 4000), xlog=True, ylog=True,
+              xticks=[1, 10, 100], yticks=[1, 10, 100, 1000], xfmt=dec, yfmt=dec)
+    body = ax.frame()
+    body += axis_titles(ax, "number of coauthors $k$", "authors in the bin")
+    body += scatter(ax, ks[m], cnt[m], color="accent", d=13, expect=int(m.sum()))
+
+    # One bin, drawn as a caliper at the left, where a unit of k is a whole decade wide
+    # on the axis and the gap is visible. Out at k = 30 the same caliper is 5bp long --
+    # which is the reason binning is a choice at all, and is what slide 54 goes on to.
+    k0, ycal = 1, 200.0
+    body += seg(ax.P(k0, ycal), ax.P(k0 + 1, ycal), color="annot", w=3.0,
+                arrow="{Latex[length=8bp]}-{Latex[length=8bp]}")
+    body += text((ax.X(k0) + ax.X(k0 + 1)) / 2, ax.Y(ycal) - 14, "one bin\\\\width 1",
+                 color="annot", anchor="north")
+    body += text(ax.x1 - 8, ax.Y(1400),
+                 f"{int(m.sum())} bins hold all {len(d):,} authors".replace(",", "{,}"),
+                 color="accenttwo", anchor="east")
+    emit("binned-once", body, container="full", h=H)
+
+
+def _fig_binning_panel(i):
+    """One state of the three-slide build: the same tail at one bin width.
+
+    R1 B-4: this was one figure with three panels side by side, and panels 2 and 3 had no
+    y tick labels -- so the shared vertical scale the whole comparison rests on could not
+    be read off the slide.  Three files, three slides, and every panel carries its ticks.
+    """
+    w = BIN_WIDTHS[i]
+    cx, cy, cn = _binned(w)
+    # The three tails must genuinely differ, or the build has nothing to show.
+    fits = []
+    for ww in BIN_WIDTHS:
+        ax_, ay_, _ = _binned(ww)
+        fits.append(float(np.polyfit(np.log10(ax_), np.log10(ay_), 1)[0]))
+    counts = [len(_binned(ww)[0]) for ww in BIN_WIDTHS]
+    assert len(set(counts)) == 3, counts
+    assert max(fits) - min(fits) > 0.5, fits
+
+    ax = Axes(FRAME, (9, 320), (1e-6, 1e-1), xlog=True, ylog=True,
+              xticks=[10, 100], yticks=[1e-6, 1e-4, 1e-2], xfmt=dec)
+    body = ax.frame()
+    body += axis_titles(ax, "number of coauthors $k$", "share of authors")
+    body += scatter(ax, cx, cy, color="accent", d=13, expect=len(cx))
+    body += text(ax.x1 - 8, ax.Y(4.0e-2), f"bin width {w}", color="accenttwo",
+                 anchor="east")
+    body += text(ax.x1 - 8, ax.Y(1.2e-2), f"{len(cx)} bins with anything in them",
+                 color="annot", anchor="east")
+    emit(f"binning-{i + 1}", body, container="full", h=H)
+
+
+def fig_binning_1():
+    _fig_binning_panel(0)
+
+
+def fig_binning_2():
+    _fig_binning_panel(1)
+
+
+def fig_binning_3():
+    _fig_binning_panel(2)
 
 
 # The twenty toy degrees slide 55 cuts through.  Small enough to count on the slide.
@@ -605,26 +724,69 @@ CCDF_DEMO = (7, 6, 5, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1)
 
 
 def fig_ccdf_def():
-    """Slide 55: the CCDF is a cut through the sorted degrees -- count everybody above."""
+    """Slide 55: the CCDF is a cut through the sorted degrees -- count everybody above.
+
+    R1 B-1 was a Blocker on three counts, all of them about what a dot is.  Nothing said
+    that a column is a node and a dot is one edge; the caption said "count everybody
+    above the line" and 11 dots sat above it while the text printed "5 of 20"; and
+    accent-2 filled whole columns, so 26 dots were red and 15 of them were below the very
+    line the label said they were above.
+
+    So: the encoding is stated in the drawing (a bracket under one column reading "one
+    node", a caliper beside one dot reading "1 edge"), the y axis carries ticks so "above
+    k = 3" can be checked, the x axis says what the columns are, and the counted thing is
+    named -- **nodes** -- with exactly the five counted columns in accent-2.
+    """
     ks = sorted(CCDF_DEMO, reverse=True)
     cut = 3
     above = [k for k in ks if k > cut]
     share = len(above) / len(ks)
     assert len(above) == 5 and abs(share - 0.25) < 1e-12, (above, share)
+    # What is red and what is counted are the same five columns, by construction.
+    red = [i for i, k in enumerate(ks) if k > cut]
+    assert len(red) == len(above) == 5 and red == list(range(5))
 
-    x0, y0 = 200, 130
-    pitch, unit = 15.5, 27.0
+    x0, y0 = 214, 196
+    pitch, unit = 15.0, 22.0
+    kmax = max(ks)
+
+    def Y(v):
+        return y0 + v * unit
+
     body = ""
+    for v in (1, 3, 5, 7):
+        body += seg((x0 - 46, Y(v)), (x0 - 37, Y(v)), color="black", w=2.2)
+        body += text(x0 - 54, Y(v), f"{v}", anchor="east")
+    body += seg((x0 - 46, Y(0)), (x0 - 46, Y(kmax) + 10), color="black", w=2.2)
+    body += text(34, Y(kmax / 2), "degree $k$", rot=90)
+
     for i, k in enumerate(ks):
-        for j in range(k):
-            body += dot(x0 + i * pitch, y0 + (j + 0.5) * unit,
+        for j in range(1, k + 1):
+            body += dot(x0 + i * pitch, Y(j - 0.5),
                         color="accenttwo" if k > cut else "annot", d=13)
     right = x0 + (len(ks) - 1) * pitch
-    body += seg((x0 - 30, y0 + cut * unit), (right + 16, y0 + cut * unit),
-                color="accenttwo", w=3.0, dash=DASH)
-    body += text(x0 - 38, y0 + cut * unit, "$k = 3$", color="accenttwo", anchor="east")
-    body += text(30, y0 + 3.4 * unit, "degree", rot=90)
-    body += text(268, 106, f"above the cut\\\\{len(above)} of {len(ks)} $= {share:.2f}$",
+
+    # The cut, and the five columns that cross it.
+    body += seg((x0 - 46, Y(cut)), (right + 18, Y(cut)), color="accenttwo", w=3.0,
+                dash=DASH)
+    body += text(517, Y(cut) + 10, f"$k = {cut}$", color="accenttwo",
+                 anchor="south east")
+
+    # What one column is, and what one dot is.
+    bx = x0 - pitch / 2
+    body += polyline([(bx, Y(0) - 8), (bx, Y(0) - 18), (bx + pitch, Y(0) - 18),
+                      (bx + pitch, Y(0) - 8)], color="annot", w=3.0)
+    body += seg((bx + pitch, Y(0) - 18), (x0 + 18, Y(0) - 18), color="annot", w=3.0)
+    body += text(x0 + 24, Y(0) - 22, "one node", color="annot", anchor="west")
+    cal = x0 + pitch + 14
+    body += seg((cal, Y(5)), (cal, Y(6)), color="annot", w=2.6,
+                arrow="{Latex[length=7bp]}-{Latex[length=7bp]}")
+    body += text(cal + 10, Y(5.5), "1 edge", color="annot", anchor="west")
+
+    body += text(268, 140, f"{len(ks)} nodes, sorted by degree", anchor="north")
+    body += text(268, 96,
+                 f"{len(above)} of {len(ks)} nodes above $k = {cut}$\\\\"
+                 f"$\\mathrm{{CCDF}}({cut}) = {share:.2f}$",
                  color="accenttwo", anchor="north")
     emit("ccdf-def", body, container="col", h=H)
 
@@ -647,57 +809,110 @@ def fig_ccdf_condmat():
 
 
 def fig_cdf_vs_ccdf():
-    """Slide 57: the CDF piles up against one; the CCDF spends its range on the tail."""
+    """Slide 57: the CDF piles up against one; the CCDF spends its range on the tail.
+
+    R1 B-2 was a Blocker: one "share of authors" title sat at the far left over a linear
+    panel and a logarithmic one, and nothing said so -- the unannounced change of ruler
+    is exactly what produces the difference in shape the slide asks the room to read, on
+    a deck whose Part Five argument is that an unannounced change of ruler misleads you.
+    Each panel now carries its own y title, its own scale word, and the reason: the CDF's
+    values run to 1, which a log axis cannot spread; the CCDF's run to 0, which it can.
+    """
     ks, su = condmat_ccdf()
     cdf = 1 - su
     assert abs(cdf[-1] - 1.0) < 1e-12 and cdf[0] < 0.11, (cdf[0], cdf[-1])
 
-    left = Axes((150, 145, 540, 340), (1, 300), (0, 1.05), xlog=True,
+    left = Axes((174, 152, 520, 286), (1, 300), (0, 1.05), xlog=True,
                 xticks=[1, 10, 100], yticks=[0, 0.5, 1.0], xfmt=dec,
                 yfmt=lambda v: f"{v:g}")
-    right = Axes((720, 145, 1058, 340), (1, 300), (1e-5, 1), xlog=True, ylog=True,
+    right = Axes((744, 152, 1058, 286), (1, 300), (1e-5, 1), xlog=True, ylog=True,
                  xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
     body = left.frame() + right.frame()
     body += curve(left, ks, cdf, color="annot", w=4.6)
     body += curve(right, ks, su, color="accent", w=4.6)
-    body += text(30, (145 + 340) / 2, "share of authors", rot=90)
-    for ax in (left, right):
-        body += text((ax.x0 + ax.x1) / 2, 79, "$k$", anchor="north")
+
+    for ax, ytitle, ytx in ((left, "$P(k' \\le k)$", 34), (right, "$P(k' > k)$", 604)):
+        body += text(ytx, (ax.y0 + ax.y1) / 2, ytitle, rot=90)
+        body += text((ax.x0 + ax.x1) / 2, 82, "number of coauthors $k$", anchor="north")
+
+    # Each panel says which ruler it is drawn on, and why that ruler was chosen. Two
+    # lines above each frame: the panels are 134bp tall so there is no room inside them
+    # for three lines of prose, and prose over a curve is what put "physicists" on the
+    # yeast tail in round 1.
     boxes = []
-    body += label_at((left.x0 + left.x1) / 2, 368, "CDF: $P(k' \\le k)$", color="annot",
-                     anchor="north", boxes=boxes)
-    body += label_at((right.x0 + right.x1) / 2, 368, "CCDF: $P(k' > k)$",
+    body += label_at((left.x0 + left.x1) / 2, 372,
+                     "CDF · linear $y$\\\\values crowd at 1",
+                     color="annot", anchor="north", boxes=boxes)
+    body += label_at((right.x0 + right.x1) / 2, 372,
+                     "CCDF · log $y$\\\\values reach down to 0",
                      color="accent", anchor="north", boxes=boxes)
     emit("cdf-vs-ccdf", body, container="full", h=H)
 
 
-def fig_slope_derivation():
-    """Slide 59: adding up the tail raises the exponent by one.
+DERIV_GAMMA = 2.5          # the exponent the schematic is drawn at
+DERIV_KCUT = 10.0          # where the tail is cut
 
-    No integral sign: LaTeX only declares math sizes up to about 25pt, so the
-    large-operator font does not follow `\\selectfont` and a 44pt line renders its
-    \\int at roughly 10pt -- smaller than the type floor and smaller than the k beside
-    it, with or without \\displaystyle.  The slide body carries the integral in KaTeX,
-    which sets it properly; the figure carries the three steps.
+
+def fig_slope_derivation():
+    """Slide 59: adding up the tail raises the exponent by one -- drawn, not written.
+
+    R1 B-5: this was three numbered text lines and a gray gloss column, which is not a
+    visual.  Now it draws the thing being integrated -- the power law with everything
+    above k shaded -- and that shaded mass re-plotted as one point on the CCDF beside it.
+
+    No integral sign anywhere: LaTeX declares math sizes only to about 25pt, so the
+    large-operator font does not follow `\\selectfont` and a 44pt `\\int` renders at
+    roughly 10pt, with or without `\\displaystyle`.  The slide body sets it in KaTeX.
     """
-    size = 44
-    lines = [
-        (r"$p(k) \sim k^{-\gamma}$", "black", "the distribution"),
-        (r"add up everything above $k$", "black", "the CCDF"),
-        (r"$P(k' > k) \sim k^{-(\gamma-1)}$", "accenttwo", "slope $1-\\gamma$"),
-    ]
-    body, boxes = "", []
-    for i, (s, col, gloss) in enumerate(lines):
-        y = 304 - i * 96
-        body += text(46, y, f"{i + 1}", color="annot", anchor="west", size=size)
-        left = label_box(112, y, visible(s), "west", size=size)
-        right = label_box(1050, y, visible(gloss), "east", size=FONT)
-        assert not boxes_overlap(left, right), \
-            f"line {i + 1} runs into its gloss -- shorten one of them"
-        body += text(112, y, s, color=col, anchor="west", size=size)
-        body += text(1050, y, gloss, color="annot", anchor="east", size=FONT)
-        boxes += [left, right]
-    body += seg((100, 62), (100, 344), color="annot", w=2.2)
+    g = DERIV_GAMMA
+    k0 = DERIV_KCUT
+    xs = np.logspace(0, 2, 240)
+    pdf = xs ** (-g)
+    cc = xs ** (-(g - 1))
+    # The CCDF exponent is one smaller: that is the whole content of the figure.
+    assert abs((g - 1) - (g - 1)) < 1e-12 and abs(cc[0] - 1) < 1e-12
+
+    left = Axes((174, 150, 500, 282), (1, 100), (1e-6, 1), xlog=True, ylog=True,
+                xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    right = Axes((724, 150, 1040, 282), (1, 100), (1e-4, 1), xlog=True, ylog=True,
+                 xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    body = left.frame() + right.frame()
+
+    # Everything above k, as area. accent-3 is a fill here, which is what it is for.
+    tail = xs >= k0
+    poly = ([left.P(k0, left.ylim[0])]
+            + [left.P(x, y) for x, y in zip(xs[tail], pdf[tail])]
+            + [left.P(xs[tail][-1], left.ylim[0])])
+    body += fill_poly(poly, color="accentthree", opacity=0.8)
+    body += left.line(xs, pdf, color="accent", w=4.6)
+    body += seg(left.P(k0, left.ylim[0]), left.P(k0, k0 ** -g), color="annot", w=2.6,
+                dash=DASH)
+    body += text(left.X(k0), left.y0 - 17, "$k$", color="accenttwo", anchor="north")
+    body += text(left.X(26), left.Y(0.06), "everything\\\\above $k$", color="accenttwo",
+                 anchor="west")
+
+    # The same mass, as one point on the CCDF.
+    body += right.line(xs, cc, color="accent", w=4.6)
+    body += dot(*right.P(k0, k0 ** -(g - 1)), color="accenttwo", d=20)
+    body += text(right.X(k0) + 16, right.Y(k0 ** -(g - 1)) + 10, "one point",
+                 color="accenttwo", anchor="south west")
+
+    body += seg((512, 216), (712, 216), color="annot", w=3.4,
+                arrow="-{Latex[length=11bp]}")
+    body += text(612, 230, "add it up", color="annot", anchor="south")
+
+    body += text(34, (left.y0 + left.y1) / 2, "$p(k)$", rot=90)
+    body += text(584, (right.y0 + right.y1) / 2, "$P(k' > k)$", rot=90)
+    body += text((left.x0 + left.x1) / 2, 86, "$k$", anchor="north")
+    body += text((right.x0 + right.x1) / 2, 86, "$k$", anchor="north")
+    body += text((left.x0 + left.x1) / 2, 330, "$p(k) \\sim k^{-\\gamma}$",
+                 anchor="north")
+    body += text(875, 330, "$P(k' > k) \\sim k^{-(\\gamma-1)}$", anchor="north")
+    body += text(1060, 372,
+                 "the log-log slope goes from $-\\gamma$ to $1-\\gamma$",
+                 color="accenttwo", anchor="north east")
+    body += text(14, 372, f"drawn at $\\gamma = {g:g}$", color="annot",
+                 anchor="north west")
     emit("slope-derivation", body, container="full", h=H)
 
 
@@ -1040,7 +1255,10 @@ FIGURES = [
     ("loglog", fig_loglog),
     ("loglog-line", fig_loglog_line),
     ("powerlaw-def", fig_powerlaw_def),
-    ("binning", fig_binning),
+    ("binned-once", fig_binned_once),
+    ("binning-1", fig_binning_1),
+    ("binning-2", fig_binning_2),
+    ("binning-3", fig_binning_3),
     ("ccdf-def", fig_ccdf_def),
     ("ccdf-condmat", fig_ccdf_condmat),
     ("cdf-vs-ccdf", fig_cdf_vs_ccdf),

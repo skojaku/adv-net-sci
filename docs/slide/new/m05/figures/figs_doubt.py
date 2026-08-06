@@ -130,11 +130,12 @@ def _sqrt():
               xticks=[0, 200, 400, 600], yticks=[0, 10, 20, 30])
     out = ax.frame()
     out += ax.line(ms, [np.sqrt(2 * m) for m in ms], color="accent", w=4.2)
-    for m, lab, col in ((tc["M"], "kept apart", "accent"),
-                        (tcb["M"], "absorbed", "accenttwo")):
+    for m, lab, col, dy in ((tc["M"], "kept apart", "accent", -22),
+                            (tcb["M"], "absorbed", "accenttwo", 22)):
         x, y = ax.P(m, tc["clique_internal"])
         out += dot(x, y, color=col, d=18)
-        out += text(x, y + 20, lab, color=col, anchor="south", size=FONT)
+        out += text(x + 30, y + dy, lab, color=col,
+                    anchor="south" if dy > 0 else "north", size=FONT)
     assert tc["clique_internal"] > tc["sqrt2m"] and tcb["clique_internal"] < tcb["sqrt2m"]
     return out
 
@@ -200,20 +201,18 @@ def _spring(g, w, h, seed=0, margin=26, node=30):
             for i, n in enumerate(sorted(g))}
 
 
-@fig("random-q-dots", h=300)
+@fig("random-q-dots", h=356)
 def _rqdots():
     """Two hundred random networks the size of the club, every one of them scoring well."""
     f = V.facts()
     er = _er_scores()
     assert min(er) > 0.3 and abs(np.mean(er) - f["er_mean"]) < 1e-9
     lo, hi = 0.24, 0.46
-    out = number_line(150, 970, 132, lo, hi,
+    out = number_line(96, 1000, 166, lo, hi,
                       [(0.3, "the rule of thumb", "annot", "down"),
                        (f["Q_true"], "the real split", "accenttwo", "down")],
-                      fmt="{:.2f}")
-    out += dot_strip(150, 970, 208, er, lo, hi, color="accent", d=11, jitter=17, seed=6)
-    out += text(560, 268, "two hundred random networks, same size as the club",
-                color="black", anchor="north", size=FONT)
+                      fmt="{:.2f}", what="random-q-dots")
+    out += dot_strip(96, 1000, 264, er, lo, hi, color="accent", d=11, jitter=17, seed=6)
     return out
 
 
@@ -224,17 +223,39 @@ def _er_scores():
 
 
 # =========================================================================== Part 8
-@fig("three-partitions", h=380)
-def _three():
-    """The same club, three methods, three different answers."""
-    f = V.facts()
-    hi, _ = V.factions()
-    S, _ = V.zachary_min_cut()
-    L4 = f["louvain_parts"]
-    assert {frozenset(hi), frozenset(S)} != {frozenset(hi)}, "the answers must differ"
+def _louvain_fill():
+    """The club coloured by Louvain's four groups.
+
+    Colour means something different here than it does on the other thirteen club
+    figures, where accent is Mr. Hi's club -- so both slides that use this say so in the
+    figcaption. Four groups need four fills and the palette has exactly four.
+    """
+    L4 = V.facts()["louvain_parts"]
     cols = ["accent", "accenttwo", "accentthree", "annot"]
-    return karate(fill={n: cols[next(i for i, c in enumerate(L4) if n in c)]
-                        for n in range(34)})
+    return {n: cols[next(i for i, c in enumerate(L4) if n in c)] for n in range(34)}
+
+
+def _split_line(pos, hi):
+    """The x of a vertical line that separates the two clubs, asserted to exist.
+
+    The reference layout was solved with a two-lobe bias, so the recorded split happens
+    to be linearly separable in it. That is checked rather than assumed: if a future
+    re-solve breaks it, the build fails instead of drawing a line through the wrong
+    people.
+    """
+    right = min(pos[n][0] for n in range(34) if n not in hi)
+    left = max(pos[n][0] for n in hi)
+    assert left < right, ("the recorded split is no longer separable by a vertical line "
+                          "in this layout -- draw the boundary some other way")
+    return (left + right) / 2
+
+
+@fig("karate-louvain-four", h=380)
+def _louvfour():
+    """What maximising Q actually picks on this club: four groups, not two."""
+    f = V.facts()
+    assert len(f["louvain_parts"]) == 4
+    return karate(fill=_louvain_fill())
 
 
 @fig("conductance-def", container="col", h=340)
@@ -267,22 +288,24 @@ def _condk():
     return karate(fill=split_fill(hi), heavy=cross, heavy_color="black")
 
 
-@fig("scores-disagree", h=300)
+@fig("scores-disagree", h=340)
 def _disagree():
     """One score puts the real split first; the other puts Louvain first."""
     f = V.facts()
     worst_louvain = max(float(c) for c in f["cond_louvain"])
     assert float(f["cond_true"]) < min(float(c) for c in f["cond_louvain"])
     assert f["louvain_Q"] > f["Q_true"]
-    out = number_line(150, 560, 236, 0.0, 0.5,
+    out = number_line(96, 500, 226, 0.0, 0.5,
                       [(float(f["cond_true"]), "the real split", "accenttwo", "up"),
-                       (worst_louvain, "Louvain", "annot", "up")], fmt="{:.1f}")
-    out += text(355, 122, "conductance: lower is better", color="black",
+                       (worst_louvain, "Louvain", "annot", "up")], fmt="{:.1f}",
+                      what="scores-disagree/conductance")
+    out += text(298, 116, "conductance:\\\\lower is better", color="black",
                 anchor="north", size=FONT)
-    out += number_line(620, 1010, 236, 0.0, 0.5,
+    out += number_line(596, 1000, 226, 0.0, 0.5,
                        [(f["Q_true"], "the real split", "accenttwo", "up"),
-                        (f["louvain_Q"], "Louvain", "annot", "up")], fmt="{:.1f}")
-    out += text(815, 122, "modularity: higher is better", color="black",
+                        (f["louvain_Q"], "Louvain", "annot", "up")], fmt="{:.1f}",
+                       what="scores-disagree/modularity")
+    out += text(798, 116, "modularity:\\\\higher is better", color="black",
                 anchor="north", size=FONT)
     return out
 
@@ -375,53 +398,55 @@ def _wsnmia():
     return out
 
 
-@fig("ari", h=300)
+@fig("ari", h=330)
 def _ari():
     """Take away what coin-flipping would have scored and very little is left."""
     s = V.worksheet_scores()
     assert float(s["rand"]) > s["ari"]
-    out = number_line(160, 960, 190, 0.0, 1.0,
-                      [(float(s["rand"]), "counting pairs", "annot", "up"),
-                       (s["ari"], "after chance is removed", "accenttwo", "down")])
-    return out
+    return number_line(96, 1000, 176, 0.0, 1.0,
+                       [(float(s["rand"]), "counting pairs", "annot", "up"),
+                        (s["ari"], "after chance is removed", "accenttwo", "down")],
+                       what="ari")
 
 
-@fig("nmi-vs-ari", h=300)
+@fig("nmi-vs-ari", h=330)
 def _nmiari():
     """One is generous where the other is strict, so both get reported."""
     s = V.worksheet_scores()
-    out = number_line(160, 960, 190, 0.0, 1.0,
-                      [(s["nmi"], "one score", "accent", "up"),
-                       (s["ari"], "the other", "accenttwo", "down")])
-    out += text(560, 268, "same partition, same answer key", color="black",
-                anchor="north", size=FONT)
-    return out
+    return number_line(96, 1000, 176, 0.0, 1.0,
+                       [(s["nmi"], "shared information", "accent", "up"),
+                        (s["ari"], "counting pairs, chance removed", "accenttwo", "down")],
+                       what="nmi-vs-ari")
 
 
 @fig("best-vs-real", h=380)
 def _bestreal():
-    """The highest-scoring answer, and the one that actually happened."""
+    """The highest-scoring answer with the real one drawn straight through it.
+
+    Deliberately NOT the same file as `karate-louvain-four`: that slide asks what
+    modularity picks, this one asks whether what it picked is what happened, and a
+    figure shared between two slides that explain it differently is a defect this
+    course has paid for twice.
+    """
     f = V.facts()
-    assert f["louvain_Q"] > f["Q_true"]
-    L4 = f["louvain_parts"]
-    cols = ["accent", "accenttwo", "accentthree", "annot"]
-    return karate(fill={n: cols[next(i for i, c in enumerate(L4) if n in c)]
-                        for n in range(34)},
-                  rings=[])
+    assert f["louvain_Q"] > f["Q_true"], "the optimum must outscore the real split"
+    pos, _ = club()
+    hi, _ = V.factions()
+    x = _split_line(pos, hi)
+    return karate(fill=_louvain_fill(),
+                  extra=f"\\draw[line width=4.2bp,draw=black,"
+                        f"dash pattern=on 15bp off 11bp] ({x:.1f},28) -- ({x:.1f},368);\n")
 
 
-@fig("nmi-comparison", h=300)
+@fig("nmi-comparison", h=340)
 def _nmicomp():
     """The higher score is the worse answer, measured against what happened."""
     f = V.facts()
     assert f["louvain_nmi"] < f["mincut_nmi"]
-    out = number_line(160, 960, 190, 0.0, 1.0,
-                      [(f["mincut_nmi"], "Zachary's cut, 1977", "accenttwo", "up"),
-                       (f["louvain_nmi"], "the highest-scoring grouping", "annot",
-                        "down")])
-    out += text(560, 274, "how well each matches what really happened",
-                color="black", anchor="north", size=FONT)
-    return out
+    return number_line(96, 1000, 186, 0.0, 1.0,
+                       [(f["mincut_nmi"], "Zachary's cut, 1977", "accenttwo", "up"),
+                        (f["louvain_nmi"], "the best-scoring grouping", "annot", "down")],
+                       what="nmi-comparison")
 
 
 @fig("node9", h=380)
@@ -468,9 +493,8 @@ def _apps():
         e += [(b, b + 1), (b, b + 2), (b + 1, b + 3), (b + 2, b + 3), (b + 1, b + 2)]
         if g:
             e.append((b - 2, b + 1))
-    cols = ["accent", "accenttwo", "accent", "accenttwo"]
     out += small(pos, e, node=34, what="applications",
-                 fill={n: cols[n // 4] for n in pos})
+                 fill={n: "accent" for n in pos})
     for g, lab in enumerate(labels):
         out += text(148 + g * 262, 116, lab.replace(" ", "\\\\", 2), color="annot",
                     anchor="north", size=FONT)
@@ -485,7 +509,7 @@ def _recap():
     out = ""
     for i, (top, bot) in enumerate(steps):
         x = 150 + i * 260
-        out += disc(x, 232, fill="accent" if i % 2 == 0 else "accenttwo", size=50)
+        out += disc(x, 232, fill="accent", size=50)
         out += text(x, 292, top, color="black", anchor="south", size=FONT)
         out += text(x, 166, bot, color="annot", anchor="north", size=FONT)
         if i:

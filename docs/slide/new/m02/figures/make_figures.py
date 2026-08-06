@@ -1274,11 +1274,56 @@ def fig_worksheet_a():
     return s
 
 
+WA_ROUTES = [nx.shortest_path(G_FULL, a, b) for a, b in WA_PAIRS]
+# The three routes share every edge they use -- (1,5) is in two of them, (4,5) in two,
+# (5,6) in two -- so they cannot be traced on one graph in one colour, and three colours
+# on one graph would need a legend.  One row per pair is the only reading that works.
+_WA_USED = [{frozenset(e) for e in zip(r, r[1:])} for r in WA_ROUTES]
+assert any(a & b for a, b in itertools.combinations(_WA_USED, 2)), (
+    "the three routes are now edge-disjoint -- they would fit on one graph, so collapse "
+    "these three rows back into one figure")
+
+# The chain is redrawn at 128bp pitch instead of 152 with shallower bows, because three
+# copies of the shipped geometry stack 580bp tall against a 375bp budget.  Same graph,
+# same letters, same left-to-right order; only the scale moves, which is what
+# `lattice-vs-random` already does for the same reason.
+WA_X0, WA_DX = 260, 128
+WA_ROW_Y = (75, 190, 305)
+# Signs matter and the planarity gate caught them: `bend left` is signed, so the chord
+# bows up (+26) and the shortcut down (-20).  Written +20, the shortcut bowed up into the
+# chord and the drawing crossed itself once per row.
+WA_BENDS = {CHORD: 26, SHORTCUT: -20}
+
+
 def fig_worksheet_a_answer():
-    s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS)
-    s += text(550, 285, WA_A, color="accenttwo", anchor="south")
-    s += text(550, 40, f"diameter $= {WA_DIA}$: no pair in the network is further apart",
-              color="accenttwo", anchor="north")
+    """Every answered pair's shortest route, traced, with its number beside it.
+
+    The figure used to print four bare numbers over an unannotated graph, four slides
+    after slide 28 established tracing as the device for exactly this.  A student who
+    reached d(D,G) = 4 the long way round had nothing to check their route against --
+    only a number contradicting theirs, which teaches that they are wrong and not where.
+    """
+    s = ""
+    boxes = {}
+    # top row first: the question slide asks the three pairs in WA_PAIRS order, and y
+    # counts upward, so the rows have to be handed out in reverse or the answers read
+    # bottom-to-top against a question that reads top-to-bottom
+    for (a, b), route, ans, y in zip(WA_PAIRS, WA_ROUTES, WA_ANS, WA_ROW_Y[::-1]):
+        pos = {i: (WA_X0 + i * WA_DX, y) for i in range(7)}
+        hot = {(min(u, v), max(u, v)) for u, v in zip(route, route[1:])}
+        P = []
+        s += _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot=hot, pos=pos,
+                    bends=WA_BENDS, out_paths=P)
+        lab = f"$d({LETTERS[a]},{LETTERS[b]}) = {ans}$"
+        s += text(WA_X0 - 32, y, lab, color="accenttwo", anchor="east")
+        boxes[lab] = text_box(WA_X0 - 32, y, lab, anchor="east")
+        assert_labels_clear(f"worksheet-a-answer row {LETTERS[a]}{LETTERS[b]}",
+                            {lab: boxes[lab]}, P)
+        assert len(route) - 1 == ans, (route, ans)
+    dia = f"diameter $= {WA_DIA}$: no pair in the network is further apart"
+    s += text(550, 352, dia, color="accenttwo", anchor="south")
+    boxes[dia] = text_box(550, 352, dia, anchor="south")
+    assert_boxes_clear("worksheet-a-answer", boxes)
     return s
 
 
@@ -1668,16 +1713,28 @@ def fig_paradox():
     """
     cl = {0: (70, 222), 1: (160, 278), 2: (250, 234), 3: (150, 170), 4: (258, 138)}
     cle = [(0, 1), (1, 2), (0, 3), (1, 3), (2, 3), (3, 4), (2, 4)]
-    chain = {5: (420, 194), 6: (570, 238), 7: (720, 194), 8: (870, 238), 9: (1030, 194)}
+    # Eleven gray hops out to the stranger, not five.  At five the drawing quietly
+    # answered its own question -- the slide asks "so why is anyone 4.74 steps away?" over
+    # a picture in which the far end is five steps away, which makes local wiring look
+    # perfectly capable of it.  The route has to be visibly longer than the number the
+    # deck is about to produce, or there is no paradox to have.
+    n_chain = 11
+    chain = {5 + k: (340 + k * 68, 196 + (k % 2) * 36) for k in range(n_chain)}
+    last = 5 + n_chain - 1
     pos = {**cl, **chain}
-    edges = cle + [(2, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
+    gray = [(2, 5)] + [(5 + k, 6 + k) for k in range(n_chain - 1)]
+    edges = cle + gray
+    assert len(gray) == 11 and 10 <= len(gray) <= 12, len(gray)
+    assert nx.shortest_path_length(nx.Graph(edges), 0, last) > 2 * 4.74, (
+        "the long way out must be plainly longer than the 4.74 the deck is about to "
+        "quote, or the drawing answers the question it is asking")
     assert not clearance_ok(edges, pos)
     assert_drawn_planar("paradox", edges, pos)
     s = ""
     for a, b in edges:
         s += seg(pos[a], pos[b], color="black" if (a, b) in cle else "annot", w=EDGE_W)
     for i2, q in pos.items():
-        s += disc(q[0], q[1], "", fill="accenttwo" if i2 == 9 else "accent")
+        s += disc(q[0], q[1], "", fill="accenttwo" if i2 == last else "accent")
     s += text(36, 105, "friends of friends are friends", color="black",
               anchor="north west")
     s += text(1090, 160, "a stranger", color="accenttwo", anchor="north east")
@@ -1902,14 +1959,21 @@ def fig_sigma_def():
     return s
 
 
-def _logaxis(x0, x1, y, decades):
+def _logaxis(x0, x1, y, decades, boxes=None):
     """One tick convention, not three.  This axis used to print 1, 10, then $10^2$ --
-    two notations on five ticks of the same scale, which asks the room to convert."""
+    two notations on five ticks of the same scale, which asks the room to convert.
+
+    `boxes`, when given, collects each tick label's measured box so a caller placing
+    anything else in that band can be checked against them rather than against a guess.
+    """
     s = seg((x0, y), (x1, y), color="annot", w=2.2)
     for k in range(decades + 1):
         x = x0 + k / decades * (x1 - x0)
         s += seg((x, y - 9), (x, y + 9), color="annot", w=2.0)
-        s += text(x, y - 14, f"{10 ** k:,}", color="annot", anchor="north")
+        lab = f"{10 ** k:,}"
+        s += text(x, y - 14, lab, color="annot", anchor="north")
+        if boxes is not None:
+            boxes[f"tick {lab}"] = text_box(x, y - 14, lab, anchor="north")
     return s
 
 
@@ -1920,21 +1984,36 @@ def fig_ws1998_dots():
     x0, x1, dec = 330, 1050, 4
     def X(v):
         return x0 + math.log10(v) / dec * (x1 - x0)
-    s = _logaxis(x0, x1, 96, dec)
+    boxes = {}
+    s = _logaxis(x0, x1, 96, dec, boxes)
     for r, (nm, lr, cr, _) in enumerate(WS98_R):
-        y = 168 + (2 - r) * 70     # 70, not 78: `fig tight` caps the image at 320px
+        # 160, not 168: the two axis tags moved from above the axis to below the tick
+        # labels, which costs 33bp at the bottom of a figure with 13bp of slack.  Moving
+        # each dot's value from above its dot to below it hands back 37bp at the top,
+        # because the top row's values were the highest ink in the drawing.
+        y = 160 + (2 - r) * 70     # 70, not 78: `fig tight` caps the image at 320px
         # a hairline, and dotted: the connector only ties the row's two dots together,
         # and drawn at edge weight it read as a measured quantity of its own
         s += seg((X(lr), y), (X(cr), y), color="annot", w=1.2,
                  dash="dash pattern=on 3bp off 6bp")
         s += text(300, y, nm, color="black", anchor="east")
+        boxes[nm] = text_box(300, y, nm, anchor="east")
         for v, col in ((lr, "annot"), (cr, "accenttwo")):
+            lab = f"{v:.0f}" if v >= 10 else (f"{v:.1f}" if v >= 2 else f"{v:.2f}")
             s += dot(round(X(v), 1), y, col)
-            s += text(round(X(v), 1), y + 20,
-                      f"{v:.0f}" if v >= 10 else (f"{v:.1f}" if v >= 2 else f"{v:.2f}"),
-                      color=col, anchor="south")
-    s += text(345, 112, "path length", color="annot", anchor="south west")
-    s += text(1050, 112, "clustering", color="accenttwo", anchor="south east")
+            s += text(round(X(v), 1), y - 20, lab, color=col, anchor="north")
+            boxes[f"{nm} {lab}"] = text_box(X(v), y - 20, lab, anchor="north")
+    # Below the axis line, under its tick labels -- not in the band between the axis and
+    # the bottom row, where "path length" sat directly under "C. elegans" and read as a
+    # fourth network name.  These two tag the two DOT COLUMNS, so they belong to the axis
+    # and not to the rows.
+    # y = 40, not 46: at 46 the tags cleared the tick labels by 4bp, and the gate below
+    # measured it.  They are a separate row from the ticks and have to look like one.
+    for x, lab, col, anc in ((345, "path length", "annot", "north west"),
+                             (1050, "clustering", "accenttwo", "north east")):
+        s += text(x, 40, lab, color=col, anchor=anc)
+        boxes[lab] = text_box(x, 40, lab, anchor=anc)
+    assert_boxes_clear("ws1998-dots", boxes, pad=6)
     return s
 
 
@@ -2587,12 +2666,38 @@ GRID_HUB_TRIPLETS = math.comb(4, 2)
 assert GRID_HUB_TRIPLETS == 6
 
 
+GRID_NBRS = sorted({b if a == GRID_HUB else a
+                    for a, b in GRID_EDGES if GRID_HUB in (a, b)})
+GRID_CLOSURES = list(itertools.combinations(GRID_NBRS, 2))
+assert len(GRID_CLOSURES) == GRID_HUB_TRIPLETS == 6
+# None of the six closing edges exists -- which is the whole claim, so it is asserted
+# rather than drawn and hoped for.
+assert not any(nx.Graph(GRID_EDGES).has_edge(*e) for e in GRID_CLOSURES)
+
+
 def _grid(ring_hub=False, triplets=False):
+    """`triplets` draws the six third-edges that WOULD close the ringed node's triplets.
+
+    The answer half used to highlight the node's four spokes and assert "6 triplets" in
+    the caption, which leaves the 4 -> C(4,2) = 6 step happening entirely in prose: a
+    student counts four red edges and is told six.  The six dashed grays are that step
+    made visible, and they are the same device slide 37 uses for the same idea --
+    possibilities, not edges -- so "none closed" becomes something the room can check
+    rather than something it is told.
+    """
     s = ""
     for a, b in GRID_EDGES:
         hot = triplets and GRID_HUB in (a, b)
         s += seg(GRID_POS[a], GRID_POS[b], color="accenttwo" if hot else "black",
                  w=HEAVY_W if hot else EDGE_W)
+    if triplets:
+        # Two of the six run straight through the ringed disc (the north-south and
+        # east-west pairs are collinear through it), so every closure is bowed by the
+        # solver rather than drawn as a chord.  RING_CLEAR keeps them outside the gold
+        # ring as well as outside the disc.
+        for a, b in GRID_CLOSURES:
+            s += curve_edge(a, b, GRID_POS, color="annot", w=2.0,
+                            dash="dash pattern=on 8bp off 7bp", clear=NODE / 2 + 18)
     for q in GRID_POS.values():
         s += disc(q[0], q[1], "", fill="accent")
     if ring_hub:
@@ -2616,7 +2721,7 @@ def fig_grid_q():
 
 def fig_grid_answer():
     s = _grid(ring_hub=True, triplets=True)
-    s += text(260, 8, f"{GRID_HUB_TRIPLETS} triplets here, none closed",
+    s += text(260, 8, f"{GRID_HUB_TRIPLETS} triplets, none closed: $C = 0$",
               color="accenttwo", anchor="south")
     return s
 
@@ -2782,25 +2887,68 @@ def fig_recap():
     return s
 
 
+MARK_R = 16          # half-width of the X mark
+# 8bp of white, not 3: at 3 the search was content to leave the right-hand X six points
+# off the solid chord, which is 24px on the slide -- clear to an assertion and not to a
+# reader.  The mark has to look unambiguously attached to one edge, not merely be so.
+MARK_PAD = 8
+
+
 def fig_m03_teaser():
-    """The X goes on the edge it removes.  Both used to land near where the two chords
-    crossed, so the render X-ed out the crossing rather than either edge -- and the cut
-    edges are dashed as well, so "removed" reads without the marker at all."""
+    """The X goes on the edge it removes, and on nothing else.
+
+    Two rounds of this.  First both X's landed where the chords crossed, so the render
+    X-ed out the crossing rather than either edge.  The fix was to spread the chords and
+    assert the two marks were 80bp apart -- which is a check on the marks against each
+    OTHER, not against the drawing, and it passed while the right-hand X sat on the last
+    26px of the solid chord the figure says survives.  Red-pixel counts inside the two
+    mark boxes were 136 against 42, the difference being an edge that is not cut.
+
+    So each mark now slides along its own chord until its box is clear of every other
+    drawn path, and the assertion is that it touches exactly one -- its own.
+    """
     # spread round the ring: the old three all ran close to the centre, so their midpoints
     # -- and therefore both X marks -- landed in the same 70bp of the drawing
     shortcuts = [(1, 6), (3, 13), (9, 14)]
     assert all(e not in RING_EDGES for e in shortcuts)
-    mids = {}
+    chords, bodies = {}, {}
     for e in shortcuts:
         paths = []
-        curve_edge(*e, RING_POS, centroid=RING_C, paths=paths)
-        q = paths[0][2]
-        mids[e] = q.mean(axis=0) if len(q) == 2 else q[len(q) // 2]
+        bodies[e] = curve_edge(*e, RING_POS, centroid=RING_C, paths=paths)
+        chords[e] = _polyline(paths[0][2])
+    mids = {e: q[len(q) // 2] for e, q in chords.items()}
     # which two get cut is arbitrary, so let the drawing choose: the pair whose marks are
     # furthest apart.  Picking the first two put both X's on the chords' crossing point.
     cut = max(itertools.combinations(shortcuts, 2),
               key=lambda pr: math.dist(mids[pr[0]], mids[pr[1]]))
-    sep = math.dist(mids[cut[0]], mids[cut[1]])
+
+    # Every other stroke on the page: the lattice, and the chords this mark does not mark.
+    all_paths = _edge_paths(RING_EDGES, RING_POS) + [(a, b, chords[(a, b)])
+                                                     for a, b in shortcuts]
+
+    def place(e):
+        """Slide the mark along its own chord, from the midpoint outward, until its box
+        clears every path but this one -- and the discs, which are drawn under it."""
+        q = chords[e]
+        order = sorted(range(len(q)), key=lambda i: abs(i - len(q) // 2))
+        for i in order:
+            if not (0.22 * len(q) <= i <= 0.78 * len(q)):
+                continue                       # too near an endpoint reads as a node marker
+            mx, my = q[i]
+            box = (mx - MARK_R, my - MARK_R, mx + MARK_R, my + MARK_R)
+            if min(math.dist((mx, my), p) for p in RING_POS.values()) < NODE / 2 + MARK_R:
+                continue
+            if set(paths_hitting_box(box, all_paths, pad=MARK_PAD)) == {frozenset(e)}:
+                return (mx, my), box
+        raise AssertionError(
+            f"no point on the chord {e} carries an X clear of every other drawn path -- "
+            f"move the shortcut, do not plant the mark on top of an edge it does not cut")
+
+    marks = {}
+    for e in cut:
+        (mx, my), box = place(e)
+        marks[e] = (mx, my, box)
+    sep = math.dist(marks[cut[0]][:2], marks[cut[1]][:2])
     assert sep >= 80, f"the two X marks are {sep:.0f}bp apart -- they will read as one"
 
     s = _lattice_edges(name="m03-teaser")
@@ -2810,9 +2958,12 @@ def fig_m03_teaser():
     for i2 in RING_POS:
         s += disc(RING_POS[i2][0], RING_POS[i2][1], "", fill="accent")
     for e in cut:                       # after the discs: a marker under a node is no marker
-        mx, my = mids[e]
-        s += seg((mx - 16, my - 16), (mx + 16, my + 16), color="black", w=5.0)
-        s += seg((mx - 16, my + 16), (mx + 16, my - 16), color="black", w=5.0)
+        mx, my, _ = marks[e]
+        s += seg((mx - MARK_R, my - MARK_R), (mx + MARK_R, my + MARK_R), color="black", w=5.0)
+        s += seg((mx - MARK_R, my + MARK_R), (mx + MARK_R, my - MARK_R), color="black", w=5.0)
+    # The claim, asserted: each mark's box intersects the one chord it marks, and no other.
+    assert_marks_own_edge("m03-teaser", {e: marks[e][2] for e in cut}, all_paths,
+                          pad=MARK_PAD)
     s += text(260, 8, "cut two shortcuts --- then what?",
               color="accenttwo", anchor="south")
     return s

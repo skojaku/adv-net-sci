@@ -193,3 +193,32 @@ yet fragile** as its bolded key term, where the phenomenon is actually named.
 
 Every finding from the three reviewer reports is either fixed, or recorded above with the
 reason it was not. `check_render.py` exits 0 on 92 slides.
+
+---
+
+# Round 10 — re-verifying on the render that actually ships
+
+The three reviewer reports were written against the **pre-round-1** render. Rounds 1–9
+changed most figures, so their ranges had never been re-read on what ships. This round
+re-read the slides whose figures changed. Three findings, none of which any earlier pass
+could have seen:
+
+1. **Slide 87/88 — the graph had two degree-2 nodes**, and both were cut vertices, so the
+   deck's phrase "*the* degree-2 node" was ambiguous and the figure supported either
+   reading. The bridge now joins the two hubs directly: exactly one node has degree 2, and
+   an assertion says so, because the slide's sentence is singular.
+2. **Slides 60 and 62 — an avoidable crossing on a planar graph** (rev-47-69 M14,
+   confirmed on the current render). The q(k) layout had `(h,e)` crossing `(c,d)`;
+   swapping two nodes makes every non-radial edge a vertical. Zero crossings asserted.
+3. Slide 21's step badges now sit on leader lines where the cable is too short to carry
+   them — checked, and each badge leads to the cable whose step it names.
+
+## Where this leaves the deck
+
+`check_render.py` exits 0: 92 slides, 370 node discs in a 26–48 px band, nothing past the
+content box, no container mismatch, no clipped ink, no math in a figcaption.
+
+Coverage is honest but not uniform: every slide has been read at least once, and the
+slides changed since the reviewer reports have been re-read here. A fresh four-way pass on
+the current render would still be the right next step before the deck is taught — that is
+what the playbook asks for, and it has not been run against this state.

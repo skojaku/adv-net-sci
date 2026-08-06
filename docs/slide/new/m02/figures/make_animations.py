@@ -21,7 +21,7 @@ import make_figures as F
 
 OUT = Path(__file__).resolve().parent
 FRAME_MS = 620
-HOLD = 5          # frames held at the end so the last state is readable
+FINAL_MS = 6000   # the end state, held long enough to talk over
 
 
 def _render(body, w, hmax, name="frame"):
@@ -117,10 +117,20 @@ def main():
     box = (0, int(0.02 * h), w, int(0.99 * h))
     imgs = [im.crop(box).resize((im.size[0] // 2, (box[3] - box[1]) // 2), Image.LANCZOS)
             for im in imgs]
-    imgs += [imgs[-1]] * HOLD
+    # Plays once and stops on the end state.
+    #
+    # `loop=0` is GIF for "forever", so the slide never rested on the state its prose
+    # describes -- the ring kept resetting to the lattice under a body claiming the
+    # shortcuts are there now.  Omitting `loop` entirely writes no Netscape looping
+    # extension, which is what makes a viewer play the frames once; passing `loop=1`
+    # would not, because most viewers read that as "repeat once more", i.e. twice.
+    # The last frame's own delay is long so the end state is also readable in any viewer
+    # that ignores the absent extension and loops anyway.
+    durations = [FRAME_MS] * (len(imgs) - 1) + [FINAL_MS]
     imgs[0].save(OUT / "ws-rewire.gif", save_all=True, append_images=imgs[1:],
-                 duration=FRAME_MS, loop=0, optimize=True)
-    print(f"  ws-rewire.gif  {imgs[0].size[0]}x{imgs[0].size[1]}  {len(imgs)} frames")
+                 duration=durations, optimize=True)
+    print(f"  ws-rewire.gif  {imgs[0].size[0]}x{imgs[0].size[1]}  {len(imgs)} frames, "
+          f"plays once, {FINAL_MS}ms on the last")
 
 
 if __name__ == "__main__":
