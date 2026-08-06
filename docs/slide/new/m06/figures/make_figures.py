@@ -13,6 +13,7 @@ in parallel:
     figs_small.py   the purpose-built small graphs (club, sigma, broker, star, path)
     figs_walk.py    Parts 5-6   eigenvector, power iteration, Katz
     figs_web.py     Parts 7-8   the directed web, and the closing figures
+    figs_extra.py   three column-width figures the slides needed once written
 
 Nothing here stops at the first failure: `figlib.run()` catches per figure, prints
 every failure and exits non-zero at the end. These gates fire in clusters -- raising
@@ -20,13 +21,14 @@ the type size broke seven of m03's figures at once -- and stopping at figure 3 o
 turns one round of fixes into seven.
 """
 
+import figs_extra
 import figs_rome
 import figs_small
 import figs_walk
 import figs_web
 from figlib import run
 
-FIGURES = (figs_rome.FIGURES + figs_small.FIGURES
+FIGURES = (figs_rome.FIGURES + figs_small.FIGURES + figs_extra.FIGURES
            + figs_walk.FIGURES + figs_web.FIGURES)
 
 _names = [n for n, _ in FIGURES]

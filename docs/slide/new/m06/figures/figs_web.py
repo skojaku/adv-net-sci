@@ -38,7 +38,7 @@ import re
 import numpy as np
 
 import figlib as F
-from figlib import ACCENT, ACCENT2, ACCENT3, GRAY
+from figlib import ACCENT          # the hex, for \definecolor; the rest are TikZ names
 from verify_numbers import (COST_ITER, COST_M, COST_N, COST_RATIO, COST_SWEEP,
                             PPR_FOCUS, PPR_FOCUS_MARGIN, PPR_GLOBAL_MARGIN, WEB,
                             WEB_AUT, WEB_AUT_KING, WEB_DANGLING, WEB_HUB,
@@ -204,13 +204,13 @@ assert len(_RECIP) == 2 and all(link_ctrl(*e) is not None for e in WEB_LINKS
 # Anchor points for the in-drawing notes. `note()` proves each one clear of every
 # page box and every drawn link, so these are starting points, not licence.
 NOTE_BR = (1068.0, 38.0)                       # bottom right, under Forum -> News
-NOTE_TC = (452.0, 300.0)                       # top centre, over News -> Blog
+NOTE_TC = (240.0, 315.0)                       # top centre, over News -> Blog
 
 
 # =============================================================================
 # 2. Drawing the web
 # =============================================================================
-def _mix(t, base=(0x39, 0x59, 0xA6)):
+def _mix(t, base=tuple(int(ACCENT[i:i + 2], 16) for i in (0, 2, 4))):
     """White -> accent at fraction t, floored so a low page is still a page."""
     t = 0.14 + 0.86 * max(0.0, min(1.0, float(t)))
     return "".join(f"{int(round(255 + (c - 255) * t)):02X}" for c in base)
@@ -416,7 +416,7 @@ def fig_web_pagerank():
     rank = f"{WEB_PR_RANK_OF_LINKS}th of {WEB.number_of_nodes()}"
     n1, b1 = note("web-pagerank", f"{WEB_HUB_KING[0]}: {rank}", NOTE_BR,
                   color=A2, anchor="east")
-    n2, _ = note("web-pagerank", "darker $=$ more PageRank", (240, 315),
+    n2, _ = note("web-pagerank", "darker $=$ more PageRank", NOTE_TC,
                  color=GY, anchor="west", extra=(b1,))
     F.emit("web-pagerank", body + n1 + n2, container="full", h=CANVAS_H)
 
@@ -453,7 +453,7 @@ def fig_teleport():
     beta = inspect.signature(pagerank).parameters["beta"].default
     assert 0.0 < beta < 1.0
     txt = f"$\\beta = {dec(beta, 2)}$: jump"
-    n1, _ = note("teleport", txt, (240, 315), color=A2, anchor="west")
+    n1, _ = note("teleport", txt, NOTE_TC, color=A2, anchor="west")
     F.emit("teleport", body + n1, container="full", h=CANVAS_H)
 
 
@@ -468,7 +468,7 @@ def fig_ppr():
     assert abs(g - PPR_GLOBAL_MARGIN) < 1e-12 and abs(f - PPR_FOCUS_MARGIN) < 1e-12
     assert 0 < g < f
     body = web_body(scores=WEB_PPR, ring=[PPR_FOCUS])
-    n1, _ = note("ppr", f"globally: Blog $+{dec(g)}$", (240, 315),
+    n1, _ = note("ppr", f"globally: Blog $+{dec(g)}$", NOTE_TC,
                  color=A2, anchor="west")
     n2, _ = note("ppr", f"on Course: Course $+{dec(f)}$", NOTE_BR,
                  color=A2, anchor="east")
@@ -494,7 +494,7 @@ def fig_next_module():
                        for i in range(len(pts) - 1)), f"the walker's jump crosses {n}"
     body += (f"\\draw[line width=3.6bp,draw={A2},{F.DASH},{ARROW}] ({here}) .. controls "
              f"({c1[0]:.1f},{c1[1]:.1f}) and ({c2[0]:.1f},{c2[1]:.1f}) .. ({there});\n")
-    n1, _ = note("next-module", "next: the walker itself", (240, 315),
+    n1, _ = note("next-module", "next: the walker itself", NOTE_TC,
                  color=A2, anchor="west")
     F.emit("next-module", body + n1, container="full", h=CANVAS_H)
 
@@ -524,10 +524,10 @@ def fig_hub_authority():
     for i in range(3):
         body += f"\\draw[ed,{ARROW}] (H) -- (n{i});\n"
         body += f"\\draw[ed,{ARROW}] (n{i + 3}) -- (A);\n"
-    body += F.text(255, 40, "hub", color=A2)
-    body += F.text(825, 40, "authority", color=A2)
+    body += F.text(hub[0], 40, "hub", color=A2)
+    body += F.text(aut[0], 40, "authority", color=A2)
     for e in [(hub, o) for o in outs] + [(i, aut) for i in ins]:
-        for lb in ((255, 40, "hub"), (825, 40, "authority")):
+        for lb in ((hub[0], 40, "hub"), (aut[0], 40, "authority")):
             b = F.label_box(lb[0], lb[1], lb[2], "center")
             assert not F.box_hits_segment(b, e[0], e[1], pad=6), \
                 f"the word {lb[2]!r} sits on an arrow"
@@ -574,7 +574,7 @@ def fig_pagerank_split():
     assert all(abs(s - 1.0 / WEB.out_degree(src)) < 1e-12 for s in share)
     p0 = (110.0, 180.0)
     ys = [300.0, 220.0, 140.0, 60.0]
-    tx = 700.0
+    tx = 620.0
     body, boxes = "", []
     b, bb = pagebox(*p0, src, name="S")
     body += b

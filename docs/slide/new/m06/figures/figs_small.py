@@ -149,21 +149,22 @@ def route_ink(routes, pos, colors, gap=14.0, w=4.6):
 # =============================================================================
 CLUB_EDGES = sorted(tuple(sorted(e)) for e in CLUB.edges)
 CLUB_XY = {
-    "Sarah": (140, 260),
-    "Mike": (140, 100),
-    "Emma": (240, 180),
-    "Alex": (400, 170),
-    "Olivia": (370, 50),
-    "James": (520, 60),
-    "Sophia": (630, 278),
-    "Ethan": (750, 60),
-    "Ava": (750, 110),
-    "Noah": (880, 240),
-    "Lily": (980, 220),
-    "Lucas": (960, 160),
-    "Henry": (860, 100),
+    "Sarah": (160, 260),
+    "Mike": (130, 60),
+    "Emma": (240, 200),
+    "Alex": (450, 200),
+    "Olivia": (360, 60),
+    "James": (480, 70),
+    "Sophia": (580, 240),
+    "Ethan": (720, 55),
+    "Ava": (720, 140),
+    "Noah": (900, 260),
+    "Lily": (1000, 240),
+    "Lucas": (1000, 120),
+    "Henry": (810, 85),
 }
 CLUB_BAND = (4.0, 4.0, 1076.0, 352.0)
+CLUB_MIN_SEP = 84            # bp between disc centres: 44 bp of white at NODE = 40
 
 assert set(CLUB_XY) == set(CLUB), sorted(set(CLUB_XY) ^ set(CLUB))
 assert nx.check_planarity(CLUB)[0], "the club network must be drawable without a crossing"
@@ -171,6 +172,8 @@ assert nx.check_planarity(CLUB)[0], "the club network must be drawable without a
 # `check_planarity` says a crossing-free drawing exists, not that this one is it.
 F.assert_planar_drawing(CLUB_EDGES, CLUB_XY, "club network")
 assert not F.crossings(CLUB_EDGES, CLUB_XY)
+_sep = min(math.dist(p, q) for p, q in itertools.combinations(CLUB_XY.values(), 2))
+assert _sep >= CLUB_MIN_SEP, f"two students are only {_sep:.0f} bp apart"
 
 # The crown is drawn ON the layout, so it is part of the layout problem: solving the
 # names first and adding the glyph afterwards drew the crown straight through the
