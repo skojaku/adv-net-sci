@@ -127,9 +127,14 @@ def _looks_like_ascii_art(lines):
             c.isalnum() for c in t
         )
 
+    # The detector reads SOURCE lines, so the first line of a markdown block
+    # arrives fused to its call: `mo.md(r"""| N | k | N/k |`. That no longer
+    # starts with a pipe, so the table exemption missed it and the prefix's
+    # own punctuation pushed it over the bar.
+    _open = re.compile(r'^\s*\w*\.?\w*\(\s*[rf]?["\']{1,3}')
     hits = 0
     for ln in lines:
-        t = ln.strip()
+        t = _open.sub("", ln).strip()
         if not t:
             continue
         if _table_row(t):
