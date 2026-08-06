@@ -338,8 +338,10 @@ function toResult({ out, failed }: { out: string; failed: boolean }) {
 const quietRender = {
   renderCall(args: { status?: string }, theme: any) {
     const status =
-      typeof args?.status === "string" && args.status.length > 0
-        ? args.status
+      // .trim(): a status of a single space passed the length test and
+      // printed a bare "📝  ✓" at the student.
+      typeof args?.status === "string" && args.status.trim().length > 0
+        ? args.status.trim()
         : "Working in the notebook…";
     return new Text(theme.fg("accent", `📝 ${status}`), 0, 0);
   },
