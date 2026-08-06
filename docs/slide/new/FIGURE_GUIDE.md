@@ -111,6 +111,46 @@ same file was already on a Part Two slide — so students met a matrix with unex
 and red cells 41 slides before the matrix was defined. If two slides need different content,
 emit two files.
 
+## Gate every drawn box against every other, not just the names
+
+Module 04's round 2 found seven new figure defects and six of them were one thing: **an
+in-figure text box drawn where something else already is.** Annotation over annotation on
+three panels of one build; five separate overlaps on a single derivation figure; a node count
+struck through by its own x-axis rule; a legend line crossed by the curve it names. Every one
+was a box that grew, or an axis that moved, after somebody chose the position by hand.
+
+The label solver already existed and only names went through it. So the gate now runs on every
+figure: collect every drawn text box — including tick labels and axis titles — every rule, and
+the sampled curves, and fail the build if any text box intersects any of them. Its first run
+failed **thirteen figures across three batches**, including four made that evening that no
+reviewer had seen, and it independently rediscovered the two collisions round 2 had measured by
+hand on the render. Fixing at the generator is worth a round; fixing seven of them one at a
+time is worth nothing, because the eighth is already being drawn.
+
+The failure message must say **shorten the note or move the panel, and never shrink the type**.
+Both of the times this deck's type quietly got smaller to make room, a reviewer found it before
+anyone noticed the drawing had changed.
+
+### But size the boxes from glyphs, not from source characters
+
+`label_box` estimates a label's width as `CHAR_W * size * len(string)`, and that estimate is
+wrong in two compounding directions. It counts **source** characters, so `$\langle k^2\rangle$`
+models as a 408bp box around an 85bp glyph. And `CHAR_W` is 0.55 em against a measured 0.43.
+
+Both errors are conservative for a collision test, which is why they survived — but conservative
+is not free:
+
+- The gate refuses layouts that are fine, and the author moves a drawing that was never wrong.
+- **An arrow that terminates at a label cannot be drawn at all.** The arrowhead is inside the
+  modelled box by construction, and stopping outside it leaves a ~160bp gap. Module 04 got out
+  of this by routing the flow *past* the label rather than into it — which turned out to be a
+  better figure — but it is a dodge, and the next labelled flow will hit the same wall.
+
+The fix is the one this guide already prescribes for type size: **measure the compiled glyph**
+the way `calibrate()` measures x-height, rather than computing what the author intended. A
+figure generator that estimates its own ink will be wrong in whichever direction its constants
+were guessed.
+
 ## Place labels with a solver, not by hand
 
 Module 03's working graph has two towns 17 km apart on a 151 km map, and eight names between

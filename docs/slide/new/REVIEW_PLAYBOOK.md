@@ -116,6 +116,34 @@ nothing. The round-2 reviewer then supplied the layout that dissolved the trade-
 altogether — the graph was an antiprism, which draws planar *and* keeps its triangles — so
 the recorded disagreement was what made the third option findable.
 
+### An assertion tells you about the property it measures, and nothing else
+
+Module 04 shipped a Blocker straight through a passing assertion, and the assertion was correct.
+
+`make_animations.py` asserted that the GIF's node layout equalled the quiz figure's
+preferential panel to 1e-9 — a guard so the animation and the still beside it could not drift
+apart. It did exactly that. It also meant the "here is preferential attachment" slide drew, node
+for node and ringed hub and all, the answer to the quiz two slides later. The room could answer
+by matching pictures.
+
+The withholding check that was supposed to catch this scans the figure's **banned strings**, and
+round 1 certified "no leak" on its strength. A graphical leak walks through a textual assertion
+without touching it.
+
+Two rules out of that:
+
+- **When an assertion passes, you have learned one fact, not a class of facts.** "Cannot drift"
+  and "gives the answer away" were the same fact here, and nothing in the guard knew it.
+- **Split a guard that is holding two properties at once.** The fix asserts the *graph* is
+  identical (same generator, same m, same n, same edge set) and the *drawing* is not (normalised
+  layouts far apart). Both halves were wanted; only their conjunction was the defect.
+
+The same shape, from the other end, in the same deck: a node-size assertion computed
+`NODE * factor` from the constant it already knew, so a figure that drew at `SMALLNODE` passed
+it, and three markers shipped at 25.5px against a 26px floor. One guaranteed a real property of
+the drawing and was blind to what it implied; the other guaranteed the author's intention and was
+blind to the drawing.
+
 ### An assertion that is never called is not a check
 
 `assert_planar()` sat in Module 02's generator with a docstring reading "a figure whose claim
