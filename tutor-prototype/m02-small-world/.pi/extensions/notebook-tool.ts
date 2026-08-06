@@ -666,6 +666,47 @@ function allStudentMessages(ctx: any): string[] {
 }
 
 /**
+ * The question the tutor asked and never got an answer to, or "".
+ *
+ * `checkpoint_done` opens a dialog, and a dialog takes over the keyboard: a
+ * live run ended its reveal with "what would you expect on a ring of 800
+ * dots?" and closed the checkpoint in the same breath. The student's typed
+ * answer went into the dialog instead of the conversation, vanished from the
+ * transcript entirely, and the picker resolved itself to READY — so the
+ * pacing gate the student was supposed to hold passed without them.
+ */
+function tutorAwaitingAnswer(ctx: any): string {
+  try {
+    const entries: any[] = ctx?.sessionManager?.getBranch?.() ?? [];
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const e = entries[i];
+      if (e?.type !== "message") continue;
+      const role = e?.message?.role;
+      if (role !== "user" && role !== "assistant") continue;
+      const c = e.message.content;
+      const text = (
+        typeof c === "string"
+          ? c
+          : Array.isArray(c)
+            ? c
+                .filter((p: any) => p?.type === "text" && typeof p.text === "string")
+                .map((p: any) => p.text)
+                .join("\n")
+            : ""
+      ).trim();
+      // A tool-only assistant turn is not the tutor speaking.
+      if (!text) continue;
+      if (role === "user") return "";
+      const last = text.split(/\n+/).filter(Boolean).pop() ?? "";
+      return last.trim().endsWith("?") ? last.trim() : "";
+    }
+  } catch {
+    /* a transcript we cannot read never blocks a close */
+  }
+  return "";
+}
+
+/**
  * A picker answer never becomes a transcript message, so until now the graded
  * record had NO independent evidence of it — and a live run logged
  * "Comfortable with Python" for a student who had picked "I don't code",
@@ -2149,6 +2190,25 @@ export default function (pi: ExtensionAPI) {
       if (!response) {
         return toResult({
           out: `NOT LOGGED — student_response is empty. Log their actual words (or "(no answer — moved on)") and call again.`,
+          failed: false,
+        });
+      }
+      // Their answer to a question that is still hanging would be eaten by
+      // this tool's own dialog. Once — a rhetorical closer is one retry away,
+      // and the retry needs no speech.
+      const hanging = tutorAwaitingAnswer(ctx);
+      if (hanging && (slotDriftWarned.get(`${id}:hanging`) ?? 0) < 1) {
+        slotDriftWarned.set(`${id}:hanging`, 1);
+        return toResult({
+          out:
+            `NOT LOGGED — you just asked "${hanging.slice(0, 90)}" and they have not ` +
+            `answered. Closing here opens the "where to next?" dialog, which takes over ` +
+            `the keyboard: their answer would go into the picker and never reach you, ` +
+            `and the checkpoint would close itself. Say nothing more, WAIT for their ` +
+            `reply, react to it, and then call checkpoint_done.\n` +
+            `If that question was rhetorical (a cliffhanger into the next chapter) or ` +
+            `they have already answered it, call checkpoint_done again right now — no ` +
+            `need to say anything first.`,
           failed: false,
         });
       }

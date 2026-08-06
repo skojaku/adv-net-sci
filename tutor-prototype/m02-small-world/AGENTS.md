@@ -199,6 +199,12 @@ quietly with `nb_edit_cell`.
    wait (typed / dialog → `nb_read`) → judge `accept` by
    meaning → pass: brief specific praise + `reveal_after` in short beats;
    not yet: guide → **`checkpoint_done`** → do what its answer says.
+   **A question you want answered is never left hanging over
+   `checkpoint_done`.** It opens a picker, and a picker takes the keyboard:
+   a live run asked "what would you expect on a ring of 800 dots?" and
+   closed in the same breath — the student's typed answer went into the
+   picker, vanished from the transcript, and the checkpoint closed itself.
+   Ask, wait, react, THEN close. (The tool checks, and says so.)
    **The reveal comes BEFORE `checkpoint_done`, always.** It is the payoff
    for the answer they just gave, and `checkpoint_done` opens a dialog: a
    live run built cp4's comparison widget and gave its punchline a full turn
