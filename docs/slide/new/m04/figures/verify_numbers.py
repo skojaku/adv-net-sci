@@ -371,7 +371,16 @@ def check_models(verbose=True):
 
 # =========================================================================== c26
 def lognormal_degrees(n=200000, mu=0.6, sigma=2.2, seed=4):
-    """A log-normal is NOT a power law, yet draws a straight CCDF over three decades.
+    """A log-normal is NOT a power law, yet draws a straight CCDF over 2.3 decades.
+
+    "Three decades" is what this docstring used to say, and the deck said it too, and
+    neither was measured: the drawn and fitted window is k = 5 to 1000, which is
+    log10(1000/5) = 2.301 decades. Two reviewers caught the sentence outrunning its own
+    figure. Widening the data until three decades were true was the obvious fix and the
+    wrong one -- at a genuine three decades the log-normal and the power law separate by
+    ~27bp at k = 6, which is visible daylight on the slide whose entire point is that
+    you cannot tell them apart by eye.
+
 
     The plan asked for a *mixture of Poissons* here.  Measured, that construction does
     not land: a mixture over log-uniform means gives CCDF ~ log(kmax/k), which is

@@ -84,7 +84,7 @@ def _bignet():
     """The same two cliques, and a forty-person community with nothing to do with them."""
     _assert_same_cliques()
     g = V.two_cliques_big()
-    pos = _clique_pair(180, 276, 112, 72)
+    pos = _clique_pair(180, 288, 100, 68)
     e = [tuple(x) for x in g.edges() if max(x) < 10]
     out = small(pos, e, node=32, what="big-clique-net", planar=False,
                 fill={n: (CHI if n < 5 else COFF) for n in pos})
@@ -92,7 +92,7 @@ def _bignet():
     out += text(740, 196, "forty more", color="black", anchor="center", size=44)
     link = [x for x in g.edges() if (min(x) < 10) != (max(x) < 10)]
     assert len(link) == 1, link
-    out += seg(pos[min(link[0])], (446, 220), color="black", w=2.6)
+    out += seg(pos[min(link[0])], (446, 214), color="black", w=2.6)
     return out
 
 
@@ -105,7 +105,7 @@ def _reslimit():
     assert f["tc"]["Q_split"] > f["tc"]["Q_merged"], "alone they must stay apart"
     g = V.two_cliques()
     out = ""
-    left = _clique_pair(120, 282, 116, 68)
+    left = _clique_pair(120, 292, 106, 64)
     out += small(left, list(g.edges()), node=28, what="reslimit-before",
                  planar=False, fill={n: (CHI if n < 5 else COFF) for n in left})
     out += text(120, 40, "two groups", color="accenttwo", anchor="north", size=FONT)

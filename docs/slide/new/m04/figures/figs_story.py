@@ -18,9 +18,9 @@ import networkx as nx
 import numpy as np
 
 from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean, solve_names
-from figlib import (DASH, EDGE_W, FONT, NODE, SMALLNODE, Axes, assert_planar_drawing,
-                    clearance_bad, disc, dot, draw_labels, emit, pct, place_labels,
-                    polyline, ring, seg, text)
+from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, SMALLNODE, Axes,
+                    assert_planar_drawing, clearance_bad, disc, dot, draw_labels, emit,
+                    pct, place_labels, polyline, render, ring, seg, text)
 from verify_numbers import (FELD_EDGES, FELD_ORDER, LITERATURE, MARKETVILLE_ABOVE,
                             MARKETVILLE_BELOW, MARKETVILLE_EQUAL, MARKETVILLE_PK,
                             condmat, immunization_curves, internet_as, moments,
@@ -122,6 +122,39 @@ def num(x, d=1):
 
 
 # =========================================================================== Part One
+def assert_ink_components(body, w, h, colour, n, what):
+    """Render the figure and count connected components of one drawn colour.
+
+    R2 A2-1: `sum-ends.png` printed "20 ends" and rendered THIRTEEN marks -- three of
+    Sue's four ticks had fused into a single chevron, and so had Alice's, at exactly the
+    two hubs the module is about.  Every gate in the build was green, because they all
+    measure what the generator intended rather than what the page shows.  A figure that
+    prints a count now has that count checked on the pixels.
+    """
+    a = np.asarray(render(body, w, h).convert("RGB")).astype(int)
+    rgb = np.array([int(colour[i:i + 2], 16) for i in (0, 2, 4)])
+    mask = np.abs(a - rgb).sum(axis=2) < 90
+    seen = np.zeros(mask.shape, bool)
+    H, W = mask.shape
+    comps = 0
+    for y0, x0 in zip(*np.where(mask)):
+        if seen[y0, x0]:
+            continue
+        comps += 1
+        stack = [(y0, x0)]
+        seen[y0, x0] = True
+        while stack:
+            y, x = stack.pop()
+            for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                ny, nx = y + dy, x + dx
+                if 0 <= ny < H and 0 <= nx < W and mask[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    stack.append((ny, nx))
+    assert comps == n, (f"{what}: the drawing prints {n} but renders {comps} separate "
+                        f"marks -- adjacent ones have fused. Push them further apart; "
+                        f"do not shrink them.")
+
+
 def fig_timeline_1961():
     y = 200
     b = seg((60, y), (1020, y), color="annot", w=4.0)
@@ -318,7 +351,10 @@ def fig_degree_def():
     leaves = _rays(cx, cy, 240, 115, STAR_ANGLES)
     assert_not_collinear((cx, cy), leaves, "degree-def")
     b = "".join(seg((cx, cy), q) for q in leaves)
-    b += "".join(disc(*q, fill="annot") for q in leaves)
+    # R2 A2-5: neighbours in accent like every other graph in the deck.  They were
+    # annotation gray, which two slides earlier means "her friends average exactly
+    # what she has".
+    b += "".join(disc(*q, fill="accent") for q in leaves)
     b += disc(cx, cy, fill="accenttwo")
     for i, (lx, ly) in enumerate(leaves, start=1):
         mx, my = (cx + lx) / 2, (cy + ly) / 2
@@ -330,21 +366,54 @@ def fig_degree_def():
     emit("degree-def", b, container="col", h=COL_H)
 
 
+def _end_radius(clear=14.0):
+    """How far along its edge each node's end-tick has to sit to clear its neighbours.
+
+    A tick is END_H long ACROSS its edge, so two ticks leaving one disc an angle dtheta
+    apart are r*dtheta apart at radius r: at Sue's 41.8 degrees the old fixed r = 44 put
+    them 32bp apart and a 34bp tick bridged the gap.  One radius per node, derived from
+    that node's own tightest angle.
+    """
+    dirs = {}
+    for a, c in FELD_EDGES:
+        for u, v in ((a, c), (c, a)):
+            d = np.array(POS[v], float) - np.array(POS[u], float)
+            dirs.setdefault(u, []).append(math.atan2(d[1], d[0]))
+    r = {}
+    for u, angs in dirs.items():
+        if len(angs) < 2:
+            r[u] = 44.0
+            continue
+        srt = sorted(angs)
+        gaps = [srt[i + 1] - srt[i] for i in range(len(srt) - 1)]
+        gaps.append(srt[0] + 2 * math.pi - srt[-1])
+        r[u] = max(44.0, (END_H + clear) / min(gaps))
+    for a, c in FELD_EDGES:
+        span = math.dist(POS[a], POS[c])
+        assert r[a] + r[c] < span - 12, (
+            f"the two end-ticks on {a}-{c} would meet in the middle of the edge")
+    return r
+
+
 def fig_sum_ends():
+    radius = _end_radius()
     b = feld_body()
     ends = 0
     for a, c in FELD_EDGES:
-        for p, q in ((POS[a], POS[c]), (POS[c], POS[a])):
-            d = np.array(q, float) - np.array(p, float)
+        for u, v in ((a, c), (c, a)):
+            d = np.array(POS[v], float) - np.array(POS[u], float)
             d /= np.linalg.norm(d)
-            m = np.array(p, float) + d * 44
+            m = np.array(POS[u], float) + d * radius[u]
             n_ = np.array([-d[1], d[0]])
             b += seg(tuple(m - n_ * END_H / 2), tuple(m + n_ * END_H / 2),
                      color="accenttwo", w=END_W)
             ends += 1
     assert ends == 2 * M["M"] == 20
     b += "".join(disc(*POS[n], fill="accent") for n in FELD_ORDER)
-    b += text(540, 45, f"{M['M']} lines, {ends} ends", color="accenttwo")
+    # black, not accent-2: the accent-2 ink in this figure is exactly the twenty ticks,
+    # which is what makes the component count below a check and not a coincidence.
+    b += text(540, 45, f"{M['M']} lines, {ends} ends")
+    assert_ink_components(b, 1080, FULL_H, ACCENT2, ends, "sum-ends")
     emit("sum-ends", b, container="full", h=FULL_H)
 
 
@@ -361,71 +430,71 @@ def fig_mean_degree():
 
 
 def fig_handshake():
-    """The attempt at three odd-degree people, drawn as an actual graph (R1 A-4).
+    """Three odd counts, their five ends, and the pairing that runs out (R2 A2-2, A2-3).
 
-    The first version was three loose discs and a dashed arc, which every earlier slide
-    had trained the room to read as an edge.  Here the pairing IS an edge -- two ends
-    joined -- so there is nothing to distinguish it from: the ambiguity is removed
-    rather than worked around.  Wanted degrees 3, 1, 1 sum to 5, an odd number of ends,
-    so four of them pair into the two drawn edges and the fifth has nothing to take.
+    Two rounds of this figure drew only the FAILURE -- a stub with an X -- while the
+    body's claim is that odd degrees *pair off*.  The pairing is drawn now: the five
+    ends are marks, two gray brackets take them two at a time, and the fifth is left
+    with nothing to bracket.  Colour does one job each: accent is a node, accent-2 is an
+    end (the same red tick slides 016 and 017 spend two slides establishing), gray is
+    annotation, black is the arithmetic.  Nothing red is line-like, so nothing red can
+    be read as an edge -- which is what killed both earlier versions.
     """
     want = {"A": 3, "B": 1, "C": 1}
-    # A's three ends leave at 0, 29 and 90 degrees. An earlier layout put B and C both at
-    # the far right, which left 13 degrees between two of them, and at the tick radius
-    # their three marks fused into one bracket round the disc.
-    pos = {"A": (160, 100), "B": (560, 320), "C": (960, 100)}
-    edges = [("A", "B"), ("A", "C")]
     ends = sum(want.values())
     assert ends % 2 == 1, "the whole point is that the wanted degree sum is odd"
-    assert 2 * len(edges) + 1 == ends
-    assert_planar_drawing(edges, pos, "handshake")
+    pairs = ends // 2
+    assert 2 * pairs + 1 == ends
 
-    b = "".join(seg(pos[a], pos[c]) for a, c in edges)
-    stub = (160.0, 250.0)
-    b += seg(pos["A"], stub, color="accenttwo", w=EDGE_W, dash=DASH)
+    at = {"A": 250.0, "B": 620.0, "C": 960.0}
+    stubs = {"A": [210.0, 250.0, 290.0], "B": [620.0], "C": [960.0]}
+    assert all(len(v) == want[k] for k, v in stubs.items())
+    flat = [x for k in ("A", "B", "C") for x in stubs[k]]
+    assert len(flat) == ends
 
-    # one mark per end, the same mark sum-ends uses, and there are five of them
-    marks = 0
-    for p, q in [(pos[a], pos[c]) for a, c in edges] + [(pos[c], pos[a]) for a, c in edges] \
-            + [(pos["A"], stub)]:
-        d = np.array(q, float) - np.array(p, float)
-        d /= np.linalg.norm(d)
-        m = np.array(p, float) + d * 44
-        n_ = np.array([-d[1], d[0]])
-        b += seg(tuple(m - n_ * END_H / 2), tuple(m + n_ * END_H / 2),
-                 color="black", w=END_W)
-        marks += 1
-    assert marks == ends == 5
+    b = ""
+    # the two matched pairs, nested so their brackets cannot cross
+    for (x0, x1), y in ((( stubs["A"][1], stubs["C"][0]), 130.0),
+                        ((stubs["A"][2], stubs["B"][0]), 175.0)):
+        b += polyline([(x0, 223), (x0, y), (x1, y), (x1, 223)], color="annot", w=3.4)
+    b += cross(stubs["A"][0], 175, r=20, color="annot", w=4.0)
 
-    b += cross(160, 285, r=22)
-    b += "".join(disc(*pos[n], str(want[n]), fill="accenttwo") for n in ("A", "B", "C"))
-    total = " + ".join(str(want[n]) for n in ("A", "B", "C"))
-    b += text(560, 55, f"${total} = {ends}$ ends")
-    b += text(240, 285, "no partner", color="accenttwo", anchor="west")
+    # a short gray shelf under each disc, spanning exactly its own ends, so the three
+    # under "3" read as that node's three rather than as three loose marks
+    for k in ("A", "B", "C"):
+        b += seg((min(stubs[k]) - 9, 264), (max(stubs[k]) + 9, 264), color="annot", w=3.0)
+    for x in flat:
+        b += end_mark(x, 240)
+    b += "".join(disc(at[k], 290, str(want[k]), fill="accent") for k in ("A", "B", "C"))
+
+    b += text(stubs["A"][0], 95, "no partner", color="annot")
+    b += text(605, 95, f"{pairs} pairs", color="annot")
+    total = " + ".join(str(want[k]) for k in ("A", "B", "C"))
+    b += text(540, 360, f"${total} = {ends}$ ends")
+    assert_ink_components(b, 1080, FULL_H, ACCENT2, ends, "handshake")
     emit("handshake", b, container="full", h=FULL_H)
 
 
 def fig_pk_def():
-    """p(k) defined on the deck's own eight girls, as a FRACTION (R1 A-5).
+    """The definition, on a generic three-degree network (R2 A2-6).
 
-    The first version piled up an invented 12-node network and labelled its axis
-    "nodes", on the slide whose body defines p(k) as a fraction -- a count where the
-    text says share, with no denominator anywhere.  Slide 022 names these same girls;
-    this one states the arithmetic, which is the build the two slides want.
+    R1's A-5 fixed a real defect -- the figure counted where the slide defines a
+    fraction -- by importing slide 021's content, which left 020 and 021 the same
+    picture one slide apart and 021 with nothing to reveal.  So: the fraction and its
+    denominator stay, the eight girls go back to 021.  The piles fall away with k, which
+    is also the shape 021's flat 2-2-2-2 is then surprising against.
     """
-    piles = {}
-    for v in FELD_ORDER:
-        piles.setdefault(degree(v), []).append(v)
-    n = M["N"]
-    assert sorted(piles) == [1, 2, 3, 4] and sum(len(v) for v in piles.values()) == n
+    heights = [3, 2, 1]
+    n = sum(heights)
+    assert n == 6 and heights == sorted(heights, reverse=True)
     b = ""
-    for i, k in enumerate(sorted(piles)):
-        x = 70 + i * 128
-        for j in range(len(piles[k])):
-            b += disc(x, 240 + j * 48, fill="accent")
-        b += text(x, 190, f"$k={k}$", color="annot")
-        b += text(x, 130, f"${len(piles[k])}/{n}$", color="accenttwo")
-    b += text(268, 60, f"$p(k)$ = fraction of all ${n}$")
+    for i, hgt in enumerate(heights):
+        x = 70 + i * 198
+        for j in range(hgt):
+            b += disc(x, 200 + j * 48, fill="accent")
+        b += text(x, 150, f"$k={i + 1}$", color="annot")
+        b += text(x, 95, f"${hgt}/{n}$", color="accenttwo")
+    b += text(268, 40, f"$p(k)$ = fraction of all ${n}$")
     emit("pk-def", b, container="col", h=COL_H)
 
 
@@ -455,30 +524,29 @@ def fig_rosters():
     hubs = [v for v in FELD_ORDER if degree(v) == max(counts.values())]
     assert hubs == ["Sue", "Alice"]
 
-    # R1 A-1: eight left-aligned, ragged-right lines -- running text, not cells.  Both
-    # earlier versions put the lists in aligned columns, so the third line of Sue's
-    # column sat on the baseline of the third line of Alice's and every horizontal read
-    # was noise.  Each line is now one TeX node, so TeX sets the spacing and there is no
-    # grid to read across.
-    #
-    # The tally at the right is the same edge-end mark the rest of the module uses, and
-    # it is the same object: a name appearing on someone's list IS one end of an edge.
-    # So the marks total 2M, which is asserted.
+    # R2 A2-4: the tally column is gone.  It sat at the end of each girl's own line, so
+    # it counted the names ON that line -- her degree, already visible -- while the
+    # caption claims the other direction, how often her name appears on everyone else's.
+    # The two coincide only because the graph is undirected, which the slide never says.
+    # The red and blue mark-up carries the point on its own; the eight lines run in two
+    # blocks of four because eight full-width lines of running text span 412bp of a
+    # 1080bp canvas, and the ink floor is 821bp.
     ones = [v for v in FELD_ORDER if counts[v] == min(counts.values())]
     assert ones == ["Betty", "Tina"]
-    role = {v: ("accenttwo" if v in hubs else "accent" if v in ones else "annot")
+    role = {v: ("hub" if v in hubs else "one" if v in ones else None)
             for v in FELD_ORDER}
 
-    b, marks = "", 0
+    # Two one-argument macros rather than \textcolor at each name.  figlib's collision
+    # gate models a box from the SOURCE string, counting a control word as one glyph and
+    # everything inside its braces as text -- so "\textcolor{accenttwo}{Alice}" measured
+    # 15 glyphs where the page shows 5, and the modelled box was twice the real one.
+    # A macro puts the colour name outside the string the gate sees.
+    b = ("\\def\\hub#1{\\textcolor{accenttwo}{#1}}\n"
+         "\\def\\one#1{\\textcolor{accent}{#1}}\n")
     for i, v in enumerate(FELD_ORDER):
-        y = 330 - i * 42
-        entries = ", ".join(f"\\textcolor{{{role[u]}}}{{{u}}}" if role[u] != "annot" else u
-                            for u in lists[v])
-        b += text(60, y, f"{v}: {entries}", anchor="west")
-        for j in range(counts[v]):
-            b += end_mark(930 + j * 26, y, color=role[v])
-            marks += 1
-    assert marks == sum(counts.values()) == 2 * M["M"] == 20
+        x, row = (55, i) if i < 4 else (690, i - 4)
+        entries = ", ".join(f"\\{role[u]}{{{u}}}" if role[u] else u for u in lists[v])
+        b += text(x, 330 - row * 76, f"{v}: {entries}", anchor="west")
     emit("rosters", b, container="full", h=FULL_H)
 
 
@@ -539,15 +607,21 @@ def fig_qk_formula():
 # from the letters font, which does scale, so the operator is built from that instead.
 SUM_K = r"\mathop{\scalebox{1.35}{$\Sigma$}}\limits_{k}"
 
+# R1 A-14 / R2 Major 1: line one used to make three moves at once -- sum, substitute,
+# and name a symbol the deck had never written down -- on a build whose whole premise is
+# one new idea per line. Four states now: q(k) goes in, then the numerator gets its name.
 _DERIV = [
     r"$\displaystyle \langle k\rangle_{\mathrm{friend}} = " + SUM_K + r" k\,q(k) "
+    r"= " + SUM_K + r" k\cdot\frac{k\,p(k)}{\langle k\rangle}$",
+    r"$\displaystyle \phantom{\langle k\rangle_{\mathrm{friend}}} "
     r"= \frac{\langle k^2\rangle}{\langle k\rangle}$",
     r"$\displaystyle \langle k^2\rangle = \mathrm{Var}(k) + \langle k\rangle^2$",
     r"$\displaystyle \langle k\rangle_{\mathrm{friend}} = \langle k\rangle "
     r"+ \frac{\mathrm{Var}(k)}{\langle k\rangle}$",
 ]
-_GLOSS = ["average over ends", r"rewrite $\langle k^2\rangle$", "the theorem"]
-_DERIV_Y = [278, 186, 92]
+_GLOSS = [r"substitute $q(k)$", "name the numerator",
+          r"rewrite $\langle k^2\rangle$", "the theorem"]
+_DERIV_Y = [300, 226, 152, 78]
 
 
 def _derivation(upto):
@@ -556,10 +630,10 @@ def _derivation(upto):
     Each state's body is a prefix of the next, so everything above the added line is
     identical by construction rather than by inspection.
     """
-    b = rect(58, 32, 1022, 342, draw="annot", w=2.4, rounded=10)
+    b = rect(58, 26, 1022, 356, draw="annot", w=2.4, rounded=10)
     for i in range(upto):
         b += text(110, _DERIV_Y[i], str(i + 1), color="annot")
-        if i == 2:
+        if i == 3:
             b += (f"\\node[font=\\fontsize{{{FONT}}}{{{int(FONT*1.15)}}}\\selectfont,"
                   f"text=black,anchor=west,align=center] (eqthree) at "
                   f"(178,{_DERIV_Y[i]}) {{{_DERIV[i]}}};\n"
@@ -585,13 +659,18 @@ def fig_derivation_3():
     emit("derivation-3", _derivation(3), container="full", h=FULL_H)
 
 
+def fig_derivation_4():
+    assert _derivation(4).startswith(_derivation(3))
+    emit("derivation-4", _derivation(4), container="full", h=FULL_H)
+
+
 def fig_gap_nonneg():
     zero = 170
     b = seg((30, 200), (zero, 200), color="annot", w=3.0, dash=DASH)
     b += seg((zero, 200), (505, 200), color="accenttwo", w=5.0, arrow=ARROW)
     b += seg((zero, 186), (zero, 214), color="black", w=3.0)
-    b += text(zero, 180, "0", anchor="north")
-    b += text(190, 105, "all degrees\\\\equal", color="annot")
+    b += text(zero, 186, "0", anchor="north")
+    b += text(190, 90, "all degrees\\\\equal", color="annot")
     b += text(95, 250, "never", color="annot")
     b += text(345, 250, "always here", color="accenttwo")
     b += text(300, 310, r"$\mathrm{Var}(k)/\langle k\rangle$")
@@ -706,20 +785,42 @@ def fig_coauthor_gap():
 
 
 def fig_fb_twitter():
+    """R1 A-2: one point, and the objects rather than a length.
+
+    This was three bars on a common 0-100 scale measuring 0.925, 0.834 and 0.978 of
+    their boxes -- all nearly full, so every bit of information came from the numbers
+    printed inside them, which is what FIGURE_GUIDE rules bars out for. And the middle
+    bar was the MEDIAN, a distinction this deck does not introduce for another 43
+    slides; it lives on "The mean and the median disagree" now, where the room has been
+    asked the question first.
+
+    A hundred discs, ninety-three of them red. Nothing to decode against an axis: the
+    room counts the seven that are not.
+    """
     assert "92.7% of users have less friends than the average" in LITERATURE
-    assert "83.6% of users have less friends than the median" in LITERATURE
     assert ">98% of Twitter users" in LITERATURE
-    rows = [(300, "Facebook mean", 0.927, "92.7"),
-            (200, "Facebook median", 0.836, "83.6"),
-            (100, "Twitter", 0.98, r"$>$98")]
-    x0, x1 = 430, 1030
+    assert "721 million active users" in LITERATURE
+
+    share = 0.927
+    hit = round(share * 100)
+    assert hit == 93, hit
+    PITCH, MARK, PER_ROW = 36, 28, 10
+    x0, ytop = 92, 360
     b = ""
-    for y, lab, share, shown in rows:
-        b += text(400, y, lab, anchor="east")
-        b += strip(x0, x1, y, share)
-        b += text(x0 + (x1 - x0) * share - 24, y, shown + "\\%", color="white",
-                  anchor="east")
-    assert [f"{r[2]*100:g}" in r[3] or ">" in r[3] for r in rows] == [True] * 3
+    for i in range(100):
+        row, col = divmod(i, PER_ROW)
+        b += dot(x0 + col * PITCH, ytop - row * PITCH, d=MARK,
+                 color="accenttwo" if i < hit else "accent")
+    assert b.count("accenttwo") == hit
+
+    tx = 560
+    b += text(tx, 300, f"{pct(share, 1)} of Facebook", color="accenttwo", anchor="west")
+    b += text(tx, 246, "have fewer friends than", anchor="west")
+    b += text(tx, 192, "their friends average", anchor="west")
+    b += text(tx, 122, "721 million people, 2011", color="annot", anchor="west")
+    b += text(tx, 62, "on Twitter, over 98\\%", color="annot", anchor="west")
+    # The median belongs to the slide that asks about it, not to this one.
+    assert "83.6" not in b and "median" not in b
     emit("fb-twitter", b, container="full", h=FULL_H)
 
 
@@ -742,12 +843,25 @@ def fig_sampling_bias():
     b += "".join(disc(*_SB_POS[i], fill="accent") for i in range(6))
     b += disc(*_SB_POS["H"], fill="accenttwo")
     b += text(250, 60, "the hub", color="accenttwo")
-    for y, lab, tot, hit in ((320, "pick a person", n, 1), (190, "follow an edge", ends, kh)):
-        b += text(790, y, lab)
-        pitch = 425 / (tot - 1)
+    # 28bp marks, not 13: these are objects the room is asked to count and compare, and
+    # the floor for a countable disc on the slide is 26px. Eighteen of them will not fit
+    # on one row at that size, so the row wraps -- the drawing grows, the mark does not
+    # shrink. Both fractions are printed, because "2.3x" cannot be checked otherwise.
+    PITCH, MARK, PER_ROW = 36, 28, 9
+    for ytop, lab, tot, hit, unit in ((330, "pick a person", n, 1, "one person"),
+                                      (176, "follow an edge", ends, kh, "one edge end")):
+        b += text(560, ytop, lab, anchor="west")
         for i in range(tot):
-            b += dot(560 + i * pitch, y - 50, color="accenttwo" if i < hit else "accent")
-    b += text(790, 60, f"${num(factor,1)}\\times$ more often", color="accenttwo")
+            row, col = divmod(i, PER_ROW)
+            b += dot(578 + col * PITCH, ytop - 46 - row * PITCH, d=MARK,
+                     color="accenttwo" if i < hit else "accent")
+        rows = (tot + PER_ROW - 1) // PER_ROW
+        b += text(578 + PER_ROW * PITCH + 16, ytop - 46 - (rows - 1) * PITCH / 2,
+                  f"${hit}$ of ${tot}$", color="accenttwo", anchor="west")
+        b += text(560, ytop - 46 - (rows - 1) * PITCH - 40, unit, color="annot",
+                  anchor="north west", size=FONT)
+    b += text(560, 60, f"the hub turns up ${num(factor,1)}\\times$ more often",
+              color="accenttwo", anchor="west")
     emit("sampling-bias", b, container="full", h=FULL_H)
 
 
@@ -852,9 +966,16 @@ def fig_acquaintance_2():
 
 
 def fig_acquaintance_3():
-    """Step three: the named friend is the one who gets the dose."""
+    """Step three: the named friend is the one who gets the dose.
+
+    The volunteer keeps her ring. The title of this slide is "vaccinate the friend, not
+    the volunteer", so a drawing that has dropped the volunteer cannot make its own
+    point -- and reusing the ring for the hub would give one glyph two meanings across a
+    three-slide build, which is the defect the marks were labelled to stop.
+    """
     b = _acq_base(treated=("H",))
-    b += ring(*ACQ_HUB, size=NODE, grow=14)
+    b += ring(*ACQ_LEAF[ACQ_PICK], size=NODE, grow=14)
+    b += _acq_label(ACQ_LEAF[ACQ_PICK], "picked")
     b += _acq_label(ACQ_HUB, "immunised")
     emit("acquaintance-3", b, container="full", h=FULL_H)
 
@@ -888,11 +1009,16 @@ def fig_immunization_curves():
     assert IMM_F[-1] == 0.10
     assert at10["random"] > at10["acquaintance"] > at10["degree"]
 
-    ax = Axes((124, 132, 310, 312), (0, 0.10), (0.001, 1), ylog=True,
+    # The plot box starts at 170, not 124: a rotated y title is drawn 100bp left of
+    # the axis, and at 124 it ran off the page -- a clip, not a crop. And the title is
+    # two words, because rotated text is bounded by the axis HEIGHT, not its width.
+    ax = Axes((170, 132, 330, 312), (0, 0.10), (0.001, 1), ylog=True,
               xticks=[0, 0.05, 0.10], yticks=[0.001, 0.01, 0.1, 1],
               xfmt=lambda v: f"{v:g}", yfmt=lambda v: pct(v, 1 if v < 0.01 else 0),
-              xlabel="fraction immunised")
+              xlabel="fraction immunised", ylabel="component left")
     b = ax.frame()
+    # An unannounced change of ruler is the whole argument of Part Five, one slide later.
+    b += text(ax.x0 + 8, ax.y1 - 4, "log scale", color="annot", anchor="north west")
     series = [("random", "accent", f"random {pct(at10['random'])}"),
               ("acquaintance", "accenttwo", f"named {pct(at10['acquaintance'])}"),
               ("degree", "annot", "targeted")]
@@ -901,7 +1027,7 @@ def fig_immunization_curves():
         b += ax.line(IMM_F, ys, color=col, w=3.6,
                      dash=DASH if key == "degree" else "")
         b += ax.points(IMM_F, ys, color=col, d=11)
-        b += text(318, ax.Y(ys[-1]), lab, color=col, anchor="west")
+        b += text(338, ax.Y(ys[-1]), lab, color=col, anchor="west")
     emit("immunization-curves", b, container="col", h=COL_H)
 
 
@@ -925,6 +1051,7 @@ FIGURES = [
     ("derivation-1", fig_derivation_1),
     ("derivation-2", fig_derivation_2),
     ("derivation-3", fig_derivation_3),
+    ("derivation-4", fig_derivation_4),
     ("gap-nonneg", fig_gap_nonneg),
     ("feld-check", fig_feld_check),
     ("two-averages", fig_two_averages),

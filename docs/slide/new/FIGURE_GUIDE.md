@@ -261,7 +261,41 @@ retires `CAP_RATIO` as a constant: derive it per build.
 (The fix for this particular trap is `\usepackage{lmodern}`, and failing the build when
 `pdflatex`'s log contains `not available`.)
 
-### Ink drawn outside the canvas does not exist
+### Assert that two discs in one figure do not overlap
+
+Every gate in the build measures **one thing at a time** — this disc's size, that label's
+x-height, the ink span of the whole canvas. Overlap is not a property of any one disc, so
+none of them can see it. Module 05's "draw two balls" figure scattered fourteen discs with
+`rng.uniform` and five of them merged into three blobs on the rendered slide, under a green
+run.
+
+    _DISC_RE.findall(body)  ->  [(size, x, y), ...]
+    for each pair: assert hypot(dx, dy) >= (si + sj) / 2 + 1
+
+Wired into `emit()`, it fired on the first run against a figure nobody had complained
+about: two stacked five-cliques whose facing members sat 20bp apart with 32bp discs. Graph
+figures already get this from `clearance_bad`; this catches the free-floating ones, which
+are exactly the figures nobody thinks to check.
+
+### A GIF's first frame is what the static export shows
+
+Marp renders frame one into the PNG and PDF exports, so that frame is what the printed
+handout and the slide-review render contain — the animation only exists in the browser.
+Module 05's k-core peel led with the 1-core, which is the untouched network: in the export
+that slide repeated an earlier figure and taught nothing. **Lead with the frame that
+carries the claim** (here the 4-core it settles on), then let the loop replay the
+derivation.
+
+### Labels on an axis need a solver too, not just labels on nodes
+
+`place_labels` was written for node names and the lesson stopped there. Module 05's number
+lines put every mark label at a fixed offset from its own tick, and two marks half a unit
+apart printed straight through each other — "the rule of thumbthe real split" on one slide,
+"the real split" over "Louvain" on another. Both were invisible in the source and both
+passed the gate. Any label whose position is computed from a *data value* can collide with
+another one; walk it outward row by row and fail the build when no row is free.
+
+### ### Ink drawn outside the canvas does not exist
 
 A canvas-edge check catches ink *touching* the border and says nothing about ink entirely
 beyond it, which simply never renders. Module 02 lost an axis title placed at `y = -2` that

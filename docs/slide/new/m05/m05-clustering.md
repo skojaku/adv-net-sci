@@ -780,11 +780,11 @@ a second opinion about what a group is
 <div class="fig">
 
 ![w:1080](figures/chance-idea.png)
-<figcaption>the same two friendships crossing, in two very different networks</figcaption>
+<figcaption>the same two friendships crossing, in two networks of very different density</figcaption>
 
 </div>
 
-Two crossing friendships out of thirty is remarkable. Two out of ten is Tuesday.
+Fourteen friendships inside those groups on the left, eight on the right — and the same two crossing. Only one of them is remarkable.
 
 <!--
 m05.c15. The cut counts crossings; it never asks how many crossings you SHOULD have expected.
@@ -818,7 +818,7 @@ The whole of modularity is this game. Play it slowly. The GIF runs the four stag
 <div class="fig">
 
 ![w:1080](figures/observed.png)
-<figcaption>six of the seven strings have the same colour at both ends</figcaption>
+<figcaption>six of the seven strings have the same colour at both ends — heavy means matching</figcaption>
 
 </div>
 
@@ -1005,7 +1005,7 @@ Two minutes, in pairs. Observed first, then expected. Do not put the answer on t
 <div class="fig">
 
 ![w:1080](figures/worksheet-q-answer.png)
-<figcaption>splitting them scores five fourteenths; calling them one group scores exactly zero</figcaption>
+<figcaption>cut along the dashed line and Q is five fourteenths; refuse to cut and it is zero</figcaption>
 
 </div>
 

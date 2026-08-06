@@ -213,6 +213,37 @@ def crop_and_check(name, im, container, hmod):
     return im, fw, fh, node_px, x_px, span
 
 
+_DISC_RE = re.compile(
+    r"\\node\[disc,[^\]]*minimum size=([\d.]+)bp[^\]]*\]\s*(?:\([^)]*\)\s*)?"
+    r"at \(([-\d.]+),([-\d.]+)\)")
+
+
+def assert_discs_apart(name, body, gap=1.0):
+    """No two discs in one figure may overlap.
+
+    There was no such check, and m05's "draw two balls" figure scattered fourteen discs
+    with `rng.uniform` -- five of them merged into three blobs on the rendered slide, and
+    every existing gate passed it: the size was right, the type was right, the ink span
+    was right. Overlap is not a property of any one disc, so nothing that measures one
+    disc at a time can see it.
+
+    Graph figures already get this from `clearance_bad`; this catches the free-floating
+    ones, which are exactly the figures nobody thinks to check.
+    """
+    discs = [(float(s), float(x), float(y)) for s, x, y in _DISC_RE.findall(body)]
+    bad = []
+    for i in range(len(discs)):
+        si, xi, yi = discs[i]
+        for j in range(i + 1, len(discs)):
+            sj, xj, yj = discs[j]
+            need = (si + sj) / 2 + gap
+            if math.hypot(xi - xj, yi - yj) < need:
+                bad.append(((xi, yi), (xj, yj)))
+    assert not bad, (
+        f"{name}: {len(bad)} pair(s) of discs overlap, e.g. {bad[0]} -- they will render "
+        f"as one blob. Place them on a grid or spread them; do not shrink the discs.")
+
+
 def emit(name, body, container="col", h=None, hmod=""):
     """Render one figure and record the failure rather than stopping the build.
 
@@ -223,6 +254,7 @@ def emit(name, body, container="col", h=None, hmod=""):
     if _only and not any(k in name for k in _only):
         return
     try:
+        assert_discs_apart(name, body)
         w = DESIGN[container]
         im = render(body, w, h or int(w * 0.70))
         im, fw, fh, node_px, x_px, span = crop_and_check(name, im, container, hmod)

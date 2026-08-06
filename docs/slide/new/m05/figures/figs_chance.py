@@ -44,7 +44,7 @@ def _ws(**kw):
 
 
 # =========================================================================== Part 4
-@fig("chance-idea", h=360)
+@fig("chance-idea", h=380)
 def _chance():
     """Two networks, the same two friendships crossing -- only one of them surprising."""
     def block(x0, dense):
@@ -65,6 +65,14 @@ def _chance():
                      heavy=[(2, 7), (4, 8)], heavy_color="black",
                      fill={n: (CHI if n < 5 else COFF) for n in p})
     assert cuts[0] == cuts[1] == 2, cuts
+    for x0, dense, n in ((30, True, None), (550, False, None)):
+        p_, e_ = block(x0, dense)
+        inside = sum(1 for a, b in e_ if (a < 5) == (b < 5))
+        out += text(x0 + 225, 44, f"{inside} inside, 2 crossing", color="annot",
+                    anchor="north", size=FONT)
+    counts = [sum(1 for a, b in block(0, d)[1] if (a < 5) == (b < 5))
+              for d in (True, False)]
+    assert counts == [14, 8], counts
     return out
 
 
@@ -81,11 +89,11 @@ def _observed():
         ca = CHI if a in WS_LEFT else COFF
         cb = CHI if b in WS_LEFT else COFF
         out += string((x - 44, 268), (x + 44, 268),
-                      color="accenttwo" if same else "annot", w=4.6 if same else 2.6)
+                      color="black" if same else "annot", w=5.2 if same else 2.4)
         out += disc(x - 44, 268, fill="accent" if ca == CHI else "accenttwo", size=40)
         out += disc(x + 44, 268, fill="accent" if cb == CHI else "accenttwo", size=40)
-        out += text(x, 150, "match" if same else "no", color="accenttwo" if same else "annot",
-                    anchor="north", size=FONT)
+        out += text(x, 150, "match" if same else "no",
+                    color="black" if same else "annot", anchor="north", size=FONT)
     out += text(540, 78, f"{len(match)} of {g.number_of_edges()} strings match",
                 color="black", anchor="north", size=44)
     return out
@@ -129,16 +137,18 @@ def _expected():
     dl = sum(g.degree(n) for n in WS_LEFT)
     dr = sum(g.degree(n) for n in WS_RIGHT)
     assert dl + dr == 2 * m and dl == dr == 7
-    out = bag(300, 200, 400, 300)
-    rng = np.random.default_rng(4)
-    xs = rng.uniform(140, 460, 14)
-    ys = rng.uniform(90, 268, 14)
-    for i, (x, y) in enumerate(zip(sorted(xs), ys)):
+    out = bag(320, 196, 440, 300)
+    # A grid, not rng.uniform: the scattered version overlapped five of the fourteen
+    # balls into single blobs on the rendered slide, and nothing in the build could see
+    # it -- there is no assertion that two discs in the same figure stay apart.
+    slots = [(164 + (i % 5) * 78, 272 - (i // 5) * 78) for i in range(2 * m)]
+    for i, (x, y) in enumerate(slots):
+        assert 110 < x < 520 and 80 < y < 300, (x, y)
         out += disc(x, y, fill="accent" if i < dl else "accenttwo", size=40)
-    out += arrow((520, 200), (640, 200), color="annot", w=4.0)
-    out += disc(730, 244, fill="accent", size=52)
-    out += disc(730, 152, fill="accenttwo", size=52)
-    out += text(880, 200, f"{dl} of {2 * m}\\\\each colour", color="black",
+    out += arrow((572, 196), (668, 196), color="annot", w=4.0)
+    out += disc(756, 240, fill="accent", size=52)
+    out += disc(756, 148, fill="accenttwo", size=52)
+    out += text(918, 196, f"{dl} of {2 * m}\\\\each colour", color="black",
                 anchor="center", size=FONT)
     return out
 
@@ -219,15 +229,17 @@ def _wsq():
     return body
 
 
-@fig("worksheet-q-answer", h=360)
+@fig("worksheet-q-answer", h=400)
 def _wsqa():
     """Five fourteenths -- and what the two rival groupings score."""
     w = V.worksheet_Q()
     assert w["right"] == Fraction(5, 14) and w["one_group"] == 0.0
     out = _ws()
-    out += text(540, 336, f"{w['right'].numerator}/{w['right'].denominator}",
-                color="accenttwo", anchor="north", size=56)
-    out += text(540, 92, "one big group: 0", color="annot", anchor="north", size=FONT)
+    out += ("\\draw[line width=4.0bp,draw=accenttwo,dash pattern=on 14bp off 10bp] "
+            "(540,58) -- (540,330);\n")
+    out += text(300, 390, f"split: {w['right'].numerator}/{w['right'].denominator}",
+                color="accenttwo", anchor="north", size=44)
+    out += text(790, 390, "one group: 0", color="annot", anchor="north", size=44)
     return out
 
 

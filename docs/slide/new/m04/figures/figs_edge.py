@@ -28,7 +28,7 @@ import numpy as np
 
 from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
-from feld import ABOVE, BELOW, EQUAL, degree
+from feld import ABOVE, BELOW, EQUAL, degree, friend_mean
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
 
@@ -128,16 +128,28 @@ def fig_individual_vs_average():
 
     # "5 have fewer" never said fewer than WHAT. The header says it once, for all three
     # groups, rather than three times in three row labels.
-    b = text(540, 322, "each girl against her friends' average", anchor="south")
-    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 220),
-              (ABOVE, f"{len(ABOVE)} have more", "accent", 640),
+    #
+    # And the discs used to carry only her own k, which CONTRADICTED the grouping the
+    # figure is built on: two girls printing 2 sat in different groups and two printing
+    # 3 sat under "fewer", because the quantity that decides the group -- her friends'
+    # average -- was nowhere on the drawing. Both numbers are on it now.
+    b = text(540, 330, "each girl against her friends' average", anchor="south")
+    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 250),
+              (ABOVE, f"{len(ABOVE)} have more", "accent", 700),
               (EQUAL, f"{len(EQUAL)} the same", "annot", 960)]
     for girls, lab, fill, cx in groups:
-        x0 = cx - 32 * (len(girls) - 1)
+        x0 = cx - 50 * (len(girls) - 1)
         for i, g in enumerate(girls):
-            b += disc(x0 + 64 * i, 200, str(degree(g)), fill=fill)
-        b += text(cx, 140, lab, color=fill, anchor="north")
-    b += text(540, 74, "number in disc $=$ her own $k$", color="annot", anchor="north")
+            k, fm = degree(g), friend_mean(g)
+            rel = (fm > k) - (fm < k)
+            assert rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill], \
+                f"{g} is drawn in the {fill} group but {k} vs {fm} says otherwise"
+            b += disc(x0 + 100 * i, 240, str(k), fill=fill)
+            b += text(x0 + 100 * i, 200, f"vs ${_dec(fm, 1)}$", color="annot",
+                      anchor="north")
+        b += text(cx, 146, lab, color=fill, anchor="north")
+    b += text(540, 72, "her $k$ in the disc, her friends' average below it",
+              color="annot", anchor="north")
     emit("individual-vs-average", b, container="full", h=400)
 
 
@@ -365,16 +377,17 @@ def fig_assortativity_real():
     def X(v):
         return ax0 + (v - lo) / (hi - lo) * (ax1 - ax0)
 
-    b = text(620, 345, "assortativity $r$", anchor="south")
-    b += text(20, 345, "$r$ runs $-1$ to $+1$", color="annot", anchor="west")
-    # stops at the top row, not above it: run to 326 and the title 19bp higher reads as
-    # a label for the rule instead of for the axis
-    b += seg((X(0), ay), (X(0), 310), color="annot", w=2.4)
+    # The caveat now sits in the axis title, under the axis it qualifies. Set at the
+    # top left it was ~470bp from that axis and read after the dots, so Facebook's
+    # +0.226 looked near-maximal on a scale whose real ends are +-1.
+    b = seg((X(0), ay), (X(0), 322), color="annot", w=2.4)
     b += seg((ax0, ay), (ax1, ay), color="annot", w=2.4)
     for v in (-0.2, 0.0, 0.2):
         b += seg((X(v), ay), (X(v), ay - 9), color="annot", w=2.4)
         b += text(X(v), ay - 17, _signed(v, 1), color="annot", anchor="north")
-    for (name, r), y in zip(rows, (292, 232, 172, 112)):
+    b += text(620, 42, "assortativity $r$: this axis spans $\\pm0.3$ of a $\\pm1$ scale",
+              anchor="north")
+    for (name, r), y in zip(rows, (308, 248, 188, 128)):
         assert lo < r < hi, f"{name}: r = {r} is off the axis"
         col = "accent" if r > 0 else "accenttwo"
         b += text(300, y, name, anchor="east")
@@ -463,22 +476,25 @@ def fig_lognormal_trap():
 # slide 087 -- the claim, the doubt, the audit
 # ===========================================================================
 def fig_scale_free_debate():
-    b = seg((60, 190), (1005, 190), color="annot", w=3.0)
-    b += seg((1005, 190), (1030, 190), color="annot", w=3.0,
+    b = seg((60, 230), (1005, 230), color="annot", w=3.0)
+    b += seg((1005, 230), (1030, 230), color="annot", w=3.0,
              arrow="-{Stealth[length=16bp,width=12bp]}")
-    # The 2019 dot carried no content and the timeline promised a test it never named.
-    # Each dot now says what its year actually contributed.
-    marks = [(200, "1999", "Barab\\'{a}si \\& Albert", "the claim", "$\\gamma = 3$"),
-             (540, "2011", "Ugander et al.", "the doubt", "curvature"),
+    # The 2019 dot carried no content, and the slide's title promises a statistical
+    # test that nothing on the drawing named. Each dot now says what its year
+    # contributed, and 2019 names the test.
+    marks = [(200, "1999", "Barab\\'{a}si \\& Albert", "the claim",
+              ["$\\gamma = 3$"]),
+             (540, "2011", "Ugander et al.", "the doubt", ["curvature"]),
              (880, "2019", "Broido \\& Clauset", "the audit",
-              f"{pct(BC_STRONG)} of {BC_NETWORKS} networks")]
+              ["likelihood-ratio tests", f"{pct(BC_STRONG)} of {BC_NETWORKS} networks"])]
     for x, year, who, role, what in marks:
-        b += dot(x, 190, color="accent", d=SMALLNODE)
-        b += text(x, 245, year, anchor="south", size=48)
-        b += text(x, 155, who, anchor="north")
-        b += text(x, 107, role, color="annot", anchor="north")
-        b += text(x, 59, what, anchor="north")
-    emit("scale-free-debate", b, container="full", h=340)
+        b += dot(x, 230, color="accent", d=SMALLNODE)
+        b += text(x, 285, year, anchor="south", size=48)
+        b += text(x, 195, who, anchor="north")
+        b += text(x, 147, role, color="annot", anchor="north")
+        for i, line in enumerate(what):
+            b += text(x, 99 - 48 * i, line, anchor="north")
+    emit("scale-free-debate", b, container="full", h=380)
 
 
 # ===========================================================================
@@ -544,15 +560,20 @@ def fig_recap():
     # Act four: Part Seven, which the recap dropped entirely. Two hubs touching, two
     # leaves each -- symmetric, so it reads as "the hubs are adjacent" rather than as
     # the four-node path an earlier diagonal placement produced.
+    #
+    # Hubs in accent-2, exactly as `assortativity.png` draws the same two degree-4 hubs
+    # on slide 088. Drawn in accent they reproduced, inside this panel, the very defect
+    # panel one is guarded against two lines above: a recap that recolours what the
+    # deck just taught.
     hub = [(756 - 30, 286), (756 + 30, 286)]
     leaf = [(660, 328), (660, 244), (852, 328), (852, 244)]
     b += seg(hub[0], hub[1])
     for i, p in enumerate(leaf):
         b += seg(hub[0] if i < 2 else hub[1], p)
     for p in leaf:
-        b += disc(p[0], p[1], fill="annot", size=SMALLNODE)
-    for p in hub:
         b += disc(p[0], p[1], fill="accent", size=SMALLNODE)
+    for p in hub:
+        b += disc(p[0], p[1], fill="accenttwo", size=SMALLNODE)
 
     for cx, head, val in (
             (108, "eight girls", f"{len(BELOW)} of 8 below"),

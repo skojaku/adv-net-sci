@@ -7,9 +7,20 @@ an `<img>` pointing at `.svg` renders blank inside Marp's own `foreignObject`; a
 referenced by relative path just animates.
 
 Geometry, palette and the TeX pipeline are imported from `figlib.py`, and the growth
-history itself from `figs_tail.py` -- the same `ba_frames()`, `growth_pos()` and
-`draw_growth()` that `quiz.png` freezes.  So the animation and the still cannot drift:
-the last frame here IS the picture on slide 73, mapped into a bigger box.
+history itself from `figs_tail.py` -- the same `ba_frames()` and `draw_growth()` that
+`quiz.png` freezes.
+
+The animation deliberately does NOT share the quiz's arrangement.  It used to: the
+last frame was `quiz.png`'s preferential panel node for node, asserted equal to 1e-9,
+and the result was that slide 076 showed the answer to slide 077's question two slides
+early, ringed hub and all.  The room could answer by matching pictures.  `fig_quiz`'s
+withholding check scans banned *strings*, so a graphical leak walked straight through
+it -- an assertion tells you about the property it measures and nothing else.
+
+So the drift guard is now split in two.  What must stay identical is the *graph*: same
+generator, same m, same n, same edge set, asserted.  What must differ is the *drawing*:
+the GIF's layout is solved for a wide box and mirrored, and the build asserts the two
+normalised layouts are far apart rather than close.
 
 Every frame is cropped to the *same* box -- the union of the ink across frames -- so the
 drawing never jumps, and the floors are then asserted once against that box, exactly as
@@ -27,28 +38,31 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from figlib import (  # noqa: E402
-    CONTAINER, DESIGN, FIG_H, FONT, INK_FILL_MIN, NODE_MAX_PX, NODE_MIN_PX, OUT, PAD,
-    PXBP, TEXT_MIN_PX, calibrate, render, ring, text,
+    CONTAINER, DESIGN, FIG_H, FONT, INK_FILL_MIN, NODE, NODE_MAX_PX, NODE_MIN_PX, OUT,
+    PAD, PXBP, TEXT_MIN_PX, calibrate, render, ring, text,
 )
 from figs_tail import (  # noqa: E402
-    GROWTH_N, GROWTH_NODE, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_pos,
+    GROWTH_N, QUIZ_B, ba_frames, draw_growth, growth_edges, growth_layout, growth_pos,
 )
 
 MS = 200            # ms per frame; 43 frames runs a shade under nine seconds
 HOLD = 10           # frames of pause on the finished state before the loop restarts
 
-# The network sits in the middle at exactly the aspect `quiz.png` uses, with the two
-# running counts at the canvas edges.  Those counts are what carry the ink across the
-# full width -- a square drawing centred in a 1080bp canvas spans 31%, and the floor is
-# 76%.  They are numbers, not prose: the sentence lives in the deck's figcaption.
-BOX = (384, 24, 696, 338)
-LEFT_X, RIGHT_X, LABEL_Y = 40, 1040, 181
+# The graph gets the width.  It used to sit in a 312bp box -- the size of a *quiz
+# panel* -- with the two running counts pushed out to the canvas edges to carry the ink
+# span, so 780bp of a 1080bp canvas was two short gray lines and the network drew at
+# 28% of the slide while every other single-graph figure in the range spans 950-1070.
+# The counts go under the drawing instead; the hub's fifteen spokes are the thing the
+# room has to be able to see.
+BOX = (50, 100, 1030, 340)
+GIF_NODE = NODE                       # 40bp, as every other graph in the deck
+LEFT_X, RIGHT_X, LABEL_Y = 50, 1030, 44
 
 _built = []
 
 
 def emit_gif(name, frames, container="full", h=None, hmod="", hold=HOLD, ms=MS,
-             node=GROWTH_NODE, lead=0):
+             node=GIF_NODE, lead=0):
     """Render every frame, crop them all to one box, and assert the same floors.
 
     `lead` repeats the LAST frame at the front. A growth animation starts from a
@@ -97,39 +111,64 @@ def emit_gif(name, frames, container="full", h=None, hmod="", hold=HOLD, ms=MS,
     pal = [im.convert("P", palette=Image.ADAPTIVE) for im in seq]
     pal[0].save(OUT / f"{name}.gif", save_all=True, append_images=pal[1:],
                 optimize=False, duration=ms, loop=0, disposal=2)
+    # Report what the FILE holds, not what was handed to the encoder: PIL merges a run
+    # of identical frames into one and lengthens its duration, so the lead and the hold
+    # collapse and `len(seq)` overstates the count by fifteen.
     _built.append(name)
-    print(f"  {name}.gif  {len(seq)} frames  {fw // 4}x{fh // 4}bp  node {node_px:.0f}px  "
-          f"x-h {x_px:.1f}px  ink {span:.0%}")
+    with Image.open(OUT / f"{name}.gif") as g:
+        n = g.n_frames
+    print(f"  {name}.gif  {n} frames ({len(seq)} drawn)  {fw // 4}x{fh // 4}bp  "
+          f"node {node_px:.0f}px  x-h {x_px:.1f}px  ink {span:.0%}")
+
+
+def _unit(p):
+    """Layout normalised to the unit square, so two drawings can be compared by shape."""
+    xs, ys = [v[0] for v in p.values()], [v[1] for v in p.values()]
+    w, hgt = max(xs) - min(xs), max(ys) - min(ys)
+    return {k: ((v[0] - min(xs)) / w, (v[1] - min(ys)) / hgt) for k, v in p.items()}
+
+
+def gif_layout():
+    """The GIF's own arrangement of the quiz's preferential graph.
+
+    Two changes from `quiz.png`'s panel, both of them the point.  `growth_layout(...,
+    stretch=True)` solves the positions for a box four times wider than it is tall --
+    its own docstring recommends exactly this for a full-width GIF -- and then the whole
+    thing is mirrored in x.  The relaxation runs inside `growth_layout`, so the two
+    clearance gates hold in the shape actually drawn; mirroring is an isometry, so they
+    survive it.
+    """
+    pos = growth_layout(True, box=BOX, node=GIF_NODE, stretch=True)
+    x0, x1 = BOX[0], BOX[2]
+    return {i: (x0 + x1 - x, y) for i, (x, y) in pos.items()}
 
 
 def ba_growth_frames():
-    """Preferential attachment, one frame per edge, ending on `quiz.png`'s right panel.
+    """Preferential attachment, one arrival's edges lit at a time.
 
     Two colours, two meanings, both readable off the drawing: accent is a node that is
     already there, accent-2 is the arrival happening in THIS frame and the edges it
-    brought.  The counts at the two edges of the canvas are recomputed from the frame,
-    never carried along, so a mislabelled frame cannot happen.
+    brought.  The counts under the drawing are recomputed from the frame, never carried
+    along, so a mislabelled frame cannot happen.
     """
     frames = ba_frames()
-    pos = growth_pos(True, BOX)
-    quiz_pos = growth_pos(True, QUIZ_B)
+    pos = gif_layout()
 
-    # The still and the animation share one relative layout by construction; this is the
-    # assertion that says so, rather than a comment claiming it.
-    def unit(p):
-        xs, ys = [v[0] for v in p.values()], [v[1] for v in p.values()]
-        w, hgt = max(xs) - min(xs), max(ys) - min(ys)
-        return {k: ((v[0] - min(xs)) / w, (v[1] - min(ys)) / hgt) for k, v in p.items()}
-
-    ua, ub = unit(pos), unit(quiz_pos)
-    assert max(abs(ua[k][0] - ub[k][0]) + abs(ua[k][1] - ub[k][1]) for k in ua) < 1e-9, \
-        "the GIF's layout has drifted from quiz.png's preferential panel"
-
+    # What must NOT differ: the graph. Same generator, same m, same n, same edges.
     final = frames[-1]
     assert sorted(final["nodes"]) == list(range(GROWTH_N))
     assert ({frozenset(e) for e in final["edges"]}
             == {frozenset(e) for e in growth_edges(True)}), \
-        "the last frame is not the graph quiz.png draws"
+        "the GIF is animating a different graph from the one the quiz freezes"
+
+    # What MUST differ: the drawing. This assertion is the old one negated. Slide 076
+    # showed the quiz's answer node for node because the two were held equal; a
+    # picture-matching student needs no tail to read.
+    ua, ub = _unit(pos), _unit(growth_pos(True, QUIZ_B))
+    apart = max(abs(ua[k][0] - ub[k][0]) + abs(ua[k][1] - ub[k][1]) for k in ua)
+    assert apart > 0.25, (
+        f"the GIF's layout is within {apart:.3f} of quiz.png's preferential panel -- "
+        f"slide 076 would be giving away slide 077's answer")
 
     out = []
     for fr in frames:
@@ -140,20 +179,32 @@ def ba_growth_frames():
         assert sum(deg.values()) == 2 * len(fr["edges"])
         top = max(deg, key=lambda v: (deg[v], -v))
 
-        body = draw_growth(fr, pos, fill="accent", size=GROWTH_NODE)
+        # `ba_frames` emits one frame per EDGE, so its `new_edges` holds only the edge
+        # just added and the finished frame lit one of the arrival's two edges red and
+        # left the other black -- under a slide that says an arrival brings two. A newly
+        # arrived node's only edges are the ones it brought, so its whole set is the
+        # highlight.
+        v = fr["new_node"]
+        fr = dict(fr, new_edges=[e for e in fr["edges"] if v in e] if v is not None
+                  else [])
+        assert v is None or 1 <= len(fr["new_edges"]) <= 2
+
+        # Ring first: drawn after `draw_growth` it sat on top of the hub's fifteen
+        # spokes and cut every one of them, leaving stubs between ring and disc.
+        body = ring(pos[top][0], pos[top][1], size=GIF_NODE,
+                    color="accentthree", w=5.0, grow=13)
         # The counter had no referent and its colour pointed at the wrong node: it was
         # set in accent-2, which in the drawing marks the node that just ARRIVED, so the
         # eye read "largest 15 edges" off a disc with one edge while the real hub sat
         # unmarked in plain accent. The count is annotation now, and the node it counts
         # carries an accent-3 ring -- legal as a ring, banned only as text and as a thin
         # stroke. So: accent-2 = arriving now, accent-3 ring = the current biggest.
-        body += ring(pos[top][0], pos[top][1], size=GROWTH_NODE,
-                     color="accentthree", w=5.0, grow=13)
+        body += draw_growth(fr, pos, fill="accent", size=GIF_NODE)
         body += text(LEFT_X, LABEL_Y,
-                     f"${len(fr['nodes'])}$ nodes\\\\${len(fr['edges'])}$ edges",
+                     f"${len(fr['nodes'])}$ nodes, ${len(fr['edges'])}$ edges",
                      color="annot", anchor="west")
         body += text(RIGHT_X, LABEL_Y,
-                     f"ringed: largest\\\\${deg[top]}$ edges",
+                     f"ringed: largest, ${deg[top]}$ edges",
                      color="annot", anchor="east")
         out.append(body)
     return out

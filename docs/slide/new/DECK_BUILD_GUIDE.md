@@ -199,6 +199,25 @@ the names do not fit at 537 px — then stack: one short line above, figure full
 width below. A deck where *every* slide does that is monotonous, so keep the
 two-column pattern wherever the figure is small enough to take it.
 
+## What actually fits on a slide
+
+Arithmetic worth doing once, because ten of Module 05's thirteen first-run gate failures
+were the same mistake. The theme reserves nothing below **y = 660** in a 720px frame, a
+title with its rule takes about **110px**, and a full-width figure may be **380px** tall
+(`fig tight` 320, `fig stack` 190). So:
+
+> a ~350px figure leaves room for **one** short line of text, and only above it.
+
+A line above *and* a line below does not fit. Move the second one into the `figcaption` —
+which is where prose belongs anyway — or shorten the drawing. Never shrink the type, and
+do not reach for `fig tight` to buy 60px: the generator asserts the figure fits the cap the
+deck's class declares, so a 349bp drawing in a `tight` container is a build failure, not a
+saving.
+
+Same arithmetic, different component: **`steps-list` gives eight rows** before the
+pagination row. A ninth does not fit and shortening the text does not help, because the row
+height is fixed. Merge two items.
+
 ## Density from motion, not from more text
 
 The lecturer's framing: the slides are an aid for teaching through dialogue, so a slide

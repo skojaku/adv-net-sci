@@ -76,9 +76,9 @@ Eight girls, and a number that offends everyone
 
 <hr>
 
-In 1961 **James Coleman** published *The Adolescent Society* — friendship surveys from twelve American high schools.
+The book was *The Adolescent Society*, and Coleman's survey asked one thing: *name your friends*.
 
-Thirty years later **Scott Feld** reopened one of them.
+The school Feld reopened he calls **Marketville** — he never says whose pseudonym it is.
 
 <div class="fig">
 
@@ -136,7 +136,7 @@ Let them count. Do not confirm anything until the next slide.
 
 <hr>
 
-* Twenty friendships end here, so the average girl has **2.5 friends**.
+* The eight counts average **2.5 friends**.
 * Betty and Tina have one. Sue and Alice have four.
 * Nobody has 2.5 friends. It is an average, and another one is coming.
 
@@ -172,12 +172,12 @@ This is the whole module in one instruction. Do not answer it, do not hint, and 
 
 <hr>
 
-Red: her friends average more than she has. Blue: fewer. Gray: exactly equal.
+Red: she has fewer friends than her friends average. Blue: more. Gray: exactly equal.
 
 <div class="fig">
 
 ![w:1080](figures/feld-friendmeans.png)
-<figcaption>five below their own friends, two above, and Carol exactly on it</figcaption>
+<figcaption>five red, two blue, and Carol the only gray</figcaption>
 
 </div>
 
@@ -196,9 +196,9 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 <div class="cols">
 <div>
 
-* The eight girls average **2.5** friends.
+* The eight girls average 2.5 friends.
 * Their friends average **3.0**.
-* Not an insult, and not about being unpopular — every one of those twenty friendships was counted from both ends.
+* Not an insult, and not about being unpopular — every one of those ten friendships was counted twice, once from each end.
 
 </div>
 <div class="fig">
@@ -220,7 +220,7 @@ So Feld ran it on every girl in the survey with at least one friend — all 146 
 <div class="fig">
 
 ![w:1080](figures/marketville-146.png)
-<figcaption>2.7 friends each, and 3.4 friends per friend</figcaption>
+<figcaption>eighteen times as many girls as we counted, and the gap holds</figcaption>
 
 </div>
 
@@ -239,6 +239,8 @@ Eighty below, forty-one above, twenty-five exactly equal — nearly twice as man
 Before we explain it, we have to be able to count it
 
 ---
+
+<!-- _class: mid -->
 
 ## Degree
 
@@ -292,7 +294,7 @@ A tick at every end of every line.
 
 </div>
 
-Every edge has two ends, so the degrees add up to **twice the number of edges**: $\sum_i k_i = 2M$.
+* Every edge has two ends, so the degrees add up to **twice the number of edges**: $\sum_i k_i = 2M$.
 
 <!--
 Ten friendships, twenty ends. This is the whole content of the degree sum formula, and the 2M comes back in Part Three as the denominator of q(k).
@@ -358,13 +360,15 @@ Odd degrees pair off; one is always left holding a loose end.
 
 </div>
 
-The degrees sum to an even number, so the **odd** ones must come in pairs — the handshaking lemma.
+* The degrees sum to an even number, so the **odd** ones must come in pairs — the handshaking lemma.
 
 <!--
 And this is the thing that was quietly doing the work in Module 01: Euler's condition said zero or two odd-degree nodes, never one, never three, and this is why.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## How common is each degree?
 
@@ -400,7 +404,7 @@ Two girls at each of one, two, three and four friends.
 
 </div>
 
-A quarter of them at every degree — about as flat as a degree distribution gets.
+* A quarter of them at every degree — about as flat as a degree distribution gets.
 
 <!--
 Flat and narrow. Hold that thought: this is why the gap in this network turns out to be small. Real networks are not this polite, and Part Five shows one.
@@ -432,10 +436,12 @@ Fish for "popular people get counted more". Do not supply it.
 
 <hr>
 
+Sue and Alice appear on four lists each; Betty and Tina on one.
+
 <div class="fig">
 
 ![w:1080](figures/rosters.png)
-<figcaption>Sue and Alice appear on four lists each; Betty and Tina on one</figcaption>
+<figcaption>eight lists, twenty names between them</figcaption>
 
 </div>
 
@@ -468,6 +474,8 @@ Not "more" — how much more
 We know *why* friends have more friends. Can we say **how many** more, for any network at all?
 
 </div>
+
+Thirty seconds with your neighbour first.
 
 <!--
 The answer is one line long and it holds for every graph that has ever existed. Build to it.
@@ -545,7 +553,26 @@ q(k), not p(k). This is the whole trick, and it is the same q(k) that told us wh
 </div>
 
 <!--
-Second moment over first moment. One line so far. The panel does the algebra; do not read it out twice.
+One line so far, and nothing in it is new: it is q(k) written out. The panel does the algebra; do not read it out twice.
+-->
+
+---
+
+## Give the numerator a name
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/derivation-2.png)
+<figcaption>the mean of the squares, which is what that sum is</figcaption>
+
+</div>
+
+Every degree counted once for each edge it owns — that is $\langle k^2\rangle$, the **second moment**.
+
+<!--
+This is the only new notation in the whole derivation. Say the words "second moment" out loud; it comes back in Part Five as the thing that diverges.
 -->
 
 ---
@@ -556,7 +583,7 @@ Second moment over first moment. One line so far. The panel does the algebra; do
 
 <div class="fig">
 
-![w:1080](figures/derivation-2.png)
+![w:1080](figures/derivation-3.png)
 <figcaption>the second moment, rewritten</figcaption>
 
 </div>
@@ -573,7 +600,7 @@ Nothing new here — it is the definition of variance, rearranged. Substitute it
 
 <div class="fig">
 
-![w:1080](figures/derivation-3.png)
+![w:1080](figures/derivation-4.png)
 <figcaption>mean friend degree equals mean degree plus variance over mean</figcaption>
 
 </div>
@@ -712,6 +739,8 @@ Does this happen anywhere else — or did we just find something odd about teena
 
 </div>
 
+Three examples from the room. Shout them out.
+
 <!--
 Take three suggestions from the room before moving on.
 -->
@@ -748,7 +777,7 @@ arXiv condensed-matter coauthorship. Same identity, same reason: prolific collab
 
 </div>
 
-On Facebook **92.7%** of users have fewer friends than their friends average. On Twitter it is over **98%**.
+Facebook **92.7%** below their friends' average — Twitter over **98%**.
 
 <!--
 Ugander et al. 2011: 721 million active users, 68.7 billion friendships. Median friend count 99; mean friend count at the end of a random edge, 635. Hodas et al. 2013 for Twitter.
@@ -767,6 +796,8 @@ Ugander et al. 2011: 721 million active users, 68.7 billion friendships. Median 
 Suppose you built your dataset by crawling — start somewhere, follow the links, keep going. What have you collected?
 
 </div>
+
+Thirty seconds with your neighbour.
 
 <!--
 Almost every large network dataset that is not a full census was built this way. Let that land before answering.
@@ -806,6 +837,8 @@ An epidemic is starting. You have vaccine for one person in ten, and no map of w
 </div>
 
 In Module 03 we took out the hubs — but that needed the whole network.
+
+Thirty seconds with your neighbour: you cannot see the network, so what *can* you ask?
 
 <!--
 Let them flounder. Somebody will suggest asking people. That is the answer.
@@ -891,13 +924,8 @@ Live demo: docs/lecture-note/assets/vis/vaccination-game.html. Let two students 
 
 Immunise one node in ten of the Internet's autonomous systems.
 
-At random, **87%** of it stays connected. By naming a friend, **2%**.
-
-<div class="note">
-
-For Thursday: the gap is the variance. So how big is the variance in a real network?
-
-</div>
+* At random, **87%** of it stays connected. By naming a friend, **2%**.
+* *For Thursday: the gap is the variance. So how big is the variance in a real network?*
 
 </div>
 <div class="fig">
@@ -1142,26 +1170,13 @@ None of the three is wrong. That is what makes it a problem.
 
 <hr>
 
-<div class="cols">
-<div>
+$\mathrm{CCDF}(k) = P(k' > k)$ — the fraction of nodes **above** $k$.
 
-<div class="formula">
-
-$$\mathrm{CCDF}(k) = P(k' > k)$$
-
-</div>
-
-The fraction of nodes with **more** than $k$ edges. Every node contributes to it, so there is nothing to choose.
-
-Also called the survival function.
-
-</div>
 <div class="fig">
 
-![w:537](figures/ccdf-def.png)
-<figcaption>count everybody above the line</figcaption>
+![w:1080](figures/ccdf-def.png)
+<figcaption>count everybody above the line — also called the survival function</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1224,6 +1239,8 @@ Half the room will say yes. It is the single most common error in this material.
 
 ---
 
+<!-- _class: mid -->
+
 ## Integrate and see
 
 <hr>
@@ -1271,7 +1288,7 @@ Hands up for 1.3, hands up for 2.3. Count both before revealing.
 
 </div>
 
-$1 - \gamma = -1.3$, so $\gamma = 2.3$. Off by one, and your network changes character completely.
+$1 - \gamma = -1.3$. Off by one, and your network changes character completely.
 
 <!--
 Between gamma = 2 and gamma = 3 the variance diverges. That is not a rounding error, that is a different physics — and Module 03's f_c depended on it.
@@ -1385,7 +1402,7 @@ Module 02's random graph. Ask them to predict the shape before answering.
 Random wiring gives a **Poisson** distribution — everybody bunched around the mean, and hubs effectively impossible.
 
 <!--
-Same mean degree as before. The tail is not smaller, it is absent: the largest degree in that network is fifteen.
+Same mean degree as before. The tail is not smaller, it is absent: the largest degree in that network is twenty-eight, against the physicists' 279.
 -->
 
 ---
@@ -1397,11 +1414,11 @@ Same mean degree as before. The tail is not smaller, it is absent: the largest d
 <div class="fig">
 
 ![w:1080](figures/three-ccdfs.png)
-<figcaption>power law, random, and a lattice, on the same axes</figcaption>
+<figcaption>the physicists' coauthorship, a random graph, and a ring lattice, on the same axes</figcaption>
 
 </div>
 
-The wiring rule sets the tail: preference stretches it, randomness cuts it short, and a lattice flattens it to one value.
+The wiring rule sets the tail: randomness cuts it short, a lattice flattens it, the physicists stretch it out.
 
 <!--
 Module 02's ring lattice. Three networks, three shapes, and the shape is the whole difference.
@@ -1525,6 +1542,8 @@ The theorem says friends have more friends on average. Does that mean *your* fri
 
 </div>
 
+Hands up if yours do.
+
 <!--
 The honest answer is no, and the gap between "on average" and "for you" is worth five minutes.
 -->
@@ -1583,7 +1602,7 @@ Build me a network where nobody's friends have more friends than they do.
 
 </div>
 
-Open the builder in the lecture notes — friendship-paradox-game.html — and try. Two minutes.
+Open docs/lecture-note/assets/vis/friendship-paradox-game.html and try. Two minutes.
 
 <!--
 docs/lecture-note/assets/vis/friendship-paradox-game.html. Let them fail a few times first — every irregular attempt has a positive gap.
@@ -1622,6 +1641,8 @@ Following on Twitter is not mutual. Does the paradox even make sense when the ed
 
 </div>
 
+Hands up: followers, or following?
+
 <!--
 Two degrees now, in and out. Ask which one they think tilts.
 -->
@@ -1639,7 +1660,7 @@ Two degrees now, in and out. Ask which one they think tilts.
 
 </div>
 
-The accounts you follow are followed more than you are — and so are the accounts that follow you.
+The accounts you follow are followed more than you are — and the accounts that follow you follow more than you do.
 
 <!--
 Hodas et al. 2013 confirm all four versions of this on Twitter. Same mechanism: you reach an account by traversing an edge, so you reach popular ones more often.
@@ -1659,6 +1680,8 @@ Two networks have identical degree distributions. Must they behave the same way?
 
 </div>
 
+Hands up for yes. Hands up for no.
+
 <!--
 Most of the room will say yes, because we have spent an hour treating p(k) as the description of a network.
 -->
@@ -1676,7 +1699,7 @@ Most of the room will say yes, because we have spent an hour treating p(k) as th
 
 </div>
 
-**Assortativity** measures whether high-degree nodes attach to each other. The degree distribution says nothing about it.
+**Assortativity** — the $r$ under each drawing — measures whether hubs attach to each other.
 
 <!--
 Same p(k) for all three. Completely different networks.
@@ -1761,7 +1784,7 @@ The log-normal. It arises from multiplying random factors — which is at least 
 <div class="fig">
 
 ![w:1080](figures/scale-free-debate.png)
-<figcaption>1999, 2011, 2019 — the claim, the doubt, and the audit</figcaption>
+<figcaption>twenty years on, and the argument is still open</figcaption>
 
 </div>
 
@@ -1801,15 +1824,19 @@ Module 03's critical fraction, Module 02's small-world distances, and spreading 
 <div class="fig">
 
 ![w:1080](figures/recap.png)
-<figcaption>eight girls, one identity, one distribution, one doubt</figcaption>
+<figcaption>left to right, the order we met them</figcaption>
 
 </div>
+
+One observation about eight girls, pushed until it became a distribution — and then doubted.
 
 <!--
 Walk it: the observation, the mechanism, the identity, the distribution, the doubt. Five sentences.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## Coming up in Module 05
 

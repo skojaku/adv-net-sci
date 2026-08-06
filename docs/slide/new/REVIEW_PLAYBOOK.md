@@ -155,7 +155,18 @@ were meant to encircle; an arrowhead standoff calibrated at the wrong linewidth;
 whose numbered visit order jumped between non-adjacent nodes; a ring lattice whose chords
 passed 0.005 units inside the discs they crossed.
 
-### After changing a figure, check every slide that uses it — and every claim about it
+### A patch that reports success but never matched looks exactly like a landed fix
+
+Applying fixes with a scripted `str.replace` is fast and it fails silently: if the search
+string is off by one escaped backslash, the script prints "patched", exits 0, and changes
+nothing. Module 05 lost a round that way — the "draw two balls" figure was reported fixed,
+the build was green, and the render still showed five overlapping discs.
+
+Two defences, both cheap. Make the replacement **assert** it matched (`assert old in s`)
+rather than trusting `str.replace` to no-op quietly; and re-read the rendered slide before
+reporting, which is the rule below and is the one that actually caught it.
+
+### ### After changing a figure, check every slide that uses it — and every claim about it
 
 Three separate regressions came from this:
 
