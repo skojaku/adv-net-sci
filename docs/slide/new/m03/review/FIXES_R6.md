@@ -164,3 +164,32 @@ their body instead of hanging it on the floor.
   crossings are unavoidable there.
 - **Speaker notes** are on ~20 of 92 slides. The ones that exist carry the interaction;
   the rest are the lecturer's to write.
+
+---
+
+# Round 9 — the last three open items
+
+1. **Edge crossings on slide 85** (rev-70-92 M9). The graph is a **forest** — three small
+   components and four isolated nodes — so it can always be drawn crossing-free; dropping
+   it on a circle put its two long chords straight across each other, on a slide about a
+   network that has barely any edges. Laid out by component now, with zero crossings and
+   disc clearance both asserted.
+2. **Progressive disclosure** (rev-1-23 M10, rev-47-69 M15, rev-70-92 M8). Eight slides
+   where two *claims* landed at once now build: slides 6, 27, 48, 62, 84, 86, 90, 92. The
+   argument arrives, then the consequence it licenses. Question slides were left alone —
+   their formula panel already separates setup from question, and `mid` centring fights a
+   growing list. L5 re-checked across all 92 slides: no paragraph follows a fragmented
+   list.
+3. **Speaker notes** — 21 → **45 of 92**. Written only where a slide has a beat to run: a
+   question to hold, a poll to collect, a GIF to time, a reveal to land. Slides that just
+   state a fact were left without one, on the grounds that a note restating the slide is
+   noise and the lecturer's words are his own.
+
+Also: the Part Six divider and its payoff slide carried the same title verbatim
+(rev-70-92 m9). The payoff slide is "The same hubs, both ways" and now carries **robust
+yet fragile** as its bolded key term, where the phenomenon is actually named.
+
+## Nothing known is open
+
+Every finding from the three reviewer reports is either fixed, or recorded above with the
+reason it was not. `check_render.py` exits 0 on 92 slides.

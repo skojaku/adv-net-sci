@@ -99,13 +99,8 @@ Real place, real date. The engineers at the West Moravian Power Company have to 
 
 A friend at the West Moravian Power Company carries the question to **Otakar Borůvka**.
 
-His 1926 paper *O jistém problému minimálním* is the first solution — and the birth of the **minimum spanning tree** problem.
-
-<div class="note">
-
-We come back to how *he* solved it at the end of Part Two.
-
-</div>
+* His 1926 paper *O jistém problému minimálním* is the first solution — and the birth of the **minimum spanning tree** problem.
+* *We come back to how he solved it at the end of Part Two.*
 
 </div>
 <div class="fig">
@@ -457,6 +452,10 @@ So why can it not be beaten here?
 
 Thirty seconds. Argue it with the person next to you.
 
+<!--
+Let them argue before you say anything. The answer they usually reach — 'because the cheapest edge can't hurt' — is nearly the cut property; take it and sharpen it on the next slide.
+-->
+
 ---
 
 ## Here it cannot be beaten
@@ -468,7 +467,7 @@ Thirty seconds. Argue it with the person next to you.
 
 Cut the towns into any two groups. The cheapest cable crossing that cut has to be in the minimum spanning tree — swap it in and any tree without it gets cheaper.
 
-Both rules only ever take such a cable. That is the whole proof.
+* Both rules only ever take such a cable. That is the whole proof.
 
 </div>
 <div class="fig">
@@ -500,6 +499,10 @@ Is there still one cheapest grid?
 ![w:1100](figures/tie-graph.png)
 
 </div>
+
+<!--
+Ask for a show of hands: one grid, or more than one? Most say one. Do not resolve it here.
+-->
 
 ---
 
@@ -536,6 +539,10 @@ What would you do, with eight towns and a pencil?
 
 </div>
 
+<!--
+Give this a full minute. Someone usually proposes 'every town picks its own cheapest cable' — which is exactly Borůvka. Name whoever says it.
+-->
+
 ---
 
 ## Every town at once
@@ -550,6 +557,10 @@ Each piece of the network looks at its own cheapest way out and takes it — all
 <figcaption>no ordering, no queue, no waiting</figcaption>
 
 </div>
+
+<!--
+Run the loop and count the cables that appear in round one: six, at the same time. That simultaneity is the whole idea.
+-->
 
 ---
 
@@ -697,6 +708,10 @@ Sketch the curve before we draw it. Does it slide, or does it fall off a cliff?
 
 </div>
 
+<!--
+Have them sketch the curve on paper before you show it. The common guess is a straight slide down; the first removal costing more than the next four is the surprise.
+-->
+
 ---
 
 ## The robustness profile
@@ -749,6 +764,10 @@ How far apart can two curves on the same network be?
 
 Guess a factor before we look.
 
+<!--
+Collect a factor out loud — most say 1.5 or 2. The measured answer is 2.4, so nobody is wildly wrong, and that is the point: order matters more than they expect.
+-->
+
 ---
 
 ## Random failure
@@ -795,6 +814,10 @@ Is it worth the attacker's trouble to re-rank after every removal?
 
 </div>
 
+<!--
+Ask which is more work for the attacker, then which is more damaging. The trade-off is the lesson, not the number.
+-->
+
 ---
 
 ## Re-measuring is worse
@@ -825,9 +848,8 @@ Same trade-off applies to any attack criterion, not just degree. We come back to
 
 Live: build a network, choose a removal strategy, and watch the profile draw itself.
 
-Then on paper: *Build it, Break it, Build it back* — construct the MST by hand, break it, and redesign.
-
-[network-robustness.html](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+* [network-robustness.html](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+* Then on paper: *Build it, Break it, Build it back* — build the MST by hand, break it, redesign.
 
 </div>
 <div class="fig">
@@ -837,6 +859,10 @@ Then on paper: *Build it, Break it, Build it back* — construct the MST by hand
 
 </div>
 </div>
+
+<!--
+Do the live demo first, then hand out the paper exercise. The demo takes five minutes; the exercise is the rest of the session.
+-->
 
 ---
 
@@ -855,6 +881,10 @@ What fraction of a network has to fail before it fragments?
 </div>
 
 Next session: one formula answers this, for any network, from its degrees alone.
+
+<!--
+End the first day here. Do not answer it. The formula arrives at the top of Part Five.
+-->
 
 ---
 
@@ -887,6 +917,10 @@ At which $p$ does one puddle first span the whole yard?
 ![w:1100](figures/puddle-low.png)
 
 </div>
+
+<!--
+Ask for a number. Guesses cluster around 0.5 — well below the real 0.59, which is what makes the sweep worth watching.
+-->
 
 ---
 
@@ -935,6 +969,10 @@ Drag $p$ in the module notebook and find the transition by hand — then say how
 
 </div>
 
+<!--
+Let them find the transition themselves before you name p_c. Ten times bigger makes the jump sharper, not earlier — that is the follow-up worth asking.
+-->
+
 ---
 
 <!-- _class: mid -->
@@ -950,6 +988,10 @@ The stones do not all wet at once — the rain fills them one by one, in whateve
 Does a different order change when the giant puddle arrives?
 
 </div>
+
+<!--
+Thirty seconds. The instinct is that order must matter; it does not, and that is why the whole problem reduces to one parameter.
+-->
 
 ---
 
@@ -1007,6 +1049,10 @@ What would you have to know about a network to tell them apart?
 
 </div>
 
+<!--
+Do not let them answer 'the number of edges' — both networks have the same. Push until someone says something about how the edges are spread.
+-->
+
 ---
 
 <!-- _class: mid -->
@@ -1033,6 +1079,10 @@ Is the node you arrive at a typical member of the network?
 
 </div>
 </div>
+
+<!--
+This is the pivot of the whole module. Make sure they see that picking an edge is not the same as picking a node before you turn the page.
+-->
 
 ---
 
@@ -1066,7 +1116,7 @@ $$ \kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} $$
 
 </div>
 
-$\kappa$ is large exactly when the network has hubs.
+* $\kappa$ is large exactly when the network has hubs.
 
 </div>
 <div class="fig">
@@ -1106,6 +1156,10 @@ Branching above 1 and the search never dies. A **giant component** exists exactl
 <figcaption>below 1 it dies; above 1 it never stops</figcaption>
 
 </div>
+
+<!--
+Left panel dies, right panel never stops. The whole criterion is which side of 1 the branching factor falls on.
+-->
 
 ---
 
@@ -1202,6 +1256,10 @@ What happens to $\kappa = \langle k^2 \rangle / \langle k \rangle$?
 
 </div>
 
+<!--
+They have met scale-free degree distributions in Module 02. Ask what happens to the average of the SQUARES when one node is enormous.
+-->
+
 ---
 
 ## $\kappa$ blows up, $f_c \to 1$
@@ -1247,6 +1305,10 @@ Is that the whole story?
 
 </div>
 
+<!--
+Let someone say yes. The next three slides are more fun if the room has committed.
+-->
+
 ---
 
 ## Random failure: both survive
@@ -1279,11 +1341,11 @@ Same two networks, highest degree first. The hub network is gone at 20%.
 
 ---
 
-## Robust yet fragile
+## The same hubs, both ways
 
 <hr>
 
-The hubs that made random failure harmless are what an attacker aims at. *Albert, Jeong & Barabási, Nature, 2000.*
+The hubs that made random failure harmless are what an attacker aims at: **robust yet fragile**. *Albert, Jeong & Barabási, Nature, 2000.*
 
 <div class="fig">
 
@@ -1291,6 +1353,10 @@ The hubs that made random failure harmless are what an attacker aims at. *Albert
 <figcaption>one network, two fates</figcaption>
 
 </div>
+
+<!--
+The two solid curves nearly coincide; the dashed pair is where the story is. Point at the gap.
+-->
 
 ---
 
@@ -1347,6 +1413,10 @@ Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst singl
 <figcaption>the best of the fifteen possible pairs — searched, not guessed</figcaption>
 
 </div>
+
+<!--
+Come back to whatever the room proposed on the previous slide before showing this. If someone proposed the southern ring, say so.
+-->
 
 ---
 
@@ -1423,6 +1493,10 @@ What is $\kappa$, and what does $f_c$ say?
 </div>
 </div>
 
+<!--
+Every degree is 2, so both averages are easy. Let them do it in their heads.
+-->
+
 ---
 
 ## Exactly on the threshold
@@ -1434,7 +1508,8 @@ What is $\kappa$, and what does $f_c$ say?
 
 $\langle k \rangle = 2$ and $\langle k^2 \rangle = 4$, so $\kappa = 2$ and the branching factor is exactly 1.
 
-$f_c = 0$: a ring has no robust core to lose. Cut one node and it is a chain; cut two and it is two chains.
+* $f_c = 0$: a ring has no robust core to lose.
+* Cut one node and it is a chain; cut two and it is two chains.
 
 </div>
 <div class="fig">
@@ -1472,6 +1547,10 @@ What does $\kappa = \langle k \rangle + 1$ say about it?
 </div>
 </div>
 
+<!--
+They derived this threshold in Module 02 by a completely different route. Do not remind them yet.
+-->
+
 ---
 
 ## The same threshold, from the other side
@@ -1483,7 +1562,8 @@ What does $\kappa = \langle k \rangle + 1$ say about it?
 
 $\kappa = 2$ — exactly the Molloy–Reed boundary.
 
-And $\langle k \rangle = 1$ is precisely where Module 02's giant component was born. Two different arguments, one number.
+* And $\langle k \rangle = 1$ is precisely where Module 02's giant component was born.
+* Two different arguments, one number.
 
 </div>
 <div class="fig">
@@ -1515,6 +1595,10 @@ Would that do more damage? What would it cost?
 ![w:1100](figures/betweenness-q.png)
 
 </div>
+
+<!--
+Ask them to point at the node they would cut. Many will point at a hub; the answer is the small node in the middle.
+-->
 
 ---
 
@@ -1562,6 +1646,10 @@ Does $f_c = 1 - 1/(\kappa - 1)$ still hold there?
 </div>
 </div>
 
+<!--
+This is the slide that says the formula has assumptions. Ask what the branching argument quietly assumed.
+-->
+
 ---
 
 ## Not exactly — and here is why
@@ -1573,7 +1661,7 @@ Does $f_c = 1 - 1/(\kappa - 1)$ still hold there?
 
 The branching argument assumed every step reaches a node it has not seen. A triangle sends the search straight back where it came from, so the real fan-out is smaller than $\kappa - 1$.
 
-Real thresholds sit below the prediction.
+* Real thresholds sit below the prediction.
 
 </div>
 <div class="fig">
@@ -1603,6 +1691,10 @@ Build it, break it, build it back — and the line that predicted the breaking.
 
 </div>
 
+<!--
+Three numbers, one grid: what it cost, what one town cost, what the ring cost. The formula that predicted it is on the board from Part Five.
+-->
+
 ---
 
 ## Coming up in Module 04
@@ -1614,7 +1706,7 @@ Build it, break it, build it back — and the line that predicted the breaking.
 
 $q(k)$ said the node at the far end of a random edge is biased toward hubs.
 
-Apply that to friendship and you get something uncomfortable: **your friends have more friends than you do.**
+* Apply that to friendship and you get something uncomfortable: **your friends have more friends than you do.**
 
 </div>
 <div class="fig">

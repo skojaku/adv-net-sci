@@ -2064,10 +2064,24 @@ ER1_KAPPA = Fraction(sum(d * d for _, d in ER1.degree()),
                      sum(d for _, d in ER1.degree()))
 
 
+# The graph is a FOREST -- three small components and four isolated nodes -- so it
+# can always be drawn without a crossing. Dropping it on a circle put its two long
+# chords straight across each other in the middle, on a slide about a network that
+# has barely any edges at all.
+ER1_POS = {1: (110, 290), 0: (45, 245), 2: (110, 215), 11: (175, 245),
+           3: (270, 290), 4: (350, 290), 12: (430, 290),
+           6: (110, 120), 7: (45, 70), 8: (175, 70),
+           5: (270, 150), 9: (340, 150), 10: (410, 150), 13: (478, 150)}
+assert set(ER1_POS) == set(ER1)
+assert not crossings(list(ER1.edges()), ER1_POS), crossings(list(ER1.edges()), ER1_POS)
+assert not clearance_bad(list(ER1.edges()), ER1_POS, r=SMALLNODE / 2 + 3)
+
+
 def _er1_case(show):
-    pos = ring_pos(14, r=1.0, ry=0.68, start=0.0)
-    s, _ = small_graph({i: pos[i] for i in ER1}, list(ER1.edges()), (260, 200),
-                       scale=200, node=SMALLNODE)
+    s = "".join(seg(ER1_POS[a], ER1_POS[b], color="black", w=EDGE_W + 1.0)
+                for a, b in ER1.edges())
+    for n, (x, y) in ER1_POS.items():
+        s += disc(x, y, "", fill="accent", size=SMALLNODE)
     s += text(260, 30, "$\\langle k \\rangle = 1$" if not show else "$\\kappa = 2$",
               color="annot" if not show else "accenttwo")
     return s
