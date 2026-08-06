@@ -2769,10 +2769,44 @@ export default function (pi: ExtensionAPI) {
       const saidNow = studentSaidSince(ctx, false);
       const snapped = snapToTranscript(question, saidNow);
       const snappedQ = snapped ?? question;
-      // Only when it really is one of their messages: their own question is
-      // not their worked answer, and the next checkpoint's note quotes the
-      // transcript. The souvenir already holds it, word for word.
-      if (snapped) detourAsked.add(normMsg(snapped));
+      // Mark the message they asked it in, so the next checkpoint's note
+      // quotes their answer and not their question — the souvenir already
+      // holds the question, word for word.
+      //
+      // NOT gated on `snapped`: snapToTranscript is a REPAIR, and its first
+      // act is to return null when the text is already in the transcript
+      // because there is nothing to repair. Gating on it meant the dedup
+      // fired only when the model DISOBEYED "their question VERBATIM" and
+      // never when it obeyed — measured: verbatim and true paraphrase both
+      // leaked, a tidied quote was the only shape that worked.
+      {
+        const qNorm = normMsg(question);
+        // A message containing the question is a match; a message CONTAINED
+        // IN it is not — "triangles" sits inside "why do triangles matter?"
+        // and is a perfectly good answer.
+        let bestIdx = -1;
+        let bestScore = 0;
+        saidNow.forEach((m, i) => {
+          const n = normMsg(m);
+          const d = n === qNorm || (qNorm.length > 0 && n.includes(qNorm)) ? 1 : bigramDice(m, question);
+          if (d > bestScore) {
+            bestScore = d;
+            bestIdx = i;
+          }
+        });
+        // Below near-identity, the message also has to LOOK like a question:
+        // a one-word answer scores 0.5 against a question that contains it.
+        const asked = bestIdx >= 0 ? saidNow[bestIdx] : "";
+        const looksAsked =
+          /\?/.test(asked) ||
+          /\b(what|whats|why|how|hows|when|where|which|who|explain|mean|means|meaning)\b/.test(
+            normMsg(asked),
+          );
+        if (bestIdx >= 0 && (bestScore >= 0.9 || (bestScore >= 0.6 && looksAsked))) {
+          detourAsked.add(normMsg(asked));
+        }
+        if (snapped) detourAsked.add(normMsg(snapped));
+      }
       let gap = "";
       if (cellName) {
         const src = await readCellSource(cellName, signal);
