@@ -315,6 +315,78 @@ of intended containers is not evidence: in m02 the table and the deck disagreed 
   does nothing. Put it in the theme.
 - **KaTeX does not process `<figcaption>`** — math there renders as literal `$…$`.
 
+## When the label solver says no, the drawing is the thing that has to move
+
+Module 06's working graph is twelve Roman cities with names like "Thessalonica",
+and on a true longitude/latitude projection `place_labels` cannot place them at
+all — three cities have **zero** collision-free sides before any other label
+exists, because the projection puts Tarraco, Lugdunum, Massilia and Colonia inside
+170 bp of width and each of them needs a ~170 bp label. Annealing the node
+positions did not help while the projection was held fixed, and neither did
+splitting the long names across two lines.
+
+Three things fixed it, in this order, and the order matters:
+
+1. **Make the layout schematic, and hold it to the geography with a statistic
+   rather than with a projection.** The final coordinates come from an annealing
+   search whose *hard* constraints are planarity, disc clearance and
+   label-solvability, and whose objective is Spearman correlation against the true
+   coordinates. Longitude order came out exactly preserved and latitude at
+   rho = 0.95, so the lecturer can still point at it and say "the Mediterranean".
+   Assert both correlations in the module; a layout edit that scrambles the map is
+   then a build failure rather than a thing nobody notices.
+2. **Give the figure the height it needs, measured.** The plain `.fig` cap of
+   380 px leaves 356 bp of ink and there is no solution at 356 or at 376; at 396
+   every name fits on one of the four *nearest* sides of its own disc. That is why
+   the theme has a `.fig.tall` modifier — added at 400 px after rendering a probe
+   slide and measuring where the ink actually ended, not guessed.
+3. **Restrict the solver to the near sides.** A label 46 bp from its disc, with
+   another disc closer to it, does not read as that city's name. Solving with only
+   the four nearest offsets and failing otherwise is better than a solution nobody
+   can parse.
+
+### A halo, not a chip
+
+Once labels are allowed to lie across edges — and with eighteen edges among twelve
+nodes they must be — the question is what to draw under the text. A white **chip**
+(a filled rectangle behind the label) was built first and produced a map whose
+roads were chopped into pieces: Londinium's road to Colonia simply stopped, and
+the reviewer's eye read the gap as a missing edge. A white **halo** (the text
+drawn eight times in white at ±2 bp, then once in black) lets the road show
+through between the letters, which is what an atlas does.
+
+The halo does leave short black stubs where a road enters and leaves a word, and
+`check_render.py`'s `smallest_text` heuristic reports those as 1 px "text". Expect
+the warning on every haloed figure; it is the heuristic being fooled, and the
+generator's measured assertion is the gate that matters. Reduce the stubs by
+having the solver **hill-climb its own answer for the fewest edge crossings** —
+the first feasible assignment is rarely the tidiest, and re-picking each label's
+side to minimise crossings is a dozen lines.
+
+## A highlight ring around a node breaks the node-size gate
+
+`check_render.py` finds discs by masking the node fill colours and then filling
+holes, so a disc drawn *inside* an accent-2 ring is one solid blob to it. Module
+06 marked its crowned city with a ring 13 bp larger than the disc and failed the
+26–52 px band on ten slides at once, at a measured 57 px, while every disc in the
+figure was drawn at 40.
+
+Mark a node with a **heavy border on the disc itself** (5 bp) plus a glyph outside
+it. The border adds its own width and nothing else, the glyph is the wrong shape
+to be counted as a disc, and the measurement then matches what was drawn. A ring
+in accent-3 is also safe, because gold is not one of the fills the gate masks —
+but do not rely on that without checking `NODE_FILLS`.
+
+## An in-drawing note needs somewhere to go, and a full map has nowhere
+
+`note()` should try several anchors and fail loudly when none is clear, rather
+than being pinned to a corner. On Module 06's map — twelve labelled discs spanning
+92% of the canvas — the honest answer was that *no* corner is free, and the notes
+came off the figures entirely: the numbers moved into the slide's body text and
+the encoding into the figcaption, which is where FIGURE_GUIDE said prose belonged
+all along. A gate that says "this does not fit anywhere" is telling you the figure
+is full, not that the gate is too strict.
+
 ## Review
 
 Figures are reviewed on the **rendered slide**, never on the source or the standalone PNG.

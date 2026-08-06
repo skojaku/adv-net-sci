@@ -157,6 +157,33 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
   slide** — he raised this four times on m01; it is now an assertion in the figure
   generator and a `check_render.py` failure, not a review finding.
 
+## Write the deck before you commission the figures
+
+Module 06 dispatched three figure modules in parallel while the deck was still
+being written, with the container for each figure taken from the *spec*. Two of
+the three authored most of their figures at full width for slides that ended up
+two-column, and `check_render.py` failed them all: a figure authored for 1080 px
+and used in a 537 px column renders at 50% of its intended scale.
+
+Halving a figure's width is a **re-composition, not a re-declaration** — a wide
+slope chart, a 12x12 matrix or two cliques side by side do not survive it — so the
+cost of getting this wrong is a second authoring pass, not a one-line edit. Write
+the slide first, or at minimum fix the container per figure before dispatching,
+and put the list in the brief.
+
+## What fits on a slide with a wide figure, measured
+
+For the m06 theme, on a slide with heading, rule, one line of body text, a
+full-width figure and a figcaption: the heading's ink ends at y=85, the rule sits
+at y=139, and a 349 bp figure plus caption ends at **y=606** against a page number
+at 617–629. Two lines of body text still fit. That is the budget; anything more
+and `check_render.py`'s CONTENT_BOTTOM check fires.
+
+If a figure cannot be beside its text — Module 06's twelve-city map cannot, since
+the names do not fit at 537 px — then stack: one short line above, figure full
+width below. A deck where *every* slide does that is monotonous, so keep the
+two-column pattern wherever the figure is small enough to take it.
+
 ## Density from motion, not from more text
 
 The lecturer's framing: the slides are an aid for teaching through dialogue, so a slide

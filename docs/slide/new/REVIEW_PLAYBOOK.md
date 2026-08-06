@@ -211,6 +211,27 @@ were driven by the checker plus a single read, which is weaker coverage than thi
 intends. Record that in the fix spec rather than letting the round read as a full pass —
 the next person needs to know which slides no one looked at.
 
+### Give a fix agent the container list, not the intention
+
+Three figure agents were briefed from the figure spec while the deck was still
+being written. Each was told a container per figure; the deck then put several of
+them somewhere else, and the build gate failed twenty figures for scale. The brief
+was not wrong when it was written — it was written too early.
+
+Dispatch figure work **after** the slide that uses it exists, and paste the
+container for each figure into the brief as a list. Ask the agent to report the
+emitted line for every figure (`name  WxH bp  node NNpx  x-h NN.Npx  [container]`)
+rather than "done": that line is the only evidence that the figure is the size the
+deck needs, and it costs the agent nothing to paste.
+
+### A missing figure must fail the gate, not crash it
+
+`check_render.py` opened every figure the deck references and died with a
+traceback on the first one that did not exist, which reads as "the checker is
+broken" rather than "the deck references a file nobody generated". While a deck is
+mid-build that is the normal state and the gate has to survive it: report the
+missing file as a failure and carry on, so one run tells you about all of them.
+
 ## Expectations
 
 **The Blocker count will not fall monotonically, and that is not necessarily failure.**
