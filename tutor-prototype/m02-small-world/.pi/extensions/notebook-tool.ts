@@ -2414,7 +2414,12 @@ export default function (pi: ExtensionAPI) {
         /verbatim/i.test(m) ? verbatimFill : fixQuotes(modelFill(i)),
       );
       const problems: string[] = [];
-      if (pool.some((m) => m.trim()) && quotesInvented.length > 0) {
+      // Stand down on the STUDENT-derived half only. `pool` also carries the
+      // tutor's own question, which is never empty, so gating on it made this
+      // check fire on a photo checkpoint where the student had typed nothing
+      // — two refusals and a false "⚠ Quoting check" on the submitted
+      // notebook, for a slot whose whole job is describing a picture.
+      if ((said.length > 0 || picked.length > 0) && quotesInvented.length > 0) {
         problems.push(
           `these are in quotation marks in a note slot but the student never said them: ` +
             quotesInvented.map((q) => `"${q}"`).join(", "),
