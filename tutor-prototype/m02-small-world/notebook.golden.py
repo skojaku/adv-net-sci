@@ -504,9 +504,7 @@ def cp2_distance_note(mo):
     $L = 7/6 \approx 1.17$. "Six degrees" is exactly this number, measured
     on a whole country.
 
-    > **A to D:** A to D is 2 — you have to go through B or C.
-    >
-    > **The average over all six pairs:** five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17.
+    > **I worked out:** "A to D is 2 — you have to go through B or C." · "five pairs are 1 and A–D is 2, so 7/6 ≈ 1.17."
     """)
     return
 
@@ -639,9 +637,7 @@ def cp3_clustering_note(mo):
     so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
     network's clustering $C$ — typically HIGH in social networks.
 
-    > **What the two pictures differ by:** in the second one the friends are all connected to each other too, not just to Alice — it's more tightly knit.
-    >
-    > **What I counted, and out of how many:** two rust lines — B–F and C–E — so 2 out of 10 = 0.2.
+    > **I worked out:** "in the second one the friends are all connected to each other too, not just to Alice" · "two rust lines — B–F and C–E — so 2 out of 10 = 0.2"
     """)
     return
 
@@ -959,13 +955,7 @@ def cp5_ring_formula_note(mo):
     $N/k$ hops — half a ring at $k/2$ places per hop — and the average is
     about half that, $L \approx N/(2k)$.
 
-    > **The counting:** at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0. At k=4, of the 6 possible pairs 3 already exist.
-    >
-    > **So C₀ at k=4 is:** 3/6 = 0.5
-    >
-    > **Does C depend on N?** swapping in 1000 people changes nothing near me — C stays 0.5.
-    >
-    > **The two formulas:** farthest trip ≈ 1000/4 = 250 hops, and the average is about half that, so L ≈ N/(2k).
+    > **My work:** "at k=2 my two friends sit on opposite sides of me, two steps apart — never friends, so C = 0" · "at k=4, of the 6 possible pairs 3 already exist" · "3/6 is 0.5" · "swapping in 1000 people changes nothing near me — C stays 0.5" · "farthest trip is about 1000/4 = 250 hops, and the average is about half that, so L is about N/(2k)"
     >
     > **On paper:** the photographed page shows the 12-dot ring at k=4, node 0's four friends listed, the three existing pairs ticked, and both formulas boxed at the bottom.
     """)
@@ -987,11 +977,7 @@ def cp5_tension_note(mo):
     $C$). Real social networks somehow have BOTH high clustering and
     short paths — neither extreme world explains it.
 
-    > **The ring world:** the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N.
-    >
-    > **The random world:** delivers mail fast but none of my friends know each other.
-    >
-    > **Which one I live in:** neither, really — real life somehow gets both.
+    > **My take on the two worlds:** "the ring is cosy — my friends all know each other — but a letter crawls, L blows up with N" · "the random world delivers mail fast but none of my friends know each other" · "neither, really — real life somehow gets both"
     """)
     return
 
