@@ -103,14 +103,34 @@ def _unraw_markdown(tree, src):
 
 
 def _looks_like_ascii_art(lines):
-    """Lines made only of drawing characters — a hand-built diagram.
+    """Hand-built diagrams, labelled or not.
 
-    One such line is usually a markdown table separator (|---|---|), so
-    require two before complaining.
+    A line made ONLY of drawing characters was the original test, and it
+    missed the shape a tutor actually improvises: "A---B" over "|   |" over
+    "C---D" carries labels, so no line is pure. So a line also counts when
+    drawing characters dominate it — three or more of them, and the letters
+    and digits a minority. One line is usually a markdown table separator
+    (|---|---|), so two are needed before complaining.
     """
-    drawing = re.compile(r"^[\s/\\|_+*.\-=~^<>—–─│┌┐└┘├┤┬┴┼]{3,}$")
-    hits = [ln for ln in lines if ln.strip() and drawing.match(ln)]
-    return len(hits) >= 2
+    chars = "/\\|_+*.-=~^<>—–─│┌┐└┘├┤┬┴┼"
+    # The characters that JOIN two things. A markdown table has plenty of
+    # pipes and no connectors, which is what keeps it out of this net.
+    connectors = "-_/\\─—–"
+    pure = re.compile(r"^[\s" + re.escape(chars) + r"]{3,}$")
+    hits = 0
+    for ln in lines:
+        t = ln.strip()
+        if not t:
+            continue
+        if pure.match(ln):
+            hits += 1
+            continue
+        drawn = sum(1 for c in t if c in chars)
+        joined = sum(1 for c in t if c in connectors)
+        alnum = sum(1 for c in t if c.isalnum())
+        if drawn >= 3 and joined >= 2 and alnum <= max(3, len(t) * 0.4):
+            hits += 1
+    return hits >= 2
 
 
 def _nb_review(src):
