@@ -485,7 +485,7 @@ def _recap():
     out = ""
     for i, (top, bot) in enumerate(steps):
         x = 150 + i * 260
-        out += disc(x, 232, fill="accent" if i % 2 == 0 else "accenttwo", size=88)
+        out += disc(x, 232, fill="accent" if i % 2 == 0 else "accenttwo", size=50)
         out += text(x, 292, top, color="black", anchor="south", size=FONT)
         out += text(x, 166, bot, color="annot", anchor="north", size=FONT)
         if i:

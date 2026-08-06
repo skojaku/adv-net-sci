@@ -159,7 +159,7 @@ def _gap():
     return out
 
 
-@fig("modularity-matrix", h=360)
+@fig("modularity-matrix", h=250)
 def _matrix():
     """One pair of members: what the network did, against what chance would have done."""
     g = nx.Graph(WS_E)
@@ -167,16 +167,16 @@ def _matrix():
     i, j = 1, 2
     assert g.has_edge(i, j)
     ki, kj = g.degree(i), g.degree(j)
-    cell = 46
+    cell = 33
     order = [1, 2, 3, 4, 5, 6]
     filled = {(r, c) for r, a in enumerate(order) for c, b in enumerate(order)
               if g.has_edge(a, b)}
-    out = cell_grid(96, 330, 6, cell, filled, fill_color="accent")
-    out += text(96 + 3 * cell, 44, "who is joined to whom", color="annot",
+    out = cell_grid(130, 236, 6, cell, filled, fill_color="accent")
+    out += text(130 + 3 * cell, 34, "who is joined to whom", color="annot",
                 anchor="north", size=FONT)
-    out += arrow((470, 210), (566, 210), color="annot", w=4.0)
-    out += text(800, 244, f"this pair: 1", color="accent", anchor="center", size=44)
-    out += text(800, 150, f"by chance: {ki}x{kj}/{2 * m}", color="annot",
+    out += arrow((400, 138), (496, 138), color="annot", w=4.0)
+    out += text(780, 184, "this pair: 1", color="accent", anchor="center", size=44)
+    out += text(780, 92, f"by chance: {ki}x{kj}/{2 * m}", color="annot",
                 anchor="center", size=44)
     return out
 

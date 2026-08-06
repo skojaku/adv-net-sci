@@ -124,19 +124,22 @@ def balls_frames():
     m = g.number_of_edges()
     col = {n: (CHI if n in WS_LEFT else COFF) for n in WS_POS}
     pos = {n: (x * 0.44 + 60, y * 0.72 + 66) for n, (x, y) in WS_POS.items()}
-    base = small(pos, list(WS_E), node=34, what="balls-1", fill=col)
+    # The bag is on the page from frame one, empty. Marp renders a GIF's FIRST frame into
+    # the static export, so a first frame that only fills the left third makes the gate --
+    # correctly -- report 63% white margin on the slide.
+    empty_bag = bag(830, 200, 400, 290)
+    base = small(pos, list(WS_E), node=34, what="balls-1", fill=col) + empty_bag
 
-    # 1: the network, as balls on strings
+    # 1: the network, as balls on strings, and an empty bag waiting
     f1 = base
     # 2: one string pulled out and inspected
     pulled = (1, 3)
-    f2 = base + string((640, 240), (860, 240), color="accenttwo", w=5.0)
-    f2 += disc(640, 240, fill=col[pulled[0]], size=48)
-    f2 += disc(860, 240, fill=col[pulled[1]], size=48)
-    f2 += text(750, 150, "same colour", color="accenttwo", anchor="north", size=FONT)
+    f2 = base + string((700, 250), (940, 250), color="accenttwo", w=5.0)
+    f2 += disc(700, 250, fill=col[pulled[0]], size=48)
+    f2 += disc(940, 250, fill=col[pulled[1]], size=48)
+    f2 += text(820, 160, "same colour", color="accenttwo", anchor="north", size=FONT)
     # 3: every string cut, the balls in the bag
-    f3 = small(pos, list(WS_E), node=34, what="balls-3", fill=col)
-    f3 += bag(830, 200, 400, 290)
+    f3 = small(pos, list(WS_E), node=34, what="balls-3", fill=col) + empty_bag
     rng = np.random.default_rng(2)
     slots = [(680 + (i % 5) * 76 + rng.uniform(-8, 8),
               110 + (i // 5) * 78 + rng.uniform(-7, 7)) for i in range(2 * m)]

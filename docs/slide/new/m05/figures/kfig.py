@@ -76,7 +76,9 @@ def karate(fill=None, heavy=(), heavy_color="accentthree", rings=(),
         else:
             out += seg(p, q, color="black", w=2.2)
     for n, (x, y) in pos.items():
-        size = KNODE * 1.55 if n in big else KNODE
+        # 1.55 lands at 52.7px and the gate's ceiling is 52 -- exactly the kind of
+        # off-by-a-pixel that a computed assertion would have called fine.
+        size = KNODE * 1.42 if n in big else KNODE
         out += disc(x, y, fill=fill.get(n, CDIM), size=size)
     for n in rings:
         out += ring(*pos[n], size=KNODE, color=ring_color, w=4.4, grow=13)

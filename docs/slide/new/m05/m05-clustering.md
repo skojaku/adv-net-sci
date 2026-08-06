@@ -29,15 +29,14 @@ Open with a karate club in 1970, not with a definition of community. Everything 
 
 <div class="steps-list">
 
-<div><div class="i">01</div><div>A karate club, 1970 — and a line the room cannot agree on</div></div>
-<div><div class="i">02</div><div>What counts as a group? The first instinct, and how it fails</div></div>
-<div><div class="i">03</div><div>Zachary's own answer — stop looking for groups, cut between them</div></div>
-<div><div class="i">04</div><div>More than chance — coloured balls, strings, and modularity</div></div>
-<div><div class="i">05</div><div>Climbing Q — Louvain, Leiden, and why every method here is a guess</div></div>
-<div><div class="i">06</div><div>Turn it around — communities first, network second</div></div>
+<div><div class="i">01</div><div>A karate club, 1970, and a line nobody agrees on</div></div>
+<div><div class="i">02</div><div>What counts as a group?</div></div>
+<div><div class="i">03</div><div>Zachary's answer — cut between them</div></div>
+<div><div class="i">04</div><div>More than chance — balls, strings, modularity</div></div>
+<div><div class="i">05</div><div>Climbing Q — Louvain and Leiden</div></div>
+<div><div class="i">06</div><div>Turn it around — communities first</div></div>
 <div><div class="i">07</div><div>Three ways modularity lies</div></div>
-<div><div class="i">08</div><div>How would you know?</div></div>
-<div><div class="i">09</div><div>Where this lands</div></div>
+<div><div class="i">08</div><div>How would you know? And where this lands</div></div>
 
 </div>
 
@@ -78,9 +77,7 @@ Zachary 1977, Journal of Anthropological Research 33(4): 452-473. Observed 1970-
 
 <hr>
 
-**Mr. Hi** taught the class and wanted the fees raised. **John A.** ran the club's business and wanted them held where they were.
-
-Thirty-four members were caught between them.
+**Mr. Hi** taught the class and wanted the fees raised. **John A.** ran the business and wanted them held. Thirty-four members were caught between.
 
 <div class="fig">
 
@@ -211,17 +208,17 @@ Take two or three answers before moving on. "They were friends already" is the b
 
 <hr>
 
-<div class="fig">
+* People befriend people **like themselves**
+* The **same work** puts people together
+* Organisations are built in **layers**
+* Information runs down **shared channels**
+
+<div class="fig stack">
 
 ![w:1080](figures/why-groups.png)
 <figcaption>four groups, four different things that made them</figcaption>
 
 </div>
-
-* People befriend people **like themselves**
-* People who do the **same work** meet constantly
-* Organisations are built in **layers**
-* Information flows down **shared channels**
 
 <!--
 Homophily, shared function, hierarchy, shared information pathways. Different causes, and they leave different traces -- which is why one definition of "community" will not fit all four.
@@ -395,16 +392,14 @@ The clique is the k-plex with k = 0.
 
 <hr>
 
-A **k-core**: every member keeps at least **k** friends *inside* the group. Peel away anyone who cannot, and repeat.
+A **k-core**: keep at least **k** friends *inside* the group. Peel away anyone who cannot, repeat, and count with me.
 
 <div class="fig">
 
 ![w:1080](figures/kcore-peel.gif)
-<figcaption>peeling the club down: k = 1, then 2, then 3, then 4</figcaption>
+<figcaption>peeling the club down — it stops at the 4-core, ten people</figcaption>
 
 </div>
-
-Count with me. The club stops at the **4-core** — ten people.
 
 <!--
 Run the peel out loud. Ask what happens at k=5: the core empties. Ten people is a third of the club, and it is not two groups.
@@ -504,14 +499,14 @@ Nowhere. Wait for someone to say it.
 
 <hr>
 
+Each definition is a different answer to *what counts as a group*, so the problem is **ill-posed** — there is no fact of the matter to be right about.
+
 <div class="fig">
 
 ![w:1080](figures/patterns-overlap.png)
 <figcaption>four pattern-groups on the same club — overlapping, and leaving people out</figcaption>
 
 </div>
-
-Every definition here is a different answer to *what counts as a group*, so community detection is **ill-posed**: there is no fact of the matter to be right about.
 
 <!--
 This is m05.c03 and it is the sentence the rest of the module keeps returning to. The move now is: stop defining, start optimising.
@@ -533,12 +528,10 @@ Zachary stopped looking for groups
 
 <hr>
 
-Zachary's move: do not ask what a group *is*. Ask where the network is **thinnest**, and cut it there.
-
 <div class="fig">
 
 ![w:1080](figures/cut-idea.png)
-<figcaption>nine members, and the obvious place to cut</figcaption>
+<figcaption>do not ask what a group is — ask where the network is thinnest</figcaption>
 
 </div>
 
@@ -947,16 +940,16 @@ $$Q = \text{observed} - \text{expected}$$
 
 <hr>
 
+<div class="formula">
+
+$$Q = \frac{1}{2m}\sum_{ij}\left[A_{ij} - \frac{k_i k_j}{2m}\right]\delta(c_i, c_j)$$
+
+</div>
+
 <div class="fig">
 
 ![w:1080](figures/modularity-matrix.png)
 <figcaption>one pair of members: what happened, against what chance predicted</figcaption>
-
-</div>
-
-<div class="formula">
-
-$$Q = \frac{1}{2m}\sum_{ij}\left[A_{ij} - \frac{k_i k_j}{2m}\right]\delta(c_i, c_j)$$
 
 </div>
 
@@ -1095,7 +1088,7 @@ B(34) = 2.1e28. Do NOT say "more than atoms in the universe" -- that is about 1e
 
 <hr>
 
-Start with everyone in their own group. Take one member at a time and move her into whichever neighbouring group raises Q the most. Stop when no move helps.
+Everyone starts alone. Move each member into whichever neighbouring group raises Q the most, until no move helps.
 
 <div class="fig">
 
@@ -1114,16 +1107,14 @@ This is greedy local search, and it is the whole of phase one. The GIF ends on t
 
 <hr>
 
-Collapse each group into a single node — friendships between groups become weighted links — and run phase one again on the smaller network.
+Collapse each group into one node, run phase one again, repeat. The **hierarchy is a by-product**.
 
 <div class="fig">
 
 ![w:1080](figures/louvain.gif)
-<figcaption>the same run: local moves, then the groups become nodes</figcaption>
+<figcaption>local moves, then the groups themselves become nodes</figcaption>
 
 </div>
-
-The **hierarchy is a by-product**: each round is a coarser level of the same network.
 
 <!--
 Fast enough for millions of nodes. Every round is cheap because the network shrinks.
@@ -1290,13 +1281,9 @@ Let them describe it before showing it. Some will say "no communities". That is 
 <div class="fig">
 
 ![w:1080](figures/sbm-three-cases.png)
-<figcaption>three block matrices, and the three networks they write</figcaption>
+<figcaption>inside more likely; outside more likely; and no difference at all</figcaption>
 
 </div>
-
-* Inside more likely — ordinary communities
-* Outside more likely — **disassortative**, and just as real
-* No difference at all — the model collapses to a random graph
 
 <!--
 m05.c52. Predator and prey; buyers and sellers; men and women in a dating network. Modularity would score these near zero and report nothing.

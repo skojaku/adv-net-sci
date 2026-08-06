@@ -54,12 +54,12 @@ def _dispute():
     out = ""
     for x, col, who, want in ((168, "accent", "Mr. Hi", "raise\\\\the dues"),
                               (912, "accenttwo", "John A.", "keep them\\\\as they are")):
-        out += disc(x, 246, fill=col, size=96)
+        out += disc(x, 246, fill=col, size=52)
         out += text(x, 302, who, color=col, anchor="south", size=44)
         out += text(x, 186, want, color="black", anchor="north", size=FONT)
     for i in range(32):
         r, c = divmod(i, 8)
-        out += disc(352 + c * 54, 306 - r * 62, fill="annot", size=30)
+        out += disc(352 + c * 54, 306 - r * 62, fill="annot", size=28)
     for i in range(9):                       # the crack running down the middle
         y0, y1 = 62 + i * 32, 62 + (i + 1) * 32
         out += seg((540 + (-9 if i % 2 else 9), y0), (540 + (9 if i % 2 else -9), y1),
@@ -122,25 +122,29 @@ def _crossing():
     return karate(fill=split_fill(hi), heavy=cross, heavy_color="black", faint=inside)
 
 
-@fig("why-groups", h=340)
+@fig("why-groups", h=214, hmod="stack")
 def _why():
-    """Four groups, four different reasons -- one drawing, not four panels."""
+    """Four groups, four different reasons -- one drawing, not four panels.
+
+    Built to the `stack` cap of 190bp rather than the usual 380. The slide it sits on
+    carries a four-item build as well, and a 259bp figure plus four rows plus a title
+    runs past the pagination row in either order. The type does not shrink; the drawing
+    does.
+    """
     labels = ["same kind", "same job", "same rank", "same channel"]
-    pos, edges, names = {}, [], {}
-    for g, (cx, lab) in enumerate(zip((150, 460, 770, 1010), labels)):
+    pos, edges = {}, []
+    for g in range(4):
         cx = 148 + g * 262
         base = g * 4
-        p = {base + 0: (cx, 268), base + 1: (cx - 76, 196),
-             base + 2: (cx + 76, 196), base + 3: (cx, 124)}
-        pos.update(p)
+        pos.update({base: (cx, 178), base + 1: (cx - 76, 134),
+                    base + 2: (cx + 76, 134), base + 3: (cx, 90)})
         edges += [(base, base + 1), (base, base + 2), (base + 1, base + 3),
                   (base + 2, base + 3), (base + 1, base + 2)]
-        names[base + 3] = lab
         if g:
             edges.append((base - 2, base + 1))          # one link to the group before
-    body = small(pos, edges, fill={n: "accent" for n in pos}, what="why-groups")
+    body = small(pos, edges, node=32, fill={n: "accent" for n in pos}, what="why-groups")
     for g, lab in enumerate(labels):
-        body += text(148 + g * 262, 84, lab, color="accenttwo", anchor="north", size=FONT)
+        body += text(148 + g * 262, 62, lab, color="accenttwo", anchor="north", size=FONT)
     return body
 
 
