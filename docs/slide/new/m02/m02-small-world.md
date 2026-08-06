@@ -1424,7 +1424,7 @@ $L$ collapses while $C$ is still essentially untouched. A few random edges are e
 
 </div>
 
-By the time the routes have halved, clustering has lost about one per cent. Ask for both at once — paths at most half, clustering still four-fifths — and the band spans a factor of five in $p$.
+By the time the routes have halved, clustering has lost about one per cent. Ask for both at once — paths at most half, clustering still four-fifths — and the band spans more than a decade in $p$.
 
 ---
 

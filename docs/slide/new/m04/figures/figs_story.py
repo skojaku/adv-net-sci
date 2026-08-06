@@ -12,6 +12,7 @@ authored for 1080bp and dropped into a 537bp column renders at 48% of its intend
 
 import itertools
 import math
+import re
 from functools import lru_cache
 
 import networkx as nx
@@ -21,7 +22,8 @@ from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean
 from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, PXBP, SMALLNODE,
                     TEXT_MIN_PX, Axes,
                     assert_planar_drawing, clearance_bad, disc, dot, draw_labels, emit,
-                    pct, place_labels, polyline, render, ring, scene_clear, seg,
+                    pct, place_labels, polyline, rect, render, ring, scene_clear,
+                    seg,
                     text)
 from verify_numbers import (FELD_EDGES, FELD_ORDER, LITERATURE, MARKETVILLE_ABOVE,
                             MARKETVILLE_BELOW, MARKETVILLE_EQUAL, MARKETVILLE_PK,
@@ -35,29 +37,6 @@ ARROW = "-{Stealth[length=13bp,width=9bp]}"
 
 
 # --------------------------------------------------------------------------- helpers
-def rect(x0, y0, x1, y1, draw="black", fill=None, w=2.6, rounded=0):
-    o = [f"line width={w}bp"]
-    o.append(f"draw={draw}" if draw else "draw=none")
-    if fill:
-        o.append(f"fill={fill}")
-    if rounded:
-        o.append(f"rounded corners={rounded}bp")
-    return f"\\draw[{','.join(o)}] ({x0:.1f},{y0:.1f}) rectangle ({x1:.1f},{y1:.1f});\n"
-
-
-def arc(p, q, bulge=70, color="accenttwo", w=3.4, dash=DASH, n=30):
-    """A parabolic arc from p to q, bulging left of p->q.  TikZ has no straight-line
-    'bend' primitive we can also sample, and the pairing arcs must clear the discs."""
-    (px, py), (qx, qy) = p, q
-    dx, dy = qx - px, qy - py
-    L = math.hypot(dx, dy)
-    cx, cy = (px + qx) / 2 - dy / L * 2 * bulge, (py + qy) / 2 + dx / L * 2 * bulge
-    pts = [((1 - t) ** 2 * px + 2 * t * (1 - t) * cx + t * t * qx,
-            (1 - t) ** 2 * py + 2 * t * (1 - t) * cy + t * t * qy)
-           for t in (i / n for i in range(n + 1))]
-    return polyline(pts, color=color, w=w, dash=dash)
-
-
 def cross(x, y, r=20, color="accenttwo", w=5.0):
     return (seg((x - r, y - r), (x + r, y + r), color=color, w=w)
             + seg((x - r, y + r), (x + r, y - r), color=color, w=w))
@@ -66,29 +45,13 @@ def cross(x, y, r=20, color="accenttwo", w=5.0):
 # ONE edge-end glyph for the whole module (R1 A-6).  Reviewer B measured the same
 # object at 8x63px on slide 028 and 4x39px on 034, in a deck that otherwise keeps its
 # objects stable.  Every figure that draws an edge end -- sum-ends, mean-degree,
-# qk-formula, rosters, two-averages -- now draws THIS mark.  Spacing is a per-figure
-# layout choice; the mark is not.
+# qk-formula, rosters, two-averages -- draws THIS mark.  Spacing is a per-figure layout
+# choice; the mark is not.
 END_W, END_H = 6.0, 34
 
 
 def end_mark(x, y, color="accenttwo"):
     return seg((x, y - END_H / 2), (x, y + END_H / 2), color=color, w=END_W)
-
-
-def tick(x, y, h=END_H, color="accenttwo", w=END_W):
-    return seg((x, y - h / 2), (x, y + h / 2), color=color, w=w)
-
-
-def bar(x, y, h=60, w=9, color="accent"):
-    return rect(x - w / 2, y - h / 2, x + w / 2, y + h / 2, draw=None, fill=color)
-
-
-def strip(x0, x1, y, share, h=44, fill="accenttwo", back="annot"):
-    """A part-of-whole strip: the whole is drawn, the part is filled.  Not a bar chart --
-    the scale is the strip itself, so there is nothing to decode against an axis."""
-    assert 0 <= share <= 1
-    return (rect(x0, y - h / 2, x0 + (x1 - x0) * share, y + h / 2, draw=None, fill=fill)
-            + rect(x0, y - h / 2, x1, y + h / 2, draw=back, w=2.4))
 
 
 def feld_body(pos=None, color="black", w=EDGE_W):
@@ -121,6 +84,67 @@ def num(x, d=1):
     q = Decimal(repr(float(x))).quantize(Decimal("1" if d == 0 else "0." + "0" * d),
                                          rounding=ROUND_HALF_UP)
     return f"{q}"
+
+
+# --------------------------------------------------------------- the one role table
+# R4 A4-1: three rounds addressed this by recolouring one figure at a time, and each
+# time the sibling twelve lines below kept the opposite key -- accent-2 meant "above her
+# friends' average" on slide 010 and "below" on 012, on the slide built to confirm the
+# result at eighteen times the scale.  A role written into one function binds nothing.
+# It is declared once here, both figures draw through `role_disc`, and
+# `assert_role_consistency` fails the build if any two figures disagree about what a
+# colour means.
+ABOVE_FRIENDS = "accenttwo"   # her friends average FEWER than she has -- the hubs
+BELOW_FRIENDS = None          # hollow: legible as "not red", carrying no second meaning
+EQUAL_FRIENDS = "annot"       # exactly equal
+
+_FRIEND_ROLE = {"above": ABOVE_FRIENDS, "below": BELOW_FRIENDS, "equal": EQUAL_FRIENDS}
+_ROLE_LOG = {}
+
+
+def friend_role(rel, what):
+    """The single place a below/above/equal group becomes a way of drawing a disc."""
+    assert rel in _FRIEND_ROLE, rel
+    role = _FRIEND_ROLE[rel]
+    seen, first = _ROLE_LOG.setdefault(role, (rel, what))
+    assert seen == rel, (
+        f"{what} draws '{rel}' the way {first} draws '{seen}' -- one colour, two "
+        f"meanings, across two figures. Change the role table, not the call site.")
+    return role
+
+
+def role_disc(x, y, role, label="", size=NODE):
+    """A disc in one of the three roles.  Hollow is a white disc with an ink ring, and
+    the count rides inside the node: a separate text() would be recorded by the
+    collision gate and the edges underneath it are rules."""
+    if role is BELOW_FRIENDS:
+        return (disc(x, y, label, fill="white", text_col="black", size=size)
+                + ring(x, y, size=size, color="black", w=3.0, grow=0))
+    return disc(x, y, label, fill=role, size=size)
+
+
+_DISC_RE = re.compile(r"disc,fill=(\w+),minimum size=[\d.]+bp")
+
+
+def assert_role_counts(body, expect, what):
+    """Count the discs the body actually DRAWS, by role, and check them against the data.
+
+    `friend_role` centralises the table but cannot see a call site that bypasses it,
+    which is precisely what happened: `fig_marketville_146` hardcoded the colours and no
+    amount of declaring changed that.  This counts fills in the emitted TeX, so it holds
+    whatever route drew them -- and it is the check that fails if the 80 "below" girls
+    are ever drawn in the 41 "above" colour again.
+    """
+    fills = {}
+    for m in _DISC_RE.finditer(body):
+        fills[m.group(1)] = fills.get(m.group(1), 0) + 1
+    got = {"above": fills.get(ABOVE_FRIENDS, 0),
+           "below": fills.get("white", 0),
+           "equal": fills.get(EQUAL_FRIENDS, 0)}
+    assert got == expect, (
+        f"{what}: the drawing holds {got} where the data says {expect} -- a group is "
+        f"being drawn in another group's colour. Fix the role table, not the figure.")
+
 
 
 # =========================================================================== Part One
@@ -250,10 +274,12 @@ def fig_feld_friendmeans():
     # filled accent-2, below is a hollow disc, and equal stays gray, so this figure
     # spends no colour on a meaning any other figure has taken.
     assert ABOVE == ["Sue", "Alice"], ABOVE
-    colour = {n: ("accenttwo" if n in ABOVE else "annot" if n in EQUAL else None)
-              for n in FELD_ORDER}
-    assert sum(v == "accenttwo" for v in colour.values()) == len(ABOVE) == 2
-    assert sum(v is None for v in colour.values()) == len(BELOW) == 5
+    rel = {n: ("above" if n in ABOVE else "equal" if n in EQUAL else "below")
+           for n in FELD_ORDER}
+    colour = {n: friend_role(rel[n], "feld-friendmeans") for n in FELD_ORDER}
+    assert sum(v == ABOVE_FRIENDS for v in colour.values()) == len(ABOVE) == 2
+    assert sum(v is BELOW_FRIENDS for v in colour.values()) == len(BELOW) == 5
+    assert sum(v == EQUAL_FRIENDS for v in colour.values()) == len(EQUAL) == 1
 
     # Sixteen labels sharing eight coordinates: the name and the chip are solved as
     # independent labels of the same disc, so each finds its own free side.
@@ -266,19 +292,13 @@ def fig_feld_friendmeans():
 
     b = feld_body()
     for n in FELD_ORDER:
-        if colour[n] is None:
-            # the count rides inside the disc node, as it does everywhere else -- a
-            # separate text() would be recorded and the edges under it are rules.
-            b += disc(*POS[n], str(degree(n)), fill="white", text_col="black")
-            # ink, not gray: the deck's key names red and names Carol, so gray has
-            # to stay Carol's. A hollow ink disc reads as "a node, not red".
-            b += ring(*POS[n], size=NODE, color="black", w=3.0, grow=0)
-        else:
-            b += disc(*POS[n], str(degree(n)), fill=colour[n])
+        b += role_disc(*POS[n], colour[n], str(degree(n)))
     for key, (anc, dx, dy) in chosen.items():
         n = key.rstrip("#")
         b += text(POS[n][0] + dx, POS[n][1] + dy, lab[key], anchor=anc,
                   color=(colour[n] or "black") if key.endswith("#") else "black")
+    assert_role_counts(b, {"above": len(ABOVE), "below": len(BELOW), "equal": len(EQUAL)},
+                       "feld-friendmeans")
     emit("feld-friendmeans", b, container="full", h=FULL_H)
 
 
@@ -314,9 +334,13 @@ def fig_marketville_146():
     assert n == 146 == MARKETVILLE_BELOW + MARKETVILLE_ABOVE + MARKETVILLE_EQUAL
     assert num(k1, 1) == "2.7" and num(friend, 1) == "3.4"
 
-    groups = [(MARKETVILLE_BELOW, "accenttwo", "below"),
-              (MARKETVILLE_ABOVE, "accent", "above"),
-              (MARKETVILLE_EQUAL, "annot", "equal")]
+    # R4 A4-1: this block is the largest single piece of ink in Part One and it used to
+    # hardcode the opposite key to slide 010's, so read with 010's legend it said eighty
+    # girls were ahead of their friends -- the module's thesis, inverted, on the slide
+    # built to confirm it. The roles come from the table now.
+    groups = [(MARKETVILLE_ABOVE, friend_role("above", "marketville-146"), "above"),
+              (MARKETVILLE_BELOW, friend_role("below", "marketville-146"), "below"),
+              (MARKETVILLE_EQUAL, friend_role("equal", "marketville-146"), "equal")]
     # check_render measures discs on the RENDERED SLIDE against a 26-52px band, and 24bp
     # discs came back 23.5px -- under it.  28bp on a 32bp pitch is the smallest that
     # clears the floor and still lets three blocks and two gaps fit the canvas.
@@ -328,12 +352,15 @@ def fig_marketville_146():
     b, x, drawn = "", (1080 - total) / 2 + size / 2, 0
     for (count, col, lab), n_, wide in zip(groups, ncols, widths):
         for i in range(count):
-            b += disc(x + (i // rows) * pitch, 150 + (i % rows) * pitch,
-                      fill=col, size=size)
+            b += role_disc(x + (i // rows) * pitch, 150 + (i % rows) * pitch,
+                           col, size=size)
             drawn += 1
-        b += text(x + (n_ - 1) * pitch / 2, 95, f"{count} {lab}", color=col)
+        b += text(x + (n_ - 1) * pitch / 2, 95, f"{count} {lab}",
+                  color=col or "black")
         x += wide + gap
     assert drawn == 146
+    assert_role_counts(b, {"above": MARKETVILLE_ABOVE, "below": MARKETVILLE_BELOW,
+                           "equal": MARKETVILLE_EQUAL}, "marketville-146")
     b += text(540, 330, f"{num(k1,1)} friends each, {num(friend,1)} per friend")
     emit("marketville-146", b, container="full", h=FULL_H)
 
@@ -596,13 +623,16 @@ def fig_bag_of_hands():
     for v in FELD_ORDER:
         owners += [v] * degree(v)
     assert len(owners) == 2 * M["M"] == 20
-    assert len({v[0] for v in FELD_ORDER}) == len(FELD_ORDER), "initials are not unique"
-
-    b = rect(30, 40, 480, 285, draw="annot", w=3.4, rounded=20)
+    # R4 A4-10: full names, not initials. Round 3 put B/S/A/J/P/D/C/T in the bag and a
+    # three-of-eight legend under it; the legend was then dropped rather than completed,
+    # leaving nothing on the slide that decodes a letter. Four columns instead of five
+    # buys the room to write the name out, which needs no legend at all.
+    b = rect(20, 15, 516, 292, color="annot", w=3.4, rounded=20,
+             what="the bag")
     for i, v in enumerate(owners):
-        x, y = 60 + (i % 5) * 88, 250 - (i // 5) * 60
+        x, y = 40 + (i % 4) * 124, 260 - (i // 4) * 55
         b += end_mark(x, y)
-        b += text(x + 16, y, v[0], color="annot", anchor="west")
+        b += text(x + 16, y, v, color="annot", anchor="west")
     b += text(268, 330, f"{len(owners)} ends, and whose they are")
     emit("bag-of-hands", b, container="col", h=COL_H)
 
@@ -676,8 +706,13 @@ _DERIV = [
     r"$\dsp \ksq = \vk + \kk^2$",
     r"$\dsp \kf = \kk + \frac{\vk}{\kk}$",
 ]
-_GLOSS = [r"substitute $q(k)$", "name the numerator",
+# "name the numerator" drew to x = 1052 against a frame border at 1040, so the border
+# ran through its last letter on three consecutive slides. The collision gate cannot see
+# it -- a frame rectangle is not in its blocker set -- so the containment is asserted
+# below, against the measured ink rather than against the modelled box.
+_GLOSS = [r"substitute $q(k)$", r"name $\ksq$",
           r"rewrite $\ksq$", "the theorem"]
+_FRAME = (40, 20, 1040, 356)
 _DERIV_Y = [300, 226, 152, 78]
 _EQ_X, _GLOSS_X = 150, 760
 
@@ -729,12 +764,17 @@ def _derivation(upto):
     identical by construction rather than by inspection.
     """
     _assert_subscript_height()
-    b = _MACROS + rect(40, 20, 1040, 356, draw="annot", w=2.4, rounded=10)
+    b = _MACROS + rect(*_FRAME, color="annot", w=2.4, rounded=10,
+                       what="the derivation frame")
     for i in range(upto):
         assert _EQ_X + _ink_width(_DERIV[i]) < _GLOSS_X - 20, (
             f"derivation line {i + 1} is drawn to x="
             f"{_EQ_X + _ink_width(_DERIV[i]):.0f} and the gloss column starts at "
             f"{_GLOSS_X}. Shorten the line or move the column; do not shrink the type.")
+        assert _GLOSS_X + _ink_width(_GLOSS[i]) < _FRAME[2] - 12, (
+            f"gloss {i + 1} is drawn to x="
+            f"{_GLOSS_X + _ink_width(_GLOSS[i]):.0f} and the frame border sits at "
+            f"{_FRAME[2]} -- the border will run through its last letter")
         b += text(78, _DERIV_Y[i], str(i + 1), color="annot")
         if i == 3:
             b += (f"\\node[font=\\fontsize{{{FONT}}}{{{int(FONT*1.15)}}}\\selectfont,"
@@ -835,8 +875,8 @@ def fig_two_averages():
 
 _STAR = nx.star_graph(3)
 _RING = nx.cycle_graph(6)
-_STAR_POS = {0: (250, 230), 1: (110, 150), 2: (110, 310), 3: (392, 230)}
-_RING_POS = {i: (790 + 190 * math.cos(math.radians(a)), 230 + 95 * math.sin(math.radians(a)))
+_STAR_POS = {0: (250, 260), 1: (110, 180), 2: (110, 340), 3: (392, 260)}
+_RING_POS = {i: (790 + 190 * math.cos(math.radians(a)), 260 + 95 * math.sin(math.radians(a)))
              for i, a in enumerate(range(0, 360, 60))}
 
 
@@ -871,12 +911,15 @@ def _worksheet(values=None):
     # appended inside the same node through a macro rather than a second node: it keeps
     # the two parts on one baseline, and it keeps the colour name out of the string
     # figlib's collision gate measures.
-    b = "\\def\\ans#1{\\textcolor{accenttwo}{#1}}\n" + b
-    left = _ink_width(_WS_Q) / 2
+    # R4 A4-9: the answer is written ON the rule the question drew for it, not appended
+    # to the prompt. The prompt is the same string in both states, centred at the same
+    # x, so nothing about it moves; the rule is in both; and the ink extents are set by
+    # the graphs and the rule, so the two states crop identically and cannot jump.
     for i, cx in enumerate(_WS_CX):
-        q = _WS_Q if not values else _WS_Q[:-1] + f" \\ans{{{{}}= {values[i]}}}$"
-        b += text(cx - left, 78, q, anchor="west")
+        b += text(cx, 110, _WS_Q)
         b += seg((cx - 100, 32), (cx + 100, 32), color="accenttwo", w=5.0)
+        if values:
+            b += text(cx, 40, f"${values[i]}$", color="accenttwo", anchor="south")
     return b
 
 

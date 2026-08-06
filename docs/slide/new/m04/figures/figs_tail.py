@@ -341,9 +341,13 @@ def curve_label(ax, s, ats, own, boxes, others=(), color="black", size=FONT, pad
     # length on a frame the module now shares. Proximity has run out as a cue, so the
     # label gets a leader instead of a worse position -- placed where there is actually
     # room, joined to its own curve by a line, and asserted to cross nothing else.
+    # The leader phase sweeps every 15 degrees rather than the eight tidy sides: it is
+    # already drawing a line to say which curve it belongs to, so the direction no longer
+    # has to be one a reader would infer, and a 24-direction sweep finds pockets the
+    # 8-direction one steps over. `max 315` sits in one of them.
     best = None
-    for at, r, deg in ((a, r, d) for a in ats for r in (46, 60, 78, 98, 122, 150)
-                       for d in _SIDES):
+    for at, r, deg in ((a, r, d) for a in ats for r in (46, 60, 78, 98, 122, 150, 180)
+                       for d in range(0, 360, 15)):
         a = math.radians(deg)
         cx, cy = at[0] + r * math.cos(a), at[1] + r * math.sin(a)
         b = label_box(cx, cy, v, "center", size=size)
@@ -1570,13 +1574,14 @@ def _quiz_body(labels, fills, dashes):
     body += ax.frame()
     body += text((ax.x0 + ax.x1) / 2, 79, "degree $k$", anchor="north")
     body += text(676, (ax.y0 + ax.y1) / 2, "$P(k' > k)$", rot=90)
-    drawn, anchors = [], []
+    drawn, anchors, curves = [], [], []
     for d, col, dash, fracs in ((ua, fills[0], dashes[0], (0.85, 0.7, 0.95, 0.55)),
                                 (ba, fills[1], dashes[1], (0.75, 0.6, 0.9, 0.45))):
         ks, su = ccdf_dense(d)
         body += curve(ax, ks, su, color=col, w=4.2, dash=dash)
         pts = curve_pts(ax, ks, su)
         drawn += pts
+        curves.append((col, pts))
         anchors.append((col, [pts[min(int(len(pts) * f), len(pts) - 1)] for f in fracs]))
     # R1 B-13 / C2-5: the switch belongs in the DRAWING. The sketches are 14-node runs of
     # the two rules; the tails are the 20,000-node ones.
@@ -1584,7 +1589,7 @@ def _quiz_body(labels, fills, dashes):
     body += text((QUIZ_A[0] + QUIZ_B[2]) / 2, 8, switch, color="annot", anchor="south")
     said = list(labels) + [switch, "degree $k$", "$P(k' > k)$", "1", "10", "100",
                            "$10^{-4}$", "$10^{-2}$"]
-    return body, ax, ba, ua, said, drawn, anchors
+    return body, ax, ba, ua, said, drawn, anchors, curves
 
 
 def _quiz_curve_labels(ax, drawn, anchors, texts):
@@ -1610,7 +1615,7 @@ def fig_quiz():
     # one neutral fill, still carries no hub/no-hub key, and the disc-edge boundary comes
     # back. It also puts the discs back under `check_render`'s node-size gate once
     # `NODE_FILLS` gains the gray.
-    body, ax, ba, ua, said, drawn, anchors = _quiz_body(
+    body, ax, ba, ua, said, drawn, anchors, _curves = _quiz_body(
         ("A", "B"), ("annot", "annot"), ("", DASH_LONG))
     said += ["A", "B"]
     body += _quiz_curve_labels(ax, drawn, anchors, ("A", "B"))
@@ -1626,12 +1631,22 @@ def fig_quiz():
 
 def fig_quiz_answer():
     """Slide 73: the same two, named, with the tails' largest degrees."""
-    body, ax, ba, ua, _, drawn, anchors = _quiz_body(
+    body, ax, ba, ua, _, drawn, anchors, curves = _quiz_body(
         ("no preference", "preference"), (NO_HUBS, HUBS), ("", ""))
-    # Each tail is labelled with its own largest degree, at the end of the curve -- which
-    # is where that degree sits on the axis, so the number reads as the point it marks.
-    body += _quiz_curve_labels(ax, drawn, anchors,
-                               (f"{int(ua.max())}", f"{int(ba.max())}"))
+    # R4 C4-5: a bare "315" placed where the solver found room sat at an x the axis reads
+    # as k = 138, so the number looked like a coordinate rather than a property of the
+    # curve. Each one is glossed the way slide 073 glosses its own, and anchored at its
+    # curve's LAST point with a leader -- so it names the end of the tail and cannot be
+    # read off the axis underneath it.
+    boxes = [label_box(ax.X(v), ax.y0 - 17, dec(v), "north") for v in (1, 10, 100)]
+    # The preferential tail reaches the frame's bottom-right corner, so it is the
+    # constrained one and claims its spot first.
+    for (col, pts), d in sorted(zip(curves, (ua, ba)), key=lambda z: -int(z[1].max())):
+        body += curve_label(ax, f"max {int(d.max())}",
+                            [pts[-1], pts[-6], pts[-14], pts[-26]], pts, boxes,
+                            others=[q for c, p in curves if c != col for q in p],
+                            color=col, floor=14, margin=1.1, force_leader=True,
+                            bounds=(700, ax.y0 + 6, 1070, ax.y1 - 6))
     emit("quiz-answer", body, container="full", h=H)
 
 

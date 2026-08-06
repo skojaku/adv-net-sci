@@ -1668,7 +1668,9 @@ def fig_transitivity_def():
               anchor="west")
     s += text(x, 232, f"hub $\\binom{{{WM_HUB_K}}}{{2}} = {WM_HUB_TRIPLETS}$",
               color="black", anchor="west")
-    s += text(x, 172, f"$+$ 10 blades $= {WM_BLADE_TRIPLETS}$, so ${total}$",
+    s += text(x, 190, f"$+$ 10 blade nodes $\\times \\binom{{2}}{{2}} = "
+                      f"{WM_BLADE_TRIPLETS}$", color="black", anchor="west")
+    s += text(x, 132, f"${WM_HUB_TRIPLETS} + {WM_BLADE_TRIPLETS} = {total}$ triplets",
               color="black", anchor="west")
     s += text(x, 80, f"$C = \\dfrac{{3 \\times {WM_TRIANGLES}}}{{{total}}} = "
                      f"\\dfrac{{{WM_T.numerator}}}{{{WM_T.denominator}}} "
@@ -2246,7 +2248,7 @@ def _sweep_data():
     as "L rises with p".  Everything below p = 0.01 gets 24 runs."""
     import json
     cfg = dict(n=400, k=8, runs=6, quiet_runs=24, quiet=6,
-               ps=[round(10 ** (-4 + 4 * i / 12), 6) for i in range(13)])
+               ps=[round(10 ** (-4 + 4 * i / 24), 6) for i in range(25)])
     cache = OUT / "_sweep.json"
     if cache.exists():
         d = json.loads(cache.read_text())
@@ -2397,14 +2399,27 @@ for _p, _c, _l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"]):
 assert BAND_LO <= min(_QUALIFY) and max(_QUALIFY) <= BAND_HI, (
     f"the drawn band [{BAND_LO:.5f}, {BAND_HI:.5f}] does not cover every measured p that "
     f"meets the criterion ({min(_QUALIFY)}-{max(_QUALIFY)}) -- it understates its own data")
-# The figure's whole point is that this is a RANGE of p and not a value.  A decade is the
-# weakest form of that claim which the sweep supports, so it is the one asserted; the
-# deck's sentence is written from BAND_DECADES and nothing else.
-assert BAND_DECADES >= 1.0, (
-    f"the band spans {BAND_DECADES:.2f} decades -- under one decade the deck cannot say "
-    f"the small-world regime is wide, and the sentence must be rewritten, not the band")
+# A tripwire, not a threshold. `assert BAND_DECADES >= 1.0` used to stand here, and its
+# bound was chosen AFTER the answer first came out at 1.18 -- so if a better sweep had put
+# the honest band at 0.9 the build would have broken, and the cheapest way to make it pass
+# would have been to move the criterion until the number was a decade again. An assertion
+# cannot say "rewrite the sentence"; it can only fail. So pin it to the value the deck was
+# actually written to and let it fire in EITHER direction.
+DECK_BAND_DECADES = 1.24
+assert abs(BAND_DECADES - DECK_BAND_DECADES) < 0.06, (
+    f"the band moved to {BAND_DECADES:.2f} decades from the {DECK_BAND_DECADES:.2f} slide 76 "
+    f"is written to. Update the slide's sentence AND this constant together -- do not "
+    f"satisfy this by moving the band, the criterion or the sampling")
+
+# The clause the deck pastes. The deck must never carry a digit the sampling cannot
+# defend: three significant figures on an interpolated crossing is more precision than
+# 0.17-decade sampling earns, so the deck gets a phrase and the number stays here.
+DECK_CLAUSE = ("the band spans more than a decade in $p$" if BAND_DECADES >= 1.0
+               else "the band spans about two thirds of a decade in $p$")
+
 print(f"band: p {BAND_LO:.5f}-{BAND_HI:.5f}  {BAND_DECADES:.2f} decades  "
       f"(factor {BAND_HI / BAND_LO:.0f})  criterion C>={BAND_C_MIN} L<={BAND_L_MAX}")
+print(f'  deck sentence: "{DECK_CLAUSE}"')
 
 
 _SWEEP_LABELS, _SWEEP_CURVES = {}, []
@@ -2591,7 +2606,7 @@ def _degree_one(answer=False):
 
 def fig_degree_one():
     s = _degree_one()
-    s += text(260, 40, "one friend only --- what is its $C_i$?",
+    s += text(260, 40, "one friend --- so no pairs at all",
               color="black", anchor="north")
     return s
 

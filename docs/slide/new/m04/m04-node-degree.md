@@ -83,7 +83,7 @@ The school Feld reopened he calls **Marketville** — he never says whose pseudo
 <div class="fig">
 
 ![w:1080](figures/timeline-1961.png)
-<figcaption>one survey, and the paper that made it famous</figcaption>
+<figcaption>Feld 1991, American Journal of Sociology</figcaption>
 
 </div>
 
@@ -168,11 +168,11 @@ This is the whole module in one instruction. Do not answer it, do not hint, and 
 
 ---
 
-## Five of eight
+## Only two come out ahead
 
 <hr>
 
-**Red**: she has more friends than her friends average. Everyone else has fewer — except Carol, exactly equal.
+**Red**: she has more friends than her friends average — only Sue and Alice. Hollow: fewer. Gray: exactly equal.
 
 <div class="fig">
 
@@ -196,7 +196,7 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 <div class="cols">
 <div>
 
-* The eight girls average <span class="accent">2.5</span> friends.
+* The eight girls average 2.5 friends.
 * Your eight answers average **2.99**; Feld’s own number is **3.0**.
 * Not an insult, and not about being unpopular — we will find out why in a moment.
 
@@ -259,7 +259,7 @@ A node's **degree** is the number of edges attached to it.
 <div class="fig">
 
 ![w:537](figures/degree-def.png)
-<figcaption>four edges attached, so degree four</figcaption>
+<figcaption>every other node in this drawing has degree one</figcaption>
 
 </div>
 </div>
@@ -389,7 +389,7 @@ One number per degree, and it describes the whole network without naming anybody
 <div class="fig">
 
 ![w:537](figures/pk-def.png)
-<figcaption>sort the nodes into piles by their count</figcaption>
+<figcaption>the fractions add to one, and always will</figcaption>
 
 </div>
 </div>
@@ -449,7 +449,7 @@ Fish for "popular people get counted more". Do not supply it.
 
 </div>
 
-When you average over *friends*, you are averaging over the lists — and a popular girl is on many lists.
+* When you average over *friends*, you are averaging over the lists — and a popular girl is on many lists.
 
 <!--
 This is the mechanism. Everything after this is turning it into a number.
@@ -502,7 +502,7 @@ There are $2M = 20$ ends in this network.
 <div class="fig">
 
 ![w:537](figures/bag-of-hands.png)
-<figcaption>twenty hands in the bag, and whose they are</figcaption>
+<figcaption>the same bag Module 03 drew an attack from</figcaption>
 
 </div>
 </div>
@@ -534,7 +534,7 @@ $$q(k) = \frac{k\,p(k)}{\langle k\rangle}$$
 <div class="fig">
 
 ![w:537](figures/qk-formula.png)
-<figcaption>twenty ends, and how they divide up among the eight</figcaption>
+<figcaption>q(k) is a share of hands, not a share of girls</figcaption>
 
 </div>
 </div>
@@ -636,7 +636,7 @@ A variance cannot be negative. So the gap cannot be negative either.
 <div class="fig">
 
 ![w:537](figures/gap-nonneg.png)
-<figcaption>the gap sits at zero or above, never below</figcaption>
+<figcaption>a consequence of the algebra, not an empirical trend</figcaption>
 
 </div>
 </div>
@@ -654,11 +654,11 @@ This is the strongest sentence in the module. It is not a tendency, it is an ide
 <div class="fig">
 
 ![w:1080](figures/feld-check.png)
-<figcaption>two routes that could not look less alike</figcaption>
+<figcaption>Feld’s identity, checked by hand on his own eight girls</figcaption>
 
 </div>
 
-$2.5 + 0.5 = 3.0$ — and so does walking the twenty ends and adding up the sixty friends they lead to.
+Two routes with no arithmetic in common, landing on the same number.
 
 <!--
 Two completely different routes, one number. That is the moment to pause.
@@ -764,7 +764,7 @@ Take three suggestions from the room before moving on.
 
 </div>
 
-**82.8%** of these authors are below their own coauthors' average.
+Same identity, same reason: prolific collaborators appear on many author lists.
 
 <!--
 arXiv condensed-matter coauthorship. Same identity, same reason: prolific collaborators appear on many author lists.
@@ -779,11 +779,11 @@ arXiv condensed-matter coauthorship. Same identity, same reason: prolific collab
 <div class="fig">
 
 ![w:1080](figures/fb-twitter.png)
-<figcaption>Facebook 2011 and Twitter 2013, measured on the whole graph</figcaption>
+<figcaption>Ugander 2011 and Hodas 2013, both on the complete graph</figcaption>
 
 </div>
 
-Facebook **92.7%** below their friends' average — Twitter over **98%**.
+Not a quirk of eight girls in one school: it holds at planetary scale, both times.
 
 <!--
 Ugander et al. 2011: 721 million active users, 68.7 billion friendships. Median friend count 99; mean friend count at the end of a random edge, 635. Hodas et al. 2013 for Twitter.
@@ -930,7 +930,7 @@ Live demo: docs/lecture-note/assets/vis/vaccination-game.html. Let two students 
 
 Immunise one node in ten of the Internet's autonomous systems.
 
-* At random, **87%** of it stays connected. Nominated, **2%**.
+* The whole difference is one question per person, and nobody names more than one friend.
 * *For Thursday: the gap is the variance. So how big is the variance in a real network?*
 
 </div>
@@ -1071,7 +1071,7 @@ $$p(k) \sim k^{-\gamma}$$
 
 A **power law**. Take logs of both sides and you get a straight line whose slope is $-\gamma$.
 
-$\gamma$ is the one number that says how fast hubs become rare.
+* $\gamma$ is the one number that says how fast hubs become rare.
 
 </div>
 <div class="fig">
@@ -1093,7 +1093,7 @@ Sort the degrees into buckets and count. So far, one bucket per degree.
 <div class="fig">
 
 ![w:1080](figures/binned-once.png)
-<figcaption>the cond-mat tail, counted in bins one degree wide</figcaption>
+<figcaption>nobody mentioned choosing a width, including me</figcaption>
 
 </div>
 
@@ -1149,7 +1149,7 @@ Out in the tail most bins hold one author, or none. That is where the scatter co
 
 </div>
 
-Fewer points and less scatter. The degrees are unchanged; only the buckets are wider, so each holds eight times as many.
+Fewer points and less scatter. Each bucket holds eight times as many, so we divide by the width — which is why the heights stay comparable.
 
 ---
 
@@ -1707,7 +1707,7 @@ Most of the room will say yes, because we have spent an hour treating p(k) as th
 <div class="fig">
 
 ![w:1080](figures/assortativity.png)
-<figcaption>the degree distribution cannot tell these three apart</figcaption>
+<figcaption>swap two edges and r moves; p(k) does not</figcaption>
 
 </div>
 
@@ -1726,7 +1726,7 @@ Same p(k) for all three. Completely different networks.
 <div class="fig">
 
 ![w:1080](figures/assortativity-real.png)
-<figcaption>social networks positive, technological and biological negative</figcaption>
+<figcaption>Module 03’s robustness assumed all four of these were zero</figcaption>
 
 </div>
 
@@ -1779,7 +1779,7 @@ Count the hands. Say you are counting them. Then show the next slide.
 
 </div>
 
-One of these has no exponent at all. Straight to $R^2 = 0.99$ over two decades, and the wrong answer.
+One of these has no exponent at all. Straight to $R^2 = 0.99$ across 2.3 decades, and the wrong answer.
 
 <!--
 The log-normal. It arises from multiplying random factors — which is at least as plausible a story for a real network as preferential attachment.
@@ -1802,8 +1802,12 @@ The log-normal. It arises from multiplying random factors — which is at least 
 
 The paper that gave us Facebook’s 92.7% also says its own degree distribution shows *substantial curvature* on log-log axes.
 
+* And so does ours: cond-mat's $p(k)$ gives $\gamma = 2.44$, its CCDF slope of $-2.57$ gives $\gamma = 3.57$. One tail, two answers.
+
 <!--
 Ugander et al. 2011, in the same section we quoted for the paradox. Broido and Clauset 2019 fit 927 networks properly and find strong scale-free evidence in about 4% of them. This argument is live.
+
+The two exponents are the point of the fragment, so be ready for "which one is right?": neither. A clean power law returns the same gamma whichever curve you fit, and the +1 rule from Part Five is exactly the statement that it should. -2.44 is the slope printed on "A line appears"; the CCDF fit is -2.5715 over 10 <= k <= 200 (R^2 = 0.976), so the rule predicts the two slopes differ by one and they differ by about 0.13. Part of that is the fit window moving, which is itself the tell: a real power law has no preferred window.
 -->
 
 ---
@@ -1815,7 +1819,7 @@ Ugander et al. 2011, in the same section we quoted for the paradox. Broido and C
 <div class="fig">
 
 ![w:1080](figures/consequences.png)
-<figcaption>one distribution, two results we proved and one still to come</figcaption>
+<figcaption>none of these three was a separate discovery</figcaption>
 
 </div>
 
