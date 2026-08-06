@@ -1143,7 +1143,7 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
  * already carries the question. The line goes under a leading heading if
  * there is one, so "### 🧭 Detour: …" stays first.
  */
-function withQuotedQuestion(markdown: string, question: string): string {
+function withQuotedQuestion(markdown: string, question: string, alsoQuoted = ""): string {
   if (!question) return markdown;
   // Words, not bytes — and the log_detour gap check normalises the same
   // way, or the two halves of the contract disagree: a cell that quotes
@@ -1155,7 +1155,11 @@ function withQuotedQuestion(markdown: string, question: string): string {
       .replace(/['\u2018\u2019\u02BC"\u201C\u201D]/g, "")
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
+  // `question` may have been upgraded to the student's fuller message after
+  // the model authored this cell, so the model's own wording counts as
+  // already-quoted too. Missing that put "You asked" in the cell twice.
   if (flat(markdown).includes(flat(question))) return markdown;
+  if (alsoQuoted && flat(markdown).includes(flat(alsoQuoted))) return markdown;
   const quote = `> 🧭 **You asked:** “${question}”`;
   const lines = markdown.split("\n");
   if (/^\s*#{1,6}\s/.test(lines[0] ?? "")) {
@@ -2875,7 +2879,10 @@ export default function (pi: ExtensionAPI) {
               .replace(/['\u2018\u2019\u02BC"\u201C\u201D]/g, "")
               .replace(/[^a-z0-9]+/g, " ")
               .trim();
-          let quoted = flat(src).includes(flat(snappedQ));
+          // Either wording: the model wrote this cell against its own
+          // `question`, and snappedQ may since have grown into the student's
+          // full message.
+          let quoted = flat(src).includes(flat(snappedQ)) || flat(src).includes(flat(question));
           if (!quoted) quoted = await prependQuestionToCell(cellName, snappedQ, signal);
           const shows =
             /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(/.test(src);
@@ -2924,7 +2931,7 @@ export default function (pi: ExtensionAPI) {
       let madeCell = "";
       let madeFailed = false;
       if (!cellName && md0) {
-        const md = withQuotedQuestion(md0, snappedQ);
+        const md = withQuotedQuestion(md0, snappedQ, question);
         const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(
           0,
           40,
