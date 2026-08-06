@@ -1517,6 +1517,8 @@ One unreachable pair makes $\bar L$ infinite, however short everything else is.
 
 So in practice we measure on the **largest connected component**, and say that we did.
 
+It is the convention behind Facebook’s 4.74 — that average is over their largest component too.
+
 </div>
 <div class="fig">
 
