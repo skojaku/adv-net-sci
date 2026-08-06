@@ -316,6 +316,269 @@ async function describeImage(
   }
 }
 
+// ── The referee (the student's ⚖️ "Tutor gets stuck" appeal) ────────────────
+// The notebook carries a persistent "Tutor gets stuck — call the referee"
+// box. Pressing it appends "tutor_stuck" to student_signal.txt (their case
+// text goes to session_artifacts/appeal.txt); the watcher hands the whole
+// situation to a STRONGER model, whose ruling is delivered to the tutor as a
+// binding "REFEREE VERDICT" message. The verdict can order what the tutor
+// cannot grant alone — count the work already shown, redo on fresh data,
+// skip ahead, end the chapter — so rulings that close things also arm a
+// short-lived waiver that the photo/build/chapter gates honor.
+
+/** ctx from the most recent hook/tool call — the referee runs outside any
+ * tool, but needs ctx.modelRegistry for model lookup and credentials. */
+let lastCtx: any = null;
+
+let refereeWaiver: { ruling: string; expires: number } | null = null;
+const refereeWaiverActive = (): boolean =>
+  !!refereeWaiver && refereeWaiver.expires > Date.now();
+
+let appealInFlight = false;
+
+const REFEREE_RULINGS = [
+  "keep_going",
+  "hear_them_out",
+  "redo_fresh",
+  "accept_and_close",
+  "skip_ahead",
+  "next_chapter",
+];
+
+/** Rulings that close or skip things need the gates to stand aside. */
+const WAIVER_RULINGS = ["accept_and_close", "skip_ahead", "next_chapter"];
+
+function resolveRefereeModel(ctx: any): any | null {
+  const reg = ctx?.modelRegistry;
+  if (!reg) return null;
+  const pinned = (process.env.TUTOR_REFEREE_MODEL ?? "openrouter/z-ai/glm-5.2").trim();
+  if (!pinned.includes("/")) return null;
+  const i = pinned.indexOf("/");
+  const m = reg.find?.(pinned.slice(0, i), pinned.slice(i + 1));
+  if (m) return m;
+  // Router model ids contain slashes themselves ("openrouter/z-ai/glm-5.2");
+  // accept the full provider/id form or the bare router slug.
+  const want = pinned.toLowerCase();
+  const all: any[] = reg.getAvailable?.() ?? [];
+  return (
+    all.find(
+      (c) =>
+        `${c.provider}/${c.id}`.toLowerCase() === want || String(c.id).toLowerCase() === want,
+    ) ?? null
+  );
+}
+
+/** The recent conversation, labeled and clipped, for the referee's eyes. */
+function transcriptTail(ctx: any, maxMsgs = 40, maxChars = 7000): string {
+  const entries: any[] = ctx?.sessionManager?.getBranch?.() ?? [];
+  const rows: string[] = [];
+  for (const e of entries) {
+    if (e?.type !== "message") continue;
+    const role = e?.message?.role;
+    if (role !== "user" && role !== "assistant") continue;
+    const c = e.message.content;
+    const text = (
+      typeof c === "string"
+        ? c
+        : Array.isArray(c)
+          ? c
+              .filter((p: any) => p?.type === "text" && typeof p.text === "string")
+              .map((p: any) => p.text)
+              .join("\n")
+          : ""
+    ).trim();
+    if (!text) continue;
+    if (role === "user" && INJECTED_PREFIX.test(text)) continue;
+    rows.push(
+      `${role === "user" ? "STUDENT" : "TUTOR"}: ${text.length > 500 ? text.slice(0, 500) + "…" : text}`,
+    );
+  }
+  let tail = rows.slice(-maxMsgs);
+  while (tail.join("\n").length > maxChars && tail.length > 4) tail = tail.slice(2);
+  return tail.join("\n") || "(no conversation captured)";
+}
+
+function currentChapterScriptRaw(): string {
+  try {
+    const dir = path.join(process.cwd(), "lesson");
+    const idx = JSON.parse(fs.readFileSync(path.join(dir, "index.json"), "utf-8"));
+    const cur = currentChapterId() ?? idx.chapters?.[0]?.id;
+    const ch = (idx.chapters ?? []).find((c: any) => c.id === cur) ?? idx.chapters?.[0];
+    if (!ch?.file) return "(no chapter script found)";
+    return fs.readFileSync(path.join(dir, ch.file), "utf-8").slice(0, 16000);
+  } catch {
+    return "(no chapter script found)";
+  }
+}
+
+async function handleAppeal(pi: any): Promise<void> {
+  if (appealInFlight) return;
+  appealInFlight = true;
+  try {
+    let caseText = "(no details given)";
+    try {
+      caseText =
+        fs
+          .readFileSync(path.join(process.cwd(), "session_artifacts", "appeal.txt"), "utf-8")
+          .trim() || caseText;
+    } catch {
+      /* the button works even if the case file does not */
+    }
+    const ctx = lastCtx;
+    const model = ctx ? resolveRefereeModel(ctx) : null;
+    let verdict: {
+      ruling: string;
+      reason: string;
+      directive: string;
+      to_student: string;
+    } | null = null;
+    let modelName = "";
+    if (model) {
+      try {
+        const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
+        if (!auth?.ok) throw new Error(auth?.error ?? "no credentials for referee model");
+        const prompt =
+          `You are the REFEREE for a live one-on-one tutoring session (a Socratic AI ` +
+          `tutor teaching a university network-science module to a possibly ` +
+          `non-programming student). The student just pressed a "Tutor gets stuck" ` +
+          `button: they are appealing over the tutor's head, and your ruling is ` +
+          `binding on the tutor.\n\n` +
+          `The tutor's standing rules, for context: it never states the answer to an ` +
+          `open checkpoint; hints are unlimited and never penalized; predictions are ` +
+          `never wrong; typed work substitutes for photographed pen-and-paper work ` +
+          `when photographing is a hardship; honest reasoning deserves credit; extra ` +
+          `practice is never failure. Rules serve the student — where a rule's letter ` +
+          `and the student's legitimate progress conflict, side with the student.\n\n` +
+          `THE STUDENT'S CASE (verbatim):\n${caseText}\n\n` +
+          `PROGRESS SO FAR (graded log):\n${progressBrief(readSessionLog())}\n\n` +
+          `CURRENT CHAPTER SCRIPT (the tutor's curriculum for right now):\n` +
+          `${currentChapterScriptRaw()}\n\n` +
+          `RECENT CONVERSATION (oldest first; STUDENT lines are the student's own ` +
+          `words):\n${transcriptTail(ctx)}\n\n` +
+          `Decide the fairest way forward. Choose EXACTLY ONE ruling:\n` +
+          `- "keep_going": the tutor is handling it right; name ONE concrete ` +
+          `adjustment it should make.\n` +
+          `- "hear_them_out": the student deserves a proper hearing on this ` +
+          `checkpoint; tell the tutor what to ask and what standard to accept.\n` +
+          `- "redo_fresh": scrap the current attempt; restart the SAME kind of ` +
+          `problem on fresh data.\n` +
+          `- "accept_and_close": the work already shown meets the bar; the current ` +
+          `checkpoint closes now, judged on what actually happened.\n` +
+          `- "skip_ahead": close the current checkpoint as unresolved and move to ` +
+          `the next one; no grade penalty.\n` +
+          `- "next_chapter": end this chapter now and move on to the next.\n\n` +
+          `Answer with ONLY a JSON object, no prose around it:\n` +
+          `{"ruling": "<one of the six>", "reason": "1-2 plain sentences", ` +
+          `"directive": "2-4 concrete sentences the tutor must now follow, naming ` +
+          `the checkpoint(s) to act on", "to_student": "1-2 warm sentences addressed ` +
+          `directly to the student"}`;
+        const response = await complete(
+          model,
+          {
+            messages: [
+              {
+                role: "user" as const,
+                content: [{ type: "text" as const, text: prompt }],
+                timestamp: Date.now(),
+              },
+            ],
+          },
+          {
+            apiKey: auth.apiKey,
+            headers: auth.headers,
+            env: auth.env,
+            ...(model.reasoning ? { reasoningEffort: "medium" as const } : {}),
+            cacheRetention: "none",
+            sessionId: uuidv7(),
+          },
+        );
+        const text = (response?.content ?? [])
+          .filter((c: any) => c.type === "text")
+          .map((c: any) => c.text)
+          .join("\n")
+          .trim();
+        const m = text.match(/\{[\s\S]*\}/);
+        let parsed: any = null;
+        try {
+          parsed = m ? JSON.parse(m[0]) : null;
+        } catch {
+          parsed = null;
+        }
+        if (parsed && REFEREE_RULINGS.includes(parsed.ruling)) {
+          verdict = {
+            ruling: String(parsed.ruling),
+            reason: String(parsed.reason ?? ""),
+            directive: String(parsed.directive ?? ""),
+            to_student: String(parsed.to_student ?? ""),
+          };
+          modelName = `${model.provider}/${model.id}`;
+        } else if (text) {
+          // A referee that replied in prose still ruled — treat the whole
+          // reply as the directive rather than dropping the appeal.
+          verdict = {
+            ruling: "hear_them_out",
+            reason: "(referee replied in prose)",
+            directive: text.slice(0, 1200),
+            to_student: "",
+          };
+          modelName = `${model.provider}/${model.id}`;
+        }
+      } catch {
+        /* fall through to the unreachable-referee path */
+      }
+    }
+    // The artifact records every appeal, ruled or not, before the tutor
+    // hears about it — misbehavior after the verdict cannot erase it.
+    appendLog({
+      type: "appeal",
+      student_case: caseText,
+      ruling: verdict?.ruling ?? "unresolved_no_referee",
+      reason: verdict?.reason ?? "",
+      referee: modelName || "(unreachable)",
+    });
+    if (!verdict || WAIVER_RULINGS.includes(verdict.ruling)) {
+      refereeWaiver = {
+        ruling: verdict?.ruling ?? "unresolved_no_referee",
+        expires: Date.now() + 20 * 60_000,
+      };
+    }
+    const content = verdict
+      ? `REFEREE VERDICT (binding). The student pressed the ⚖️ "Tutor gets stuck" ` +
+        `button, and a stronger referee model reviewed the whole situation. Its ` +
+        `ruling overrides your script and your own judgment wherever they ` +
+        `conflict.\n` +
+        `Their case, in their words: "${caseText}"\n` +
+        `Ruling: ${verdict.ruling} — ${verdict.reason}\n` +
+        (verdict.to_student
+          ? `For the student (deliver this warmly, in your own words, as the ` +
+            `referee's decision): ${verdict.to_student}\n`
+          : "") +
+        `What you do now, exactly: ${verdict.directive}\n` +
+        `Do not argue with or re-litigate the ruling, and never hold the appeal ` +
+        `against the student — appealing is participation. The appeal itself is ` +
+        `already in the log; close any affected checkpoint honestly (its row is ` +
+        `stamped for the graders). If a gate refused you before, it will let this ` +
+        `ruling through now.`
+      : `REFEREE VERDICT (the referee could not be reached — you resolve this ` +
+        `appeal yourself). The student pressed the ⚖️ "Tutor gets stuck" button ` +
+        `with this case, in their words: "${caseText}"\n` +
+        `Resolve it generously, in their favor where reasonable: react to their ` +
+        `case, then offer plainly the three ways forward — count the honest work ` +
+        `they have already shown, redo the problem on fresh data, or simply move ` +
+        `on — and do what they choose. The appeal is already in the log; log ` +
+        `whatever closes as it actually happened (notes may say "resolved without ` +
+        `referee").`;
+    pi.sendMessage(
+      { customType: "referee-verdict", content, display: false },
+      { deliverAs: "followUp", triggerTurn: true },
+    );
+  } catch {
+    /* an appeal must never break the session */
+  } finally {
+    appealInFlight = false;
+  }
+}
+
 function toResult({ out, failed }: { out: string; failed: boolean }) {
   let text = failed ? `NOTEBOOK ERROR:\n${out || "(no output)"}` : out || "(ok)";
   if (failed) {
@@ -646,7 +909,7 @@ let studentSaidMark = 0;
 // Anything added here MUST start with one of these prefixes, or it is filed
 // as the student's own words and quoted back at them in the graded record.
 const INJECTED_PREFIX =
-  /^(CHAPTER SCRIPT|RESUME CONTEXT|=== TUTORING HANDOFF|The student clicked|Please start the tutoring session|── Chapter |NOTE \(invisible to the student\))/;
+  /^(CHAPTER SCRIPT|RESUME CONTEXT|=== TUTORING HANDOFF|The student clicked|Please start the tutoring session|── Chapter |NOTE \(invisible to the student\)|REFEREE VERDICT)/;
 
 function allStudentMessages(ctx: any): string[] {
   const entries: any[] = ctx?.sessionManager?.getBranch?.() ?? [];
@@ -1695,6 +1958,12 @@ export default function (pi: ExtensionAPI) {
       const widget = lines[lines.length - 1];
       signalMark = lines.length;
       if (!/^[A-Za-z_]\w*$/.test(widget)) return;
+      // The ⚖️ "Tutor gets stuck" button appeals over the tutor's head:
+      // the referee model rules, then the verdict message starts the turn.
+      if (widget === "tutor_stuck") {
+        void handleAppeal(pi);
+        return;
+      }
       // Two kinds of box send: a photo drop area, and an exercise code box
       // (whose widget name ends in _ed). They need opposite instructions —
       // one is read with the vision model, the other with nb_read — and a
@@ -1731,6 +2000,7 @@ export default function (pi: ExtensionAPI) {
   (signalTimer as any).unref?.();
 
   pi.on("session_start", async (_event, _ctx) => {
+    lastCtx = _ctx ?? lastCtx;
     // ── Chapter start + resume brief ──────────────────────────────────────
     // Determine the current chapter (from progress or saved state), inject
     // its script, and — when previous progress exists — a resume brief that
@@ -1907,6 +2177,7 @@ export default function (pi: ExtensionAPI) {
       }),
     }),
     async execute(_id, params, _signal, _onUpdate, ctx: any) {
+      lastCtx = ctx ?? lastCtx;
       const chapters = loadChapters();
       const curId = currentChapterId() ?? chapters[0]?.id;
       const idx = chapters.findIndex((c) => c.id === curId);
@@ -1940,7 +2211,11 @@ export default function (pi: ExtensionAPI) {
         // telling the tutor "LOG WRITE FAILED — keep teaching". The student
         // could never leave chapter 1.
         const gateStrikes = chapterGateWarned.get(cur.id) ?? 0;
-        if (missing.length > 0 && gateStrikes < 2) {
+        // A referee ruling that ends the chapter walks through this gate;
+        // the summary still reports the unlogged checkpoints as gaps.
+        const chapterWaived = refereeWaiverActive();
+        if (missing.length > 0 && chapterWaived) refereeWaiver = null;
+        if (missing.length > 0 && gateStrikes < 2 && !chapterWaived) {
           chapterGateWarned.set(cur.id, gateStrikes + 1);
           return {
             content: [
@@ -2218,6 +2493,7 @@ export default function (pi: ExtensionAPI) {
       ),
     }),
     async execute(_id, params, signal, _onUpdate, ctx: any) {
+      lastCtx = ctx ?? lastCtx;
       const id = String(params.id ?? "").trim();
       const judgment = String(params.judgment ?? "").trim();
       if (!JUDGMENTS.includes(judgment)) {
@@ -2266,7 +2542,7 @@ export default function (pi: ExtensionAPI) {
         if (have) missingBuild = wantCells.filter((c) => !have.includes(c));
       }
       const buildStrikes = slotDriftWarned.get(`${id}:build`) ?? 0;
-      if (missingBuild.length > 0 && buildStrikes < 2) {
+      if (missingBuild.length > 0 && buildStrikes < 2 && !refereeWaiverActive()) {
         slotDriftWarned.set(`${id}:build`, buildStrikes + 1);
         return toResult({
           out:
@@ -2319,7 +2595,7 @@ export default function (pi: ExtensionAPI) {
       const cameraSaidHere =
         saidSoFar.some((m) => /camera|photo|picture|scan|phone/i.test(m)) ||
         (photoStrikes > 0 && saidSoFar.length > 0);
-      if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2)) {
+      if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2) && !refereeWaiverActive()) {
         slotDriftWarned.set(`${id}:photo`, photoStrikes + 1);
         return toResult({
           out:
@@ -2693,6 +2969,14 @@ export default function (pi: ExtensionAPI) {
             ? "pass"
             : judgment;
       if (judgmentOut === "guided" && hintsOut === 0) hintsOut = 1;
+      // A row logged under a referee ruling says so, for the graders. The
+      // waiver is spent here — except next_chapter, which chapter_done's own
+      // gate must still see and consume.
+      let appealRuling: string | null = null;
+      if (refereeWaiverActive()) {
+        appealRuling = refereeWaiver!.ruling;
+        if (appealRuling !== "next_chapter") refereeWaiver = null;
+      }
       const logged = appendLog({
         type: "checkpoint",
         id,
@@ -2705,6 +2989,7 @@ export default function (pi: ExtensionAPI) {
         ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(photoMissing ? { photo_missing: true } : {}),
+        ...(appealRuling ? { closed_by_referee: appealRuling } : {}),
         ...(quotesSnapped.length ? { slot_quotes_repaired: quotesSnapped } : {}),
         ...(quotesMsgs.length ? { note_quotes_msgs: quotesMsgs } : {}),
         ...(skippedMsgs.length ? { note_skipped_msgs: skippedMsgs } : {}),

@@ -47,6 +47,55 @@ def reference_banner(mo):
 
 
 @app.cell(hide_code=True)
+def tutor_stuck_box(mo):
+    tutor_stuck_text = mo.ui.text_area(
+        placeholder=(
+            "What's going on? e.g. \"I answered this and I think it should count\", "
+            "\"I'd like a fresh try at this one\", \"we're going in circles — let's move on\""
+        ),
+        rows=2,
+    )
+    tutor_stuck_send = mo.ui.run_button(label="⚖️ Tutor gets stuck — call the referee")
+    mo.accordion({
+        "⚖️ Stuck with your tutor?": mo.vstack([
+            mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>If the two of you are "
+                "going in circles — you think an answer should count, you want a "
+                "fresh try, or you'd rather move on — say so below and press the "
+                "button. A second, stronger model reads the whole situation and "
+                "makes a call your tutor has to follow. Using it is never held "
+                "against you.</span>"
+            ),
+            tutor_stuck_text,
+            tutor_stuck_send,
+        ])
+    })
+    return tutor_stuck_send, tutor_stuck_text
+
+
+@app.cell(hide_code=True)
+def tutor_stuck_writer(mo, tutor_stuck_send, tutor_stuck_text):
+    from pathlib import Path as _P_appeal
+
+    if tutor_stuck_send.value:
+        _P_appeal("session_artifacts").mkdir(exist_ok=True)
+        (_P_appeal("session_artifacts") / "appeal.txt").write_text(
+            (tutor_stuck_text.value or "").strip() or "(no details given)"
+        )
+        with open("session_artifacts/student_signal.txt", "a") as _f:
+            _f.write("tutor_stuck\n")
+        _appeal_out = mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>✅ <strong>The referee is "
+            "reading your case.</strong> It can take a minute — your tutor will "
+            "come back to you in the terminal with the decision.</span>"
+        )
+    else:
+        _appeal_out = mo.md("")
+    _appeal_out
+    return
+
+
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
 
