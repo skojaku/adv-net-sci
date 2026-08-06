@@ -92,7 +92,7 @@ def crown_mark(x, y, color=RED):
     slide 12 is the same shape as the crown on slide 41; two crowns drawn twice is
     how m01 ended up with two different rings meaning the same thing.
     """
-    return (F.ring(x, y, size=F.NODE, color=color, w=4.0, grow=13)
+    return (F.mark(x, y, color=color, size=F.NODE)
             + R._crown_glyph(x, y + F.NODE / 2 + 22, color))
 
 
@@ -391,7 +391,7 @@ assert sorted(map(tuple, map(sorted, SIG_E))) == sorted(map(tuple, map(sorted, S
 def _sigma_base():
     b = edges_ink(SIG_E, SIG_XY)
     for n in ("S", "D"):
-        b += F.ring(*SIG_XY[n], size=F.NODE, color=RED, w=4.0, grow=13)
+        b += F.mark(*SIG_XY[n], color=RED)
     b += discs_ink(SIG_XY, labels={n: n for n in SIG_XY})
     return b
 
@@ -512,7 +512,7 @@ def fig_star_closeness():
     shown = dec(c, 1)
     assert shown == "1.0", shown
     b = edges_ink(STAR_E, xy)
-    b += F.ring(*xy[0], size=F.NODE, color=RED, w=4.0, grow=13)
+    b += F.mark(*xy[0], color=RED)
     b += discs_ink(xy)
     b += T(268, 332, f"hub closeness = {shown}", color=RED)
     F.emit("star-closeness", b, container="col", h=390)
@@ -542,7 +542,7 @@ def fig_star_vs_path_2():
     assert len(deg_k) == 5 and len(bet_k) == 1
     b = edges_ink(PATH_E, PATH_XY)
     for i in deg_k:                       # accent-3 is a ring here, never a label
-        b += F.ring(*PATH_XY[i], size=F.NODE, color=GOLD, w=6.0, grow=15)
+        b += F.mark(*PATH_XY[i], color=GOLD, w=6.0)
     b += discs_ink(PATH_XY, labels={i: str(i) for i in PATH_XY})
     for i in bet_k:
         b += crown_mark(*PATH_XY[i])
@@ -616,7 +616,7 @@ def fig_localization():
         # floored at 14% so the faintest disc is still a disc and not a hole
         pctile = int(round(100 * (0.14 + 0.86 * ev[n] / top)))
         b += F.disc(p[0], p[1], "", fill=f"accent!{pctile}!white")
-    b += F.ring(*LOC_XY["t4"], size=F.NODE, color=RED, w=4.0, grow=13)
+    b += F.mark(*LOC_XY["t4"], color=RED)
     b += T(30, 336, "shade = eigenvector score", color=DIM, anchor="west")
     b += T(30, 28, f"the far node scores {shown} of the top", color=RED, anchor="west")
     F.emit("localization", b, container="full", h=400)

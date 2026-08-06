@@ -249,7 +249,26 @@ def opendisc(x, y, color="accenttwo", size=NODE, w=4.0):
 
 
 def ring(x, y, size=NODE, color="accenttwo", w=4.0, grow=11):
+    """A ring OUTSIDE a disc. Use `mark()` instead on anything the gate measures.
+
+    check_render.py finds node discs by masking the node fill colours and then
+    filling holes, so an accent-2 ring around an accent disc reads to it as one
+    solid disc of the ring's diameter. m06 failed the 26-52px band on ten slides
+    that way, at a measured 57px, while every disc was drawn at 40.
+    """
+    assert color not in ("accent", "accenttwo") or grow >= 26, (
+        f"a {color} ring {grow}bp outside a disc will be measured as one "
+        f"{size + grow}bp disc -- use mark() for a highlight on a node")
     return f"\\draw[line width={w}bp,draw={color}] ({x},{y}) circle ({(size+grow)/2}bp);\n"
+
+
+def mark(x, y, color="accenttwo", size=NODE, w=5.0):
+    """Highlight a node by thickening its own border, not by ringing it.
+
+    Says the same thing as a ring and leaves the disc the size it actually is, so
+    the render gate measures what was drawn.
+    """
+    return f"\\draw[line width={w}bp,draw={color}] ({x},{y}) circle ({size/2}bp);\n"
 
 
 def dot(x, y, color="accent", d=DOT):

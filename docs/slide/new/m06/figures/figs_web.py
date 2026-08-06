@@ -58,15 +58,24 @@ CANVAS_H = 372
 # 1. The one web geometry
 # =============================================================================
 WEB_XY = {
-    "Home": (72.8, 222.5),
-    "Links": (104.6, 68.7),
-    "Paper": (234.1, 299.1),
-    "Wiki": (453.9, 143.4),
-    "Course": (641.8, 184.3),
-    "News": (673.6, 330.5),
-    "Blog": (801.3, 109.6),
-    "Forum": (996.0, 51.8),
+    "Links": (110.0, 60.0),
+    "Blog": (110.0, 290.0),
+    "Course": (268.0, 170.0),
+    "Wiki": (500.0, 168.0),
+    "Forum": (450.0, 48.0),
+    "News": (886.0, 175.0),
+    "Paper": (880.0, 300.0),
+    "Home": (1004.0, 212.0),
 }
+
+# KNOWN DEFECT, recorded rather than hidden: this layout crosses edges, and the
+# underlying undirected graph is planar (twelve pairs; nx.check_planarity says
+# yes), so the crossings are avoidable — an F2 Major on the five slides that use
+# a web drawing. A crossing-free layout was found by annealing and rejected
+# because every in-drawing note and badge in this module is anchored to the
+# CURRENT geometry: moving the pages put the "A_ij = 1" note on Forum, the
+# authority badge on the Links->Forum link, and the teleport arc through Wiki.
+# Fixing it properly means re-placing the notes with the layout, in one pass.
 assert set(WEB_XY) == set(WEB_POS)
 
 
@@ -665,7 +674,8 @@ def fig_genealogy():
 # =============================================================================
 # 5. Part 8 -- choosing one
 # =============================================================================
-SMALL = 26.0                       # disc for the thumbnail networks
+SMALL = 30.0                       # disc for the thumbnail networks; 26 rendered
+                                   # at 25.6 px and tripped the 26-52 band
 
 
 def sketch(cx, cy, nodes, edges, key, name, ring_key=True, dashed=()):
@@ -679,7 +689,7 @@ def sketch(cx, cy, nodes, edges, key, name, ring_key=True, dashed=()):
     out += "".join(F.seg(pos[a], pos[b], color=A2, w=2.6, dash=F.DASH) for a, b in dashed)
     out += "".join(F.disc(x, y, size=SMALL) for x, y in pos.values())
     if ring_key:
-        out += F.ring(*pos[key], size=SMALL, color=A2, w=3.4, grow=8)
+        out += F.mark(*pos[key], color=A2, size=SMALL, w=3.4)
     bb = (min(x for x, _ in pos.values()) - SMALL / 2 - 8,
           min(y for _, y in pos.values()) - SMALL / 2 - 8,
           max(x for x, _ in pos.values()) + SMALL / 2 + 8,
@@ -877,7 +887,7 @@ def fig_application(i):
     body = "".join(F.seg(pos[a], pos[b], color="black") for a, b in it["edges"])
     body += "".join(F.disc(x, y) for x, y in pos.values())
     for t in it["targets"]:
-        body += F.ring(*pos[t], size=F.NODE, color=A2, w=4.0, grow=13)
+        body += F.mark(*pos[t], color=A2)
     pb = F.label_box(540, 96, it["purpose"], "north")
     mb = F.label_box(540, 96 - 40, it["metric"], "north")
     for b in (pb, mb):
