@@ -1036,6 +1036,45 @@ function slotMarkers(skeleton: string): string[] {
  * they never said. checkpoint_done nudges for the missing fills before it
  * ever gets here; this is the shape when it has nudged twice and given up.
  */
+/**
+ * Words that can only ever be a student clearing their throat. A «verbatim»
+ * note slot quotes what they typed since the last checkpoint, and a live
+ * stream is not all answer: "yep im ready" to a pace question, "ohh ok got
+ * it" after a hint, and the student's OWN detour question all landed in the
+ * keepsake as their worked answer — the more they engaged, the more polluted
+ * their note. Lesson answers are never made ONLY of these, and the one that
+ * could be ("right", "sure") is rescued by the student_response check below.
+ */
+const ACK_WORDS = new Set(
+  ("ok okay k kk yep yup yeah ya sure right true ready im i m ive got it gotcha see ah oh ohh " +
+    "hm hmm mm uh huh thanks thanku thank you cool nice great awesome perfect makes sense " +
+    "understood understand lets go going next continue done finished fine alright allright " +
+    "sounds good please well so and then ill let s").split(" "),
+);
+const normMsg = (m: string) =>
+  m
+    .toLowerCase()
+    .replace(/['\u2018\u2019\u02BC]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+/** True for a message that is acknowledgement and nothing else. */
+function isFillerMessage(m: string): boolean {
+  const t = normMsg(m);
+  if (!t || /\d/.test(t)) return false;
+  const words = t.split(" ");
+  if (words.length > 5) return false;
+  return words.every((w) => ACK_WORDS.has(w));
+}
+
+/**
+ * Questions the student asked that are already recorded as detours. Their own
+ * question is not their answer, and log_detour deliberately peeks at the
+ * transcript without consuming it, so without this the question is quoted
+ * twice: once in the souvenir, once in the next checkpoint's note as work.
+ * Cleared when the checkpoint that follows them closes.
+ */
+const detourAsked = new Set<string>();
+
 function fillSlots(skeleton: string, slots: string[], fallback: string): string {
   let i = 0;
   let usedFallback = false;
@@ -1045,7 +1084,10 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
     // `.trim()`, matching the slot-count guard: a whitespace pad satisfied
     // neither, and rendered as a heading with nothing under it.
     if (supplied !== undefined && supplied.trim() !== "") return supplied;
-    if (usedFallback) return "*(not answered)*";
+    // The fallback is for a ONE-slot skeleton. On a skeleton whose other slot
+    // already quotes the student, using it again printed their sentence twice
+    // in one line: "**My guess:** way off, i said 20 — "way off, i said 20"".
+    if (!fallback.trim() || usedFallback) return "*(not answered)*";
     usedFallback = true;
     return fallback;
   });
@@ -1404,21 +1446,20 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
       out.push(`Typed by the student: ${JSON.stringify(e.student_said_verbatim)}`);
     }
     if (e.notes) out.push(`Tutor's note: ${String(e.notes).trim()}`);
-    // Which typed message each quoted slot came from. A note whose slots do
-    // not walk forward through the transcript is the signature of a fill set
-    // filled shifted by one — not decidable automatically (see the comment
-    // in checkpoint_done), so it is put in front of the person marking.
+    // The note quotes the transcript, so a grader never has to trust the
+    // tutor's memory. What is worth a human eye is what the note left out.
     if (Array.isArray(e.figures_not_quoted) && e.figures_not_quoted.length) {
       out.push(
         `Numbers they typed that no slot quotes: ${e.figures_not_quoted.join(", ")} ` +
           `(may be a self-correction or an aside — worth a glance)`,
       );
     }
-    if (Array.isArray(e.slot_sources) && e.slot_sources.some((v: unknown) => v !== null)) {
+    if (Array.isArray(e.note_skipped_msgs) && e.note_skipped_msgs.length) {
       out.push(
-        `Slot → which of their messages: ${e.slot_sources
-          .map((v: unknown, i: number) => `slot ${i + 1}→${v === null ? "?" : `msg ${v}`}`)
-          .join(", ")}`,
+        `Typed here but NOT quoted in the note: ${e.note_skipped_msgs
+          .map((n: unknown) => `msg ${n}`)
+          .join(", ")} (an aside they already have a souvenir for, or ` +
+          `acknowledgement — the full list above is the record)`,
       );
     }
     out.push("");
@@ -2236,8 +2277,20 @@ export default function (pi: ExtensionAPI) {
       // instead of the answer, quotes shifted by one, punctuation tidied —
       // and every deterministic guard that tried to catch it had to be
       // withdrawn for refusing honest records. The words are right here.
-      const verbatimFill = said.length
-        ? said.map((m) => `"${m.replace(/\n+/g, " ").trim()}"`).join(" · ")
+      // Their ANSWER, not the whole stream: asides they already got a
+      // souvenir for, and pure acknowledgement, are dropped — unless the
+      // message IS the answer the tutor logged, which rescues a one-word
+      // "right" that happens to look like filler.
+      const quotedFrom: number[] = [];
+      const answerish = said.filter((m, i) => {
+        const isResponse =
+          normMsg(m) === normMsg(response) || bigramDice(m, response) >= 0.6;
+        const keep = isResponse || (!detourAsked.has(normMsg(m)) && !isFillerMessage(m));
+        if (keep) quotedFrom.push(i + 1);
+        return keep;
+      });
+      const verbatimFill = answerish.length
+        ? answerish.map((m) => `"${m.replace(/\n+/g, " ").trim()}"`).join(" · ")
         : response;
       // The model is asked for the OTHER slots only — the ones whose answer
       // was a drawing, a photo or a picker, which no transcript holds. It may
@@ -2276,7 +2329,9 @@ export default function (pi: ExtensionAPI) {
       // exist.
       const inFills = new Set(filledSlots.flatMap(slotTokens).filter(isFigure));
       const figuresDropped = markers.length
-        ? [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter((f) => !inFills.has(f))
+        ? [...new Set(answerish.flatMap(slotTokens).filter(isFigure))].filter(
+            (f) => !inFills.has(f),
+          )
         : [];
       const slotStrikes = slotDriftWarned.get(`${id}:slots`) ?? 0;
       // No note_markdown exemption: the renderer ignores note_markdown
@@ -2375,19 +2430,15 @@ export default function (pi: ExtensionAPI) {
       // comparison. So the attribution goes in the log for a human to read,
       // the instruction lives in AGENTS.md, and nothing here refuses a
       // record on a guess.
-      const slotSources = filledSlots.map((fill, i) => {
-        if (!fill.trim() || !/verbatim/i.test(markers[i] ?? "")) return null;
-        let best = -1;
-        let score = 0;
-        said.forEach((m, mi) => {
-          const d = bigramDice(fill, m);
-          if (d > score) {
-            score = d;
-            best = mi;
-          }
-        });
-        return score >= 0.5 ? best + 1 : null;
-      });
+      // Which of their messages the note quotes, and which it passed over.
+      // (This used to be a per-slot best-bigram guess, from back when the
+      // model wrote the quotes and could shift them by one. The quotes are
+      // copied from the transcript now, so a guess would only mislead: what
+      // a grader still wants is what was LEFT OUT.)
+      const quotesMsgs = markers.some((m) => /verbatim/i.test(m)) ? quotedFrom : [];
+      const skippedMsgs = markers.some((m) => /verbatim/i.test(m))
+        ? said.map((_m, i) => i + 1).filter((n) => !quotedFrom.includes(n))
+        : [];
       // A «verbatim» slot is filled from the transcript now, so the model's
       // fill for it is never rendered — policing it refused twice over a
       // string nobody reads and then stamped "⚠ Quoting check" on a note that
@@ -2466,6 +2517,9 @@ export default function (pi: ExtensionAPI) {
       awaitingResumeChoice = false;
       studentSaidSince(ctx, true);
       pickedSince(true);
+      // The detour marks belong to the checkpoint just closed — the same
+      // words typed again later are a fresh answer.
+      detourAsked.clear();
 
       // A checkpoint that needed hints is `pass_with_hints`, whatever the
       // model typed. It logged plain `pass` with hints_used 2 in a live run —
@@ -2495,7 +2549,8 @@ export default function (pi: ExtensionAPI) {
         ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(photoMissing ? { photo_missing: true } : {}),
-        ...(slotSources.some((v) => v !== null) ? { slot_sources: slotSources } : {}),
+        ...(quotesMsgs.length ? { note_quotes_msgs: quotesMsgs } : {}),
+        ...(skippedMsgs.length ? { note_skipped_msgs: skippedMsgs } : {}),
         ...(figuresDropped.length ? { figures_not_quoted: figuresDropped } : {}),
         ...(problems.length > 0 ? { verbatim_drift: problems } : {}),
       });
@@ -2505,7 +2560,7 @@ export default function (pi: ExtensionAPI) {
       const md = suppressed
         ? ""
         : skeleton
-          ? fillSlots(skeleton, filledSlots, response)
+          ? fillSlots(skeleton, filledSlots, markers.length === 1 ? response : "")
           : String(params.note_markdown ?? "").trim();
       let noteLine: string;
       if (suppressed) {
@@ -2652,7 +2707,12 @@ export default function (pi: ExtensionAPI) {
       // A live run logged a tidied paraphrase — "wait whats this called," gone,
       // "it" reworded — and the souvenir quoted that.
       const saidNow = studentSaidSince(ctx, false);
-      const snappedQ = snapToTranscript(question, saidNow) ?? question;
+      const snapped = snapToTranscript(question, saidNow);
+      const snappedQ = snapped ?? question;
+      // Only when it really is one of their messages: their own question is
+      // not their worked answer, and the next checkpoint's note quotes the
+      // transcript. The souvenir already holds it, word for word.
+      if (snapped) detourAsked.add(normMsg(snapped));
       let gap = "";
       if (cellName) {
         const src = await readCellSource(cellName, signal);
@@ -2721,11 +2781,27 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
+      // Insert BEFORE logging, so the row names the cell it actually made. It
+      // logged cell:"" on this path, and a grader auditing souvenirs from the
+      // log found none for a question that has one.
+      let madeCell = "";
+      let madeFailed = false;
+      if (!cellName && md0) {
+        const md = withQuotedQuestion(md0, snappedQ);
+        const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(
+          0,
+          40,
+        );
+        const name = `detour_${slug || "note"}`;
+        const r = await insertMarkdownCell(name, md, signal);
+        madeFailed = r.failed;
+        if (!r.failed) madeCell = name;
+      }
       appendLog({
         type: "detour",
         question,
         what_you_did: String(params.what_you_did ?? ""),
-        cell: String(params.cell_name ?? ""),
+        cell: String(params.cell_name ?? "") || madeCell,
         // Peek, never consume: a detour normally happens mid-checkpoint, and
         // consuming the mark here would move the student's checkpoint answer
         // into the detour record — leaving checkpoint_done with an empty
@@ -2745,11 +2821,10 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      const md = withQuotedQuestion(md0, snappedQ);
-      const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(0, 40);
-      const r = await insertMarkdownCell(`detour_${slug || "note"}`, md, signal);
       return toResult({
-        out: r.failed ? `Logged. Souvenir cell FAILED — add it with nb_add_cell.` : `Logged and the souvenir is in their notebook.`,
+        out: madeFailed
+          ? `Logged. Souvenir cell FAILED — add it with nb_add_cell.`
+          : `Logged and the souvenir is in their notebook.`,
         failed: false,
       });
     },
