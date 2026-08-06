@@ -97,7 +97,10 @@ checkpoints:
       Student distinguishes a short path EXISTING somewhere in a network
       from a short path being FINDABLE by someone using only local
       knowledge — Milgram's stronger, harder claim, felt through Wikirace.
-    build: none
+    build: |
+      nb_add_template("cp1_routing_view") — but only AFTER they have
+      answered the question below: the picture shows the holder's
+      blindness, which IS the answer, so it lands with the reveal.
     ask: |
       Stay on the picture already on screen from cp1_milgram. Say: "One
       more thing about Milgram's result, before we start measuring any of
@@ -124,13 +127,14 @@ checkpoints:
       steps on your first try, seeing only the walls right in front of
       you?" Same idea, new setting.
     reveal_after: |
-      Terminal: a short path EXISTING is a fact about the whole network —
-      something only someone holding the full map could check. A short
-      path being FOUND, by ordinary people each using only who they
-      personally knew, is a much stronger claim — and that's exactly what
-      Milgram's letters showed. Bridge: "So now the real question: what is
-      it about a network's SHAPE that makes that possible? Let's start
-      measuring it."
+      NOW build nb_add_template("cp1_routing_view") and point at it: a
+      short path EXISTING is a fact about the whole network — something
+      only someone holding the full map could check. A short path being
+      FOUND, by people who each see only their own rust lines — like the
+      holder in the picture — is a much stronger claim, and that's exactly
+      what Milgram's letters showed. Bridge: "So now the real question:
+      what is it about a network's SHAPE that makes that possible? Let's
+      start measuring it."
     note: |
       ### 🧭 Existing vs. findable
       A short path **existing** somewhere in a network is a fact about the
