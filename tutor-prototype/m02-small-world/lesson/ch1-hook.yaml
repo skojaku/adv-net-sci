@@ -1,4 +1,4 @@
-# Chapter 1 of 5 — A Letter Across a Country (cp0-cp1).
+# Chapter 1 of 5 — A Letter Across a Country (cp0, cp1, cp1_routing).
 # The chapter title is deliberately vague: it is rendered as a visible
 # notebook header before cp1's prediction, so it must not name the answer.
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
@@ -8,7 +8,9 @@
 chapter:
   id: ch1
   title: "A Letter Across a Country"
-  goal: Hook the student with the six-degrees phenomenon and calibrate to them.
+  goal: |
+    Hook the student with the six-degrees phenomenon, calibrate to them, and
+    surface the difference between a short path EXISTING and one being FOUND.
 checkpoints:
 
   - id: cp0_welcome
@@ -77,8 +79,9 @@ checkpoints:
       with what you guessed?" One line is plenty. Their picker choice never
       reaches the transcript, so this line is the only thing the notebook can
       quote in their own voice — ask it, and wait.
-      Bridge: "Hundreds of millions of people, ~6 steps. Something about the
-      network's SHAPE makes that possible. Let's find out what."
+      Bridge: "Hundreds of millions of people, ~6 steps. But there's something
+      even more surprising about HOW those 64 letters got there — let's look
+      at that before we start measuring anything."
     note: |
       ### 🌍 Six degrees of separation
       In the 1960s, Stanley Milgram mailed packets to strangers in Nebraska
@@ -88,3 +91,54 @@ checkpoints:
       Facebook's 721 million users: **4.74 steps** on average.
 
       > **My guess:** «their pick» — «their own line on how it compared, verbatim»
+
+  - id: cp1_routing
+    goal: |
+      Student distinguishes a short path EXISTING somewhere in a network
+      from a short path being FINDABLE by someone using only local
+      knowledge — Milgram's stronger, harder claim, felt through Wikirace.
+    build: none
+    ask: |
+      Stay on the picture already on screen from cp1_milgram. Say: "One
+      more thing about Milgram's result, before we start measuring any of
+      this. There's a game called Wikirace: you get two totally unrelated
+      Wikipedia pages, and you have to click your way from one to the
+      other — but only using the links on whatever page you're currently
+      on. No search bar, no jumping straight there." Then ask, typed:
+      "If I told you, with total certainty, that SOME six-click path
+      connects those two pages somewhere on Wikipedia — would that make
+      the race easy to win? Why or why not?"
+    accept: |
+      Recognizes that a path EXISTING is not the same as being able to
+      FIND it: you don't have a map of the whole site, only the links on
+      your current page — same as Milgram's letter-holders, who only knew
+      their own friends, not the whole social network. Any wording that
+      lands on "no, because you can only see where YOU are, not the whole
+      thing" passes.
+    hints:
+      - "When you land on a Wikipedia page, can you see the whole site's link map, or just the links on that one page?"
+      - "Milgram's letter-holders — did any of them see the whole social network, or only their own friends?"
+    fresh_variants: |
+      If the answer slips out, ask it about a maze instead: "If I told you
+      a maze definitely has a 10-step solution, could you walk it in 10
+      steps on your first try, seeing only the walls right in front of
+      you?" Same idea, new setting.
+    reveal_after: |
+      Terminal: a short path EXISTING is a fact about the whole network —
+      something only someone holding the full map could check. A short
+      path being FOUND, by ordinary people each using only who they
+      personally knew, is a much stronger claim — and that's exactly what
+      Milgram's letters showed. Bridge: "So now the real question: what is
+      it about a network's SHAPE that makes that possible? Let's start
+      measuring it."
+    note: |
+      ### 🧭 Existing vs. findable
+      A short path **existing** somewhere in a network is a fact about the
+      whole network — you'd need the full map to even check it. A short
+      path being **found**, by ordinary people each using only who THEY
+      personally knew, is a much stronger claim. Milgram's letter-holders
+      never saw the social network as a whole; they just kept forwarding to
+      whoever seemed "closer" to the target. That they succeeded, in about
+      6 hops, is the surprising part.
+
+      > **My answer:** «their answer, verbatim»
