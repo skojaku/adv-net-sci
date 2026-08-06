@@ -71,7 +71,7 @@ hanging off Sue. Solve the positions so the four core faces are convex.
 | `degree-def.png` | col | one node with four edges, the edges counted 1–4 | count = drawn degree |
 | `sum-ends.png` | full | the Feld graph with a small tick at **each end** of every edge, 20 ticks, and the running total | ticks = 2M = 20 |
 | `mean-degree.png` | col | the division 20 ÷ 8 = 2.5 set as a diagram, not a formula panel | value from `moments()` |
-| `odd-three-attempt.png` | full | three ringed nodes labelled "odd" and a half-drawn edge that cannot find a partner — an *attempt*, not a proof | shows no resolution (question slide) |
+| ~~`odd-three-attempt.png`~~ | — | **cut.** Any drawing of a failed attempt hands the room the pairing argument, and that slide's whole job is to let them fail at it themselves. Slide 19 is text-only, which N2 allows for a question slide. | — |
 | `handshake.png` | full | odd-degree nodes pairing up: four odd nodes joined by dashed accent-2 arcs, one left over crossed out | pairing is exhaustive; the leftover is unmatched |
 | `pk-def.png` | col | p(k) as "how many of the eight sit at each k", drawn as columns of discs | — |
 | `feld-pk.png` | full | four columns of two discs each, k = 1, 2, 3, 4, annotated "a quarter each" | column heights = the computed p(k) |
@@ -88,8 +88,8 @@ hanging off Sue. Solve the positions so the four core faces are convex.
 | `fb-twitter.png` | full | Facebook 92.7% (mean) and 83.6% (median) and Twitter >98%, as annotated proportion strips — **not bars, not a table** | percentages hard-checked against the quoted sentences |
 | `sampling-bias.png` | full | the same network sampled two ways: nodes at random (flat) and edges followed (hub-heavy) | the hub is over-picked by the computed factor |
 | `acquaintance.png` | full | three steps: pick a person at random → ask for one friend → immunise the friend | — |
-| `immunization-curves.png` | full | giant component against fraction immunised, three curves (random / acquaintance / degree-targeted) on the Internet AS graph, with f = 0.10 marked: 0.877, 0.024, 0.002 | curves from `immunization_curves()` |
-| `demo-still.png` | col | a still pointing at `vaccination-game.html` | — |
+| `immunization-curves.png` | **col** | giant component against fraction immunised, three curves (random / acquaintance / degree-targeted) on the Internet AS graph, with f = 0.10 marked: 0.877, 0.024, 0.002 | curves from `immunization_curves()` |
+| ~~`demo-still.png`~~ | — | **cut.** The demo slide carries `immunization-curves.png` in a `cols` column instead. | — |
 
 ## Batch B — `figs_tail.py` (Parts 5–6, 20 figures + 1 GIF)
 
@@ -124,7 +124,7 @@ All degree data comes from `condmat()`; nothing is re-derived.
 | file | container | contents | asserted |
 |---|---|---|---|
 | `individual-vs-average.png` | full | the eight girls sorted by "below / above / equal", with Facebook's 92.7% (mean) and 83.6% (median) beside them | the 5/2/1 split recomputed |
-| `vanishing-blank.png` | full | an empty frame inviting the room to build a paradox-free network, plus a pointer to `friendship-paradox-game.html` | **no answer** |
+| ~~`vanishing-blank.png`~~ | — | **cut.** An empty frame is not a figure. Slide 77 is text-only. | — |
 | `vanishing.png` | full | the ring, the complete graph and the lattice, each annotated Var(k) = 0 | all three variances computed as 0 |
 | `directed.png` | full | a small directed network with in- and out-degree separated; the "you watch / they are watched" asymmetry marked | in-degree sum = out-degree sum = M |
 | `assortativity.png` | full | three schematics — assortative, disassortative, neutral — same degree sequence, different wiring | the three share one degree sequence (asserted) |
