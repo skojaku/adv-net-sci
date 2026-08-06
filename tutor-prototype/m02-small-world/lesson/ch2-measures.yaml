@@ -1,4 +1,5 @@
-# Chapter 2 of 5 — Measuring Smallness (cp2, cp2_paperwork, cp3).
+# Chapter 2 of 5 — Measuring Smallness
+# (cp2_distance, cp2_diameter, cp2_paperwork, cp3_clustering, cp3_global_clustering).
 # Follow checkpoints IN ORDER. Judge "accept" by meaning, not wording.
 # "hints" are first rungs of a ladder — invent smaller rungs, never state answers.
 # If an answer slips out, re-check with the SAME question on fresh_variants data.
@@ -7,7 +8,9 @@
 chapter:
   id: ch2
   title: "Measuring Smallness"
-  goal: The student can compute distance, average path length, and local clustering.
+  goal: |
+    The student can compute distance, average path length, diameter, local
+    clustering, and global clustering.
 checkpoints:
 
   - id: cp2_distance
@@ -49,6 +52,43 @@ checkpoints:
       on a whole country.
 
       > **I worked out:** «their answers, verbatim»
+
+  - id: cp2_diameter
+    goal: Student distinguishes diameter (the worst-case trip) from average path length (the typical trip), on the same chart just built.
+    build: none
+    ask: |
+      Point back at the chart still on screen from cp2_distance (cp2_pairs_table).
+      "That chart has six bars — one per pair — and the average was 7/6.
+      But there's another number sitting right there in the same chart: the
+      SINGLE longest trip in this whole network. Which pair is it, and how
+      many edges?"
+    accept: |
+      A-D at 2 edges — the only pair not at distance 1. Naming the number
+      (2) is enough; naming the pair too is a bonus, not required.
+    hints:
+      - "Scan the six bars in the chart — which one stands tallest?"
+      - "You already worked out all six distances for the average. Which single one was the biggest?"
+    fresh_variants: |
+      Reuse cp2_distance's fresh-variant networks: the 4-person star (longest
+      trip is 2, between any two leaves) or the A-B-C-D-A square (longest
+      trip is 2, along either diagonal).
+    reveal_after: |
+      Terminal: name it — this worst-case number is the **diameter**.
+      Average path length tells you the TYPICAL trip; diameter tells you
+      the worst one. A network can have a small average and still hide a
+      few painfully long trips in its diameter — they measure different
+      things, and a small-world network keeps BOTH small even as it grows.
+    note: |
+      ### 📐 Diameter — the worst-case trip
+      **Average path length** ($L$) is the typical trip; the **diameter**
+      is the single LONGEST shortest-path trip anywhere in the network —
+      the worst case, not the average. Here every pair sits at distance 1
+      except A–D, so the diameter is **2**. A ring or lattice can have a
+      diameter that keeps growing as the network grows; a small-world
+      network's diameter stays small even as it gets bigger — that's part
+      of what "small" means.
+
+      > **I worked out:** «their answer, verbatim»
 
   - id: cp2_paperwork
     goal: |
@@ -143,14 +183,80 @@ checkpoints:
     reveal_after: |
       Terminal: name it — local clustering coefficient C_i = (edges among
       neighbors) / (possible edges among neighbors); averaging over nodes
-      gives the network's clustering. Social networks: typically high. One
-      sentence: a 'global clustering' variant exists in the lecture notes.
+      gives the network's average clustering. Social networks: typically
+      high. There's also a way to measure clustering for the WHOLE network
+      at once, counted differently — let's look at that next.
     note: |
       ### 🤝 Local clustering — do my friends know each other?
       The **local clustering coefficient** of a person $i$ is
       $C_i = \frac{\text{friendships among } i\text{'s friends}}{\text{possible ones}}$.
       A has 5 friends, so up to 10 friendships could exist among them; 2 do,
       so $C_A = 2/10 = 0.2$. Averaging $C_i$ over everyone gives the
-      network's clustering $C$ — typically HIGH in social networks.
+      network's average clustering $\overline{C}$ — typically HIGH in
+      social networks.
+
+      > **I worked out:** «their answers, verbatim»
+
+  - id: cp3_global_clustering
+    goal: |
+      Student distinguishes a triangle (a closed triplet) from an open
+      triplet, and understands global clustering as a network-wide,
+      hub-weighted ratio — different from the node-averaged local
+      clustering just learned.
+    build: none
+    ask: |
+      Stay on Alice's picture, still on screen from cp3_clustering.
+      ONE piece at a time:
+      1. "Pick Alice and any two of her friends who are NOT connected to
+         each other. Two of the three possible friendships exist — both
+         run back to Alice — but the third one doesn't. We call that shape
+         an OPEN triplet, 'open' because one edge is missing. Now pick
+         Alice and two friends who ARE connected to each other too, so all
+         three edges exist. What would you call THAT shape, if not open?"
+      2. "So a triangle really is just a triplet with all three edges — a
+         CLOSED triplet. Now zoom out to the whole network, not just
+         Alice's corner of it: say the whole network has 2 triangles in
+         it, and 30 triplets total once you count the open ones too. Since
+         each triangle gets counted three times — once centered on each of
+         its three corners — the formula is 3 times the triangles, divided
+         by the triplets. What number does that give you?"
+      3. "Now think about WHO those triplets belong to. Alice's local score
+         only ever looks at Alice's own five friends. This network-wide
+         number doesn't care whose neighborhood a triplet sits in — it just
+         counts every triplet in the whole network. Someone with 2 friends
+         contributes very few possible triplets; someone with 200 friends
+         contributes a lot. Does that make this network-wide number MORE
+         sensitive to ordinary people, or to a few super-connected hubs?"
+    accept: |
+      (1) triangle = closed triplet, all three edges present, vs. an open
+      triplet that is missing one edge.
+      (2) 3x2/30 = 0.2.
+      (3) hubs — high-degree nodes contribute disproportionately, unlike
+      the node-averaged local version where everyone counts equally.
+    hints:
+      - "A triangle needs all three possible edges. Does your open triplet have all three, or just two?"
+      - "3 times 2 is 6. What's 6 divided by 30?"
+      - "If Alice has 2 friends, how many possible triplets can even be centered on her? Now what if she had 200?"
+    fresh_variants: |
+      If the answer slips out, re-check with new counts: 3 triangles and
+      45 triplets total -> 9/45 = 0.2; or 1 triangle and 10 triplets ->
+      3/10 = 0.3.
+    reveal_after: |
+      Terminal: name it — the **global clustering coefficient** (also
+      called transitivity): 3 x triangles / triplets, one number for the
+      WHOLE network. Unlike the local-clustering average, which treats
+      every node equally, hub or leaf, this one gets pulled around by
+      whoever has the most friends. The two numbers can disagree quite a
+      bit on the same network — the lecture notes go further into when
+      that happens.
+    note: |
+      ### 🔺 Global clustering — one number for the whole network
+      A **triplet** is any three people with at least two friendships among
+      them; if the third friendship is ALSO there, it's a **triangle** — a
+      "closed" triplet. The **global clustering coefficient**
+      $C = \frac{3 \times \text{triangles}}{\text{triplets}}$ counts every
+      triplet in the network, not just one person's neighborhood — so
+      people with more friends contribute more triplets, and pull this
+      number around more than the node-averaged $\overline{C}$ does.
 
       > **I worked out:** «their answers, verbatim»
