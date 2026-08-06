@@ -116,7 +116,7 @@ def er_graph():
 
 @lru_cache(maxsize=None)
 def lattice_degrees():
-    """A ring lattice at the same mean degree as cond-mat and the random graph."""
+    """A ring lattice at cond-mat's mean degree: every node with exactly eight."""
     g = nx.watts_strogatz_graph(2000, 8, 0.0, seed=1)
     return tuple(int(d) for _, d in g.degree())
 
@@ -1050,8 +1050,15 @@ def fig_universality():
 def fig_poisson_ccdf():
     """Slide 67: wire it at random and the tail is not smaller, it is absent."""
     d = np.array(degrees_of("er"))
+    cm = np.array(condmat_degrees())
     k1, var = float(d.mean()), float(d.var())
-    assert abs(var / k1 - 1) < 0.05 and int(d.max()) == 15, (var / k1, d.max())
+    # Matched to cond-mat by construction (B-11), so the two figures differ in SHAPE
+    # only: assert the match rather than a hardcoded maximum, which is what broke when
+    # the random graph stopped being an arbitrary <k> = 4.
+    assert abs(k1 - cm.mean()) < 0.05, (k1, cm.mean())
+    assert len(d) == len(cm), (len(d), len(cm))
+    assert abs(var / k1 - 1) < 0.05, var / k1
+    assert int(d.max()) < int(cm.max()) / 8, (d.max(), cm.max())
     ks, su = ccdf(d)
 
     ax = Axes(FRAME, (1, 300), (1e-5, 1), xlog=True, ylog=True,
@@ -1070,29 +1077,43 @@ def fig_poisson_ccdf():
                         f"largest degree {int(d.max())}\\\\"
                         f"$\\mathrm{{Var}}/\\langle k \\rangle = {var / k1:.2f}$",
                         drawn, boxes, color="accenttwo", anchor="east")
-    body += fixed_label([(1050, 338)],
-                        f"$\\langle k \\rangle = {k1:.1f}$, {len(d):,} nodes"
-                        .replace(",", "{,}"),
+    # The figure carries the numbers; the naming of the comparison is prose and lives in
+    # the deck's figcaption (B-11). Written as one wide line here it reached x=322 and sat
+    # on the curve, which is the guide's rule arriving as a build failure: shorten the
+    # note, do not move the drawing.
+    # Two short lines, not one wide one: at <k> = 8 the cliff reaches x~695, so a 513bp
+    # label anchored at the right edge runs back under the curve. Stacked, it is 297bp
+    # and sits entirely in the empty quarter past the cliff.
+    body += fixed_label([(1050, 180), (1050, 168), (1050, 196)],
+                        (f"$\\langle k \\rangle = {k1:.1f}$\\\\{len(d):,} nodes"
+                         .replace(",", "{,}")),
                         drawn, boxes, color="annot", anchor="east")
     emit("poisson-ccdf", body, container="full", h=H)
 
 
 def fig_three_ccdfs():
     """Slide 68: same average degree, three shapes."""
-    ba = np.array(degrees_of("ba"))
+    # R1 B-10: accent named "power law" here while being drawn from a BA model, three
+    # slides after accent was the physicists on `universality`. Reviewer C's own fix was
+    # to use the cond-mat CCDF, which is already computed -- so accent is one network
+    # across Part Six, the deck's own, and the slide compares a real heavy tail against
+    # two idealisations at its own mean instead of an arbitrary <k> = 4.
+    cm = np.array(condmat_degrees())
     er = np.array(degrees_of("er"))
     lat = np.array(lattice_degrees())
-    for name, d in (("power law", ba), ("random", er), ("lattice", lat)):
-        assert abs(d.mean() - 4) < 0.02, (name, d.mean())
-    assert set(lat.tolist()) == {4} and lat.var() == 0
-    assert int(ba.max()) == 315 and int(er.max()) == 15
+    means = {"physicists": cm.mean(), "random": er.mean(), "lattice": lat.mean()}
+    assert max(means.values()) / min(means.values()) < 1.015, means
+    assert set(lat.tolist()) == {8} and lat.var() == 0
+    assert int(cm.max()) == 279, cm.max()
+    assert int(er.max()) < 40, er.max()
+    LAT_K = 8
 
     ax = Axes(FRAME, (1, 500), (1e-5, 1), xlog=True, ylog=True,
               xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
     drawn, anchors = [], []
-    for d, col, name, frac in ((ba, "accent", "power law", 0.72),
+    for d, col, name, frac in ((cm, "accent", "physicists", 0.72),
                                (er, "accenttwo", None, 0)):
         ks, su = ccdf(d)
         body += curve(ax, ks, su, color=col, w=4.6)
@@ -1101,21 +1122,23 @@ def fig_three_ccdfs():
         if name:
             anchors.append((name, col, pts[int(len(pts) * frac)]))
     # Every node has exactly four, so the survival is 1 up to k=3 and 0 from k=4: a wall.
-    wall = [ax.P(1, 1), ax.P(4, 1), (ax.X(4), ax.y0)]
+    wall = [ax.P(1, 1), ax.P(LAT_K, 1), (ax.X(LAT_K), ax.y0)]
     body += polyline(wall, color="black", w=4.6)
-    drawn += curve_pts(ax, [1, 4], [1, 1]) + [(ax.X(4), ax.y0 + t) for t in
-                                              range(0, int(ax.y1 - ax.y0), 7)]
-    anchors.append(("lattice", "black", (ax.X(4), ax.y0 + (ax.y1 - ax.y0) * 0.45)))
+    drawn += curve_pts(ax, [1, LAT_K], [1, 1]) + [(ax.X(LAT_K), ax.y0 + t) for t in
+                                                  range(0, int(ax.y1 - ax.y0), 7)]
+    anchors.append(("lattice", "black",
+                    (ax.X(LAT_K), ax.y0 + (ax.y1 - ax.y0) * 0.45)))
 
     boxes = [label_box((ax.x0 + ax.x1) / 2, 372,
-                       visible("all three networks: $\\langle k \\rangle = 4$"), "north")]
+                       visible("all three networks: $\\langle k \\rangle \\approx 8$"), "north")]
     body += text((ax.x0 + ax.x1) / 2, 372,
-                 "all three networks: $\\langle k \\rangle = 4$", color="annot",
+                 "all three networks: $\\langle k \\rangle \\approx 8$", color="annot",
                  anchor="north")
     # The random curve falls off the bottom of the frame, so every offset around a point
     # ON it lands either under the axis or on the power law.  It takes the clear pocket
     # just right of its own cliff -- claimed first, so the solver works around it.
-    body += fixed_label([(626, 200), (626, 232), (660, 205), (600, 176)], "random",
+    body += fixed_label([(700, 300), (700, 264), (740, 320), (680, 232),
+                         (760, 286), (660, 330)], "random",
                         drawn, boxes, color="accenttwo")
     for name, col, at in anchors:
         body += curve_label(ax, name, at, drawn, boxes, color=col)

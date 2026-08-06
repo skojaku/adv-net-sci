@@ -1378,7 +1378,7 @@ Module 02's random graph. Ask them to predict the shape before answering.
 <div class="fig">
 
 ![w:1080](figures/poisson-ccdf.png)
-<figcaption>a random network with the same average: nothing lives past a handful</figcaption>
+<figcaption>the same 23,133 nodes and the same average as the physicists, wired at random</figcaption>
 
 </div>
 
