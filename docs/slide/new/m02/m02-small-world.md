@@ -1424,11 +1424,11 @@ $L$ collapses while $C$ is still essentially untouched. A few random edges are e
 <div class="fig tight">
 
 ![w:1000](figures/ws-band.png)
-<figcaption>gold: two decades of rewiring where both hold</figcaption>
+<figcaption>gold: paths at most half the lattice’s, clustering still four-fifths of it</figcaption>
 
 </div>
 
-The gap is not a knife edge — it is two orders of magnitude wide. Any network that rewires a little at all lands inside it.
+By the time the routes have halved, clustering has lost about one per cent. Ask for both at once — paths at most half, clustering still four-fifths — and the band spans a factor of five in $p$.
 
 ---
 
@@ -1651,15 +1651,15 @@ Count the triplets centred on one intersection. How many are closed?
 </div>
 <div class="fig">
 
-![w:520](figures/grid-no-triangles.png)
-<figcaption>every face is a square</figcaption>
+![w:520](figures/grid-q.png)
+<figcaption>gold: the intersection to count around</figcaption>
 
 </div>
 </div>
 
 ---
 
-## Six triplets at every intersection
+## What the six triplets do
 
 <hr>
 
@@ -1673,8 +1673,8 @@ Nothing closes. $C = 0$, and $\sigma = 0$ with it.
 </div>
 <div class="fig">
 
-![w:520](figures/grid-no-triangles.png)
-<figcaption>no diagonals anywhere — so every triplet stays open</figcaption>
+![w:520](figures/grid-answer.png)
+<figcaption>red: the four edges whose pairs are the six triplets</figcaption>
 
 </div>
 </div>
