@@ -29,7 +29,7 @@ import numpy as np
 from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
 from feld import ABOVE, BELOW, EQUAL, degree, friend_mean
-from figs_tail import CCDF_BOX, CCDF_YLIM, CCDF_YTICKS, HUBS
+from figs_tail import HUBS, axis_titles, ccdf_axes
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
 
@@ -476,17 +476,21 @@ def fig_lognormal_trap():
     gap = max(abs(math.log10(float((pl > k).mean()) / float((ln > k).mean()))) for k in grid)
     assert gap < 0.16, f"the two CCDFs are {gap:.2f} decades apart -- not on top of each other"
 
-    # The deck's CCDF frame, imported rather than hand-rolled. This panel had its own
-    # box, its own y limits and its own title ("CCDF" against P(k'>k) everywhere else),
-    # so it ran at 65px per decade where the other seven run at 37.5 -- an unannounced
-    # change of ruler, on the slide range whose whole argument is that an unannounced
-    # change of ruler misleads you. The curve only reaches 10^-2.5, so the lower half of
-    # the frame is empty; that is this distribution not going as deep as cond-mat's,
-    # which is readable information and not a defect to be scaled away.
-    ax = Axes(CCDF_BOX, (KLO, KHI), CCDF_YLIM, xlog=True, ylog=True,
-              xlabel="degree $k$", ylabel="$P(k'>k)$",
-              xticks=[10, 100, 1000], yticks=CCDF_YTICKS)
-    b = ax.frame()
+    # The module's one CCDF ruler, built by the module's own builder. R4's C4-3 fixed
+    # this panel's y axis by importing the box and the limits, and left the x axis
+    # hand-rolled -- so k still ran at 379.5bp per decade against 264.5 everywhere else,
+    # and a slope drawn here could not be compared with a slope drawn on 092, which is
+    # the comparison that slide asks for out loud. `ccdf_axes` fixes bp per decade on
+    # BOTH axes and asserts the range fits; going through it is what stops the next
+    # round finding the half I did not think of.
+    # The axis spans the module's canonical (1, 2000) -- CCDF_PX_PER_DECADE is defined
+    # off log10(2000), so that range is exactly CCDF_BOX's width -- and the curves
+    # occupy the 5..1000 they actually cover. Ticks 1/10/100/1000 like every other k
+    # axis. Centring a 608bp frame instead put the ink at 75% of the canvas, under the
+    # 76% floor, which is the gate saying the same thing: the frame is the deck's, not
+    # this figure's to trim.
+    ax = ccdf_axes((1, 2000), [1, 10, 100, 1000])
+    b = ax.frame() + axis_titles(ax, "degree $k$", "$P(k'>k)$")
     sel = (ks_pl >= KLO) & (ks_pl <= KHI)
     b += ax.line(ks_pl[sel], su_pl[sel], color="accent", w=6.0)
     keep = np.unique(np.round(np.logspace(math.log10(KLO), math.log10(KHI), 34)).astype(int))
@@ -496,9 +500,12 @@ def fig_lognormal_trap():
     # frame this 2.5-decade curve leaves clear: it runs across the top, so anything at
     # the right is under it, and the collision boxes are wide enough that a right-hand
     # label overlaps a left-hand one whatever the height.
-    b += text(250, 215, "power law", color="accent", anchor="west")
-    b += text(250, 155, f"log-normal, $R^2 = {_dec(r2, 2)}$ over "
-                        f"${_dec(decades, 1)}$ decades", color="accenttwo", anchor="west")
+    # inside the centred frame, under the curve: `ccdf_axes(centre=True)` shifts the
+    # box, so these are placed off ax.x0 rather than off the canvas
+    b += text(ax.x0 + 37, 215, "power law", color="accent", anchor="west")
+    b += text(ax.x0 + 37, 155, f"log-normal, $R^2 = {_dec(r2, 2)}$ over "
+                               f"${_dec(decades, 1)}$ decades",
+              color="accenttwo", anchor="west")
     emit("lognormal-trap", b, container="full", h=400)
 
 
@@ -506,9 +513,13 @@ def fig_lognormal_trap():
 # slide 087 -- the claim, the doubt, the audit
 # ===========================================================================
 def fig_scale_free_debate():
-    b = seg((60, 230), (1005, 230), color="annot", w=3.0)
-    b += seg((1005, 230), (1030, 230), color="annot", w=3.0,
-             arrow="-{Stealth[length=16bp,width=12bp]}")
+    # No arrowhead and no interval chips. The dots are equally spaced and the intervals
+    # are not (12 years, then 8), and metric spacing is arithmetically unavailable at
+    # 36pt: the 1.5 ratio needs 822bp of dot-to-dot span and the end columns' own widths
+    # leave 712. An arrowhead promises a continuous scale, so it was the part of the
+    # drawing making the claim; the chips I added in R4 then printed numbers the
+    # spacing contradicted. Three dated marks on a connector claim nothing.
+    b = seg((60, 230), (1020, 230), color="annot", w=3.0)
     # The 2019 dot carried no content, and the slide's title promises a statistical
     # test that nothing on the drawing named. Each dot now says what its year
     # contributed, and 2019 names the test.
@@ -526,9 +537,6 @@ def fig_scale_free_debate():
     # left. Metric spacing does not fit: it would leave 268bp between 2011 and 2019 for
     # a column whose widest line models 448. So the intervals are named instead, which
     # says the thing the spacing was implying wrongly.
-    for a, c in zip(marks[:-1], marks[1:]):
-        b += text((a[0] + c[0]) / 2, 248, f"{int(c[1]) - int(a[1])} years",
-                  color="annot", anchor="south")
     for x, year, who, role, what in marks:
         b += dot(x, 230, color="accent", d=SMALLNODE)
         b += text(x, 285, year, anchor="south", size=48)
