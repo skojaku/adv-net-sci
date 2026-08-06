@@ -481,9 +481,14 @@ def fig_next_module():
     body = web_body()
     here, there = WEB_DANGLING[0], "Forum"
     assert not WEB.has_edge(here, there), "a teleport is not a link"
-    x, y = WEB_XY[here]
-    body += F.dot(x, y, color=A2, d=26)
-    p0, p3 = np.array((x, y)), np.array(WEB_XY[there])
+    # The walker stands ON the page, not in the middle of its name.
+    wx, wy = WEB_XY[here][0] - 14, BOXES[here][3] + 19
+    for (u, v), P in _PATHS.items():
+        assert not any(F.box_hits_segment((wx - 15, wy - 15, wx + 15, wy + 15),
+                                          P[i], P[i + 1], pad=2)
+                       for i in range(len(P) - 1)), f"the walker sits on {u} -> {v}"
+    body += F.dot(wx, wy, color=A2, d=26)
+    p0, p3 = np.array(WEB_XY[here]), np.array(WEB_XY[there])
     c1, c2 = np.array((996.0, 58.0)), np.array((690.0, 18.0))
     pts = [tuple((1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * c1
                  + 3 * (1 - t) * t ** 2 * c2 + t ** 3 * p3) for t in np.linspace(0, 1, 48)]

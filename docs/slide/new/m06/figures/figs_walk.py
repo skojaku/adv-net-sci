@@ -119,8 +119,13 @@ class Notes:
         self.bounds = bounds
         self.pad = pad
 
-    def box(self, at, s, anchor="center", size=FONT):
-        return label_box(at[0], at[1], visible(s), anchor, size=size)
+    def box(self, at, s, anchor="center", size=FONT, meas=None):
+        # `meas` is the plain-TeX equivalent of `s`, for strings `visible()` cannot
+        # measure: it drops control words but keeps their arguments, so the nine
+        # letters of `\color{accenttwo}` counted as nine glyphs and a 340 bp equation
+        # measured 820.
+        return label_box(at[0], at[1], visible(meas if meas is not None else s),
+                         anchor, size=size)
 
     def why(self, b, s):
         lo_x, lo_y, hi_x, hi_y = self.bounds
@@ -143,8 +148,8 @@ class Notes:
             return f"{s!r} sits on a curve at {cur[0][0]:.0f},{cur[0][1]:.0f}"
         return None
 
-    def put(self, at, s, color="black", anchor="center", size=FONT):
-        b = self.box(at, s, anchor, size)
+    def put(self, at, s, color="black", anchor="center", size=FONT, meas=None):
+        b = self.box(at, s, anchor, size, meas)
         bad = self.why(b, s)
         assert bad is None, bad
         self.boxes.append(b)
@@ -313,7 +318,7 @@ def fig_eigen_equation():
     assert np.abs(A @ ROMA_EVEC - ROMA_LMAX * ROMA_EVEC).max() < 1e-9, \
         "the drawn vector must actually be the eigenvector"
 
-    bx0, bx1, by0, by1 = 88.0, 248.0, 130.0, 280.0
+    bx0, bx1, by0, by1 = 20.0, 180.0, 130.0, 280.0
     body = (f"\\fill[accent!14] ({bx0},{by0}) rectangle ({bx1},{by1});\n"
             f"\\draw[line width=3bp,draw=black] ({bx0},{by0}) rectangle "
             f"({bx1},{by1});\n")
@@ -331,13 +336,13 @@ def fig_eigen_equation():
         return out
 
     mid = (by0 + by1) / 2
-    body += column(262)
-    body += column(405)
+    body += column(210)
+    body += column(380)
     notes = Notes()
     body += notes.put(((bx0 + bx1) / 2, mid + 22), "$A$", size=46)
     body += notes.put(((bx0 + bx1) / 2, mid - 34), f"${n} \\times {n}$")
-    body += notes.put((318, mid), "$=$", size=46)
-    body += notes.put((372, mid), "$\\lambda$", color="accenttwo", size=46)
+    body += notes.put((272, mid), "$=$", size=46)
+    body += notes.put((330, mid), "$\\lambda$", color="accenttwo", size=46)
     body += notes.put((W / 2, 330), "$A\\,c = \\lambda\\,c$", size=46)
     body += notes.put((W / 2, 68),
                       f"$\\lambda = {lmax}$: the same twelve\\\\"
@@ -644,7 +649,8 @@ def _katz_solve_body(final):
     notes = Notes()
     body = notes.put((W / 2, 336),
                      "$c = {\\color{accenttwo}\\beta\\mathbf{1}}"
-                     " + {\\color{accent}\\lambda A c}$", size=46)
+                     " + {\\color{accent}\\lambda A c}$", size=46,
+                     meas="$c = \\beta\\mathbf{1} + \\lambda A c$")
     body += notes.put((W / 2, 268), "$\\beta$: a floor for everyone",
                       color="accenttwo")
     body += notes.put((W / 2, 210), "$\\lambda A c$: your neighbours", color="accent")

@@ -962,13 +962,20 @@ No hints. The next slide names the theorem.
 
 <hr>
 
-One eigenvalue is larger than all the others, and its eigenvector is unique and **strictly positive**. Perron **1907**, Frobenius **1912**.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+For a connected network with non-negative $A$, **one** eigenvalue is larger than all the others, and its eigenvector is unique and **strictly positive**.
 
-![w:1080](figures/spectrum.png)
-<figcaption>twelve eigenvalues, and the only one whose vector is all-positive</figcaption>
+Perron proved it in **1907**; Frobenius extended it in **1912**.
 
+</div>
+<div class="fig">
+
+![w:537](figures/spectrum.png)
+<figcaption>twelve eigenvalues, one usable</figcaption>
+
+</div>
 </div>
 
 <!--
@@ -996,13 +1003,22 @@ Everyone starts at 1. Add up your neighbours. Rescale. Repeat.
 
 <hr>
 
-Step 0 is flat. **Step 1 is exactly the degree ranking**, because the first sum is only a count. The order stops changing by step 4.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Step 0 is flat: everybody equal.
 
-![w:1080](figures/power-step-2.png)
+**Step 1 is exactly the degree ranking**, because the first sum is only a count.
+
+After that the score arrives from further away, and the order stops changing by step 4.
+
+</div>
+<div class="fig">
+
+![w:537](figures/power-step-2.png)
 <figcaption>two rounds of adding up neighbours</figcaption>
 
+</div>
 </div>
 
 <!--
@@ -1015,13 +1031,20 @@ The crown is decided after a single step. Everything after that is sorting out t
 
 <hr>
 
-Every mode but the leading one decays. The slowest here is **0.80**.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Write the starting vector in the eigenbasis. Multiplying by $A$ multiplies each piece by its own $\lambda$.
 
-![w:1080](figures/decay.png)
-<figcaption>every other mode, dying as lambda-i over lambda-1 to the t</figcaption>
+So every piece but the leading one shrinks like $|\lambda_i/\lambda_1|^t$ — and the slowest here is **0.80**.
 
+</div>
+<div class="fig">
+
+![w:537](figures/decay.png)
+<figcaption>every other mode, dying</figcaption>
+
+</div>
 </div>
 
 <!--
@@ -1034,13 +1057,20 @@ Write the starting vector in the eigenbasis: multiplying by A multiplies each pi
 
 <hr>
 
-$A^t$ counts **walks of length $t$**, so eigenvector centrality answers "where do most walks end up?"
+<div class="cols">
+<div>
 
-<div class="fig tall">
+$A^t$ counts **walks of length $t$**.
 
-![w:1080](figures/walks-arrive.png)
-<figcaption>three walks of length 3, arriving at one node</figcaption>
+Power iteration counts walks and lets the long ones dominate — so eigenvector centrality answers "where do most walks end up?"
 
+</div>
+<div class="fig">
+
+![w:537](figures/walks-arrive.png)
+<figcaption>three walks of length 3, arriving</figcaption>
+
+</div>
 </div>
 
 ---
@@ -1225,13 +1255,22 @@ Katz counts **every walk of every length**, discounting a walk of length $t$ by 
 
 <hr>
 
-Small $\lambda$ is **degree**. Large $\lambda$ is **eigenvector centrality**.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Turn $\lambda$ down and only the shortest walks survive: Katz becomes **degree**.
 
-![w:1080](figures/katz-dial.png)
-<figcaption>the top of the ranking, at three settings of lambda</figcaption>
+Turn it up and long walks count as much as short ones: Katz becomes **eigenvector centrality**.
 
+Everything useful is in between.
+
+</div>
+<div class="fig">
+
+![w:537](figures/katz-dial.png)
+<figcaption>the top of the ranking, at three settings</figcaption>
+
+</div>
 </div>
 
 <!--
@@ -1264,13 +1303,22 @@ Collect two or three predictions. "It grows" is the common one. "It stops workin
 
 <hr>
 
-The series converges only while $\lambda < 1/\lambda_{\max}$ — here **0.299**. Set $\lambda = 0.344$ and **eleven of the twelve scores go negative**.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+The series converges only while $\lambda < 1/\lambda_{\max}$.
 
-![w:1080](figures/katz-diverge.png)
-<figcaption>scores against lambda, crossing zero past the ceiling</figcaption>
+Here $\lambda_{\max} = 3.35$, so the ceiling is **0.299**.
 
+Set $\lambda = 0.344$ and **eleven of the twelve scores go negative**.
+
+</div>
+<div class="fig">
+
+![w:537](figures/katz-diverge.png)
+<figcaption>scores against lambda, crossing zero</figcaption>
+
+</div>
 </div>
 
 ---
