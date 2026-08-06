@@ -1581,7 +1581,7 @@ $\sigma \approx 5$ for a ring of a thousand nodes; even the 16-node ring scores 
 </div>
 <div class="fig">
 
-![w:520](figures/ring-lattice.png)
+![w:520](figures/sigma-lt-1-answer.png)
 <figcaption>clustering wins the ratio, even here</figcaption>
 
 </div>
