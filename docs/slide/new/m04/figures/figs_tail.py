@@ -60,7 +60,7 @@ FRAME_COL = (165, 145, 500, 356)
 # of them teaching that an unannounced change of ruler misleads you. One box, one y range
 # and one set of y ticks for every CCDF in the module; only x adapts to the data, and the
 # band above the frame is where a figure's own numbers go.
-CCDF_BOX = (185, 150, 1058, 306)
+CCDF_BOX = (185, 118, 1058, 306)
 CCDF_YLIM = (1e-5, 1)
 CCDF_YTICKS = [1e-4, 1e-2, 1]
 CCDF_NOTE_Y = 372
@@ -257,6 +257,23 @@ def curve_pts(ax, xs, ys, step=7.0):
 _SIDES = (270, 300, 240, 330, 210, 0, 180, 30, 150, 90)
 
 
+def _leader(at, b, gap=5.0):
+    """A line from a point on the curve to the nearest edge of its label's box."""
+    cx = min(max(at[0], b[0]), b[2])
+    cy = min(max(at[1], b[1]), b[3])
+    d = math.hypot(cx - at[0], cy - at[1]) or 1.0
+    return (at, (at[0] + (cx - at[0]) * (1 - gap / d),
+                 at[1] + (cy - at[1]) * (1 - gap / d)))
+
+
+def _seg_near(seg_pts, p, tol=6.0):
+    (x0, y0), (x1, y1) = seg_pts
+    dx, dy = x1 - x0, y1 - y0
+    L2 = dx * dx + dy * dy or 1e-9
+    u = max(0.0, min(1.0, ((p[0] - x0) * dx + (p[1] - y0) * dy) / L2))
+    return math.hypot(x0 + u * dx - p[0], y0 + u * dy - p[1]) < tol
+
+
 def _box_dist(b, p):
     """Distance from the point `p` to the rectangle `b`, zero if inside."""
     return math.hypot(max(b[0] - p[0], 0, p[0] - b[2]), max(b[1] - p[1], 0, p[1] - b[3]))
@@ -302,10 +319,42 @@ def curve_label(ax, s, ats, own, boxes, others=(), color="black", size=FONT, pad
                 continue
             boxes.append(b)
             return text(cx, cy, s, color=color, anchor="center", size=size)
+    # Nothing satisfies the margin. On `universality` nothing can: measured over every
+    # anchor, radius and side, the physicists curve's best achievable ratio is 1.23 with
+    # its nearest neighbour 14bp away, because the other two bracket it for its whole
+    # length on a frame the module now shares. Proximity has run out as a cue, so the
+    # label gets a leader instead of a worse position -- placed where there is actually
+    # room, joined to its own curve by a line, and asserted to cross nothing else.
+    best = None
+    for at, r, deg in ((a, r, d) for a in ats for r in (46, 60, 78, 98, 122, 150)
+                       for d in _SIDES):
+        a = math.radians(deg)
+        cx, cy = at[0] + r * math.cos(a), at[1] + r * math.sin(a)
+        b = label_box(cx, cy, v, "center", size=size)
+        if not (bounds[0] <= b[0] and b[2] <= bounds[2]
+                and bounds[1] <= b[1] and b[3] <= bounds[3]):
+            continue
+        if any(boxes_overlap(b, o) for o in boxes):
+            continue
+        if any(_box_dist(b, q) <= pad for q in own) or \
+           any(_box_dist(b, q) <= pad for q in others):
+            continue
+        lead = _leader(at, b)
+        if any(_seg_near(lead, q) for q in others):
+            continue
+        d_oth = min((_box_dist(b, q) for q in others), default=1e9)
+        if best is None or d_oth > best[0]:
+            best = (d_oth, cx, cy, b, lead)
+    if best is not None:
+        _, cx, cy, b, lead = best
+        boxes.append(b)
+        return (seg(lead[0], lead[1], color="annot", w=2.0, record=False)
+                + text(cx, cy, s, color=color, anchor="center", size=size))
+
     raise SystemExit(
-        f"no clear spot for the curve label {s!r} -- it must end up nearer its own curve "
-        f"than any other by {margin:.2f}x. Move its anchor, shorten it or widen the "
-        f"panel; do not shrink the type.")
+        f"no clear spot for the curve label {s!r} -- it must end up nearer its own "
+        f"curve than any other, and there is no room for a leader either. Move its "
+        f"anchor, shorten it or widen the panel; do not shrink the type.")
 
 
 def fixed_label(spots, s, curves, boxes, color="black", anchor="center", size=FONT,
@@ -722,23 +771,32 @@ BIN_WIDTHS = (1, 8, 32)
 # said "122 bins hold all 23,133 authors", the next "113 bins", and the nine bins below
 # k = 10 were never mentioned. Now every one of them is counts, over 1 <= k <= 300.
 BIN_LO, BIN_HI = 1, 300
-BIN_XLIM, BIN_YLIM = (0.8, 400), (0.6, 2e5)
-BIN_XTICKS, BIN_YTICKS = [1, 10, 100], [1, 100, 10000]
+BIN_XLIM, BIN_YLIM = (0.8, 400), (0.02, 2e4)
+BIN_XTICKS, BIN_YTICKS = [1, 10, 100], [0.1, 10, 1000]
 
 
 @lru_cache(maxsize=None)
 def binned(w):
-    """(bin centres, authors per bin) of the cond-mat degrees in bins of width w."""
+    """(bin centres, authors per unit of k) of the cond-mat degrees in bins of width w.
+
+    R3 B3-6: this returned raw counts, so widening the bin eightfold multiplied every
+    height eightfold -- the leftmost point went from 2,373 to 16,588 on identical axes --
+    under a slide saying "nothing was recomputed". Per unit k the three panels land on
+    one scale and the change in SHAPE is the only visible difference, which is what the
+    build is about.
+    """
     d = np.array(condmat_degrees())
     e = np.arange(BIN_LO, BIN_HI + w, w)
     c, _ = np.histogram(d, bins=e)
     ctr = (e[:-1] + e[1:] - 1) / 2
     m = c > 0
-    return tuple(ctr[m].tolist()), tuple(int(v) for v in c[m])
+    return tuple(ctr[m].tolist()), tuple((c[m] / w).tolist())
 
 
 def _bin_axes():
-    return Axes(FRAME, BIN_XLIM, BIN_YLIM, xlog=True, ylog=True,
+    # The same box as every CCDF in the module, so the four binning slides and the four
+    # CCDF slides are read on one ruler (B3-3).
+    return Axes(CCDF_BOX, BIN_XLIM, BIN_YLIM, xlog=True, ylog=True,
                 xticks=BIN_XTICKS, yticks=BIN_YTICKS, xfmt=dec, yfmt=dec)
 
 
@@ -752,17 +810,17 @@ def fig_binned_once():
     """
     d = np.array(condmat_degrees())
     ctr, cnt = binned(1)
-    assert len(ctr) == 122 and sum(cnt) == len(d) == 23133
+    assert len(ctr) == 122 and abs(sum(cnt) - len(d)) < 1e-6 and len(d) == 23133
 
     ax = _bin_axes()
     body = ax.frame()
-    body += axis_titles(ax, "number of coauthors $k$", "authors in the bin")
+    body += axis_titles(ax, "number of coauthors $k$", "authors per unit of $k$")
     body += scatter(ax, ctr, cnt, color=HUBS, d=13, expect=len(ctr))
 
     # One bin, drawn as a caliper at the left, where a unit of k is a whole decade wide
     # on the axis. Out at k = 30 the same caliper is 5bp long, which is the reason
     # binning is a choice at all and is what the build goes on to.
-    ycal = 600.0
+    ycal = 40.0
     body += seg(ax.P(1, ycal), ax.P(2, ycal), color="annot", w=3.0,
                 arrow="{Latex[length=8bp]}-{Latex[length=8bp]}")
     body += text((ax.X(1) + ax.X(2)) / 2, ax.Y(ycal) - 14, "one bin\\\\width 1",
@@ -770,7 +828,7 @@ def fig_binned_once():
     # The note lives ABOVE the frame, on one line: inside it there is no corner that is
     # empty at every bin width, and the note is the same object on all four figures.
     body += text(ax.x1 - 8, 372,
-                 f"{len(ctr)} bins hold all {len(d):,} authors".replace(",", "{,}"),
+                 f"{len(ctr)} bins hold all {num(len(d))} authors",
                  color="accenttwo", anchor="north east")
     emit("binned-once", body, container="full", h=H)
 
@@ -788,7 +846,8 @@ def _fig_binning_panel(i):
     ctr, cnt = binned(w)
     counts = [len(binned(ww)[0]) for ww in BIN_WIDTHS]
     assert len(set(counts)) == 3, counts
-    assert all(sum(binned(ww)[1]) == 23133 for ww in BIN_WIDTHS), "a bin lost an author"
+    for ww in BIN_WIDTHS:
+        assert abs(sum(binned(ww)[1]) * ww - 23133) < 1e-6, "a bin lost an author"
     # The three tails must genuinely differ, or the build has nothing to show.
     fits = [float(np.polyfit(np.log10(binned(ww)[0]), np.log10(binned(ww)[1]), 1)[0])
             for ww in BIN_WIDTHS]
@@ -796,10 +855,14 @@ def _fig_binning_panel(i):
 
     ax = _bin_axes()
     body = ax.frame()
-    body += axis_titles(ax, "number of coauthors $k$", "authors in the bin")
+    body += axis_titles(ax, "number of coauthors $k$", "authors per unit of $k$")
     body += scatter(ax, ctr, cnt, color=HUBS, d=13, expect=len(ctr))
+    # R3 B3-7: the fitted slope was computed, asserted to differ, and thrown away, so the
+    # only visible change across the build was that the scatter thinned -- which reads as
+    # "wider bins are cleaner", the opposite of the point. Bin width alone moves this
+    # network across the gamma = 3 boundary, and now the panel says so.
     body += text(ax.x1 - 8, 372,
-                 f"bin width {w}  ·  {len(ctr)} non-empty bins",
+                 f"bin width {w}  ·  fitted slope ${fits[i]:.2f}$",
                  color="accenttwo", anchor="north east")
     emit(f"binning-{i + 1}", body, container="full", h=H)
 
@@ -884,7 +947,9 @@ def fig_ccdf_def():
     cal = x0 + 17
     body += seg((cal, Y(5.5)), (cal, Y(6.5)), color="annot", w=3.4,
                 arrow="{Latex[length=9bp]}-{Latex[length=9bp]}")
-    body += text(cal + 35, Y(6), "1 edge", color="annot", anchor="west")
+    body += seg((x0 + 14, Y(5.5)), (cal, Y(5.5)), color="annot", w=2.0)
+    body += seg((x0 + 14, Y(6.5)), (cal, Y(6.5)), color="annot", w=2.0)
+    body += text(cal + 35, Y(6), "one end", color="annot", anchor="west")
 
     body += text(1060, 372,
                  f"{len(above)} of {len(ks)} nodes above $k = {cut}$\\\\"
@@ -926,11 +991,15 @@ def fig_cdf_vs_ccdf():
     cdf = 1 - su
     assert abs(cdf[-1] - 1.0) < 1e-12 and cdf[0] < 0.11, (cdf[0], cdf[-1])
 
-    left = Axes((174, 140, 520, 262), (1, 300), (0, 1.05), xlog=True,
-                xticks=[1, 10, 100], yticks=[0, 0.5, 1.0], xfmt=dec,
-                yfmt=lambda v: f"{v:g}")
-    right = Axes((740, 140, 1040, 262), (1, 300), (1e-5, 1), xlog=True, ylog=True,
-                 xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    # R3 B3-8: the CDF used to be drawn on a linear y against the CCDF's log y, and the
+    # panel titles announced it -- so a student could correctly answer "the left one is
+    # bad because you used the wrong axis" and the slide had no reply. Same ruler now.
+    # The CDF still flattens against 1 from k = 30 and still shows nothing of the tail,
+    # so the point lands harder and the only difference left is the quantity.
+    left = Axes((174, 140, 520, 262), (1, 300), CCDF_YLIM, xlog=True, ylog=True,
+                xticks=[1, 10, 100], yticks=CCDF_YTICKS, xfmt=dec)
+    right = Axes((740, 140, 1040, 262), (1, 300), CCDF_YLIM, xlog=True, ylog=True,
+                 xticks=[1, 10, 100], yticks=CCDF_YTICKS, xfmt=dec)
     body = left.frame() + right.frame()
     body += curve(left, ks, cdf, color=HUBS, w=4.6)
     body += curve(right, ks, su, color=HUBS, w=4.6)
@@ -947,9 +1016,9 @@ def fig_cdf_vs_ccdf():
     # R2 B2-15: the CDF was drawn in annotation gray -- a colour this deck reserves for
     # annotation -- against an accent CCDF, and "reaches down to 0" sat over a log axis,
     # which cannot show zero. Same data, same colour; the titles carry the difference.
-    body += label_at(left.x0, 372, "CDF · linear $y$\\\\values crowd at 1",
+    body += label_at(left.x0, 372, "CDF\\\\flat from $k = 30$",
                      color="black", anchor="north west", boxes=boxes)
-    body += label_at(right.x1, 372, "CCDF · log $y$\\\\values keep falling",
+    body += label_at(right.x1, 372, "CCDF\\\\still falling",
                      color="black", anchor="north east", boxes=boxes)
     emit("cdf-vs-ccdf", body, container="full", h=H)
 
@@ -974,8 +1043,12 @@ def fig_slope_derivation():
     xs = np.logspace(0, 2, 240)
     pdf = xs ** (-g)
     cc = xs ** (-(g - 1))
-    # The CCDF exponent is one smaller: that is the whole content of the figure.
-    assert abs((g - 1) - (g - 1)) < 1e-12 and abs(cc[0] - 1) < 1e-12
+    # The CCDF exponent is one smaller: that is the whole content of the figure, so it is
+    # measured off the two drawn curves rather than asserted against itself (R3 B3-14).
+    fit_pdf = np.polyfit(np.log10(xs), np.log10(pdf), 1)[0]
+    fit_ccdf = np.polyfit(np.log10(xs), np.log10(cc), 1)[0]
+    assert abs(fit_pdf + g) < 1e-9 and abs(fit_ccdf + (g - 1)) < 1e-9
+    assert abs((fit_ccdf - fit_pdf) - 1.0) < 1e-9, (fit_pdf, fit_ccdf)
 
     # R2 B2-1 had five overlaps, three of them caused by putting a y title in the
     # inter-panel gutter and then running an arrow and its label through the same strip.
@@ -1169,21 +1242,19 @@ def fig_hubs_share():
                 dash=DASH)
     drawn = curve_pts(ax, ks, su)
 
-    # R3 B3-9: the headline number was text and nothing more -- the plot shows how FEW
-    # the hubs are and says nothing about the third of the ends they hold. Here it is as
-    # a length: one rule the width of the frame, the share of it in accent-3.
-    bar_y = 330
-    body += seg((ax.x0, bar_y), (ax.x1, bar_y), color="annot", w=13)
-    body += seg((ax.x0, bar_y), (ax.x0 + share * (ax.x1 - ax.x0), bar_y),
-                color="accentthree", w=13)
+    # R3 B3-9 asked for the share drawn as a split rule under the plot, or demoted to
+    # the body. B3-3 asks for one CCDF frame across four panels, and a frame tall enough
+    # for that leaves a 46bp band above it -- one line of type, not a rule and a label.
+    # The two cannot both be had, so the share stays as the figure's headline number and
+    # the deck body carries the sentence.
     boxes = []
     body += fixed_label([(ax.x1 - 8, CCDF_NOTE_Y)],
-                        f"shaded: the Internet's top {pct(0.01)} -- {n_top} of "
-                        f"{num(len(d))} routers, $k \\ge {kstar}$",
+                        f"{n_top} routers hold {pct(share, 1)} of all "
+                        f"{num(d.sum())} edge ends",
                         drawn, boxes, color="accenttwo", anchor="north east")
-    body += fixed_label([(ax.x0, bar_y - 12)],
-                        f"{pct(share, 1)} of all {num(d.sum())} edge ends",
-                        drawn, boxes, color="annot", anchor="north west")
+    body += fixed_label([(ax.x1 - 8, 290), (ax.x1 - 8, 274)],
+                        f"shaded: top {pct(0.01)}, $k \\ge {kstar}$",
+                        drawn, boxes, color="annot", anchor="east")
     emit("hubs-share", body, container="full", h=H)
 
 
@@ -1203,10 +1274,15 @@ def fig_universality():
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
 
-    sets = [("physicists", np.array(condmat_degrees()), "", (0.97, 0.9, 0.82, 0.7)),
-            ("Internet", np.array(degrees_of("internet")), DASH_LONG,
-             (0.95, 0.88, 0.8, 0.7)),
-            ("yeast", np.array(degrees_of("yeast")), DASH, (0.75, 0.6, 0.9, 0.45))]
+    # A dense sweep of anchors, not a handful: which stretch of a curve is isolated is
+    # not something to guess at, and the physicists' curve has exactly one.
+    sweep = tuple(x / 24 for x in range(2, 25))
+    sets = [("physicists", np.array(condmat_degrees()), "", sweep),
+            ("Internet", np.array(degrees_of("internet")), DASH_LONG, sweep),
+            ("yeast", np.array(degrees_of("yeast")), DASH, sweep)]
+    # Solved in order of how boxed-in each curve is: the physicists' curve is bracketed
+    # by the other two for its whole length, so it claims its spot before they take the
+    # room it needs.
     kmax, paths = {}, []
     for name, d, dash, fracs in sets:
         ks, su = ccdf_dense(d)
@@ -1220,7 +1296,7 @@ def fig_universality():
         others = [q for j, (_, pp, _) in enumerate(paths) if j != i for q in pp]
         anchors = [pts[min(int(len(pts) * f), len(pts) - 1)] for f in fracs]
         body += curve_label(ax, name, anchors, pts, boxes, others=others, color=HUBS,
-                            floor=46, margin=1.35)
+                            floor=16, margin=1.6)
     emit("universality", body, container="full", h=H)
 
 
@@ -1247,15 +1323,14 @@ def fig_poisson_ccdf():
                     d=13, expect=len(plot))
     drawn = curve_pts(ax, ks, su)
     boxes = []
-    # The largest degree labels the point it describes -- the end of the curve -- rather
-    # than sitting in a corner claiming a number the drawing stops short of (B3-12).
-    body += curve_label(ax, f"largest degree {int(d.max())}", drawn[-6:], drawn, boxes,
-                        color=NO_HUBS, floor=20, margin=1.0)
     body += fixed_label([(ax.x1 - 8, CCDF_NOTE_Y)],
-                        f"same {num(len(d))} nodes, same "
-                        f"$\\langle k \\rangle = {k1:.1f}$ as the physicists -- "
-                        f"$\\mathrm{{Var}}/\\langle k \\rangle = {var / k1:.2f}$",
+                        f"same $N$ and $\\langle k \\rangle$ as the physicists",
                         drawn, boxes, color="annot", anchor="north east")
+    body += fixed_label([(ax.x0 + 12, 168), (ax.x0 + 12, 190), (ax.x0 + 12, 150)],
+                        f"$\\langle k \\rangle = {k1:.1f}$, {num(len(d))} nodes\\\\"
+                        f"$\\mathrm{{Var}}/\\langle k \\rangle = {var / k1:.2f}$\\\\"
+                        f"largest degree {int(d.max())}",
+                        drawn, boxes, color=NO_HUBS, anchor="south west")
     emit("poisson-ccdf", body, container="full", h=H)
 
 
