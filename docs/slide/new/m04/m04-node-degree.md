@@ -97,14 +97,14 @@ Coleman asked students to name their friends. Feld 1991, American Journal of Soc
 
 <hr>
 
+A line joins two girls who named each other.
+
 <div class="fig">
 
 ![w:1080](figures/feld-names.png)
-<figcaption>a line joins two girls who named each other</figcaption>
+<figcaption>Feld's own words about the names: they are fictitious</figcaption>
 
 </div>
-
-Feld's own words about the names: *they are fictitious*.
 
 <!--
 Nothing but the shape yet. Do not put numbers on the board.
@@ -136,65 +136,34 @@ Let them count. Do not confirm anything until the next slide.
 
 <hr>
 
-<div class="cols">
-<div>
+* Twenty friendships end here, so the average girl has **2.5 friends**.
+* Betty and Tina have one. Sue and Alice have four.
+* Nobody has 2.5 friends. It is an average, and another one is coming.
 
-Twenty friendships end at these eight girls, so the average girl has **2.5 friends**.
-
-Betty and Tina have one. Sue and Alice have four.
-
-<div class="note">
-
-Nobody has 2.5 friends. It is an average, and it is about to be compared with another one.
-
-</div>
-
-</div>
 <div class="fig">
 
-![w:537](figures/feld-degrees.png)
-<figcaption>each girl carrying her own count</figcaption>
+![w:1080](figures/feld-degrees.png)
 
-</div>
 </div>
 
 ---
-
-<!-- _class: mid -->
 
 ## Now count theirs
 
 <hr>
 
-<div class="formula">
-
-Pick one girl. How many friends does *each of her friends* have — and what is the average of those?
-
-</div>
-
 Same eight girls. Same ten lines. A different question.
-
-<!--
-This is the whole module in one slide. Do not answer it, do not hint, and do not say the number 3.
--->
-
----
-
-## Your turn
-
-<hr>
 
 Take one girl each — count her friends, then count *their* friends, and divide.
 
 <div class="fig">
 
 ![w:1080](figures/feld-worksheet.png)
-<figcaption>one girl each; write her friends' average on the line</figcaption>
 
 </div>
 
 <!--
-Assign round the room: Betty, Sue, Alice, Jane, Pam, Dale, Carol, Tina. Collect all eight before showing the next slide. Ask each student, out loud, whether their girl came out above or below her own count.
+This is the whole module in one instruction. Do not answer it, do not hint, and do not say the number 3. Assign round the room: Betty, Sue, Alice, Jane, Pam, Dale, Carol, Tina. Collect all eight before showing the next slide, and ask each student out loud whether their girl came out above or below her own count.
 -->
 
 ---
@@ -203,20 +172,22 @@ Assign round the room: Betty, Sue, Alice, Jane, Pam, Dale, Carol, Tina. Collect 
 
 <hr>
 
+Red: her friends average more than she has. Blue: fewer. Gray: exactly equal.
+
 <div class="fig">
 
 ![w:1080](figures/feld-friendmeans.png)
-<figcaption>red: her friends average more than she has. Blue: fewer. Gray: exactly equal</figcaption>
+<figcaption>five below their own friends, two above, and Carol exactly on it</figcaption>
 
 </div>
-
-Five girls are below their own friends. Two are above. Carol lands exactly on it.
 
 <!--
 The two above are Sue and Alice — the two with four friends each. Note that out loud; it comes back in Part Seven.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## Feld's number
 
@@ -225,15 +196,9 @@ The two above are Sue and Alice — the two with four friends each. Note that ou
 <div class="cols">
 <div>
 
-The eight girls average **2.5** friends.
-
-Their friends average **3.0**.
-
-<div class="note">
-
-This is not an insult and it is not about being unpopular. Every one of those twenty friendships was counted from both ends.
-
-</div>
+* The eight girls average **2.5** friends.
+* Their friends average **3.0**.
+* Not an insult, and not about being unpopular — every one of those twenty friendships was counted from both ends.
 
 </div>
 <div class="fig">
@@ -255,12 +220,12 @@ So Feld ran it on every girl in the survey with at least one friend — all 146 
 <div class="fig">
 
 ![w:1080](figures/marketville-146.png)
-<figcaption>146 girls: 80 below their friends, 41 above, 25 exactly equal</figcaption>
+<figcaption>2.7 friends each, and 3.4 friends per friend</figcaption>
 
 </div>
 
 <!--
-2.7 friends each; 3.4 friends per friend. Nearly twice as many below as above. And it is the same school and the same survey — not a new example.
+Eighty below, forty-one above, twenty-five exactly equal — nearly twice as many below as above. Same school, same survey; not a new example.
 -->
 
 ---
@@ -283,8 +248,6 @@ Before we explain it, we have to be able to count it
 <div>
 
 A node's **degree** is the number of edges attached to it.
-
-For one person it measures exposure. For the whole network, the spread of degrees says how centralised the thing is.
 
 </div>
 <div class="fig">
@@ -309,6 +272,8 @@ Add every girl's degree together. What do you get — and is it a coincidence?
 
 </div>
 
+Add them in your head. Shout the total.
+
 <!--
 Let them add: 1 + 4 + 4 + 2 + 3 + 3 + 2 + 1. Ask for the number before you ask for the reason.
 -->
@@ -319,10 +284,11 @@ Let them add: 1 + 4 + 4 + 2 + 3 + 3 + 2 + 1. Ask for the number before you ask f
 
 <hr>
 
+A tick at every end of every line.
+
 <div class="fig">
 
 ![w:1080](figures/sum-ends.png)
-<figcaption>a tick at every end of every line: twenty ticks, ten lines</figcaption>
 
 </div>
 
@@ -384,10 +350,11 @@ Let them try. Walk round. Somebody will get to four odd, or two, and be unable t
 
 <hr>
 
+Odd degrees pair off; one is always left holding a loose end.
+
 <div class="fig">
 
 ![w:1080](figures/handshake.png)
-<figcaption>odd degrees pair off; one is always left holding a loose end</figcaption>
 
 </div>
 
@@ -425,10 +392,11 @@ One number per degree, and it describes the whole network without naming anybody
 
 <hr>
 
+Two girls at each of one, two, three and four friends.
+
 <div class="fig">
 
 ![w:1080](figures/feld-pk.png)
-<figcaption>two girls at each of one, two, three and four friends</figcaption>
 
 </div>
 
@@ -533,6 +501,8 @@ The same bag we used in Module 03 to follow an edge. Say so — this is the seco
 
 ---
 
+<!-- _class: mid -->
+
 ## A hub has more hands in the bag
 
 <hr>
@@ -574,10 +544,8 @@ q(k), not p(k). This is the whole trick, and it is the same q(k) that told us wh
 
 </div>
 
-$$\langle k\rangle_{\text{friend}} = \sum_k k\,q(k) = \frac{\langle k^2\rangle}{\langle k\rangle}$$
-
 <!--
-Second moment over first moment. One line so far.
+Second moment over first moment. One line so far. The panel does the algebra; do not read it out twice.
 -->
 
 ---
@@ -592,8 +560,6 @@ Second moment over first moment. One line so far.
 <figcaption>the second moment, rewritten</figcaption>
 
 </div>
-
-$$\langle k^2\rangle = \mathrm{Var}(k) + \langle k\rangle^2$$
 
 <!--
 Nothing new here — it is the definition of variance, rearranged. Substitute it on the next slide.
@@ -612,13 +578,15 @@ Nothing new here — it is the definition of variance, rearranged. Substitute it
 
 </div>
 
-$$\langle k\rangle_{\text{friend}} = \langle k\rangle + \frac{\mathrm{Var}(k)}{\langle k\rangle}$$
+Feld writes this line out himself, on page 1470.
 
 <!--
-Feld writes this out himself on page 1470, and it closes on his full 146-girl data too: 2.6575 + 0.6981 = 3.3557.
+And it closes on his full 146-girl data too: 2.6575 + 0.6981 = 3.3557.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## Which is why it never fails
 
@@ -757,11 +725,11 @@ Take three suggestions from the room before moving on.
 <div class="fig">
 
 ![w:1080](figures/coauthor-gap.png)
-<figcaption>23,133 physicists: eight coauthors each, and their coauthors have twenty-two</figcaption>
+<figcaption>23,133 physicists: 8.1 coauthors each, and their coauthors have 22.1</figcaption>
 
 </div>
 
-Nearly **83%** of these authors are below their own coauthors' average.
+**82.8%** of these authors are below their own coauthors' average.
 
 <!--
 arXiv condensed-matter coauthorship. Same identity, same reason: prolific collaborators appear on many author lists.
@@ -845,14 +813,44 @@ Let them flounder. Somebody will suggest asking people. That is the answer.
 
 ---
 
+## Pick somebody at random
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/acquaintance-1.png)
+<figcaption>step one: one person, chosen with no information at all</figcaption>
+
+</div>
+
+No map, no list of who is popular. Start with the only move you have.
+
+---
+
 ## Ask them to name a friend
 
 <hr>
 
 <div class="fig">
 
-![w:1080](figures/acquaintance.png)
-<figcaption>pick at random, ask for one friend, vaccinate the friend</figcaption>
+![w:1080](figures/acquaintance-2.png)
+<figcaption>step two: they name one friend</figcaption>
+
+</div>
+
+One name, and nothing else. Nobody reveals who else they know.
+
+---
+
+## Vaccinate the friend, not the volunteer
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/acquaintance-3.png)
+<figcaption>step three: the named friend is immunised</figcaption>
 
 </div>
 
@@ -864,7 +862,27 @@ Cohen, Havlin and ben-Avraham 2003. Nobody is asked to reveal anything except on
 
 ---
 
-## Try it
+<!-- _class: mid -->
+
+## Random, or nominated?
+
+<hr>
+
+<div class="formula">
+
+Vaccine for one node in ten. Picking people at random, or asking each of them to name a friend — which one wins, and by how much?
+
+</div>
+
+Hands up for random, hands up for nominated. Then two of you play it.
+
+<!--
+Live demo: docs/lecture-note/assets/vis/vaccination-game.html. Let two students play random against nomination on the same network before showing the curves. Make the room commit to a margin out loud first.
+-->
+
+---
+
+## Nominated wins, and not by a little
 
 <hr>
 
@@ -873,7 +891,7 @@ Cohen, Havlin and ben-Avraham 2003. Nobody is asked to reveal anything except on
 
 Immunise one node in ten of the Internet's autonomous systems.
 
-At random, **88%** of it stays connected. By naming a friend, **2%**.
+At random, **87%** of it stays connected. By naming a friend, **2%**.
 
 <div class="note">
 
@@ -891,7 +909,7 @@ For Thursday: the gap is the variance. So how big is the variance in a real netw
 </div>
 
 <!--
-Live demo: docs/lecture-note/assets/vis/vaccination-game.html. Let two students play random against nomination on the same network before showing the curves.
+Compare the curves against whatever margin the room guessed. The third curve needs the full map, and nomination gets most of the way there for one question per person.
 -->
 
 ---
@@ -913,7 +931,7 @@ We left off asking how spread out degrees really are
 <div class="fig">
 
 ![w:1080](figures/linear-axes.png)
-<figcaption>every one of 23,133 authors, plotted by how many coauthors they have</figcaption>
+<figcaption>the 122 distinct coauthor counts among 23,133 authors, and how common each one is</figcaption>
 
 </div>
 
@@ -937,6 +955,8 @@ Where are the hubs? How fast do they thin out? Is there a typical number of coau
 
 </div>
 
+Thirty seconds. Say anything you can actually read off it.
+
 <!--
 None of these are answerable from that picture, which is the point.
 -->
@@ -950,7 +970,7 @@ None of these are answerable from that picture, which is the point.
 <div class="fig">
 
 ![w:1080](figures/fat-tail-reveal.png)
-<figcaption>78% of authors sit in the first ten columns; 28 of them run out past a hundred</figcaption>
+<figcaption>78% of authors have ten coauthors or fewer; 28 of them run out past a hundred</figcaption>
 
 </div>
 
@@ -962,6 +982,8 @@ The tail runs to 279. On this axis those 28 authors are less than a pixel tall e
 
 ---
 
+<!-- _class: mid -->
+
 ## Change the axes, not the data
 
 <hr>
@@ -969,7 +991,7 @@ The tail runs to 279. On this axis those 28 authors are less than a pixel tall e
 <div class="fig">
 
 ![w:1080](figures/loglog.png)
-<figcaption>identical data, identical bins — both axes now logarithmic</figcaption>
+<figcaption>identical data, identical points — only the ruler changed</figcaption>
 
 </div>
 
@@ -997,6 +1019,8 @@ Remember the word "roughly". Part Eight comes back for it.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## A straight line means a power law
 
@@ -1026,6 +1050,25 @@ $\gamma$ is the one number that says how fast hubs become rare.
 
 ---
 
+## Every point came out of a bin
+
+<hr>
+
+Sort the degrees into buckets and count. So far, one bucket per degree.
+
+<div class="fig">
+
+![w:1080](figures/binned-once.png)
+<figcaption>the cond-mat tail, counted in bins one degree wide</figcaption>
+
+</div>
+
+<!--
+Say it plainly: we have been choosing bins all along and nobody mentioned it.
+-->
+
+---
+
 <!-- _class: mid -->
 
 ## One awkward question
@@ -1034,9 +1077,11 @@ $\gamma$ is the one number that says how fast hubs become rare.
 
 <div class="formula">
 
-That plot had bins. What happens to the picture if I choose different ones?
+Those bins were one degree wide. What happens to the picture if I choose different ones?
 
 </div>
+
+Predict it first — hands up if you think the picture holds.
 
 <!--
 Nobody ever asks this and it changes everything downstream.
@@ -1044,14 +1089,44 @@ Nobody ever asks this and it changes everything downstream.
 
 ---
 
-## The tail changes shape
+## Bins one degree wide
 
 <hr>
 
 <div class="fig">
 
-![w:1080](figures/binning.png)
-<figcaption>the same tail at three bin widths</figcaption>
+![w:1080](figures/binning-1.png)
+<figcaption>bin width 1 — the choice we made without noticing</figcaption>
+
+</div>
+
+Out in the tail most bins hold one author, or none. That is where the scatter comes from.
+
+---
+
+## Now eight degrees wide
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/binning-2.png)
+<figcaption>bin width 8 — same data, same axes</figcaption>
+
+</div>
+
+Fewer points and less scatter. Nothing was recomputed; the bins were only drawn wider.
+
+---
+
+## The shape was a choice
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/binning-3.png)
+<figcaption>bin width 32 — same data, same axes</figcaption>
 
 </div>
 
@@ -1091,6 +1166,8 @@ Also called the survival function.
 
 ---
 
+<!-- _class: mid -->
+
 ## The same data, no choices
 
 <hr>
@@ -1098,7 +1175,7 @@ Also called the survival function.
 <div class="fig">
 
 ![w:1080](figures/ccdf-condmat.png)
-<figcaption>one point per distinct degree, and every author counted</figcaption>
+<figcaption>no width to choose — every node counted at every k</figcaption>
 
 </div>
 
@@ -1139,6 +1216,8 @@ You measure a slope on the CCDF. Is that the same exponent as the one in $p(k) \
 
 </div>
 
+Hands up for yes. Hands up for no.
+
 <!--
 Half the room will say yes. It is the single most common error in this material.
 -->
@@ -1156,8 +1235,6 @@ Half the room will say yes. It is the single most common error in this material.
 
 </div>
 
-$$\int_k^{\infty} x^{-\gamma}\,dx \propto k^{-(\gamma-1)} \quad\Rightarrow\quad \text{slope} = 1-\gamma$$
-
 <!--
 The CCDF is the integral of the PDF, so its exponent is one smaller. On a log-log plot that is a slope of 1 - gamma.
 -->
@@ -1168,7 +1245,7 @@ The CCDF is the integral of the PDF, so its exponent is one smaller. On a log-lo
 
 <hr>
 
-You measure a CCDF slope of $-1.3$. What is $\gamma$?
+You measure a CCDF slope of $-1.3$. What is $\gamma$? Hands up: 1.3 or 2.3?
 
 <div class="fig">
 
@@ -1190,7 +1267,7 @@ Hands up for 1.3, hands up for 2.3. Count both before revealing.
 <div class="fig">
 
 ![w:1080](figures/slope-answer.png)
-<figcaption>slope minus one point three, so gamma is two point three</figcaption>
+<figcaption>the exponent you report is not the slope you measured</figcaption>
 
 </div>
 
@@ -1201,6 +1278,8 @@ Between gamma = 2 and gamma = 3 the variance diverges. That is not a rounding er
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## Paper exercise
 
@@ -1241,7 +1320,7 @@ A tail that long has to be built by something
 <div class="fig">
 
 ![w:1080](figures/hubs-share.png)
-<figcaption>the top 1% of Internet nodes hold 34% of all connections</figcaption>
+<figcaption>the top 1% of Internet nodes hold 33.8% of all edge ends</figcaption>
 
 </div>
 
@@ -1284,6 +1363,8 @@ If I wire a network up completely at random, do I get hubs?
 
 </div>
 
+Predict the shape first.
+
 <!--
 Module 02's random graph. Ask them to predict the shape before answering.
 -->
@@ -1309,7 +1390,7 @@ Same mean degree as before. The tail is not smaller, it is absent: the largest d
 
 ---
 
-## And a lattice is narrower still
+## Three networks, three tails
 
 <hr>
 
@@ -1320,7 +1401,7 @@ Same mean degree as before. The tail is not smaller, it is absent: the largest d
 
 </div>
 
-Regular structures give every node the same degree — a distribution one value wide.
+The wiring rule sets the tail: preference stretches it, randomness cuts it short, and a lattice flattens it to one value.
 
 <!--
 Module 02's ring lattice. Three networks, three shapes, and the shape is the whole difference.
@@ -1336,7 +1417,7 @@ Module 02's ring lattice. Three networks, three shapes, and the shape is the who
 
 <div class="formula">
 
-Real networks have hubs and random ones do not. What is real networks doing that randomness is not?
+Real networks have hubs and random ones do not. What are real networks doing that randomness is not?
 
 </div>
 
@@ -1391,7 +1472,7 @@ Barabási-Albert, 1999. Rich get richer. Run the loop twice. The exponent that c
 <div class="fig">
 
 ![w:1080](figures/quiz.png)
-<figcaption>two networks, same size, same average degree — and their two tails</figcaption>
+<figcaption>two networks, same average degree, and their two tails · sketches: 24 nodes · tails: 20 000 nodes</figcaption>
 
 </div>
 
@@ -1410,7 +1491,7 @@ Do not let anyone off with "the left one looks clumpier". Ask what in the tail t
 <div class="fig">
 
 ![w:1080](figures/quiz-answer.png)
-<figcaption>largest degree 315 with preference, 29 without</figcaption>
+<figcaption>largest degree 315 with preference, 29 without · sketches: 24 nodes · tails: 20 000 nodes</figcaption>
 
 </div>
 
@@ -1454,17 +1535,38 @@ The honest answer is no, and the gap between "on average" and "for you" is worth
 
 <hr>
 
+If you are a hub it runs the other way: Sue and Alice beat theirs.
+
 <div class="fig">
 
 ![w:1080](figures/individual-vs-average.png)
-<figcaption>five of the eight girls below, two above, one equal — and Facebook's two percentages</figcaption>
+<figcaption>five of the eight girls below, two above, one exactly equal</figcaption>
 
 </div>
 
-If you are a hub it runs the other way. And whether you compare against your friends' **mean** or their **median** changes the answer for millions of people.
+Their **mean**, or their **median**? Hands up if you think it matters.
 
 <!--
-92.7% below the mean of their friends, but 83.6% below the median. Nine million Facebook users sit in that gap.
+The theorem is a statement about the average, not about any one person. The two above the line are the two with four friends each — name them. Take the hands-up count out loud before moving on.
+-->
+
+---
+
+## The mean and the median disagree
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/mean-vs-median.png)
+<figcaption>Facebook 2011: the same users scored against their friends' mean, then against their friends' median</figcaption>
+
+</div>
+
+Nine percent of Facebook sits between those two numbers — below the mean, above the median.
+
+<!--
+Ugander et al. 2011, 721 million users. 92.7% below the mean of their friends, 83.6% below the median: a gap of 9.1 points, about 66 million people. One hub in your friend list drags the mean up and leaves the median alone.
 -->
 
 ---
@@ -1481,7 +1583,7 @@ Build me a network where nobody's friends have more friends than they do.
 
 </div>
 
-Open the builder and try. Two minutes.
+Open the builder in the lecture notes — friendship-paradox-game.html — and try. Two minutes.
 
 <!--
 docs/lecture-note/assets/vis/friendship-paradox-game.html. Let them fail a few times first — every irregular attempt has a positive gap.
@@ -1593,7 +1695,7 @@ Same p(k) for all three. Completely different networks.
 
 </div>
 
-Social networks put their hubs in a core that holds together. The Internet and the cell hang leaves off hubs, so removing a hub sheds everything under it.
+Social hubs sit in a core that holds together. Technological and biological hubs carry leaves — remove one and the leaves go.
 
 <!--
 Facebook +0.226, coauthorship +0.134, Internet -0.182, yeast proteins -0.210. The robustness we computed in Module 03 assumed no correlation at all.
@@ -1642,13 +1744,15 @@ Count the hands. Say you are counting them. Then show the next slide.
 
 </div>
 
-One of these has no exponent at all. Straight to $R^2 = 0.99$ over three decades, and the wrong answer.
+One of these has no exponent at all. Straight to $R^2 = 0.99$ over two decades, and the wrong answer.
 
 <!--
 The log-normal. It arises from multiplying random factors — which is at least as plausible a story for a real network as preferential attachment.
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## So it takes a test, not an eye
 
@@ -1676,7 +1780,7 @@ Ugander et al. 2011, in the same section we quoted for the paradox. Broido and C
 <div class="fig">
 
 ![w:1080](figures/consequences.png)
-<figcaption>one distribution, three results we have already proved</figcaption>
+<figcaption>one distribution, two results we proved and one still to come</figcaption>
 
 </div>
 
@@ -1687,6 +1791,8 @@ Module 03's critical fraction, Module 02's small-world distances, and spreading 
 -->
 
 ---
+
+<!-- _class: mid -->
 
 ## Module 04 in one page
 
