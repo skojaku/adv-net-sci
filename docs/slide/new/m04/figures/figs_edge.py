@@ -40,14 +40,17 @@ FB_BELOW_MEAN = 0.927        # Ugander et al. 2011, arXiv:1111.4503
 FB_BELOW_MEDIAN = 0.836
 FB_R = 0.226
 for _quote in ("92.7%", "83.6%", "721 million", "r = 0.226",
-               "gamma = 3", "substantial curvature"):
+               "gamma = 3", "substantial curvature",
+               # Broido & Clauset 2019, Nat. Commun. 10:1017, abstract. The corpus was
+               # printed as "927" on the strength of how widely it is quoted; the
+               # abstract says "nearly 1000" and LITERATURE now records that 927 could
+               # not be verified. This is the slide that teaches the room not to trust
+               # an eyeballed claim, so it is the last one that may carry a remembered
+               # number.
+               "nearly 1000 network data sets", "only 4% exhibiting"):
     assert _quote in LITERATURE, f"{_quote!r} is not in verify_numbers.LITERATURE"
 
-# The two exceptions, and the only numbers in this file LITERATURE cannot check.
-# Broido, A. D. & Clauset, A. "Scale-free networks are rare." Nat. Commun. 10:1017
-# (2019): a corpus of 927 network datasets, with "strongest" scale-free evidence in 4%
-# of them. Reported to the lead so the sentences can be added to verify_numbers.
-BC_NETWORKS, BC_STRONG = 927, 0.04
+BC_NETWORKS, BC_STRONG = "nearly 1000", 0.04
 
 
 def _dec(x, places):
@@ -134,18 +137,20 @@ def fig_individual_vs_average():
     # 3 sat under "fewer", because the quantity that decides the group -- her friends'
     # average -- was nowhere on the drawing. Both numbers are on it now.
     b = text(540, 330, "each girl against her friends' average", anchor="south")
-    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 250),
-              (ABOVE, f"{len(ABOVE)} have more", "accent", 700),
+    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 280),
+              (ABOVE, f"{len(ABOVE)} have more", "accent", 720),
               (EQUAL, f"{len(EQUAL)} the same", "annot", 960)]
     for girls, lab, fill, cx in groups:
-        x0 = cx - 50 * (len(girls) - 1)
+        x0 = cx - 60 * (len(girls) - 1)
         for i, g in enumerate(girls):
             k, fm = degree(g), friend_mean(g)
             rel = (fm > k) - (fm < k)
             assert rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill], \
                 f"{g} is drawn in the {fill} group but {k} vs {fm} says otherwise"
-            b += disc(x0 + 100 * i, 240, str(k), fill=fill)
-            b += text(x0 + 100 * i, 200, f"vs ${_dec(fm, 1)}$", color="annot",
+            b += disc(x0 + 120 * i, 240, str(k), fill=fill)
+            # bare number, not "vs 4.0": the line under the row already says what the
+            # second number is, and the two words cost 60bp of pitch per disc
+            b += text(x0 + 120 * i, 200, f"${_dec(fm, 1)}$", color="annot",
                       anchor="north")
         b += text(cx, 146, lab, color=fill, anchor="north")
     b += text(540, 72, "her $k$ in the disc, her friends' average below it",
@@ -277,9 +282,9 @@ def fig_directed():
             b += _arrow(p[a], p[c])
         for n, xy in p.items():
             b += disc(xy[0], xy[1], str(counts[n]), fill="accent")
-        b += text(cx, 318, title, anchor="south")
-        b += text(cx, 86, f"an account at random: ${_dec(mean, 1)}$", anchor="north")
-        b += text(cx, 44, f"{phrase}: ${_dec(end, 1)}$", color="accenttwo",
+        b += text(cx, 322, title, anchor="south")
+        b += text(cx, 94, f"an account at random: ${_dec(mean, 1)}$", anchor="north")
+        b += text(cx, 38, f"{phrase}: ${_dec(end, 1)}$", color="accenttwo",
                   anchor="north")
     emit("directed", b, container="full", h=420)
 
@@ -372,7 +377,7 @@ def fig_assortativity_real():
     # over the full range their 28bp discs would overlap and the row order would be
     # unreadable. So the quantity is named, the ticks give the scale, and a note carries
     # the range this window is a zoom of.
-    lo, hi, ax0, ax1, ay = -0.30, 0.30, 340, 900, 88
+    lo, hi, ax0, ax1, ay = -0.30, 0.30, 340, 900, 135
 
     def X(v):
         return ax0 + (v - lo) / (hi - lo) * (ax1 - ax0)
@@ -380,14 +385,14 @@ def fig_assortativity_real():
     # The caveat now sits in the axis title, under the axis it qualifies. Set at the
     # top left it was ~470bp from that axis and read after the dots, so Facebook's
     # +0.226 looked near-maximal on a scale whose real ends are +-1.
-    b = seg((X(0), ay), (X(0), 322), color="annot", w=2.4)
+    b = seg((X(0), ay), (X(0), 358), color="annot", w=2.4)
     b += seg((ax0, ay), (ax1, ay), color="annot", w=2.4)
     for v in (-0.2, 0.0, 0.2):
         b += seg((X(v), ay), (X(v), ay - 9), color="annot", w=2.4)
-        b += text(X(v), ay - 17, _signed(v, 1), color="annot", anchor="north")
-    b += text(620, 42, "assortativity $r$: this axis spans $\\pm0.3$ of a $\\pm1$ scale",
+        b += text(X(v), ay - 25, _signed(v, 1), color="annot", anchor="north")
+    b += text(620, 53, "assortativity $r$: this axis spans $\\pm0.3$ of a $\\pm1$ scale",
               anchor="north")
-    for (name, r), y in zip(rows, (308, 248, 188, 128)):
+    for (name, r), y in zip(rows, (344, 284, 224, 164)):
         assert lo < r < hi, f"{name}: r = {r} is off the axis"
         col = "accent" if r > 0 else "accenttwo"
         b += text(300, y, name, anchor="east")
@@ -466,8 +471,11 @@ def fig_lognormal_trap():
     idx = [int(np.argmin(np.abs(ks_ln - k))) for k in keep]
     b += ax.points(ks_ln[idx], su_ln[idx], color="accenttwo", d=13)
     b += text(1035, 320, "a true power law", color="accent", anchor="east")
-    b += text(200, 200, "a log-normal", color="accenttwo", anchor="west")
-    b += text(200, 158, f"$R^2 = {_dec(r2, 2)}$ across ${_dec(decades, 1)}$ decades",
+    # Lifted clear of the x spine: the R^2 line sat 8bp above y0 = 140, which the
+    # collision gate reads as the axis crossing the label, and 8bp is tight on the
+    # render too. 56bp apart rather than 42 so the two lines' boxes do not touch.
+    b += text(200, 236, "a log-normal", color="accenttwo", anchor="west")
+    b += text(200, 180, f"$R^2 = {_dec(r2, 2)}$ across ${_dec(decades, 1)}$ decades",
               color="accenttwo", anchor="west")
     emit("lognormal-trap", b, container="full", h=400)
 
@@ -482,18 +490,22 @@ def fig_scale_free_debate():
     # The 2019 dot carried no content, and the slide's title promises a statistical
     # test that nothing on the drawing named. Each dot now says what its year
     # contributed, and 2019 names the test.
-    marks = [(200, "1999", "Barab\\'{a}si \\& Albert", "the claim",
+    # "Barabási" in UTF-8, not "Barab\'{a}si": figlib's collision boxes are sized from
+    # len(the source string), so five characters of TeX escape for one glyph inflated
+    # this label's modelled width by 29% and it was rejected for overlapping a label
+    # the render puts 108bp away. Measured, not argued -- see the note to the lead.
+    marks = [(180, "1999", "Barabási \\& Albert", "the claim",
               ["$\\gamma = 3$"]),
-             (540, "2011", "Ugander et al.", "the doubt", ["curvature"]),
-             (880, "2019", "Broido \\& Clauset", "the audit",
+             (520, "2011", "Ugander et al.", "the doubt", ["curvature"]),
+             (850, "2019", "Broido \\& Clauset", "the audit",
               ["likelihood-ratio tests", f"{pct(BC_STRONG)} of {BC_NETWORKS} networks"])]
     for x, year, who, role, what in marks:
         b += dot(x, 230, color="accent", d=SMALLNODE)
         b += text(x, 285, year, anchor="south", size=48)
         b += text(x, 195, who, anchor="north")
-        b += text(x, 147, role, color="annot", anchor="north")
+        b += text(x, 143, role, color="annot", anchor="north")
         for i, line in enumerate(what):
-            b += text(x, 99 - 48 * i, line, anchor="north")
+            b += text(x, 91 - 56 * i, line, anchor="north")
     emit("scale-free-debate", b, container="full", h=380)
 
 
@@ -507,20 +519,26 @@ def fig_consequences():
     lam = s["k1"] / s["k2"]                  # the spreading threshold
     assert 0.9 < fc < 1.0 and 0.03 < lam < 0.06, (fc, lam)
 
-    b = _tail_sketch(32, 150, 292, 300)
+    b = _tail_sketch(40, 150, 280, 300)
     # Both numbers below are cond-mat's, last drawn 32 slides earlier, and the figure
     # named neither the network nor the fact that the third result is still to come.
-    b += text(162, 120, "cond-mat's tail", color="annot", anchor="north")
-    b += _arrow((312, 225), (392, 225), color="annot", gap_tail=0, gap_head=0)
-    b += text(452, 225, "$\\langle k^2\\rangle$", color="accenttwo", size=60)
-    results = [(350, "Module 03: robustness", f"$f_c = {_dec(fc, 2)}$"),
-               (225, "Module 02: distance", "shorter paths"),
-               (100, "spreading: still to come",
+    b += text(160, 120, "cond-mat's tail", color="annot", anchor="north")
+    # The flow runs ALONG one arrow with the quantity labelled above it, rather than
+    # arrows terminating at a floating <k^2>. Collision boxes are sized from source
+    # length, so `$\langle k^2\rangle$` models as 408bp around an 85bp glyph and
+    # swallows any arrow that reaches it -- an arrow pointing at a label is not
+    # currently drawable. Running the arrow past the label instead keeps the relation
+    # visible and keeps the label clear of it.
+    b += _arrow((300, 196), (612, 196), color="annot", gap_tail=0, gap_head=0)
+    b += text(450, 290, "$\\langle k^2\\rangle$", color="accenttwo")
+    results = [(330, "Module 03: robustness", f"$f_c = {_dec(fc, 2)}$"),
+               (222, "Module 02: distance", "shorter paths"),
+               (114, "spreading: still to come",
                 f"$\\langle k\\rangle/\\langle k^2\\rangle = {_dec(lam, 3)}$")]
     for y, head, val in results:
-        b += _arrow((516, 225), (616, y - 21), color="annot", gap_tail=0, gap_head=0)
-        b += text(640, y, head, anchor="west")
-        b += text(640, y - 42, val, color="accenttwo", anchor="west")
+        b += _arrow((676, 196), (716, y - 22), color="annot", gap_tail=0, gap_head=0)
+        b += text(742, y, head, anchor="west")
+        b += text(742, y - 56, val, color="accenttwo", anchor="west")
     emit("consequences", b, container="full", h=440)
 
 
@@ -575,14 +593,25 @@ def fig_recap():
     for p in hub:
         b += disc(p[0], p[1], fill="accenttwo", size=SMALLNODE)
 
+    # Five panels in 1080bp leaves 216bp of pitch, and the collision boxes are sized
+    # from source-string length, so each pair of neighbouring captions has a character
+    # budget. These are the shortest wordings that still name their act; the numbers
+    # they used to carry in full ("2.5 + 0.5 = 3.0", the exponent) are in the deck's
+    # figcaption, which is where the lead ruled they should go when a drawing cannot
+    # hold its annotations at 36pt.
+    # Panel three carries no second line: its neighbour holds the identity, which has
+    # to stay whole -- "2.5 + 0.5" without the "= 3.0" is a fragment, not an identity --
+    # and the pictogram plus "one tail" says panel three's act without help.
     for cx, head, val in (
-            (108, "eight girls", f"{len(BELOW)} of 8 below"),
-            (324, "one identity", f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
-            (540, "one tail", "$p(k)\\sim k^{-\\gamma}$"),
+            (108, "the girls", f"{len(BELOW)} of 8"),
+            (324, "identity",
+             f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
+            (540, "one tail", None),
             (756, "one wiring", "$r \\neq 0$"),
-            (972, "one doubt", "$R^2 = 0.99$")):
+            (972, "one doubt", "$R^2=0.99$")):
         b += text(cx, 152, head, anchor="north")
-        b += text(cx, 106, val, color="annot", anchor="north")
+        if val:
+            b += text(cx, 106, val, color="annot", anchor="north")
     emit("recap", b, container="full", h=400)
 
 
