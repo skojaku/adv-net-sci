@@ -45,6 +45,47 @@ assert BELOW == [v for v in FELD_ORDER if FM[v][2] > G.degree(v)]
 assert ABOVE == [v for v in FELD_ORDER if FM[v][2] < G.degree(v)]
 assert EQUAL == [v for v in FELD_ORDER if FM[v][2] == G.degree(v)]
 
+
+# ------------------------------------------------------------ how each group is drawn
+# R5 A5-1, the fourth and fifth address of one defect. The membership lists have always
+# lived here and the COLOURS lived in each figure module, so every round a call site
+# nobody had named kept the opposite key: accent-2 meant "above her friends' average" on
+# slides 010 and 012 and "below" on 039, 040, 082 and 096, and `figs_edge.py` grew its
+# own declaration with an assertion that guaranteed the inversion.
+#
+# Data and role are one object now. `paradox_groups()` is the only way to get the
+# memberships, and it hands back the way each is drawn along with them, so a figure
+# cannot take the lists and invent its own colours for them.
+ABOVE_FRIENDS = "accenttwo"   # her friends average FEWER than she has -- the minority
+BELOW_FRIENDS = None          # hollow: legible as "not red", carrying no second meaning
+EQUAL_FRIENDS = "annot"       # exactly equal
+
+PARADOX_ROLE = {"above": ABOVE_FRIENDS, "below": BELOW_FRIENDS, "equal": EQUAL_FRIENDS}
+
+
+def paradox_groups():
+    """(relation, members, role) for the three groups -- one object, never three."""
+    return (("above", ABOVE, ABOVE_FRIENDS),
+            ("below", BELOW, BELOW_FRIENDS),
+            ("equal", EQUAL, EQUAL_FRIENDS))
+
+
+def paradox_role(rel):
+    """The way a girl who is above / below / exactly on her friends' average is drawn."""
+    assert rel in PARADOX_ROLE, f"unknown relation {rel!r}"
+    return PARADOX_ROLE[rel]
+
+
+def paradox_rel(v):
+    """Which of the three a girl is in, from the data rather than from a caller."""
+    k, fm = G.degree(v), FM[v][2]
+    return "below" if fm > k else "above" if fm < k else "equal"
+
+
+assert {v: paradox_rel(v) for v in FELD_ORDER} == \
+    {v: r for r, members, _ in paradox_groups() for v in members}
+assert len({ABOVE_FRIENDS, BELOW_FRIENDS, EQUAL_FRIENDS}) == 3, "two groups share a role"
+
 assert set(POS) == set(FELD_ORDER)
 assert_planar_drawing(FELD_EDGES, POS, "feld layout")
 assert min(x for x, _ in POS.values()) > 60, "leftmost disc is too close to the canvas"

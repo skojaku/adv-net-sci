@@ -18,7 +18,9 @@ from functools import lru_cache
 import networkx as nx
 import numpy as np
 
-from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean, solve_names
+from feld import (ABOVE, ABOVE_FRIENDS, BELOW, BELOW_FRIENDS, EQUAL,
+                  EQUAL_FRIENDS, G, LABEL_BAND, M, POS, degree, friend_mean,
+                  paradox_groups, paradox_rel, paradox_role, solve_names)
 from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, PXBP, SMALLNODE,
                     TEXT_MIN_PX, Axes,
                     assert_planar_drawing, clearance_bad, disc, dot, draw_labels, emit,
@@ -86,31 +88,18 @@ def num(x, d=1):
     return f"{q}"
 
 
-# --------------------------------------------------------------- the one role table
-# R4 A4-1: three rounds addressed this by recolouring one figure at a time, and each
-# time the sibling twelve lines below kept the opposite key -- accent-2 meant "above her
-# friends' average" on slide 010 and "below" on 012, on the slide built to confirm the
-# result at eighteen times the scale.  A role written into one function binds nothing.
-# It is declared once here, both figures draw through `role_disc`, and
-# `assert_role_consistency` fails the build if any two figures disagree about what a
-# colour means.
-ABOVE_FRIENDS = "accenttwo"   # her friends average FEWER than she has -- the hubs
-BELOW_FRIENDS = None          # hollow: legible as "not red", carrying no second meaning
-EQUAL_FRIENDS = "annot"       # exactly equal
-
-_FRIEND_ROLE = {"above": ABOVE_FRIENDS, "below": BELOW_FRIENDS, "equal": EQUAL_FRIENDS}
-_ROLE_LOG = {}
-
-
+# The role table lives in `feld.py` now, beside the group memberships it colours, so a
+# figure that imports the data cannot miss the roles (R5 A5-1).
+#
+# There is deliberately no cross-figure "do two figures agree about this colour" check
+# here any more. The version in round 4 could not fail: once the table is a function of
+# the relation, two figures asking for the same relation get the same colour by
+# construction, and asking for different relations SHOULD give different colours. An
+# assertion that cannot fire reads as coverage and is not -- the check that does the
+# work is `assert_role_counts`, which counts what the figure actually drew.
 def friend_role(rel, what):
-    """The single place a below/above/equal group becomes a way of drawing a disc."""
-    assert rel in _FRIEND_ROLE, rel
-    role = _FRIEND_ROLE[rel]
-    seen, first = _ROLE_LOG.setdefault(role, (rel, what))
-    assert seen == rel, (
-        f"{what} draws '{rel}' the way {first} draws '{seen}' -- one colour, two "
-        f"meanings, across two figures. Change the role table, not the call site.")
-    return role
+    """The way a group is drawn.  `what` names the caller in any failure downstream."""
+    return paradox_role(rel)
 
 
 def role_disc(x, y, role, label="", size=NODE):
@@ -230,7 +219,11 @@ def fig_feld_degrees():
 def fig_feld_worksheet():
     # The answer goes in the empty right-middle void; the solver is told to keep the
     # eight names out of it.  Nothing in this figure may carry a friend-mean value.
-    void = [(788, 90, 1072, 250)]
+    # B5-3: the ring round Jane is drawn AFTER the names are solved, so the solver
+    # never knew about it and put the "J" of "Jane" in its outermost pixel column. Its
+    # box is a blocker now -- the same root as every other mark added after a solve.
+    jx, jy = POS["Jane"]
+    void = [(788, 90, 1072, 250), (jx - 31, jy - 31, jx + 31, jy + 31)]
     chosen, _ = solve_names(extra_blockers=void)
     names = {n: n for n in POS}
     b = feld_body()
@@ -841,18 +834,22 @@ def fig_feld_check():
     assert M["sum_k2"] / M["sum_k"] == 3.0
     ans = num(k1 + gap, 1)
 
-    b = text(200, 342, "the identity", color="annot")
-    b += text(880, 342, "the hand count", color="annot")
-    for y, l, r in ((278, rf"$\langle k^2\rangle = {num(k2,1)}$",
+    # E5-2: "60 friends" on a slide about counting invited the reading "60 friendships",
+    # where there are ten. The 60 is sum k^2 -- one count of friends per edge end -- so
+    # the line names the ends it is counted across. Two lines, and the row pitch grew
+    # from 60 to 80 to hold them.
+    b = text(200, 360, "the identity", color="annot")
+    b += text(880, 360, "the hand count", color="annot")
+    for y, l, r in ((300, rf"$\langle k^2\rangle = {num(k2,1)}$",
                      f"{M['sum_k']} ends"),
-                    (218, rf"$\mathrm{{Var}}(k) = {num(var,2)}$",
-                     f"{M['sum_k2']} friends"),
-                    (158, f"${num(k1,1)} + {num(gap,1)}$",
+                    (220, rf"$\mathrm{{Var}}(k) = {num(var,2)}$",
+                     f"{M['sum_k2']} friends\\\\at those {M['sum_k']} ends"),
+                    (140, f"${num(k1,1)} + {num(gap,1)}$",
                      f"${M['sum_k2']} \\div {M['sum_k']}$")):
         b += text(200, y, l)
         b += text(880, y, r)
-    b += seg((380, 240), (462, 240), color="annot", w=3.0, arrow=ARROW)
-    b += seg((700, 240), (618, 240), color="annot", w=3.0, arrow=ARROW)
+    b += seg((380, 240), (452, 240), color="annot", w=3.0, arrow=ARROW)
+    b += seg((690, 240), (628, 240), color="annot", w=3.0, arrow=ARROW)
     b += text(540, 240, ans, color="accenttwo", size=88)
     b += text(540, 150, "friends' average", color="annot")
     emit("feld-check", b, container="full", h=FULL_H)
@@ -947,35 +944,41 @@ def _condmat_stats():
 
 
 def fig_coauthor_gap():
-    """R3 A3-8: the last bar in the deck becomes the objects it was encoding.
+    """R5: the disc field is the only colour-carrying element, and it uses feld's roles.
 
-    Slide 040's three bars became a hundred discs for exactly this rule and this strip
-    was left behind, so 82.8% was the one quantity in the module still drawn as a length
-    to be decoded against a scale.  The field is 4 x 25 rather than 040's 10 x 10 so the
-    two slides do not read as the same picture twice.
+    Two defects, one figure.  The field drew the 83 authors BELOW their coauthors'
+    average in accent-2, the opposite of slides 010 and 012 -- so a student holding the
+    key those slides teach read this as "83 in 100 have more coauthors than their
+    coauthors", the module's thesis inverted at 23,133 nodes.  And the headline drew 8.1
+    in accent and 22.1 in accent-2 directly above a field where those same two colours
+    meant which authors, so the available misreading was "the red dots are the
+    coauthors".  The headline is ink now; the field carries the colour alone.
     """
     s_, share = _condmat_stats()
     assert s_["N"] == 23133
     assert num(s_["k1"], 1) == "8.1" and num(s_["friend"], 1) == "22.1"
-    hit = round(share * 100)
-    assert hit == 83, hit
+    below = round(share * 100)
+    above = 100 - below
+    assert below == 83 and abs(above / 100 - (1 - share)) <= 0.005, (below, above)
 
-    b = text(250, 330, num(s_["k1"], 1), color="accent", size=88)
-    b += text(830, 330, num(s_["friend"], 1), color="accenttwo", size=88)
-    b += seg((420, 330), (660, 330), color="annot", w=3.4, arrow=ARROW)
-    b += text(250, 258, "each author", color="annot")
-    b += text(830, 258, "their coauthors", color="annot")
+    b = text(250, 340, num(s_["k1"], 1), size=88)
+    b += text(830, 340, num(s_["friend"], 1), size=88)
+    b += seg((420, 340), (660, 340), color="annot", w=3.4, arrow=ARROW)
+    b += text(250, 268, "each author", color="annot")
+    b += text(830, 268, "their coauthors", color="annot")
 
     PITCH, MARK, PER_ROW = 38, 26, 25
-    field, red = "", 0
+    field = ""
     for i in range(100):
         row, col = divmod(i, PER_ROW)
-        field += dot(71 + col * PITCH, 205 - row * PITCH, d=MARK,
-                     color="accenttwo" if i < hit else "accent")
-        red += i < hit
-    assert red == hit == field.count("accenttwo"), (red, hit)
+        field += role_disc(71 + col * PITCH, 215 - row * PITCH,
+                           friend_role("above" if i < above else "below",
+                                       "coauthor-gap"), size=MARK)
+    assert_role_counts(field, {"above": above, "below": below, "equal": 0},
+                       "coauthor-gap")
     b += field
-    b += text(540, 40, f"{pct(share, 1)} below their coauthors' average", color="annot")
+    b += "\\def\\hi#1{\\textcolor{accenttwo}{#1}}\n"
+    b += text(540, 40, f"\\hi{{{pct(1 - share, 1)} above}}, {pct(share, 1)} below")
     emit("coauthor-gap", b, container="full", h=FULL_H)
 
 
@@ -986,34 +989,38 @@ def fig_fb_twitter():
     their boxes -- all nearly full, so every bit of information came from the numbers
     printed inside them, which is what FIGURE_GUIDE rules bars out for. And the middle
     bar was the MEDIAN, a distinction this deck does not introduce for another 43
-    slides; it lives on "The mean and the median disagree" now, where the room has been
-    asked the question first.
+    slides; it lives on "The mean and the median disagree" now.
 
-    A hundred discs, ninety-three of them red. Nothing to decode against an axis: the
-    room counts the seven that are not.
+    R5: the polarity matches slides 010 and 012. The ninety-three below are hollow and
+    the seven above are accent-2 -- and those seven, which previously sat in plain
+    accent with nothing on the slide saying what they were, now explain themselves.
     """
     assert "92.7% of users have less friends than the average" in LITERATURE
     assert ">98% of Twitter users" in LITERATURE
     assert "721 million active users" in LITERATURE
 
     share = 0.927
-    hit = round(share * 100)
-    assert hit == 93, hit
+    below = round(share * 100)
+    above = 100 - below
+    assert below == 93 and abs(above / 100 - (1 - share)) <= 0.005, (below, above)
     PITCH, MARK, PER_ROW = 36, 28, 10
     x0, ytop = 92, 360
-    b = ""
+    field = ""
     for i in range(100):
         row, col = divmod(i, PER_ROW)
-        b += dot(x0 + col * PITCH, ytop - row * PITCH, d=MARK,
-                 color="accenttwo" if i < hit else "accent")
-    assert b.count("accenttwo") == hit
+        field += role_disc(x0 + col * PITCH, ytop - row * PITCH,
+                           friend_role("above" if i < above else "below", "fb-twitter"),
+                           size=MARK)
+    assert_role_counts(field, {"above": above, "below": below, "equal": 0}, "fb-twitter")
+    b = field
 
     tx = 560
-    b += text(tx, 300, f"{pct(share, 1)} of Facebook", color="accenttwo", anchor="west")
-    b += text(tx, 246, "have fewer friends than", anchor="west")
-    b += text(tx, 192, "their friends average", anchor="west")
-    b += text(tx, 122, "721 million people, 2011", color="annot", anchor="west")
-    b += text(tx, 62, "on Twitter, over 98\\%", color="annot", anchor="west")
+    b += text(tx, 320, f"{pct(share, 1)} of Facebook", anchor="west")
+    b += text(tx, 266, "have fewer friends than", anchor="west")
+    b += text(tx, 212, "their friends average", anchor="west")
+    b += text(tx, 152, f"{pct(1 - share, 1)} do not", color=ABOVE_FRIENDS, anchor="west")
+    b += text(tx, 92, "721 million people, 2011", color="annot", anchor="west")
+    b += text(tx, 38, "on Twitter, over 98\\%", color="annot", anchor="west")
     # The median belongs to the slide that asks about it, not to this one.
     assert "83.6" not in b and "median" not in b
     emit("fb-twitter", b, container="full", h=FULL_H)
@@ -1042,18 +1049,28 @@ def fig_sampling_bias():
     # the floor for a countable disc on the slide is 26px. Eighteen of them will not fit
     # on one row at that size, so the row wraps -- the drawing grows, the mark does not
     # shrink. Both fractions are printed, because "2.3x" cannot be checked otherwise.
-    PITCH, MARK, PER_ROW = 36, 28, 9
-    for ytop, lab, tot, hit, unit in ((330, "pick a person", n, 1, "one person"),
-                                      (176, "follow an edge", ends, kh, "one edge end")):
+    # B5-2: the two samples are drawn with two glyphs. People are discs -- the mark that
+    # has meant a person since slide 006 -- and edge ends are the module's red tick, the
+    # mark 016, 017, 026 and 027 use. Both rows drew discs before, on the one slide
+    # whose entire point is that picking a person and picking an end are not the same
+    # draw; "1 of 7 people" against "6 of 18 ends" now reads off the glyph alone.
+    # (R3 fixed exactly this on 026 and it stayed live here.)
+    PITCH, MARK, PER_ROW, ROW_H = 36, 28, 9, 46
+    for ytop, lab, tot, hit, unit, glyph in (
+            (330, "pick a person", n, 1, "one person", "disc"),
+            (176, "follow an edge", ends, kh, "one edge end", "tick")):
         b += text(560, ytop, lab, anchor="west")
         for i in range(tot):
             row, col = divmod(i, PER_ROW)
-            b += dot(578 + col * PITCH, ytop - 46 - row * PITCH, d=MARK,
-                     color="accenttwo" if i < hit else "accent")
+            x, y = 578 + col * PITCH, ytop - 46 - row * ROW_H
+            if glyph == "disc":
+                b += dot(x, y, d=MARK, color="accenttwo" if i < hit else "accent")
+            else:
+                b += end_mark(x, y, color="accenttwo" if i < hit else "annot")
         rows = (tot + PER_ROW - 1) // PER_ROW
-        b += text(578 + PER_ROW * PITCH + 16, ytop - 46 - (rows - 1) * PITCH / 2,
+        b += text(578 + PER_ROW * PITCH + 16, ytop - 46 - (rows - 1) * ROW_H / 2,
                   f"${hit}$ of ${tot}$", color="accenttwo", anchor="west")
-        b += text(560, ytop - 46 - (rows - 1) * PITCH - 40, unit, color="annot",
+        b += text(560, ytop - 46 - (rows - 1) * ROW_H - 40, unit, color="annot",
                   anchor="north west", size=FONT)
     # under the graph, not under the tally: at the foot of the right column it sat
     # on the "one edge end" unit label and 2bp into the bottom row of dots.
@@ -1243,6 +1260,94 @@ def fig_immunization_curves():
     emit("immunization-curves", b, container="col", h=COL_H)
 
 
+
+# ------------------------------------------------- what accent-2 marks, figure by figure
+# R5 A5-1. Four rounds of naming call sites produced four rounds of one more call site,
+# so this is the forcing function rather than another list: **every figure in FIGURES
+# must appear here**, and `assert_declarations` at the foot of this file fails at import
+# when one does not. A figure cannot be added without saying what its red ink means, and
+# a figure that says PARADOX is checked against feld.py's table instead of trusted --
+# its source must go through `role_disc`/`friend_role` and must not name a role colour
+# itself.
+#
+# The rubric already required "one colour, one meaning, per figure, and say what it
+# means". This is that rule, executable.
+PARADOX = "which side of her friends' average she is on"
+HUB = "the hub, or the node being counted"
+END = "an edge end"
+FOCUS = "the quantity this slide is about"
+NONE = "nothing -- no accent-2 ink"
+
+ACCENT2_MEANS = {
+    "timeline-1961": NONE,
+    "feld-names": NONE,
+    "feld-degrees": NONE,
+    "feld-worksheet": "the girl worked as the example",
+    "feld-friendmeans": PARADOX,
+    "feld-two-numbers": FOCUS,
+    "marketville-146": PARADOX,
+    "degree-def": HUB,
+    "sum-ends": END,
+    "mean-degree": END,
+    "handshake": END,
+    "pk-def": FOCUS,
+    "feld-pk": FOCUS,
+    "rosters": HUB,
+    "bag-of-hands": END,
+    "qk-formula": END,
+    "derivation-1": FOCUS,
+    "derivation-2": FOCUS,
+    "derivation-3": FOCUS,
+    "derivation-4": FOCUS,
+    "gap-nonneg": FOCUS,
+    "feld-check": FOCUS,
+    "two-averages": FOCUS,
+    "worksheet-star-ring": "the blank the room fills in",
+    "worksheet-answer": FOCUS,
+    "coauthor-gap": PARADOX,
+    "fb-twitter": PARADOX,
+    "sampling-bias": HUB,
+    "acquaintance-1": "the person this step acts on",
+    "acquaintance-2": "the person this step acts on",
+    "acquaintance-3": "the person this step acts on",
+    "immunization-curves": "the nominated strategy",
+}
+
+# Only the forms that COLOUR A MARK. `color="annot"` on a caption is annotation, not a
+# role, and forbidding it would push figures into worse workarounds.
+_ROLE_LITERALS = ('fill="accent', "fill='accent", 'color="accent', "color='accent")
+
+
+def assert_declarations(figures):
+    """Every figure declares its accent-2 meaning, and paradox figures are checked.
+
+    The test this has to pass, and the reason it exists: if someone adds a fifth figure
+    that colours people, does the build fail?  It does -- on the completeness assertion,
+    before the figure is ever drawn.
+    """
+    import inspect
+    names = [n for n, _ in figures]
+    assert len(names) == len(set(names)), "duplicate figure name"
+    missing = sorted(set(names) - set(ACCENT2_MEANS))
+    extra = sorted(set(ACCENT2_MEANS) - set(names))
+    assert not missing and not extra, (
+        f"ACCENT2_MEANS does not match FIGURES -- undeclared: {missing}; "
+        f"stale: {extra}. Say what accent-2 marks in the new figure; if it marks which "
+        f"side of her friends' average a person is on, declare PARADOX and draw through "
+        f"role_disc() so feld.py's table decides the colour.")
+    for name, fn in figures:
+        if ACCENT2_MEANS[name] != PARADOX:
+            continue
+        src = inspect.getsource(fn)
+        assert "role_disc" in src and "friend_role" in src, (
+            f"{name} declares PARADOX but does not draw through role_disc()/"
+            f"friend_role() -- it cannot be checked against feld.py's table")
+        bad = [lit for lit in _ROLE_LITERALS if lit in src]
+        assert not bad, (
+            f"{name} declares PARADOX and names {bad} itself -- the role belongs to "
+            f"feld.py, and a literal here is how this defect survived four rounds")
+
+
 FIGURES = [
     ("timeline-1961", fig_timeline_1961),
     ("feld-names", fig_feld_names),
@@ -1277,3 +1382,5 @@ FIGURES = [
     ("acquaintance-3", fig_acquaintance_3),
     ("immunization-curves", fig_immunization_curves),
 ]
+
+assert_declarations(FIGURES)

@@ -148,20 +148,21 @@ Stress that the geometry never moves again. What changes on later slides is only
 
 ---
 
-<!-- _class: mid -->
-
 ## Which one is the most important?
 
 <hr>
 
-<div class="formula">
+Point at a city. Do not explain yet.
 
-Point at a city on that map. Do not explain yet.
+<div class="fig tall">
+
+![w:1080](figures/roma-graph.png)
+<figcaption>twelve cities, eighteen routes, no scores</figcaption>
 
 </div>
 
 <!--
-Take a show of hands for two or three cities. Do not confirm anything, do not hint, and above all do not say the word "degree".
+The map has to be on the slide they are pointing at, not on the one before it. Take a show of hands for two or three cities. Do not confirm anything, do not hint, and above all do not say the word "degree".
 -->
 
 ---

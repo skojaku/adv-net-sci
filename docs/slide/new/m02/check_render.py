@@ -111,6 +111,19 @@ FILL_TOL = 46
 # floor covers ~200. Below this, a component is a glyph the hole-filling closed up.
 MIN_DISC_AREA = 380
 
+# What figures/make_figures.py emitted on its last run. Anything referenced by the deck
+# and NOT in here is an external asset -- the lecturer's own map, a poster -- and is
+# checked differently: see the height-cap branch in main().
+def _generated():
+    import json
+    try:
+        return set(json.loads((__import__("pathlib").Path("figures/_generated.json")).read_text()))
+    except (OSError, ValueError):
+        return set()
+
+
+_GENERATED = _generated()
+
 
 def components(mask, min_px=120, step=2, with_origin=False):
     """Connected components of a boolean mask, as (h, w, area) triples.
@@ -401,6 +414,19 @@ def main():
             sw, sh = Image.open(src).size
         except OSError:
             fails.append(f"slide {n:03d}: {src} is missing")
+            continue
+        # Both checks below reason about in-figure TYPE -- the authored width sets the
+        # scale that type lands at, and the height cap shrinks it. Only a figure this
+        # build draws has type whose size we control. An external asset (the lecturer's
+        # own map, a film poster) has none, and a portrait poster simply cannot fill a
+        # landscape column, so the cap binding on it is not the same defect. Those get a
+        # floor on how large they land instead.
+        if src.split("/")[-1].rsplit(".", 1)[0] not in _GENERATED:
+            ext_scale = min(container / sw, hcap / sh, 1.0)
+            if min(sw * ext_scale, sh * ext_scale) < 240:
+                fails.append(
+                    f"slide {n:03d}: {src} is an external asset landing "
+                    f"{sw * ext_scale:.0f}x{sh * ext_scale:.0f}px — too small to read")
             continue
         # Figures are authored at 4px per bp: a column figure is 520bp -> 2080px
         # (the GIF is emitted at half that), a full-width one 1100bp -> 4400px.

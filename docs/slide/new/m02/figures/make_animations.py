@@ -136,6 +136,13 @@ def main():
     durations = [FINAL_MS] + [FRAME_MS] * (len(imgs) - 2) + [FINAL_MS]
     imgs[0].save(OUT / "ws-rewire.gif", save_all=True, append_images=imgs[1:],
                  duration=durations, optimize=True)
+    # The GIF is generated, so it belongs in the manifest the gate reads: it has
+    # in-figure type whose size this build controls, and must be held to the same
+    # height-cap reasoning as every other drawn figure.
+    import json
+    man = OUT / "_generated.json"
+    names = set(json.loads(man.read_text())) if man.exists() else set()
+    man.write_text(json.dumps(sorted(names | {"ws-rewire"})))
     print(f"  ws-rewire.gif  {imgs[0].size[0]}x{imgs[0].size[1]}  {len(imgs)} frames, "
           f"plays once, {FINAL_MS}ms on the last")
 

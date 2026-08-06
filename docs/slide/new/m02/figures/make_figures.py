@@ -3099,6 +3099,8 @@ def main():
         except AssertionError as e:
             bad.append(name)
             print(f"  FAIL {name}: {e}")
+    import json
+    (OUT / "_generated.json").write_text(json.dumps(sorted(_built)))
     print(f"\n{len(_built)} figures written, {len(bad)} failed")
     if bad:
         print("  " + " ".join(bad))

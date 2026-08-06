@@ -658,7 +658,7 @@ This is the strongest sentence in the module. It is not a tendency, it is an ide
 
 </div>
 
-Two routes with no arithmetic in common, landing on the same number.
+Two very different countings, landing on the same number.
 
 <!--
 Two completely different routes, one number. That is the moment to pause.
@@ -677,7 +677,7 @@ Two completely different routes, one number. That is the moment to pause.
 
 </div>
 
-The theorem is about **friendships**, not about people. Averaging person by person gives a slightly different number.
+Both answer *how many friends does a friend have*: over the twenty **ends**, 3.00; over the eight **girls**, 2.99. Feld’s theorem is the first one.
 
 <!--
 3.0 versus 2.99 is nothing here, but the distinction is exactly what Part Seven's first question turns on. Flag it now.
@@ -1802,7 +1802,7 @@ The log-normal. It arises from multiplying random factors — which is at least 
 
 Facebook’s own paper calls its tail *substantially curved*.
 
-* And so does ours: cond-mat's $p(k)$ gives $\gamma = 2.44$, its CCDF gives $3.57$. One tail, two answers.
+* And so does ours: $p(k)$ gives $\gamma = 2.44$, so the rule predicts a CCDF slope of $-1.44$. It measures $-2.57$. One tail, two answers.
 
 <!--
 Ugander et al. 2011, in the same section we quoted for the paradox. Broido and Clauset 2019 fit 927 networks properly and find strong scale-free evidence in about 4% of them. This argument is live.

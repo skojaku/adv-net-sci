@@ -181,3 +181,90 @@ def fig_club_three_answers():
 
 
 FIGURES.append(("club-three-answers", fig_club_three_answers))
+
+
+# --------------------------------------------------------------------------- the
+# blank club network with the CLUBS drawn on it. The first version of this slide
+# listed the rosters as bullets beside a bare scatter of names; when the slide went
+# full width the bullets went with it, and the figure was left saying "draw a line
+# between two students who share a club" without anywhere showing who shares one.
+# The grouping belongs in the drawing.
+CLUB_BLOB_R = 36.0
+# Candidate offsets for a club's name, tried in order from its members' centroid.
+# Hand-assigning eight of these was tried first and the assertion below rejected
+# the second one -- with thirteen student names already placed by the solver there
+# is no way to guess a free spot, which is the whole reason FIGURE_GUIDE says to
+# place labels with a solver rather than by hand.
+CLUB_LABEL_SPOTS = [(anc, dx, dy)
+                    for r in (52, 74, 96, 120)
+                    for anc, ux, uy in (("south", 0, 1), ("north", 0, -1),
+                                        ("west", 1, 0), ("east", -1, 0),
+                                        ("south west", 0.7, 0.7), ("south east", -0.7, 0.7),
+                                        ("north west", 0.7, -0.7), ("north east", -0.7, -0.7))
+                    for dx, dy in ((ux * r, uy * r),)]
+
+
+def fig_club_clubs():
+    import itertools
+    from verify_numbers import CLUBS
+    assert set(CLUB_XY) == set(CLUB)
+
+    b = ""
+    # Each club is a blob: a round-capped stroke between every pair of its members,
+    # plus a disc at each member. Overlaps read as darker gold, which is true --
+    # Noah really is in four clubs at once.
+    for members in CLUBS.values():
+        for u, v in itertools.combinations(members, 2):
+            b += (f"\\draw[line width={2 * CLUB_BLOB_R}bp,draw={ACCENT3},opacity=0.30,"
+                  f"line cap=round] ({CLUB_XY[u][0]},{CLUB_XY[u][1]}) -- "
+                  f"({CLUB_XY[v][0]},{CLUB_XY[v][1]});\n")
+        for m in members:
+            b += (f"\\fill[{ACCENT3},opacity=0.30] ({CLUB_XY[m][0]},{CLUB_XY[m][1]}) "
+                  f"circle ({CLUB_BLOB_R}bp);\n")
+
+    for n, (x, y) in CLUB_XY.items():
+        b += (f"\\draw[line width=1.6bp,draw=black,fill=accent] ({x},{y}) "
+              f"circle ({F.NODE / 2}bp);\n")
+
+    names = {n: n for n in CLUB_XY}
+    saved = F.SIDES[:]
+    F.SIDES[:] = saved[:4]
+    try:
+        sides, boxes = F.place_labels(names, CLUB_XY, [], bounds=(6, 6, 1074, 420),
+                                      gap=3.0)
+    finally:
+        F.SIDES[:] = saved
+    for dx, dy in [(a, c) for a in (-2, 0, 2) for c in (-2, 0, 2) if (a, c) != (0, 0)]:
+        shifted = {n: (x + dx, y + dy) for n, (x, y) in CLUB_XY.items()}
+        b += F.draw_labels(names, shifted, sides, color="white")
+    b += F.draw_labels(names, CLUB_XY, sides, color="black")
+
+    # Club names, placed by hand and then held to the same collision rule the
+    # student names are: a club label that lands on a student name is worse than
+    # no club label, because the room reads it as that student's.
+    placed = dict(boxes)
+    for club, members in CLUBS.items():
+        mx = sum(CLUB_XY[m][0] for m in members) / len(members)
+        my = sum(CLUB_XY[m][1] for m in members) / len(members)
+        chosen = None
+        for anc, dx, dy in CLUB_LABEL_SPOTS:
+            cx, cy = mx + dx, my + dy
+            box = F.label_box(cx, cy, club, anc)
+            if not (6 <= box[0] and box[2] <= 1074 and 6 <= box[1] and box[3] <= 430):
+                continue
+            if any(F.boxes_overlap(box, o) for o in placed.values()):
+                continue
+            if any(F.box_hits_disc(box, x, y) for x, y in CLUB_XY.values()):
+                continue
+            chosen = (cx, cy, anc, box)
+            break
+        assert chosen, (f"no clear spot for the {club} label -- move a student, or "
+                        f"widen the canvas; do not shrink the type")
+        cx, cy, anc, box = chosen
+        placed[club] = box
+        b += text(cx, cy, club, color=GRAY, anchor=anc)
+
+    emit("club-clubs", b, container="full", h=440, hmod="tall")
+
+
+FIGURES.append(("club-clubs", fig_club_clubs))
