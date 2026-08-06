@@ -167,6 +167,58 @@ it, and three markers shipped at 25.5px against a 26px floor. One guaranteed a r
 the drawing and was blind to what it implied; the other guaranteed the author's intention and was
 blind to the drawing.
 
+### The ground-truth side of an assertion must be able to be wrong on its own
+
+Module 04 shipped one defect through five rounds of review, and the thing that kept it alive was an
+assertion whose job was to catch it. A figure drawing eight people coloured by whether their friends
+have more friends than they do asserted:
+
+    rel = 1 if friend_mean(g) > degree(g) else -1 if ... else 0     # derived from the data
+    assert rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill]  # written two lines above
+
+The data was right. The comparison was right. The **map from comparison to colour was inverted**,
+and it sat inside the thing whose job was to catch inversions. The assertion passed every round and
+reported the polarity verified.
+
+"Do not assert against literals" is the wrong lesson — it would ban a lot of good assertions. The
+invariant is structural:
+
+> **The side of an assertion you are treating as ground truth must come from somewhere that can be
+> wrong independently of the code under test.**
+
+A dict written two lines above the thing it checks cannot be. Swap which side is derived and the
+same line becomes a real test. In practice that means the expected side comes from a shared module,
+a measurement of the render, or the source data — not from a constant the author wrote while writing
+the thing it guards.
+
+The corollary the same module paid for four times: **a shared constant binds only where someone
+remembers to reach for it; a shared builder binds everywhere it is called.** Round 4 fixed an axis
+mismatch by importing two constants, and the half of the axis those constants did not cover stayed
+wrong. Round 5 fixed it by calling the shared axis *builder*. Same for the colour roles — declaring
+them bound the two functions that were named, and the two that were not kept calling the primitive
+directly.
+
+### A green build line is not evidence about the file on disk
+
+Late in module 04 a figure agent edited a generator, rebuilt, read `1 figures written, 0 failed`,
+opened the PNG — and it was the previous image. It knew, because the drawing on screen could not
+have passed the assertion the build had just reported passing, so it measured the file:
+
+    accent-2 101536 px, accent 45423 px    <- on disk after a "successful" build
+    accent-2  45409 px, accent     0 px    <- after rm + rebuild
+
+The likely mechanism is mundane and worth naming: this build had, more than once, **two
+`make_figures.py` processes writing into the same directory at the same time**, one of them from a
+session nobody had thought to hold. A process reports success for the write it performed; the bytes
+that survive can be the other one's.
+
+The guard is cheap: **delete a figure's PNG before regenerating it.** Then "did it actually write"
+cannot be answered by accident — if the file is absent and the build is green, the file on disk is
+the file the code describes.
+
+This is the render-staleness failure one level down. There, the render was stale relative to the
+figures. Here, the figure was stale relative to its own generator, and nothing in the output said so.
+
 ### Assert on the numbers that describe the canvas, not the numbers that describe the content
 
 Module 04 spent three rounds refining one rule, and this is where it ended up.
