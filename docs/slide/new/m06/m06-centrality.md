@@ -100,7 +100,7 @@ Not the distance between cities. The distance **from here**.
 <div class="fig tall">
 
 ![w:1080](figures/milestone-radial.png)
-<figcaption>distances outward, never across — in Roman miles along the roads</figcaption>
+<figcaption>outward, never across — roughly, in Roman miles by road</figcaption>
 
 </div>
 

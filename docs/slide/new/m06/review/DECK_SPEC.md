@@ -245,6 +245,8 @@ against ~3×10⁸ for thirty power-iteration steps — a factor of about **33,00
 
 ## History (each checked before it was written)
 
+The four mileages on `milestone-radial` are the deck's **only hand-entered numbers**: approximate road distances from Rome in Roman miles (Gades 1650, Londinium 1310, Byzantium 1120, Alexandria 1560), taken from the road itineraries rather than computed from the graph. The figcaption says "roughly" for that reason.
+
 Milliarium Aureum: erected by **Augustus in 20 BC**, in the Forum Romanum, as
 *curator viarum*. Aesop: 6th century BC. Perron **1907**, Frobenius **1912**. Bavelas
 **1950** (closeness). Katz **1953**. Hubbell **1965**. Beauchamp **1965** (harmonic).
