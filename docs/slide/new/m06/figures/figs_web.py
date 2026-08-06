@@ -670,7 +670,7 @@ def sketch(cx, cy, nodes, edges, key, name, ring_key=True, dashed=()):
     out += "".join(F.seg(pos[a], pos[b], color=A2, w=2.6, dash=F.DASH) for a, b in dashed)
     out += "".join(F.disc(x, y, size=SMALL) for x, y in pos.values())
     if ring_key:
-        out += F.ring(*pos[key], size=SMALL, color=A2, w=3.4, grow=13)
+        out += F.ring(*pos[key], size=SMALL, color=A2, w=3.4, grow=8)
     bb = (min(x for x, _ in pos.values()) - SMALL / 2 - 8,
           min(y for _, y in pos.values()) - SMALL / 2 - 8,
           max(x for x, _ in pos.values()) + SMALL / 2 + 8,
@@ -692,9 +692,9 @@ PURPOSE = [
          metric="betweenness\\\\eccentricity",
          nodes=[(-40, 24), (-40, -24), (0, 0), (40, 24), (40, -24)],
          edges=[(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4)], key=2),
-    dict(sx=180, sy=100, tx=250, anchor="west", purpose="influential",
+    dict(sx=175, sy=100, tx=250, anchor="west", purpose="influential",
          metric="eigenvector,\\\\Katz, PageRank",
-         nodes=[(16, 24), (16, -24), (40, 0), (-16, 0), (-40, 28)],
+         nodes=[(20, 28), (20, -28), (48, 0), (-18, 0), (-46, 30)],
          edges=[(0, 1), (0, 2), (1, 2), (3, 0), (3, 1), (4, 3)], key=0),
     dict(sx=966, sy=100, tx=900, anchor="east", purpose="personalized",
          metric="personalized\\\\PageRank",

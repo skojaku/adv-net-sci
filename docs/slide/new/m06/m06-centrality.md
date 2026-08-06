@@ -274,7 +274,7 @@ That is **degree centrality**, and it is the whole definition.
 
 ---
 
-## Your turn: count them
+## Your turn: count the roads
 
 <hr>
 
