@@ -298,15 +298,22 @@ def fig_roma_katz():
     _map("roma-katz", scores=ROMA_C["katz"], crown_cities=ROMA_CROWNS["katz"])
 
 
-def fig_hits_collapses():
-    """Hub score and authority score on an undirected map: the same vector."""
+def check_hits_collapses():
+    """No figure: on an undirected map the HITS picture IS the Part 5 picture.
+
+    A `hits-collapses.png` was emitted first and came out byte-identical to
+    `roma-eigenvector.png`, which is not a bug -- it is the theorem. Shipping two
+    identical files would have hidden that behind a duplicate, so the deck reuses
+    the Part 5 figure on the Part 7 slide and the caption says why. What survives
+    here is the check that they would still be identical.
+    """
     import networkx as nx
     A = nx.to_numpy_array(ROMA, nodelist=list(ROMA))
     hub, aut = hits(A)
     ev = np.array([ROMA_C["eigenvector"][n] for n in ROMA])
-    assert np.abs(hub - ev).max() < 1e-8 and np.abs(aut - ev).max() < 1e-8
-    scores = dict(zip(list(ROMA), hub))
-    _map("hits-collapses", scores=scores, crown_cities=crown(scores))
+    assert np.abs(hub - ev).max() < 1e-8 and np.abs(aut - ev).max() < 1e-8, \
+        "hub and authority no longer equal eigenvector -- Part 7's slide 75 is wrong"
+    assert crown(dict(zip(list(ROMA), hub))) == ROMA_CROWNS["eigenvector"]
 
 
 # --------------------------------------------------------------------------- Part 8
@@ -380,7 +387,7 @@ FIGURES = [
     ("attack-compare-2", fig_attack_between),
     ("roma-eigenvector", fig_roma_eigenvector),
     ("roma-katz", fig_roma_katz),
-    ("hits-collapses", fig_hits_collapses),
+    ("hits-collapses-check", check_hits_collapses),
     ("crown-summary", fig_crown_summary),
     ("redraw", fig_redraw),
 ]

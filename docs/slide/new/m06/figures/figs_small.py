@@ -26,6 +26,7 @@ the result is frozen in CLUB_XY with the three gates re-run at import.
 """
 
 import itertools
+import math
 import re
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -106,20 +107,30 @@ def discs_ink(pos, fill="accent", size=F.NODE, labels=None):
     return out
 
 
-def offset_path(pts, d):
-    """A polyline pushed d bp to the left of its own direction, segment by segment.
+def route_ink(routes, pos, colors, gap=14.0, w=4.6):
+    """Draw shortest paths so that a shared edge shows one strand per route.
 
-    Three shortest paths that share an edge are three coincident lines; drawn at
-    -10/0/+10 they read as three strands squeezing through the same node, which is
-    the whole claim of the figure.
+    Offsetting a whole path instead draws a ghost line beside every edge it uses
+    alone, and the figure reads as if the graph had doubled edges. Here the offset
+    is per edge: an edge one route uses sits ON the edge, an edge two routes share
+    splits into two strands, and the bundle at the node they all cross is the count
+    the figure is claiming.
     """
-    out = []
-    for i, p in enumerate(pts):
-        a = pts[max(i - 1, 0)]
-        b = pts[min(i + 1, len(pts) - 1)]
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        L = (dx * dx + dy * dy) ** 0.5 or 1.0
-        out.append((p[0] - dy / L * d, p[1] + dx / L * d))
+    users = {}
+    for i, r in enumerate(routes):
+        for e in zip(r, r[1:]):
+            users.setdefault(tuple(sorted(e)), []).append(i)
+    out = ""
+    for i, r in enumerate(routes):
+        for u, v in zip(r, r[1:]):
+            who = users[tuple(sorted((u, v)))]
+            off = (who.index(i) - (len(who) - 1) / 2) * gap
+            p, q = pos[u], pos[v]
+            dx, dy = q[0] - p[0], q[1] - p[1]
+            L = (dx * dx + dy * dy) ** 0.5 or 1.0
+            nx_, ny_ = -dy / L * off, dx / L * off
+            out += F.seg((p[0] + nx_, p[1] + ny_), (q[0] + nx_, q[1] + ny_),
+                         color=colors[i], w=w)
     return out
 
 
@@ -238,14 +249,14 @@ def fig_club_three_kings():
     start_log()
     b = ""
     for i, (name, role) in enumerate(KING_ROWS):
-        y = 320 - 100 * i
+        y = 300 - 90 * i
         k = CLUB.degree(name)
         assert k == dict(CLUB.degree())[name]
-        b += F.disc(60, y, str(k), fill="accenttwo", size=52)
+        b += F.disc(58, y, str(k), fill="accenttwo", size=52)
         _DRAWN.append(str(k))
-        b += T(100, y, name, anchor="west")
-        b += T(515, y, role, color=DIM, anchor="east")
-    b += T(20, 48, "in the disc: how many friends", color=DIM, anchor="west")
+        b += T(96, y, name, anchor="west")
+        b += T(288, y, role, color=DIM, anchor="west")
+    b += T(20, 42, "in the disc: how many friends", color=DIM, anchor="west")
     assert CLUB.degree(CLUB_SPREAD[0]) == 6 and CLUB.degree(CLUB_BROKER[0]) == 4
     F.emit("club-three-kings", b, container="col", h=390)
 
@@ -256,31 +267,32 @@ def fig_club_three_kings():
 def fig_degree_count():
     """One node, five edge ends, each end ticked. Degree counts ends, not neighbours."""
     start_log()
-    cx, cy, rx, ry = 540, 175, 400, 125
-    angles = [0, 60, 120, 180, 270]
-    import math
+    # Five spokes 72 deg apart on a wide ellipse: even spacing keeps the five ticks
+    # from bunching into one red smear at the hub, and the ellipse (not a circle) is
+    # what gets the ink across 76% of the canvas inside the height cap.
+    cx, cy, rx, ry = 560, 175, 440, 120
     pos = {"c": (cx, cy)}
-    for i, a in enumerate(angles):
-        pos[f"n{i}"] = (cx + rx * math.cos(math.radians(a)),
-                        cy + ry * math.sin(math.radians(a)))
-    edges = [("c", f"n{i}") for i in range(len(angles))]
+    for i in range(5):
+        a = math.radians(72 * i)
+        pos[f"n{i}"] = (cx + rx * math.cos(a), cy + ry * math.sin(a))
+    edges = [("c", f"n{i}") for i in range(5)]
     F.assert_planar_drawing(edges, pos, "degree-count")
     k = len(edges)
-    assert k == len([e for e in edges if "c" in e]) == 5
+    assert k == len({e[1] for e in edges}) == 5
 
     b = edges_ink(edges, pos)
-    # one accent-2 tick across each edge end, just outside the disc
     for _, n in edges:
         px, py = pos[n]
         dx, dy = px - cx, py - cy
         L = math.hypot(dx, dy)
         ux, uy = dx / L, dy / L
-        mx, my = cx + ux * (F.NODE / 2 + 12), cy + uy * (F.NODE / 2 + 12)
-        b += F.seg((mx - uy * 13, my + ux * 13), (mx + uy * 13, my - ux * 13),
-                   color="accenttwo", w=5.0)
-    b += discs_ink(pos)
-    b += T(cx, 330, f"{k} edge ends, so degree {k}", color=RED)
-    F.emit("degree-count", b, container="full", h=390)
+        mx, my = cx + ux * (52 / 2 + 22), cy + uy * (52 / 2 + 22)
+        b += F.seg((mx - uy * 15, my + ux * 15), (mx + uy * 15, my - ux * 15),
+                   color=RED, w=5.5)
+    b += discs_ink({n: p for n, p in pos.items() if n != "c"})
+    b += F.disc(cx, cy, "", fill="accent", size=52)
+    b += T(cx, 340, f"{k} edge ends, so degree {k}", color=RED)
+    F.emit("degree-count", b, container="full", h=400)
 
 
 # =============================================================================
@@ -310,12 +322,14 @@ def fig_betweenness_idea():
         assert p in list(nx.all_shortest_paths(BI, p[0], p[-1])), \
             f"the drawn route {p} is not a shortest path"
     b = edges_ink(BI_EDGES, BI_POS, color=DIM, w=F.EDGE_W)
-    for p, off in zip(BI_SHOWN, (-11, 0, 11)):
-        b += F.polyline(offset_path([BI_POS[n] for n in p], off), color="accenttwo", w=4.4)
+    b += route_ink(BI_SHOWN, BI_POS, [RED] * len(BI_SHOWN))
     b += discs_ink({n: p for n, p in BI_POS.items() if n != "M"})
     b += F.disc(*BI_POS["M"], "M", fill="accenttwo", size=52)
     _DRAWN.append("M")
-    b += T(540, 330, f"all {len(BI_PAIRS)} left-right routes cross M", color=RED)
+    # The drawing shows three of the nine; the note says so rather than letting the
+    # count of strands stand in for the count of pairs.
+    b += T(540, 330, f"{len(BI_SHOWN)} of the {len(BI_PAIRS)} left-right routes; "
+                     f"all of them cross M", color=RED)
     F.emit("betweenness-idea", b, container="full", h=390)
 
 
@@ -368,8 +382,7 @@ def fig_sigma_answer():
     assert words == {"A": "1/2", "B": "1/2", "T": "1"}
 
     b = edges_ink(SIG_E, SIG_XY, color=DIM)
-    for p, col, off in zip(SIG_ROUTES, ("accent", "accenttwo"), (-11, 11)):
-        b += F.polyline(offset_path([SIG_XY[n] for n in p], off), color=col, w=4.6)
+    b += route_ink(SIG_ROUTES, SIG_XY, [BLUE, RED])
     b += discs_ink(SIG_XY, labels={n: n for n in SIG_XY})
     sides, boxes = F.place_labels(words, SIG_XY, SIG_E, bounds=(4, 4, 1076, 300), gap=3.0)
     for n, s in words.items():
@@ -424,9 +437,6 @@ def fig_broker():
 # =============================================================================
 # the star and the path
 # =============================================================================
-import math
-
-
 def _star_xy(cx, cy, rx, ry, n=6):
     """Hub plus n leaves on a wide ellipse.
 
@@ -489,8 +499,8 @@ def fig_star_vs_path_2():
     b += discs_ink(PATH_XY, labels={i: str(i) for i in PATH_XY})
     for i in bet_k:
         b += crown_mark(*PATH_XY[i])
-    b += T(540, 332, f"crown = most routes ({len(bet_k)} node)", color=RED)
-    b += T(540, 42, f"ring = most friends ({len(deg_k)} nodes)", color=DIM)
+    b += T(540, 292, f"crown = most routes ({len(bet_k)} node)", color=RED)
+    b += T(540, 72, f"ring = most friends ({len(deg_k)} nodes)", color=DIM)
     F.emit("star-vs-path-2", b, container="full", h=400)
 
 

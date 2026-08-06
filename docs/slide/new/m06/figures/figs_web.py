@@ -623,18 +623,16 @@ def fig_genealogy():
 
     # Staggered above/below, and nudged along the axis where two labels would
     # touch; the leader line keeps each label tied to its own year.
-    place = {1895: (1, 0.0), 1949: (-1, -21.0), 1953: (1, 0.0),
-             1965: (-1, 15.0), 1972: (1, 0.0), 1998: (-1, -45.0)}
+    place = {1895: (1, 0.0), 1949: (-1, -30.0), 1953: (1, 0.0),
+             1965: (-1, -8.0), 1972: (1, 0.0), 1998: (-1, -45.0)}
     body = F.seg((x0, ax), (x1, ax), color="black", w=2.6)
     boxes = {}
     for year, who in GENEALOGY:
         side, dx = place[year]
         mx, lx = X(year), X(year) + dx
         ly = ax + side * 24
-        body += F.seg((mx, ax), (mx, ax + side * 13), color="black", w=2.6)
-        body += F.dot(mx, ax, color=A2, d=15)
-        if abs(dx) > 1:
-            body += F.seg((mx, ax + side * 13), (lx, ly), color=GY, w=1.8)
+        body += F.dot(mx, ax, color=A2, d=18)
+        body += F.seg((mx, ax + side * 9), (lx, ly - side * 2), color=GY, w=1.8)
         s = f"{year}\\\\{who}"
         body += F.text(lx, ly, s, color="black",
                        anchor="south" if side > 0 else "north")
@@ -655,6 +653,232 @@ def fig_genealogy():
     F.emit("genealogy", body, container="full", h=CANVAS_H)
 
 
+# =============================================================================
+# 5. Part 8 -- choosing one
+# =============================================================================
+SMALL = 26.0                       # disc for the thumbnail networks
+
+
+def sketch(cx, cy, nodes, edges, key, name, ring_key=True, dashed=()):
+    """A thumbnail network, asserted planar as drawn and inside its slot."""
+    pos = {i: (cx + x, cy + y) for i, (x, y) in enumerate(nodes)}
+    F.assert_planar_drawing(edges, pos, name)
+    for i, p in pos.items():
+        for j, q in pos.items():
+            assert i >= j or math.dist(p, q) > SMALL + 4, f"{name}: nodes {i},{j} touch"
+    out = "".join(F.seg(pos[a], pos[b], color="black", w=2.2) for a, b in edges)
+    out += "".join(F.seg(pos[a], pos[b], color=A2, w=2.6, dash=F.DASH) for a, b in dashed)
+    out += "".join(F.disc(x, y, size=SMALL) for x, y in pos.values())
+    if ring_key:
+        out += F.ring(*pos[key], size=SMALL, color=A2, w=3.4, grow=13)
+    bb = (min(x for x, _ in pos.values()) - SMALL / 2 - 8,
+          min(y for _, y in pos.values()) - SMALL / 2 - 8,
+          max(x for x, _ in pos.values()) + SMALL / 2 + 8,
+          max(y for _, y in pos.values()) + SMALL / 2 + 8)
+    return out, bb
+
+
+# purpose -> the metrics that answer it. The five pairings of DECK_SPEC slide 85,
+# each drawn as its own thumbnail so the slide cannot read as a table.
+PURPOSE = [
+    dict(sx=70, sy=250, tx=138, anchor="west", purpose="popular", metric="degree",
+         nodes=[(0, 0), (38, 0), (12, 36), (-31, 22), (-31, -22), (12, -36)],
+         edges=[(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)], key=0),
+    dict(sx=350, sy=250, tx=415, anchor="west", purpose="efficient",
+         metric="closeness,\\\\harmonic",
+         nodes=[(-42, -32), (-21, -5), (0, 22), (21, -5), (42, -32)],
+         edges=[(0, 1), (1, 2), (2, 3), (3, 4)], key=2),
+    dict(sx=955, sy=250, tx=890, anchor="east", purpose="critical",
+         metric="betweenness,\\\\eccentricity",
+         nodes=[(-40, 24), (-40, -24), (0, 0), (40, 24), (40, -24)],
+         edges=[(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4)], key=2),
+    dict(sx=180, sy=100, tx=248, anchor="west", purpose="influential",
+         metric="eigenvector,\\\\Katz, PageRank",
+         nodes=[(16, 24), (16, -24), (40, 0), (-16, 0), (-40, 28)],
+         edges=[(0, 1), (0, 2), (1, 2), (3, 0), (3, 1), (4, 3)], key=0),
+    dict(sx=965, sy=100, tx=900, anchor="east", purpose="personalized",
+         metric="personalized\\\\PageRank",
+         nodes=[(-38, 0), (0, 28), (0, -28), (38, 24), (38, -24)],
+         edges=[(0, 1), (0, 2), (1, 3), (2, 4), (3, 4)], key=0,
+         dashed=[(4, 0)]),
+]
+
+
+def _purpose_boxes():
+    out = []
+    for i, it in enumerate(PURPOSE):
+        pb = F.label_box(it["tx"], it["sy"] + 38, it["purpose"], it["anchor"])
+        mb = F.label_box(it["tx"], it["sy"] - 20, it["metric"], it["anchor"])
+        out.append((i, pb, mb))
+    return out
+
+
+def fig_purpose(step):
+    """One purpose, one metric, one thumbnail -- revealed one at a time."""
+    body = ""
+    slots = []
+    for i, it in enumerate(PURPOSE):
+        ink, bb = sketch(it["sx"], it["sy"], it["nodes"], it["edges"], it["key"],
+                         f"purpose-{i + 1}", ring_key=(i < step),
+                         dashed=it.get("dashed", ()) if i < step else ())
+        body += ink
+        slots.append(bb)
+    boxes = _purpose_boxes()
+    for i, pb, mb in boxes:
+        for j, qb, nb in boxes:
+            if i < j:
+                assert not (F.boxes_overlap(pb, qb) or F.boxes_overlap(mb, nb)
+                            or F.boxes_overlap(pb, nb) or F.boxes_overlap(mb, qb)), \
+                    f"the purpose-{i + 1} and purpose-{j + 1} captions overlap"
+        for b in (pb, mb):
+            assert 6 <= b[0] and b[2] <= 1074 and 6 <= b[1] and b[3] <= INK_H, \
+                f"the purpose-{i + 1} caption runs off the canvas: {b}"
+            for j, sb in enumerate(slots):
+                assert not F.boxes_overlap(b, sb), \
+                    f"the purpose-{i + 1} caption lands on thumbnail {j + 1}"
+    for i, it in enumerate(PURPOSE[:step]):
+        body += F.text(it["tx"], it["sy"] + 38, it["purpose"], color="black",
+                       anchor=it["anchor"])
+        body += F.text(it["tx"], it["sy"] - 20, it["metric"], color=A2,
+                       anchor=it["anchor"])
+    F.emit(f"purpose-{step}", body, container="full", h=CANVAS_H)
+
+
+# crown_robustness() enumerates 4992 map variants and takes about a minute, so the
+# figure quotes the numbers and re-derives them only when asked. Set M06_FULL_CHECK=1
+# to make the build call it and check every row against this table.
+ROBUST_N = 4992
+ROBUST = [("degree", 1.000), ("closeness", 0.962), ("harmonic", 0.962),
+          ("betweenness", 0.936), ("katz", 0.852), ("eccentricity", 0.846),
+          ("eigenvector", 0.792)]
+ROBUST_MARK = ("degree", "eigenvector")           # the two the slide names out loud
+
+
+def _robust_full_check():
+    ex, keeps = crown_robustness()
+    assert ex == ROBUST_N, f"{ex} variants, not {ROBUST_N}"
+    for m, v in ROBUST:
+        got = keeps[m] / ex
+        assert abs(got - v) < 5e-4, f"{m}: {got:.4f} computed against {v} quoted"
+    return ex, keeps
+
+
+def fig_robustness():
+    """How much of 'who is most important' survives redrawing the map."""
+    if os.environ.get("M06_FULL_CHECK"):
+        _robust_full_check()
+    assert dict(ROBUST)["degree"] == 1.0 > dict(ROBUST)["eigenvector"] == 0.792
+    assert [m for m, _ in ROBUST] == sorted([m for m, _ in ROBUST],
+                                            key=lambda m: -dict(ROBUST)[m])
+    x0, x1, ay = 410.0, 960.0, 62.0
+    body = F.seg((x0, ay), (x1, ay), color="black", w=2.2)
+    for v in (0.0, 0.5, 1.0):
+        x = x0 + v * (x1 - x0)
+        body += F.seg((x, ay), (x, ay - 9), color="black", w=2.2)
+        body += F.text(x, ay - 17, F.pct(v), color=GY, anchor="north")
+    rows, boxes = [], []
+    for i, (m, v) in enumerate(ROBUST):
+        y = 100.0 + (len(ROBUST) - 1 - i) * 38.0
+        hot = m in ROBUST_MARK
+        col = A2 if hot else "black"
+        body += F.text(350, y, m, color=col, anchor="east")
+        boxes.append(F.label_box(350, y, m, "east"))
+        body += F.seg((x0, y), (x0 + v * (x1 - x0), y), color=GY, w=1.4)
+        body += F.dot(x0 + v * (x1 - x0), y, color=A2 if hot else A1, d=18)
+        if hot:
+            s = F.pct(v, 1) if v < 1 else F.pct(v)
+            body += F.text(x0 + v * (x1 - x0) + 16, y, s, color=A2, anchor="west")
+            boxes.append(F.label_box(x0 + v * (x1 - x0) + 16, y, s, "west"))
+        rows.append(y)
+    cap = f"{ROBUST_N} maps"
+    cb = F.label_box(350, ay - 17, cap, "east")
+    for b in boxes:
+        assert not F.boxes_overlap(cb, b), "the caption collides with a row"
+    assert 6 <= cb[0] and cb[2] <= 1074 and 6 <= cb[1] and cb[3] <= INK_H
+    n = F.text(350, ay - 17, cap, color=GY, anchor="east")
+    for b in boxes:
+        assert 6 <= b[0] and b[2] <= 1074, f"a row label runs off the canvas: {b}"
+    F.emit("robustness", body + n, container="full", h=CANVAS_H)
+
+
+def fig_cost():
+    """Cost against n: one sweep per node, against one product per step."""
+    assert COST_M == 10 * COST_N, (COST_N, COST_M)
+    assert COST_SWEEP == COST_N * COST_M and COST_ITER == 30 * COST_M
+    assert COST_RATIO == COST_SWEEP // COST_ITER == 33333, COST_RATIO
+    ax = F.Axes((300, 110, 1020, 285), (1e2, 1e7), (1e4, 1e16), xlog=True, ylog=True,
+                xlabel="$n$ nodes, $m = 10n$", ylabel="",
+                yticks=[1e5, 1e10, 1e15])
+    body = ax.frame()
+    body += F.text(170, (110 + 285) / 2, "operations", anchor="south", rot=90)
+    ns = np.logspace(2, 7, 60)
+    body += ax.line(ns, ns * (10 * ns), color=A2, w=3.6)
+    body += ax.line(ns, 30 * (10 * ns), color=A1, w=3.6)
+    for y, c in ((COST_SWEEP, A2), (COST_ITER, A1)):
+        body += F.dot(*ax.P(COST_N, y), color=c, d=20)
+    p1, p2 = ax.P(COST_N, COST_SWEEP), ax.P(COST_N, COST_ITER)
+    body += F.seg(p1, p2, color=GY, w=2.0, arrow="{Stealth[length=9bp]}-"
+                                                 "{Stealth[length=9bp]}")
+    body += F.text(p1[0] + 18, (p1[1] + p2[1]) / 2, f"${COST_RATIO:,}".replace(",", "{,}")
+                   + "\\times$", color=GY, anchor="west")
+    body += F.text(300, 315, "closeness: $n\\,m$", color=A2, anchor="west")
+    body += F.text(700, 315, "PageRank: $30\\,m$", color=A1, anchor="west")
+    F.emit("cost", body, container="full", h=CANVAS_H)
+
+
+APPLICATIONS = [
+    dict(name="applications-1", purpose="vaccination targets", metric="degree",
+         nodes=[(215, 220), (310, 220), (263, 302), (168, 302), (120, 220),
+                (168, 138), (263, 138),
+                (865, 220), (960, 220), (894, 310), (788, 251), (788, 189),
+                (894, 130)],
+         edges=[(0, i) for i in range(1, 7)] + [(7, i) for i in range(8, 13)]
+               + [(1, 11)],
+         targets=[0, 7]),
+    dict(name="applications-2", purpose="infrastructure defence", metric="betweenness",
+         nodes=[(70, 150), (70, 270), (170, 210),
+                (340, 210),
+                (510, 210), (610, 150), (610, 270),
+                (700, 210),
+                (810, 210), (910, 150), (910, 270)],
+         edges=[(0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (4, 5), (4, 6), (5, 6),
+                (5, 7), (6, 7), (7, 8), (8, 9), (8, 10), (9, 10)],
+         targets=[3, 7]),
+    dict(name="applications-3", purpose="financial contagion",
+         metric="eigenvector, PageRank",
+         nodes=[(470, 160), (610, 160), (540, 270), (540, 202),
+                (300, 110), (300, 270), (110, 190),
+                (780, 110), (780, 270), (970, 190)],
+         edges=[(0, 1), (0, 2), (1, 2), (3, 0), (3, 1), (3, 2),
+                (4, 0), (5, 2), (6, 4), (6, 5), (7, 1), (8, 2), (9, 7), (9, 8)],
+         targets=[0, 1, 2, 3]),
+]
+
+
+def fig_application(i):
+    """One network, the nodes the metric names, and the metric."""
+    it = APPLICATIONS[i]
+    pos = {j: p for j, p in enumerate(it["nodes"])}
+    F.assert_planar_drawing(it["edges"], pos, it["name"])
+    body = "".join(F.seg(pos[a], pos[b], color="black") for a, b in it["edges"])
+    body += "".join(F.disc(x, y) for x, y in pos.values())
+    for t in it["targets"]:
+        body += F.ring(*pos[t], size=F.NODE, color=A2, w=4.0, grow=13)
+    pb = F.label_box(540, 96, it["purpose"], "north")
+    mb = F.label_box(540, 96 - 40, it["metric"], "north")
+    for b in (pb, mb):
+        assert 6 <= b[0] and b[2] <= 1074 and 6 <= b[1], f"{it['name']}: caption {b}"
+        for x, y in pos.values():
+            assert not F.box_hits_disc(b, x, y, r=F.NODE / 2 + 14), \
+                f"{it['name']}: the caption lands on a node"
+        for a, c in it["edges"]:
+            assert not F.box_hits_segment(b, pos[a], pos[c], pad=6), \
+                f"{it['name']}: the caption lands on an edge"
+    body += F.text(540, 96, it["purpose"], color="black", anchor="north")
+    body += F.text(540, 56, it["metric"], color=A2, anchor="north")
+    F.emit(it["name"], body, container="full", h=CANVAS_H)
+
+
 FIGURES = [
     ("web-graph", fig_web_graph),
     ("web-blank", fig_web_blank),
@@ -667,5 +891,10 @@ FIGURES = [
     ("hits-equations", fig_hits_equations),
     ("pagerank-split", fig_pagerank_split),
     ("genealogy", fig_genealogy),
+] + [(f"purpose-{k}", functools.partial(fig_purpose, k)) for k in range(1, 6)] + [
+    ("robustness", fig_robustness),
+    ("cost", fig_cost),
+] + [(a["name"], functools.partial(fig_application, i))
+     for i, a in enumerate(APPLICATIONS)] + [
     ("next-module", fig_next_module),
 ]

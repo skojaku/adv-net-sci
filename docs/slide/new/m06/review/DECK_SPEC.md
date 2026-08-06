@@ -1,7 +1,7 @@
 # m06 "All Roads Lead to Rome" — deck spec
 
 Slide-by-slide plan for `m06-centrality.md`, expanded from `plan.md`.
-Sessions 10/14 (Parts 1–4) and 10/16 (Parts 5–8). **88 slides.**
+Sessions 10/14 (Parts 1–4) and 10/16 (Parts 5–8). **101 slides as built.**
 
 Every number below was printed out of `figures/verify_numbers.py` before it was written
 here, and the figure generator imports the same functions rather than repeating a value.
@@ -40,6 +40,28 @@ type / 15.5 px x-height on the slide. Height caps: 380 px (`.fig`), 320 px (`.fi
 190 px (`.fig stack`).
 
 ---
+
+# THREE DECISIONS TAKEN DURING THE BUILD, AND WHY
+
+Recorded here because each of them departs from `plan.md`, and the next person
+should see the reason rather than rediscover it.
+
+**1. The crown does not move on the Roman map, and the deck says so.** See below.
+
+**2. Every Roman-map figure is full width, and the deck stacks text above it.**
+`plan.md` assumed the house two-column pattern. It is not available for this map:
+twelve cities with names like "Thessalonica" cannot be labelled at the 36 pt
+in-figure type floor inside a 537 px column — on a true longitude/latitude
+projection they cannot be labelled at 1080 px either, and three cities have zero
+collision-free sides before any other label is placed. The map's coordinates
+therefore come from an annealing search (planarity, disc clearance and
+label-solvability hard; geographic faithfulness the objective), the theme gained a
+`.fig tall` modifier measured against a real render, and the map slides carry one
+line of text above the figure instead of a column beside it.
+
+**3. The crown-summary figure is one map, not a six-panel build.** The deck has
+already shown each metric map on its own slide; replaying all six adds five slides
+and no information. The closing figure shows the one fact they share.
 
 # THE DECISION THAT RESHAPED THE PLAN
 

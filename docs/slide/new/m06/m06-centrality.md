@@ -274,6 +274,25 @@ That is **degree centrality**, and it is the whole definition.
 
 ---
 
+## Your turn: count them
+
+<hr>
+
+Count the roads at **Rome**. Then at **Alexandria**. Call both numbers out.
+
+<div class="fig tall">
+
+![w:1080](figures/roma-graph.png)
+<figcaption>no shading, no crown — just the map</figcaption>
+
+</div>
+
+<!--
+Thirty seconds. Two numbers from the room before the next slide. Somebody will miscount Rome as four by missing the sea lane to Alexandria, which is worth catching out loud.
+-->
+
+---
+
 ## The first crown
 
 <hr>
@@ -1530,8 +1549,8 @@ With $A$ symmetric, $A^{\top}A = A^2$, so $A^{\top} A\, c = \lambda^2 c$: the sa
 
 <div class="fig tall">
 
-![w:1080](figures/hits-collapses.png)
-<figcaption>hub score, authority score and eigenvector centrality — one shading, because they are one vector</figcaption>
+![w:1080](figures/roma-eigenvector.png)
+<figcaption>this is the Part Five picture, unchanged — hub score and authority score are that same vector</figcaption>
 
 </div>
 
