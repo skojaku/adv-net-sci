@@ -111,6 +111,22 @@ def labels(parts, n):
     return [next(i for i, c in enumerate(parts) if x in c) for x in range(n)]
 
 
+def bell(n):
+    """Ways to partition n labelled items into any number of groups (Bell triangle).
+
+    The tempting slide line is "more ways than atoms in the universe". B(34) is
+    2.1e28 and the observable universe holds ~1e80 atoms, so the comparison is false
+    and the deck does not make it.
+    """
+    row = [1]
+    for _ in range(n):
+        nxt = [row[-1]]
+        for x in row:
+            nxt.append(nxt[-1] + x)
+        row = nxt
+    return row[0]
+
+
 def best_louvain(g, seeds=200):
     """The best partition Louvain reaches, and every distinct one it produced."""
     seen = {}
@@ -304,6 +320,9 @@ def facts():
     assert out["louvain_nmi"] < out["mincut_nmi"], (
         "the point of the ending: the higher-scoring partition matches reality less well")
 
+    out["bell"] = {n: bell(n) for n in (5, 10, 20, 34)}
+    assert 2e28 < out["bell"][34] < 2.2e28, "the Part 5 slide states 2e28"
+
     out["distinct_partitions"] = len({k for k, _ in ranked})
     alt = next((list(k), q) for k, q in ranked if abs(q - QL4) > 1e-9 and QL4 - q < 0.006)
     out["degenerate_alt_Q"] = alt[1]
@@ -424,6 +443,8 @@ def main():
     p(f"  best Q {f['louvain_Q']:.4f} with {len(f['louvain_parts'])} communities, "
       f"sizes {f['louvain_sizes']}")
     p(f"    vs the real split: NMI {f['louvain_nmi']:.4f}  ARI {f['louvain_ari']:.4f}")
+    p("  ways to partition n people: "
+      + ", ".join(f"B({n})={v:.3g}" for n, v in f["bell"].items()))
     p(f"  {f['distinct_partitions']} distinct partitions from 200 Louvain runs")
     p(f"  runner-up Q {f['degenerate_alt_Q']:.4f} (gap "
       f"{f['louvain_Q'] - f['degenerate_alt_Q']:.4f}), moves nodes "
