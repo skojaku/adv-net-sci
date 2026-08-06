@@ -681,22 +681,22 @@ def sketch(cx, cy, nodes, edges, key, name, ring_key=True, dashed=()):
 # purpose -> the metrics that answer it. The five pairings of DECK_SPEC slide 85,
 # each drawn as its own thumbnail so the slide cannot read as a table.
 PURPOSE = [
-    dict(sx=70, sy=250, tx=138, anchor="west", purpose="popular", metric="degree",
+    dict(sx=70, sy=250, tx=140, anchor="west", purpose="popular", metric="degree",
          nodes=[(0, 0), (38, 0), (12, 36), (-31, 22), (-31, -22), (12, -36)],
          edges=[(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)], key=0),
-    dict(sx=350, sy=250, tx=415, anchor="west", purpose="efficient",
-         metric="closeness,\\\\harmonic",
+    dict(sx=372, sy=250, tx=442, anchor="west", purpose="efficient",
+         metric="closeness\\\\harmonic",
          nodes=[(-42, -32), (-21, -5), (0, 22), (21, -5), (42, -32)],
          edges=[(0, 1), (1, 2), (2, 3), (3, 4)], key=2),
-    dict(sx=955, sy=250, tx=890, anchor="east", purpose="critical",
-         metric="betweenness,\\\\eccentricity",
+    dict(sx=966, sy=250, tx=900, anchor="east", purpose="critical",
+         metric="betweenness\\\\eccentricity",
          nodes=[(-40, 24), (-40, -24), (0, 0), (40, 24), (40, -24)],
          edges=[(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4)], key=2),
-    dict(sx=180, sy=100, tx=248, anchor="west", purpose="influential",
+    dict(sx=180, sy=100, tx=250, anchor="west", purpose="influential",
          metric="eigenvector,\\\\Katz, PageRank",
          nodes=[(16, 24), (16, -24), (40, 0), (-16, 0), (-40, 28)],
          edges=[(0, 1), (0, 2), (1, 2), (3, 0), (3, 1), (4, 3)], key=0),
-    dict(sx=965, sy=100, tx=900, anchor="east", purpose="personalized",
+    dict(sx=966, sy=100, tx=900, anchor="east", purpose="personalized",
          metric="personalized\\\\PageRank",
          nodes=[(-38, 0), (0, 28), (0, -28), (38, 24), (38, -24)],
          edges=[(0, 1), (0, 2), (1, 3), (2, 4), (3, 4)], key=0,
@@ -707,8 +707,9 @@ PURPOSE = [
 def _purpose_boxes():
     out = []
     for i, it in enumerate(PURPOSE):
-        pb = F.label_box(it["tx"], it["sy"] + 38, it["purpose"], it["anchor"])
-        mb = F.label_box(it["tx"], it["sy"] - 20, it["metric"], it["anchor"])
+        pb = F.label_box(it["tx"], it["sy"] + 50, it["purpose"], it["anchor"])
+        mb = F.label_box(it["tx"], it["sy"] - 26, it["metric"], it["anchor"])
+        assert not F.boxes_overlap(pb, mb), f"purpose-{i + 1}: the two lines overlap"
         out.append((i, pb, mb))
     return out
 
@@ -737,9 +738,9 @@ def fig_purpose(step):
                 assert not F.boxes_overlap(b, sb), \
                     f"the purpose-{i + 1} caption lands on thumbnail {j + 1}"
     for i, it in enumerate(PURPOSE[:step]):
-        body += F.text(it["tx"], it["sy"] + 38, it["purpose"], color="black",
+        body += F.text(it["tx"], it["sy"] + 50, it["purpose"], color="black",
                        anchor=it["anchor"])
-        body += F.text(it["tx"], it["sy"] - 20, it["metric"], color=A2,
+        body += F.text(it["tx"], it["sy"] - 26, it["metric"], color=A2,
                        anchor=it["anchor"])
     F.emit(f"purpose-{step}", body, container="full", h=CANVAS_H)
 
@@ -770,7 +771,7 @@ def fig_robustness():
     assert dict(ROBUST)["degree"] == 1.0 > dict(ROBUST)["eigenvector"] == 0.792
     assert [m for m, _ in ROBUST] == sorted([m for m, _ in ROBUST],
                                             key=lambda m: -dict(ROBUST)[m])
-    x0, x1, ay = 410.0, 960.0, 62.0
+    x0, x1, ay = 410.0, 930.0, 62.0
     body = F.seg((x0, ay), (x1, ay), color="black", w=2.2)
     for v in (0.0, 0.5, 1.0):
         x = x0 + v * (x1 - x0)

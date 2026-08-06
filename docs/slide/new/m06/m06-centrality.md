@@ -1991,16 +1991,38 @@ Module 04's friendship paradox, used deliberately: ask a random person to name a
 
 ---
 
-## Two more
+## Defending infrastructure
 
 <hr>
 
 <div class="cols">
 <div>
 
-**Defending infrastructure** — Module 03 showed networks die fastest when the attacker targets well. So does the defender.
+Module 03 showed that a network dies fastest when the attacker chooses well.
 
-**Systemic risk** — a bank that is not large can still be the one every exposure runs through.
+The defender reads the same ranking. **Betweenness** names the substations whose loss splits the grid, not the ones with the most cables.
+
+</div>
+<div class="fig">
+
+![w:537](figures/applications-2.png)
+<figcaption>the nodes worth hardening first</figcaption>
+
+</div>
+</div>
+
+---
+
+## Systemic risk
+
+<hr>
+
+<div class="cols">
+<div>
+
+A bank that is not large can still be the one every exposure runs through.
+
+Regulators score institutions on their **position**, not their balance sheet — which is a centrality, chosen for a purpose.
 
 </div>
 <div class="fig">

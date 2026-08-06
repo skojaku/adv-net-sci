@@ -641,3 +641,28 @@ c19 s68 · c20 s69 · c21 s76 · c22 s79 · c23 s81 · c24 s85 · c25 s90 · c26
 c28 s25 · c29 s73 · c30 s81
 
 Nothing is left off the slides.
+
+---
+
+# KNOWN DEVIATIONS FROM plan.md, AND WHAT WAS SHIPPED INSTEAD
+
+Listed so the next round does not spend time rediscovering them.
+
+- **The power-iteration slider (plan.md milestone P5) was not built.** The deck
+  ships `power-iteration.gif` plus the "step one is degree" slide. A slider only
+  exists in the `--html` export, which `check_render.py` never exercises, so it
+  cannot be shipped without driving the real control in a browser and confirming
+  it runs — and `DECK_BUILD_GUIDE.md` is explicit that checking the `<script>`
+  survived the export is not the same as checking that it runs. Part 5 still meets
+  S5 through the animation and the "describe a network where this breaks"
+  discussion. **If this is picked up, the data is already in
+  `verify_numbers.POWER_TRACE` and the GIF is generated from it, so the two cannot
+  drift.**
+- **No marimo demo**, per `plan.md`.
+- **No day-2 recap slide**, per `plan.md` — Part 5 restarts from its divider.
+- **The eccentricity crown is shared three ways** rather than being Rome's alone.
+  That is the data, and the deck uses it as the first crack rather than hiding it.
+- **`hits-collapses.png` was cut.** It rendered byte-identical to
+  `roma-eigenvector.png` — which is the theorem, not a bug — so the Part 7 slide
+  reuses the Part 5 figure and its caption says why. The identity is still
+  asserted in `figs_rome.check_hits_collapses`.

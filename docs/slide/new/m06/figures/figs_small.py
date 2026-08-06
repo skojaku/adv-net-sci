@@ -267,14 +267,18 @@ def fig_club_three_kings():
 def fig_degree_count():
     """One node, five edge ends, each end ticked. Degree counts ends, not neighbours."""
     start_log()
-    # Five spokes 72 deg apart on a wide ellipse: even spacing keeps the five ticks
-    # from bunching into one red smear at the hub, and the ellipse (not a circle) is
-    # what gets the ink across 76% of the canvas inside the height cap.
-    cx, cy, rx, ry = 560, 175, 440, 120
+    # The direction of each spoke is chosen in DRAWING space, with its own length,
+    # rather than by putting five nodes on an ellipse: an ellipse wide enough for the
+    # ink-span gate squashes 60 deg of angle down to 28, and the two left-hand ticks
+    # rendered as one bracket. Here no two spokes leave the hub less than 60 deg
+    # apart, so the five ticks are five ticks.
+    cx, cy = 560, 175
+    spokes = [(0, 460), (60, 150), (120, 150), (180, 460), (270, 130)]
+    assert min((b[0] - a[0]) % 360 for a, b in zip(spokes, spokes[1:] + spokes[:1])) >= 60
     pos = {"c": (cx, cy)}
-    for i in range(5):
-        a = math.radians(72 * i)
-        pos[f"n{i}"] = (cx + rx * math.cos(a), cy + ry * math.sin(a))
+    for i, (deg, L) in enumerate(spokes):
+        a = math.radians(deg)
+        pos[f"n{i}"] = (cx + L * math.cos(a), cy + L * math.sin(a))
     edges = [("c", f"n{i}") for i in range(5)]
     F.assert_planar_drawing(edges, pos, "degree-count")
     k = len(edges)
@@ -291,8 +295,8 @@ def fig_degree_count():
                    color=RED, w=5.5)
     b += discs_ink({n: p for n, p in pos.items() if n != "c"})
     b += F.disc(cx, cy, "", fill="accent", size=52)
-    b += T(cx, 340, f"{k} edge ends, so degree {k}", color=RED)
-    F.emit("degree-count", b, container="full", h=400)
+    b += T(cx, 350, f"{k} edge ends, so degree {k}", color=RED)
+    F.emit("degree-count", b, container="full", h=410)
 
 
 # =============================================================================
