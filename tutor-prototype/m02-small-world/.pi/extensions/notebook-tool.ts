@@ -2369,10 +2369,48 @@ export default function (pi: ExtensionAPI) {
         modelSlotIdx.length < markers.length && givenSlots.length === modelSlotIdx.length;
       const modelFill = (i: number) =>
         compactFills ? (givenSlots[modelSlotIdx.indexOf(i)] ?? "") : (givenSlots[i] ?? "");
+      // A model-filled slot describes a picture, so its prose is the tutor's.
+      // Anything it puts in QUOTATION MARKS is still the student's, and a
+      // live run put three different spellings of one sentence into the
+      // record — student_response, the transcript capture, and a note cell
+      // reading "becuase tirangles are im[portat]", brackets and all. A quote
+      // that is a near-copy of something they typed is replaced with what
+      // they actually typed; a quote of three words or more that matches
+      // nothing they said is refused, like any other invented content.
+      const quotesSnapped: string[] = [];
+      const quotesInvented: string[] = [];
+      const fixQuotes = (fill: string): string =>
+        fill.replace(/[\u201C"]([^\u201D"]{4,})[\u201D"]/g, (whole, inner: string) => {
+          const text = inner.trim();
+          let best = "";
+          let score = 0;
+          for (const msg of said) {
+            const d = bigramDice(text, msg);
+            if (d > score) {
+              score = d;
+              best = msg;
+            }
+          }
+          if (score >= 0.8 && best && normMsg(best) !== normMsg(text)) {
+            quotesSnapped.push(text);
+            return `\u201C${best}\u201D`;
+          }
+          // Short quotes are labels and readings ("2.07", "long"), not speech.
+          if (score < 0.5 && text.split(/\s+/).filter(Boolean).length >= 3) {
+            quotesInvented.push(text);
+          }
+          return whole;
+        });
       const filledSlots = markers.map((m, i) =>
-        /verbatim/i.test(m) ? verbatimFill : modelFill(i),
+        /verbatim/i.test(m) ? verbatimFill : fixQuotes(modelFill(i)),
       );
       const problems: string[] = [];
+      if (said.length > 0 && quotesInvented.length > 0) {
+        problems.push(
+          `these are in quotation marks in a note slot but the student never said them: ` +
+            quotesInvented.map((q) => `"${q}"`).join(", "),
+        );
+      }
       // One fill per slot. The skeletons ask for a slot per part of the ask
       // precisely so the keepsake quotes the ANSWER and not whichever
       // fragment came last — under-filling turns that back into one sentence
@@ -2614,6 +2652,7 @@ export default function (pi: ExtensionAPI) {
         ...(picked.length > 0 ? { student_picked: picked } : {}),
         ...(responseSnappedFrom ? { response_retyped_as: responseSnappedFrom } : {}),
         ...(photoMissing ? { photo_missing: true } : {}),
+        ...(quotesSnapped.length ? { slot_quotes_repaired: quotesSnapped } : {}),
         ...(quotesMsgs.length ? { note_quotes_msgs: quotesMsgs } : {}),
         ...(skippedMsgs.length ? { note_skipped_msgs: skippedMsgs } : {}),
         ...(figuresDropped.length ? { figures_not_quoted: figuresDropped } : {}),
@@ -2824,10 +2863,25 @@ export default function (pi: ExtensionAPI) {
         // answer, gone from the note, on the checkpoint that was about
         // counting. Any figure in the residue, or three content words of
         // it, means this message is carrying more than the question.
-        const qTok = new Set(normMsg(question).split(" ").filter(Boolean));
-        const residue = normMsg(asked)
-          .split(" ")
-          .filter((t) => t && !qTok.has(t));
+        const qNormFull = normMsg(question);
+        const aNorm = normMsg(asked);
+        // WHERE the leftovers sit decides what they are. A lead-in runs
+        // BEFORE the question ("wait, quick question before I do the average
+        // — does it matter which direction…"), and a live run lost that whole
+        // checkpoint's note to it: four content words in the run-up read as
+        // an answer. What comes AFTER is the half that is usually an answer.
+        // Either way a figure anywhere in the leftovers means graded content,
+        // and the message stays whole.
+        const at = qNormFull ? aNorm.indexOf(qNormFull) : -1;
+        const tokensOf = (t: string) => t.split(" ").filter(Boolean);
+        const before = at >= 0 ? tokensOf(aNorm.slice(0, at)) : [];
+        const after = at >= 0 ? tokensOf(aNorm.slice(at + qNormFull.length)) : [];
+        const qTok = new Set(tokensOf(qNormFull));
+        const residue =
+          at >= 0 ? [...before, ...after] : tokensOf(aNorm).filter((t) => !qTok.has(t));
+        // Only the trailing half is weighed by length; a lead-in is judged on
+        // figures alone.
+        const weighed = at >= 0 ? after : residue;
         const HEDGE_WORDS = new Set([
           "wait", "hang", "hold", "sorry", "ok", "okay", "hmm", "hmmm", "umm", "um",
           "oh", "ohh", "quick", "random", "side", "topic", "off", "exactly", "just",
@@ -2836,7 +2890,7 @@ export default function (pi: ExtensionAPI) {
         ]);
         const carriesMore =
           residue.some((t) => /\d/.test(t)) ||
-          residue.filter((t) => !HEDGE_WORDS.has(t) && !SLOT_GLUE.has(t)).length >= 3;
+          weighed.filter((t) => !HEDGE_WORDS.has(t) && !SLOT_GLUE.has(t)).length >= 3;
         if (
           bestIdx >= 0 &&
           !carriesMore &&
