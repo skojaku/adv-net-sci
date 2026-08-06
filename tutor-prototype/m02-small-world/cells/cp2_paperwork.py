@@ -22,9 +22,18 @@ mo.vstack([
     ),
 ])
 # --- cell: cp2_paperwork_photo_preview ---
+from pathlib import Path as _P
+
 _files = list(cp2_paperwork_photo.value or [])
+# A photo already saved means this session is over and someone is reading
+# the notebook. The drop box cannot remember the file across a restart, but
+# the saved copy is two cells below — so "your photo appears here once you
+# drop it in" was simply false to every later reader.
+_done = not _files and _P("assets/uploads/cp2_paperwork_photo_view.jpg").exists()
 cp2_paperwork_photo_send = mo.ui.run_button(label="📨 Send to my tutor", disabled=not _files)
-if not _files:
+if _done:
+    _out = mo.md("")
+elif not _files:
     _out = mo.vstack([
         mo.md(
             "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
@@ -45,16 +54,24 @@ else:
     ])
 _out
 # --- cell: cp2_paperwork_photo_sent ---
+from pathlib import Path as _P
+
+# Recomputed, not borrowed: a name starting with "_" is private to its cell
+# in marimo, so the preview cell's copy is not visible here.
+_done = not (cp2_paperwork_photo.value or []) and _P("assets/uploads/cp2_paperwork_photo_view.jpg").exists()
 if cp2_paperwork_photo_send.value and (cp2_paperwork_photo.value or []):
-    from pathlib import Path as _P
 
     _P("session_artifacts").mkdir(exist_ok=True)
     with open("session_artifacts/student_signal.txt", "a") as _f:
         _f.write("cp2_paperwork_photo\n")
     _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
 else:
-    _sent = mo.md(
-        "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
-        "when the photo looks right — that is what tells your tutor to look.*</span>"
+    _sent = (
+        mo.md("")
+        if _done
+        else mo.md(
+            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        )
     )
 _sent

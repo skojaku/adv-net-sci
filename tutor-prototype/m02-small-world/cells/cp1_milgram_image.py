@@ -14,7 +14,7 @@ mo.vstack([
         "Nebraska, and has to reach one named stockbroker near Boston. Nobody "
         "may post it directly: each holder passes it to a single person they "
         "know on a first-name basis and who they think sits closer to the "
-        "target. Each arrow is one such hand-off. The experiment counts the "
-        "arrows.</span>"
+        "target. Each arrow is one such hand-off. The drawing shows the idea, "
+        "not the result.</span>"
     ),
 ])

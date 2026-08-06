@@ -118,10 +118,23 @@ function render({ model, el }) {
     .attr("r", d => d.r || 16)
     .attr("fill", d => d.color || "#35577F")
     .attr("stroke", "#1D1E21").attr("stroke-width", 1);
+  // Label ink follows the fill. White was hardcoded, which is 1.25:1 on the
+  // neutral #E4E6EA and 2.93:1 on amber — so on cp2's ripple three of four
+  // labels were invisible, including the D the question is about, and on
+  // cp5's ring the amber friends were the least legible nodes in the figure.
+  const inkFor = (hex) => {
+    const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+    if (!m) return "#FFFFFF";
+    const n = parseInt(m[1], 16);
+    const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+    // Contrast against white vs against the module's text ink.
+    return (1.05 / (L + 0.05)) >= 4.5 ? "#FFFFFF" : "#35373C";
+  };
   node.append("text")
     .text(d => d.label ?? d.id)
     .attr("text-anchor", "middle").attr("dy", "0.35em")
-    .attr("fill", "#FFFFFF")
+    .attr("fill", d => inkFor(d.color || "#35577F"))
     .style("font", "600 12px 'IBM Plex Sans', sans-serif")
     .style("pointer-events", "none");
 

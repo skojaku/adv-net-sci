@@ -16,5 +16,13 @@ mo.vstack([
         "\"my friends know each other\". Find them and count them yourself. "
         "Dots are drag-able if the picture gets tangled.</span>"
     ),
-    netviz(_edges, highlight=_friend_edges, node_colors={"A": "#B4552D"}),
+    # A really IS in the middle — the caption and the describe line both say
+    # so, and the default circle layout put it on the ring at the top, where
+    # a reader hunting for a central rust dot found a hexagon.
+    netviz(
+        _edges,
+        highlight=_friend_edges,
+        node_colors={"A": "#B4552D"},
+        layout={"A": (0.5, 0.5), "B": (0.5, 0.14), "C": (0.842, 0.389), "D": (0.712, 0.791), "E": (0.288, 0.791), "F": (0.158, 0.389)},
+    ),
 ])
