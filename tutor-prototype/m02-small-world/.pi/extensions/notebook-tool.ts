@@ -706,10 +706,17 @@ function tutorAwaitingAnswer(ctx: any): string {
       // — so the line ended in a full stop, the guard stayed quiet, and the
       // picker ate the answer exactly as before. Take the last sentence that
       // IS a question.
-      if (!last.includes("?")) return "";
-      const upTo = last.slice(0, last.lastIndexOf("?") + 1);
-      const sentences = upTo.split(/(?<=[.!?])\s+/).filter(Boolean);
-      return (sentences.pop() ?? upTo).trim();
+      // A question the tutor QUOTES is not a question it is waiting on:
+      // `You wrote "is it 6?" earlier.` fired the guard and reported the
+      // fragment `you just asked "You wrote "`. Mask quoted spans (same
+      // length, so offsets still line up) before looking for the "?".
+      const masked = last.replace(/[\u201C"][^\u201D"]*[\u201D"]/g, (m) => " ".repeat(m.length));
+      if (!masked.includes("?")) return "";
+      const end = masked.lastIndexOf("?") + 1;
+      const upTo = last.slice(0, end);
+      const parts = masked.slice(0, end - 1).split(/(?<=[.!?])\s+/);
+      const startAt = parts.length > 1 ? upTo.length - parts[parts.length - 1].length - 1 : 0;
+      return upTo.slice(Math.max(0, startAt)).trim();
     }
   } catch {
     /* a transcript we cannot read never blocks a close */
@@ -1106,8 +1113,11 @@ const ACK_WORDS = new Set(
     // be nice" — is not the student's work, and a live run left it sitting in
     // the note between two real answers. `yes` and `no` stay OUT: they can be
     // the answer to a lesson question.
-    "would could should will do does did a an the be is are quick note maybe bit little " +
-    "one that this these those").split(" "),
+    // `this`, `that`, `one` are NOT here: "this one", answering "which of the
+    // two worlds do you live in?", is half an answer, and adding them deleted
+    // it from the keepsake while the student's reason survived.
+    "would could should will do does did a an the be is are quick note maybe bit little")
+    .split(" "),
 );
 const normMsg = (m: string) =>
   m
