@@ -98,9 +98,11 @@ def fig_harmonic_idea():
 # three crowned students, without the network. Used beside the day-one closing
 # text, where there is no room for thirteen names.
 def fig_club_three_kings_small():
+    # Third mark is BLACK, not accent: a blue ring on a blue disc is invisible,
+    # and blue text is the theme's structural colour rather than an emphasis.
     who = [(CLUB_SPREAD[0], "spreads the news fastest", ACCENT2),
            (CLUB_CLOSE[0], "closest to everyone else", ACCENT3),
-           (CLUB_BROKER[0], "coordinates all the clubs", ACCENT)]
+           (CLUB_BROKER[0], "coordinates all the clubs", "black")]
     assert len({w[0] for w in who}) == 3
     b = ""
     y = 250.0
@@ -109,8 +111,7 @@ def fig_club_three_kings_small():
         b += (f"\\draw[line width=5bp,draw={colour},fill=accent] (32,{y}) "
               f"circle ({F.NODE / 2}bp);\n")
         b += text(70, y + 14, f"{name} — {deg} friends", color="black", anchor="west")
-        b += text(70, y - 20, job, color=colour if colour != ACCENT3 else GRAY,
-                  anchor="west")
+        b += text(70, y - 20, job, color=GRAY, anchor="west")
         y -= 105
     emit("club-three-kings-small", b, container="col", h=320)
 
