@@ -149,7 +149,49 @@ def _solve_near():
         F.SIDES[:] = saved
 
 
-LABEL_SIDES, LABEL_BOXES = _solve_near()
+def _edge_hits(box):
+    return sum(1 for a, b in EDGES if F.box_hits_segment(box, NODE_XY[a], NODE_XY[b]))
+
+
+def _fewest_crossings(sides, boxes):
+    """Among the feasible side assignments, prefer the one crossing fewest roads.
+
+    The solver returns the first assignment that fits, and "fits" here ignores the
+    edges -- there is no assignment that clears them. But some assignments cross
+    six roads and some cross two, and every crossing is a road chopped into stubs
+    by the label's halo. So take the first solution and hill-climb it: for each
+    name in turn, keep the side that hits fewest edges while staying feasible.
+    """
+    sides, boxes = dict(sides), dict(boxes)
+    for _ in range(4):
+        improved = False
+        for n in CITIES:
+            best, best_hits = sides[n], _edge_hits(boxes[n])
+            best_box = boxes[n]
+            for side in _NEAR_SIDES:
+                anc, dx, dy = side
+                b = F.label_box(NODE_XY[n][0] + dx, NODE_XY[n][1] + dy, n, anc)
+                b = (b[0] - 3.0, b[1] - 3.0, b[2] + 3.0, b[3] + 3.0)
+                if not (BAND[0] <= b[0] and b[2] <= BAND[2]
+                        and BAND[1] <= b[1] and b[3] <= BAND[3]):
+                    continue
+                if any(F.box_hits_disc(b, x, y) for x, y in NODE_XY.values()):
+                    continue
+                if any(F.boxes_overlap(b, o) for k, o in boxes.items() if k != n):
+                    continue
+                h = _edge_hits(b)
+                if h < best_hits:
+                    best, best_hits, best_box = side, h, b
+            if best is not sides[n] and best != sides[n]:
+                sides[n], boxes[n] = best, best_box
+                improved = True
+        if not improved:
+            break
+    return sides, boxes
+
+
+LABEL_SIDES, LABEL_BOXES = _fewest_crossings(*_solve_near())
+LABEL_EDGE_HITS = sum(_edge_hits(b) for b in LABEL_BOXES.values())
 assert all(max(abs(dx), abs(dy)) <= 26 for _, dx, dy in LABEL_SIDES.values()), \
     "a name drifted onto the far ring -- it would no longer read as that city's"
 
@@ -213,17 +255,24 @@ def discs(scores=None):
 
 
 def crowns(cities, color=ACCENT2):
-    """An accent-2 ring plus a crown glyph, on every city that holds the maximum.
+    """A heavy accent-2 border plus a crown glyph, on every city holding the max.
 
     A shared crown is a real answer -- eccentricity crowns three cities -- so this
     takes a list and draws all of them. Drawing one where the data has three would
     be a false claim on the slide.
+
+    A separate RING around the disc was drawn here first and had to go. The render
+    gate masks node fill colours and then fills holes, so a disc sitting inside an
+    accent-2 ring reads to it as one 57 px disc, and every crowned slide in the
+    deck failed the 26-52 px band at once. A heavy border on the disc itself says
+    exactly the same thing and leaves the disc the size it actually is.
     """
     out = ""
     for c in cities:
         x, y = NODE_XY[c]
-        out += F.ring(x, y, size=F.NODE, color=color, w=4.0, grow=13)
-        out += _crown_glyph(x, y + F.NODE / 2 + 26, color)
+        out += (f"\\draw[line width=5bp,draw={color}] ({x:.2f},{y:.2f}) "
+                f"circle ({F.NODE / 2}bp);\n")
+        out += _crown_glyph(x, y + F.NODE / 2 + 20, color)
     return out
 
 

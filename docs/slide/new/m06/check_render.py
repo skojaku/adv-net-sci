@@ -16,6 +16,7 @@ This runs after marp and fails the build on what a student actually sees.
 """
 
 import glob
+import os
 import re
 import sys
 from collections import deque
@@ -426,6 +427,13 @@ def main():
           srcs, in_cols, hcap = figs[n]
           for src in srcs:
             container = COL_W if in_cols else FULL_IMG_W
+            # A missing figure used to crash the gate with a traceback, which reads
+            # as "the checker is broken" rather than "the deck references a file
+            # nobody generated". It is a build failure like any other.
+            if not os.path.exists(src):
+                fails.append(f"slide {n:03d}: {src} is referenced by the deck but "
+                             f"does not exist")
+                continue
             ext = drawing_extent(src, container, hcap)
             if ext is None:
                 fails.append(f"slide {n:03d}: {src} is blank")

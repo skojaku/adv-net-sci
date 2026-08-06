@@ -845,3 +845,24 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# =============================================================================
+# 13. Claims the deck's prose makes, checked here so the slide cannot drift
+# =============================================================================
+def _slide_claims():
+    import collections
+    d = dict(nx.single_source_shortest_path_length(ROMA, "Massilia"))
+    hist = collections.Counter(v for k, v in d.items() if k != "Massilia")
+    return {
+        # "Three cities one step away, five at two steps, three at three ... sum 22"
+        "massilia_hist": (hist[1], hist[2], hist[3]),
+        "massilia_sum": sum(v for k, v in d.items() if k != "Massilia"),
+        "roma_sum": sum(v for k, v in nx.single_source_shortest_path_length(ROMA, "Roma").items()),
+    }
+
+
+SLIDE_CLAIMS = _slide_claims()
+assert SLIDE_CLAIMS["massilia_hist"] == (3, 5, 3), SLIDE_CLAIMS
+assert SLIDE_CLAIMS["massilia_sum"] == 22
+assert SLIDE_CLAIMS["roma_sum"] == 18

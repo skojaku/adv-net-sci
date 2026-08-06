@@ -205,6 +205,45 @@ the number the sentence wanted.
 This is the same failure as picking a flattering random seed, one level up. Both choose the
 evidence.
 
+### A tripwire must not encode the conclusion
+
+Having derived that band from the data, the generator then grew a guard against the number
+going stale:
+
+    assert BAND_DECADES >= 1.0, "under one decade the deck cannot say ..."
+
+The intent was right and the threshold was picked *after* seeing the answer come out at
+1.18. An assertion cannot say "rewrite the sentence"; it can only fail the build. So if a
+better sweep had put the honest band at 0.9 decades, the build would have broken and the
+cheapest way to make it pass would have been to move the criterion until the number was a
+decade again — the same disease as widening the band, with the sign flipped: *assert that
+the data must permit the sentence.*
+
+Pin the tripwire to the value the prose was actually written to, so it fires on movement in
+**either** direction and names the prose as the thing to update:
+
+    # slide 76's sentence is written to this number. If the sweep, the criterion or the
+    # edge rule changes, this fires -- update the sentence and this constant together.
+    # Do NOT satisfy it by moving the band.
+    DECK_BAND_DECADES = 1.18
+    assert abs(BAND_DECADES - DECK_BAND_DECADES) < 0.05, ...
+
+That version cannot be satisfied by moving the drawing. Worth knowing that this defect
+arrived inside a safeguard written against the very defect it reproduced, and that it was a
+reviewer who spotted it, not the author.
+
+### When two readings of the same data disagree, suspect the sampling
+
+The same band could be read two ways — snap the edges to the sampled points (0.67 decades)
+or solve the drawn polyline for its threshold crossings (1.18 decades). Both readings were
+argued well and they differ by a factor of three. Neither was the answer: the sweep was 13
+points over four decades, one per third of a decade, and the whole disagreement was an
+artefact of that spacing. Resampling finely enough that the two readings converge dissolves
+the question instead of adjudicating it.
+
+The tell is that the argument is about *how to read* the data rather than about what the
+data says.
+
 ### Measure the render. Never compute what you can measure.
 
 Module 02's generator asserted in-figure text size as `FONT * CAP_RATIO * scale` — three

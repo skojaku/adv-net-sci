@@ -947,11 +947,14 @@ def fig_routing_vs_existence():
         hot = (a, b) in route
         s += seg(pos[a], pos[b], color="accenttwo" if hot else "annot",
                  w=HEAVY_W if hot else EDGE_W)
+    # Every ordinary node is a white circle, including the two inside the box.  They were
+    # accent blue while all the others were white, which inverts the deck's own
+    # convention -- blue is an ordinary node on all sixty-odd other figures -- so the one
+    # slide that colours the visible ones differently teaches "blue means visible" for
+    # exactly one slide.  The dashed box already says what is visible.
     for i, p in pos.items():
         if i in (0, 8):
             s += disc(p[0], p[1], "", fill="accenttwo")
-        elif i in (1, 2):
-            s += disc(p[0], p[1], "", fill="accent")
         else:
             s += (f"\\draw[line width=2.6bp,draw=annot,fill=white] ({p[0]},{p[1]}) "
                   f"circle ({NODE / 2}bp);\n")
@@ -967,8 +970,15 @@ CHAIN_POS = {i: (95 + i * 152, 150) for i in range(7)}   # fixed once: the graph
 
 
 def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all=False,
-           name_col=None, pos=CHAIN_POS, edge_num=False, curve=True):
-    """The Milgram acquaintance graph. One routine, so the geometry cannot drift."""
+           name_col=None, pos=CHAIN_POS, edge_num=False, curve=True, bends=None,
+           out_paths=None):
+    """The Milgram acquaintance graph. One routine, so the geometry cannot drift.
+
+    `out_paths`, when given, is filled with every drawn edge as a sampled polyline, so a
+    caller that also prints type can hand the two to `assert_labels_clear`.  Without it
+    the occupation names below the graph were unchecked, and the shortcut arc shipped
+    through the feet of "teacher" and "printer" on two slides.
+    """
     s = ""
     paths = []
     order = [e for e in edges if e in CHAIN_EDGES] + [e for e in edges if e not in CHAIN_EDGES]
@@ -976,7 +986,7 @@ def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all
         col = hot_col if (a, b) in hot else "black"
         w = HEAVY_W if ((a, b) in hot or heavy_all) else EDGE_W
         if curve and (b - a) > 1:
-            bend = 60 if (a, b) == CHORD else -34
+            bend = (bends or {}).get((a, b), 60 if (a, b) == CHORD else -34)
             paths.append((a, b, bend_path(pos[a], pos[b], bend)))
             s += (f"\\draw[line width={w}bp,draw={col}] ({pos[a][0]},{pos[a][1]}) "
                   f"to[bend left={bend}] ({pos[b][0]},{pos[b][1]});\n")
@@ -986,6 +996,8 @@ def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all
     # file used to be blind to; sampled, they are checked like anything else.
     assert not clearance_ok(edges, pos, paths=paths), clearance_ok(edges, pos, paths=paths)
     assert_drawn_planar("milgram chain", edges, pos, paths)
+    if out_paths is not None:
+        out_paths.extend(_edge_paths(edges, pos, paths))
     for i in pos:
         s += disc(pos[i][0], pos[i][1], labels[i] if labels else "",
                   fill="accenttwo" if i in ringed else "accent")
@@ -996,19 +1008,47 @@ def _chain(edges, labels=None, hot=(), hot_col="accenttwo", ringed=(), heavy_all
     return s
 
 
-def _names(pos=CHAIN_POS, col="annot", dy=-34, highlight=None):
+def _names(pos=CHAIN_POS, col="annot", dy=-34, highlight=None, paths=()):
     """`highlight` is opt-in: on every Part Two figure accent-2 is already carrying the
     chord, the shortcut, the edge counters or the diameter route, and a permanently red
-    seventh name made the colour mean two things in one picture."""
-    return "".join(text(pos[i][0], pos[i][1] + dy, NAMES[i],
-                        color="accenttwo" if i == highlight else col, anchor="north")
-                   for i in range(7))
+    seventh name made the colour mean two things in one picture.
+
+    `paths` is the drawn geometry from `_chain`, checked against every name box.  Pass it.
+    """
+    s, boxes = "", {}
+    for i in range(7):
+        x, y = pos[i][0], pos[i][1] + dy
+        s += text(x, y, NAMES[i], color="accenttwo" if i == highlight else col,
+                  anchor="north")
+        boxes[NAMES[i]] = text_box(x, y, NAMES[i], anchor="north")
+    assert_boxes_clear("milgram chain names", boxes, pad=4)
+    assert_labels_clear("milgram chain names", boxes, paths)
+    return s
+
+
+# Which figures may carry the occupation names, and why the other two may not.
+#
+# The names sit 34bp under a row of discs, and the shortcut arc (1,5) has to cross that
+# band on its way down -- so on any figure drawing SHORTCUT the arc lands inside a name.
+# Both ways out are closed: deepening the arc until it clears "teacher" and "printer"
+# pulls its crossing of the label row back inside "buyer" and "clerk" (their boxes are
+# directly under the arc's own endpoints), and bowing it upward instead crosses the (0,2)
+# chord.  Measured, not guessed: at the shipped bend the arc sits 50 red pixels inside
+# "teacher" and 114 inside "printer".
+#
+# So the two figures that draw the shortcut lose the names, and their red annotation
+# gains the letters, which are what the drawing still shows.
+NAMED_FIGURES_MAY_NOT_DRAW = SHORTCUT
 
 
 def _knew(edge, verb="already knew"):
-    """Built from NAMES and the edge tuple, so a caption can never name the wrong pair."""
+    """Built from NAMES and the edge tuple, so a caption can never name the wrong pair.
+
+    Carries the disc letter as well: on the two figures that dropped the occupation
+    names, "the clerk knows the buyer" would otherwise point at nothing on the slide.
+    """
     a, b = edge
-    return f"the {NAMES[a]} {verb} the {NAMES[b]}"
+    return (f"the {NAMES[a]} ({LETTERS[a]}) {verb} the {NAMES[b]} ({LETTERS[b]})")
 
 
 def fig_milgram_chain():
@@ -1019,7 +1059,7 @@ def fig_milgram_chain():
     for i in range(7):
         s += disc(CHAIN_POS[i][0], CHAIN_POS[i][1], "",
                   fill="accenttwo" if i == 6 else "accent")
-    s += _names(highlight=6)
+    s += _names(highlight=6, paths=_edge_paths(CHAIN_EDGES, CHAIN_POS))
     s += text(CHAIN_POS[0][0], 196, "Omaha", color="annot", anchor="south")
     s += text(CHAIN_POS[6][0], 196, "Boston", color="accenttwo", anchor="south")
     s += text(550, 250, "six hands, Omaha to Boston", color="accenttwo", anchor="south")
@@ -1028,7 +1068,8 @@ def fig_milgram_chain():
 
 def fig_chain_graph():
     # no in-figure title: the deck body carries the node/edge definition and cannot drop it
-    return _chain(CHAIN_EDGES, labels=LETTERS) + _names()
+    P = []
+    return _chain(CHAIN_EDGES, labels=LETTERS, out_paths=P) + _names(paths=P)
 
 
 def fig_distance_def():
@@ -1046,34 +1087,44 @@ def fig_distance_def():
 
 
 def fig_chain_blank():
-    s = _chain(CHAIN_EDGES, labels=LETTERS)
+    P = []
+    s = _chain(CHAIN_EDGES, labels=LETTERS, out_paths=P)
     s += ring(*CHAIN_POS[0])
     s += ring(*CHAIN_POS[6])
-    s += _names()
+    s += _names(paths=P)
     s += text(550, 245, "how many edges from A to G?", color="accenttwo", anchor="south")
     return s
 
 
 def fig_distance_six():
-    s = _chain(CHAIN_EDGES, labels=LETTERS, hot=set(CHAIN_EDGES), edge_num=True)
-    s += _names()
+    P = []
+    s = _chain(CHAIN_EDGES, labels=LETTERS, hot=set(CHAIN_EDGES), edge_num=True,
+               out_paths=P)
+    s += _names(paths=P)
     s += text(550, 250, "$d(A,G) = 6$", color="accenttwo", anchor="south")
     return s
 
 
 def fig_chain_chord():
-    s = _chain(CHAIN_EDGES + [CHORD], labels=LETTERS, hot={CHORD})
-    s += _names()
+    P = []
+    s = _chain(CHAIN_EDGES + [CHORD], labels=LETTERS, hot={CHORD}, out_paths=P)
+    s += _names(paths=P)
     s += text(550, 275, _knew(CHORD), color="accenttwo", anchor="south")
     return s
 
 
 def fig_two_routes():
-    """The rejected route is annotation gray, not gold: gold text measures 2.0:1 against
-    white where the red on the same figure measures 5.5:1, and the floor is 3:1."""
+    """A-B and B-C are drawn solid black, like every other real edge in the deck.
+
+    They were dashed gray, which fourteen slides later means the opposite: on the ego
+    figures dashed gray marks pairs that are NOT joined -- "possibilities, not edges".
+    Here the same device marked two edges that certainly exist and are the route the red
+    one replaces.  One device cannot mean a thing and its negation in one deck, and the
+    real edges are the ones that lose, because red alone already carries "the minimum".
+    """
     p = {0: (70, 120), 1: (260, 250), 2: (450, 120)}
-    s = seg(p[0], p[1], color="annot", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
-    s += seg(p[1], p[2], color="annot", w=EDGE_W, dash="dash pattern=on 9bp off 7bp")
+    s = seg(p[0], p[1], color="black", w=EDGE_W)
+    s += seg(p[1], p[2], color="black", w=EDGE_W)
     s += (f"\\draw[line width={HEAVY_W}bp,draw=accenttwo] ({p[0][0]},{p[0][1]}) "
           f"to[bend right=22] ({p[2][0]},{p[2][1]});\n")
     for i in p:
@@ -1117,19 +1168,39 @@ def _dotplot(counts, mean):
     lo, hi = math.floor(float(mean)), math.ceil(float(mean))
     xr = max(x0 + (counts.get(d, 1) - 1) * dx for d in {lo, hi})
     xl = x0 - DOT / 2 - 4
-    gap = xl - lab_x
-    assert gap >= 20, (f"the mean rule starts {gap:.0f}bp from the row labels -- under "
-                       f"20bp the red reads as a strikethrough on the label it passes")
-    # the rule goes down FIRST, so the discs cover it: the mean falls between two rows and
-    # at 1.81 it lands inside the d = 2 discs, where a line drawn on top reads as a
-    # strikethrough rather than as a level
-    s = seg((xl, ym), (xr + DOT / 2 + 4, ym), color="accenttwo", w=3.4,
-            dash="dash pattern=on 10bp off 7bp")
+    s, row_labels = "", {}
     for d in range(1, 7):
         y = ytop - (d - 1) * dy
         s += text(lab_x, y, f"$d={d}$", color="annot", anchor="east")
+        row_labels[f"$d={d}$"] = text_box(lab_x, y, f"$d={d}$", anchor="east")
         for k in range(counts.get(d, 0)):
             s += dot(x0 + k * dx, y, "accent")
+    # The rule goes on top of the discs, inside a white casing.
+    #
+    # It used to be drawn first, so the discs covered it -- and at a mean of 1.81 it falls
+    # inside the d = 2 row, so on `apl-shortcut` it survived only in the gaps between
+    # discs and read as decoration threading the row rather than as a level.  Drawing it
+    # in front without the casing swaps one defect for the other the old comment feared,
+    # a red line struck through a row of dots.  The casing is what makes it read as a
+    # line passing in FRONT: 7bp of white either side of a 3.4bp stroke, against a 32bp
+    # disc, leaves two thirds of every disc it crosses intact.  `apl-chain`'s mean is
+    # 2.67 and lands in a gap, so there the casing draws over nothing and the two slides
+    # keep one convention between them.
+    rule = ((xl, ym), (xr + DOT / 2 + 4, ym))
+    # A halo, not a corridor.  At 17bp the casing spanned 254-271 against a d = 2 disc
+    # spanning 238-270, so it erased the whole top cap and the row rendered as nine
+    # half-moons -- the rule was legible and the data it crossed was not.  The mean lands
+    # 7bp below the disc top, so anything wider than about 8bp cuts the cap off; 7bp
+    # leaves the discs whole and still gives the red enough white to be read against
+    # accent blue, which it cannot be on its own.
+    casing = 3.4 + 3.6
+    s += seg(*rule, color="white", w=casing)
+    s += seg(*rule, color="accenttwo", w=3.4, dash="dash pattern=on 10bp off 7bp")
+    # The rule must not reach the row labels: red across "$d=2$" reads as a strikethrough
+    # on the label, and the white casing would erase part of it outright.  Checked
+    # against the labels' measured boxes, padded by the casing's own half-width, rather
+    # than against a hand-picked 20bp gap that knew nothing about either.
+    assert_labels_clear("dotplot mean rule", row_labels, [rule], pad=casing / 2 + 4)
     s += text(260, 12, f"all {sum(counts.values())} pairs, mean "
                         f"${mean.numerator}/{mean.denominator} = {float(mean):.2f}$",
               color="accenttwo", anchor="south")
@@ -1145,10 +1216,17 @@ def fig_apl_shortcut():
 
 
 def fig_chain_shortcut():
-    s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot={SHORTCUT})
-    s += _names()
-    s += text(550, 285, "one long edge: " + _knew(SHORTCUT[::-1], "knows"),
-              color="accenttwo", anchor="south")
+    """No occupation names: this figure draws the shortcut, and the shortcut's arc has to
+    cross the row those names sit in.  See NAMED_FIGURES_MAY_NOT_DRAW -- the annotation
+    carries the two letters instead, so the sentence still points at the drawing.
+    """
+    P = []
+    s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot={SHORTCUT},
+               out_paths=P)
+    note = "one long edge: " + _knew(SHORTCUT[::-1], "knows")
+    s += text(550, 285, note, color="accenttwo", anchor="south")
+    assert_labels_clear("chain-shortcut", {note: text_box(550, 285, note, anchor="south")},
+                        P)
     return s
 
 
@@ -1166,11 +1244,14 @@ def fig_diameter():
     hot = set()
     for a, b in zip(DIA_ROUTE, DIA_ROUTE[1:]):
         hot.add((min(a, b), max(a, b)))
-    s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot=hot)
-    s += _names()
-    s += text(550, 285, f"one of the {len(DIA_TIES)} worst pairs --- "
-                        f"{nx.diameter(G_FULL)} edges",
-              color="accenttwo", anchor="south")
+    # No occupation names, for the same reason as `chain-shortcut`: this figure draws the
+    # shortcut, and the arc crossed "teacher" and "printer" at 62 and 114 red pixels.
+    P = []
+    s = _chain(CHAIN_EDGES + [CHORD, SHORTCUT], labels=LETTERS, hot=hot, out_paths=P)
+    note = (f"one of the {len(DIA_TIES)} worst pairs --- "
+            f"{nx.diameter(G_FULL)} edges")
+    s += text(550, 285, note, color="accenttwo", anchor="south")
+    assert_labels_clear("diameter", {note: text_box(550, 285, note, anchor="south")}, P)
     return s
 
 
@@ -1689,8 +1770,16 @@ assert abs(math.log(8e9) / math.log(150) - 4.55) < 0.01
 
 def fig_fanout_solve():
     """The vertical axis is logarithmic, so it has to say so: unlabelled, exponential
-    fan-out renders as a straight line, which is the opposite of the slide's point."""
-    xa, ya = 118, 100                       # axis corner
+    fan-out renders as a straight line, which is the opposite of the slide's point.
+
+    The axis corner moved right, from 118 to 166.  The rotated title sat at x = 38 in a
+    band 22-55bp wide, and the tick labels -- anchored east at x = 100 -- reach back to
+    x = 10, so "reached" shared pixels with the 1 of $10^{11}$ and "people" touched the 1
+    of $10^2$.  There was no room to move the title further left: at 25bp further out its
+    own ink runs off the canvas.  So the plot gives up 48bp instead, and the title's x is
+    now solved from the widest tick label rather than picked.
+    """
+    xa, ya = 166, 100                       # axis corner
     x0, x1, y1 = 190, 1030, 292             # 292: `fig tight` caps the image at 320px
     def X(L):
         return x0 + (L - 1) / 4 * (x1 - x0)
@@ -1699,12 +1788,25 @@ def fig_fanout_solve():
 
     s = seg((xa, ya), (1060, ya), color="annot", w=2.2)
     s += seg((xa, ya), (xa, y1), color="annot", w=2.2)
+    ticks = {}
     for e in range(2, 12):
         y = Y(10 ** e)
         s += seg((xa - 9, y), (xa + 9, y), color="annot", w=2.0)
         if e % 3 == 2:
-            s += text(xa - 18, y, f"$10^{{{e}}}$", color="annot", anchor="east")
-    s += text(38, (ya + y1) / 2, "people reached", color="annot", rotate=90)
+            lab = f"$10^{{{e}}}$"
+            s += text(xa - 18, y, lab, color="annot", anchor="east")
+            ticks[lab] = text_box(xa - 18, y, lab, anchor="east")
+
+    # Solved, not placed: sit the title one gap to the left of the widest tick label.
+    title = "people reached"
+    tw, th = ink_box_bp(title)
+    title_x = min(b[0] for b in ticks.values()) - 14 - th / 2
+    assert title_x - th / 2 >= 6, (
+        f"the y-axis title's ink would start at x = {title_x - th / 2:.0f} -- there is no "
+        f"room beside the tick labels, so move the plot right (raise xa), never overlap")
+    s += text(round(title_x, 1), (ya + y1) / 2, title, color="annot", rotate=90)
+    ticks[title] = text_box(title_x, (ya + y1) / 2, title, rotate=90)
+    assert_boxes_clear("fanout-solve", ticks, pad=6)
 
     ypop = Y(8e9)
     s += seg((xa, ypop), (1060, ypop), color="accenttwo", w=3.2,
@@ -1938,8 +2040,19 @@ def _ring(hot=(), pos=RING_POS, edges=RING_EDGES, ringed=(), cen=RING_C, dashed=
 
 
 def fig_ring_lattice():
+    """The label carries the number the slide is FOR, not a restatement of its body.
+
+    It read "joined to its 4 nearest neighbours", which is word for word what the body
+    beside it says -- so the figure spent its one line of type saying nothing the reader
+    had not just read.  The clustering coefficient is the thing this lattice is on the
+    slide to have, and it is what slides 83 and 84 divide with.
+    """
     s = _ring()
-    s += text(260, 8, f"joined to its {RING_K} nearest neighbours",
+    # "half the pairs": each node has 4 neighbours, so 6 pairs, of which the 3 that sit
+    # within 2 steps of each other are joined -- which is where the 0.50 comes from and
+    # why it does not depend on n.  Asserted rather than asserted-in-prose:
+    assert RING_CBAR == Fraction(1, 2) and math.comb(RING_K, 2) == 6
+    s += text(260, 8, f"$\\bar C = {float(RING_CBAR):.2f}$: half the pairs closed",
               color="black", anchor="south")
     return s
 
@@ -1948,11 +2061,25 @@ RING_FAR = nx.shortest_path(_R16, 0, RING_N // 2)
 assert len(RING_FAR) - 1 == RING_DIA
 
 
+RING_DIST_NOTE = "the longest shortest route"
+
+
 def fig_ring_distance():
+    """The figure names the route and does NOT count it.
+
+    It printed "4 hops to cross a ring of 16 nodes", and the slide's first build fragment
+    reads "16 nodes: 4 hops to the far side" -- so the reveal arrived statically, beside
+    the question, before the click.  That fragment has to stay: it is the first step of a
+    16 -> 1000 -> "grows linearly with n" build, and cutting it would trade this Minor for
+    a Major.  So the count leaves the drawing, which still traces the route the count is
+    of.
+    """
     hot = {(min(a, b), max(a, b)) for a, b in zip(RING_FAR, RING_FAR[1:])}
     s = _ring(hot=hot)
-    s += text(260, 8, f"{RING_DIA} hops to cross a ring of {RING_N} nodes",
-              color="accenttwo", anchor="south")
+    assert not any(ch.isdigit() for ch in RING_DIST_NOTE), (
+        f"{RING_DIST_NOTE!r} prints a number -- the deck's build reveals this count one "
+        f"fragment later, and a figure that states it first has answered its own slide")
+    s += text(260, 8, RING_DIST_NOTE, color="accenttwo", anchor="south")
     return s
 
 
@@ -2136,26 +2263,72 @@ assert abs(SWEEP["L0"] - 25.4386) < 1e-3, SWEEP["L0"]
 # Criterion: clustering still at least four fifths of the lattice's, paths at most half.
 BAND_C_MIN, BAND_L_MAX = 0.80, 0.50
 BAND_RULE = "paths at most half the lattice's, clustering still four fifths of it"
+# Printed ON the figure, so the rectangle is never a shaded region the slide does not
+# define.  Set as maths rather than as BAND_RULE's prose because 66 characters at 37pt
+# measures wider than the whole 1100bp canvas -- the deck's figcaption carries the words.
+BAND_NOTE = (f"both at once: $C \\geq {BAND_C_MIN:.1f}\\,C(0)$, "
+             f"$L \\leq {BAND_L_MAX:.1f}\\,L(0)$")
 
 
-def _derive_band():
-    ok = [p for p, c, l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"])
-          if c / SWEEP["C0"] >= BAND_C_MIN and l / SWEEP["L0"] <= BAND_L_MAX]
-    assert ok, "no p satisfies the band criterion -- the sweep or the criterion is wrong"
-    return min(ok), max(ok)
+def _band_edge(key, target):
+    """Where the DRAWN curve crosses `target`, by the same linear interpolation the
+    drawing itself does between samples.
+
+    The edges are solved for, not chosen from the 13 sampled p values.  Snapping to
+    samples looks more conservative and is really an artefact of where the samples fall:
+    it puts the rectangle's left edge at p = 0.01 while the L curve *as drawn* has been
+    under 0.5 since p = 0.0048, so the picture contradicts its own band, and the number
+    moves if anyone edits `cfg["ps"]`.  Interpolating gives the band a reader with a
+    ruler actually measures off the figure, which is the only band the figure can defend.
+    """
+    v = [x / SWEEP[key + "0"] for x in SWEEP[key]]
+    lg = [math.log10(p) for p in SWEEP["p"]]
+    cross = [i for i in range(len(v) - 1) if (v[i] >= target) != (v[i + 1] >= target)]
+    assert len(cross) == 1, (
+        f"{key}/{key}(0) crosses {target} {len(cross)} times -- the band's edge is only "
+        f"well defined while the curve is monotone; re-run the sweep with more runs")
+    i = cross[0]
+    t = (target - v[i]) / (v[i + 1] - v[i])
+    return 10 ** (lg[i] + t * (lg[i + 1] - lg[i]))
 
 
-BAND_LO, BAND_HI = _derive_band()
+BAND_LO = _band_edge("L", BAND_L_MAX)      # routes have fallen to half the lattice's
+BAND_HI = _band_edge("C", BAND_C_MIN)      # clustering has not yet fallen below four fifths
 BAND_DECADES = math.log10(BAND_HI / BAND_LO)
-# Sanity, against the data rather than against the band: every p inside the band must
-# actually satisfy the criterion, and the p just outside each edge must fail it.
+assert BAND_LO < BAND_HI, (BAND_LO, BAND_HI)
+
+# Assert the rectangle against the data it summarises, never against itself.  Two checks,
+# and neither can pass by construction now that the edges are solved rather than selected:
+#
+#   1. every SAMPLED p inside the band meets the criterion and every one outside fails it.
+#      This is what catches a non-contiguous qualifying set -- an edge solved from one
+#      crossing would silently span a gap.
+#   2. the band contains every sampled p that qualifies.  The rectangle may not be
+#      narrower than the measured evidence either; understating is a defect too, it is
+#      just a quieter one than the two-decade claim this replaced.
+_QUALIFY = [p for p, c, l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"])
+            if c / SWEEP["C0"] >= BAND_C_MIN and l / SWEEP["L0"] <= BAND_L_MAX]
+assert _QUALIFY, "no sampled p meets the band criterion -- the sweep or the criterion is wrong"
 for _p, _c, _l in zip(SWEEP["p"], SWEEP["C"], SWEEP["L"]):
     _inside = BAND_LO <= _p <= BAND_HI
     _meets = _c / SWEEP["C0"] >= BAND_C_MIN and _l / SWEEP["L0"] <= BAND_L_MAX
     assert _inside == _meets, (
         f"p={_p} is {'inside' if _inside else 'outside'} the drawn band but "
         f"{'meets' if _meets else 'fails'} the criterion -- the band is not the data")
-assert abs(BAND_DECADES - 0.67) < 0.02, BAND_DECADES     # what n=400, k=8 actually gives
+assert BAND_LO <= min(_QUALIFY) and max(_QUALIFY) <= BAND_HI, (
+    f"the drawn band [{BAND_LO:.5f}, {BAND_HI:.5f}] does not cover every measured p that "
+    f"meets the criterion ({min(_QUALIFY)}-{max(_QUALIFY)}) -- it understates its own data")
+# The figure's whole point is that this is a RANGE of p and not a value.  A decade is the
+# weakest form of that claim which the sweep supports, so it is the one asserted; the
+# deck's sentence is written from BAND_DECADES and nothing else.
+assert BAND_DECADES >= 1.0, (
+    f"the band spans {BAND_DECADES:.2f} decades -- under one decade the deck cannot say "
+    f"the small-world regime is wide, and the sentence must be rewritten, not the band")
+print(f"band: p {BAND_LO:.5f}-{BAND_HI:.5f}  {BAND_DECADES:.2f} decades  "
+      f"(factor {BAND_HI / BAND_LO:.0f})  criterion C>={BAND_C_MIN} L<={BAND_L_MAX}")
+
+
+_SWEEP_LABELS, _SWEEP_CURVES = {}, []
 
 
 def _sweep_frame(band=False):
@@ -2187,13 +2360,28 @@ def _sweep_frame(band=False):
     # needs that row, and a y-axis title belongs beside its own ticks anyway
     s += text(90, (y0 + y1) / 2, "fraction of the\\\\lattice value", color="annot",
               rotate=90)
-    for key, col, lab, ly, lx in (("C", "accenttwo", "$C(p)/C(0)$", 0.84, 360),
+    # ly 0.71 for C, not 0.84: at 0.84 the label box ran from y 234 to 271 and the C curve
+    # it names descends through 260 at the label's right-hand end, so the curve struck out
+    # its own name.  0.71 puts the label in the wide gap BETWEEN the two curves, which is
+    # where it belongs anyway -- and the assertion below is what found it.
+    curves, boxes = [], {}
+    for key, col, lab, ly, lx in (("C", "accenttwo", "$C(p)/C(0)$", 0.71, 360),
                                   ("L", "accent", "$L(p)/L(0)$", 0.30, 30)):
         base = SWEEP[key + "0"]
         pts = [(X(p), Y(v / base)) for p, v in zip(SWEEP["p"], SWEEP[key])]
+        curves.append((key, key, np.array(pts, float)))
         s += "\\draw[line width=3.4bp,draw=%s] %s;\n" % (
             col, " -- ".join("(%.1f,%.1f)" % q for q in pts))
         s += text(x0 + lx, Y(ly), lab, color=col, anchor="west")
+        boxes[lab] = text_box(x0 + lx, Y(ly), lab, anchor="west")
+    # A curve label is placed by hand against a curve whose shape comes from measured
+    # data, so the two drift apart whenever the sweep is re-run.  Check the drawn
+    # polylines, not the intent.
+    assert_labels_clear("ws-sweep", boxes, curves, pad=8)
+    assert_boxes_clear("ws-sweep", boxes)
+    _SWEEP_LABELS.clear()
+    _SWEEP_LABELS.update(boxes)
+    _SWEEP_CURVES[:] = curves
     return s
 
 
@@ -2204,7 +2392,13 @@ def fig_ws_sweep():
 def fig_ws_band():
     """The annotation names the gold band, so it sits over the gold band and is drawn in
     annotation gray.  It was accent-2 -- which already labels the C curve in this same
-    figure -- and it sat entirely to the right of the band it was naming."""
+    figure -- and it sat entirely to the right of the band it was naming.
+
+    It now carries the criterion as well.  A shaded region with no stated rule is an
+    assertion the reader cannot check, and the rule is the whole of what round 2 got
+    wrong: the band was widened to make a sentence true, so the sentence and the shading
+    now both come from BAND_C_MIN / BAND_L_MAX and neither can move without the other.
+    """
     s = _sweep_frame(band=True)
     mid = (BAND_LO * BAND_HI) ** 0.5           # the band's midpoint on a log axis
     x = 200 + (math.log10(mid) + 4) / 4 * 850
@@ -2212,7 +2406,14 @@ def fig_ws_band():
     lo_x = 200 + (math.log10(BAND_LO) + 4) / 4 * 850
     hi_x = 200 + (math.log10(BAND_HI) + 4) / 4 * 850
     assert lo_x < x < hi_x, (lo_x, x, hi_x)
-    s += text(round(x, 1), 296, "both at once", color="annot", anchor="south")
+    s += text(round(x, 1), 296, BAND_NOTE, color="annot", anchor="south")
+    # The note is four times the band's own width, so it has to be the only thing in its
+    # row -- and the two curve labels sit one row below it, placed by a different line of
+    # code against data that moves.  Both boxes come from `_sweep_frame`, so there is no
+    # second copy of their coordinates to fall out of step.
+    note = text_box(x, 296, BAND_NOTE, anchor="south")
+    assert_boxes_clear("ws-band", {BAND_NOTE: note, **_SWEEP_LABELS})
+    assert_labels_clear("ws-band", {BAND_NOTE: note}, _SWEEP_CURVES, pad=8)
     return s
 
 
@@ -2347,13 +2548,28 @@ assert abs(SIGMA_LT_1["L_rand"] - 2.0) < 1e-12, SIGMA_LT_1
 
 
 def fig_sigma_lt_1_answer():
+    """The one slide whose job is the arithmetic that settles the question, so the
+    printed numbers have to divide to the printed answer.
+
+    C_rand was shown at two decimals: the figure read "C 0.50/0.27, L 2.4/2.0,
+    sigma = 1.56" and (0.50/0.27)/(2.4/2.0) is 1.543, not 1.56 -- sigma was right,
+    computed from the exact 4/15, and the display rounded the one number that could not
+    take it.  A student who does the division must land on the answer beside it, so the
+    check below is done on the STRINGS the figure prints, not on the floats behind them.
+    """
     d = SIGMA_LT_1
+    # 0.267, not 0.27: three decimals is what makes the division reconcile.
+    c, c_rand = f"{d['C']:.2f}", f"{float(d['C_rand']):.3f}"
+    l, l_rand, sig = f"{d['L']:.1f}", f"{d['L_rand']:.1f}", f"{d['sigma']:.2f}"
+    shown = (float(c) / float(c_rand)) / (float(l) / float(l_rand))
+    assert f"{shown:.2f}" == sig, (
+        f"the printed numbers do not divide to the printed sigma: "
+        f"({c}/{c_rand})/({l}/{l_rand}) = {shown:.4f}, printed {sig} -- print another "
+        f"decimal of whichever number is being rounded away, never round sigma to match")
     s = _ring()
     # both ratios as ratios, which is what sigma is -- and 482bp, which fits the column
     # where the "0.50 vs 0.27" phrasing measured 605
-    s += text(260, 8, f"$C$ {d['C']:.2f}/{float(d['C_rand']):.2f}, "
-                      f"$L$ {d['L']:.1f}/{d['L_rand']:.1f}, "
-                      f"$\\sigma = {d['sigma']:.2f}$",
+    s += text(260, 8, f"$C$ {c}/{c_rand}, $L$ {l}/{l_rand}, $\\sigma = {sig}$",
               color="accenttwo", anchor="south")
     return s
 
@@ -2503,7 +2719,7 @@ def fig_sw_map():
                    for i, a in enumerate(_ws_adj(n, 4, 1.0, random.Random(1))) for j in a})
     assert 2 <= sum((e not in lat) for e in mids) <= 4, "the middle panel needs a few"
     assert sum((e not in lat) for e in full) >= 14, "p = 1 must move most of the lattice"
-    s = ""
+    s, boxes = "", {}
     for k, (cx, cy) in enumerate(cs):
         # the same antiprism the 16-node lattice uses on slides 65-83: one object, one
         # drawing.  C_n(1,2) is the (n/2)-antiprism, so it is the same construction here.
@@ -2517,13 +2733,36 @@ def fig_sw_map():
                             clear=NODE / 2 + 3)
         for i2 in pos:
             s += disc(pos[i2][0], pos[i2][1], "", fill="accent")
-        s += text(cx, 86, labs[k], color="accenttwo" if k == 1 else "black",
-                  anchor="north")
-    # the axis label rides the arrow's own row instead of taking a second one: this slide
-    # is a `fig tight`, and two annotation rows under three rings overran the 320px cap
-    s += text(20, 40, "rewiring probability $p$", color="annot", anchor="west")
-    s += seg((360, 40), (1020, 40), color="annot", w=2.4,
+        # All three panel labels in ink.  The middle one was accent-2, which in this same
+        # drawing already means "a rewired edge" -- so red said both "this edge moved" and
+        # "look at this panel", and the middle panel is not the one with the most red.
+        # Raised from y = 86 to 104: the rings' lowest ink is at y = 114, so the labels
+        # were floating 28bp under nothing and 3bp above the annotation row.
+        s += text(cx, 104, labs[k], color="black", anchor="north")
+        boxes[labs[k]] = text_box(cx, 104, labs[k], anchor="north")
+
+    # The axis label rides the arrow's own row -- this slide is a `fig tight`, and a
+    # second annotation row under three rings overruns the 320px cap by 16bp.  So the
+    # arrow is INTERRUPTED around the label rather than the label being parked to the
+    # left of it: at x = 20 the label spanned 20-346 while the arrow it names ran
+    # 360-1020, which put it under the lattice panel and read as that panel's caption.
+    # A title sitting in a gap in its own axis cannot be read as anything else's.
+    note = "rewiring probability $p$"
+    nw, _ = ink_box_bp(note)
+    ax0, ax1, ay = 200, 1040, 40
+    xc = (ax0 + ax1) / 2
+    gap = nw / 2 + 16
+    s += text(xc, ay, note, color="annot", anchor="center")
+    s += seg((ax0, ay), (xc - gap, ay), color="annot", w=2.4)
+    s += seg((xc + gap, ay), (ax1, ay), color="annot", w=2.4,
              arrow="-{Stealth[length=11bp]}")
+    boxes[note] = text_box(xc, ay, note, anchor="center")
+    assert xc - gap - ax0 >= 120 and ax1 - xc - gap >= 120, (
+        f"the label leaves {xc - gap - ax0:.0f}bp and {ax1 - xc - gap:.0f}bp of arrow -- "
+        f"under 120bp either side the two stubs stop reading as one axis")
+    assert_boxes_clear("sw-map", boxes)
+    assert_labels_clear("sw-map", {note: boxes[note]},
+                        [((ax0, ay), (xc - gap, ay)), ((xc + gap, ay), (ax1, ay))], pad=4)
     return s
 
 

@@ -494,3 +494,23 @@ def _shuffled():
     out = _sbm_ring(e, coloured=False)
     out += cell_grid(636, 362, 10, 33, filled, fill_color="accent")
     return out
+
+
+@fig("sbm-assortative", h=360)
+def _assort():
+    """The ordinary case, at full size: a high diagonal and the groups you expect.
+
+    Deliberately its own file rather than a crop of `sbm-three-cases`. That figure is a
+    comparison of three matrices; this slide is about one of them, and m01 shipped a
+    figure reused across two slides that explained it differently.
+    """
+    e = _sbm_graph(5, 0.85, 0.08, seed=12)
+    inside = sum(1 for a, b in e if (a < 5) == (b < 5))
+    assert inside > 2 * (len(e) - inside), "the diagonal has to dominate here"
+    out = _sbm_ring(e, node=34, cx=286, cy=184, rx=250, ry=142)
+    out += cell_grid(716, 300, 2, 104, {(0, 0), (1, 1)}, fill_color="accentthree")
+    out += text(716 + 52, 300 - 52, "high", color="black", anchor="center", size=44)
+    out += text(716 + 156, 300 - 156, "high", color="black", anchor="center", size=44)
+    out += text(716 + 156, 300 - 52, "low", color="annot", anchor="center", size=44)
+    out += text(716 + 52, 300 - 156, "low", color="annot", anchor="center", size=44)
+    return out

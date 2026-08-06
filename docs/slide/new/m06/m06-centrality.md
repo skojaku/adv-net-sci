@@ -49,13 +49,13 @@ Do not answer. Part Eight answers it, and the answer is that there is no single 
 
 <div class="steps-list">
 
-<div><div class="i">01</div><div>The Golden Milestone — Rome decided who mattered, and wrote it in bronze</div></div>
-<div><div class="i">02</div><div>Count the roads — the cheapest question you can ask</div></div>
-<div><div class="i">03</div><div>Close to everything — and what breaks when the network breaks</div></div>
+<div><div class="i">01</div><div>The Golden Milestone — importance by decree</div></div>
+<div><div class="i">02</div><div>Count the roads</div></div>
+<div><div class="i">03</div><div>Close to everything — and what breaks when the network does</div></div>
 <div><div class="i">04</div><div>The broker — who the traffic cannot avoid</div></div>
-<div><div class="i">05</div><div>Known by the company you keep — importance you inherit</div></div>
+<div><div class="i">05</div><div>Known by the company you keep</div></div>
 <div><div class="i">06</div><div>Everyone gets a floor — Katz, and the dial that breaks it</div></div>
-<div><div class="i">07</div><div>The Web has direction — hubs, authorities, and PageRank</div></div>
+<div><div class="i">07</div><div>The Web has direction — hubs, authorities, PageRank</div></div>
 <div><div class="i">08</div><div>Which one should you use?</div></div>
 
 </div>
@@ -76,7 +76,7 @@ Rome decided who mattered, and wrote it in bronze
 
 <hr>
 
-Augustus, newly made *curator viarum*, puts up a column of gilded bronze at the head of the Forum: the **Milliarium Aureum**.
+Augustus, newly commissioner of roads, raises the **Milliarium Aureum** at the head of the Forum.
 
 <div class="fig tall">
 
@@ -173,11 +173,10 @@ Take a show of hands for two or three cities. Do not confirm anything, do not hi
 <div class="cols">
 <div>
 
-Eight clubs, thirteen students. Draw a line between two students who share a club.
+Draw a line between two students who share a club.
 
-* Drama — Sarah, Mike, Emma
-* Art — Emma, Alex · Sailing — Alex, Sophia
-* Volunteer — Alex, Olivia, James
+* Drama — Sarah, Mike, Emma · Art — Emma, Alex
+* Volunteer — Alex, Olivia, James · Sailing — Alex, Sophia
 * Chess — Sophia, Ethan, Ava, Noah
 * Debate, Math, Tennis — Noah with Lily, Lucas, Henry
 
@@ -389,8 +388,8 @@ $$c_i = \frac{N-1}{\sum_j d(i,j)}$$
 </div>
 <div class="fig">
 
-![w:537](figures/degree-count.png)
-<figcaption>one node, and what leaves it</figcaption>
+![w:537](figures/closeness-idea.png)
+<figcaption>one node, and its distance to each of the others</figcaption>
 
 </div>
 </div>
@@ -416,11 +415,26 @@ Ninety seconds. Then take the total from the room before showing the next slide.
 
 ---
 
+## Massilia's eleven distances
+
+<hr>
+
+Three cities one step away, five at two steps, three at three. They sum to **22**, so Massilia scores $11/22 = 0.50$.
+
+<div class="fig tall">
+
+![w:1080](figures/closeness-one-city.png)
+<figcaption>each city carrying its distance from Massilia</figcaption>
+
+</div>
+
+---
+
 ## The second crown
 
 <hr>
 
-Massilia's distances sum to 22, so it scores $11/22 = 0.50$. Rome's sum to 18, and Rome scores **0.61**.
+Rome's distances sum to 18, so Rome scores **0.61** — and takes a second crown.
 
 <div class="fig tall">
 
@@ -527,8 +541,8 @@ $$c_i = \sum_{j \neq i} \frac{1}{d(i,j)}$$
 </div>
 <div class="fig">
 
-![w:537](figures/star-closeness.png)
-<figcaption>the shape that set the ceiling</figcaption>
+![w:537](figures/harmonic-idea.png)
+<figcaption>an unreachable node adds nothing instead of adding infinity</figcaption>
 
 </div>
 </div>
@@ -1720,12 +1734,12 @@ Everything above, and the cost of choosing wrong
 
 <hr>
 
-Rome took every crown outright. The only one it could not take outright, it shares with two three-road cities.
+Rome took every crown outright but one, and shares that one with two three-road cities.
 
 <div class="fig tall">
 
 ![w:1080](figures/crown-summary.png)
-<figcaption>red crown: degree, closeness, harmonic, betweenness, eigenvector, Katz. Gold rings: the two cities that tie Rome on eccentricity</figcaption>
+<figcaption>red: the six crowns Rome holds alone. gold: the two cities that tie it on eccentricity</figcaption>
 
 </div>
 

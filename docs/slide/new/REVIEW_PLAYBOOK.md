@@ -42,6 +42,20 @@ The underlying cause is that fix agents keep working after reporting. Prefer to 
 reviewers only once every fix agent has gone idle, and re-run the check immediately before
 you launch them.
 
+### "A caveat on the answer" and "the answer cannot be computed yet" are different sentences
+
+A fix agent, asked to write a number into a slide, sent back three candidate values with a
+note that the sweep's sampling quantised all three. That read as a caveat, so the lead
+picked one of the three. The right sentence was the second one — the sampling made *none*
+of the three computable, and the fix was to resample, not to choose.
+
+Writing the first when the second is true routes a decision to someone who then decides on
+incomplete grounds, and it looks like diligence while doing it. If the work you are handing
+back cannot answer the question as posed, say that in the first line, before the options.
+
+(The agent that made this mistake is also the one that named it, after the fact, better than
+the lead had.)
+
 ### Wait for the report, not for silence
 
 Polling a fix agent's file mtimes until they go quiet does **not** tell you it has
