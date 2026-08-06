@@ -1037,23 +1037,21 @@ def fig_ccdf_condmat():
     # arrived two slides before the poll asking whether the CCDF slope IS gamma -- it
     # answered the poll and showed the room the +1 rule that the next slide exists to
     # derive. It belongs after both, and it is not this figure's.
-    # R5 E5-1: 094 closes the deck on "cond-mat's p(k) gives gamma = 2.44, its CCDF gives
-    # 3.57" and had no drawn slope to point back at, so a room that has just been drilled
-    # on "add one to the CCDF slope" reads 2.44 -> 3.57 as that rule being obeyed. The
-    # number comes back -- number and window, no comparison, since the comparison is what
-    # made this the wrong slide in round 4. The window is the one `verify_numbers` fits
-    # and the one 094's 3.57 comes from; it is printed because it is not 054's.
-    a = ccdf_fit(ks, su, 10, 200)[0]
-    assert abs((1 - a) - 3.57) < 0.01, (a, 1 - a)
+    # R5 E5-1 was offered to this figure and settled on the deck instead, better than
+    # either draft: slide 094 now states a prediction and a measurement in the rule's own
+    # units -- "the rule predicts a CCDF slope of -1.44. It measures -2.57" -- rather than
+    # two gamma values whose difference looks like the +1 rule being obeyed. So this slide
+    # keeps its one point, which is that a CCDF has no bin width to choose, and prints no
+    # slope at all. The assertion stays: nothing here draws -2.57, but if this data stops
+    # producing it, the sentence closing the deck has gone stale and the build should say
+    # so rather than the next reviewer.
+    assert abs(ccdf_fit(ks, su, 10, 200)[0] - (-2.57)) < 0.005, ccdf_fit(ks, su, 10, 200)
 
     ax = ccdf_axes((1, 300), [1, 10, 100], centre=True)
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$P(k' > k)$")
     body += scatter(ax, [p[0] for p in plot], [p[1] for p in plot], color=HUBS, d=13,
                     expect=121)
-    body += text((ax.x0 + ax.x1) / 2, CCDF_NOTE_Y,
-                 f"fitted slope ${a:.2f}$ over $10 \\le k \\le 200$",
-                 color="accenttwo", anchor="north")
     emit("ccdf-condmat", body, container="full", h=H)
 
 
