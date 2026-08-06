@@ -213,8 +213,8 @@ Let them argue. Do not write any name on the board, and do not confirm either an
 
 <div class="fig tall">
 
-![w:1080](figures/club-three-kings.png)
-<figcaption>three questions about one network, and three different students</figcaption>
+![w:1080](figures/club-three-answers.png)
+<figcaption>red Noah: tell first · gold Sophia: closest to everyone · black Alex: coordinates</figcaption>
 
 </div>
 
@@ -240,26 +240,19 @@ The cheapest question you can ask
 
 <hr>
 
-<div class="cols">
-<div>
-
-Count the edges that end at a node.
-
 <div class="formula">
 
 $$c_i = \sum_j A_{ij}$$
 
 </div>
 
-That is **degree centrality**, and it is the whole definition.
+Count the edges that end at a node. That is **degree centrality**, and it is the whole definition.
 
-</div>
-<div class="fig">
+<div class="fig tall">
 
-![w:537](figures/degree-count.png)
+![w:1080](figures/degree-count.png)
 <figcaption>one tick per edge end</figcaption>
 
-</div>
 </div>
 
 ---
@@ -645,26 +638,19 @@ Let two or three students trace different routes out loud. Do not count anything
 
 <hr>
 
-<div class="cols">
-<div>
-
-Count how often a node lies **on the shortest path between two others**.
-
 <div class="formula">
 
 $$c_i = \sum_{j<k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}$$
 
 </div>
 
-**Betweenness centrality** measures traffic you can broker — or block.
+**Betweenness centrality** counts how often a node lies on the shortest path between two others — traffic it can broker, or block.
 
-</div>
-<div class="fig">
+<div class="fig tall">
 
-![w:537](figures/betweenness-idea.png)
+![w:1080](figures/betweenness-idea.png)
 <figcaption>paths with no other way round</figcaption>
 
-</div>
 </div>
 
 ---
@@ -921,13 +907,26 @@ Let the objection stand for a moment. It is a good objection. The answer is that
 
 <hr>
 
-Twelve cities at once, and the recursion is $\lambda c = A c$.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Write that one line for all twelve cities at once and the sum becomes a matrix product.
 
-![w:1080](figures/eigen-equation.png)
-<figcaption>the matrix acting on the scores, and handing them back rescaled</figcaption>
+<div class="formula">
 
+$$\lambda\, c = A\, c$$
+
+</div>
+
+**Eigenvector centrality** is the vector that comes back unchanged, up to scale.
+
+</div>
+<div class="fig">
+
+![w:537](figures/eigen-equation.png)
+<figcaption>the matrix acting on the scores</figcaption>
+
+</div>
 </div>
 
 <!--
@@ -1407,26 +1406,19 @@ A good **hub** points at good authorities. A good **authority** is pointed at by
 
 <hr>
 
-<div class="cols">
-<div>
-
 <div class="formula">
 
 $$x = A y \qquad y = A^{\top} x$$
 
 </div>
 
-Substitute one into the other and each is an eigenvector problem: hubs of $A A^{\top}$, authorities of $A^{\top} A$.
+Substitute one into the other and each is an eigenvector problem — hubs of $A A^{\top}$, authorities of $A^{\top} A$. **HITS**, Kleinberg 1999.
 
-**HITS**, Kleinberg 1999.
+<div class="fig tall">
 
-</div>
-<div class="fig">
-
-![w:537](figures/hits-equations.png)
+![w:1080](figures/hits-equations.png)
 <figcaption>hub scores from authorities, authority scores from hubs</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1540,26 +1532,19 @@ What is the first thing somebody does to you?
 
 <hr>
 
-<div class="cols">
-<div>
-
-A page has one vote to give, and it **splits it among its out-links**.
-
 <div class="formula">
 
 $$c_i = (1-\beta)\sum_j \frac{A_{ji}\,c_j}{d^{\text{out}}_j} + \frac{\beta}{N}$$
 
 </div>
 
-A link from a page that links to everything is worth almost nothing.
+A page has one vote and **splits it among its out-links**, so a link from a page that links to everything is worth almost nothing.
 
-</div>
-<div class="fig">
+<div class="fig tall">
 
-![w:537](figures/pagerank-split.png)
+![w:1080](figures/pagerank-split.png)
 <figcaption>one score, split four ways</figcaption>
 
-</div>
 </div>
 
 ---
@@ -1639,26 +1624,19 @@ Fish for "things near it". Then ask what "near" means in a directed network, and
 
 <hr>
 
-<div class="cols">
-<div>
-
-Send every jump back to **one** page instead of a random one, and the ranking bends toward it.
-
-Globally, Blog leads Course by 0.009. Personalized on Course, **Course leads by 0.125**.
-
 <div class="formula">
 
 $$c_i = \sum_k \beta(1-\beta)^k p_i^{(k)}$$
 
 </div>
 
-</div>
-<div class="fig">
+Send every jump back to **one** page and the ranking bends toward it: globally Blog leads Course by 0.009; personalized on Course, **Course leads by 0.125**.
 
-![w:537](figures/ppr.png)
+<div class="fig tall">
+
+![w:1080](figures/ppr.png)
 <figcaption>the same web, seen from one page</figcaption>
 
-</div>
 </div>
 
 <!--

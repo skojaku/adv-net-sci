@@ -402,6 +402,9 @@ def fig_spectrum():
     notes = Notes()
     body += notes.put((X(w[-1]) - 14, 252), f"$\\lambda_{{\\max}} = {shown}$",
                       color="accenttwo", anchor="east")
+    # A leader, because the label has to sit left of its own dot to stay on the page
+    # and without one it reads as a caption for the pair of dots underneath it.
+    body += F.seg((X(w[-1]) - 20, 234), (X(w[-1]) - 2, 204), color="accenttwo", w=2.4)
     body += notes.put((30, 308), f"{len(w)} eigenvalues of $A$", color="annot",
                       anchor="west")
     body += notes.put((W / 2, 58), "only $\\lambda_{\\max}$ has an\\\\"
@@ -632,8 +635,11 @@ def fig_katz_floor():
     body += notes.put((W - 10, 285),
                       f"Katz  ${katz_txt}$\\\\eigenvector\\\\${eig_txt}$",
                       color="accenttwo", anchor="east")
-    body += notes.put((W - 10, 60), "darker $=$ higher", color="annot", anchor="east")
-    body += F.seg((484, 218), (484, 199), color="accenttwo", w=3.0)
+    body += notes.put((W - 10, 60), "darker $=$ higher Katz", color="annot",
+                      anchor="east")
+    # The leader runs from inside the note's own descender line down to the disc's
+    # rim: drawn shorter it read as a stray dash between two unrelated things.
+    body += F.seg((484, 224), (484, 197), color="accenttwo", w=2.4)
     F.emit("katz-floor", body, container="col", h=H)
 
 
@@ -645,15 +651,20 @@ def _katz_solve_body(final):
     annotations under it repeat those colours: at 537 bp there is no room for a leader
     from each term out to a note beside it, and an uncoloured note under a two-term
     equation names neither term.
+
+    The annotations are flush left and flush right -- the side each term sits on in
+    the equation above -- which is also what carries the ink across the column. A
+    centred stack of five lines spans 64% of 537 bp and the width gate wants 76%.
     """
     notes = Notes()
     body = notes.put((W / 2, 336),
                      "$c = {\\color{accenttwo}\\beta\\mathbf{1}}"
                      " + {\\color{accent}\\lambda A c}$", size=46,
                      meas="$c = \\beta\\mathbf{1} + \\lambda A c$")
-    body += notes.put((W / 2, 268), "$\\beta$: a floor for everyone",
-                      color="accenttwo")
-    body += notes.put((W / 2, 210), "$\\lambda A c$: your neighbours", color="accent")
+    body += notes.put((14, 268), "$\\beta$: a floor for everyone",
+                      color="accenttwo", anchor="west")
+    body += notes.put((W - 14, 210), "$\\lambda A c$: your neighbours",
+                      color="accent", anchor="east")
     body += notes.put((W / 2, 140), "$(I - \\lambda A)\\,c = \\beta\\mathbf{1}$",
                       size=46)
     if final:
@@ -681,7 +692,7 @@ SERIES_TERMS = 4
 SERIES_TICKS = ["$\\mathbf{1}$", "$\\lambda A\\mathbf{1}$",
                 "$\\lambda^2 A^2\\mathbf{1}$", "$\\lambda^3 A^3\\mathbf{1}$"]
 SERIES_ROWS = (320, 246, 172, 98)
-SERIES_X0, SERIES_X1, SERIES_MAX = 200.0, 400.0, 14.0
+SERIES_X0, SERIES_X1, SERIES_MAX = 200.0, 400.0, 13.0
 
 
 def series_totals():

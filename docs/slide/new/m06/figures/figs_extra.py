@@ -120,3 +120,63 @@ FIGURES = [
     ("harmonic-idea", fig_harmonic_idea),
     ("club-three-kings-small", fig_club_three_kings_small),
 ]
+
+
+# --------------------------------------------------------------------------- the
+# club network with all three answers marked. `figs_small` emitted a column-width
+# version of this that is really the small three-disc summary; the payoff slide of
+# Part 1 needs the network itself, so it is drawn here at full width.
+CLUB_XY = {
+    "Sarah": (70.0, 300.0), "Mike": (70.0, 110.0), "Emma": (185.0, 205.0),
+    "Alex": (325.0, 205.0), "Olivia": (325.0, 62.0), "James": (445.0, 110.0),
+    "Sophia": (470.0, 275.0), "Ethan": (620.0, 358.0), "Ava": (625.0, 320.0),
+    "Noah": (775.0, 265.0), "Lily": (900.0, 352.0), "Lucas": (940.0, 285.0),
+    "Henry": (890.0, 175.0),
+}
+CLUB_MARK = None
+
+
+def fig_club_three_answers():
+    """One network, three marks, three questions -- the whole of Part 1's payoff."""
+    import itertools
+    edges = [tuple(e) for e in CLUB.edges()]
+    assert set(CLUB_XY) == set(CLUB), sorted(set(CLUB_XY) ^ set(CLUB))
+    F.assert_planar_drawing(edges, CLUB_XY, "club network")
+
+    # Three marks, three colours, and the third one cannot be accent: a blue ring
+    # on a blue disc is invisible, which is how the first version of this figure
+    # shipped a mark nobody could see. Marked nodes change FILL instead, so all
+    # three read at a glance, and the slide's figcaption names each colour.
+    marks = [(CLUB_SPREAD[0], ACCENT2, "tell first"),
+             (CLUB_CLOSE[0], ACCENT3, "closest to everyone"),
+             (CLUB_BROKER[0], "black", "coordinates")]
+    assert len({m[0] for m in marks}) == 3
+
+    b = ""
+    for u, v in edges:
+        b += seg(CLUB_XY[u], CLUB_XY[v], color="black", w=F.EDGE_W)
+    marked = {m[0]: m[1] for m in marks}
+    for n, (x, y) in CLUB_XY.items():
+        fill = marked.get(n, "accent")
+        b += (f"\\draw[line width=1.6bp,draw=black,fill={fill}] ({x},{y}) "
+              f"circle ({F.NODE / 2}bp);\n")
+    # Same treatment as the Roman map: solve against discs and other labels only,
+    # restricted to the four nearest sides, and halo the text so an edge behind it
+    # stays readable. Solving against seventeen edges as well does not terminate
+    # here -- the backtracker explores the whole tree before reporting failure.
+    names = {n: n for n in CLUB_XY}
+    saved = F.SIDES[:]
+    F.SIDES[:] = saved[:4]
+    try:
+        sides, boxes = F.place_labels(names, CLUB_XY, [], bounds=(6, 6, 1074, 420),
+                                      gap=3.0)
+    finally:
+        F.SIDES[:] = saved
+    for dx, dy in [(a, c) for a in (-2, 0, 2) for c in (-2, 0, 2) if (a, c) != (0, 0)]:
+        shifted = {n: (x + dx, y + dy) for n, (x, y) in CLUB_XY.items()}
+        b += F.draw_labels(names, shifted, sides, color="white")
+    b += F.draw_labels(names, CLUB_XY, sides, color="black")
+    emit("club-three-answers", b, container="full", h=440, hmod="tall")
+
+
+FIGURES.append(("club-three-answers", fig_club_three_answers))
