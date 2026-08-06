@@ -28,7 +28,9 @@ import numpy as np
 
 from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
-from feld import ABOVE, BELOW, EQUAL, degree, friend_mean
+from feld import (ABOVE, BELOW, EQUAL, degree, friend_mean, paradox_groups,
+                  paradox_rel)
+from figs_story import assert_role_counts, friend_role, role_disc
 from figs_tail import HUBS, axis_titles, ccdf_axes
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
@@ -137,25 +139,34 @@ def fig_individual_vs_average():
     # figure is built on: two girls printing 2 sat in different groups and two printing
     # 3 sat under "fewer", because the quantity that decides the group -- her friends'
     # average -- was nowhere on the drawing. Both numbers are on it now.
+    # Roles come from feld.py, which owns them, and the discs go through role_disc so
+    # the colour is never named here. The line this replaces asserted
+    #     rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill]
+    # with `rel` computed live from the data -- so the data was right, the comparison
+    # was right, and the inversion sat in the map between them, inside the check whose
+    # job was to catch inversions. An assertion written against a literal cannot fail in
+    # the direction of the literal being wrong; it can only confirm it, which it did for
+    # four rounds. assert_role_counts reads what the TeX actually drew, so it holds
+    # whatever route drew it.
     b = text(540, 330, "each girl against her friends' average", anchor="south")
-    groups = [(BELOW, f"{len(BELOW)} have fewer", "accenttwo", 280),
-              (ABOVE, f"{len(ABOVE)} have more", "accent", 720),
-              (EQUAL, f"{len(EQUAL)} the same", "annot", 960)]
-    for girls, lab, fill, cx in groups:
-        x0 = cx - 60 * (len(girls) - 1)
-        for i, g in enumerate(girls):
-            k, fm = degree(g), friend_mean(g)
-            rel = (fm > k) - (fm < k)
-            assert rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill], \
-                f"{g} is drawn in the {fill} group but {k} vs {fm} says otherwise"
-            b += disc(x0 + 120 * i, 240, str(k), fill=fill)
-            if fill == "accent":          # the two above; the deck calls them by name
+    place = {"below": (280, f"{len(BELOW)} have fewer"),
+             "above": (720, f"{len(ABOVE)} have more"),
+             "equal": (960, f"{len(EQUAL)} the same")}
+    expect = {}
+    for rel, members, _ in paradox_groups():
+        cx, lab = place[rel]
+        expect[rel] = len(members)
+        x0 = cx - 60 * (len(members) - 1)
+        role = friend_role(rel, "individual-vs-average")
+        for i, g in enumerate(members):
+            assert paradox_rel(g) == rel, f"{g} is drawn {rel}, data says {paradox_rel(g)}"
+            b += role_disc(x0 + 120 * i, 240, role, str(degree(g)))
+            if rel == "above":        # the two the deck calls out by name
                 b += text(x0 + 120 * i, 276, g, anchor="south")
-            # bare number, not "vs 4.0": the line under the row already says what the
-            # second number is, and the two words cost 60bp of pitch per disc
-            b += text(x0 + 120 * i, 200, f"${_dec(fm, 1)}$", color="annot",
-                      anchor="north")
-        b += text(cx, 146, lab, color=fill, anchor="north")
+            b += text(x0 + 120 * i, 200, f"${_dec(friend_mean(g), 1)}$",
+                      color="annot", anchor="north")
+        b += text(cx, 146, lab, color=role or "black", anchor="north")
+    assert_role_counts(b, expect, "individual-vs-average")
     b += text(540, 72, "her $k$ in the disc, her friends' average below it",
               color="annot", anchor="north")
     emit("individual-vs-average", b, container="full", h=400)
@@ -596,13 +607,25 @@ def fig_recap():
     assert k1 + gap == friend
 
     b = ""
-    # Act one, in slide 076's key: 5 below, 2 above, 1 exactly equal. Drawn 5 red +
-    # 3 gray, it taught three ties against the key the deck had just given the room.
-    fills = ["accenttwo"] * len(BELOW) + ["accent"] * len(ABOVE) + ["annot"] * len(EQUAL)
-    assert len(fills) == 8
-    for i, fill in enumerate(fills):
-        b += disc(108 - 63 + 42 * (i % 4), 292 if i < 4 else 240,
-                  fill=fill, size=SMALLNODE)
+    # Act one, in the key feld.py owns and slide 010 teaches: the minority who are
+    # ahead of their friends in accent-2, the majority behind them hollow, Carol gray.
+    # Drawn 5 red / 2 blue this panel taught the inversion twice -- once here and once
+    # on 082 -- so it goes through role_disc like everything else that colours people,
+    # and the count check runs on this panel's own fragment because the wiring panel
+    # below draws discs too and would be counted with it.
+    panel, expect = "", {}
+    order = [(rel, members) for rel, members, _ in paradox_groups()]
+    i = 0
+    for rel, members in order:
+        expect[rel] = len(members)
+        role = friend_role(rel, "recap")
+        for _ in members:
+            panel += role_disc(108 - 63 + 42 * (i % 4), 292 if i < 4 else 240,
+                               role, size=SMALLNODE)
+            i += 1
+    assert i == 8
+    assert_role_counts(panel, expect, "recap panel one")
+    b += panel
 
     # Act two: 2.5 of your own, plus the gap the variance buys. All gray -- accent-2
     # means "her friends have more" in panel one and must not mean a second thing here.
@@ -646,7 +669,7 @@ def fig_recap():
     # 0.5" without the "= 3.0" is a fragment, not an identity -- so it gets the five
     # characters the collision budget leaves: "heavy".
     for cx, head, val in (
-            (108, "the girls", f"{len(BELOW)} below"),
+            (108, "the girls", f"{len(ABOVE)} ahead"),
             (324, "identity",
              f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
             (540, "one tail", "heavy"),
