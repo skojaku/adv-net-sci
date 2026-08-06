@@ -200,6 +200,10 @@ def fig_recursive_flow():
         "the four arrows must carry four different widths"
     top = max(have[n] for n in nbrs)
 
+    # Every score is a single digit, so it goes INSIDE its own disc.  Set beside the
+    # discs by the solver instead, the "9" on node a landed halfway down the a-b edge
+    # and read as if it belonged to b.
+    assert all(have[n] < 10 for n in FLOW_POS if n != FLOW_FOCUS), have
     body = ""
     for a, b in FLOW_EDGES:
         if FLOW_FOCUS not in (a, b):
@@ -209,18 +213,15 @@ def fig_recursive_flow():
             body += (f"\\node[circle,draw=accenttwo,line width=4.5bp,fill=white,"
                      f"minimum size={NODE}bp,inner sep=0pt] (f{n}) at ({x},{y}) {{}};\n")
         else:
-            body += F.disc(x, y, "", fill="accent", name=f"f{n}")
+            body += F.disc(x, y, f"{have[n]}", fill="accent", name=f"f{n}")
     for n in nbrs:
         body += arrow(f"f{n}", f"f{FLOW_FOCUS}", color="accent",
                       w=2.5 + 9.5 * have[n] / top)
 
-    names = {n: f"{have[n]}" for n in FLOW_POS if n != FLOW_FOCUS}
-    names[FLOW_FOCUS] = f"{total}"
+    names = {FLOW_FOCUS: f"{total}"}
     sides, boxes = F.place_labels(names, FLOW_POS, FLOW_EDGES,
                                   bounds=(12, 74, 1068, 366), gap=3.0)
-    for n, (anc, dx, dy) in sides.items():
-        body += F.text(FLOW_POS[n][0] + dx, FLOW_POS[n][1] + dy, names[n],
-                       color="accenttwo" if n == FLOW_FOCUS else "black", anchor=anc)
+    body += F.draw_labels(names, FLOW_POS, sides, color="accenttwo")
     body += F.note("your new score $=$ the sum of your neighbours' scores",
                    (540, 46), color="accenttwo", anchor="center", boxes=boxes)
     F.emit("recursive-flow", body, container="full", h=H)
@@ -282,17 +283,22 @@ def fig_eigen_equation():
     body += column(546)
 
     boxes = []
-    for at, s, col, anchor in (((612, 262), f"$\\lambda = {lmax}$", "accenttwo", "west"),
-                               ((612, 178),
-                                f"same twelve numbers,\\\\every one {lmax}$\\times$ bigger",
-                                "black", "west"),
-                               ((612, 92), "filled cell $=$ a road", "annot", "west")):
-        b = label_box(at[0], at[1], visible(s), anchor)
+    # The headline names the three objects the picture draws; without it the reader
+    # has a grid, a strip and a lambda, and has to guess which is A and which is c.
+    for at, s, col, anchor, size in (
+            ((612, 300), "$A\\,c = \\lambda\\,c$", "black", "west", 46),
+            ((612, 218), f"$\\lambda = {lmax}$", "accenttwo", "west", FONT),
+            ((612, 140),
+             f"same twelve numbers,\\\\every one {lmax}$\\times$ bigger",
+             "black", "west", FONT),
+            ((612, 62), "filled cell $=$ a road", "annot", "west", FONT)):
+        b = label_box(at[0], at[1], visible(s), anchor, size=size)
         hit = [i for i, o in enumerate(boxes) if boxes_overlap(b, o)]
         assert not hit, f"{s!r} collides with note {hit}"
         assert b[2] <= 1072, f"{s!r} runs off the page at x={b[2]:.0f}"
+        assert 10 <= b[1] and b[3] <= INK_TOP, f"{s!r} off the page vertically"
         boxes.append(b)
-        body += F.text(at[0], at[1], s, color=col, anchor=anchor)
+        body += F.text(at[0], at[1], s, color=col, anchor=anchor, size=size)
     F.emit("eigen-equation", body, container="full", h=H)
 
 
@@ -375,8 +381,8 @@ def fig_decay():
                         f"slowest mode\\\\{shown}", drawn, boxes, color="accenttwo",
                         anchor="west")
     body += fixed_label([(ax.X(11.2), ax.Y(0.86)), (ax.X(10.4), ax.Y(0.9))],
-                        "the other ten modes", drawn, boxes, color="annot",
-                        anchor="west")
+                        f"the other ${len(ratios) - 1}$ modes", drawn, boxes,
+                        color="annot", anchor="west")
     F.emit("decay", body, container="full", h=H)
 
 
@@ -420,7 +426,8 @@ def fig_walks_arrive():
         for u, v in zip(wk, wk[1:]):
             body += arrow(f"w{k}{u}", f"w{k}{v}", color="accenttwo", w=6.0,
                           head=(18, 22))
-    body += F.note(f"three of the ${arriving}$ 3-step walks ending at the ring",
+    body += F.note(f"three of the ${arriving}$ walks of length ${len(WALKS[0]) - 1}$ "
+                   f"ending at the ring",
                    (540, 62), color="accenttwo", anchor="center")
     F.emit("walks-arrive", body, container="full", h=H)
 
@@ -592,8 +599,8 @@ def _katz_solve_body(final):
     # The two annotations under the first line: what the floor is, and what the
     # recursion is.  Each has a leader to its own term, so neither can be read as
     # naming the whole equation.
-    body += F.seg((306, 300), (200, 278), color="accenttwo", w=2.6)
-    body += F.seg((458, 300), (700, 278), color="accent", w=2.6)
+    body += F.seg((306, 302), (170, 274), color="accenttwo", w=2.6)
+    body += F.seg((458, 302), (862, 274), color="accent", w=2.6)
     for at, s, col, anchor in (((30, 246), "$\\beta$: a floor for everyone",
                                 "accenttwo", "west"),
                                ((1058, 246), "$\\lambda\\times$ your neighbours",
@@ -618,7 +625,7 @@ def fig_katz_solve_2():
 
 # --------------------------------------------------------------------------- the series
 SERIES_TERMS = 4
-SERIES_FRAME = (300, 150, 1040, 320)
+SERIES_FRAME = (250, 150, 1040, 320)
 SERIES_TICKS = ["$\\mathbf{1}$", "$\\lambda A\\mathbf{1}$",
                 "$\\lambda^2 A^2\\mathbf{1}$", "$\\lambda^3 A^3\\mathbf{1}$"]
 
@@ -641,7 +648,7 @@ def _series_body(upto):
               xticks=list(range(SERIES_TERMS)), yticks=[0, 4, 8, 12],
               xfmt=lambda v: SERIES_TICKS[int(round(v))], yfmt=lambda v: f"{v:g}")
     body = ax.frame()
-    body += F.text(126, (ax.y0 + ax.y1) / 2, "score added", rot=90)
+    body += F.text(110, (ax.y0 + ax.y1) / 2, "score added", rot=90)
     # The term names are the x tick labels, so they are blockers for everything else.
     boxes = [label_box(ax.X(t), ax.y0 - 17, visible(SERIES_TICKS[t]), "north")
              for t in range(SERIES_TERMS)]
@@ -729,7 +736,9 @@ def fig_katz_dial():
         body += put((DIAL_X[0] - 28, DIAL_Y[i]), name,
                     "accenttwo" if name in moving else "black", "east")
     body += put((DIAL_X[2] + 28, DIAL_Y[3]), shared, "accenttwo", "west")
-    body += put((30, 40), "only 4th place moves", "accenttwo", "west")
+    body += put((30, 40),
+                f"Carthago: {tops[0].index('Carthago') + 1}th $\\to$ "
+                f"{order_hi.index('Carthago') + 1}th", "accenttwo", "west")
     F.emit("katz-dial", body, container="full", h=H)
 
 

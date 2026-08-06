@@ -499,6 +499,162 @@ def fig_next_module():
     F.emit("next-module", body + n1, container="full", h=CANVAS_H)
 
 
+def pagebox(x, y, label, fill="white", text_col="black", name=None):
+    """One page box, the same object the web is drawn from."""
+    w = F.CHAR_W * F.FONT * len(label) + 26.0
+    nm = f"({name})" if name else ""
+    return (f"\\node[rectangle,rounded corners=7bp,draw=black,line width=1.8bp,"
+            f"fill={fill},text={text_col},minimum width={w:.1f}bp,"
+            f"minimum height={BOX_H}bp,inner sep=0pt,"
+            f"font=\\fontsize{{{F.FONT}}}{{{int(F.FONT * 1.15)}}}\\selectfont] "
+            f"{nm} at ({x:.1f},{y:.1f}) {{{label}}};\n"), (x - w / 2, y - BOX_H / 2,
+                                                           x + w / 2, y + BOX_H / 2)
+
+
+def fig_hub_authority():
+    """The two roles as one picture: three arrows out, three arrows in."""
+    hub, aut = (120.0, 190.0), (960.0, 190.0)
+    outs = [(390.0, 300.0), (400.0, 190.0), (390.0, 80.0)]
+    ins = [(690.0, 300.0), (680.0, 190.0), (690.0, 80.0)]
+    assert len(outs) + len(ins) + 2 == 8, "eight nodes, like the web"
+    body = ""
+    for i, p in enumerate(outs + ins):
+        body += F.disc(p[0], p[1], name=f"n{i}")
+    body += F.disc(*hub, fill=A2, name="H") + F.disc(*aut, fill=A2, name="A")
+    for i in range(3):
+        body += f"\\draw[ed,{ARROW}] (H) -- (n{i});\n"
+        body += f"\\draw[ed,{ARROW}] (n{i + 3}) -- (A);\n"
+    body += F.text(255, 40, "hub", color=A2)
+    body += F.text(825, 40, "authority", color=A2)
+    for e in [(hub, o) for o in outs] + [(i, aut) for i in ins]:
+        for lb in ((255, 40, "hub"), (825, 40, "authority")):
+            b = F.label_box(lb[0], lb[1], lb[2], "center")
+            assert not F.box_hits_segment(b, e[0], e[1], pad=6), \
+                f"the word {lb[2]!r} sits on an arrow"
+    F.emit("hub-authority", body, container="full", h=CANVAS_H)
+
+
+def fig_hits_equations():
+    """x = A y and y = A^T x, drawn as the two updates they are.
+
+    The convention is the standard one and NOT the lecture note's: verify_numbers
+    .hits() records that the note has hubs and authorities swapped.
+    """
+    body = ""
+    src, tgt = (130.0, 210.0), (950.0, 210.0)
+    ys = [(390.0, 300.0), (400.0, 210.0), (390.0, 120.0)]
+    xs = [(690.0, 300.0), (680.0, 210.0), (690.0, 120.0)]
+    body += F.disc(*src, label="$x$", fill=A2, name="S")
+    body += F.disc(*tgt, label="$y$", fill=A2, name="T")
+    for i, p in enumerate(ys):
+        body += F.disc(p[0], p[1], label="$y$", name=f"y{i}")
+    for i, p in enumerate(xs):
+        body += F.disc(p[0], p[1], label="$x$", name=f"x{i}")
+    for i in range(3):
+        body += f"\\draw[ed,{ARROW}] (S) -- (y{i});\n"
+        body += f"\\draw[ed,{ARROW}] (x{i}) -- (T);\n"
+    body += F.text(265, 55, "hub: $x = A\\,y$", color="black")
+    body += F.text(795, 55, "authority: $y = A^{\\top} x$", color="black")
+    for lb in ((265, 55, "hub: $x = A y$"), (795, 55, "authority: $y = A^{top} x$")):
+        b = F.label_box(lb[0], lb[1], lb[2], "center")
+        assert 6 <= b[0] and b[2] <= 1074, f"{lb[2]!r} runs off the canvas {b}"
+        for e in [(src, y) for y in ys] + [(x, tgt) for x in xs]:
+            assert not F.box_hits_segment(b, e[0], e[1], pad=6), f"{lb[2]!r} sits on an arrow"
+    F.emit("hits-equations", body, container="full", h=CANVAS_H)
+
+
+def fig_pagerank_split():
+    """One page's score, split equally among its out-links."""
+    src = WEB_HUB_KING[0]
+    outs = [b for a, b in WEB_LINKS if a == src]
+    d = WEB.out_degree(src)
+    assert d == len(outs) == 4
+    share = [1.0 / d] * d
+    assert abs(sum(share) - 1.0) < 1e-12, share
+    assert all(abs(s - 1.0 / WEB.out_degree(src)) < 1e-12 for s in share)
+    p0 = (110.0, 180.0)
+    ys = [300.0, 220.0, 140.0, 60.0]
+    body, boxes = "", []
+    b, bb = pagebox(*p0, src, name="S")
+    body += b
+    boxes.append(bb)
+    for i, (n, y) in enumerate(zip(outs, ys)):
+        b, bb = pagebox(520.0, y, n, name=f"t{i}")
+        body += b
+        boxes.append(bb)
+    for i in range(d):
+        body += f"\\draw[ed,{ARROW}] (S) -- (t{i});\n"
+    # The fraction rides beside its own arrow, out where the fan has opened.
+    chips = []
+    for i, y in enumerate(ys):
+        t = 0.66
+        cx, cy = p0[0] + t * (520.0 - p0[0]), p0[1] + t * (y - p0[1])
+        cy += 32 if y > p0[1] else -32
+        txt = f"$1/{d}$"
+        cb = F.label_box(cx, cy, txt, "center")
+        for o in chips + boxes:
+            assert not F.boxes_overlap(cb, o), f"the {txt} chip collides at {cb}"
+        chips.append(cb)
+        body += F.text(cx, cy, txt, color=A2)
+    tot = f"${d} \\times 1/{d} = 1$"
+    tb = F.label_box(1062, 180, tot, "east")
+    for o in chips + boxes:
+        assert not F.boxes_overlap(tb, o), "the total collides"
+    assert tb[0] >= 6
+    body += F.text(1062, 180, tot, color=A2, anchor="east")
+    F.emit("pagerank-split", body, container="full", h=CANVAS_H)
+
+
+# Verified against review/DECK_SPEC.md (slide 74), which lists each with what they
+# were ranking: chess tournaments, children's popularity, sociometry, the Web.
+GENEALOGY = [(1895, "Landau"), (1949, "Seeley"), (1953, "Katz"),
+             (1965, "Hubbell"), (1972, "Bonacich"), (1998, "Brin \\& Page")]
+GEN_SPAN = (1890, 2000)
+
+
+def fig_genealogy():
+    """One equation, discovered six times, on a timeline -- never a table."""
+    assert [y for y, _ in GENEALOGY] == sorted(y for y, _ in GENEALOGY)
+    assert GEN_SPAN[0] < GENEALOGY[0][0] and GENEALOGY[-1][0] < GEN_SPAN[1]
+    x0, x1, ax = 150.0, 1000.0, 168.0
+
+    def X(y):
+        return x0 + (y - GEN_SPAN[0]) / (GEN_SPAN[1] - GEN_SPAN[0]) * (x1 - x0)
+
+    # Staggered above/below, and nudged along the axis where two labels would
+    # touch; the leader line keeps each label tied to its own year.
+    place = {1895: (1, 0.0), 1949: (-1, -21.0), 1953: (1, 0.0),
+             1965: (-1, 15.0), 1972: (1, 0.0), 1998: (-1, -45.0)}
+    body = F.seg((x0, ax), (x1, ax), color="black", w=2.6)
+    boxes = {}
+    for year, who in GENEALOGY:
+        side, dx = place[year]
+        mx, lx = X(year), X(year) + dx
+        ly = ax + side * 24
+        body += F.seg((mx, ax), (mx, ax + side * 13), color="black", w=2.6)
+        body += F.dot(mx, ax, color=A2, d=15)
+        if abs(dx) > 1:
+            body += F.seg((mx, ax + side * 13), (lx, ly), color=GY, w=1.8)
+        s = f"{year}\\\\{who}"
+        body += F.text(lx, ly, s, color="black",
+                       anchor="south" if side > 0 else "north")
+        boxes[year] = F.label_box(lx, ly, s, "south" if side > 0 else "north")
+    ys = sorted(boxes)
+    for i, a in enumerate(ys):
+        for b in ys[i + 1:]:
+            assert not F.boxes_overlap(boxes[a], boxes[b]), \
+                f"the {a} and {b} labels overlap -- stagger them further"
+    for b in boxes.values():
+        assert 6 <= b[0] and b[2] <= 1074, f"a timeline label runs off the canvas: {b}"
+    banner = "one equation, six times: $c = \\lambda A c$"
+    bb = F.label_box(540, 312, banner, "center")
+    for b in boxes.values():
+        assert not F.boxes_overlap(bb, b), "the banner collides with a label"
+    assert 6 <= bb[0] and bb[2] <= 1074 and bb[3] <= INK_H
+    body += F.text(540, 312, banner, color=A2)
+    F.emit("genealogy", body, container="full", h=CANVAS_H)
+
+
 FIGURES = [
     ("web-graph", fig_web_graph),
     ("web-blank", fig_web_blank),
@@ -507,5 +663,9 @@ FIGURES = [
     ("web-dangling", fig_web_dangling),
     ("teleport", fig_teleport),
     ("ppr", fig_ppr),
+    ("hub-authority", fig_hub_authority),
+    ("hits-equations", fig_hits_equations),
+    ("pagerank-split", fig_pagerank_split),
+    ("genealogy", fig_genealogy),
     ("next-module", fig_next_module),
 ]
