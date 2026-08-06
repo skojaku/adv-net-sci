@@ -1671,7 +1671,7 @@ def fig_transitivity_def():
               color="black", anchor="west")
     s += text(x, 190, f"$+$ 10 blade nodes $\\times \\binom{{2}}{{2}} = "
                       f"{WM_BLADE_TRIPLETS}$", color="black", anchor="west")
-    s += text(x, 132, f"${WM_HUB_TRIPLETS} + {WM_BLADE_TRIPLETS} = {total}$ triplets",
+    s += text(x, 132, f"${WM_HUB_TRIPLETS} + {WM_BLADE_TRIPLETS} = {total}$ (closed or not)",
               color="black", anchor="west")
     s += text(x, 80, f"$C = \\dfrac{{3 \\times {WM_TRIANGLES}}}{{{total}}} = "
                      f"\\dfrac{{{WM_T.numerator}}}{{{WM_T.denominator}}} "
