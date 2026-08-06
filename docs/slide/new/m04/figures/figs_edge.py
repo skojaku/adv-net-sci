@@ -29,7 +29,7 @@ import numpy as np
 from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
 from feld import ABOVE, BELOW, EQUAL, degree, friend_mean
-from figs_tail import HUBS
+from figs_tail import CCDF_BOX, CCDF_YLIM, CCDF_YTICKS, HUBS
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
 
@@ -149,6 +149,8 @@ def fig_individual_vs_average():
             assert rel == {"accenttwo": 1, "accent": -1, "annot": 0}[fill], \
                 f"{g} is drawn in the {fill} group but {k} vs {fm} says otherwise"
             b += disc(x0 + 120 * i, 240, str(k), fill=fill)
+            if fill == "accent":          # the two above; the deck calls them by name
+                b += text(x0 + 120 * i, 276, g, anchor="south")
             # bare number, not "vs 4.0": the line under the row already says what the
             # second number is, and the two words cost 60bp of pitch per disc
             b += text(x0 + 120 * i, 200, f"${_dec(fm, 1)}$", color="annot",
@@ -474,22 +476,29 @@ def fig_lognormal_trap():
     gap = max(abs(math.log10(float((pl > k).mean()) / float((ln > k).mean()))) for k in grid)
     assert gap < 0.16, f"the two CCDFs are {gap:.2f} decades apart -- not on top of each other"
 
-    ax = Axes((185, 140, 1040, 335), (KLO, KHI), (1e-3, 1.0), xlog=True, ylog=True,
-              xlabel="degree $k$", ylabel="CCDF",
-              xticks=[10, 100, 1000], yticks=[1e-3, 1e-2, 1e-1, 1])
+    # The deck's CCDF frame, imported rather than hand-rolled. This panel had its own
+    # box, its own y limits and its own title ("CCDF" against P(k'>k) everywhere else),
+    # so it ran at 65px per decade where the other seven run at 37.5 -- an unannounced
+    # change of ruler, on the slide range whose whole argument is that an unannounced
+    # change of ruler misleads you. The curve only reaches 10^-2.5, so the lower half of
+    # the frame is empty; that is this distribution not going as deep as cond-mat's,
+    # which is readable information and not a defect to be scaled away.
+    ax = Axes(CCDF_BOX, (KLO, KHI), CCDF_YLIM, xlog=True, ylog=True,
+              xlabel="degree $k$", ylabel="$P(k'>k)$",
+              xticks=[10, 100, 1000], yticks=CCDF_YTICKS)
     b = ax.frame()
     sel = (ks_pl >= KLO) & (ks_pl <= KHI)
     b += ax.line(ks_pl[sel], su_pl[sel], color="accent", w=6.0)
     keep = np.unique(np.round(np.logspace(math.log10(KLO), math.log10(KHI), 34)).astype(int))
     idx = [int(np.argmin(np.abs(ks_ln - k))) for k in keep]
     b += ax.points(ks_ln[idx], su_ln[idx], color="accenttwo", d=13)
-    b += text(1035, 320, "a true power law", color="accent", anchor="east")
-    # Lifted clear of the x spine: the R^2 line sat 8bp above y0 = 140, which the
-    # collision gate reads as the axis crossing the label, and 8bp is tight on the
-    # render too. 56bp apart rather than 42 so the two lines' boxes do not touch.
-    b += text(200, 236, "a log-normal", color="accenttwo", anchor="west")
-    b += text(200, 180, f"$R^2 = {_dec(r2, 2)}$ across ${_dec(decades, 1)}$ decades",
-              color="accenttwo", anchor="west")
+    # Both labels stack in the lower LEFT, which is the only region of a five-decade
+    # frame this 2.5-decade curve leaves clear: it runs across the top, so anything at
+    # the right is under it, and the collision boxes are wide enough that a right-hand
+    # label overlaps a left-hand one whatever the height.
+    b += text(250, 215, "power law", color="accent", anchor="west")
+    b += text(250, 155, f"log-normal, $R^2 = {_dec(r2, 2)}$ over "
+                        f"${_dec(decades, 1)}$ decades", color="accenttwo", anchor="west")
     emit("lognormal-trap", b, container="full", h=400)
 
 
@@ -512,6 +521,14 @@ def fig_scale_free_debate():
              (520, "2011", "Ugander et al.", "the doubt", ["curvature"]),
              (850, "2019", "Broido \\& Clauset", "the audit",
               ["likelihood-ratio tests", f"{pct(BC_STRONG)} of {BC_NETWORKS} networks"])]
+    # The dots are equally spaced and the intervals are not (12 years, then 8), so the
+    # rule reads as a metric axis it is not -- the same length is 55% more time on the
+    # left. Metric spacing does not fit: it would leave 268bp between 2011 and 2019 for
+    # a column whose widest line models 448. So the intervals are named instead, which
+    # says the thing the spacing was implying wrongly.
+    for a, c in zip(marks[:-1], marks[1:]):
+        b += text((a[0] + c[0]) / 2, 248, f"{int(c[1]) - int(a[1])} years",
+                  color="annot", anchor="south")
     for x, year, who, role, what in marks:
         b += dot(x, 230, color="accent", d=SMALLNODE)
         b += text(x, 285, year, anchor="south", size=48)
@@ -617,14 +634,14 @@ def fig_recap():
     # they used to carry in full ("2.5 + 0.5 = 3.0", the exponent) are in the deck's
     # figcaption, which is where the lead ruled they should go when a drawing cannot
     # hold its annotations at 36pt.
-    # Panel three carries no second line: its neighbour holds the identity, which has
-    # to stay whole -- "2.5 + 0.5" without the "= 3.0" is a fragment, not an identity --
-    # and the pictogram plus "one tail" says panel three's act without help.
+    # Panel three's gloss has to fit beside the identity, which stays whole -- "2.5 +
+    # 0.5" without the "= 3.0" is a fragment, not an identity -- so it gets the five
+    # characters the collision budget leaves: "heavy".
     for cx, head, val in (
             (108, "the girls", f"{len(BELOW)} below"),
             (324, "identity",
              f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
-            (540, "one tail", None),
+            (540, "one tail", "heavy"),
             (756, "one wiring", "$r \\neq 0$"),
             (972, "one doubt", "$R^2=0.99$")):
         b += text(cx, 152, head, anchor="north")

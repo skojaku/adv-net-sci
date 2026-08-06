@@ -30,6 +30,7 @@ drawing never jumps, and the floors are then asserted once against that box, exa
     python3 figures/make_animations.py
 """
 
+import math
 import sys
 from pathlib import Path
 
@@ -57,6 +58,7 @@ HOLD = 10           # frames of pause on the finished state before the loop rest
 # room has to be able to see.
 BOX = (50, 100, 1030, 340)
 GIF_NODE = NODE                       # 40bp, as every other graph in the deck
+RING_GROW, RING_W = 6, 5.0            # accent-3 ring; clearance asserted per frame
 LEFT_X, RIGHT_X, LABEL_Y = 50, 1030, 44
 
 _built = []
@@ -213,10 +215,21 @@ def ba_growth_frames():
         # I had recomputed the highlight here as well; two mechanisms agreeing today is
         # how they disagree later, so this one is gone and figs_tail's is the only one.
 
+        # R4 C4-4: the ring is added after `growth_layout`'s clearance solve, so the
+        # solve knows nothing about it -- a property asserted on something other than
+        # what is drawn, which is the shape of defect this deck keeps finding. grow=13
+        # left 3.2bp between the ring's outer edge and the nearest disc. Narrower now,
+        # and the clearance is measured on the drawn radius rather than trusted.
+        outer = (GIF_NODE + RING_GROW) / 2 + RING_W / 2
+        near = min(math.dist(pos[top], pos[n]) for n in fr["nodes"] if n != top)
+        assert near - GIF_NODE / 2 - outer >= 4.0, (
+            f"the accent-3 ring reaches within {near - GIF_NODE / 2 - outer:.1f}bp of "
+            f"the nearest disc -- narrow RING_GROW or the layout will look fused")
+
         # Ring first: drawn after `draw_growth` it sat on top of the hub's fifteen
         # spokes and cut every one of them, leaving stubs between ring and disc.
         body = ring(pos[top][0], pos[top][1], size=GIF_NODE,
-                    color="accentthree", w=5.0, grow=13)
+                    color="accentthree", w=RING_W, grow=RING_GROW)
         # The counter had no referent and its colour pointed at the wrong node: it was
         # set in accent-2, which in the drawing marks the node that just ARRIVED, so the
         # eye read "largest 15 edges" off a disc with one edge while the real hub sat
