@@ -144,6 +144,44 @@ it, and three markers shipped at 25.5px against a 26px floor. One guaranteed a r
 the drawing and was blind to what it implied; the other guaranteed the author's intention and was
 blind to the drawing.
 
+### Assert on the numbers that describe the canvas, not the numbers that describe the content
+
+Module 04 spent three rounds refining one rule, and this is where it ended up.
+
+Round 3: **assert on the coordinates actually drawn.** A clearance gate passed at 46bp in a
+canonical box, the layout was then scaled by 0.873 into a narrower panel, and six discs fused at
+40.1bp against 40bp discs.
+
+Round 4 found the narrower and more useful version. A figure teaching that a CCDF's slope is one
+less than a PDF's drew the two panels at **0.4099 and 0.3915** — 4.5% apart, where the claim is 2.5
+against 1.5 — because the panels spent six and four decades in boxes of identical height, so the
+change of ruler cancelled the change of slope. The guard meant to catch it fit `xs ** -g` against
+`xs ** -(g-1)` and asserted they differed by one: arithmetic on arrays the author had constructed.
+
+What found it was **bp per decade, measured off the box dimensions** — the only quantity in that
+figure that neither the data nor the author's intention can reach.
+
+> A slope is content. Bp per decade is canvas. Assert the canvas.
+
+The same test retires a whole family: a label's position is content, its ink box is canvas; a
+node's degree is content, its drawn diameter is canvas; "the two states differ by one line" is
+content, "the two PNGs are pixel-identical above row 313" is canvas.
+
+### A gate is blind to whatever the drawing primitives do not tell it about
+
+Three of module 04's gate gaps were the same gap. The collision gate could not see a **fill**,
+because `fill_poly` reported nothing. It could not see a **frame border**, because a rectangle is
+one TikZ path and the gate only knew `seg()`. And the node-size gate could not see a **gray or
+hollow disc**, because `NODE_FILLS` listed two colours.
+
+Each was found by a reviewer measuring the render, months of rounds apart, and each was one line to
+close once someone looked at the primitive rather than at the check. So when a gate passes on a
+figure you can see is wrong, ask what the drawing *told* it — not what it examined.
+
+The corollary bites: **a private helper that bypasses the shared primitive is a hole in every gate
+built on it.** `figs_story.py` kept its own `rect()` after `figlib`'s learned to record, so the
+frame blockers were live and that file's frames were still invisible.
+
 ### A mechanical edit must assert that it matched
 
 A fixer applying twenty wording changes reaches for `str.replace`, and a `str.replace` whose
