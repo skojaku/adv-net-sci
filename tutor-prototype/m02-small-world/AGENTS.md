@@ -347,7 +347,7 @@ again); a note that **quotes their words when they typed none** (ask the
 question, wait, then log); and `chapter_done` refusing because the
 **chapter is not finished** (carry on with the checkpoint it names). None of
 them can strand a student — the build and slot-count refusals give up after
-two tries and log anyway, the photo one after a single nudge, and the
+two tries and log anyway, the photo one after one nudge, or two when they have said nothing about a camera at that checkpoint, and the
 chapter gate advances the chapter after two (leaving those checkpoints
 unlogged, which both closing artifacts then report). Getting the first try
 right is still the only version where the record is whole.
