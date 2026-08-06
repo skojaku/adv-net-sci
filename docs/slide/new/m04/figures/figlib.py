@@ -221,8 +221,10 @@ def emit(name, body, container="col", h=None, hmod=""):
     once. Every failure is printed and the run exits non-zero at the end.
     """
     if _only and not any(k in name for k in _only):
+        scene_clear()
         return
     try:
+        assert_no_collisions(name)
         w = DESIGN[container]
         im = render(body, w, h or int(w * 0.70))
         im, fw, fh, node_px, x_px, span = crop_and_check(name, im, container, hmod)
@@ -233,6 +235,8 @@ def emit(name, body, container="col", h=None, hmod=""):
     except (AssertionError, SystemExit) as e:
         _failures.append((name, str(e)))
         print(f"  FAIL {name}: {e}")
+    finally:
+        scene_clear()
 
 
 # --------------------------------------------------------------------------- drawing
@@ -252,11 +256,20 @@ def ring(x, y, size=NODE, color="accenttwo", w=4.0, grow=11):
     return f"\\draw[line width={w}bp,draw={color}] ({x},{y}) circle ({(size+grow)/2}bp);\n"
 
 
-def dot(x, y, color="accent", d=DOT):
+def dot(x, y, color="accent", d=DOT, record=True):
+    if record:
+        _scene["mark"].append((x, y, d / 2, f"a {d:g}bp dot"))
     return f"\\fill[{color}] ({x},{y}) circle ({d/2}bp);\n"
 
 
-def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None):
+def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None, record=True):
+    """A straight rule.  `record=False` for one drawn deliberately ACROSS text.
+
+    The only legitimate case is a strike-through, which is a rule whose whole job is to
+    cross a word.  Everything else that crosses a word is the defect the gate exists for.
+    """
+    if record:
+        _scene["rule"].append((tuple(p), tuple(q), "a rule"))
     o = [f"line width={w}bp", f"draw={color}"]
     for extra in (dash, arrow):
         if extra:
@@ -266,7 +279,10 @@ def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None):
     return f"\\draw[{','.join(o)}] ({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f});\n"
 
 
-def polyline(pts, color="accent", w=3.4, dash=""):
+def polyline(pts, color="accent", w=3.4, dash="", record=True, what="a curve"):
+    if record:
+        for a, b in zip(pts, pts[1:]):
+            _scene["rule"].append((tuple(a), tuple(b), what))
     o = [f"line width={w}bp", f"draw={color}"]
     if dash:
         o.append(dash)
@@ -281,13 +297,16 @@ def fill_poly(pts, color="accenttwo", opacity=0.25):
 _fontsizes = set()
 
 
-def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=None):
+def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=None,
+         record=True):
     _fontsizes.add(size)
     assert size >= FONT, f"font {size}pt is below the {FONT}pt floor"
     # A bare % is a TeX comment: it swallowed the rest of a \node line once and the
     # build died with "Undefined control sequence" pointing at the wrong token.
     assert not re.search(r"(?<!\\)%", s), f"unescaped % in {s!r} -- write \\%"
     assert color != "accentthree", "accent-3 is not a text colour (2.0:1 on white)"
+    if record:
+        _scene["text"].append((text_box(x, y, s, anchor, size=size, rot=rot), s))
     o = [f"font=\\fontsize{{{size}}}{{{int(size*1.15)}}}\\selectfont",
          f"text={color}", f"anchor={anchor}", "align=center"]
     if width:
@@ -477,6 +496,97 @@ def note(s, at, color="accenttwo", anchor="west", size=FONT, boxes=()):
     return text(at[0], at[1], s, color=color, anchor=anchor, size=size)
 
 
+# --------------------------------------------------------------------------- collisions
+# Round 2 of m04 found the same defect six times in one range: an in-figure text box drawn
+# where something else already is -- an annotation over an annotation on three binning
+# panels, five separate overlaps on one derivation figure, a note struck through by an
+# axis rule, another struck by a curve. Every one was a box that grew, or an axis that
+# moved, after the position had been chosen by hand.
+#
+# `place_labels` has solved names against discs and edges since m03, but the data figures
+# never used it -- they place annotations at fixed corners. So this moves the same idea
+# under everything: every `text()`, `seg()`, `polyline()` and `dot()` records itself, and
+# `emit()` refuses a figure in which a word sits on anything.
+#
+# What is deliberately NOT recorded: fills. Text on a filled chip or band is a design, not
+# a collision -- `fill_poly` and raw `\fill` never enter the scene. A rule meant to cross
+# a word (a strike-through) opts out with `record=False` and says why at the call site.
+_scene = {"text": [], "rule": [], "mark": []}
+
+_TEX_TOKEN = re.compile(r"\\\\|\\[a-zA-Z]+|\\[,;!]|[${}^_]")
+
+
+def visible(s):
+    """Roughly what a label occupies on the page, for its collision box.
+
+    `label_box` counts characters and a TeX label is mostly markup: the literal
+    "$\\langle k \\rangle = 4$" is 24 characters and eight glyphs, so measuring it raw
+    reports collisions that are not there. Control words count as one glyph; braces,
+    dollars, carets and thin spaces count as none; the line break is left alone so
+    `label_box` can still split on it.
+    """
+    def sub(m):
+        tok = m.group(0)
+        if tok == "\\\\":
+            return tok
+        return "" if tok[0] in "${}^_" or len(tok) == 2 else "n"
+
+    return _TEX_TOKEN.sub(sub, s)
+
+
+def text_box(x, y, s, anchor="center", size=FONT, rot=None, pad=3):
+    """The axis-aligned box a `text()` call occupies, rotation included."""
+    b = label_box(x, y, visible(s), anchor, size=size, pad=pad)
+    if not rot:
+        return b
+    a = math.radians(rot)
+    ca, sa = math.cos(a), math.sin(a)
+    xs, ys = [], []
+    for cx, cy in ((b[0], b[1]), (b[2], b[1]), (b[2], b[3]), (b[0], b[3])):
+        dx, dy = cx - x, cy - y
+        xs.append(x + dx * ca - dy * sa)
+        ys.append(y + dx * sa + dy * ca)
+    return (min(xs), min(ys), max(xs), max(ys))
+
+
+def scene_clear():
+    for v in _scene.values():
+        v.clear()
+
+
+def _short(s, n=34):
+    s = " ".join(s.split())
+    return s if len(s) <= n else s[:n - 1] + "..."
+
+
+def collisions(limit=6):
+    """Every place a drawn word sits on something else.  Returns a list of messages."""
+    out = []
+    texts = _scene["text"]
+    for i, (b, s) in enumerate(texts):
+        for c, u in texts[i + 1:]:
+            if boxes_overlap(b, c):
+                out.append(f"{_short(s)!r} overlaps the text {_short(u)!r}")
+        for pp, qq, what in _scene["rule"]:
+            if box_hits_segment(b, pp, qq, pad=0):
+                out.append(f"{_short(s)!r} is crossed by {what} at "
+                           f"({pp[0]:.0f},{pp[1]:.0f})-({qq[0]:.0f},{qq[1]:.0f})")
+                break
+        for mx, my, mr, what in _scene["mark"]:
+            if box_hits_disc(b, mx, my, mr):
+                out.append(f"{_short(s)!r} sits on {what} at ({mx:.0f},{my:.0f})")
+                break
+    return out[:limit]
+
+
+def assert_no_collisions(name):
+    bad = collisions()
+    assert not bad, (
+        f"{name}: {len(bad)} in-figure collision(s) --\n    "
+        + "\n    ".join(bad)
+        + "\n  Shorten the note or move the panel. Never shrink the type.")
+
+
 # --------------------------------------------------------------------------- axes
 def _ticks_log(lo, hi):
     """Decade ticks covering [lo, hi]."""
@@ -591,6 +701,7 @@ def run(figures):
         if _only and not any(k in name for k in _only):
             continue
         try:
+            scene_clear()
             fn()
         except (AssertionError, SystemExit) as e:
             _failures.append((name, str(e)))
