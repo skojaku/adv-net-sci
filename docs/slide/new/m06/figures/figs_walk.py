@@ -441,7 +441,7 @@ def fig_walks_arrive():
 BOW_EDGES = [("A", "B"), ("A", "P"), ("A", "M"), ("L", "M"),
              ("B", "P"), ("B", "N"), ("R", "N")]
 BOW_POS = {"L": (60, 150), "M": (216, 150), "A": (372, 150), "P": (556, 300),
-           "B": (740, 150), "N": (896, 150), "R": (1040, 150)}
+           "B": (740, 150), "N": (900, 150), "R": (1026, 150)}
 BOW_ORDER = ["L", "M", "A", "P", "B", "N", "R"]
 POWER_STEPS = (0, 1, 2, 4)
 
@@ -495,8 +495,11 @@ def fig_power_step(step):
         body += F.disc(*BOW_POS[n], "", fill=shade(val[i]))
 
     names = {n: printed[i] for i, n in enumerate(BOW_ORDER)}
+    # The right-hand bound is 1076 rather than 1072 so that R's value can sit directly
+    # under R: at 1072 the only side left was a diagonal that put the number nearer to
+    # N than to the node it belongs to.
     sides, boxes = F.place_labels(names, BOW_POS, BOW_EDGES,
-                                  bounds=(8, 62, 1072, 374), gap=3.0)
+                                  bounds=(8, 62, 1076, 374), gap=3.0)
     body += F.draw_labels(names, BOW_POS, sides)
     body += F.note(f"step ${step}$", (24, 34), color="accenttwo", anchor="west",
                    boxes=boxes)
