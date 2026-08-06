@@ -319,6 +319,15 @@ Two defences, both cheap. Make the replacement **assert** it matched (`assert ol
 rather than trusting `str.replace` to no-op quietly; and re-read the rendered slide before
 reporting, which is the rule below and is the one that actually caught it.
 
+### ### A scripted replacement can eat the fix you just applied
+
+Two edits in one script, both matching on the same URL: the first inserted a link on the
+slide, the second rewrote "the URL in the speaker note" — and hit the copy inside the link
+it had just created, producing `href="https://The link is on the slide..."`. The script
+printed success. Order the replacements so later patterns cannot match earlier insertions,
+or make each one match on enough surrounding context to be unambiguous — and then grep the
+export for what you claimed to add.
+
 ### ### After changing a figure, check every slide that uses it — and every claim about it
 
 Three separate regressions came from this:

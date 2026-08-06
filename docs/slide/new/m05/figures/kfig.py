@@ -384,11 +384,66 @@ def bag(cx, cy, w, h, color="annot", lw=2.6):
             f"({cx + w / 2:.1f},{cy + h / 2:.1f});\n")
 
 
-def string(p, q, color="annot", w=2.4, sag=16):
+def _bow_control(p, q, bow):
+    """Control point for a string that sags away from the straight line.
+
+    The first version displaced the midpoint straight down in y, which does nothing to a
+    vertical edge -- it just slides the control point along the line. Sagging along the
+    PERPENDICULAR, biased downwards, bows every edge whatever its direction.
+    """
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    L = math.hypot(dx, dy) or 1.0
+    nx_, ny_ = -dy / L, dx / L
+    if ny_ > 0:                      # always hang downwards
+        nx_, ny_ = -nx_, -ny_
+    mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+    return (mx + nx_ * bow * L, my + ny_ * bow * L)
+
+
+def string(p, q, color="annot", w=2.4, bow=0.13):
     """A hanging string between two balls."""
-    mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2 - sag
+    cx, cy = _bow_control(p, q, bow)
     return (f"\\draw[line width={w}bp,draw={color}] ({p[0]:.1f},{p[1]:.1f}) "
-            f".. controls ({mx:.1f},{my:.1f}) .. ({q[0]:.1f},{q[1]:.1f});\n")
+            f".. controls ({cx:.1f},{cy:.1f}) .. ({q[0]:.1f},{q[1]:.1f});\n")
+
+
+def strings_graph(pos, edges, fill, node=34, bow=0.13, w=3.0, color="annot",
+                  cut=False, what="strings"):
+    """The network drawn as balls hanging on strings, rather than as a node-link diagram.
+
+    The slide's claim is "every friendship is two coloured balls on a string" and the
+    first version drew ordinary straight edges, so the room saw a graph and heard a
+    metaphor. `cut=True` snips every string into two stubs, which is what stage three of
+    the game actually does.
+
+    The bowed curve is sampled and checked against every disc it does not end at: a sag
+    that dips through somebody's head is worse than a straight line.
+    """
+    out = ""
+    for a, b in edges:
+        p, q = pos[a], pos[b]
+        c = _bow_control(p, q, bow)
+        for t in np.linspace(0.05, 0.95, 19):          # quadratic Bezier samples
+            x = (1 - t) ** 2 * p[0] + 2 * (1 - t) * t * c[0] + t ** 2 * q[0]
+            y = (1 - t) ** 2 * p[1] + 2 * (1 - t) * t * c[1] + t ** 2 * q[1]
+            for k, (kx, ky) in pos.items():
+                if k in (a, b):
+                    continue
+                assert math.hypot(x - kx, y - ky) >= node / 2 + 4, (
+                    f"{what}: the string {a}-{b} sags through disc {k} -- reduce bow "
+                    f"or move the node")
+        if cut:
+            for lo, hi in ((0.0, 0.30), (0.70, 1.0)):
+                pts = []
+                for t in np.linspace(lo, hi, 7):
+                    pts.append(((1 - t) ** 2 * p[0] + 2 * (1 - t) * t * c[0] + t ** 2 * q[0],
+                                (1 - t) ** 2 * p[1] + 2 * (1 - t) * t * c[1] + t ** 2 * q[1]))
+                out += polyline(pts, color=color, w=w)
+        else:
+            out += string(p, q, color=color, w=w, bow=bow)
+    for n, (x, y) in pos.items():
+        out += disc(x, y, fill=fill[n], size=node)
+    return out
 
 
 def assert_boxes_clear(boxes, what):

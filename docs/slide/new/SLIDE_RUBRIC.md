@@ -158,6 +158,11 @@ Use the report format at the bottom. Order findings by severity, then slide numb
 - **S4 · Major — Act 4: edge cases as prompts.** The final movement probes edge
   cases, each posed **as a question to students** before any resolution
   (self-loops? disconnected? a single node? directed?).
+- **S5a · Major — A demo the lecturer cannot launch is not a demo.** If a milestone slide
+  points at a live tool, the link must be **on the slide** and clickable in the HTML
+  export. Module 05 shipped three demo slides whose URL lived only in the speaker note,
+  without a scheme, so the lecturer had to retype it mid-lecture. Check the export, not
+  the markdown: `grep -o 'href="http[^"]*"' out.html`.
 - **S5 · Major — Demo at every milestone.** Each milestone (≈ each part) contains
   an interactive element: a demo, worksheet, trace-it-yourself activity, poll, or
   live widget. A milestone without one is a Major per milestone.

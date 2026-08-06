@@ -34,7 +34,9 @@ from figlib import (                                                   # noqa: E
     PXBP, TEXT_MIN_PX, calibrate, disc, render, seg, text,
 )
 from figs_chance import WS_E, WS_LEFT, WS_POS                          # noqa: E402
-from kfig import CHI, COFF, KNODE, bag, club, karate, small, string    # noqa: E402
+from kfig import (                                                     # noqa: E402
+    CHI, COFF, KNODE, bag, club, karate, small, string, strings_graph,
+)
 
 HOLD = 6            # frames of pause on the finished state
 MS = 700            # ms per frame
@@ -132,27 +134,33 @@ def balls_frames():
     # the static export, so a first frame that only fills the left third makes the gate --
     # correctly -- report 63% white margin on the slide.
     empty_bag = bag(830, 200, 400, 290)
-    base = small(pos, list(WS_E), node=34, what="balls-1", fill=col) + empty_bag
 
-    # 1: the network, as balls on strings, and an empty bag waiting
-    f1 = base
-    # 2: one string pulled out and inspected
+    # 1: balls on strings. Drawn as strings, not as graph edges -- the slide's whole
+    # claim is that a friendship IS two balls on a string, and straight black segments
+    # do not say that.
+    f1 = strings_graph(pos, WS_E, col, node=34, what="balls-1") + empty_bag
+
+    # 2: one string picked out and held up, in place
     pulled = (1, 3)
-    f2 = base + string((700, 250), (940, 250), color="accenttwo", w=5.0)
-    f2 += disc(700, 250, fill=col[pulled[0]], size=48)
-    f2 += disc(940, 250, fill=col[pulled[1]], size=48)
-    f2 += text(820, 160, "same colour", color="accenttwo", anchor="north", size=FONT)
-    # 3: every string cut, the balls in the bag
-    f3 = small(pos, list(WS_E), node=34, what="balls-3", fill=col) + empty_bag
-    rng = np.random.default_rng(2)
-    slots = [(680 + (i % 5) * 76 + rng.uniform(-8, 8),
-              110 + (i // 5) * 78 + rng.uniform(-7, 7)) for i in range(2 * m)]
+    f2 = strings_graph(pos, [e for e in WS_E if e != pulled], col, node=34,
+                       what="balls-2") + empty_bag
+    f2 += string(pos[pulled[0]], pos[pulled[1]], color="accenttwo", w=6.0)
+    f2 += disc(*pos[pulled[0]], fill=col[pulled[0]], size=34)
+    f2 += disc(*pos[pulled[1]], fill=col[pulled[1]], size=34)
+    f2 += text(830, 200, "same colour", color="accenttwo", anchor="center", size=FONT)
+
+    # 3: every string cut, and the balls still where they were
+    f3 = strings_graph(pos, WS_E, col, node=34, cut=True, what="balls-3") + empty_bag
+
+    # 4: the balls tipped into the bag -- two per string, so a member with k friends
+    #    contributes k of them
+    f4 = empty_bag
+    slots = [(680 + (i % 5) * 76, 118 + (i // 5) * 78) for i in range(2 * m)]
     order = [n for n in sorted(WS_POS) for _ in range(g.degree(n))]
     assert len(order) == 2 * m == 14
     for (x, y), n in zip(slots, order):
-        f3 += disc(x, y, fill=col[n], size=40)
-    # 4: two of them drawn back out
-    f4 = f3 + disc(1000, 250, fill=CHI, size=52) + disc(1000, 150, fill=COFF, size=52)
+        f4 += disc(x, y, fill=col[n], size=40)
+    f4 += text(280, 200, f"{2 * m} balls", color="black", anchor="center", size=44)
     return [f1, f2, f3, f4]
 
 

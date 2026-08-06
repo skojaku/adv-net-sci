@@ -588,7 +588,7 @@ Do NOT say the word "size" or "balance". Let the demo find it for them.
 
 <hr>
 
-Two groups of five, one friendship between them. Drag the solver and watch where it goes.
+Two groups of five, one friendship between them. [**Run it →**](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json)
 
 <div class="fig">
 
@@ -598,8 +598,7 @@ Two groups of five, one friendship between them. Drag the solver and watch where
 </div>
 
 <!--
-skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json
-Let it run to the cheap answer before saying anything.
+The link is on the slide. Let it run to the cheap answer before saying anything.
 -->
 
 ---
@@ -1437,7 +1436,7 @@ Nobody expects anything to happen. That is the trap and it is worth walking into
 
 <hr>
 
-The same two groups of five. Untouched. Plus forty people who know each other.
+The same two groups of five, untouched, plus forty people who know each other. [**Ask it for three groups →**](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json)
 
 <div class="fig">
 
@@ -1447,8 +1446,7 @@ The same two groups of five. Untouched. Plus forty people who know each other.
 </div>
 
 <!--
-skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json
-Ask for three communities. Watch it refuse.
+The link is on the slide. Ask for three communities; watch it refuse to keep the two cliques apart.
 -->
 
 ---
@@ -1576,8 +1574,10 @@ Half the room will say "about zero". They did this experiment last week and it d
 
 </div>
 
+Forty people, forty-one friendships, and no groups at all. [**Run it →**](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=random-net.json)
+
 <!--
-skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=random-net.json
+The link is on the slide. There are no groups in this network and the score will still climb.
 -->
 
 ---
