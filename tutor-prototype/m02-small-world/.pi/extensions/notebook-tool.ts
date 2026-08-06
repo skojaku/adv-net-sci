@@ -3316,9 +3316,13 @@ export default function (pi: ExtensionAPI) {
         // ▶ Run the out cell renders "Press ▶ Run when you're ready" and no
         // 📨 button at all, and pointing at it then is one more thing for a
         // nervous beginner to hunt for.
+        // Phrased so it is still true months later: "press 📨 once the chart
+        // looks right" is an instruction to a session that ended, in a
+        // notebook whose code was handed in long ago. Naming what the button
+        // does works live AND on a cold read.
         `    _sent = mo.md(\n` +
-        `        "<span style='color:#6A6D75;font-size:13px'>*Press 📨 above once the "\n` +
-        `        "chart looks right — that is what hands your code in.*</span>"\n` +
+        `        "<span style='color:#6A6D75;font-size:13px'>*The 📨 button above is "\n` +
+        `        "what hands this code to your tutor.*</span>"\n` +
         `        if _P(${py(savedPath)}).exists()\n` +
         `        else "<span style='color:#6A6D75;font-size:13px'>*A 📨 hand-in button "\n` +
         `        "appears here once you have pressed ▶ Run.*</span>"\n` +
