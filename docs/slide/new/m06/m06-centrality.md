@@ -770,7 +770,7 @@ Take out Rome, then Alexandria — the two cities with the most roads. **Seven**
 <div class="fig tall">
 
 ![w:1080](figures/attack-compare-1.png)
-<figcaption>white with a red rim is removed; blue is still in the surviving network</figcaption>
+<figcaption>red rim: removed · blue: the surviving network · gray: cut off from it</figcaption>
 
 </div>
 
@@ -785,7 +785,7 @@ Rome again — and then **Tarraco, which has two roads**. Only **five** stay joi
 <div class="fig tall">
 
 ![w:1080](figures/attack-compare-2.png)
-<figcaption>the same two strikes, chosen by traffic rather than by count</figcaption>
+<figcaption>same marks, but the second strike chosen by traffic, not by count</figcaption>
 
 </div>
 
