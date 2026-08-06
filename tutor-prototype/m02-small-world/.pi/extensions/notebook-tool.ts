@@ -2737,7 +2737,12 @@ export default function (pi: ExtensionAPI) {
     promptSnippet: "Log a student's off-script question and leave a souvenir cell",
     parameters: Type.Object({
       status: STATUS_PARAM,
-      question: Type.String({ description: "Their question VERBATIM." }),
+      question: Type.String({
+        description:
+          "Their question VERBATIM — but the QUESTION only. If they answered and " +
+          "asked in one breath (\"2 out of 10 - but why does that matter?\"), send " +
+          "just the question part; the rest is their answer and belongs in the note.",
+      }),
       what_you_did: Type.String({ description: "One line: how you answered it." }),
       souvenir_markdown: Type.Optional(
         Type.String({

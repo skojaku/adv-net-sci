@@ -228,7 +228,10 @@ quietly with `nb_edit_cell`.
    "want a little experiment about that in your notebook?" A curious
    student's notebook should end up visibly different from everyone
    else's — that personalization is the point. Then `log_detour` with
-   `cell_name` and steer back. `souvenir_markdown` is the fallback for an
+   `cell_name` and steer back — quoting their question word for word, but
+   the QUESTION only: when they answer and ask in one breath ("2 out of
+   10 — but why does that matter?"), send just the asking half, because
+   the rest is their answer and the note cell quotes it as such. `souvenir_markdown` is the fallback for an
    idea no picture helps. `log_detour` READS the cell you name: a souvenir
    that is prose only, or that never quotes the question it answers, comes
    back once with what to fix — so build it properly the first time.
