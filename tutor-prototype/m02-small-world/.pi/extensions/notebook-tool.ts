@@ -1062,10 +1062,10 @@ function fillSlots(skeleton: string, slots: string[], fallback: string): string 
  */
 function withQuotedQuestion(markdown: string, question: string): string {
   if (!question) return markdown;
-  // Same normalisation souvenirGap uses, or the two halves of the contract
-  // disagree: a cell that quotes "can't" against a question typed "cant"
-  // satisfies that check and then gets a SECOND copy of the question
-  // prepended by this one.
+  // Words, not bytes — and the log_detour gap check normalises the same
+  // way, or the two halves of the contract disagree: a cell that quotes
+  // "can't" against a question typed "cant" satisfies that check and then
+  // gets a SECOND copy of the question prepended by this one.
   const flat = (s: string) =>
     s
       .toLowerCase()
@@ -1187,40 +1187,6 @@ async function prependQuestionToCell(
     signal,
   );
   return !r.failed && r.out.includes("QUOTED");
-}
-
-/** What a souvenir cell is missing, or "" when it honours the contract. */
-function souvenirGap(src: string, question: string): string {
-  if (!src) return "does not exist in the notebook";
-  const shows = /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(|mo\.carousel|mo\.accordion/.test(
-    src,
-  );
-  // Quoting is judged on words, not bytes. The suggested template wraps the
-  // question in typographic quotes, a model rewrites "what's" as "what’s"
-  // or drops the trailing "?", and a byte-exact match then bounced a
-  // souvenir that plainly does quote the question — and stamped it
-  // `souvenir_gap` in the log afterwards.
-  // Apostrophes are DELETED, not turned into spaces: a student types "cant"
-  // and the souvenir quotes "can't", which is the same word and the right
-  // thing for the model to have written. Collapsing the apostrophe to a
-  // space made it two tokens against the student's one, and the honest
-  // souvenir was bounced and then stamped `souvenir_gap` in the log.
-  const flat = (s: string) =>
-    s
-      .toLowerCase()
-      .replace(/['‘’ʼ"“”]/g, "")
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim();
-  // Strip the word the 40-char slice cut in half — but ONLY when it did cut
-  // one. Doing it unconditionally shrank a short question ("Why triangles?")
-  // to the single word "why", which any prose souvenir contains by accident.
-  const asked = flat(question);
-  const needle = asked.length > 40 ? asked.slice(0, 40).replace(/\s+\S*$/, "") : asked;
-  const quotes = needle.length > 0 && flat(src).includes(needle);
-  if (!shows && !quotes) return "is prose only, and never quotes their question";
-  if (!shows) return "is prose only — nothing to look at or play with";
-  if (!quotes) return "never quotes the question it answers";
-  return "";
 }
 
 /**
@@ -2113,10 +2079,12 @@ export default function (pi: ExtensionAPI) {
       note_slots: Type.Optional(
         Type.Array(Type.String(), {
           description:
-            "Fills for the «slots» in the script's note: skeleton — ONE per slot, in " +
-            "order, in the student's own words. Most skeletons have several (a slot per " +
-            "part of the ask); sending fewer is refused, and after two refusals the " +
-            "unfilled ones are printed as '(not answered)' in the graded notebook.",
+            "Fills for the «slots» in the script's note: skeleton that a transcript " +
+            "cannot supply — what their drawing shows, which option they picked, the " +
+            "numbers a widget displayed. ONE per such slot, in order. Slots marked " +
+            "«… verbatim» are filled with the student's typed words automatically — " +
+            "skip them. Sending fewer than the rest is refused twice, then the " +
+            "unfilled ones print as '(not answered)' in the graded notebook.",
         }),
       ),
       note_markdown: Type.Optional(
@@ -2206,9 +2174,10 @@ export default function (pi: ExtensionAPI) {
       // typed version", which says nothing about a camera; they had answered
       // the question, and the guard did not notice.
       const photoStrikes = slotDriftWarned.get(`${id}:photo`) ?? 0;
+      const saidSoFar = studentSaidSince(ctx, false);
       const cameraSaidHere =
-        studentSaidSince(ctx, false).some((m) => /camera|photo|picture|scan|phone/i.test(m)) ||
-        (photoStrikes > 0 && said.length > 0);
+        saidSoFar.some((m) => /camera|photo|picture|scan|phone/i.test(m)) ||
+        (photoStrikes > 0 && saidSoFar.length > 0);
       if (photoMissing && photoStrikes < (cameraSaidHere ? 1 : 2)) {
         slotDriftWarned.set(`${id}:photo`, photoStrikes + 1);
         return toResult({
@@ -2234,7 +2203,6 @@ export default function (pi: ExtensionAPI) {
       // where it was, or the retry would log an empty student_said_verbatim.
       const said = studentSaidSince(ctx, false);
       const picked = pickedSince(false);
-      const slots = (params.note_slots ?? []).map((s: unknown) => String(s ?? ""));
       // Note «slots» the instructor marked «… verbatim» are held to the
       // student's own words. «their pick» (a picker choice, which never
       // reaches the transcript) and free commentary slots are the tutor's to
@@ -2262,6 +2230,30 @@ export default function (pi: ExtensionAPI) {
       // warning on it in the submitted notebook.
       const pool = [...said, ...picked, String(params.question ?? "")];
       const markers = slotMarkers(noteSkeleton(id));
+      // A «verbatim» slot is filled from the transcript, by the extension.
+      // Asking the model to pair answers with labelled slots failed five
+      // different ways across five rounds — dropped halves, a fragment
+      // instead of the answer, quotes shifted by one, punctuation tidied —
+      // and every deterministic guard that tried to catch it had to be
+      // withdrawn for refusing honest records. The words are right here.
+      const verbatimFill = said.length
+        ? said.map((m) => `"${m.replace(/\n+/g, " ").trim()}"`).join(" · ")
+        : response;
+      // The model is asked for the OTHER slots only — the ones whose answer
+      // was a drawing, a photo or a picker, which no transcript holds. It may
+      // still send a fill per slot positionally (older habit, and what the
+      // refusal below prints); both shapes are accepted.
+      const givenSlots = (params.note_slots ?? []).map((x: unknown) => String(x ?? ""));
+      const modelSlotIdx = markers
+        .map((m, i) => (/verbatim/i.test(m) ? -1 : i))
+        .filter((i) => i >= 0);
+      const compactFills =
+        modelSlotIdx.length < markers.length && givenSlots.length === modelSlotIdx.length;
+      const modelFill = (i: number) =>
+        compactFills ? (givenSlots[modelSlotIdx.indexOf(i)] ?? "") : (givenSlots[i] ?? "");
+      const filledSlots = markers.map((m, i) =>
+        /verbatim/i.test(m) ? verbatimFill : modelFill(i),
+      );
       const problems: string[] = [];
       // One fill per slot. The skeletons ask for a slot per part of the ask
       // precisely so the keepsake quotes the ANSWER and not whichever
@@ -2282,7 +2274,7 @@ export default function (pi: ExtensionAPI) {
       // and `_extra` rounds have no skeleton, so every number the student
       // typed was being listed as un-quoted against a note that does not
       // exist.
-      const inFills = new Set(slots.flatMap(slotTokens).filter(isFigure));
+      const inFills = new Set(filledSlots.flatMap(slotTokens).filter(isFigure));
       const figuresDropped = markers.length
         ? [...new Set(said.flatMap(slotTokens).filter(isFigure))].filter((f) => !inFills.has(f))
         : [];
@@ -2292,22 +2284,25 @@ export default function (pi: ExtensionAPI) {
       // tutor's note and printed "*(not answered)*" under slots the student
       // had answered. Count NON-EMPTY fills — padding with "" satisfied a
       // length check and produced the same placeholder.
-      const filled = slots.filter((f) => f.trim()).length;
-      if (markers.length > 1 && filled < markers.length && slotStrikes < 2) {
+      // Only the slots the model fills. Demanding one for a «verbatim» slot
+      // refused an honest call over a string the renderer throws away.
+      const filled = modelSlotIdx.filter((i) => modelFill(i).trim()).length;
+      if (markers.length > 1 && modelSlotIdx.length > 0 && filled < modelSlotIdx.length && slotStrikes < 2) {
         slotDriftWarned.set(`${id}:slots`, slotStrikes + 1);
         return toResult({
           out:
-            `NOT LOGGED — this checkpoint's note has ${markers.length} slots and you sent ` +
-            `${filled} filled. One fill each, in this order:\n` +
-            markers
+            `NOT LOGGED — this checkpoint's note needs ${modelSlotIdx.length} fill` +
+            `${modelSlotIdx.length > 1 ? "s" : ""} from you and you sent ${filled}. Send note_slots ` +
+            `in this order, one entry each:\n` +
+            modelSlotIdx
               .map(
-                (m, i) =>
-                  `  ${i + 1}. ${m.replace(/[«»]/g, "").replace(/\s+/g, " ").trim()}`,
+                (mi, n) =>
+                  `  ${n + 1}. ${(markers[mi] ?? "").replace(/[«»]/g, "").replace(/\s+/g, " ").trim()}`,
               )
               .join("\n") +
-            `\nQuote them for each part separately — the slots exist so the notebook holds ` +
-            `their ANSWER and not just whichever fragment came last. Then call ` +
-            `checkpoint_done again.`,
+            `\nThese are the parts no transcript holds — what the drawing shows, which ` +
+            `option they picked, the numbers a widget displayed. Their typed words are ` +
+            `quoted into the other slots for you. Then call checkpoint_done again.`,
           failed: false,
         });
       }
@@ -2380,7 +2375,7 @@ export default function (pi: ExtensionAPI) {
       // comparison. So the attribution goes in the log for a human to read,
       // the instruction lives in AGENTS.md, and nothing here refuses a
       // record on a guess.
-      const slotSources = slots.map((fill, i) => {
+      const slotSources = filledSlots.map((fill, i) => {
         if (!fill.trim() || !/verbatim/i.test(markers[i] ?? "")) return null;
         let best = -1;
         let score = 0;
@@ -2393,15 +2388,16 @@ export default function (pi: ExtensionAPI) {
         });
         return score >= 0.5 ? best + 1 : null;
       });
-      for (const [i, fill] of slots.entries()) {
+      // A «verbatim» slot is filled from the transcript now, so the model's
+      // fill for it is never rendered — policing it refused twice over a
+      // string nobody reads and then stamped "⚠ Quoting check" on a note that
+      // was character-perfect. What IS still the model's wording is a slot
+      // that describes a picture, and that slot is only exempt while a
+      // picture exists: when no photo arrived the answer was typed, and a
+      // live run used the exemption to paraphrase a typed derivation.
+      for (const i of photoMissing ? modelSlotIdx : []) {
         if (said.length === 0) break;
-        // A photo slot is exempt because the tutor legitimately describes a
-        // picture there. When no photo ever arrived, there is no picture to
-        // describe — whatever is in that slot came from words the student
-        // typed, and it is held to them like any other quote. A live run
-        // used the exemption to paraphrase a typed derivation.
-        const photoSlotAnsweredByTyping = photoMissing && !/verbatim/i.test(markers[i] ?? "");
-        if (!/verbatim/i.test(markers[i] ?? "") && !photoSlotAnsweredByTyping) continue;
+        const fill = modelFill(i);
         const d = slotDrift(fill, pool);
         if (d.numbers.length === 0 && d.words.length < 3) continue;
         problems.push(
@@ -2506,18 +2502,6 @@ export default function (pi: ExtensionAPI) {
 
       const suppressed = noteSuppressed(id);
       const skeleton = suppressed ? "" : noteSkeleton(id);
-      // A «verbatim» slot is filled from the transcript, by the extension.
-      // Asking the model to pair answers with labelled slots failed five
-      // different ways across five rounds — dropped halves, a fragment
-      // instead of the answer, quotes shifted by one, punctuation tidied —
-      // and every deterministic guard that tried to catch it had to be
-      // withdrawn for refusing honest records. The words are right here.
-      const verbatimFill = said.length
-        ? said.map((m) => `"${m.replace(/\n+/g, " ").trim()}"`).join(" · ")
-        : response;
-      const filledSlots = markers.map((m, i) =>
-        /verbatim/i.test(m) ? verbatimFill : (params.note_slots ?? [])[i] ?? "",
-      );
       const md = suppressed
         ? ""
         : skeleton
@@ -2678,14 +2662,33 @@ export default function (pi: ExtensionAPI) {
         // supposed to be theirs, word for word. It goes in unless their exact
         // words are already there, and the gap check no longer asks the model
         // for it at all.
-        if (src !== null) {
-          const flat = (x: string) => x.replace(/\s+/g, " ").trim();
-          if (!flat(src).includes(flat(snappedQ))) {
-            await prependQuestionToCell(cellName, snappedQ, signal);
-          }
+        if (src !== null && src.trim() === "") {
+          // No such cell. Saying "is prose only" about a cell that does not
+          // exist sent the model editing thin air; the honest gap is the one
+          // withQuotedQuestion's sibling check has always used.
+          gap = "does not exist in the notebook";
+        } else if (src !== null) {
+          // Words, not bytes — the SAME normalisation withQuotedQuestion uses.
+          // A byte-exact test called a cell unquoted because the quote had
+          // typographic apostrophes, and the cell then carried "You asked"
+          // twice: once raw, once tidied.
+          const flat = (x: string) =>
+            x
+              .toLowerCase()
+              .replace(/['\u2018\u2019\u02BC"\u201C\u201D]/g, "")
+              .replace(/[^a-z0-9]+/g, " ")
+              .trim();
+          let quoted = flat(src).includes(flat(snappedQ));
+          if (!quoted) quoted = await prependQuestionToCell(cellName, snappedQ, signal);
           const shows =
             /netviz\s*\(|mo\.ui\.|mo\.image\s*\(|alt\.Chart|sns\.\w+\s*\(|plt\.\w+\s*\(/.test(src);
-          gap = shows ? "" : "is prose only — nothing to look at or play with";
+          gap = !shows
+            ? "is prose only — nothing to look at or play with"
+            : // The prepend failed (a cell marimo will not rewrite). Reporting
+              // success here shipped a souvenir with no question in it.
+              quoted
+              ? ""
+              : "never quotes the question it answers";
         }
       }
       const gapKey = cellName || question;
@@ -2742,7 +2745,7 @@ export default function (pi: ExtensionAPI) {
           failed: false,
         });
       }
-      const md = withQuotedQuestion(md0, question);
+      const md = withQuotedQuestion(md0, snappedQ);
       const slug = sanitize(question.toLowerCase().split(/\s+/).slice(0, 4).join("_")).slice(0, 40);
       const r = await insertMarkdownCell(`detour_${slug || "note"}`, md, signal);
       return toResult({
