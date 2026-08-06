@@ -1499,8 +1499,9 @@ function buildSessionSummary(entries: any[], allCheckpoints: string[]): string {
       out.push(
         `Typed here but NOT quoted in the note: ${e.note_skipped_msgs
           .map((n: unknown) => `msg ${n}`)
-          .join(", ")} (an aside they already have a souvenir for, or ` +
-          `acknowledgement — the full list above is the record)`,
+          .join(", ")} (a question they already have a souvenir for, or ` +
+          `acknowledgement — the full list above is the record, and worth a ` +
+          `glance if one of these looks like part of their answer)`,
       );
     }
     out.push("");
@@ -2808,7 +2809,30 @@ export default function (pi: ExtensionAPI) {
         const QUESTION_OPENER =
           /^(?:(?:wait|hang on|hold on|sorry|ok|okay|hmm+|umm+|oh|but|and|also|quick|one more|side note|random|off topic)[ ]+)*(?:what|whats|why|how|hows|when|where|who|whos|is|are|isnt|arent|do|does|did|dont|doesnt|can|could|should|would|will)\b|^(?:i (?:dont|do not|didnt|cant) (?:get|understand|see|follow)|im (?:confused|lost)|i(?:m| am) not sure (?:what|why|how))\b/;
         const looksAsked = /\?/.test(asked) || QUESTION_OPENER.test(normMsg(asked));
-        if (bestIdx >= 0 && (bestScore >= 0.9 || (bestScore >= 0.6 && looksAsked))) {
+        // A message that is their question AND something else keeps its
+        // something else. Dropping whole messages cost a student the "i
+        // count 2" out of "how many could there be? i count 2" — half an
+        // answer, gone from the note, on the checkpoint that was about
+        // counting. Any figure in the residue, or three content words of
+        // it, means this message is carrying more than the question.
+        const qTok = new Set(normMsg(question).split(" ").filter(Boolean));
+        const residue = normMsg(asked)
+          .split(" ")
+          .filter((t) => t && !qTok.has(t));
+        const HEDGE_WORDS = new Set([
+          "wait", "hang", "hold", "sorry", "ok", "okay", "hmm", "hmmm", "umm", "um",
+          "oh", "ohh", "quick", "random", "side", "topic", "off", "exactly", "just",
+          "really", "actually", "again", "please", "btw", "like", "though", "tho",
+          "whats", "hows", "whos", "one", "more", "note", "er",
+        ]);
+        const carriesMore =
+          residue.some((t) => /\d/.test(t)) ||
+          residue.filter((t) => !HEDGE_WORDS.has(t) && !SLOT_GLUE.has(t)).length >= 3;
+        if (
+          bestIdx >= 0 &&
+          !carriesMore &&
+          (bestScore >= 0.9 || (bestScore >= 0.6 && looksAsked))
+        ) {
           detourAsked.add(normMsg(asked));
         }
         if (snapped) detourAsked.add(normMsg(snapped));
