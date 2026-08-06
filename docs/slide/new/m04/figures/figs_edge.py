@@ -29,6 +29,7 @@ import numpy as np
 from figlib import (EDGE_W, NODE, SMALLNODE, Axes, assert_planar_drawing,
                     clearance_bad, crossings, disc, dot, emit, polyline, pct, seg, text)
 from feld import ABOVE, BELOW, EQUAL, degree, friend_mean
+from figs_tail import HUBS
 from verify_numbers import (LITERATURE, ccdf, ccdf_fit, condmat, internet_as,
                             lognormal_degrees, moments, net_stats, yeast_ppi)
 
@@ -214,7 +215,7 @@ def fig_vanishing():
                for i in range(8)}
 
     b = ""
-    panels = [("ring", ring6, _ring(6, 140, 88), 180),
+    panels = [("cycle", ring6, _ring(6, 140, 88), 180),
               ("complete graph", k5, _ring(5, 140, 88, phase=18), 540),
               ("ring lattice", lat, pos_lat, 900)]
     for title, g, pos, cx in panels:
@@ -226,6 +227,12 @@ def fig_vanishing():
             # K5 is Kuratowski's own non-planar graph, so zero crossings is impossible.
             # The convex drawing has exactly the five of the pentagram; assert that
             # number rather than waiving the gate.
+            #
+            # R3 C3-5 weighed five crossings against the minimum of one and let it
+            # stand, and this comment is here so the next round does not re-open it.
+            # The panel's claim is Var(k) = 0, and the symmetric form is what makes
+            # "four lines leave every disc" countable at a glance; the one-crossing
+            # drawing of K5 is lopsided and hides exactly the regularity being shown.
             assert len(crossings(list(g.edges()), p)) == 5
             assert not clearance_bad(list(g.edges()), p)
         else:
@@ -348,8 +355,14 @@ def fig_assortativity():
         assert_planar_drawing(WIRINGS[name], p, name)
         hubs = [n for n in g.nodes() if g.degree(n) == max(seq)]
         assert len(hubs) == 2
+        # HUBS, imported from the module that declares it, not a second local constant.
+        # These were accent-2 -- ten slides after Part Six taught that an accent-2
+        # network is the one WITHOUT hubs, the red discs here were the hubs. The role is
+        # per-network and this axis is per-node, but a reader holding one key does not
+        # know that, and the contradiction is the reader's problem, not the taxonomy's.
+        # So: hubs in accent, ordinary nodes in annotation gray.
         b += _graph(WIRINGS[name], p,
-                    {n: "accenttwo" if n in hubs else "accent" for n in g.nodes()},
+                    {n: HUBS if n in hubs else "annot" for n in g.nodes()},
                     labels={n: g.degree(n) for n in g.nodes()})
         b += text(cx, 320, name, anchor="south")
         # r was invisible here while the next slide plotted four of them, so those dots
@@ -530,15 +543,21 @@ def fig_consequences():
     # currently drawable. Running the arrow past the label instead keeps the relation
     # visible and keeps the label clear of it.
     b += _arrow((300, 196), (612, 196), color="annot", gap_tail=0, gap_head=0)
-    b += text(450, 290, "$\\langle k^2\\rangle$", color="accenttwo")
-    results = [(330, "Module 03: robustness", f"$f_c = {_dec(fc, 2)}$"),
-               (222, "Module 02: distance", "shorter paths"),
+    # As close to the arrow it labels as the collision box allows: the modelled box is
+    # 408bp wide and 50 tall around an 85bp glyph, so its lower edge is what sets the
+    # gap, not the ink. 94bp of daylight read as a floating label; this is 44.
+    b += text(450, 240, "$\\langle k^2\\rangle$", color="accenttwo")
+    # accent-2 is what the second moment has already bought us; the third result is not
+    # derived in this course, so its value is annotation gray. All three printed in red
+    # made "still to come" look like the two we proved.
+    results = [(330, "Module 03: robustness", f"$f_c = {_dec(fc, 2)}$", "accenttwo"),
+               (222, "Module 02: distance", "shorter paths", "accenttwo"),
                (114, "spreading: still to come",
-                f"$\\langle k\\rangle/\\langle k^2\\rangle = {_dec(lam, 3)}$")]
-    for y, head, val in results:
+                f"$\\langle k\\rangle/\\langle k^2\\rangle = {_dec(lam, 3)}$", "annot")]
+    for y, head, val, col in results:
         b += _arrow((676, 196), (716, y - 22), color="annot", gap_tail=0, gap_head=0)
         b += text(742, y, head, anchor="west")
-        b += text(742, y - 56, val, color="accenttwo", anchor="west")
+        b += text(742, y - 56, val, color=col, anchor="west")
     emit("consequences", b, container="full", h=440)
 
 
@@ -579,19 +598,18 @@ def fig_recap():
     # leaves each -- symmetric, so it reads as "the hubs are adjacent" rather than as
     # the four-node path an earlier diagonal placement produced.
     #
-    # Hubs in accent-2, exactly as `assortativity.png` draws the same two degree-4 hubs
-    # on slide 088. Drawn in accent they reproduced, inside this panel, the very defect
-    # panel one is guarded against two lines above: a recap that recolours what the
-    # deck just taught.
+    # Same key as `assortativity.png`, which this panel is a miniature of: hubs in
+    # accent, ordinary nodes in annotation gray. Both moved together -- if they ever
+    # disagree, the recap is recolouring what the deck just taught.
     hub = [(756 - 30, 286), (756 + 30, 286)]
     leaf = [(660, 328), (660, 244), (852, 328), (852, 244)]
     b += seg(hub[0], hub[1])
     for i, p in enumerate(leaf):
         b += seg(hub[0] if i < 2 else hub[1], p)
     for p in leaf:
-        b += disc(p[0], p[1], fill="accent", size=SMALLNODE)
+        b += disc(p[0], p[1], fill="annot", size=SMALLNODE)
     for p in hub:
-        b += disc(p[0], p[1], fill="accenttwo", size=SMALLNODE)
+        b += disc(p[0], p[1], fill=HUBS, size=SMALLNODE)
 
     # Five panels in 1080bp leaves 216bp of pitch, and the collision boxes are sized
     # from source-string length, so each pair of neighbouring captions has a character
@@ -603,7 +621,7 @@ def fig_recap():
     # to stay whole -- "2.5 + 0.5" without the "= 3.0" is a fragment, not an identity --
     # and the pictogram plus "one tail" says panel three's act without help.
     for cx, head, val in (
-            (108, "the girls", f"{len(BELOW)} of 8"),
+            (108, "the girls", f"{len(BELOW)} below"),
             (324, "identity",
              f"${_dec(k1, 1)}+{_dec(gap, 1)}={_dec(friend, 1)}$"),
             (540, "one tail", None),

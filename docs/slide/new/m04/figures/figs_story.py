@@ -18,7 +18,8 @@ import networkx as nx
 import numpy as np
 
 from feld import ABOVE, BELOW, EQUAL, G, LABEL_BAND, M, POS, degree, friend_mean, solve_names
-from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, PXBP, SMALLNODE, Axes,
+from figlib import (ACCENT2, DASH, EDGE_W, FONT, NODE, PXBP, SMALLNODE,
+                    TEXT_MIN_PX, Axes,
                     assert_planar_drawing, clearance_bad, disc, dot, draw_labels, emit,
                     pct, place_labels, polyline, render, ring, scene_clear, seg,
                     text)
@@ -271,11 +272,15 @@ def fig_feld_two_numbers():
     own, friends = float(M["k1"]), float(M["friend"])
     assert (own, friends) == (2.5, 3.0)
     b = ""
-    rows = [(280, num(own, 1), "accent", "each girl", 320),
+    # R3 A3-9: the girls' own mean is ink, not accent. Every other figure in the
+    # build spends accent on a role (the hub, the node being counted), and a
+    # second encoding of 2.5 as "blue" collided with it. Only the number this
+    # slide is about is coloured.
+    rows = [(280, num(own, 1), "black", "each girl", 320),
             (120, num(friends, 1), "accenttwo", "her friends", 280)]
     for y, v, col, lab, lead_x1 in rows:
         b += text(25, y, v, color=col, anchor="west", size=92)
-        b += text(512, y, lab, color=col, anchor="east")
+        b += text(512, y, lab, color="annot", anchor="east")
         b += seg((195, y), (lead_x1, y), color="annot", w=2.0, dash=DASH)
     emit("feld-two-numbers", b, container="col", h=COL_H)
 
@@ -317,7 +322,9 @@ def fig_marketville_146():
 # put the neighbours on the corners of a rectangle, so both diagonals ran straight
 # through the centre and the eye counted TWO lines on the slide whose whole job is
 # "four edges attached".  The gap from 180 degrees is asserted, not eyeballed.
-STAR_ANGLES = (15, 155, 230, 300)
+# clockwise from the top right, so the edge numbers run 1 2 3 4 the way the
+# eye does (R3 A3-11); they used to come out 2 1 3 4.
+STAR_ANGLES = (15, 300, 230, 155)
 
 
 def _rays(cx, cy, rx, ry, angles):
@@ -367,48 +374,52 @@ def fig_degree_def():
     emit("degree-def", b, container="col", h=COL_H)
 
 
-def _end_radius(clear=14.0):
-    """How far along its edge each node's end-tick has to sit to clear its neighbours.
+# R3 A3-2: a tick sits at a fixed FRACTION of its edge, not a fixed distance from its
+# node.  A constant ~66bp separated cleanly on the 292bp Pam-Carol edge and put both
+# ticks of a 150bp edge at 44% and 56% -- 18bp apart at the midpoint, which is the
+# standard geometry mark for two lengths being EQUAL, and around Sue the eye counted six
+# marks where four ends exist.  The component count could not see it: twenty marks were
+# genuinely there.  Position is asserted now as well as quantity.
+END_F = 0.28
 
-    A tick is END_H long ACROSS its edge, so two ticks leaving one disc an angle dtheta
-    apart are r*dtheta apart at radius r: at Sue's 41.8 degrees the old fixed r = 44 put
-    them 32bp apart and a 34bp tick bridged the gap.  One radius per node, derived from
-    that node's own tightest angle.
-    """
-    dirs = {}
+
+def _end_marks():
+    """One (node, segment) per edge end, with the drawn geometry checked."""
+    out = []
     for a, c in FELD_EDGES:
-        for u, v in ((a, c), (c, a)):
-            d = np.array(POS[v], float) - np.array(POS[u], float)
-            dirs.setdefault(u, []).append(math.atan2(d[1], d[0]))
-    r = {}
-    for u, angs in dirs.items():
-        if len(angs) < 2:
-            r[u] = 44.0
-            continue
-        srt = sorted(angs)
-        gaps = [srt[i + 1] - srt[i] for i in range(len(srt) - 1)]
-        gaps.append(srt[0] + 2 * math.pi - srt[-1])
-        r[u] = max(44.0, (END_H + clear) / min(gaps))
-    for a, c in FELD_EDGES:
-        span = math.dist(POS[a], POS[c])
-        assert r[a] + r[c] < span - 12, (
-            f"the two end-ticks on {a}-{c} would meet in the middle of the edge")
-    return r
+        pa, pc = np.array(POS[a], float), np.array(POS[c], float)
+        span = float(np.linalg.norm(pc - pa))
+        n_ = np.array([-(pc - pa)[1], (pc - pa)[0]]) / span
+        ends = []
+        for u, v in ((pa, pc), (pc, pa)):
+            m = u + (v - u) * END_F
+            ends.append((m - n_ * END_H / 2, m + n_ * END_H / 2, m))
+        apart = float(np.linalg.norm(ends[0][2] - ends[1][2]))
+        assert apart >= 0.40 * span, (
+            f"sum-ends: the two ticks on {a}-{c} are {apart / span:.0%} of the edge "
+            f"apart; below 40% they read as one pair at the midpoint, not as two ends")
+        assert END_F * span - NODE / 2 > 8, f"sum-ends: the {a}-{c} tick is inside a disc"
+        out += [(a, ends[0][:2]), (c, ends[1][:2])]
+
+    def gap(s1, s2):
+        t = np.linspace(0, 1, 60)[:, None]
+        A, B = s1[0] + (s1[1] - s1[0]) * t, s2[0] + (s2[1] - s2[0]) * t
+        return float(np.min(np.linalg.norm(A[:, None] - B[None, :], axis=2)))
+
+    for i in range(len(out)):
+        for j in range(i + 1, len(out)):
+            d = gap(out[i][1], out[j][1])
+            assert d >= 12, (f"sum-ends: a tick at {out[i][0]} and one at {out[j][0]} "
+                             f"are {d:.0f}bp apart and will fuse on the page")
+    return out
 
 
 def fig_sum_ends():
-    radius = _end_radius()
+    marks = _end_marks()
     b = feld_body()
-    ends = 0
-    for a, c in FELD_EDGES:
-        for u, v in ((a, c), (c, a)):
-            d = np.array(POS[v], float) - np.array(POS[u], float)
-            d /= np.linalg.norm(d)
-            m = np.array(POS[u], float) + d * radius[u]
-            n_ = np.array([-d[1], d[0]])
-            b += seg(tuple(m - n_ * END_H / 2), tuple(m + n_ * END_H / 2),
-                     color="accenttwo", w=END_W)
-            ends += 1
+    for _, (p, q) in marks:
+        b += seg(tuple(p), tuple(q), color="accenttwo", w=END_W)
+    ends = len(marks)
     assert ends == 2 * M["M"] == 20
     b += "".join(disc(*POS[n], fill="accent") for n in FELD_ORDER)
     # black, not accent-2: the accent-2 ink in this figure is exactly the twenty ticks,
@@ -606,6 +617,12 @@ def fig_qk_formula():
 # at 36pt a \sum, \int or \prod still draws at its 10pt natural size, silently, with no
 # "not available" line in the log for figlib.render() to catch.  A capital \Sigma comes
 # from the letters font, which does scale, so the operator is built from that instead.
+# R3 A3-3: "friend" is the only mark separating this quantity from a plain <k>, and
+# at TeX's script size it landed 12px x-height against a 15px floor. It is set at the
+# body size now -- raised, not shrunk -- and `_assert_subscript_height` measures what
+# that actually renders rather than trusting the number.
+SUB_PT = 36
+
 SUM_K = r"\mathop{\scalebox{1.35}{$\Sigma$}}\limits_{k}"
 
 # Every heavy sub-expression gets a macro, and the equations are written in terms of
@@ -617,7 +634,9 @@ SUM_K = r"\mathop{\scalebox{1.35}{$\Sigma$}}\limits_{k}"
 # 58bp.  With the macros the model reads 541bp, which is a fair over-estimate rather
 # than a doubling, and the gate can do its job on this figure instead of crying wolf.
 _MACROS = (r"\def\dsp{\displaystyle}"
-           r"\def\kf{\langle k\rangle_{\mathrm{friend}}}"
+           r"\def\sub#1{\mbox{\fontsize{" + str(SUB_PT) + r"}{" + str(SUB_PT) + r"}"
+           r"\selectfont #1}}"
+           r"\def\kf{\langle k\rangle_{\sub{friend}}}"
            r"\def\kk{\langle k\rangle}"
            r"\def\ksq{\langle k^2\rangle}"
            r"\def\sk{" + SUM_K + r"}"
@@ -635,7 +654,32 @@ _DERIV = [
 _GLOSS = [r"substitute $q(k)$", "name the numerator",
           r"rewrite $\ksq$", "the theorem"]
 _DERIV_Y = [300, 226, 152, 78]
-_EQ_X, _GLOSS_X = 150, 700
+_EQ_X, _GLOSS_X = 150, 760
+
+
+def _raw_node(x, y, s, size=FONT, anchor="west"):
+    """A text node that does NOT enter figlib's collision scene.
+
+    `text()` records every call, so measuring a string by rendering it through `text()`
+    left a phantom box at the measuring coordinates and the gate reported the figure
+    colliding with its own ruler.  Measurement draws nothing the figure keeps, so it
+    must not be recorded.
+    """
+    return (f"\\node[font=\\fontsize{{{size}}}{{{int(size * 1.15)}}}\\selectfont,"
+            f"text=black,anchor={anchor},align=center] at ({x},{y}) {{{s}}};\n")
+
+
+@lru_cache(maxsize=None)
+def _assert_subscript_height():
+    """Measure the x-height the derivation's subscript really renders at."""
+    glyph = (f"\\mbox{{\\fontsize{{{SUB_PT}}}{{{SUB_PT}}}\\selectfont rnm}}")
+    a = np.asarray(render(_raw_node(30, 120, f"${glyph}$"), 400, 240).convert("L"))
+    ys, _ = np.where(a < 200)
+    px = (ys.max() - ys.min() + 1) / PXBP
+    assert px >= TEXT_MIN_PX, (
+        f"the derivation's 'friend' subscript renders {px:.1f}px x-height against a "
+        f"{TEXT_MIN_PX}px floor -- raise SUB_PT; do not accept the warning")
+    return px
 
 
 @lru_cache(maxsize=None)
@@ -647,7 +691,7 @@ def _ink_width(s):
     297bp drawn).  A model that can under-estimate cannot be the only check on a column
     that has to clear another column, so the equations are measured.
     """
-    body = _MACROS + text(30, 120, s, anchor="west")
+    body = _MACROS + _raw_node(30, 120, s)
     a = np.asarray(render(body, 1900, 300).convert("L"))
     ys, xs = np.where(a < 200)
     return (xs.max() - xs.min() + 1) / PXBP
@@ -659,13 +703,14 @@ def _derivation(upto):
     Each state's body is a prefix of the next, so everything above the added line is
     identical by construction rather than by inspection.
     """
-    b = _MACROS + rect(58, 20, 1022, 356, draw="annot", w=2.4, rounded=10)
+    _assert_subscript_height()
+    b = _MACROS + rect(40, 20, 1040, 356, draw="annot", w=2.4, rounded=10)
     for i in range(upto):
         assert _EQ_X + _ink_width(_DERIV[i]) < _GLOSS_X - 20, (
             f"derivation line {i + 1} is drawn to x="
             f"{_EQ_X + _ink_width(_DERIV[i]):.0f} and the gloss column starts at "
             f"{_GLOSS_X}. Shorten the line or move the column; do not shrink the type.")
-        b += text(100, _DERIV_Y[i], str(i + 1), color="annot")
+        b += text(78, _DERIV_Y[i], str(i + 1), color="annot")
         if i == 3:
             b += (f"\\node[font=\\fontsize{{{FONT}}}{{{int(FONT*1.15)}}}\\selectfont,"
                   f"text=black,anchor=west,align=center] (eqthree) at "
@@ -778,16 +823,37 @@ def _star_ring_body():
     return b
 
 
-def fig_worksheet_star_ring():
+_WS_Q = r"$\mathrm{Var}(k)/\langle k\rangle$"
+_WS_CX = (250, 790)
+
+
+def _worksheet(values=None):
+    """The question and the answer, drawn on identical ink extents (R3 A3-10).
+
+    They used to differ by 66px: the question carried a blank rule the answer dropped,
+    so the two croppings differed and the pair of graphs jumped between the slides. The
+    rule stays in both, the prompt keeps its position and its colour, and the answer is
+    added beside it -- the acquaintance build holds still across three slides and this
+    one should too.
+    """
     b = _star_ring_body()
-    b += "".join(disc(*_STAR_POS[n], fill="accent") for n in _STAR)
-    b += "".join(disc(*_RING_POS[n], fill="accent") for n in _RING)
-    q = r"$\mathrm{Var}(k)/\langle k\rangle$"
-    b += text(250, 78, q)
-    b += text(790, 78, q)
-    b += seg((150, 32), (350, 32), color="accenttwo", w=5.0)
-    b += seg((690, 32), (890, 32), color="accenttwo", w=5.0)
-    assert_no_digits([q], "worksheet-star-ring")
+    lab = (lambda n: str(_STAR.degree(n))) if values else (lambda n: "")
+    b += "".join(disc(*_STAR_POS[n], lab(n), fill="accent") for n in _STAR)
+    lab2 = (lambda n: str(_RING.degree(n))) if values else (lambda n: "")
+    b += "".join(disc(*_RING_POS[n], lab2(n), fill="accent") for n in _RING)
+    half = _ink_width(_WS_Q) / 2
+    for i, cx in enumerate(_WS_CX):
+        b += text(cx, 78, _WS_Q)
+        b += seg((cx - 100, 32), (cx + 100, 32), color="accenttwo", w=5.0)
+        if values:
+            b += text(cx + half + 16, 78, f"$= {values[i]}$", color="accenttwo",
+                      anchor="west")
+    return b
+
+
+def fig_worksheet_star_ring():
+    b = _worksheet()
+    assert_no_digits([_WS_Q], "worksheet-star-ring")
     for bad in ("0.5", "0.50", "= 0$", "zero"):
         assert bad not in b, f"worksheet-star-ring leaks the answer ({bad})"
     emit("worksheet-star-ring", b, container="full", h=FULL_H)
@@ -796,12 +862,7 @@ def fig_worksheet_star_ring():
 def fig_worksheet_answer():
     ms, mr = moments(_STAR), moments(_RING)
     assert float(ms["gap"]) == 0.5 and float(mr["gap"]) == 0.0
-    b = _star_ring_body()
-    b += "".join(disc(*_STAR_POS[n], str(_STAR.degree(n)), fill="accent") for n in _STAR)
-    b += "".join(disc(*_RING_POS[n], str(_RING.degree(n)), fill="accent") for n in _RING)
-    q = r"$\mathrm{Var}(k)/\langle k\rangle = "
-    b += text(250, 70, q + num(float(ms["gap"]), 1) + "$", color="accenttwo")
-    b += text(790, 70, q + num(float(mr["gap"]), 0) + "$", color="accenttwo")
+    b = _worksheet((num(float(ms["gap"]), 1), num(float(mr["gap"]), 0)))
     emit("worksheet-answer", b, container="full", h=FULL_H)
 
 
@@ -990,6 +1051,15 @@ def _acq_base(treated=()):
     return b
 
 
+def _acq_arrow():
+    """The nomination, drawn along the edge it travels.  Shared by steps two and three."""
+    p = np.array(ACQ_LEAF[ACQ_PICK], float)
+    q = np.array(ACQ_HUB, float)
+    u = (q - p) / np.linalg.norm(q - p)
+    return seg(tuple(p + u * (NODE / 2 + 12)), tuple(q - u * (NODE / 2 + 10)),
+               color="accenttwo", w=4.4, arrow=ARROW)
+
+
 def fig_acquaintance_1():
     """Step one: somebody chosen at random, and it is almost never the hub."""
     b = _acq_base()
@@ -1003,11 +1073,7 @@ def fig_acquaintance_2():
     b = _acq_base()
     b += ring(*ACQ_LEAF[ACQ_PICK], size=NODE, grow=14)
     b += _acq_label(ACQ_LEAF[ACQ_PICK], "picked")
-    p = np.array(ACQ_LEAF[ACQ_PICK], float)
-    q = np.array(ACQ_HUB, float)
-    u = (q - p) / np.linalg.norm(q - p)
-    b += seg(tuple(p + u * (NODE / 2 + 12)), tuple(q - u * (NODE / 2 + 10)),
-             color="accenttwo", w=4.4, arrow=ARROW)
+    b += _acq_arrow()
     emit("acquaintance-2", b, container="full", h=FULL_H)
 
 
@@ -1021,6 +1087,11 @@ def fig_acquaintance_3():
     """
     b = _acq_base(treated=("H",))
     b += ring(*ACQ_LEAF[ACQ_PICK], size=NODE, grow=14)
+    # R3 A3-6: the nomination arrow has to survive into this frame. `_acq_base` redraws
+    # every edge as plain black, so step two's mark was being painted over and the slide
+    # titled "vaccinate the friend, not the volunteer" no longer showed how the friend
+    # was reached. A build that stops accumulating is not a build.
+    b += _acq_arrow()
     b += _acq_label(ACQ_LEAF[ACQ_PICK], "picked")
     b += _acq_label(ACQ_HUB, "immunised")
     emit("acquaintance-3", b, container="full", h=FULL_H)

@@ -289,7 +289,17 @@ def polyline(pts, color="accent", w=3.4, dash="", record=True, what="a curve"):
     return "\\draw[%s] %s;\n" % (",".join(o), " -- ".join("(%.2f,%.2f)" % p for p in pts))
 
 
-def fill_poly(pts, color="accenttwo", opacity=0.25):
+def fill_poly(pts, color="accenttwo", opacity=0.25, record=True, what=None):
+    """A filled area.  `record=False` for one a label is MEANT to sit on.
+
+    Fills were left out of the collision gate on the argument that text on a chip is a
+    design rather than a defect. That was true of chips and false of bands: m04 drew a
+    "78% of authors sit at k <= 10" annotation across the accent-3 band marking the tail,
+    so the note describing the head of the distribution sat over k = 43...142 and the gate
+    said nothing. A chip opts out at the call site and says why; a band does not.
+    """
+    if record:
+        _scene["fill"].append((tuple(tuple(q) for q in pts), what or f"the {color} fill"))
     return "\\fill[%s,opacity=%s] %s -- cycle;\n" % (
         color, opacity, " -- ".join("(%.2f,%.2f)" % p for p in pts))
 
@@ -511,7 +521,7 @@ def note(s, at, color="accenttwo", anchor="west", size=FONT, boxes=()):
 # What is deliberately NOT recorded: fills. Text on a filled chip or band is a design, not
 # a collision -- `fill_poly` and raw `\fill` never enter the scene. A rule meant to cross
 # a word (a strike-through) opts out with `record=False` and says why at the call site.
-_scene = {"text": [], "rule": [], "mark": []}
+_scene = {"text": [], "rule": [], "mark": [], "fill": []}
 
 _TEX_TOKEN = re.compile(r"\\\\|\\[a-zA-Z]+|\\[,;!]|[${}^_]")
 
@@ -549,6 +559,30 @@ def text_box(x, y, s, anchor="center", size=FONT, rot=None, pad=3):
     return (min(xs), min(ys), max(xs), max(ys))
 
 
+def _point_in_poly(p, poly):
+    """Ray casting, so a text box can be tested against a filled REGION and not its box.
+
+    A bounding box would report the shaded tail under a power law as covering the whole
+    panel; the fill that matters here is a triangle under a curve.
+    """
+    x, y = p
+    inside = False
+    for (ax_, ay), (bx, by) in zip(poly, poly[1:] + poly[:1]):
+        if (ay > y) != (by > y) and x < (bx - ax_) * (y - ay) / (by - ay) + ax_:
+            inside = not inside
+    return inside
+
+
+def _box_hits_fill(b, poly):
+    corners = ((b[0], b[1]), (b[2], b[1]), (b[2], b[3]), (b[0], b[3]))
+    if any(_point_in_poly(c, poly) for c in corners):
+        return True
+    if any(b[0] <= x <= b[2] and b[1] <= y <= b[3] for x, y in poly):
+        return True
+    return any(box_hits_segment(b, poly[i], poly[(i + 1) % len(poly)], pad=0)
+               for i in range(len(poly)))
+
+
 def scene_clear():
     for v in _scene.values():
         v.clear()
@@ -575,6 +609,10 @@ def collisions(limit=6):
         for mx, my, mr, what in _scene["mark"]:
             if box_hits_disc(b, mx, my, mr):
                 out.append(f"{_short(s)!r} sits on {what} at ({mx:.0f},{my:.0f})")
+                break
+        for poly, what in _scene["fill"]:
+            if _box_hits_fill(b, poly):
+                out.append(f"{_short(s)!r} is drawn on {what}")
                 break
     return out[:limit]
 

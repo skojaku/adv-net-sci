@@ -55,6 +55,20 @@ FRAME = (185, 145, 1058, 356)
 # the last tick needs 27bp of its own, so the frame stops at 500, not at the canvas.
 FRAME_COL = (165, 145, 500, 356)
 
+# R3 B3-3: four consecutive CCDF panels carried four different vertical rulers -- one
+# decade of P(k'>k) measured 42.2, 34.7, 27.2 and 21.8px -- on the slides that spend ten
+# of them teaching that an unannounced change of ruler misleads you. One box, one y range
+# and one set of y ticks for every CCDF in the module; only x adapts to the data, and the
+# band above the frame is where a figure's own numbers go.
+CCDF_BOX = (185, 150, 1058, 306)
+CCDF_YLIM = (1e-5, 1)
+CCDF_YTICKS = [1e-4, 1e-2, 1]
+CCDF_NOTE_Y = 372
+CCDF_DECADE = (CCDF_BOX[3] - CCDF_BOX[1]) / 5
+# The linear pair (slides 51 and 52) shares the same box, so the two views of the same
+# data are the same size, and so both have the band above the frame for their numbers.
+LIN_BOX = CCDF_BOX
+
 
 # --------------------------------------------------------------------------- data
 @lru_cache(maxsize=None)
@@ -152,6 +166,30 @@ def worksheet_ccdf():
     k = k[k >= 1]
     ks, su = ccdf(k)
     return ks, su, ccdf_fit(ks, su, WS_KMIN, WS_KMAX)
+
+
+def ccdf_dense(d):
+    """P(k' > k) at EVERY integer k, not only at the degrees that happen to occur.
+
+    R3 B3-12: `ccdf()` evaluates at the observed degrees, so the random graph's curve
+    stopped at k = 21 -- the largest degree below its maximum that anything actually had
+    -- while the figure's headline said "largest degree 28". Evaluated densely the curve
+    runs to the last k with anyone above it, which is where the largest degree is.
+    """
+    d = np.asarray(d)
+    ks = np.arange(1, int(d.max()) + 1)
+    su = np.array([(d > k).mean() for k in ks])
+    sparse_k, sparse_s = ccdf(d)
+    lookup = dict(zip(ks.tolist(), su.tolist()))
+    assert all(abs(lookup[int(k)] - s) < 1e-12 for k, s in zip(sparse_k, sparse_s)
+               if int(k) in lookup), "the dense CCDF disagrees with verify_numbers' own"
+    return ks, su
+
+
+def ccdf_axes(xlim, xticks):
+    """The module's one CCDF frame.  See CCDF_BOX."""
+    return Axes(CCDF_BOX, xlim, CCDF_YLIM, xlog=True, ylog=True,
+                xticks=xticks, yticks=CCDF_YTICKS, xfmt=dec)
 
 
 # --------------------------------------------------------------------------- plot helpers
@@ -474,6 +512,25 @@ def growth_layout(preferential=True, box=GROWTH_BOX, node=GROWTH_NODE, stretch=F
     return pos
 
 
+def assert_drawn_clearance(pos, edges, node, what):
+    """The clearance gates, re-run on the coordinates actually drawn.
+
+    R3 B3-2: `growth_layout` enforced `gap >= node + 2` inside `GROWTH_BOX` and passed at
+    46.0bp; `growth_pos` then mapped into a panel 40bp shorter, scale 0.8726, and the gap
+    became 40.1bp against 40bp discs -- six discs fused on the render. The gate had run,
+    correctly, on coordinates nothing was drawn at. Assert the property on the numbers the
+    figure emits, not on the ones it solved.
+    """
+    bad = clearance_bad(list(edges), pos, r=node / 2 + 2)
+    assert not bad, f"{what}: edge passes through a disc it does not end at -- {bad[:3]}"
+    ns = sorted(pos)
+    gap = min(math.dist(pos[i], pos[j]) for a, i in enumerate(ns) for j in ns[a + 1:])
+    assert gap >= node + 2, (
+        f"{what}: two discs are {gap:.1f}bp apart with {node}bp discs -- they will fuse "
+        f"on the render. Solve the layout in the box it is drawn in.")
+    return gap
+
+
 def growth_pos(preferential=True, box=GROWTH_BOX):
     """The CANONICAL layout mapped into `box`, aspect preserved and centred.
 
@@ -488,8 +545,12 @@ def growth_pos(preferential=True, box=GROWTH_BOX):
     s = min((bx1 - bx0) / (gx1 - gx0), (by1 - by0) / (gy1 - gy0))
     w, h = (gx1 - gx0) * s, (gy1 - gy0) * s
     ox, oy = bx0 + (bx1 - bx0 - w) / 2, by0 + (by1 - by0 - h) / 2
-    return {i: (ox + (x - gx0) / (gx1 - gx0) * w, oy + (y - gy0) / (gy1 - gy0) * h)
-            for i, (x, y) in canon.items()}
+    pos = {i: (ox + (x - gx0) / (gx1 - gx0) * w, oy + (y - gy0) / (gy1 - gy0) * h)
+           for i, (x, y) in canon.items()}
+    # The mapping can shrink the layout, and a gate that ran before it proves nothing.
+    assert_drawn_clearance(pos, [tuple(e) for e in growth_edges(preferential)],
+                           GROWTH_NODE, f"growth_pos into {box}")
+    return pos
 
 
 def draw_growth(frame, pos, fill="accent", size=GROWTH_NODE, new_color="accenttwo",
@@ -525,15 +586,15 @@ def fig_linear_axes():
     s = condmat_stats()
     assert s["N"] == N and abs(s["gap"] - s["var"] / s["k1"]) < 1e-9
 
-    ax = Axes(FRAME, (0, 288), (0, 0.15), xticks=[0, 100, 200],
+    ax = Axes(LIN_BOX, (0, 288), (0, 0.15), xticks=[0, 100, 200],
               yticks=[0, 0.05, 0.10, 0.15], yfmt=lambda v: f"{v:g}")
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$p(k)$")
-    body += scatter(ax, ks, pk, color="accent", d=13, expect=len(ks))
-    body += text(ax.x1 - 8, ax.Y(0.132),
+    body += scatter(ax, ks, pk, color=HUBS, d=13, expect=len(ks))
+    body += text(ax.x1 - 8, 372,
                  f"one dot per distinct $k$: {len(ks)} of them", color="annot",
                  anchor="north east")
-    body += text(ax.x1 - 8, ax.Y(0.098),
+    body += text(ax.x1 - 8, ax.Y(0.130),
                  f"$\\mathrm{{Var}}(k)/\\langle k \\rangle = {s['gap']:.1f}$",
                  color="accenttwo", anchor="north east")
     emit("linear-axes", body, container="full", h=H)
@@ -547,7 +608,7 @@ def fig_fat_tail_reveal():
     far = int((d > TAIL_K).sum())
     assert far == 28 and N == 23133, (far, N)
 
-    ax = Axes(FRAME, (0, 288), (0, 0.15), xticks=[0, 100, 200],
+    ax = Axes(LIN_BOX, (0, 288), (0, 0.15), xticks=[0, 100, 200],
               yticks=[0, 0.05, 0.10, 0.15], yfmt=lambda v: f"{v:g}")
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$p(k)$")
@@ -558,17 +619,21 @@ def fig_fat_tail_reveal():
     # It marks a RANGE OF k, so it runs the full height of the frame.
     body += fill_poly([ax.P(TAIL_K, 0), ax.P(288, 0), ax.P(288, ax.ylim[1]),
                        ax.P(TAIL_K, ax.ylim[1])], color="accentthree", opacity=0.55)
-    body += scatter(ax, ks, pk, color="accent", d=13, expect=len(ks))
+    body += scatter(ax, ks, pk, color=HUBS, d=13, expect=len(ks))
 
+    # R3 A3-7: the head annotation was drawn across the tail band, describing k <= 10
+    # while sitting over k = 43...142. The band has to be full height -- clipped to the
+    # data it is a 0.6bp sliver, since every point out there is one author -- so both
+    # notes live above the frame instead, each over the range it names. Fills are in the
+    # collision gate now, so neither can drift back in.
     boxes = []
-    body += label_at(ax.X(40), ax.Y(0.118),
-                     f"{pct(small)} of {N:,} authors\\\\sit at $k \\le {SMALL_K}$"
-                     .replace(",", "{,}"),
-                     color="accenttwo", anchor="west", boxes=boxes)
-    body += seg(ax.P(190, 0.044), ax.P(190, 0.022), color="accenttwo", w=3.0,
+    body += fixed_label([(ax.X(TAIL_K) - 20, 372)],
+                        f"{pct(small)} sit at $k \\le {SMALL_K}$",
+                        [], boxes, color="accenttwo", anchor="north east")
+    body += fixed_label([(ax.x1 - 8, 372)], f"{far} run past $k = {TAIL_K}$",
+                        [], boxes, color="accenttwo", anchor="north east")
+    body += seg(ax.P(190, 0.136), ax.P(190, 0.040), color="accenttwo", w=3.0,
                 arrow="-{Latex[length=9bp]}")
-    body += label_at(ax.X(190), ax.Y(0.048), f"{far} run past $k = {TAIL_K}$",
-                     color="accenttwo", anchor="south", boxes=boxes)
     emit("fat-tail-reveal", body, container="full", h=H)
 
 
@@ -1090,25 +1155,35 @@ def fig_hubs_share():
     # The frame stops at y = 278 so the two numbers have a band of their own above it.
     # A CCDF is a diagonal across its whole panel: there is no corner inside it that is
     # empty at both ends, which is what the collision gate kept saying.
-    ax = Axes((185, 145, 1058, 254), (1, 2000), (1e-4, 1), xlog=True, ylog=True,
-              xticks=[1, 10, 100, 1000], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    ax = ccdf_axes((1, 2000), [1, 10, 100, 1000])
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
-    # Everything below P = 0.01 IS the top one per cent. accent-3 as a band, which is
-    # what accent-3 is for.
-    body += fill_poly([ax.P(1, ax.ylim[0]), ax.P(2000, ax.ylim[0]),
-                       ax.P(2000, top_frac), ax.P(1, top_frac)],
+    # R3 B3-10: the band used to span the full width while its label said k >= 36, so
+    # everything left of the dashed line was shaded and was not k >= 36. It is the
+    # rectangle those 65 routers actually occupy: k >= kstar AND P <= 1%.
+    body += fill_poly([ax.P(kstar, ax.ylim[0]), ax.P(ax.xlim[1], ax.ylim[0]),
+                       ax.P(ax.xlim[1], top_frac), ax.P(kstar, top_frac)],
                       color="accentthree", opacity=0.55)
     body += curve(ax, ks, su, color=HUBS, w=4.6)
     body += seg(ax.P(kstar, ax.ylim[0]), ax.P(kstar, top_frac), color="annot", w=2.6,
                 dash=DASH)
     drawn = curve_pts(ax, ks, su)
+
+    # R3 B3-9: the headline number was text and nothing more -- the plot shows how FEW
+    # the hubs are and says nothing about the third of the ends they hold. Here it is as
+    # a length: one rule the width of the frame, the share of it in accent-3.
+    bar_y = 330
+    body += seg((ax.x0, bar_y), (ax.x1, bar_y), color="annot", w=13)
+    body += seg((ax.x0, bar_y), (ax.x0 + share * (ax.x1 - ax.x0), bar_y),
+                color="accentthree", w=13)
     boxes = []
-    body += fixed_label([(ax.x1 - 8, 372)],
-                        f"shaded: the Internet's top {pct(0.01)}, $k \\ge {kstar}$\\\\"
-                        f"{n_top} of {num(len(d))} routers hold {pct(share, 1)} "
-                        f"of {num(d.sum())} ends",
+    body += fixed_label([(ax.x1 - 8, CCDF_NOTE_Y)],
+                        f"shaded: the Internet's top {pct(0.01)} -- {n_top} of "
+                        f"{num(len(d))} routers, $k \\ge {kstar}$",
                         drawn, boxes, color="accenttwo", anchor="north east")
+    body += fixed_label([(ax.x0, bar_y - 12)],
+                        f"{pct(share, 1)} of all {num(d.sum())} edge ends",
+                        drawn, boxes, color="annot", anchor="north west")
     emit("hubs-share", body, container="full", h=H)
 
 
@@ -1124,8 +1199,7 @@ def fig_universality():
     twice, because the first solver only avoided ink.  `curve_label` now takes the other
     curves as blockers and asserts the nearest-curve property the reviewer measured.
     """
-    ax = Axes(FRAME, (1, 2000), (1e-5, 1), xlog=True, ylog=True,
-              xticks=[1, 10, 100, 1000], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    ax = ccdf_axes((1, 2000), [1, 10, 100, 1000])
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
 
@@ -1135,7 +1209,7 @@ def fig_universality():
             ("yeast", np.array(degrees_of("yeast")), DASH, (0.75, 0.6, 0.9, 0.45))]
     kmax, paths = {}, []
     for name, d, dash, fracs in sets:
-        ks, su = ccdf(d)
+        ks, su = ccdf_dense(d)
         kmax[name] = int(d.max())
         body += curve(ax, ks, su, color=HUBS, w=4.2, dash=dash)
         paths.append((name, curve_pts(ax, ks, su), fracs))
@@ -1146,7 +1220,7 @@ def fig_universality():
         others = [q for j, (_, pp, _) in enumerate(paths) if j != i for q in pp]
         anchors = [pts[min(int(len(pts) * f), len(pts) - 1)] for f in fracs]
         body += curve_label(ax, name, anchors, pts, boxes, others=others, color=HUBS,
-                            floor=24, margin=1.15)
+                            floor=46, margin=1.35)
     emit("universality", body, container="full", h=H)
 
 
@@ -1162,26 +1236,26 @@ def fig_poisson_ccdf():
     assert len(d) == len(cm), (len(d), len(cm))
     assert abs(var / k1 - 1) < 0.05, var / k1
     assert int(d.max()) < int(cm.max()) / 8, (d.max(), cm.max())
-    ks, su = ccdf(d)
+    ks, su = ccdf_dense(d)
 
-    ax = Axes((185, 145, 1058, 254), (1, 300), (1e-5, 1), xlog=True, ylog=True,
-              xticks=[1, 10, 100], yticks=[1e-4, 1], xfmt=dec)
+    ax = ccdf_axes((1, 40), [1, 10])
     body = ax.frame()
     body += axis_titles(ax, "degree $k$", "$P(k' > k)$")
     body += curve(ax, ks, su, color=NO_HUBS, w=4.6)
     plot = [(k, s) for k, s in zip(ks, su) if s > 0 and ax.inside(k, s)]
     body += scatter(ax, [p[0] for p in plot], [p[1] for p in plot], color=NO_HUBS,
                     d=13, expect=len(plot))
-    # The whole distribution is over by k = 15, so the right half of the panel is empty
-    # -- which is the point of the slide, and where the numbers go.
     drawn = curve_pts(ax, ks, su)
     boxes = []
-    body += fixed_label([(1050, 372)],
-                        f"largest degree {int(d.max())}  ·  "
-                        f"$\\mathrm{{Var}}/\\langle k \\rangle = {var / k1:.2f}$\\\\"
-                        f"{num(len(d))} nodes, $\\langle k \\rangle = {k1:.1f}$ "
-                        f"-- as the physicists",
-                        drawn, boxes, color="accenttwo", anchor="north east")
+    # The largest degree labels the point it describes -- the end of the curve -- rather
+    # than sitting in a corner claiming a number the drawing stops short of (B3-12).
+    body += curve_label(ax, f"largest degree {int(d.max())}", drawn[-6:], drawn, boxes,
+                        color=NO_HUBS, floor=20, margin=1.0)
+    body += fixed_label([(ax.x1 - 8, CCDF_NOTE_Y)],
+                        f"same {num(len(d))} nodes, same "
+                        f"$\\langle k \\rangle = {k1:.1f}$ as the physicists -- "
+                        f"$\\mathrm{{Var}}/\\langle k \\rangle = {var / k1:.2f}$",
+                        drawn, boxes, color="annot", anchor="north east")
     emit("poisson-ccdf", body, container="full", h=H)
 
 
@@ -1297,8 +1371,18 @@ QUIZ_B = (330, 66, 642, 340)        # preferential attachment
 QUIZ_FRAME = (818, 145, 1058, 356)
 
 
-def _quiz_body(labels):
-    """Both sketches and both tails.  `labels` is the pair drawn over the sketches."""
+def _quiz_body(labels, fills, dashes):
+    """Both sketches and both tails.
+
+    R3 B3-1 was a Blocker of round 2's own making. C2-7 made the colour role consistent --
+    accent has hubs, accent-2 does not -- and three slides then spend that key in words
+    ("hubs effectively impossible", "randomness cuts it short"). So on the QUESTION slide
+    a student could read the answer off the palette and vote without looking at a tail,
+    which the speaker note explicitly forbids. The ruling stands everywhere else; this one
+    figure is exempt, deliberately, and `fig_quiz` passes one neutral fill for both
+    sketches and tells the two tails apart by dash pattern instead. `fig_quiz_answer`
+    passes the roles, where "no preference"/"preference" arrive and they become legible.
+    """
     ba = np.array(degrees_of("ba"))
     ua = np.array(degrees_of("uniform"))
     assert abs(ba.mean() - 4) < 0.01 and abs(ua.mean() - 4) < 0.01
@@ -1310,35 +1394,34 @@ def _quiz_body(labels):
     assert len({v for e in ea for v in e}) == GROWTH_N
 
     body = ""
-    # R2 C2-7: accent-2 was B, "preference", the hub-rich one -- inverted against the
-    # role five slides earlier, where accent-2 is the random graph with no hubs.
-    for box, pref, col, lab in ((QUIZ_A, False, NO_HUBS, labels[0]),
-                                (QUIZ_B, True, HUBS, labels[1])):
-        pos = growth_pos(pref, box)
-        frame = {"nodes": list(range(GROWTH_N)),
-                 "edges": [tuple(e) for e in growth_edges(pref)],
+    for box, pref, col, lab in ((QUIZ_A, False, fills[0], labels[0]),
+                                (QUIZ_B, True, fills[1], labels[1])):
+        # R3 B3-2: solved in the panel box it is drawn in, not in a canonical box and
+        # then scaled into this one.
+        pos = growth_layout(pref, box=box)
+        edges = [tuple(e) for e in growth_edges(pref)]
+        assert_drawn_clearance(pos, edges, GROWTH_NODE, f"quiz panel {lab}")
+        frame = {"nodes": list(range(GROWTH_N)), "edges": edges,
                  "new_node": None, "new_edges": []}
         body += draw_growth(frame, pos, fill=col, size=GROWTH_NODE)
         body += text((box[0] + box[2]) / 2, 372, lab, color=col, anchor="north")
 
     ax = Axes(QUIZ_FRAME, (1, 400), (1e-5, 1), xlog=True, ylog=True,
-              xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+              xticks=[1, 10, 100], yticks=CCDF_YTICKS, xfmt=dec)
     body += ax.frame()
     body += text((ax.x0 + ax.x1) / 2, 79, "degree $k$", anchor="north")
     body += text(676, (ax.y0 + ax.y1) / 2, "$P(k' > k)$", rot=90)
     drawn, anchors = [], []
-    for d, col, frac in ((ua, NO_HUBS, 0.80), (ba, HUBS, 0.72)):
-        ks, su = ccdf(d)
-        body += curve(ax, ks, su, color=col, w=4.2)
+    for d, col, dash, fracs in ((ua, fills[0], dashes[0], (0.85, 0.7, 0.95, 0.55)),
+                                (ba, fills[1], dashes[1], (0.75, 0.6, 0.9, 0.45))):
+        ks, su = ccdf_dense(d)
+        body += curve(ax, ks, su, color=col, w=4.2, dash=dash)
         pts = curve_pts(ax, ks, su)
         drawn += pts
-        anchors.append((col, pts[int(len(pts) * frac)]))
-    # R2 C2-5 / R1 B-13: the switch belongs in the DRAWING. The sketches are 14-node
-    # runs of the two rules; the tails are the 20,000-node ones, and slide 078 prints
-    # "largest degree 315" under a picture whose busiest node has ten edges. A caption is
-    # not where a student looks when they are counting spokes.
-    switch = (f"sketches: {GROWTH_N} nodes  ·  tails: {len(ba):,} nodes"
-              .replace(",", "{,}"))
+        anchors.append((col, [pts[min(int(len(pts) * f), len(pts) - 1)] for f in fracs]))
+    # R1 B-13 / C2-5: the switch belongs in the DRAWING. The sketches are 14-node runs of
+    # the two rules; the tails are the 20,000-node ones.
+    switch = f"sketches: {GROWTH_N} nodes  ·  tails: {num(len(ba))} nodes"
     body += text((QUIZ_A[0] + QUIZ_B[2]) / 2, 8, switch, color="annot", anchor="south")
     said = list(labels) + [switch, "degree $k$", "$P(k' > k)$", "1", "10", "100",
                            "$10^{-4}$", "$10^{-2}$"]
@@ -1353,14 +1436,17 @@ def _quiz_curve_labels(ax, drawn, anchors, texts):
     """
     body = ""
     boxes = [label_box(ax.X(v), ax.y0 - 17, dec(v), "north") for v in (1, 10, 100)]
-    for (col, at), s in zip(anchors, texts):
-        body += curve_label(ax, s, at, drawn, boxes, color=col)
+    for (col, ats), s in zip(anchors, texts):
+        body += curve_label(ax, s, ats, drawn, boxes, color=col, floor=20, margin=1.0)
     return body
 
 
 def fig_quiz():
     """Slide 72: two networks and two tails, and nothing that says which rule made them."""
-    body, ax, ba, ua, said, drawn, anchors = _quiz_body(("A", "B"))
+    # One neutral fill, two dash patterns: see `_quiz_body`. The palette must not
+    # answer the question the slide is asking.
+    body, ax, ba, ua, said, drawn, anchors = _quiz_body(
+        ("A", "B"), ("black", "black"), ("", DASH_LONG))
     said += ["A", "B"]
     body += _quiz_curve_labels(ax, drawn, anchors, ("A", "B"))
     # Checked against the strings drawn, not the TikZ body -- coordinates are full of
@@ -1375,7 +1461,8 @@ def fig_quiz():
 
 def fig_quiz_answer():
     """Slide 73: the same two, named, with the tails' largest degrees."""
-    body, ax, ba, ua, _, drawn, anchors = _quiz_body(("no preference", "preference"))
+    body, ax, ba, ua, _, drawn, anchors = _quiz_body(
+        ("no preference", "preference"), (NO_HUBS, HUBS), ("", ""))
     # Each tail is labelled with its own largest degree, at the end of the curve -- which
     # is where that degree sits on the axis, so the number reads as the point it marks.
     body += _quiz_curve_labels(ax, drawn, anchors,
