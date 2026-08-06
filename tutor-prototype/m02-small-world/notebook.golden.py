@@ -334,8 +334,8 @@ def cp1_milgram_img(mo):
             "Nebraska, and has to reach one named stockbroker near Boston. Nobody "
             "may post it directly: each holder passes it to a single person they "
             "know on a first-name basis and who they think sits closer to the "
-            "target. Each arrow is one such hand-off. The experiment counts the "
-            "arrows.</span>"
+            "target. Each arrow is one such hand-off. The drawing shows the idea, "
+            "not the result.</span>"
         ),
     ])
     return
@@ -530,11 +530,16 @@ def cp2_paperwork_photo(mo):
 
 @app.cell(hide_code=True)
 def cp2_paperwork_photo_preview(cp2_paperwork_photo, mo):
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     _files = list(cp2_paperwork_photo.value or [])
     cp2_paperwork_photo_send = mo.ui.run_button(
         label="📨 Send to my tutor", disabled=not _files
     )
-    if not _files:
+    if _done:
+        _out = mo.md("")
+    elif not _files:
         _out = mo.vstack([
             mo.md(
                 "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
@@ -559,17 +564,26 @@ def cp2_paperwork_photo_preview(cp2_paperwork_photo, mo):
 
 @app.cell(hide_code=True)
 def cp2_paperwork_photo_sent(cp2_paperwork_photo, cp2_paperwork_photo_send, mo):
+    from pathlib import Path as _P
+
+    # Recomputed: an underscore name is private to its cell in marimo.
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     if cp2_paperwork_photo_send.value and (cp2_paperwork_photo.value or []):
-        from pathlib import Path as _P
 
         _P("session_artifacts").mkdir(exist_ok=True)
         with open("session_artifacts/student_signal.txt", "a") as _f:
             _f.write("cp2_paperwork_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md(
-            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
-            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        _sent = (
+            mo.md("")
+            if _done
+            else mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+                "when the photo looks right — that is what tells your tutor to look.*</span>"
+            )
         )
     _sent
     return
@@ -622,7 +636,12 @@ def cp3_fig(mo, netviz):
             '"my friends know each other". Find them and count them yourself. '
             "Dots are drag-able if the picture gets tangled.</span>"
         ),
-        netviz(_edges, highlight=_friend_edges, node_colors={"A": "#B4552D"}),
+        netviz(
+            _edges,
+            highlight=_friend_edges,
+            node_colors={"A": "#B4552D"},
+            layout={"A": (0.5, 0.5), "B": (0.5, 0.14), "C": (0.842, 0.389), "D": (0.712, 0.791), "E": (0.288, 0.791), "F": (0.158, 0.389)},
+        ),
     ])
     return
 
@@ -677,8 +696,14 @@ def cp4_photo(mo):
 @app.cell(hide_code=True)
 def cp4_photo_preview(cp4_photo, mo):
     _files = list(cp4_photo.value or [])
+    # A photo already saved means someone is reading a finished notebook.
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     cp4_photo_send = mo.ui.run_button(label="📨 Send to my tutor", disabled=not _files)
-    if not _files:
+    if _done:
+        _out = mo.md("")
+    elif not _files:
         _out = mo.vstack([
             mo.md(
                 "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
@@ -703,17 +728,26 @@ def cp4_photo_preview(cp4_photo, mo):
 
 @app.cell(hide_code=True)
 def cp4_photo_sent(cp4_photo, cp4_photo_send, mo):
+    from pathlib import Path as _P
+
+    # Recomputed: an underscore name is private to its cell in marimo.
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     if cp4_photo_send.value and (cp4_photo.value or []):
-        from pathlib import Path as _P
 
         _P("session_artifacts").mkdir(exist_ok=True)
         with open("session_artifacts/student_signal.txt", "a") as _f:
             _f.write("cp4_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md(
-            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
-            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        _sent = (
+            mo.md("")
+            if _done
+            else mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+                "when the photo looks right — that is what tells your tutor to look.*</span>"
+            )
         )
     _sent
     return
@@ -742,7 +776,7 @@ def cp4_choice(mo):
     cp4_choice = mo.ui.radio(
         options=["no extra cable", "short cable (2 apart)", "long cable (opposite)"],
         value="no extra cable",
-        label="Where does your one cable go?",
+        label="Compare three placements",
     )
     cp4_choice
     return (cp4_choice,)
@@ -873,11 +907,16 @@ def cp5_ring_paperwork_photo(mo):
 
 @app.cell(hide_code=True)
 def cp5_ring_paperwork_photo_preview(cp5_ring_paperwork_photo, mo):
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     _files = list(cp5_ring_paperwork_photo.value or [])
     cp5_ring_paperwork_photo_send = mo.ui.run_button(
         label="📨 Send to my tutor", disabled=not _files
     )
-    if not _files:
+    if _done:
+        _out = mo.md("")
+    elif not _files:
         _out = mo.vstack([
             mo.md(
                 "<span style='color:#6A6D75;font-size:13px'>*Your photo appears "
@@ -904,17 +943,26 @@ def cp5_ring_paperwork_photo_preview(cp5_ring_paperwork_photo, mo):
 def cp5_ring_paperwork_photo_sent(
     cp5_ring_paperwork_photo, cp5_ring_paperwork_photo_send, mo
 ):
+    from pathlib import Path as _P
+
+    # Recomputed: an underscore name is private to its cell in marimo.
+    # This reference notebook is a FINISHED session, so the drop-box chrome is
+    # collapsed the way it is for any reader opening a completed one.
+    _done = True
     if cp5_ring_paperwork_photo_send.value and (cp5_ring_paperwork_photo.value or []):
-        from pathlib import Path as _P
 
         _P("session_artifacts").mkdir(exist_ok=True)
         with open("session_artifacts/student_signal.txt", "a") as _f:
             _f.write("cp5_ring_paperwork_photo\n")
         _sent = mo.md("✅ **Sent.** Your tutor is looking at it now.")
     else:
-        _sent = mo.md(
-            "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
-            "when the photo looks right — that is what tells your tutor to look.*</span>"
+        _sent = (
+            mo.md("")
+            if _done
+            else mo.md(
+                "<span style='color:#6A6D75;font-size:13px'>*Press the button above "
+                "when the photo looks right — that is what tells your tutor to look.*</span>"
+            )
         )
     _sent
     return
