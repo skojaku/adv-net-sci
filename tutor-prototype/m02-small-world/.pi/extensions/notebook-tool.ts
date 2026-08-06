@@ -2365,8 +2365,12 @@ export default function (pi: ExtensionAPI) {
       const modelSlotIdx = markers
         .map((m, i) => (/verbatim/i.test(m) ? -1 : i))
         .filter((i) => i >= 0);
+      // Positional ONLY when the count matches the skeleton exactly. Anything
+      // else is read as compact — three entries on a two-marker skeleton used
+      // to make `modelFill(1)` read entry 2 while the model's real fill sat
+      // unread at entry 1, and the note rendered the wrong one silently.
       const compactFills =
-        modelSlotIdx.length < markers.length && givenSlots.length === modelSlotIdx.length;
+        modelSlotIdx.length < markers.length && givenSlots.length !== markers.length;
       const modelFill = (i: number) =>
         compactFills ? (givenSlots[modelSlotIdx.indexOf(i)] ?? "") : (givenSlots[i] ?? "");
       // A model-filled slot describes a picture, so its prose is the tutor's.
@@ -2450,7 +2454,11 @@ export default function (pi: ExtensionAPI) {
       // Only the slots the model fills. Demanding one for a «verbatim» slot
       // refused an honest call over a string the renderer throws away.
       const filled = modelSlotIdx.filter((i) => modelFill(i).trim()).length;
-      if (markers.length > 1 && modelSlotIdx.length > 0 && filled < modelSlotIdx.length && slotStrikes < 2) {
+      // Not gated on markers.length: cp2_paperwork and cp4_shortcut_drawing
+      // have exactly one marker and it is the model's, and it IS the keepsake
+      // on those two — omitting it rendered "> **My cable:** done, sent it"
+      // with no nudge at all.
+      if (modelSlotIdx.length > 0 && filled < modelSlotIdx.length && slotStrikes < 2) {
         slotDriftWarned.set(`${id}:slots`, slotStrikes + 1);
         return toResult({
           out:
