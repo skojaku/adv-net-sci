@@ -1800,9 +1800,9 @@ The log-normal. It arises from multiplying random factors — which is at least 
 
 </div>
 
-The paper that gave us Facebook’s 92.7% also says its own degree distribution shows *substantial curvature* on log-log axes.
+Facebook’s own paper calls its tail *substantially curved*.
 
-* And so does ours: cond-mat's $p(k)$ gives $\gamma = 2.44$, its CCDF slope of $-2.57$ gives $\gamma = 3.57$. One tail, two answers.
+* And so does ours: cond-mat's $p(k)$ gives $\gamma = 2.44$, its CCDF gives $3.57$. One tail, two answers.
 
 <!--
 Ugander et al. 2011, in the same section we quoted for the paradox. Broido and Clauset 2019 fit 927 networks properly and find strong scale-free evidence in about 4% of them. This argument is live.

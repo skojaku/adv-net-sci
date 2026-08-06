@@ -627,10 +627,11 @@ def fig_bag_of_hands():
     # three-of-eight legend under it; the legend was then dropped rather than completed,
     # leaving nothing on the slide that decodes a letter. Four columns instead of five
     # buys the room to write the name out, which needs no legend at all.
-    b = rect(20, 15, 516, 292, color="annot", w=3.4, rounded=20,
-             what="the bag")
+    # 128bp of pitch, not 120: a name has to clear the NEXT column's tick, which is a
+    # recorded rule, as well as the bag's own border.
+    b = rect(8, 15, 530, 292, color="annot", w=3.4, rounded=20, what="the bag")
     for i, v in enumerate(owners):
-        x, y = 40 + (i % 4) * 124, 260 - (i // 4) * 55
+        x, y = 20 + (i % 4) * 128, 260 - (i // 4) * 55
         b += end_mark(x, y)
         b += text(x + 16, y, v, color="annot", anchor="west")
     b += text(268, 330, f"{len(owners)} ends, and whose they are")
@@ -714,7 +715,7 @@ _GLOSS = [r"substitute $q(k)$", r"name $\ksq$",
           r"rewrite $\ksq$", "the theorem"]
 _FRAME = (40, 20, 1040, 356)
 _DERIV_Y = [300, 226, 152, 78]
-_EQ_X, _GLOSS_X = 150, 760
+_EQ_X, _GLOSS_X = 150, 710
 
 
 def _raw_node(x, y, s, size=FONT, anchor="west"):
