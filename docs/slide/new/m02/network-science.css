@@ -124,6 +124,11 @@ section.part h2 {
   line-height: 1.08;
   letter-spacing: -0.03em;
   max-width: 1000px;
+  /* `section h2` pins height to 45px for the single-line 40px content title, so a
+     two-line part title (67px, line-height 1.08) overflowed that box and the
+     paragraph below started inside the overflow, printing its first line on top
+     of the title's wrapped second line. Part titles size to their own content. */
+  height: auto;
 }
 section.part p {
   margin: 32px 80px 0;

@@ -1201,7 +1201,7 @@ def _dotplot(counts, mean):
     # against the labels' measured boxes, padded by the casing's own half-width, rather
     # than against a hand-picked 20bp gap that knew nothing about either.
     assert_labels_clear("dotplot mean rule", row_labels, [rule], pad=casing / 2 + 4)
-    s += text(260, 12, f"dashed line = mean of {sum(counts.values())} pairs: "
+    s += text(260, 12, f"dashed = mean: "
                         f"${mean.numerator}/{mean.denominator} = {float(mean):.2f}$",
               color="accenttwo", anchor="south")
     return s

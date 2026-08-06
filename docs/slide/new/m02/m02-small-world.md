@@ -9,7 +9,7 @@ math: katex
 
 <div class="eyebrow">Advanced Topics in Network Science · Module 02</div>
 
-# Six Handshakes
+# How Many Handshakes?
 
 <hr>
 
@@ -31,7 +31,7 @@ Open with Omaha, not with definitions. The paradox — clustered *and* short —
 
 <div class="formula">
 
-Why is a stranger on the other side of the world only about six handshakes away?
+How many handshakes away is a stranger on the other side of the world?
 
 </div>
 
@@ -182,8 +182,8 @@ Milgram reported a median chain length. The slogan did the rest of the work.
 </div>
 <div class="fig">
 
-![w:520](figures/guare.png)
-<figcaption>John Guare, who wrote the title — photo David Shankbone, CC BY 3.0</figcaption>
+![w:520](figures/six-degrees-poster.jpg)
+<figcaption>the 1993 film adaptation of Guare's play</figcaption>
 
 </div>
 </div>
