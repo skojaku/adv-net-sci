@@ -968,12 +968,28 @@ def fig_ccdf_condmat():
     plot = [(k, s) for k, s in zip(ks, su) if s > 0]
     assert len(ks) == 122 and len(plot) == 121, (len(ks), len(plot))
 
-    ax = Axes(FRAME, (1, 300), (1e-5, 1), xlog=True, ylog=True,
-              xticks=[1, 10, 100], yticks=[1e-4, 1e-2, 1], xfmt=dec)
+    a, _, r2, n = ccdf_fit(ks, su, PDF_KMIN, PDF_KMAX)
+    pdf_slope = pdf_fit()[0]
+    # R3 B3-5: slide 55 says the p(k) slope IS -gamma and slide 65 says the CCDF falls
+    # one shallower. Apply both to this one network and you get gamma = 2.44 from the
+    # PDF and gamma = 3.29 from the CCDF -- 0.85 apart where the deck's own rule says
+    # exactly 1.0, and slide 67 calls a gap of one "a different physics". Neither number
+    # is wrong; the assumption behind reconciling them is. So the figure prints the slope
+    # it measured and says it does not reconcile, which is Part Eight's argument arriving
+    # four slides early and standing on the evidence that is already on the screen.
+    gamma_ccdf, gamma_pdf = 1 - a, -pdf_slope
+    assert abs(gamma_ccdf - gamma_pdf) > 0.5, (gamma_ccdf, gamma_pdf)
+    assert abs(a - (pdf_slope + 1)) > 0.5, (a, pdf_slope + 1)
+
+    ax = ccdf_axes((1, 300), [1, 10, 100])
     body = ax.frame()
     body += axis_titles(ax, "number of coauthors $k$", "$P(k' > k)$")
-    body += scatter(ax, [p[0] for p in plot], [p[1] for p in plot], color="accent", d=13,
+    body += scatter(ax, [p[0] for p in plot], [p[1] for p in plot], color=HUBS, d=13,
                     expect=121)
+    body += text(ax.x1 - 8, CCDF_NOTE_Y,
+                 f"fitted slope ${a:.2f}$ over ${PDF_KMIN} \\le k \\le {PDF_KMAX}$, "
+                 f"not ${pdf_slope:.2f} + 1$",
+                 color="accenttwo", anchor="north east")
     emit("ccdf-condmat", body, container="full", h=H)
 
 
