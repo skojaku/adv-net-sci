@@ -62,8 +62,8 @@ def fig_milestone():
     for i in range(4):
         y = top + 170 - i * 34
         b += seg((cx - 30, y), (cx + 30, y), color="black", w=3.0)
-    b += text(cx - 130, top + 120, "gilded\\\\bronze", color=ACCENT2, anchor="east")
-    b += text(cx + 130, top + 60, "distances to\\\\every province", color="black",
+    b += text(cx - 300, top + 120, "gilded\\\\bronze", color=ACCENT2, anchor="east")
+    b += text(cx + 268, top + 60, "distances to\\\\every province", color="black",
               anchor="west")
     b += text(cx, cy - 18, "Milliarium Aureum, 20 BC", color=GRAY, anchor="north")
     emit("milestone", b, container="full", h=520, hmod=MAP_MOD)
@@ -76,21 +76,31 @@ def fig_milestone_radial():
     ten. They are constants here because they come from the road itineraries, not
     from the graph -- and they are the only hand-entered numbers in this module.
     """
-    spokes = [("Gades", 190, 1650), ("Londinium", 130, 1310),
-              ("Byzantium", 40, 1120), ("Alexandria", -60, 1560)]
-    cx, cy = 300.0, 210.0
+    spokes = [("Gades", 20, 1650), ("Londinium", 7, 1310),
+              ("Byzantium", -7, 1120), ("Alexandria", -20, 1560)]
+    cx, cy, H = 96.0, 200.0, 400.0
     b = f"\\fill[{ACCENT3}] ({cx},{cy}) circle (26bp);\n"
     b += f"\\draw[line width=3bp] ({cx},{cy}) circle (26bp);\n"
-    for i, (place, ang, miles) in enumerate(spokes):
+    pts = []
+    for place, ang, miles in spokes:
         a = np.deg2rad(ang)
-        r0, r1 = 34.0, 300.0
+        r0, r1 = 34.0, 470.0
         p = (cx + r0 * np.cos(a), cy + r0 * np.sin(a))
         q = (cx + r1 * np.cos(a), cy + r1 * np.sin(a))
         b += seg(p, q, color="black", w=2.6)
-        b += text(q[0] + 14, q[1], f"{place}\\\\{miles} miles", color="black",
+        b += text(q[0] + 16, q[1], f"{place} — {miles} miles", color="black",
                   anchor="west")
-    b += text(cx, cy - 46, "the stone", color=ACCENT2, anchor="north")
-    emit("milestone-radial", b, container="full", h=560, hmod=MAP_MOD)
+        pts.append(F.label_box(q[0] + 16, q[1], f"{place} — {miles} miles", "west"))
+    b += text(cx, cy - 44, "the stone", color=ACCENT2, anchor="north")
+    # "the stone" is centred under a disc that sits near the left edge, so its
+    # own box is what runs off the canvas if the centre moves any further left.
+    _sb = F.label_box(cx, cy - 44, "the stone", "north")
+    assert _sb[0] >= 0 and _sb[2] <= 1080, _sb
+    # Ink drawn outside the canvas does not exist -- assert the coordinates the
+    # generator wrote rather than hoping the crop notices.
+    for box in pts:
+        assert 0 <= box[0] and box[2] <= 1080 and 0 <= box[1] and box[3] <= H, box
+    emit("milestone-radial", b, container="full", h=H, hmod=MAP_MOD)
 
 
 def fig_roma_map():

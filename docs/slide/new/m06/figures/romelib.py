@@ -223,11 +223,11 @@ def crowns(cities, color=ACCENT2):
     for c in cities:
         x, y = NODE_XY[c]
         out += F.ring(x, y, size=F.NODE, color=color, w=4.0, grow=13)
-        out += _crown_glyph(x, y + F.NODE / 2 + 22, color)
+        out += _crown_glyph(x, y + F.NODE / 2 + 26, color)
     return out
 
 
-def _crown_glyph(x, y, color=ACCENT2, w=26.0, h=17.0):
+def _crown_glyph(x, y, color=ACCENT2, w=44.0, h=28.0):
     """A small crown, drawn as a filled path so it reads at slide size."""
     pts = [(x - w / 2, y - h / 2), (x - w / 2, y + h / 2), (x - w / 4, y),
            (x, y + h / 2 + 3), (x + w / 4, y), (x + w / 2, y + h / 2),
