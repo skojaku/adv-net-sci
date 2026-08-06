@@ -211,14 +211,14 @@ Let them argue. Do not write any name on the board, and do not confirm either an
 
 <hr>
 
+Nobody has defined anything yet, and the room already disagrees.
+
 <div class="fig tall">
 
 ![w:1080](figures/club-three-answers.png)
 <figcaption>red Noah: tell first · gold Sophia: closest to everyone · black Alex: coordinates</figcaption>
 
 </div>
-
-Nobody has defined anything yet, and the room already disagrees.
 
 <!--
 Noah has six friends and is the obvious broadcast choice. Sophia is closest to everyone on average. Alex is the one every path between the clubs has to use — on four friends, against Noah's six.
@@ -246,14 +246,16 @@ $$c_i = \sum_j A_{ij}$$
 
 </div>
 
-Count the edges that end at a node. That is **degree centrality**, and it is the whole definition.
 
 <div class="fig tall">
 
 ![w:1080](figures/degree-count.png)
-<figcaption>one tick per edge end</figcaption>
 
 </div>
+
+<!--
+Count the edges that end at a node. That is degree centrality, and it is the whole definition — the cheapest question in the module.
+-->
 
 ---
 
@@ -644,14 +646,16 @@ $$c_i = \sum_{j<k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}$$
 
 </div>
 
-**Betweenness centrality** counts how often a node lies on the shortest path between two others — traffic it can broker, or block.
 
 <div class="fig tall">
 
 ![w:1080](figures/betweenness-idea.png)
-<figcaption>paths with no other way round</figcaption>
 
 </div>
+
+<!--
+Betweenness centrality counts how often a node lies on the shortest path between two others: traffic it can broker, or block.
+-->
 
 ---
 
@@ -1412,14 +1416,16 @@ $$x = A y \qquad y = A^{\top} x$$
 
 </div>
 
-Substitute one into the other and each is an eigenvector problem — hubs of $A A^{\top}$, authorities of $A^{\top} A$. **HITS**, Kleinberg 1999.
 
 <div class="fig tall">
 
 ![w:1080](figures/hits-equations.png)
-<figcaption>hub scores from authorities, authority scores from hubs</figcaption>
 
 </div>
+
+<!--
+Substitute one into the other and each is an eigenvector problem: hubs are the leading eigenvector of A A-transpose, authorities of A-transpose A. HITS, Kleinberg 1999.
+-->
 
 ---
 
@@ -1538,14 +1544,16 @@ $$c_i = (1-\beta)\sum_j \frac{A_{ji}\,c_j}{d^{\text{out}}_j} + \frac{\beta}{N}$$
 
 </div>
 
-A page has one vote and **splits it among its out-links**, so a link from a page that links to everything is worth almost nothing.
 
 <div class="fig tall">
 
 ![w:1080](figures/pagerank-split.png)
-<figcaption>one score, split four ways</figcaption>
 
 </div>
+
+<!--
+A page has one vote and splits it among its out-links, so a link from a page that links to everything is worth almost nothing.
+-->
 
 ---
 
@@ -1630,16 +1638,15 @@ $$c_i = \sum_k \beta(1-\beta)^k p_i^{(k)}$$
 
 </div>
 
-Send every jump back to **one** page and the ranking bends toward it: globally Blog leads Course by 0.009; personalized on Course, **Course leads by 0.125**.
 
 <div class="fig tall">
 
 ![w:1080](figures/ppr.png)
-<figcaption>the same web, seen from one page</figcaption>
 
 </div>
 
 <!--
+Send every jump back to one page and the ranking bends toward it. Globally Blog leads Course by 0.009; personalized on Course, Course leads by 0.125.
 The formula is the same score read a second way: the chance of reaching i in k steps, discounted by distance from the focus. Personalized PageRank is discounted reachability.
 -->
 
