@@ -114,7 +114,9 @@ def fig_timeline_1961():
     marks = [(250, "1961", "James Coleman surveys\\\\twelve high schools"),
              (830, "1991", "Scott Feld reopens\\\\one of them")]
     for x, year, who in marks:
-        b += dot(x, y, color="accent", d=24)
+        # 34bp, not 24: check_render counts a solid accent disc as a node and measures it
+        # on the slide against the 26-52px band -- 24bp came back 23.5px and failed.
+        b += dot(x, y, color="accent", d=34)
         b += text(x, y + 30, year, anchor="south", size=46)
         b += text(x, y - 30, who, anchor="north")
     b += text(540, y + 22, "30 years", color="annot", anchor="south")
@@ -165,9 +167,24 @@ def fig_feld_worksheet():
 
 
 def fig_feld_friendmeans():
+    """The eight girls with their names, their degrees and their friends' means.
+
+    Chips carry ONE decimal, which is what Feld's own Table 1 prints.  Two decimals plus
+    the eight names is the one combination the label solver cannot place inside the
+    356bp band: two-line "Betty\\\\4.00", one-line "Betty 4.0", and sixteen labels with
+    two-decimal chips all raise.  Rounding to one decimal cannot change the story, and
+    the assertion below is what says so rather than a comment claiming it.
+    """
     fm = {n: friend_mean(n) for n in FELD_ORDER}
-    assert [f"{fm[n]:.2f}" for n in FELD_ORDER] == \
-        ["4.00", "2.75", "3.00", "3.50", "3.33", "3.33", "2.00", "2.00"]
+    chip = {n: num(fm[n], 1) for n in FELD_ORDER}
+    assert [chip[n] for n in FELD_ORDER] == \
+        ["4.0", "2.8", "3.0", "3.5", "3.3", "3.3", "2.0", "2.0"]
+    # the below/above/equal reading must survive the rounding
+    for n in FELD_ORDER:
+        exact = (fm[n] > degree(n)) - (fm[n] < degree(n))
+        shown = (float(chip[n]) > degree(n)) - (float(chip[n]) < degree(n))
+        assert exact == shown, f"{n}: rounding {fm[n]} to {chip[n]} flips the comparison"
+
     colour = {}
     for n in FELD_ORDER:
         colour[n] = ("accenttwo" if n in BELOW else "accent" if n in ABOVE else "annot")
@@ -175,13 +192,21 @@ def fig_feld_friendmeans():
     assert sum(v == "accent" for v in colour.values()) == len(ABOVE) == 2
     assert sum(v == "annot" for v in colour.values()) == len(EQUAL) == 1
 
-    chips = {n: f"{fm[n]:.2f}" for n in POS}
-    chosen, _ = place_labels(chips, POS, FELD_EDGES, bounds=LABEL_BAND)
+    # Sixteen labels sharing eight coordinates: the name and the chip are solved as
+    # independent labels of the same disc, so each finds its own free side.
+    pos2, lab = dict(POS), {}
+    for n in FELD_ORDER:
+        lab[n] = n
+        pos2[n + "#"] = POS[n]
+        lab[n + "#"] = chip[n]
+    chosen, _ = place_labels(lab, pos2, FELD_EDGES, bounds=LABEL_BAND)
+
     b = feld_body()
     b += "".join(disc(*POS[n], str(degree(n)), fill=colour[n]) for n in FELD_ORDER)
-    for n in FELD_ORDER:
-        anc, dx, dy = chosen[n]
-        b += text(POS[n][0] + dx, POS[n][1] + dy, chips[n], color=colour[n], anchor=anc)
+    for key, (anc, dx, dy) in chosen.items():
+        n = key.rstrip("#")
+        b += text(POS[n][0] + dx, POS[n][1] + dy, lab[key], anchor=anc,
+                  color=colour[n] if key.endswith("#") else "black")
     emit("feld-friendmeans", b, container="full", h=FULL_H)
 
 
@@ -209,16 +234,22 @@ def fig_marketville_146():
     groups = [(MARKETVILLE_BELOW, "accenttwo", "below"),
               (MARKETVILLE_ABOVE, "accent", "above"),
               (MARKETVILLE_EQUAL, "annot", "equal")]
-    rows, pitch, gap = 5, 30, 44
-    b, x, drawn = "", 50.0, 0
-    for count, col, lab in groups:
-        cols = math.ceil(count / rows)
+    # check_render measures discs on the RENDERED SLIDE against a 26-52px band, and 24bp
+    # discs came back 23.5px -- under it.  28bp on a 32bp pitch is the smallest that
+    # clears the floor and still lets three blocks and two gaps fit the canvas.
+    rows, pitch, size, gap = 5, 32, 28, 50
+    ncols = [math.ceil(c / rows) for c, _, _ in groups]
+    widths = [(n - 1) * pitch + size for n in ncols]
+    total = sum(widths) + gap * (len(groups) - 1)
+    assert total <= 1060, f"the block is {total}bp wide and would touch the canvas edge"
+    b, x, drawn = "", (1080 - total) / 2 + size / 2, 0
+    for (count, col, lab), n_, wide in zip(groups, ncols, widths):
         for i in range(count):
             b += disc(x + (i // rows) * pitch, 150 + (i % rows) * pitch,
-                      fill=col, size=24)
+                      fill=col, size=size)
             drawn += 1
-        b += text(x + (cols - 1) * pitch / 2, 95, f"{count} {lab}", color=col)
-        x += cols * pitch + gap
+        b += text(x + (n_ - 1) * pitch / 2, 95, f"{count} {lab}", color=col)
+        x += wide + gap
     assert drawn == 146
     b += text(540, 330, f"{num(k1,1)} friends each, {num(friend,1)} per friend")
     emit("marketville-146", b, container="full", h=FULL_H)
@@ -329,17 +360,19 @@ def fig_rosters():
     hubs = [v for v in FELD_ORDER if degree(v) == max(counts.values())]
     assert hubs == ["Sue", "Alice"]
 
+    # Eight free-standing rosters, not a ruled table.  The header row and the two rules
+    # of the first version made this the format the rubric calls the worst one; each list
+    # now hangs from its owner's own disc -- the same disc every Feld figure draws --
+    # carrying the number of lists she turns up on. That the count and the degree are one
+    # number is the point of the slide, so they are one mark.
     b = ""
     for i, v in enumerate(FELD_ORDER):
         x = 85 + i * 130
-        b += text(x, 310, v)
+        b += text(x, 332, v)
+        b += disc(x, 282, str(counts[v]), fill="accenttwo" if v in hubs else "accent")
         for j, u in enumerate(lists[v]):
-            b += text(x, 255 - j * 45, u,
+            b += text(x, 222 - j * 45, u,
                       color="accenttwo" if u in hubs else "annot")
-        b += text(x, 62, str(counts[v]),
-                  color="accenttwo" if v in hubs else "black")
-    b += seg((35, 288), (1045, 288), color="annot", w=2.0)
-    b += seg((35, 95), (1045, 95), color="annot", w=2.0)
     emit("rosters", b, container="full", h=FULL_H)
 
 
