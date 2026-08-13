@@ -20,13 +20,11 @@ No programming experience is required.
 2. **Install the tutor agent** — either one works:
    - pi: `npm install -g @mariozechner/pi-coding-agent`
    - Claude Code: `npm install -g @anthropic-ai/claude-code`
-3. **Set up your API key** (provided by the course — check the syllabus page).
-   The tutor runs on the open-weights **DeepSeek v4 Flash** model through the
-   course's API. Set the environment variables from the course instructions, e.g.:
-   ```bash
-   export DEEPSEEK_API_KEY="<your course key>"
-   ```
-   Put this line in your `~/.zshrc` so you only do this once.
+3. **Set up Ollama Cloud** (the tutor runs on the open-weights **Gemma 4 31B**
+   model through it):
+   - Install Ollama: https://ollama.com/download
+   - Sign in: `ollama signin`
+   - Pull the course model: `ollama pull gemma4:31b-cloud`
    (Advanced: `TUTOR_MODEL` overrides the model, e.g.
    `TUTOR_MODEL="provider/model" ./run_tutor.sh`.)
 

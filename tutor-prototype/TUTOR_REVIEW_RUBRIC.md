@@ -324,7 +324,7 @@ thing and must stay at the course model (`TUTOR_MODEL`) — fidelity is about
 what the student meets, not about who types the student's lines.
 
 Fidelity requirements: course model
-(`TUTOR_MODEL`, default `deepseek/deepseek-v4-flash-0731`), global agent
+(`TUTOR_MODEL`, default `ollama/gemma4:31b-cloud`), global agent
 extensions disabled (`--no-extensions -e <module>/.pi/extensions/notebook-tool.ts`),
 a browser page connected **before** the tutor's first nb_* call (the marimo
 kernel wakes only when a client connects), sandbox copy of the module (never
