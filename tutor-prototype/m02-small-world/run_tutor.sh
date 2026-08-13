@@ -15,8 +15,9 @@ cd "$(dirname "$0")"
 
 MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
 
-# Course model: GLM-5.2 via Ollama Cloud (override with TUTOR_MODEL).
-TUTOR_MODEL="${TUTOR_MODEL:-ollama/glm-5.2:cloud}"
+# Course model: Muse Glimmer 30B via OpenRouter (needs OPENROUTER_API_KEY,
+# same as the vision/referee defaults below). Override with TUTOR_MODEL.
+TUTOR_MODEL="${TUTOR_MODEL:-openrouter/meta/muse-glimmer-30b}"
 
 # The tutor model is TEXT-ONLY — photo uploads (chapter 3) are described to it
 # by a separate vision-capable model. Default: Gemini 3.6 Flash via OpenRouter
