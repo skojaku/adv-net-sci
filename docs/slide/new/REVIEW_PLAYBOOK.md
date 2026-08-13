@@ -415,6 +415,58 @@ emitted line for every figure (`name  WxH bp  node NNpx  x-h NN.Npx  [container]
 rather than "done": that line is the only evidence that the figure is the size the
 deck needs, and it costs the agent nothing to paste.
 
+### Ban private helpers that bypass the shared drawing primitive
+
+m04 had three gate blind spots that were one gap: the collision gate could not see a
+`fill_poly`, could not see a rectangle border, and the node gate could not see a gray
+or hollow disc. m06 paid it again — a ring drawn around a node was measured *as* the
+node. The corollary: **a private helper that bypasses the shared primitive is a hole
+in every gate built on it.** `figs_story.py` kept its own `rect()` after `figlib`'s
+learned to record, so the frame blockers were live and that file's frames were still
+invisible. Grep for private drawing helpers in every figure generator:
+
+    grep -n 'def _\(rect\|fill\|disc\|node\|edge\)' figures/*.py
+
+Any hit is a gate bypass. Route through the shared primitive or extend the gate.
+
+### The ground-truth side of an assertion must be able to be wrong independently
+
+The most expensive content defect in the record: a colour-map dict written two lines
+above the assertion that checked it kept an inverted polarity alive through five
+rounds of review while reporting the polarity verified. The invariant is structural:
+
+> The side of an assertion you treat as ground truth must come from somewhere that
+> can be wrong independently of the code under test — a shared module, a measurement
+> of the render, or the source data. Not a constant the author wrote while writing
+> the thing it guards.
+
+### Delete a figure's PNG before regenerating it
+
+Two `make_figures.py` processes writing the same directory — one from a session
+nobody had held — means a process reports success for the write it performed, but
+the bytes that survive can be the other one's. If the file is absent and the build
+is green, the file on disk is the file the code describes. Add to the generator:
+
+    os.path.exists(out) and os.remove(out)   # before writing
+
+### Run `check_deck.py` before any LLM review
+
+The structural checker (`check_deck.py`, alongside `check_render.py` in each module)
+catches tables, code blocks, answer leaks on question slides, figure reuse with
+different captions, fragment/paragraph ordering, KaTeX in HTML blocks, demo links
+living only in speaker notes, and stale renders — all at zero token cost. Historically
+these were found by LLM reviewers reading PNGs at ~10K tokens per slide.
+
+Run it after `check_render.py` and before launching any reviewer:
+
+    python3 check_render.py   # pixel-level checks
+    python3 check_deck.py     # source-level checks
+    # only then: LLM review of judgment criteria
+
+A reviewer who spends their pass reporting what `check_deck.py` catches is wasted
+tokens. The LLM pass should focus on what automation cannot check: one-point-per-slide,
+unexplained encodings, narrative quality, four-act structure, conversational tone.
+
 ### A missing figure must fail the gate, not crash it
 
 `check_render.py` opened every figure the deck references and died with a
@@ -443,3 +495,55 @@ Review and planning want the stronger model; applying a written spec to markdown
 generator does not. Run reviewers on Opus over disjoint slide ranges, write the fix spec
 yourself, and dispatch the edits to cheaper agents — one for the deck, one for the figures,
 never both on the same file.
+
+### Token-efficient agent architecture
+
+Seven modules of session data (148MB, 8,810 messages, 121 agent spawns) show three
+structural token sinks, each fixable:
+
+**1. Guide re-reads.** Every spawned agent re-reads SLIDE_RUBRIC.md, REVIEW_PLAYBOOK.md,
+FIGURE_GUIDE.md, DECK_BUILD_GUIDE.md — 49 reads across sessions, ~370K tokens. Fix:
+inject the relevant excerpts into the agent's brief. The lead reads the guides once;
+workers get only the sections their task touches.
+
+**2. Full-deck LLM review per round.** 224 PNG reads at ~10K tokens each ≈ 2.2M tokens
+per module. Most structural findings are caught by `check_deck.py` at zero cost.
+Adopt a tiered review:
+
+- **Tier 0**: `check_render.py` + `check_deck.py` — automated, zero tokens. Runs every
+  round. Measure what fraction of findings it catches on the next module's R1; set
+  Tier 1's scope from that number, not from an estimate.
+- **Tier 1**: LLM reviews only slides whose RENDER HASH changed since last round
+  (computed by `check_deck.py`, stored in `review/.render_hashes.json`). A figure edit
+  propagates to every slide that uses it; a CSS edit propagates deck-wide. Both are
+  caught by hashing the render, not the markdown source. Review only judgment criteria
+  (P1, F1, F4, N1–N4, S1–S5) on those slides.
+- **Tier 2**: Full-deck LLM review, all criteria — once per module, before shipping.
+
+**Caveat**: three regressions in the record are unchanged slides broken by a changed
+figure. "Unchanged" and "reviewed" are different claims. The render hash is the
+correct change detector because it captures exactly what a reviewer would see.
+
+**2b. Image read token cost.** 281 image reads across sessions — 63% of all Read calls.
+Estimated ~422K tokens, larger than guide re-reads (~370K). 56 reads (20%) were
+duplicates of the same image. Three mitigations, implemented in `gatelib/review_images.py`:
+
+- **Downscale before review.** 1280x720 → 640x360 costs ~307 tokens per slide instead
+  of ~1,229 — 75% saving. Text at 30px body remains readable at half scale.
+  Run `python3 -m gatelib.review_images prepare <module_dir>` after rendering.
+- **Review changed slides only.** The render hash in `check_deck.py` identifies which
+  slides changed. `--changed-only` filters to those. A typical round touches 10–20
+  slides, not 70+.
+- **Contact sheet for small batches.** When reviewing ≤ 12 changed slides, tile them
+  into one image to save tool-call round-trips.
+
+**3. Inter-agent message overhead.** 207 SendMessage calls at ~2K tokens each. Reduce
+agent count: 3 agents per round (lead + deck-fixer + figure-fixer), not 8+. The lead
+collects findings and writes the spec; workers apply it. No reviewer agents in Tier 1 —
+the lead IS the reviewer.
+
+**4. Session-limit failures.** 8 mid-build crashes across sessions. Mitigate:
+- Commit after every successful gate pass, not just at round end
+- Write `review/CHECKPOINT.md` after each round: round number, gate status, pending
+  fixes, which agents were running
+- On re-entry, read CHECKPOINT.md to resume without re-doing completed work

@@ -105,6 +105,10 @@ Use the report format at the bottom. Order findings by severity, then slide numb
 - **F4 · Major — The figure carries the point.** The figure must show the slide's
   single point, not a multi-panel dump. Multi-panel figures are acceptable only as
   a build (one panel per step). Decorative elements that encode nothing get cut.
+- **F6 · Major — No shared figures with different explanations.** If two slides
+  reference the same figure file but explain it differently (different captions,
+  different narrative roles), one slide gets content the other hasn't introduced.
+  Emit two files. `check_deck.py` flags this automatically.
 - **F5 · Minor — Palette discipline.** Use the theme tokens (accent `#3959A6`,
   accent-2 `#B14434`, accent-3 `#DAB167`, annotation gray `#6b6b6b`). The palette
   is already good; off-palette colors are a Minor unless they collide with an
@@ -141,6 +145,10 @@ Use the report format at the bottom. Order findings by severity, then slide numb
 - **N3 · Major — Conversational voice.** The deck addresses students directly
   ("Can you…?", "Your turn", "What breaks if…?"). A whole part with no direct
   address or question is a Major; individual textbook-monologue slides are Minors.
+- **N4a · Blocker — No answer leak on question slides.** The answer must not
+  appear *anywhere* on the question slide — body, notes, gray text, or figcaption.
+  A gray `note` has leaked the puzzle's answer twice. `check_deck.py` flags
+  question slides with substantive notes (>15 words).
 - **N4 · Major — Question before answer.** Key results are set up as a question,
   a beat for thinking (turn to your neighbor / take 30 seconds), then the answer.
   Revealing the punchline in the same breath as the question is a Major. The answer

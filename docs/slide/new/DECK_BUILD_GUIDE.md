@@ -89,23 +89,29 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
    assertions per `FIGURE_GUIDE.md`. Animations in `make_animations.py`, importing
    geometry and palette **from** `make_figures.py` so the two cannot drift.
 3. **Write the deck to the spec.**
-4. **Gate before any review:** render and run the checker; it must exit 0.
+4. **Gate before any review:** render and run both checkers; both must exit 0.
 
        python3 figures/make_figures.py
        python3 figures/make_animations.py
+       python3 check_deck.py m0N-<slug>.md   # source-level structural checks
        marp m0N-<slug>.md --theme network-science.css --allow-local-files \
             --images png -o review/slide.png
-       python3 check_render.py
+       python3 check_render.py               # pixel-level rendered checks
 
    `check_render.py` measures what a student sees — in-figure x-height ≥ 15px, node
    discs 26–52px, drawing ≥ 150px, per-axis margin ≤ 30%, no ink below the pagination
    row. It reproduced the human reviewers' measurements to the pixel; a green run is the
    completion criterion for figure work (the lecturer's most-repeated complaint, stated
    as a build failure).
-5. **Then the review loop** — `/slide-review`, run per `REVIEW_PLAYBOOK.md`, until PASS.
+5. **Then the tiered review loop** — `/slide-review`, run per `REVIEW_PLAYBOOK.md`:
+   - **Tier 0** every round: `check_render.py` + `check_deck.py` (zero tokens)
+   - **Tier 1** per round: LLM review of only changed slides, judgment criteria only
+   - **Tier 2** once before shipping: full-deck LLM review, all criteria
    Expect the Blocker count to bounce as the deck grows; what must fall is the severity
    class (structure → polish).
-6. **Commit every round**, with the round's lesson in the message.
+6. **Commit every gate pass, not just every round.** A commit is the checkpoint that
+   survives a session-limit crash. Write `review/CHECKPOINT.md` after each round with
+   the round number, gate status, and pending fixes.
 
 ## Marp and theme facts (verified in the render, not assumed)
 
