@@ -20,11 +20,11 @@ No programming experience is required.
 2. **Install the tutor agent** — either one works:
    - pi: `npm install -g @mariozechner/pi-coding-agent`
    - Claude Code: `npm install -g @anthropic-ai/claude-code`
-3. **Set up Ollama Cloud** (the tutor runs on the open-weights **Gemma 4 31B**
+3. **Set up Ollama Cloud** (the tutor runs on the open-weights **GLM-5.2**
    model through it):
    - Install Ollama: https://ollama.com/download
    - Sign in: `ollama signin`
-   - Pull the course model: `ollama pull gemma4:31b-cloud`
+   - Pull the course model: `ollama pull glm-5.2:cloud`
    (Advanced: `TUTOR_MODEL` overrides the model, e.g.
    `TUTOR_MODEL="provider/model" ./run_tutor.sh`.)
 
