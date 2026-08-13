@@ -18,6 +18,5 @@ run(
         "airline_routes.jpg", "brain_tracts.jpg", "deadlift.jpg",
         "digesting_duck.jpg", "euler.jpg", "internet_map.jpg", "lehman.jpg",
         "pen_paper.jpg", "von_neumann.jpg", "philosophers.jpg",
-        "sci-topic-net.png", "ecog.png", "super-charger.png",
     ],
 )

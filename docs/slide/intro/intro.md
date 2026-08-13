@@ -51,15 +51,15 @@ Open on the outbreak, not on definitions. The whole first part is one story.
 
 ---
 
-<!-- _class: mid -->
+<!-- _class: lead -->
 
-## EngiNet
+<div class="eyebrow">Binghamton University</div>
+
+# EngiNet™
 
 <hr>
 
-Binghamton University EngiNet™
-
-State University of New York
+<div class="sub">State University of New York</div>
 
 ---
 
@@ -83,9 +83,10 @@ storage and retrieval systems, without written approval from the copyright owner
 
 <hr>
 
-- EngiNet office: Janice Kinzer · enginet@binghamton.edu · 1-800-478-0718 or 607-777-4965
+- EngiNet office: Janice Kinzer, enginet@binghamton.edu
+- EngiNet by phone: 1-800-478-0718, or 607-777-4965
 - Media production: Rafia Rahman
-- Instructor: Sadamori Kojaku · skojaku@binghamton.edu · 607-777-5039
+- Instructor: Sadamori Kojaku, skojaku@binghamton.edu, 607-777-5039
 
 ---
 
@@ -136,7 +137,7 @@ The 2009 H1N1 pandemic starts in Mexico. Name the first country outside Mexico w
 
 <hr>
 
-Spain is eight thousand kilometres from Mexico City. Guatemala shares a border with Mexico, and was reached later.
+Spain is nine thousand kilometres from Mexico City. Guatemala shares a border with Mexico, and was reached later.
 
 ---
 
@@ -277,29 +278,33 @@ Whoever maintains the first box in that chain controls everything downstream of 
 
 ---
 
-<!-- _class: mid -->
-
 ## It was caught by half a second
 
 <hr>
 
-* Andres Freund noticed his SSH logins had become 0.5 seconds slower.
-* He went looking, and found the backdoor before it reached stable releases.
-* Nobody audited the trust relationship; a stopwatch caught it.
+<div class="fig">
+
+![](figures/xz_3.png)
+<figcaption>Andres Freund noticed logins to a test machine had slowed, went looking, and found the backdoor before it reached a stable release. Nobody had audited the trust; a stopwatch caught it.</figcaption>
+
+</div>
 
 <a href="https://www.youtube.com/watch?v=aoag03mSuXQ">How the xz backdoor worked (video)</a>
 
 ---
 
-<!-- _class: mid -->
-
 ## Same shape, three worlds
 
 <hr>
 
-A virus travels flights. A loss travels loans. A backdoor travels dependencies.
-
 Different material, one question: **who is connected to whom?**
+
+<div class="fig">
+
+![](figures/same_shape.png)
+<figcaption>A virus travels the first, a loss the second, a backdoor the third. The reasoning that works on one works on the others.</figcaption>
+
+</div>
 
 ---
 
@@ -342,7 +347,7 @@ Which plant here is safest? Which is one extinction away from trouble?
 <div class="fig">
 
 ![](figures/pollinator.png)
-<figcaption>Lines are visits. The middle plant is served by three species, the outer two by one each.</figcaption>
+<figcaption>A line means that insect visits that plant.</figcaption>
 
 </div>
 </div>
@@ -430,7 +435,7 @@ No two neighbourhoods look alike, so one proof no longer covers all of them.
 
 <hr>
 
-Water, number, atoms, method: four answers to *what is everything made of?*
+Water, number, atoms, method: four attempts to reduce the world to something simpler.
 
 <div class="fig">
 
@@ -485,16 +490,26 @@ Water, number, atoms, method: four answers to *what is everything made of?*
 
 ---
 
-<!-- _class: mid -->
-
 ## Knowing the parts is not knowing the system
 
 <hr>
+
+<div class="cols">
+<div>
 
 * Every neuron, but not the dream.
 * Every person, but not the protest.
 * Parts never act alone; they act on each other.
 * **The relationships are the object of study.**
+
+</div>
+<div class="fig">
+
+![](figures/parts_vs_relations.png)
+<figcaption>Same four parts in both rows. Only the lower row can carry anything between them.</figcaption>
+
+</div>
+</div>
 
 ---
 
@@ -589,6 +604,8 @@ How the course is built, and why it is built that way.
 </div>
 
 ---
+
+<!-- _class: mid -->
 
 ## Every module opens on paper
 
@@ -704,63 +721,15 @@ One square is one percent.
 
 ---
 
-## Example: the network of scientific topics
+<!-- _class: mid -->
+
+## Three projects from previous years
 
 <hr>
 
-<div class="cols">
-<div>
-
-Which research topics get cited together, and which papers sit on the bridge between two fields?
-
-</div>
-<div class="fig">
-
-![](figures/sci-topic-net.png)
-<figcaption>Topics as nodes, shared citations as links.</figcaption>
-
-</div>
-</div>
-
----
-
-## Example: correlated brain activity
-
-<hr>
-
-<div class="cols">
-<div>
-
-Electrodes become nodes, and a link means two recordings rise and fall together.
-
-</div>
-<div class="fig">
-
-![](figures/ecog.png)
-<figcaption>One recording session, redrawn as a network of co-varying signals.</figcaption>
-
-</div>
-</div>
-
----
-
-## Example: the Tesla supercharger network
-
-<hr>
-
-<div class="cols">
-<div>
-
-Chargers as nodes, drivable hops as links: where does one new charger help the most drivers?
-
-</div>
-<div class="fig">
-
-![](figures/super-charger.png)
-<figcaption>Charger locations across the United States, by model served.</figcaption>
-
-</div>
-</div>
+* A map of research topics: which fields cite each other, and which papers sit on the bridge between two of them.
+* Brain recordings as a network: electrodes are the nodes, and a link means two signals rise and fall together.
+* The Tesla supercharger network: chargers are the nodes, drivable hops the links, and the question was where one more charger helps most.
 
 ---
 
@@ -797,6 +766,20 @@ Chargers as nodes, drivable hops as links: where does one new charger help the m
 - AI tools are allowed for learning; cite them when you use them in an assignment.
 - Back up your code; a lost laptop is not an extension.
 - Accommodations are available; academic dishonesty is not.
+
+---
+
+<!-- _class: mid -->
+
+## Before you go
+
+<hr>
+
+Earlier you each wrote down three networks you belong to.
+
+* Which of them would you want to study for the project?
+* What would you have to measure before you could say anything about it?
+* *Bring one answer to the next class.*
 
 ---
 

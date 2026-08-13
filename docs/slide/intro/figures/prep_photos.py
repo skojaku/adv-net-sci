@@ -32,9 +32,6 @@ PHOTOS = {
     "euler.jpg": ("cols", 0.14),
     "deadlift.jpg": ("cols", 0.45),
     "pen_paper.jpg": ("cols", 0.5),
-    "sci-topic-net.png": ("cols", 0.5),
-    "ecog.png": ("cols", 0.5),
-    "super-charger.png": ("cols", 0.5),
 }
 
 

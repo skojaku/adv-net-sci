@@ -373,6 +373,46 @@ def fig_xz_2():
     return f
 
 
+def fig_xz_3():
+    """The only visible symptom sat at the far end of the chain."""
+    f = Fig("xz_3.png", 1080, 270, 1080)
+    centers, _ = _chain(f, 70)
+    f.text(centers[3], 200, "half a second slower", anchor="center", color=ACCENT2)
+    f.seg(centers[3], 190, centers[3], 122, color=ACCENT2, lw=3, arrow=True)
+    return f
+
+
+def fig_same_shape():
+    """One shape, three substances."""
+    f = Fig("same_shape.png", 1080, 300, 1080)
+    motif = [(0, 80), (120, 160), (240, 80), (120, 0)]
+    for ox, label in ((90, "flights"), (420, "loans"), (750, "dependencies")):
+        pts = [(ox + x, 100 + y) for x, y in motif]
+        for a, b in zip(pts, pts[1:] + pts[:1]):
+            f.seg(*a, *b, color=GRAY, lw=2.5)
+        for p in pts:
+            f.disc(*p)
+        f.text(ox + 120, 45, label, anchor="north", color=GRAY)
+    return f
+
+
+def fig_parts_vs_relations():
+    """The same parts, with and without what runs between them."""
+    f = Fig("parts_vs_relations.png", 520, 360, 537)
+    xs = [70, 190, 310, 430]
+    for p in [(x, 270) for x in xs]:
+        f.disc(*p)
+    f.text(250, 320, "parts alone", anchor="south", color=GRAY)
+    low = [(x, 100) for x in xs]
+    for a, b in zip(low, low[1:]):
+        f.seg(*a, *b, color=ACCENT2, lw=4)
+    f.seg(*low[0], *low[2], color=ACCENT2, lw=4)
+    for p in low:
+        f.disc(*p)
+    f.text(250, 45, "parts in relation", anchor="north", color=ACCENT2)
+    return f
+
+
 def fig_pollinator():
     """Who pollinates whom: a network drawn by evolution."""
     f = Fig("pollinator.png", 520, 340, 537)
@@ -421,7 +461,9 @@ def fig_konigsberg():
     return f
 
 
-GRADE = [("Quiz", 10), ("Lecture", 10), ("Homework", 20), ("Exam", 30), ("Project", 30)]
+# The labels are the deck's own words for these items: "Lecture" is the Student Lecture
+# slide, "Assignments" the GitHub Classroom slide. Rename here and there together.
+GRADE = [("Quiz", 10), ("Lecture", 10), ("Assignments", 20), ("Exam", 30), ("Project", 30)]
 GRADE_FILL = [ACCENT, ACCENT2, ACCENT3, GRAY, INK]
 
 
@@ -453,7 +495,7 @@ def fig_philosophers():
     canvas = Image.new("RGB", (w, h), "white")
     font = ImageFont.truetype(
         os.path.join(os.path.dirname(__import__("matplotlib").__file__),
-                     "mpl-data/fonts/ttf/DejaVuSans.ttf"), 36 * PX_PER_BP)
+                     "mpl-data/fonts/ttf/DejaVuSerif.ttf"), 36 * PX_PER_BP)
     d = ImageDraw.Draw(canvas)
     for i, (src, label) in enumerate(names):
         im = Image.open(os.path.join(src_dir, src)).convert("RGB")
@@ -474,8 +516,9 @@ def fig_philosophers():
     return canvas
 
 
-FIGURES = [fig_flightpath, fig_interbank_1, fig_interbank_2, fig_xz_1, fig_xz_2,
-           fig_pollinator, fig_regular_graph, fig_konigsberg, fig_grading]
+FIGURES = [fig_flightpath, fig_interbank_1, fig_interbank_2, fig_xz_1, fig_xz_2, fig_xz_3,
+           fig_same_shape, fig_parts_vs_relations, fig_pollinator, fig_regular_graph,
+           fig_konigsberg, fig_grading]
 
 
 def main():
