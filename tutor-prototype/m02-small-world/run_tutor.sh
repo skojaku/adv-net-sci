@@ -15,8 +15,8 @@ cd "$(dirname "$0")"
 
 MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
 
-# Course model: Gemma 4 31B via Ollama Cloud (override with TUTOR_MODEL).
-TUTOR_MODEL="${TUTOR_MODEL:-ollama/gemma4:31b-cloud}"
+# Course model: GLM-5.2 via Ollama Cloud (override with TUTOR_MODEL).
+TUTOR_MODEL="${TUTOR_MODEL:-ollama/glm-5.2:cloud}"
 
 # The tutor model is TEXT-ONLY — photo uploads (chapter 3) are described to it
 # by a separate vision-capable model. Default: Gemini 3.6 Flash via OpenRouter

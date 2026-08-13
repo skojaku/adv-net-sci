@@ -202,7 +202,7 @@ async function ensureWarm(signal?: AbortSignal): Promise<{ out: string; failed: 
 }
 
 /**
- * The tutor model (gemma4 31b cloud) is text-only — nb_view_image delegates
+ * The tutor model (glm-5.2 cloud) is text-only — nb_view_image delegates
  * "seeing" to a separate vision-capable model. Resolution order:
  *   1. TUTOR_VISION_MODEL env ("provider/model-id", as pi knows it)
  *   2. an image-capable model on the tutor's own provider (same billing)

@@ -13,7 +13,7 @@ set -euo pipefail
 
 MODULE_DIR=$(cd "${1:?usage: e2e_setup.sh <module_dir> [agent_name]}" && pwd)
 AGENT="${2:-tutor-e2e-$$}"
-TUTOR_MODEL="${TUTOR_MODEL:-ollama/gemma4:31b-cloud}"
+TUTOR_MODEL="${TUTOR_MODEL:-ollama/glm-5.2:cloud}"
 
 for cmd in herdr uv rsync python3 pi; do
   command -v "$cmd" >/dev/null || { echo "error: $cmd is required" >&2; exit 1; }
