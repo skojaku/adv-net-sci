@@ -121,7 +121,12 @@ Existing legacy sheets stay under `docs/lecture-note/mNN-name/pen-and-paper/`.
 
 Build with `xelatex -interaction=nonstopmode exercise.tex` run twice, from the
 sheet's own directory. Commit the `.tex` and the `.pdf`; do not commit `.xdv`,
-`.aux`, `.log`, `.out`.
+`.aux`, `.log`, `.out`. The repo `.gitignore` has a blanket `*.pdf`, so the PDF
+needs `git add -f`.
+
+Proofread by rendering: `pdftoppm -r 60 -png exercise.pdf out` and read the
+images. Tables and their question text drift apart across page breaks — wrap
+each question plus its table in `\begin{minipage}{\textwidth} ... \end{minipage}`.
 
 ## After writing
 
