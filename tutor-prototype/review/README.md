@@ -21,7 +21,7 @@ STATE=$(./e2e_setup.sh ../m02-small-world)   # sandbox + marimo + browser + tuto
   every `nb_*` call fails), then starts pi in a herdr pane with
   `--no-extensions -e <sandbox>/.pi/extensions/notebook-tool.ts` so the
   machine's global pi extensions can't contaminate the run.
-  Env overrides: `TUTOR_MODEL` (default `deepseek/deepseek-v4-flash-0731`),
+  Env overrides: `TUTOR_MODEL` (default `ollama/gemma4:31b-cloud`),
   `TUTOR_VISION_MODEL`.
 - `student_turn.sh` / `dialog_choice.sh` block until the tutor goes idle
   (override wait with `TURN_TIMEOUT` seconds), then print the screen.
