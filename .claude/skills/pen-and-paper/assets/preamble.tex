@@ -1,0 +1,62 @@
+% Standard pen-and-paper worksheet preamble.
+% Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+\documentclass[a4paper, 14pt]{extarticle}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{adjustbox}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+
+% Handwriting font. "Pretty Neat" (xkcd-style) is the house font; it is not
+% installed everywhere, so guard it and fall back silently.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{
+  \setmainfont{Pretty Neat}
+  \renewcommand{\ppfont}{\fontspec{Pretty Neat}}
+  \tikzset{every picture/.style={/utils/exec={\fontspec{Pretty Neat}}}}
+  \AtBeginEnvironment{tabular}{\fontspec{Pretty Neat}}
+}{
+  \IfFontExistsTF{Humor Sans}{
+    \setmainfont{Humor Sans}
+    \renewcommand{\ppfont}{\fontspec{Humor Sans}}
+    \tikzset{every picture/.style={/utils/exec={\fontspec{Humor Sans}}}}
+    \AtBeginEnvironment{tabular}{\fontspec{Humor Sans}}
+  }{}
+}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
+\makeatletter
+\pgfset{
+  /pgf/decoration/randomness/.initial=2,
+  /pgf/decoration/wavelength/.initial=100
+}
+\pgfdeclaredecoration{sketch}{init}{
+  \state{init}[width=0pt,next state=draw,persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t0
+  }]{}
+  \state{draw}[width=\pgfdecorationsegmentlength,
+  auto corner on length=\pgfdecorationsegmentlength,
+  persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}
+  }]{
+    \pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}
+    \pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}
+  }
+  \state{final}{}
+}
+\tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
+\makeatother
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
