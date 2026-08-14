@@ -573,7 +573,7 @@ modules:
         level: core
         statement: "The distance d(i,j) is the number of edges on a shortest path between i and j, and is infinite when no path exists."
         prereq: [m01.c12, m01.c14]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c06
         name: "Average path length"
@@ -581,7 +581,7 @@ modules:
         level: core
         statement: "The mean of d(i,j) over all node pairs; for the 4-node example with distances [1,1,2,1,1,1] it is 7/6 = 1.16."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c07
         name: "Diameter"
@@ -589,7 +589,7 @@ modules:
         level: core
         statement: "The largest shortest-path distance in the network - the worst case rather than the average case; a lattice has a large diameter, a small-world network does not."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c08
         name: "Triangle and connected triplet"
@@ -597,7 +597,7 @@ modules:
         level: core
         statement: "A triangle is three mutually connected nodes; a connected triplet is any three nodes with at least two edges among them (open or closed)."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c09
         name: "Local clustering coefficient"
@@ -605,7 +605,7 @@ modules:
         level: core
         statement: "C_i is the fraction of possible edges among node i's neighbors that actually exist: (triangles at i) / [k_i (k_i - 1) / 2]."
         prereq: [m02.c08, m01.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c10
         name: "Average local clustering"
@@ -629,7 +629,7 @@ modules:
         level: core
         statement: "A complete graph has C = 1 and L = 1, so s_naive = 1 - the largest value the ratio can take - even though it is trivially not a small world. Raw values cannot certify small-worldness."
         prereq: [m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c13
         name: "Erdos-Renyi random graph"
@@ -637,7 +637,7 @@ modules:
         level: core
         statement: "Each pair of n nodes is connected independently with probability p - the standard structureless baseline."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c14
         name: "Random-graph reference values"
@@ -645,7 +645,7 @@ modules:
         level: core
         statement: "For an ER graph, clustering is about <k>/(n-1) and average path length is about ln(n)/ln(<k>) - short paths come free, high clustering does not."
         prereq: [m02.c13, m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c15
         name: "Small-world index sigma"
@@ -653,7 +653,7 @@ modules:
         level: core
         statement: "sigma = (C/C_rand) / (L/L_rand); sigma > 1 means small-world, sigma about 1 means random-like, sigma < 1 means anti-small-world."
         prereq: [m02.c12, m02.c14]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c16
         name: "Regular ring lattice"
@@ -661,7 +661,7 @@ modules:
         level: core
         statement: "n nodes on a ring, each joined to its k nearest neighbors: high clustering but path length growing linearly with n."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c17
         name: "Local vs random wiring trade-off"
@@ -669,7 +669,7 @@ modules:
         level: core
         statement: "Purely local wiring gives high clustering and long paths; purely random wiring gives short paths and no clustering. Real networks somehow have both."
         prereq: [m02.c16, m02.c13]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c18
         name: "Watts-Strogatz rewiring"
@@ -677,7 +677,7 @@ modules:
         level: core
         statement: "Start from a ring lattice and rewire each edge with probability p to a random endpoint, avoiding self-loops and duplicates."
         prereq: [m02.c16]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c19
         name: "The role of p in Watts-Strogatz"
@@ -685,7 +685,7 @@ modules:
         level: core
         statement: "p = 0 is a lattice, p = 1 is a random graph, and a wide intermediate band gives high clustering together with short paths."
         prereq: [m02.c18, m02.c17]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c20
         name: "Shortcuts as the mechanism"
@@ -693,7 +693,7 @@ modules:
         level: core
         statement: "A handful of long-range edges collapses path length while leaving almost all local triangles intact - which is why the small-world regime is so broad."
         prereq: [m02.c19]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c21
         name: "Small-worldness across domains"
@@ -733,7 +733,7 @@ modules:
         level: core
         statement: "Watts and Strogatz used average local clustering while Humphries used global clustering; the same network can get different sigma values depending on the choice."
         prereq: [m02.c15, m02.c11]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c26
         name: "Generative models as explanation"
