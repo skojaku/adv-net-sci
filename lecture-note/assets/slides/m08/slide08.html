@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="slide08_files/libs/clipboard/clipboard.min.js"></script>
+<script src="slide08_files/libs/quarto-html/tabby.min.js"></script>
+<script src="slide08_files/libs/quarto-html/popper.min.js"></script>
+<script src="slide08_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="slide08_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="slide08_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="slide08_files/libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>slide08</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="slide08_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="slide08_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #f8f8f2;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #f8f8f2; } /* Normal */
+    code span.al { color: #f07178; } /* Alert */
+    code span.an { color: #d4d0ab; } /* Annotation */
+    code span.at { color: #00e0e0; } /* Attribute */
+    code span.bn { color: #d4d0ab; } /* BaseN */
+    code span.bu { color: #abe338; } /* BuiltIn */
+    code span.cf { color: #ffa07a; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #abe338; } /* Char */
+    code span.cn { color: #ffd700; } /* Constant */
+    code span.co { color: #f8f8f2; font-style: italic; } /* Comment */
+    code span.cv { color: #ffd700; } /* CommentVar */
+    code span.do { color: #f8f8f2; } /* Documentation */
+    code span.dt { color: #ffa07a; } /* DataType */
+    code span.dv { color: #d4d0ab; } /* DecVal */
+    code span.er { color: #f07178; text-decoration: underline; } /* Error */
+    code span.ex { color: #00e0e0; font-weight: bold; } /* Extension */
+    code span.fl { color: #d4d0ab; } /* Float */
+    code span.fu { color: #ffa07a; } /* Function */
+    code span.im { color: #abe338; } /* Import */
+    code span.in { color: #d4d0ab; } /* Information */
+    code span.kw { color: #ffa07a; font-weight: bold; } /* Keyword */
+    code span.op { color: #ffa07a; } /* Operator */
+    code span.ot { color: #00e0e0; } /* Other */
+    code span.pp { color: #dcc6e0; } /* Preprocessor */
+    code span.re { color: #00e0e0; background-color: #f8f8f2; } /* RegionMarker */
+    code span.sc { color: #abe338; } /* SpecialChar */
+    code span.ss { color: #abe338; } /* SpecialString */
+    code span.st { color: #abe338; } /* String */
+    code span.va { color: #00e0e0; } /* Variable */
+    code span.vs { color: #abe338; } /* VerbatimString */
+    code span.wa { color: #dcc6e0; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="slide08_files/libs/revealjs/dist/theme/quarto-00033b64c7f4405b1251d0bf85080562.css">
+  <link rel="stylesheet" href="css/terminal.css">
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link href="slide08_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="slide08_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="slide08_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="slide08_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="slide08_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="slide08_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Solution for general <span class="math inline">d</span> dimensional case</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level3">
+
+<p>Check list</p>
+<ul class="task-list">
+<li><label><input type="checkbox">Microphone turned on</label></li>
+<li><label><input type="checkbox">Zoom room open</label></li>
+<li><label><input type="checkbox">Recording on</label></li>
+<li><label><input type="checkbox">Mouse cursor visible</label></li>
+<li><label><input type="checkbox">Sound Volume on</label></li>
+</ul>
+</section>
+<section>
+<section id="slide-08-network-embedding" class="title-slide slide level1 center">
+<h1>Slide 08: Network Embedding</h1>
+<p>Sadamori Kojaku</p>
+</section>
+<section id="network-embedding" class="title-slide slide level2 center">
+<h2>Network Embedding 🌐</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><strong>Task</strong>: Embed a network into a low-dimensional vector space
+<ol type="1">
+<li>Embedding can recover the network with high accuracy</li>
+<li>Embedding should be low-dimensional</li>
+</ol></li>
+</ul>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>How would you do that? What approaches would be viable?</p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/graph-embedding-viz.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+
+<section id="pen-and-paper" class="title-slide slide level2 center">
+<h2>Pen and Paper ✍️</h2>
+<p><a href="https://tinyurl.com/3ckp36n5">Link to exercise</a></p>
+</section>
+
+<section id="idea-1-network-reconstruction" class="title-slide slide level2 center">
+<h2>Idea 1: Network reconstruction</h2>
+<p>Compress adjacency matrix A into low-dim representation <span class="math inline">U</span> that minimizes <strong>the reconstruction error</strong>:</p>
+<p><span class="math display">
+\min \frac{1}{2}||\mathbf{A} - \lambda \mathbf{U}\mathbf{U}^\top||_F^2
+</span></p>
+<p>where</p>
+<p><span class="math display">
+U = \begin{bmatrix}
+| &amp; | &amp; &amp; | \\
+\mathbf{u}_1 &amp; \mathbf{u}_2 &amp; \cdots &amp; \mathbf{u}_d \\
+| &amp; | &amp; &amp; |
+\end{bmatrix} \in \mathbb{R}^{n \times d}, \quad
+\mathbf{u}^\top_i \mathbf{u}_j = 0 \quad \forall i \neq j, \text{and} \quad \sum_i u_i^2 = 1
+</span></p>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>Try solving this for the 1d case (only u_1)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="proof-sketch" class="slide level3">
+<h3>Proof sketch</h3>
+<p><span class="math display">
+\frac{1}{2}||\mathbf{A} - \lambda \mathbf{U}\mathbf{U}^\top||_F^2 = \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N (A_{ij} - \lambda u_i u_j)^2
+</span></p>
+<p>This is a convex function of <span class="math inline">u_i</span>. Meaning that the gradient is 0 at the minimum. Thus, by taking derivative with respect to <span class="math inline">u_i</span>, we can find the optimal <span class="math inline">u_i</span> by solving the following equation:</p>
+<p><span class="math display">
+\frac{\partial}{\partial u_i}\left[ \frac{1}{2}\sum_{i=1}^N \sum_{j=1}^N (A_{ij} - \lambda u_i u_j)^2 \right] = 0
+</span></p>
+</section>
+<section id="deriving-the-solution" class="slide level3">
+<h3>Deriving the solution</h3>
+<p>By setting the derivative to 0, we get:</p>
+<p><span class="math display">
+\begin{align}
+\frac{\partial}{\partial u_i}\left[ \frac{1}{2}\sum_{i=1}^N \sum_{j=1}^N (A_{ij} - \lambda u_i u_j)^2 \right] &amp;= \underbrace{2}_{\text{Why🤔?}} \times \left[ \sum_{j=1, j\neq i}^N (A_{ij} - \lambda u_i u_j)(-\lambda u_j)\right] +
+(A_{ii} - \lambda u_i^2) (-2\lambda u_i)
+= 0 \\
+&amp;\iff -2 \lambda \left[ \sum_{j=1, j\neq i}^N A_{ij}u_j - \lambda^2 u_i u_j^2 \right] - 2 \lambda A_{ii}u_i + 2\lambda^2 u_i^3 \\
+&amp;\iff \sum_{j=1}^N A_{ij}u_j - \lambda u_i \underbrace{\sum_{j=1}^N u_j^2}_{=1 \text{ (our constraint)}}\\
+&amp;\iff \sum_{j=1}^N A_{ij}u_j  = \lambda u_i
+\end{align}
+</span></p>
+</section>
+<section id="eigenvalue-problem" class="slide level3">
+<h3>Eigenvalue problem</h3>
+<p>This is an eigenvalue problem of <span class="math inline">A</span>, i.e.,</p>
+<p><span class="math display">
+\mathbf{A} \mathbf{u} = \lambda \mathbf{u}
+</span></p>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>But we have <span class="math inline">N</span> eigenvectors (<span class="math inline">u_i</span>) with 0 gradient. Which one should we choose?</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="which-eigenvector-should-we-choose" class="slide level3">
+<h3>Which eigenvector should we choose?</h3>
+<p>A guiding criterion is <em>the reconstruction error</em>, i.e., choose the eigenvector with eigenvalue <span class="math inline">\lambda</span> that minimizes the reconstruction error.</p>
+<p><span class="math display">
+\frac{1}{2}||\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top||_F^2 = \text{Tr}((\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)^\top (\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top))
+</span></p>
+<p><strong>Hint</strong>: Let’s use the matrix Frobenius norm:</p>
+<p><span class="math display">
+||\mathbf{M}||_F^2 = \text{Tr}(\mathbf{M}^\top\mathbf{M})
+</span></p>
+<p>And see how it relates to the eigenvalue.</p>
+</section>
+<section id="finding-the-optimal-eigenvalue" class="slide level3">
+<h3>Finding the optimal eigenvalue</h3>
+<p>Expanding it gives</p>
+<p><span class="math display">
+\begin{align}
+\text{Tr}((\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)^\top (\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top)) &amp;= \underbrace{\text{Tr}(\mathbf{A}^\top\mathbf{A})}_{\text{const.}} - 2\lambda \text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u}) + \lambda^2 \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{u}\mathbf{u}^\top\mathbf{u})}_{\text{const. (why? 🤔)}}) \\
+&amp;\propto -2 \lambda \underbrace{\text{Tr}(\mathbf{u}^\top\mathbf{A}\mathbf{u})}_{\text{$=\lambda$ (why? 🤔)}}
+\end{align}
+</span></p>
+<p>Altogether, the reconstruction error is</p>
+<p><span class="math display">
+\frac{1}{2}||\mathbf{A} - \lambda \mathbf{u}\mathbf{u}^\top||_F^2 = - \lambda^2 + \text{const.}
+</span></p>
+<p>It is minimized when <span class="math inline">\lambda</span> is the largest eigenvalue. So the best <span class="math inline">u</span> is the eigenvector corresponding to <strong>the largest eigenvalue</strong>.</p>
+</section>
+<section id="why-eigenvectors" class="slide level3">
+<h3>Why eigenvectors?</h3>
+
+<img data-src="figs/spectral-decomposition.jpg" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
+<section id="intuition-behind-eigenvectors" class="slide level3">
+<h3>Intuition behind eigenvectors</h3>
+<div id="8da133b4" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" data-code-line-numbers="6-8,16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
+<span id="cb1-2"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href=""></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href=""></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href=""></a></span>
+<span id="cb1-6"><a href=""></a>A <span class="op">=</span> ig.Graph.Famous(<span class="st">"Zachary"</span>).get_adjacency_sparse() <span class="co"># Load the karate club network</span></span>
+<span id="cb1-7"><a href=""></a>eigvals, eigvecs <span class="op">=</span> np.linalg.eig(A.toarray()) <span class="co"># Eigenvalues and eigenvectors</span></span>
+<span id="cb1-8"><a href=""></a>eigvals, eigvecs <span class="op">=</span> np.real(eigvals), np.real(eigvecs)</span>
+<span id="cb1-9"><a href=""></a></span>
+<span id="cb1-10"><a href=""></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">3</span>))</span>
+<span id="cb1-11"><a href=""></a></span>
+<span id="cb1-12"><a href=""></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb1-13"><a href=""></a>    u <span class="op">=</span> eigvecs[:, i].reshape((<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb1-14"><a href=""></a>    lam <span class="op">=</span> eigvals[i]</span>
+<span id="cb1-15"><a href=""></a></span>
+<span id="cb1-16"><a href=""></a>    basisMatrix <span class="op">=</span> u <span class="op">@</span> u.T</span>
+<span id="cb1-17"><a href=""></a></span>
+<span id="cb1-18"><a href=""></a>    sns.heatmap(basisMatrix, ax<span class="op">=</span>axes[i<span class="op">+</span><span class="dv">1</span>], cmap<span class="op">=</span><span class="st">"coolwarm"</span>, center<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-19"><a href=""></a>    axes[i<span class="op">+</span><span class="dv">1</span>].set_title(<span class="ss">f"Lambda=</span><span class="sc">{</span>lam<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb1-20"><a href=""></a>sns.heatmap(A.toarray(), ax<span class="op">=</span>axes[<span class="dv">0</span>], cmap<span class="op">=</span><span class="st">"coolwarm"</span>, center<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-21"><a href=""></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Adjacency Matrix"</span>)</span>
+<span id="cb1-22"><a href=""></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="slide08_files/figure-revealjs/cell-2-output-1.png" class="r-stretch"><p>The <span class="math inline">d</span> eigenvectors associated with the largest <span class="math inline">d</span> eigenvalues give the optimal solution that minimizes the reconstruction error for the <span class="math inline">d</span> dimensional case.</p>
+</section>
+<section id="fed-up-with-the-math-lets-try-it-out" class="slide level3">
+<h3>Fed up with the math? Let’s try it out! 🧑‍💻</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href=""></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
+<span id="cb2-3"><a href=""></a>A <span class="op">=</span> ig.Graph.Famous(<span class="st">"Zachary"</span>).get_adjacency_sparse() <span class="co"># Load the karate club network</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Task 1</strong>: Compute the eigenvectors and eigenvalues of <span class="math inline">A</span>.</p>
+<p><strong>Task 2</strong>: Compute the sum of reconstructed matrices using the first <span class="math inline">d</span> eigenvectors for <span class="math inline">d=1,2,3,4,5</span> and compare it with the original adjacency matrix <span class="math inline">A</span>.</p>
+<p><span class="math display">
+\frac{1}{2}||\mathbf{A} - \sum_{i=1}^d \lambda_i \mathbf{u}_i \mathbf{u}_i^\top||_F^2
+</span></p>
+<p>where <span class="math inline">u_i</span> is the eigenvector corresponding to the <span class="math inline">i</span>-th largest eigenvalue <span class="math inline">\lambda_i</span>.</p>
+</section>
+<section id="lets-try-it-out-more" class="slide level3">
+<h3>Let’s try it out more!</h3>
+<p>The adjacency matrix is not the only matrix that represents a network.</p>
+<p>What do the eigenvectors of the following matrices look like? Compute the eigenvectors, visualize them (e.g., heatmap) and see what they are likely to represent.</p>
+<ol type="1">
+<li>Laplacian matrix <span class="math inline">L = D - A</span>, where <span class="math inline">D</span> is the degree matrix.</li>
+<li>Normalized Laplacian matrix <span class="math inline">L_n = I - D^{-1/2} A D^{-1/2}</span>.</li>
+</ol>
+<p>Work with Zachary’s karate club network.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href=""></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
+<span id="cb3-3"><a href=""></a>A <span class="op">=</span> ig.Graph.Famous(<span class="st">"Zachary"</span>).get_adjacency_sparse() <span class="co"># Load the karate club network</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section>
+<section id="idea-2-graph-cut" class="title-slide slide level1 center">
+<h1>Idea 2: Graph Cut ✂️</h1>
+
+</section>
+<section id="graph-cut-problem" class="slide level3">
+<h3>Graph cut Problem</h3>
+<p><strong>Graph cut Problem</strong> ✂️</p>
+<p>Disconnect a graph into two components by cutting the minimum number of edges</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span class="math display">
+\min_{Q,S} \text{cut}(Q,S) = \sum_{i \in Q} \sum_{j \in S} A_{ij}
+</span></p>
+<p>where <span class="math inline">|Q \cup S| = N, \quad Q \cap S = \emptyset</span></p>
+<p>This has a close relationship with <em>the Laplacian matrices</em> <span class="math inline">L</span> and <span class="math inline">L_n</span> given by</p>
+<p><span class="math display">
+L = D - A, \quad L_n = I - D^{-1/2} A D^{-1/2}
+</span></p>
+<p>where <span class="math inline">D</span> is the degree matrix and <span class="math inline">A</span> is the adjacency matrix.</p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/GraphMinCut2-ConductanceHERO.width-1250.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="ratio-cut" class="slide level3">
+<h3>Ratio Cut</h3>
+<div class="columns">
+<div class="column divider" style="width:50%;">
+<p>Ratio Cut:</p>
+<p><span class="math display">
+\sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right) = \frac{1}{N} \mathbf{x}^\top \mathbf{L} \mathbf{x}
+</span></p>
+<p>where <span class="math inline">L = D - A</span> (the combinatorial Laplacian matrix) with <span class="math inline">{\bf x}=[x_1,x_2,...,x_N]^\top</span> is an indicator vector for the partition.</p>
+<p><span class="math display">
+x_i = \begin{cases}
+\sqrt{|S|/|Q|} &amp; \text{if } i \in Q \\
+-\sqrt{|Q|/|S|} &amp; \text{if } i \in S
+\end{cases}
+</span></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math inline">x_i</span> appears to be peculiar but has convenient properties, i.e., <strong>zero mean</strong> and <strong>normalization</strong>, i.e.,</p>
+<p><span class="math display">
+\sum_i x_i = 0, \quad \sum_i x_i^2 = N
+</span></p>
+</div></div>
+<p>Let’s prove this!</p>
+</section>
+<section id="deriving-the-ratio-cut-formula" class="slide level3">
+<h3>Deriving the Ratio Cut formula</h3>
+<p>Consider distance between points <span class="math inline">x_i</span> and <span class="math inline">x_j</span>:</p>
+<p><span class="math display">
+(x_i - x_j)^2 = \left(\sqrt{\frac{|S|}{|Q|}} + \sqrt{\frac{|Q|}{|S|}}\right)^2 = \frac{|S|^2 + |Q|^2 + 2|S||Q|}{|Q||S|} = \frac{(|S| + |Q|)^2}{|Q||S|} = \frac{N^2}{|Q||S|}
+</span></p>
+<p><span class="math display">
+\begin{align}
+\text{RatioCut}(Q,S) &amp;= \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{1}{|Q|} + \frac{1}{|S|} \right)
+= \sum_{i \in Q} \sum_{j \in S} A_{ij} \left( \frac{|Q| + |S|}{|Q||S|} \right) \\
+&amp;= \frac{1}{N}\sum_{i \in Q} \sum_{j \in S} A_{ij}  \left( x_i - x_j \right)^2 \\
+&amp;= \frac{1}{2N}\underbrace{\sum_{i=1}^N  \sum_{j=1}^N}_{\text{Sum over all node pairs.}}  A_{ij}  \left( x_i - x_j \right)^2
+\end{align}
+</span></p>
+<p>(The last equality holds because <span class="math inline">(x_i - x_j)^2 = 0</span> for <span class="math inline">i,j \in Q</span> or <span class="math inline">i,j \in S</span>.)</p>
+</section>
+<section id="connecting-to-laplacian" class="slide level3">
+<h3>Connecting to Laplacian</h3>
+<div class="columns">
+<div class="column divider" style="width:60%;">
+<p>By expanding the square term, we get</p>
+<p><span class="math display">
+\begin{align*}
+\text{RatioCut}(Q,S) &amp;= \frac{1}{2N}\sum_{i=1}^N  \sum_{j=1}^N A_{ij}  \left( x_i - x_j \right)^2 \\
+&amp;= \frac{1}{N}\sum_{i=1}^N x^2_i \underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree } k_i}  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&amp;= \frac{1}{N}\sum_{i=1}^N k_i x^2_i  - \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^N A_{ij} x_i x_j \\
+&amp;= \frac{1}{N}\sum_{i=1}^N \sum_{j=1} ^N L_{ij} x_i x_j \\
+\end{align*}
+</span></p>
+</div><div class="column" style="width:40%;">
+<p>Therefore,</p>
+<p><span class="math display">
+\text{RatioCut}(Q,S) = \frac{1}{N} \mathbf{x}^\top \mathbf{L} \mathbf{x}.
+</span></p>
+</div></div>
+</section>
+<section id="the-optimization-problem" class="slide level3">
+<h3>The optimization problem</h3>
+<p>The ratio cut minimization problem is formulated as</p>
+<p><span class="math display">
+\min_{\mathbf{x}} \mathbf{x}^\top \mathbf{L} \mathbf{x}
+</span></p>
+<p>subject to</p>
+<p><span class="math display">
+\mathbf{x} \mathbf{1} = 0, \quad \mathbf{x}^\top \mathbf{x} = N \quad x_i \in \left\{\sqrt{|S|/|Q|}, -\sqrt{|Q|/|S|}\right\}
+</span></p>
+<p>This is an NP-hard problem 😿. But, there is a way to get a good suboptimal solution by using spectral embedding!</p>
+<p><strong>💫 Core idea 💫</strong>: Relax the discrete constraint by allowing <span class="math inline">x_i</span> to be any real number. But keep the normalization constraint:</p>
+<p><span class="math display">
+\mathbf{x}^\top \mathbf{1} = 0, \quad \mathbf{x}^\top \mathbf{x} = 1 \quad x_i \in [-1,1]
+</span></p>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>What is the solution to this optimization problem?</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="solution-via-eigenvalue-problem" class="title-slide slide level2 center">
+<h2>Solution via eigenvalue problem</h2>
+<div class="columns">
+<div class="column divider" style="width:50%;">
+<p>Consider the eigenvalue problem:</p>
+<p><span class="math display">
+\mathbf{L} \mathbf{x} = \lambda \mathbf{x}
+</span></p>
+<p>By applying <span class="math inline">x</span> to both sides, we get</p>
+<p><span class="math display">
+\mathbf{x}^\top \mathbf{L} \mathbf{x} = \lambda \mathbf{x}^\top \mathbf{x} = \lambda
+</span></p>
+<p>where we have used <span class="math inline">||x|| = 1</span>. The left-hand side is exactly the objective function we want to minimize!</p>
+<p>Thus the solution is the eigenvector corresponding to the smallest eigenvalue 😉….</p>
+</div><div class="column" style="width:50%;">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href=""></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
+<span id="cb4-3"><a href=""></a>A <span class="op">=</span> ig.Graph.Famous(<span class="st">"Zachary"</span>)</span>
+<span id="cb4-4"><a href=""></a>      .get_adjacency_sparse() <span class="co"># Load</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Compute the combinatorial Laplacian matrix <span class="math inline">L</span> given by</p>
+<p><span class="math display">
+\mathbf{L} = \mathbf{D} - \mathbf{A}
+</span></p>
+<p>where <span class="math inline">D</span> is the degree matrix.</p>
+<p><strong>Task 1</strong>: Compute the eigenvector associated with the smallest eigenvalue of <span class="math inline">L</span> and visualize it.</p>
+<p><strong>Task 2</strong>: Compute the second smallest eigenvector and plot it.</p>
+</div></div>
+</section>
+
+<section id="issue-with-the-best-solution" class="title-slide slide level2 center">
+<h2>Issue with the “best” solution</h2>
+<div class="columns">
+<div class="column divider" style="width:50%;">
+<blockquote>
+<p><del>Thus the solution is the eigenvector corresponding to the smallest eigenvalue 😉</del>.</p>
+</blockquote>
+<p>The eigenvector corresponding to the smallest eigenvalue is parallel to the all-ones vector.</p>
+<p><span class="math display">
+\mathbf{x}_1 = \frac{1}{\sqrt{N}} \begin{bmatrix}
+1 &amp; 1 &amp; \cdots &amp; 1
+\end{bmatrix}^\top
+</span></p>
+<p>which violates the zero mean constraint:</p>
+<p><span class="math display">
+\mathbf{x}^\top \mathbf{1} = 0
+</span></p>
+</div><div class="column" style="width:50%;">
+<p>The second smallest eigenvector is orthogonal to <span class="math inline">x_1</span>.</p>
+<ul>
+<li>This is because the eigenvectors are orthogonal to each other.</li>
+<li>Thus, the solution is the eigenvector corresponding to <strong>the second smallest eigenvalue</strong>!</li>
+<li>The second, and third, and … smallest eigenvectors can be used to get a k-way partition of the network.</li>
+</ul>
+</div></div>
+</section>
+
+<section id="normalized-cut" class="title-slide slide level2 center">
+<h2>Normalized Cut</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Let us derive another spectral embedding method based on the normalized cut.</p>
+<p><span class="math display">
+\text{NC}(Q,S) = \frac{\text{cut}(Q,S)}{\text{vol}(Q)} + \frac{\text{cut}(Q,S)}{\text{vol}(S)}
+</span></p>
+<p>where</p>
+<p><span class="math display">
+\text{vol}(Q) = \sum_{i \in Q} k_{i}, \text{vol}(S) = \sum_{i \in S} k_{i}
+</span></p>
+<p>The objective is expressed as:</p>
+<p><span class="math display">
+z^\top L_n z
+</span></p>
+</div><div class="column" style="width:50%;">
+<p>where <span class="math inline">z</span> is an indicator vector given by</p>
+<p><span class="math display">
+z_i = \begin{cases} \sqrt{\frac{\text{vol}(S)}{\text{vol}(Q)}} &amp; \text{if } i \in Q \\
+-\sqrt{\frac{\text{vol}(Q)}{\text{vol}(S)}} &amp; \text{if } i \in S
+\end{cases}
+</span></p>
+<p>And <span class="math inline">L_n</span> is the normalized Laplacian matrix given by</p>
+<p><span class="math display">
+\mathbf{L}_n = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}\mathbf{D}^{-1/2}
+</span></p>
+<p>Prove it!</p>
+</div></div>
+</section>
+
+<section id="laplacian-eigenmap" class="title-slide slide level2 center">
+<h2>Laplacian Eigenmap 🔄</h2>
+<p><strong>Objective</strong>: Position connected nodes close together</p>
+<p><span class="math display">
+\min_{\mathbf{u}} \sum_{i,j} A_{ij} (\mathbf{u}_i - \mathbf{u}_j)^2
+</span></p>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>What is the solution to this optimization problem?</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section>
+<section id="neural-embedding-methods" class="title-slide slide level1 center">
+<h1>Neural Embedding Methods</h1>
+
+</section>
+<section id="neural-networks-for-embedding" class="title-slide slide level2 center">
+<h2>Neural networks for embedding</h2>
+
+<img data-src="figs/neural-net.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
+
+<section id="how-can-i-apply-neural-networks-to-embedding" class="title-slide slide level2 center">
+<h2>How can I apply neural networks to embedding?</h2>
+<ol type="1">
+<li>Run random walks</li>
+<li>Treat the walks as sentences</li>
+<li>Apply neural networks to predict temporal correlations between words</li>
+</ol>
+
+<img data-src="figs/random-walk-idea.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"><p><strong>DeepWalk &amp; node2vec</strong>: Use <em>word2vec</em> to learn node embeddings from random walks</p>
+<div title="Note:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note:</strong></p>
+</div>
+<div class="callout-content">
+<p>This is one way. Another popular way is to use <em>convolution</em> inspired from image processing.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="cbow-model" class="title-slide slide level2 center">
+<h2>CBOW Model</h2>
+
+<img data-src="figs/word2vec-cbow.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
+
+<section id="skipgram" class="title-slide slide level2 center">
+<h2>Skipgram</h2>
+
+<img data-src="figs/word2vec-skipgram.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
+
+<section id="node2vec" class="title-slide slide level2 center">
+<h2>node2vec 📝</h2>
+
+<img data-src="figs/node2vec.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"><ul>
+<li>Learn multi-step transition probabilities of random walks</li>
+<li>High probability ~ close in the embedding space</li>
+</ul>
+<div title="Note:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note:</strong></p>
+</div>
+<div class="callout-content">
+<p>Precisely speaking, this is not an accurate model description. node2vec is trained on a biased training algorithm. Consequently, two frequently co-visited nodes are <em>not</em> always embedded closely. <a href="https://dl.acm.org/doi/10.5555/3540261.3542110">See paper</a></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="node2vec-random-walks" class="title-slide slide level2 center">
+<h2>node2vec random walks</h2>
+<p><strong>Biased Random Walk</strong>:</p>
+<p><span class="math display">
+\begin{align*}
+P(x_{t+1}|x_t, x_{t-1})
+\propto\begin{cases}
+\frac{1}{p} &amp; \text{Return to } x_{t-1} \\
+1 &amp; \text{Move to a neighbor $x_{t+1}$ directly connected to } x_{t-1} \\
+\frac{1}{q} &amp; \text{Move to a neighbor $x_{t+1}$ *not* directly connected to } x_{t-1}
+\end{cases}
+\end{align*}
+</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><span class="math inline">p</span>: Return parameter (lower = more backtracking)</li>
+<li><span class="math inline">q</span>: Exploration parameter (lower = more exploration)</li>
+</ul>
+<p>which control the walker to <em>move away</em> from the previous node or <em>stay locally</em>.</p>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/node2vec-random-walk.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+
+<section id="example-les-misérables-network" class="title-slide slide level2 center">
+<h2>Example: Les Misérables Network 📚</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<p>Complementary visualizations of Les Misérables coappearance network generated by node2vec with label colors reflecting homophily (top) and structural equivalence (bottom).</p>
+</div><div class="column" style="width:70%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/node2vec-cp-coms.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="lets-try-it-out" class="slide level3">
+<h3>Let’s try it out!</h3>
+<p><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m08-network-embedding/node2vec_demo.ipynb">Notebook</a></p>
+</section>
+
+<section id="hyperbolic-embedding-methods" class="title-slide slide level2 center">
+<h2>Hyperbolic Embedding Methods</h2>
+
+</section>
+<section id="lets-think-about-geometry" class="slide level3">
+<h3>Let’s think about geometry… 🌍</h3>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>All the embedding methods we’ve seen so far use Euclidean space (flat geometry).</p>
+<p>But what if our network has a hierarchical structure—like a tree or organization chart?</p>
+<p>Can flat space efficiently capture exponentially growing hierarchies?</p>
+</div>
+</div>
+</div>
+</div>
+<p><em>Take 30 seconds to think about it…</em></p>
+</section>
+<section id="the-challenge-with-euclidean-space" class="slide level3">
+<h3>The Challenge with Euclidean Space</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><strong>Problem</strong>: Real networks have
+<ul>
+<li>Hierarchical structures</li>
+<li>Scale-free properties</li>
+<li>Strong clustering + small-world</li>
+</ul></li>
+<li><strong>Issue</strong>: In flat (Euclidean) space, volume grows <strong>polynomially</strong> with radius</li>
+<li><strong>But</strong>: Tree-like hierarchies grow <strong>exponentially</strong></li>
+<li><em>This is a fundamental mismatch!</em></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/hyperbolic-tessellation.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="what-is-hyperbolic-space" class="slide level3">
+<h3>What is Hyperbolic Space?</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Hyperbolic geometry</strong> = curved space with <strong>negative curvature</strong></p>
+<div title="Key Property:">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Key Property:</strong></p>
+</div>
+<div class="callout-content">
+<p>Volume grows <strong>exponentially</strong> with radius—just like trees!</p>
+</div>
+</div>
+</div>
+</div>
+<p>This naturally captures:</p>
+<ul>
+<li>Scale-free degree distributions</li>
+<li>Strong clustering</li>
+<li>Small-world property</li>
+<li>Self-similarity</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/poincare-projection.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+<p><em>Poincaré disk: hyperbolic space visualized in a circle</em></p>
+</div></div>
+</section>
+
+<section id="the-popularity-similarity-framework" class="title-slide slide level2 center">
+<h2>The Popularity-Similarity Framework</h2>
+
+</section>
+<section id="how-do-real-networks-actually-grow" class="slide level3">
+<h3>How do real networks actually grow? 🤔</h3>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>2012: Researchers analyzed Internet, metabolic, and social networks</p>
+<p>Do new nodes just connect to popular nodes (preferential attachment)?</p>
+<p>Or is there something more going on? Think about a case (e.g., social network, transportation network, etc.) where it is not the case.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="answer-its-both" class="slide level3">
+<h3>Answer: It’s Both! ⚖️</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div title="Discovery:">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Discovery:</strong></p>
+</div>
+<div class="callout-content">
+<p>Networks grow by balancing <strong>two factors</strong>:</p>
+<ul>
+<li><strong>Popularity</strong>: Connect to well-established nodes</li>
+<li><strong>Similarity</strong>: Connect to similar nodes</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<p>This optimization naturally emerges in hyperbolic space!</p>
+<ul>
+<li><strong>Popularity</strong> → radial position (birth time)</li>
+<li><strong>Similarity</strong> → angular distance</li>
+<li>New connections → hyperbolically closest nodes</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/internet-routers-hyperbolic.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="how-does-the-model-actually-work" class="slide level3">
+<h3>How does the model actually work? 🔧</h3>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>If networks grow by balancing popularity and similarity, what are the precise rules?</p>
+<p>How do we generate a network that captures this?</p>
+</div>
+</div>
+</div>
+</div>
+<p><em>Let’s break down the mathematical rules…</em></p>
+</section>
+<section id="the-core-model-popularity-similarity" class="slide level3">
+<h3>The Core Model: Popularity × Similarity</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Network Generation Process</strong>:</p>
+<ul>
+<li>At each time <span class="math inline">t = 1, 2, 3, \dots</span>, add a new node <span class="math inline">t</span></li>
+<li>Each node <span class="math inline">t</span> gets coordinates:
+<ul>
+<li>Random angular position on a circle, <span class="math inline">\theta_t</span></li>
+<li>Radial position based on birth time, <span class="math inline">r_t = \ln t</span> (older = more popular)</li>
+</ul></li>
+<li>New node <span class="math inline">t</span> connects to the <span class="math inline">m</span> nodes that minimize:</li>
+</ul>
+<p><span class="math display">
+s \cdot \theta_{st} \quad \text{for } s &lt; t
+</span></p>
+<p><strong>Key property</strong>: In this space, the rule “minimize <span class="math inline">s \cdot \theta_{st}</span>” is mathematically equivalent to connecting to the <span class="math inline">m</span> <em>hyperbolically closest</em> nodes.</p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/internet-routers-hyperbolic.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="the-connection-rule-balancing-two-forces" class="slide level3">
+<h3>The Connection Rule: Balancing Two Forces ⚖️</h3>
+<p><strong>Key insight</strong>:</p>
+<ul>
+<li class="fragment">The <em>number</em> of nodes to connect to depends on both popularity and similarity
+<ul>
+<li class="fragment">If a node is very popular, it should connect to many nodes</li>
+<li class="fragment">If a node is surrounded by many similar nodes, it should connect to many nodes</li>
+<li class="fragment">The <code>radius</code> of the node is often referred to as the <code>implicit</code> degree.
+<ul>
+<li class="fragment">Example: European airports have high degree in part becaues there are many airports in Europe. Their implicit degree might be lower than what the degree suggests.</li>
+</ul></li>
+</ul></li>
+<li class="fragment">Preferential attachment is <strong>not</strong> a primitive mechanism
+<ul>
+<li class="fragment">Probability <span class="math inline">\Pi(k) \propto k</span> emerges naturally</li>
+</ul></li>
+<li class="fragment">It’s a <strong>consequence</strong> of geometric optimization!</li>
+</ul>
+</section>
+
+<section id="mathematical-models-of-hyperbolic-space" class="title-slide slide level2 center">
+<h2>Mathematical Models of Hyperbolic Space</h2>
+
+</section>
+<section id="two-ways-to-represent-hyperbolic-space" class="slide level3">
+<h3>Two Ways to Represent Hyperbolic Space</h3>
+<div title="Question:">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Question:</strong></p>
+</div>
+<div class="callout-content">
+<p>How can we mathematically represent this curved space in a computer?</p>
+</div>
+</div>
+</div>
+</div>
+<p>We have two main models (they’re mathematically equivalent but computationally different):</p>
+</section>
+<section id="poincaré-ball-model" class="slide level3">
+<h3>1. Poincaré Ball Model 🔮</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>Points lie within unit ball: <span class="math inline">\|\mathbf{x}\| &lt; 1</span></p>
+<p><strong>Distance formula</strong>:</p>
+<p><span class="math display">
+d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
+</span></p>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li>Intuitive visualization</li>
+<li>Geodesics = circular arcs</li>
+<li>Requires complex Riemannian optimization</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/hyperbolic-tessellation.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+<p><em>Shapes appear to shrink near boundary, but they’re all the same hyperbolic size!</em></p>
+</div></div>
+</section>
+<section id="lorentzian-hyperboloid-model" class="slide level3">
+<h3>2. Lorentzian (Hyperboloid) Model 🎯</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>Points lie on hyperboloid in Minkowski space</p>
+<p><strong>Lorentzian inner product</strong>:</p>
+<p><span class="math display">
+\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
+</span></p>
+<p><strong>Distance formula</strong>:</p>
+<p><span class="math display">
+d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
+</span></p>
+<p><strong>Advantage</strong>: More efficient optimization (gradients in Euclidean ambient space)</p>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/poincare-projection.png" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
+</figure>
+</div>
+<p><em>Hyperboloid projects onto Poincaré disk</em></p>
+</div></div>
+</section>
+
+<section id="hyperbolic-embeddings-in-practice" class="title-slide slide level2 center">
+<h2>Hyperbolic Embeddings in Practice</h2>
+
+</section>
+<section id="what-do-hyperbolic-embeddings-look-like" class="slide level3">
+<h3>What do hyperbolic embeddings look like?</h3>
+
+<img data-src="figs/wordnet-hyperbolic-embedding.png" class="quarto-figure quarto-figure-center r-stretch" style="width:70.0%"></section>
+<section id="natural-hierarchy-emerges" class="slide level3">
+<h3>Natural Hierarchy Emerges! 🌳</h3>
+<ul>
+<li><strong>Center</strong>: Abstract terms (“Entity”, “Object”)</li>
+<li><strong>Moving outward</strong>: Increasingly specific
+<ul>
+<li>“Material” → “Wood” → “Hardwood”</li>
+</ul></li>
+<li><strong>Key insight</strong>: Hyperbolic space automatically organizes concepts hierarchically</li>
+<li>No explicit supervision needed!</li>
+</ul>
+<div title="Why This Works:">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why This Works:</strong></p>
+</div>
+<div class="callout-content">
+<p>The exponential volume growth in hyperbolic space naturally accommodates the exponentially growing number of specific concepts at lower hierarchy levels</p>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="slide08_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="slide08_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="slide08_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="slide08_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

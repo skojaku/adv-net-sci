@@ -26,26 +26,26 @@ meta:
   updated: "2026-08-04"
   source_of_truth:
     # Primary: the lecture note. Every concept below was checked against these.
-    - docs/lecture-note/intro/why-networks.qmd
-    - docs/lecture-note/m01-euler_tour/{01-concepts,04-advanced}.qmd
-    - docs/lecture-note/m02-small-world/{01-concepts,appendix,04-appendix}.qmd
-    - docs/lecture-note/m03-robustness/01-concepts.qmd
-    - docs/lecture-note/m04-node-degree/{01-concepts,03-exercises}
-    - docs/lecture-note/m05-clustering/{01-concepts.qmd,04-appendix.md}
-    - docs/lecture-note/m06-centrality/{01-concepts,eigencentrality,degree-distance-based-centrality}.qmd
-    - docs/lecture-note/m07-random-walks/{01-concepts,random-walks-math,appendix-unifying-centrality-and-communities,amida-kuji}.qmd
-    - docs/lecture-note/m08-embedding/{01-concepts.qmd,04-appendix.md}
-    - docs/lecture-note/m09-graph-neural-networks/{00-preparation,01-concepts}.qmd
+    - lecture-note/intro/why-networks.qmd
+    - lecture-note/m01-euler_tour/{01-concepts,04-advanced}.qmd
+    - lecture-note/m02-small-world/{01-concepts,appendix,04-appendix}.qmd
+    - lecture-note/m03-robustness/01-concepts.qmd
+    - lecture-note/m04-node-degree/{01-concepts,03-exercises}
+    - lecture-note/m05-clustering/{01-concepts.qmd,04-appendix.md}
+    - lecture-note/m06-centrality/{01-concepts,eigencentrality,degree-distance-based-centrality}.qmd
+    - lecture-note/m07-random-walks/{01-concepts,random-walks-math,appendix-unifying-centrality-and-communities,amida-kuji}.qmd
+    - lecture-note/m08-embedding/{01-concepts.qmd,04-appendix.md}
+    - lecture-note/m09-graph-neural-networks/{00-preparation,01-concepts}.qmd
     # Secondary: condensed references used by the AI tutor.
-    - docs/tutor-references/m0*-concept.md
+    - tutor-references/m0*-concept.md
   not_covered_here:
-    - "docs/lecture-note/m0*/02-coding.qmd (library usage)"
-    - "docs/lecture-note/m09-graph-neural-networks/04-appendix.qmd (PyTorch implementations)"
+    - "lecture-note/m0*/02-coding.qmd (library usage)"
+    - "lecture-note/m09-graph-neural-networks/04-appendix.qmd (PyTorch implementations)"
   schema:
     module:
       id: "m00-m09"
       title: "human-readable module name"
-      slug: "directory name under docs/lecture-note/"
+      slug: "directory name under lecture-note/"
       sessions: "class dates from the syllabus (Fall 2025)"
       big_question: "the one question the module answers"
       hook: "the concrete story/experience the module opens with"
@@ -280,7 +280,7 @@ modules:
         level: core
         statement: "Cross each of the seven bridges of Konigsberg exactly once and return to the start - the concrete puzzle that motivates the whole module."
         prereq: []
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#the-konigsberg-bridge-problem", "docs/slide/new/m01/m01-euler-tour.md#your-turn"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-konigsberg-bridge-problem", "slides/m01/m01-euler-tour.md#your-turn"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c02
         name: "Abstraction: landmass to node, bridge to edge"
@@ -288,7 +288,7 @@ modules:
         level: core
         statement: "Euler discarded geography, distance and shape, keeping only which landmass touches which bridge; the shape of the map is irrelevant to the answer."
         prereq: [m01.c01]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c03
         name: "Graph as (V, E)"
@@ -296,7 +296,7 @@ modules:
         level: core
         statement: "A graph is a set of nodes V together with a set of edges E, each edge joining a pair of nodes."
         prereq: [m01.c02]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c04
         name: "Multigraph"
@@ -304,7 +304,7 @@ modules:
         level: core
         statement: "Konigsberg has two bridges between the same pair of landmasses, so it is a multigraph - parallel edges are allowed and each one counts."
         prereq: [m01.c03]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c05
         name: "Node degree"
@@ -312,7 +312,7 @@ modules:
         level: core
         statement: "The degree of a node is the number of edges attached to it."
         prereq: [m01.c03]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c06
         name: "Self-loop and degree"
@@ -320,7 +320,7 @@ modules:
         level: core
         statement: "A self-loop joins a node to itself and contributes 2 to that node's degree, because both endpoints attach to the same node."
         prereq: [m01.c05]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c07
         name: "Degree parity argument"
@@ -328,7 +328,7 @@ modules:
         level: core
         statement: "Every visit to a node uses one edge in and one edge out, so a node of even degree can be passed through, while a node of odd degree must be a start or an end of the walk."
         prereq: [m01.c05]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c08
         name: "Eulerian path condition"
@@ -336,7 +336,7 @@ modules:
         level: core
         statement: "An Eulerian path exists if and only if the graph is connected and has exactly zero or exactly two nodes of odd degree."
         prereq: [m01.c07, m01.c14]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#eulerian-path-and-circuit", "docs/slide/new/m01/m01-euler-tour.md#the-konigsberg-verdict"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit", "slides/m01/m01-euler-tour.md#the-konigsberg-verdict"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c09
         name: "Eulerian circuit condition"
@@ -344,7 +344,7 @@ modules:
         level: core
         statement: "A closed Eulerian walk (circuit) exists if and only if the graph is connected and every node has even degree; Konigsberg has four odd-degree nodes, so the walk is impossible."
         prereq: [m01.c08]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#eulerian-path-and-circuit"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c10
         name: "Walk"
@@ -352,7 +352,7 @@ modules:
         level: core
         statement: "A walk is any sequence of adjacent nodes; both nodes and edges may repeat."
         prereq: [m01.c03]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c11
         name: "Trail"
@@ -360,7 +360,7 @@ modules:
         level: core
         statement: "A trail is a walk that never repeats an edge, though it may revisit nodes."
         prereq: [m01.c10]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c12
         name: "Path"
@@ -368,7 +368,7 @@ modules:
         level: core
         statement: "A path is a walk that never repeats a node (and hence never repeats an edge)."
         prereq: [m01.c10]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c13
         name: "Circuit and cycle"
@@ -376,7 +376,7 @@ modules:
         level: core
         statement: "A circuit is a closed trail and a cycle is a closed path; both start and end at the same node, but only the cycle forbids intermediate repetition."
         prereq: [m01.c11, m01.c12]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#circuit-cycle-and-eulers-language"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#circuit-cycle-and-eulers-language"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c14
         name: "Connected vs disconnected graph"
@@ -384,7 +384,7 @@ modules:
         level: core
         statement: "A graph is connected when a path exists between every pair of nodes; otherwise it splits into separate islands."
         prereq: [m01.c12]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c15
         name: "Connected component"
@@ -392,7 +392,7 @@ modules:
         level: core
         statement: "A connected component is a maximal set of nodes that are mutually reachable."
         prereq: [m01.c14]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c16
         name: "Giant component"
@@ -400,7 +400,7 @@ modules:
         level: core
         statement: "A giant component is a connected component holding a finite fraction of all nodes - typically the one component that matters in a real network."
         prereq: [m01.c15]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#the-giant-component"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-giant-component"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c17
         name: "Directed graph"
@@ -408,7 +408,7 @@ modules:
         level: core
         statement: "In a directed graph each edge has an orientation, so reachability from i to j does not imply reachability from j to i."
         prereq: [m01.c03]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c18
         name: "Weak vs strong connectivity"
@@ -416,7 +416,7 @@ modules:
         level: core
         statement: "A directed graph is weakly connected if it becomes connected when directions are ignored, and strongly connected if a directed path runs from every node to every other node."
         prereq: [m01.c17, m01.c14]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c19
         name: "Edge list representation"
@@ -424,7 +424,7 @@ modules:
         level: core
         statement: "A network stored as a list of node pairs - compact, natural for data files, but answering 'who are i's neighbors?' requires a scan."
         prereq: [m01.c03]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "docs/slide/new/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c20
         name: "Adjacency list representation"
@@ -432,7 +432,7 @@ modules:
         level: core
         statement: "For each node, the list of its neighbors - the representation that makes neighborhood traversal cheap."
         prereq: [m01.c19]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "docs/slide/new/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c21
         name: "Adjacency matrix representation"
@@ -440,7 +440,7 @@ modules:
         level: core
         statement: "The n-by-n matrix A with A_ij = 1 when i and j are connected; it turns network questions into linear algebra but costs O(n^2) memory if stored densely."
         prereq: [m01.c19]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks", "docs/slide/new/m01/m01-euler-tour.md#three-ways-to-store-the-same-network"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks", "slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c22
         name: "Degree from each representation"
@@ -448,7 +448,7 @@ modules:
         level: core
         statement: "Degree is a row sum of A, a count of incidences in the edge list, or a list length in the adjacency list - the same quantity read three ways."
         prereq: [m01.c05, m01.c19, m01.c20, m01.c21]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c23
         name: "Graph traversal for components"
@@ -456,7 +456,7 @@ modules:
         level: core
         statement: "Depth-first (or breadth-first) search from a seed node visits exactly its connected component, which is how components are found in practice."
         prereq: [m01.c15, m01.c20]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#finding-components-dfs-and-bfs"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#finding-components-dfs-and-bfs"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c24
         name: "Birth of graph theory"
@@ -464,7 +464,7 @@ modules:
         level: extension
         statement: "Euler's 1736 abstraction created graph theory, now the substrate for social, transportation, brain and Internet analysis."
         prereq: [m01.c02]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c25
         name: "Konigsberg after the bombing"
@@ -472,7 +472,7 @@ modules:
         level: extension
         statement: "WWII destroyed two of the seven bridges, leaving only two odd-degree landmasses - the 200-year-old impossible puzzle became possible by accident of war."
         prereq: [m01.c09]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c26
         name: "Real networks are sparse"
@@ -480,7 +480,7 @@ modules:
         level: core
         statement: "Most node pairs are not connected, so a dense n-by-n matrix is hopeless at scale - Earth's 8 billion people would need 512 exabytes."
         prereq: [m01.c21]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c27
         name: "Compressed Sparse Row (CSR)"
@@ -488,7 +488,7 @@ modules:
         level: core
         statement: "Store only non-zero entries in three arrays - data, indices, indptr - where row i occupies data[indptr[i]:indptr[i+1]]; memory drops from O(n^2) to O(m+n)."
         prereq: [m01.c26, m01.c20]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c28
         name: "Reading structure off CSR"
@@ -496,7 +496,7 @@ modules:
         level: core
         statement: "Degree of node i is indptr[i+1] - indptr[i] and its neighbors are indices[indptr[i]:indptr[i+1]] - the semantics of the arrays are what make the format fast, not the storage alone."
         prereq: [m01.c27]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c29
         name: "When dense beats sparse"
@@ -504,7 +504,7 @@ modules:
         level: extension
         statement: "Sparse formats win for row-based operations and matrix-vector products on large sparse networks; dense arrays win for small or dense networks and random single-entry access."
         prereq: [m01.c27]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#when-to-use-which-format"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#when-to-use-which-format"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c30
         name: "Matrix powers count walks"
@@ -517,7 +517,7 @@ modules:
           stated as prose. Worth promoting to explicit teaching, since m06 and
           m07 both depend on it.
         prereq: [m01.c21, m01.c10]
-        coverage: {slide: ["docs/slide/new/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: [], out_class: [], assessment: []}
 
 # =============================================================================
 # M02: Small World
@@ -541,7 +541,7 @@ modules:
         level: core
         statement: "Packets sent from Omaha and Wichita were forwarded person to person toward a Boston target; 64 of 160 arrived, with a median chain of about six intermediaries."
         prereq: [m01.c12]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c02
         name: "Six degrees of separation"
@@ -549,7 +549,7 @@ modules:
         level: core
         statement: "The claim that any two people are separated by a handful of social steps - short paths in a network of billions."
         prereq: [m02.c01]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c03
         name: "Modern replications"
@@ -565,7 +565,7 @@ modules:
         level: core
         statement: "Milgram showed people can *find* short chains using only local knowledge, which is a stronger and different claim than short paths merely existing - the point made vivid by playing Wikirace."
         prereq: [m02.c02]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c05
         name: "Shortest path and geodesic distance"
@@ -573,7 +573,7 @@ modules:
         level: core
         statement: "The distance d(i,j) is the number of edges on a shortest path between i and j, and is infinite when no path exists."
         prereq: [m01.c12, m01.c14]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c06
         name: "Average path length"
@@ -581,7 +581,7 @@ modules:
         level: core
         statement: "The mean of d(i,j) over all node pairs; for the 4-node example with distances [1,1,2,1,1,1] it is 7/6 = 1.16."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c07
         name: "Diameter"
@@ -589,7 +589,7 @@ modules:
         level: core
         statement: "The largest shortest-path distance in the network - the worst case rather than the average case; a lattice has a large diameter, a small-world network does not."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c08
         name: "Triangle and connected triplet"
@@ -597,7 +597,7 @@ modules:
         level: core
         statement: "A triangle is three mutually connected nodes; a connected triplet is any three nodes with at least two edges among them (open or closed)."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c09
         name: "Local clustering coefficient"
@@ -605,7 +605,7 @@ modules:
         level: core
         statement: "C_i is the fraction of possible edges among node i's neighbors that actually exist: (triangles at i) / [k_i (k_i - 1) / 2]."
         prereq: [m02.c08, m01.c05]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c10
         name: "Average local clustering"
@@ -613,7 +613,7 @@ modules:
         level: core
         statement: "The unweighted mean of C_i over all nodes, which gives every node - hub or leaf - the same weight."
         prereq: [m02.c09]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c11
         name: "Global clustering (transitivity)"
@@ -621,7 +621,7 @@ modules:
         level: core
         statement: "C = 3 x (number of triangles) / (number of connected triplets), a network-level ratio that weights high-degree nodes more heavily than the average local clustering."
         prereq: [m02.c08]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c12
         name: "Why the naive ratio fails"
@@ -629,7 +629,7 @@ modules:
         level: core
         statement: "A complete graph has C = 1 and L = 1, so s_naive = 1 - the largest value the ratio can take - even though it is trivially not a small world. Raw values cannot certify small-worldness."
         prereq: [m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c13
         name: "Erdos-Renyi random graph"
@@ -637,7 +637,7 @@ modules:
         level: core
         statement: "Each pair of n nodes is connected independently with probability p - the standard structureless baseline."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c14
         name: "Random-graph reference values"
@@ -645,7 +645,7 @@ modules:
         level: core
         statement: "For an ER graph, clustering is about <k>/(n-1) and average path length is about ln(n)/ln(<k>) - short paths come free, high clustering does not."
         prereq: [m02.c13, m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c15
         name: "Small-world index sigma"
@@ -653,7 +653,7 @@ modules:
         level: core
         statement: "sigma = (C/C_rand) / (L/L_rand); sigma > 1 means small-world, sigma about 1 means random-like, sigma < 1 means anti-small-world."
         prereq: [m02.c12, m02.c14]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c16
         name: "Regular ring lattice"
@@ -661,7 +661,7 @@ modules:
         level: core
         statement: "n nodes on a ring, each joined to its k nearest neighbors: high clustering but path length growing linearly with n."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c17
         name: "Local vs random wiring trade-off"
@@ -669,7 +669,7 @@ modules:
         level: core
         statement: "Purely local wiring gives high clustering and long paths; purely random wiring gives short paths and no clustering. Real networks somehow have both."
         prereq: [m02.c16, m02.c13]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c18
         name: "Watts-Strogatz rewiring"
@@ -677,7 +677,7 @@ modules:
         level: core
         statement: "Start from a ring lattice and rewire each edge with probability p to a random endpoint, avoiding self-loops and duplicates."
         prereq: [m02.c16]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c19
         name: "The role of p in Watts-Strogatz"
@@ -685,7 +685,7 @@ modules:
         level: core
         statement: "p = 0 is a lattice, p = 1 is a random graph, and a wide intermediate band gives high clustering together with short paths."
         prereq: [m02.c18, m02.c17]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c20
         name: "Shortcuts as the mechanism"
@@ -693,7 +693,7 @@ modules:
         level: core
         statement: "A handful of long-range edges collapses path length while leaving almost all local triangles intact - which is why the small-world regime is so broad."
         prereq: [m02.c19]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c21
         name: "Small-worldness across domains"
@@ -717,7 +717,7 @@ modules:
         level: core
         statement: "Among a node's k neighbors there are k(k-1)/2 possible edges, each present with probability p independently, so E[C_i] = p regardless of degree - hence C_rand = <k>/(n-1)."
         prereq: [m02.c22, m02.c09]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c24
         name: "Tree-expansion argument for path length"
@@ -725,7 +725,7 @@ modules:
         level: core
         statement: "Breadth-first growth from any node reaches about k^h nodes in h steps (few cycles in a sparse random graph); setting k^h = n gives L ~ ln n / ln <k>, i.e. logarithmic scaling."
         prereq: [m02.c22, m02.c06]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c25
         name: "Which clustering coefficient goes into sigma"
@@ -733,7 +733,7 @@ modules:
         level: core
         statement: "Watts and Strogatz used average local clustering while Humphries used global clustering; the same network can get different sigma values depending on the choice."
         prereq: [m02.c15, m02.c11]
-        coverage: {slide: [], in_class: ["docs/pen-and-papers/m02/do-your-friends-know-each-other/exercise.pdf", "docs/pen-and-papers/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c26
         name: "Generative models as explanation"

@@ -24,8 +24,8 @@ counting.
 1. Read `curriculum.yml` (repo root) for the target module: `big_question`,
    `hook`, `objectives`, and the full `concepts` list with IDs.
 2. Read at least two existing sheets end to end to re-anchor the voice —
-   `docs/lecture-note/m05-clustering/pen-and-paper/exercise.tex` (compare-two-
-   groups pattern) and `docs/lecture-note/m06-centrality/pen-and-paper/exercise.tex`
+   `lecture-note/m05-clustering/pen-and-paper/exercise.tex` (compare-two-
+   groups pattern) and `lecture-note/m06-centrality/pen-and-paper/exercise.tex`
    (guess-then-compute-then-revisit pattern) are the two purest examples.
 3. Read `references/house-style.md` in this skill — the full style rules with
    quoted examples.
@@ -115,9 +115,9 @@ preamble used across all existing sheets, plus a font guard.
 
 ## Where files go
 
-New sheets: `docs/pen-and-papers/mNN/<slug>/exercise.tex`, where `<slug>` is a
+New sheets: `lecture-note/mNN/<slug>/exercise.tex`, where `<slug>` is a
 short kebab-case name of the sheet's idea (e.g. `m02/counting-triangles`).
-Existing legacy sheets stay under `docs/lecture-note/mNN-name/pen-and-paper/`.
+Existing legacy sheets stay under `lecture-note/mNN-name/pen-and-paper/`.
 
 Build with `xelatex -interaction=nonstopmode exercise.tex` run twice, from the
 sheet's own directory. Commit the `.tex` and the `.pdf`; do not commit `.xdv`,

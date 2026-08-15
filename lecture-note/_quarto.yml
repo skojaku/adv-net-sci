@@ -1,0 +1,245 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "*.md"
+    - "!figs/src/"  # figure generators, not pages
+
+title: "Advanced Topics in Network Science"
+author: Sadamori Kojaku
+date: last-modified
+date-format: long
+
+website:
+  title: "Advanced Topics in Network Science"
+  repo-url: https://github.com/skojaku/adv-net-sci
+  repo-actions: [edit, issue]
+  page-navigation: true
+  reader-mode: true
+  search:
+    keyboard-shortcut: ["|"]
+    type: overlay
+  page-footer:
+    left: "Copyright 2024, Sadamori Kojaku"
+    right:
+      - icon: github
+        href: https://github.com/skojaku/adv-net-sci
+
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 1
+    border: false
+    background: "white"
+    contents:
+      - section: "Course Information"
+        contents:
+          - course/welcome.md
+          - course/about.md
+          - course/discord.md
+          - course/minidora-usage.qmd
+          - course/setup.qmd
+          - course/how-to-submit-assignment.md
+      - section: "Introduction"
+        contents:
+          - intro/why-networks.qmd
+      - section: "M01: Euler Path"
+        contents:
+          - m01-euler_tour/01-concepts.qmd
+          - m01-euler_tour/02-coding.qmd
+          - m01-euler_tour/03-exercises.qmd
+          - m01-euler_tour/04-advanced.qmd
+      - section: "M02: Small World"
+        contents:
+          - m02-small-world/01-concepts.qmd
+          - m02-small-world/02-coding.qmd
+          - m02-small-world/03-exercises.md
+          - m02-small-world/04-appendix.qmd
+      - section: "M03: Robustness"
+        contents:
+          - m03-robustness/01-concepts.qmd
+          - m03-robustness/02-coding.qmd
+          - m03-robustness/03-exercises.qmd
+          - m03-robustness/04-appendix.md
+      - section: "M04: Friendship Paradox"
+        contents:
+          - m04-node-degree/01-concepts.qmd
+          - m04-node-degree/02-coding.qmd
+          - m04-node-degree/03-exercises.md
+      - section: "M05: Clustering"
+        contents:
+          - m05-clustering/01-concepts.qmd
+          - m05-clustering/02-coding.qmd
+          - m05-clustering/03-exercises.qmd
+      - section: "M06: Centrality"
+        contents:
+          - m06-centrality/01-concepts.qmd
+          - m06-centrality/02-coding.qmd
+          - m06-centrality/03-exercises.md
+      - section: "M07: Random Walks"
+        contents:
+          - m07-random-walks/01-concepts.qmd
+          - m07-random-walks/02-coding.qmd
+          - m07-random-walks/03-exercises.qmd
+      - section: "M08: Embedding"
+        contents:
+          - m08-embedding/01-concepts.qmd
+          - m08-embedding/02-coding.qmd
+          - m08-embedding/03-exercises.md
+          - m08-embedding/04-appendix.md
+      - section: "M09: Graph Neural Networks"
+        contents:
+          - m09-graph-neural-networks/00-preparation.qmd
+          - m09-graph-neural-networks/01-concepts.qmd
+          - m09-graph-neural-networks/02-coding.qmd
+          - m09-graph-neural-networks/03-exercises.qmd
+          - m09-graph-neural-networks/04-appendix.qmd
+
+  navbar:
+    logo: logo.jpg
+    background: primary
+    search: true
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Course"
+        menu:
+          - text: "Welcome"
+            file: course/welcome.md
+          - text: "About"
+            file: course/about.md
+          - text: "Discord"
+            file: course/discord.md
+          - text: "Minidora"
+            file: course/minidora-usage.qmd
+          - text: "Setup"
+            file: course/setup.qmd
+      - text: "Intro"
+        menu:
+          - text: "Why Networks?"
+            file: intro/why-networks.qmd
+      - text: "Foundations"
+        menu:
+          - text: "─── M01: Euler Path ───"
+          - text: "Concepts"
+            file: m01-euler_tour/01-concepts.qmd
+          - text: "Hands-on"
+            file: m01-euler_tour/02-coding.qmd
+          - text: "Exercises"
+            file: m01-euler_tour/03-exercises.qmd
+          - text: "Hands-on: Sparse matrices"
+            file: m01-euler_tour/04-advanced.qmd
+          - text: "─── M02: Small World ───"
+          - text: "Concepts"
+            file: m02-small-world/01-concepts.qmd
+          - text: "Hands-on"
+            file: m02-small-world/02-coding.qmd
+          - text: "Exercises"
+            file: m02-small-world/03-exercises.md
+          - text: "Appendix"
+            file: m02-small-world/04-appendix.qmd
+          - text: "─── M03: Robustness ───"
+          - text: "Concepts"
+            file: m03-robustness/01-concepts.qmd
+          - text: "Hands-on"
+            file: m03-robustness/02-coding.qmd
+          - text: "Exercises"
+            file: m03-robustness/03-exercises.qmd
+          - text: "Appendix"
+            file: m03-robustness/04-appendix.md
+      - text: "Core Topics"
+        menu:
+          - text: "─── M04: Friendship Paradox ───"
+          - text: "Concepts"
+            file: m04-node-degree/01-concepts.qmd
+          - text: "Hands-on"
+            file: m04-node-degree/02-coding.qmd
+          - text: "Exercises"
+            file: m04-node-degree/03-exercises.md
+          - text: "─── M05: Clustering ───"
+          - text: "Concepts"
+            file: m05-clustering/01-concepts.qmd
+          - text: "Hands-on"
+            file: m05-clustering/02-coding.qmd
+          - text: "Exercises"
+            file: m05-clustering/03-exercises.qmd
+          - text: "─── M06: Centrality ───"
+          - text: "Concepts"
+            file: m06-centrality/01-concepts.qmd
+          - text: "Hands-on"
+            file: m06-centrality/02-coding.qmd
+          - text: "Exercises"
+            file: m06-centrality/03-exercises.md
+      - text: "Advanced Topics"
+        menu:
+          - text: "─── M07: Random Walks ───"
+          - text: "Concepts"
+            file: m07-random-walks/01-concepts.qmd
+          - text: "Hands-on"
+            file: m07-random-walks/02-coding.qmd
+          - text: "Exercises"
+            file: m07-random-walks/03-exercises.qmd
+          - text: "─── M08: Embedding ───"
+          - text: "Concepts"
+            file: m08-embedding/01-concepts.qmd
+          - text: "Hands-on"
+            file: m08-embedding/02-coding.qmd
+          - text: "Exercises"
+            file: m08-embedding/03-exercises.md
+          - text: "Appendix"
+            file: m08-embedding/04-appendix.md
+          - text: "─── M09: Graph Neural Networks ───"
+          - text: "Concepts"
+            file: m09-graph-neural-networks/01-concepts.qmd
+          - text: "Hands-on"
+            file: m09-graph-neural-networks/02-coding.qmd
+          - text: "Exercises"
+            file: m09-graph-neural-networks/03-exercises.qmd
+          - text: "Appendix"
+            file: m09-graph-neural-networks/04-appendix.qmd
+
+# The lecture note is prose, mathematics and static figures only. Nothing here
+# executes, so a render is fast and needs no Python environment.
+#
+#   - Runnable code lives in marimo notebooks under notebooks/, linked from each
+#     module's "Hands-on" page. Link ids are kept in _variables.yml.
+#   - The figures that used to be generated inline are now committed SVGs under
+#     figs/. Regenerate them with:  bash tools/build_figures.sh
+#   - Graphviz (```{dot}```) blocks are rendered by Quarto itself, not by a
+#     Jupyter kernel, so they are unaffected by `enabled: false` and stay inline.
+execute:
+  enabled: false
+  freeze: true
+
+format:
+  html:
+    theme:
+      - pulse
+      - scss/style.scss
+    toc: false
+    page-layout: article
+    toc-depth: 2
+    number-sections: true
+    number-depth: 2
+    html-math-method: katex
+    code-fold: false
+    code-copy: hover
+    code-tools: true
+    highlight-style: github-dark
+    #code-block-bg: true
+    code-block-border-left: "#22c55e"
+    #fontsize: 24px
+    #grid:
+      #body-width: 1200px
+      #sidebar-width: 200px
+      #margin-width: 200px
+    css:
+      - assets/custom.css
+
+resources:
+  - "assets/**"
+
+# Add a bibtex file so that we can create citations
+bibliography: references.bib
+

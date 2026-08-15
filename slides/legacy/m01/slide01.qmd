@@ -1,0 +1,716 @@
+---
+format:
+  revealjs:
+    slide-number: true
+    chalkboard:
+      buttons: true
+    preview-links: auto
+    theme: simple
+    css: css/style.css
+highlight-style: github
+---
+
+# Module 01: Königsberg Bridge Puzzle
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Advanced Topics in Network Science
+
+Sadamori Kojaku
+
+skojaku@binghamton.edu
+
+:::
+
+::: {.column width="50%"}
+
+![](https://images.squarespace-cdn.com/content/v1/5cc95b569d4149226d0f4e4a/1556727689524-ENOT8C0BYFAWICK0WANX/Image-Koenigsberg%2C_Map_by_Merian-Erben_1652.jpg)
+
+:::
+
+::::
+
+## The Königsberg Bridge Puzzle 🌉
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){width=100% fig-align="center"}
+
+:::
+
+::: {.column width="50%"}
+
+- 18th century puzzle in Königsberg, Prussia (now Kaliningrad, Russia) 🇩🇪
+- City had 7 bridges connecting 2 islands and mainland 🏙️
+- **Challenge**: Find a route that crosses each bridge exactly once 🚶‍♂️
+
+:::
+::::
+
+## Your turn! 🧩
+
+Find a route that crosses each bridge exactly once
+
+Take 10 mins - Think about your strategy through the pen & paper exercise
+
+[pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)
+
+---
+
+### Euler's Revolutionary Approach 🧠
+
+**What if we ignore all the physical details? 🙂 **
+
+What do you see in this transformation?
+*What's the key insight?*
+
+
+![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png){width=800 fig-align="center"}
+
+## The Breakthrough Insight ✨
+
+**Euler realized:** Only connections matter, not physical details!
+
+- Landmasses → **dots** (nodes)
+- Bridges → **lines** (edges)
+
+**Abstraction is the a cornerstone of Network Science**
+
+*This was the birth of graph theory and network science!*
+
+## Euler's Reasoning 🧮
+
+If you walk through a node, what happens?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+::: {.incremental}
+- Even number of edges: Enter/leave perfectly ✅
+- Odd number: One edge "left over" ❌
+- Question: Where can those "leftover" edges be?
+- Only at start/end points!
+:::
+
+:::
+
+::: {.column width="60%"}
+```{dot}
+//| fig-width: 6
+//| fig-height: 3
+//| fig-align: center
+
+graph {
+  layout=fdp
+  sep=0.7
+
+  // Degree 3 (odd)
+  A [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  B1 [shape=circle, style="filled", fillcolor="#ffffff", color="#ffffff", label=""];
+  B2 [shape=circle, style="filled", fillcolor="#ffffff", color="#ffffff", label=""];
+  B3 [shape=circle, style="filled", fillcolor="#ffffff", color="#ffffff", label=""];
+
+  A -- B1;
+  A -- B2;
+  A -- B3;
+
+  // Degree 2 (even)
+  C [shape=circle, fillcolor="#cbf5cc", style="filled"];
+  D1 [shape=circle, style="filled", fillcolor="#ffffff", color="#ffffff", label=""];
+  D2 [shape=circle, style="filled", fillcolor="#ffffff", color="#ffffff", label=""];
+
+  C -- D1;
+  C -- D2;
+
+  // Horizontal positioning
+  A [pos="1,0!"];
+  C [pos="2,0!"];
+}
+```
+:::
+
+::::
+
+---
+
+Euler's theorem says:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+::: {.incremental}
+- 0 odd nodes → We can start and end at the same node while passing through all edges exactly once ✅
+- 2 odd nodes → We can start and end at different nodes while passing through all edges exactly once ✅
+- More than 2 → Not possible to pass through all edges exactly once ❌
+:::
+
+
+:::
+
+::: {.column width="50%"}
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-cap: "Königsberg Bridge Problem - Seven bridges connecting four land areas"
+//| fig-align: center
+graph Konigsberg {
+  layout=neato
+  overlap=false
+  sep=2.0
+
+  // Land areas
+  A [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  B [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  C [shape=circle, fillcolor="#cbf5cc", style="filled"];
+  D [shape=circle, fillcolor="#cbf5cc", style="filled"];
+
+  // Bridges (edges)
+  A -- C;
+  A -- C;
+  A -- D;
+  B -- C;
+  B -- C;
+  B -- D;
+  C -- D;
+}
+```
+
+*What's your verdict?*
+:::
+
+::::
+
+---
+
+::: {.callout-tip title = "Euler Path Theorem"}
+**An Euler path exists if and only if:**
+
+1. **The graph is connected** (can reach any node from any other)
+2. **Either:**
+   - All nodes have even degree (Euler circuit), OR
+   - Exactly two nodes have odd degree (Euler path)
+
+:::
+
+**Königsberg verdict:** 4 odd-degree nodes → **IMPOSSIBLE!**
+
+## Aftermath
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+The story takes a sobering turn during World War II. In 1944, Königsberg was heavily bombed by Allied forces, and later captured by the Soviet Union. Two of the seven historic bridges were destroyed in the bombardment.
+
+:::
+
+::: {.column width="50%"}
+
+![](./seven-bridge-bombared.png){width=100% fig-align="center"}
+
+:::
+
+::::
+
+
+---
+
+::: {.callout-note title = "Question:"}
+
+In the previous question, we learned the condition for the possibility to cross each bridge exactly once.
+
+Now, let's also add a new condition: *[Return to the starting point]{.red-text}.*
+
+How does this change the condition for the possibility?
+
+:::
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-cap: "Königsberg Bridge Problem - Seven bridges connecting four land areas"
+//| fig-align: center
+graph Konigsberg {
+  layout=neato
+  overlap=false
+  sep=2.0
+
+  // Land areas
+  A [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  B [shape=circle, fillcolor="#f5cbcc", style="filled"];
+  C [shape=circle, fillcolor="#cbf5cc", style="filled"];
+  D [shape=circle, fillcolor="#cbf5cc", style="filled"];
+
+  // Bridges (edges)
+  A -- C;
+  A -- C;
+  A -- D;
+  B -- C;
+  B -- C;
+  B -- D;
+  C -- D;
+}
+```
+
+---
+
+
+::: {.callout-tip title = "Answer:"}
+
+1. Graph is connected, AND
+
+2. Either:
+   - All nodes have even degree
+   - ~~Exactly two nodes have odd degree~~
+
+This is called an [Euler circuit]{.red-text}.
+
+:::
+
+*Why we cannot have odd-degree nodes?*
+
+---
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- **Walk**: Any sequence of connected nodes
+
+- **Path**: Walks without repeated nodes
+
+- **Circuit**: Paths that return to the starting point
+
+- **Trail**: Paths without repeated edges
+
+- **Cycle**: Trails that return to the starting point
+
+:::
+
+::: {.column width="50%"}
+
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 6
+//| fig-align: center
+graph Campus {
+  layout=circo
+  overlap=false
+  sep =0.3
+  // Campus locations
+  Dorm [shape=circle, fillcolor="#e1f5fe", style="filled", label="Dorm"];
+  Cafe [shape=circle, fillcolor="#fff3e0", style="filled", label="Cafeteria"];
+  Lib [shape=circle, fillcolor="#f3e5f5", style="filled", label="Library"];
+  Gym [shape=circle, fillcolor="#e8f5e8", style="filled", label="Gym"];
+
+  // Walkways
+  Dorm -- Cafe;
+  Cafe -- Lib;
+  Lib -- Gym;
+  Gym -- Dorm;
+  Cafe -- Gym;
+}
+```
+
+:::
+
+::::
+
+*Question: Are trails always paths? Are paths always trails?*
+
+
+## Examples
+
+::: {.callout-note title = "Question:"}
+
+What are the real-world examples of the paths and trails?
+
+:::
+
+
+::: {.incremental}
+
+- **Path**: A travel itinerary that visits each city exactly once
+- **Trail**: A mail carrier's route that visits each street exactly once
+
+:::
+
+## Network Connectivity 🔗
+
+**Look at Euler's conditions again:**
+
+1. Either all nodes have even degree OR exactly two have odd degree, and
+2. The graph is [connected]{.red-text}
+
+What does "connected" mean?
+
+## What Does "Connected" Really Mean? 🤔
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+**Definition:** [A network is **connected**]{.red-text} if there is a path between every pair of nodes.
+
+Example:
+You can walk from any building to any other building if connected. A building is not connected if there is no route to it along the walkways.
+
+:::
+
+::: {.column width="40%"}
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 4
+//| fig-align: center
+graph Connected {
+  layout=neato
+  overlap=false
+  sep=0.8
+
+  A [pos="0,2!", shape=circle, fillcolor="#e1f5fe", style="filled"];
+  B [pos="2,2!", shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [pos="1,0!", shape=circle, fillcolor="#f3e5f5", style="filled"];
+  D [pos="3,0!", shape=circle, fillcolor="#e8f5e8", style="filled"];
+
+  A -- B;
+  B -- C;
+  C -- D;
+  A -- C;
+}
+```
+
+:::
+
+::::
+
+## Connected Component
+
+
+**Definition:** [A connected component]{.red-text} is a maximal set of nodes where every node can reach every other node within that set.
+
+
+![](./connected-component.jpg){width=100% fig-align="center"}
+
+
+*Question: Is a single node a connected component?*
+
+---
+
+In large real-world networks, what would you expect 🤔?
+
+- Many tiny components of 2-3 nodes?
+- One huge component containing most nodes?
+- All components roughly equal size?
+
+
+::: {.incremental}
+- Many networks contain [a giant component]{.red-text} that contains a significant fraction of all nodes in the network
+- **Definition:** [A giant component]{.red-text} is a connected component where almost every node in the network is reachable from any other node in the component.
+:::
+
+
+---
+
+**Context:** What if edges have direction? (Think Twitter follows, webpage links)
+
+:::: {.columns}
+
+::: {.column width="45%" .column-divider}
+
+### Strongly connected 💪
+Every node can reach every other node following edge directions
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Strong {
+  layout=circo
+
+  A [shape=circle, fillcolor="#e1f5fe", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#f3e5f5", style="filled"];
+
+  A -> B -> C -> A;
+}
+```
+
+:::
+
+::: {.column width="45%"}
+
+### Weakly connected 🤝
+
+Connected if we ignore edge directions
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 3
+//| fig-align: center
+digraph Weak {
+  layout=circo
+
+  A [shape=circle, fillcolor="#ffcdd2", style="filled"];
+  B [shape=circle, fillcolor="#fff3e0", style="filled"];
+  C [shape=circle, fillcolor="#c8e6c9", style="filled"];
+
+  A -> B -> C;
+}
+```
+
+:::
+
+::::
+
+**Question:** Is every strongly connected component also weakly connected?
+
+## Coding Networks in Python 💻
+
+Given any network, how would you represent it in a computer?
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+
+Three ways to represent the same network:
+
+1. **Edge Table** - List of connections
+2. **Adjacency List** - Each node's neighbors
+3. **Adjacency Matrix** - Grid of 1s and 0s
+
+:::
+
+::: {.column width="40%"}
+
+![](https://www.tandfonline.com/cms/asset/2820b951-1747-4621-802c-8d04263f106c/tcon_a_1707286_f0001_oc.jpg){width=200px fig-align="center"}
+
+*5 nodes, 6 edges*
+
+:::
+
+::::
+
+## Edge Table: The Direct Approach 📋
+
+Simply list every connection:
+
+```python
+edges = [
+    (0, 1),  # Node 0 connects to Node 1
+    (0, 2),  # Node 0 connects to Node 2
+    (1, 2),  # Node 1 connects to Node 2
+    (1, 3),  # Node 1 connects to Node 3
+    (2, 4),  # Node 2 connects to Node 4
+    (3, 4)   # Node 3 connects to Node 4
+]
+```
+
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
+
+## Adjacency List: Neighborhood Map 🗺️
+
+Each node knows its neighbors:
+
+```python
+neighbors = {
+    0: [1, 2],     # Node 0 connects to nodes 1,2
+    1: [0, 2, 3],  # Node 1 connects to nodes 0,2,3
+    2: [0, 1, 4],  # Node 2 connects to nodes 0,1,4
+    3: [1, 4],     # Node 3 connects to nodes 1,4
+    4: [2, 3]      # Node 4 connects to nodes 2,3
+}
+```
+
+- *How would you count the degree of node 1 from this list?*
+- *How would you find the neighbors of node 1?*
+
+## Adjacency Matrix: The Math Way 📐
+
+Grid where entry $(i,j) = 1$ if connected:
+
+```python
+import numpy as np
+
+matrix = np.array([
+    [0, 1, 1, 0, 0],  # Node 0: connects to 1,2
+    [1, 0, 1, 1, 0],  # Node 1: connects to 0,2,3
+    [1, 1, 0, 0, 1],  # Node 2: connects to 0,1,4
+    [0, 1, 0, 0, 1],  # Node 3: connects to 1,4
+    [0, 0, 1, 1, 0]   # Node 4: connects to 2,3
+])
+```
+
+- *How would you count the degree of node 1 from this matrix?*
+- *How would you find the neighbors of node 1?*
+
+## Implementing Euler's Theorem 🧮
+
+```python
+def has_euler_path(adjacency_matrix):
+    # Calculate degrees
+    degrees = adjacency_matrix.sum(axis=1)
+
+    # Count odd degrees
+    odd_count = sum(1 for d in degrees if d % 2 == 1)
+
+    # Euler's condition
+    return odd_count == 0 or odd_count == 2
+```
+
+*Do you agree with this?*
+
+## The Missing Piece: Connectivity ⚖️
+
+::: {.callout-tip title = "Revisit"}
+An Euler path exists if and only if:
+
+1. **The graph is connected** ← We forgot this!
+2. **Exactly 0 or 2 nodes have odd degree**
+
+:::
+
+# Module 01 Review 🎯
+
+
+---
+
+::: {.incremental}
+- **Euler's legacy** (1736)
+  - Abstraction over physical details
+  - Focus on relationships $\rightarrow$ Birth of graph theory
+- **Euler's theorem**
+  - [Euler path]{.red-text} exists if and only if the graph is [connected]{.red-text} and exactly 0 or 2 nodes have odd [degree]{.red-text}
+- **Key concepts**:
+  - Path, walk, trail, circuit, cycle
+  - Connected component, giant component, degree
+- **Computational Representation**
+  - Edge table, adjacency list, adjacency matrix
+:::
+
+---
+
+::: {.incremental}
+- **Walk**
+  - Any sequence of connected nodes
+- **Trail**
+  - Walk without repeated edges
+- **Path**
+  - Walk without repeated nodes
+- **Circuit/Cycle:**
+  - Closed versions that return to start
+- [Is a path always a trail 🤔?]{.blue-text}
+  - [Yes. Path does not repeat edges.]{.blue-text}
+:::
+
+---
+
+::: {.incremental}
+- **Connected**
+  - A network where there is a path between every pair of nodes
+- **Connected component**
+  - A maximal set of nodes where every node can reach every other node within that set
+- **Giant component**
+  - A connected component where almost every node in the network is reachable from any other node in the component
+- **Strongly connected**
+  - A network where every node can reach every other node following edge directions
+- **Weakly connected**
+  - A network where there is a path between every pair of nodes ignoring edge directions
+:::
+
+---
+
+::: {.incremental}
+- **Euler path**
+  - A path that visits each edge exactly once
+- **Euler circuit**
+  - An Euler path that starts and ends at the same node
+- [What is the condition for the existence of an Euler circuit?]{.blue-text}
+  - [Graph is connected and all nodes have even degree.]{.blue-text}
+:::
+
+---
+
+## Representation of Networks
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+**Edge Table**
+```python
+edges = [
+    (0, 1),
+    (1, 2),
+    (2, 3)
+]
+```
+*Best for:* Storage, I/O
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency List**
+```python
+neighbors = {
+    0: [1],
+    1: [0, 2],
+    2: [1, 3]
+}
+```
+*Best for:* Neighbor search
+
+:::
+
+::: {.column width="33%"}
+
+**Adjacency Matrix**
+```python
+matrix = np.array([
+    [0, 1, 0],
+    [1, 0, 1],
+    [0, 1, 0]
+])
+```
+*Best for:* Math operations
+
+:::
+
+::::
+
+**My recommendation:**
+
+Use edge table for saving the network data. Use (sparse) adjacency matrices for analysis.
+
+## Coming up in Module 02:
+
+**Small world networks**
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](https://arc-anglerfish-arc2-prod-bostonglobe.s3.amazonaws.com/public/KAFMHCBENYI6HMSJRGIHNL55SU.jpg)
+
+:::
+
+
+::: {.column width="50%"}
+
+Almost all 8 billion people on the planet are your friends of friends of friends of friends of friends of friends.
+
+:::
+
+:::

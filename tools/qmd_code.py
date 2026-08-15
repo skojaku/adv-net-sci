@@ -15,9 +15,9 @@ to-figs    Write all python cells into a single flat script that saves each
 
 Usage
 -----
-    python tools/qmd_code.py list docs/lecture-note/m05-clustering/02-coding.qmd
+    python tools/qmd_code.py list lecture-note/m05-clustering/02-coding.qmd
     python tools/qmd_code.py to-ipynb <in.qmd> -o notebooks/m05-clustering/coding.ipynb
-    python tools/qmd_code.py to-figs <in.qmd> -o docs/lecture-note/figs/src/m05.py --prefix m05
+    python tools/qmd_code.py to-figs <in.qmd> -o lecture-note/figs/src/m05.py --prefix m05
 """
 
 from __future__ import annotations
@@ -137,7 +137,7 @@ def cmd_to_figs(args) -> None:
         '"""Regenerate the static figures for this module.',
         "",
         f"Extracted from {args.qmd}.",
-        "Run from the repository root; writes SVGs into docs/lecture-note/figs/.",
+        "Run from the repository root; writes SVGs into lecture-note/figs/.",
         '"""',
         "",
         "import matplotlib",

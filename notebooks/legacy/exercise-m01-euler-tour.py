@@ -25,7 +25,7 @@ def _(mo):
     1. Create a network of landmasses and bridges of Binghamton, NY.
     2. Find an Euler path that crosses all the bridges of Binghamton, NY exactly once.
 
-    ![Binghamton Map](https://github.com/skojaku/adv-net-sci/raw/main/docs/lecture-note/figs/binghamton-map.jpg)
+    ![Binghamton Map](https://github.com/skojaku/adv-net-sci/raw/main/lecture-note/figs/binghamton-map.jpg)
     """)
     return
 

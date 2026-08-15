@@ -3,14 +3,14 @@
 Every rule below is extracted from the eight existing sheets. Quotes are verbatim.
 
 Sources:
-- `docs/lecture-note/m02-small-world/pen-paper-csr/exercise.tex` — network representations / CSR
-- `docs/lecture-note/m03-robustness/pen-and-paper/exercise.tex` — MST, attacks, redesign
-- `docs/lecture-note/m04-node-degree/pen-and-paper/exercise.tex` — data visualization, log scales, CCDF
-- `docs/lecture-note/m05-clustering/pen-and-paper/exercise.tex` — pseudo-cliques, cuts
-- `docs/lecture-note/m06-centrality/pen-and-paper/exercise.tex` — centrality
-- `docs/lecture-note/m07-random-walks/pen-and-paper/exercise.tex` — random walks, stationary distribution
-- `docs/lecture-note/m08-embedding/pen-and-paper/exercise.tex` — outer products, matrix factorization, word co-occurrence
-- `docs/lecture-note/m09-graph-neural-networks/pen-and-paper/exercise.tex` — convolution, spectra
+- `lecture-note/m02-small-world/pen-paper-csr/exercise.tex` — network representations / CSR
+- `lecture-note/m03-robustness/pen-and-paper/exercise.tex` — MST, attacks, redesign
+- `lecture-note/m04-node-degree/pen-and-paper/exercise.tex` — data visualization, log scales, CCDF
+- `lecture-note/m05-clustering/pen-and-paper/exercise.tex` — pseudo-cliques, cuts
+- `lecture-note/m06-centrality/pen-and-paper/exercise.tex` — centrality
+- `lecture-note/m07-random-walks/pen-and-paper/exercise.tex` — random walks, stationary distribution
+- `lecture-note/m08-embedding/pen-and-paper/exercise.tex` — outer products, matrix factorization, word co-occurrence
+- `lecture-note/m09-graph-neural-networks/pen-and-paper/exercise.tex` — convolution, spectra
 
 ---
 

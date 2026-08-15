@@ -1,0 +1,338 @@
+/* @theme network-science */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap');
+
+/* 1280x720 (16:9). All sizes are the 1920px design values / 1.5 */
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 40px 80px 60px;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.42;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ---------- headings ---------- */
+
+section h2 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.12;
+  /* A KaTeX line box is taller than a text one, so the eight headings containing math
+     pushed their own title and rule 16px below every other slide's -- measured across
+     the deck: title ink at y=42 and rule at y=103 everywhere except those eight, which
+     sat at 47 and 119. Pinning the height stops maths growing the box. */
+  height: 45px;
+  letter-spacing: -0.02em;
+  color: #000000;
+  flex: none;
+}
+
+/* the rule under every content title — use <hr> on the same slide, not --- */
+section h2 + hr {
+  border: 0;
+  height: 2px;
+  background: #dddddd;
+  margin: 18px 0 22px;
+  flex: none;
+  width: 100%;
+}
+
+section h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3959A6;
+}
+
+/* ---------- title slide ---------- */
+
+section.lead {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 34px;
+}
+section.lead h1 {
+  margin: 0;
+  font-size: 90px;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: #000000;
+}
+section.lead hr {
+  border: 0;
+  width: 290px;
+  height: 4px;
+  background: #3959A6;
+  margin: 0;
+}
+section.lead .eyebrow {
+  font-size: 21px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+section.lead .sub {
+  font-size: 33px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  max-width: 870px;
+}
+section.lead .credit {
+  font-size: 23px;
+  letter-spacing: 0.1em;
+  color: #6b6b6b;
+}
+
+/* ---------- part dividers ---------- */
+
+section.part {
+  padding: 0;
+  justify-content: center;
+}
+section.part .band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #3959A6;
+  color: #ffffff;
+  padding: 36px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+section.part .band .count { opacity: 0.72; letter-spacing: 0.1em; }
+section.part h2 {
+  margin: 0 80px;
+  font-size: 67px;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  max-width: 1000px;
+  /* `section h2` pins height to 45px for the single-line 40px content title, so a
+     two-line part title (67px, line-height 1.08) overflowed that box and the
+     paragraph below started inside the overflow, printing its first line on top
+     of the title's wrapped second line. Part titles size to their own content. */
+  height: auto;
+}
+section.part p {
+  margin: 32px 80px 0;
+  font-size: 31px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  max-width: 900px;
+}
+
+/* Shallow slides: centre the BODY in the space under the rule, and leave the
+   title where it always is. Centring the whole section pushed the title down
+   the frame, so a `mid` slide's heading no longer lined up with its neighbours'.
+   The auto margins put the slack above and below the body block only.
+   Add `<!-- _class: mid -->` to the slide. */
+section.mid { justify-content: flex-start; }
+section.mid > h2 + hr { margin-bottom: auto; }
+section.mid > :last-child { margin-bottom: auto; }
+
+/* ---------- body ---------- */
+
+section p {
+  margin: 0 0 20px;
+  max-width: 1080px;
+  text-wrap: pretty;
+}
+section p:last-child { margin-bottom: 0; }
+
+section ul, section ol {
+  margin: 0 0 20px;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+section ul:last-child, section ol:last-child { margin-bottom: 0; }
+section li { line-height: 1.42; }
+section li::marker { color: #3959A6; }
+
+/* Key terms. The deck already bolds exactly the terms worth colouring, so
+   `strong` carries the highlight. Blue is structural (rules, part bands, list
+   markers), gold is auxiliary, so the accent that reads as emphasis is the red. */
+strong { font-weight: 700; color: #B14434; }
+em { font-style: italic; }
+a { color: #3959A6; text-decoration: none; }
+a:hover { color: #22336b; }
+
+/* annotations / secondary copy — slightly gray */
+section .note,
+section blockquote {
+  font-size: 27px;
+  line-height: 1.45;
+  color: #6b6b6b;
+  margin: 14px 0 26px;
+  border: 0;
+  padding: 0;
+  max-width: 1080px;
+}
+section .note:last-child, section blockquote:last-child { margin-bottom: 0; }
+
+/* lecturer's cues — readable from the lectern, not from the back row.
+   Wrap your own prompting bullets in <div class="cue"> … </div>. Body size,
+   so it is easy to read up close; near-white, so the room reads it as texture
+   rather than text. #d2d2d2 is fainter than the page number (#b3b3b3) —
+   darken it if your projector washes out, lighten it if the room sees it. */
+section .cue,
+section .cue p,
+section .cue li,
+section .cue strong {
+  color: #d2d2d2;
+  font-weight: 400;
+}
+section .cue li::marker { color: #d2d2d2; }
+
+/* handwriting, for figure labels and captions */
+section .hand,
+section figcaption {
+  font-family: 'Caveat', cursive;
+  font-size: 30px;
+  color: #6b6b6b;
+}
+
+/* ---------- formula panel ---------- */
+
+section .formula {
+  background: #f7f4f1;
+  padding: 22px 28px;
+  margin: 0 0 22px;
+  font-size: 30px;
+}
+section .formula:last-child { margin-bottom: 0; }
+section .katex { color: #000000; }
+section .katex-display { margin: 0; }
+
+/* labelled derivation rows: | LABEL | formula | */
+section table.steps,
+section table.steps td { border: 0; }
+section table.steps td:first-child {
+  width: 210px;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3959A6;
+  vertical-align: middle;
+}
+
+/* ---------- tables ---------- */
+
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 24px;
+}
+section th {
+  text-align: left;
+  padding: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+}
+section td {
+  padding: 17px 0;
+  border-bottom: 1px solid #eeeeee;
+  color: #000000;
+}
+
+/* ---------- utility layout ---------- */
+
+section .cols {
+  display: grid;
+  /* minmax(0, 1fr), not 1fr: a `1fr` track is minmax(auto, 1fr), so an
+     unbreakable element in one column -- a wide LaTeX formula, say -- widens
+     its own track and steals room from the figure beside it. That made the
+     figure column 370px on one slide and 537px on every other. Pinning the
+     minimum to 0 keeps both columns at (1120 - 46) / 2 = 537px always. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 46px;
+  /* center, not start: a text column two lines shorter than the figure beside it
+     left an empty wedge bottom-left on eight slides of m02, measured at 150-208px.
+     `_class: mid` cannot fix that -- it centres the whole body block, so both
+     columns move together and the wedge moves with them. The columns have to be
+     centred against each other. */
+  align-items: center;
+}
+section .cols3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+section .fig { min-width: 0; display: flex; flex-direction: column; align-items: center; }
+section .fig img {
+  max-width: 100%;
+  max-height: 380px;
+  width: auto !important;   /* defeats Marp's inline width:NNNpx */
+  height: auto;
+}
+/* modifiers: use when text above the figure eats the row */
+section .fig.tight img { max-height: 320px; }
+/* modifier: use on the deck's one .fig holding two stacked images */
+section .fig.stack img { max-height: 190px; }
+
+/* three-up statistic row */
+section .stats {
+  display: flex;
+  gap: 46px;
+  flex: 1;
+  align-items: center;
+}
+section .stats > div {
+  flex: 1;
+  border-left: 4px solid #3959A6;
+  padding-left: 29px;
+}
+section .stats .n {
+  font-size: 74px;
+  line-height: 1;
+  color: #000000;
+}
+section .stats .cap {
+  margin-top: 14px;
+  font-size: 23px;
+  line-height: 1.4;
+  color: #6b6b6b;
+}
+
+/* numbered takeaway list */
+section .steps-list { display: flex; flex-direction: column; gap: 26px; }
+section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
+section .steps-list .i { font-size: 25px; color: #3959A6; flex: none; }
+
+/* secondary accents — use only where a contrast carries meaning */
+.accent-2 { color: #B14434; }
+.accent-3 { color: #DAB167; }
+
+/* pagination */
+section::after {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 16px;
+  color: #b3b3b3;
+  right: 80px;
+  bottom: 24px;
+}
+section.lead::after,
+section.part::after { display: none; }

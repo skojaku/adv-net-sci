@@ -1,4 +1,45 @@
-# LaTeX
+# ---------------------------------------------------------------------------
+# Rule of thumb: if a script or a build command can produce it, it does not
+# belong in git. Sources only.
+# ---------------------------------------------------------------------------
+
+# --- Quarto / lecture note build output ------------------------------------
+lecture-note/_site/
+lecture-note/_freeze/
+lecture-note/site_libs/
+lecture-note/_book/
+lecture-note/.quarto/
+lecture-note/**/__marimo__/
+/.quarto/
+/_site/
+_book/
+
+# Figures built by tools/build_figures.sh from lecture-note/figs/src/*.py.
+# Everything else in figs/ is hand-made art with no generator — keep it.
+lecture-note/figs/*.svg
+
+# --- Slides -----------------------------------------------------------------
+# Marp/Quarto renders, review screenshot sweeps, and script-built figures.
+# The .md under review/ are design specs and fix logs — those are sources.
+slides/**/review/*.png
+slides/**/review/*.json
+slides/**/review/small/
+slides/**/*_files/
+slides/**/figures/*.png
+slides/**/figures/*.gif
+slides/**/figures/*.svg
+slides/**/figures/data/
+# ...but these are hand-placed photographs and portraits with no generator.
+!slides/intro/figures/flue-01.png
+!slides/intro/figures/flue-02.png
+!slides/intro/figures/xkcd_dependency.png
+!slides/m01/figures/konigsberg-map.png
+!slides/m01/figures/connected-component.jpg
+!slides/m02/figures/milgram-route.png
+!slides/m02/figures/six-degrees-poster.jpg
+!slides/m03/figures/boruvka-portrait.png
+
+# --- LaTeX ------------------------------------------------------------------
 *.aux
 *.bbl
 *.blg
@@ -10,50 +51,43 @@
 *.fdb_latexmk
 *.out
 *.run.xml
-main.pdf
-supp.pdf
 *.log
+*.xdv
 
-# Data files
+# --- Binaries and data ------------------------------------------------------
+# Worksheet and syllabus PDFs are force-added (`git add -f`); they are the
+# artifact students download and nothing in CI rebuilds them.
+*.pdf
 *.csv
 *.tsv
 *.txt
-
-# Office files
 *.docx
 *.doc
 *.ppt
 *.pptx
 *.xls
 *.xlsx
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Large files
-*.bin.gz
 *.bin
+*.bin.gz
 *.gz
-*.pdf
+*.zip
 
-# Snakemake
+# --- Local scratch ----------------------------------------------------------
+assignments/
+tmp/
+tools/tmp/
+.venv-figs/
+marimo.toml
 .snakemake
 workflow/config.yaml
-
-# Others
-.DS_Store
+*.bak
 *.un~
+.DS_Store
 
-###################### Standard Python gitignore
-
-# Byte-compiled / optimized / DLL files
+# --- Python -----------------------------------------------------------------
 __pycache__/
 *.py[cod]
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 env/
 build/
@@ -67,68 +101,13 @@ parts/
 sdist/
 var/
 *.egg-info/
-.installed.cfg
 *.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
+.installed.cfg
+.ipynb_checkpoints/
 .tox/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
+htmlcov/
 coverage.xml
-*,cover
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# JupyBook
-_build
-
-#
-.xdv
-
-assignments/*
-
-/.quarto/
-/_site/
-
-**_book/*
-_book/
-
-marimo.toml
-
-*.bak
-
-# Quarto / lecture-note build artifacts
-docs/lecture-note/_site/
-docs/lecture-note/.quarto/
-
-# Local scratch: student submissions, graded clones, downloads
-tools/tmp/
-.venv-figs/
-
-# rendered slide review images (regenerate with `python3 -m gatelib review`)
-docs/slide/*/review/slide.*.png
-docs/slide/*/review/*/
+nosetests.xml

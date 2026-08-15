@@ -1,5 +1,11 @@
 # Sadamori Kojaku's Slide Writing Style Guide
 
+> **Scope.** The pedagogy below applies to every deck. The *technical* syntax in
+> this file (Quarto revealjs, `:::` callouts, `.incremental`) describes the
+> legacy decks in `slides/legacy/`. New decks are Marp — see
+> `slides/DECK_BUILD_GUIDE.md`, `slides/SLIDE_RUBRIC.md`, and
+> `slides/FIGURE_GUIDE.md`.
+
 ## Interactive Teaching Philosophy
 When creating slides for Sadamori, follow his interactive, step-by-step narrative approach:
 - **Context → Question → Discussion → Content** pattern throughout
@@ -77,8 +83,9 @@ Use incremental display for building suspense:
 ```
 
 **Use local lecture note figures when possible:**
-- Path: `../lecture-note/m01-euler_tour/tikz-tex/[hash]/[hash].svg`
-- Path: `../lecture-note/figs/[filename].jpg`
+- Path: `../lecture-note/figs/[filename].jpg` (hand-made art, committed)
+- The `.svg` in that directory are built by `tools/build_figures.sh` from
+  `lecture-note/figs/src/*.py` and are **not** committed — run the script first.
 
 ### 5. Content Style
 

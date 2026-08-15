@@ -10,7 +10,7 @@ Run from the repository root:  python3 tools/make_handson_pages.py
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-NOTE = ROOT / "docs/lecture-note"
+NOTE = ROOT / "lecture-note"
 
 HOW = {
     "wasm": "It runs in your browser — nothing to install, nothing to sign into. "

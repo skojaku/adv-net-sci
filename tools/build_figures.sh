@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Regenerate every static figure used by the lecture note.
 #
-# The lecture note contains no executable code, so its figures are committed
-# SVGs. This script rebuilds them from the scripts in
-# docs/lecture-note/figs/src/. Run it whenever one of those scripts changes;
-# the note itself never needs a Python environment.
+# The lecture note contains no executable code, so its figures are plain SVGs
+# built ahead of the render. They are NOT committed — CI runs this script
+# before `quarto render`, and so should you after a fresh clone.
+# Everything else in lecture-note/figs/ is hand-made art with no generator.
 #
 # Usage:  bash tools/build_figures.sh
 #
@@ -15,8 +15,16 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SRC=docs/lecture-note/figs/src
-OUT=docs/lecture-note/figs
+SRC=lecture-note/figs/src
+OUT=lecture-note/figs
+
+# Prefer the local figure venv when it exists; CI installs the deps into the
+# ambient interpreter instead.
+if [ -x .venv-figs/bin/python ]; then
+  PY=.venv-figs/bin/python
+else
+  PY=python3
+fi
 
 if [ ! -d "$SRC" ]; then
   echo "no figure sources at $SRC" >&2
@@ -27,7 +35,7 @@ fail=0
 for f in "$SRC"/*.py; do
   [ -e "$f" ] || continue
   echo "=== $f"
-  if ! python3 "$f"; then
+  if ! "$PY" "$f"; then
     echo "!!! FAILED: $f" >&2
     fail=1
   fi
