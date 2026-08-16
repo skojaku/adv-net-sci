@@ -27,7 +27,7 @@ In what sense do we say a node is important?
 That vagueness is not a defect to be tidied away. It is the subject. Every measure in this module is one precise answer to "important in what sense?", and they are built to disagree with each other.
 
 ::: {.callout-note title="Do this first, with a pencil"}
-[Who's the Big Cheese in the University Clubs?](./pen-and-paper/exercise.pdf) — rank the members of a small club network by hand before you read a single formula.
+[Who's the Big Cheese in the University Clubs?](./pen-and-paper/exercise.pdf) — thirteen students in eight clubs. Rank them by hand, four different ways, before you read a single formula. Four questions, three different winners.
 :::
 
 ### One small network, carried through the whole module
@@ -36,7 +36,63 @@ Every measure below is worked on the same five-node network, so you can compare 
 
 **Nodes** 1, 2, 3, 4, 5. **Edges** 1–2, 1–3, 2–3, 3–4, 4–5.
 
-Node 3 sits in a triangle with 1 and 2, and it also holds the only link to the tail 4–5. Node 5 dangles off the end. Sketch it on paper — it takes ten seconds, and every number in this module refers back to it.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The running example, drawn once. A still picture, not an animation: it uses
+   the kit's paper and pen (assets/anim.css) and nothing from the sequencer.
+   The only rules here are the two the kit lacks — a label printed inside a
+   node, and a small annotation in the margin of the drawing.
+   -------------------------------------------------------------------------- */
+#five-net { --anim-svg-max: 440px; --anim-knockout-w: 3px; }
+#five-net .fn-in {
+  font-family: var(--_hand);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--_white);
+}
+#five-net .fn-tag { font-family: var(--_hand); font-size: 12px; fill: var(--_ink-soft); }
+#five-net .fn-lead { stroke: var(--_ink-faint); stroke-width: 1; stroke-dasharray: 3 3; }
+</style>
+
+<figure class="anim-stage" id="five-net">
+  <svg class="anim-svg" viewBox="0 0 320 160" role="img"
+       aria-label="Five nodes. Nodes 1, 2 and 3 form a triangle. Node 3 also joins to node 4, and node 4 joins to node 5, making a two-step tail off the triangle.">
+    <g>
+      <line class="anim-edge" x1="60" y1="40" x2="60" y2="114"></line>
+      <line class="anim-edge" x1="60" y1="40" x2="135" y2="77"></line>
+      <line class="anim-edge" x1="60" y1="114" x2="135" y2="77"></line>
+      <line class="anim-edge" x1="135" y1="77" x2="212" y2="77"></line>
+      <line class="anim-edge" x1="212" y1="77" x2="285" y2="77"></line>
+    </g>
+    <g>
+      <circle class="anim-node" cx="60" cy="40" r="15"></circle>
+      <circle class="anim-node" cx="60" cy="114" r="15"></circle>
+      <circle class="anim-node" cx="135" cy="77" r="15"></circle>
+      <circle class="anim-node" cx="212" cy="77" r="15"></circle>
+      <circle class="anim-node" cx="285" cy="77" r="15"></circle>
+    </g>
+    <g>
+      <text class="fn-in" x="60" y="45" text-anchor="middle">1</text>
+      <text class="fn-in" x="60" y="119" text-anchor="middle">2</text>
+      <text class="fn-in" x="135" y="82" text-anchor="middle">3</text>
+      <text class="fn-in" x="212" y="82" text-anchor="middle">4</text>
+      <text class="fn-in" x="285" y="82" text-anchor="middle">5</text>
+    </g>
+    <g>
+      <line class="fn-lead" x1="146" y1="128" x2="137" y2="97"></line>
+      <text class="fn-tag anim-knockout" x="60" y="16" text-anchor="middle">the triangle</text>
+      <text class="fn-tag anim-knockout" x="248" y="55" text-anchor="middle">the tail</text>
+      <text class="fn-tag anim-knockout" x="158" y="140" text-anchor="middle">the only way across</text>
+    </g>
+  </svg>
+  <figcaption class="anim-note">
+    The network every number in this module refers to. Node 3 sits in the
+    triangle with 1 and 2, <em>and</em> holds the only link to the tail; node 5
+    dangles off the end. Copy it once and keep it beside you.
+  </figcaption>
+</figure>
+```
 
 A network that small does not argue with itself. Whatever you ask of it, node 3
 answers: most connections, shortest distances to everyone, most paths running
@@ -513,6 +569,10 @@ On our five-node network: $d_1 = 2$, $d_2 = 2$, $d_3 = 3$, $d_4 = 2$, $d_5 = 1$.
 
 ![Degree centrality on a larger example. Darker, larger nodes have more direct connections.](../figs/degree.svg){#fig-degree}
 
+::: {.callout-note title="About the grey panels" collapse="true"}
+Every panel like the one above shows the *same* ten-node network — a different, bigger network from our five-node example, and one whose nodes are numbered 0 to 9 because that is how Python counts. Their job is to show how a measure spreads across a network at a glance. The numbers you can check by hand are the five-node ones in the running text.
+:::
+
 Degree centrality is a no brainer measure of centrality. It is also crude: it counts how many neighbors a node has and ignores entirely who those neighbors are.
 
 ## The Golden Milestone: central means close to everyone
@@ -634,7 +694,236 @@ $$
 
 and they stop moving. This repeat-and-rescale procedure is called **power iteration**, and it is all you need to compute eigenvector centrality in practice.
 
-<!-- TODO(anim): the score-passing rounds on the five-node network, one round per click, with the bars rescaled each round. -->
+"They settle" is a claim you should not have to take on faith. Step through the
+rounds below. The white digit inside a node is its name; the coloured number
+beside it is its score for that round; the bar underneath is that same score
+divided by the largest score of the round. Watch the raw numbers and the bars
+behave completely differently.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Score passing on the five-node network. Same drawing as the still figure at
+   the top of the page, now carrying numbers. Paper, pen, buttons, motion and
+   the sequencer all come from assets/anim.css + assets/anim.js; the rules
+   below are only what this figure adds — a label printed inside a node, a
+   score printed beside it, and the bar row.
+   -------------------------------------------------------------------------- */
+#score-pass { --anim-svg-max: 420px; --anim-knockout-w: 3px; }
+
+/* A node is a <g> holding a unit circle, so "how big is this score" is a
+   transform. Its identity number lives in a separate, unscaled layer. */
+#score-pass .sp-node { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+#score-pass .sp-node circle { vector-effect: non-scaling-stroke; }
+/* Node 3 leads every round, so it wears the contrast colour — and so does its
+   bar, which is the only pairing the eye has to make. */
+#score-pass .sp-king { fill: var(--_amber); }
+#score-pass .sp-id {
+  font-family: var(--_hand);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--_white);
+}
+/* The white digit inside a node is its name; the coloured digit beside it is
+   its score. Two different jobs, so two different inks. */
+#score-pass .sp-score { font-family: var(--_hand); font-size: 14px; font-weight: 700; fill: var(--_accent); }
+#score-pass .sp-tick { font-family: var(--_hand); font-size: 11px; fill: var(--_ink-soft); }
+#score-pass .sp-val { font-family: var(--_hand); font-size: 11px; fill: var(--_ink-soft); }
+
+/* The bars carry the rescaled score. Scaling a <g> vertically is the one way
+   to get a height change that animates everywhere without help. */
+#score-pass .sp-bar { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+#score-pass .sp-cap { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  #score-pass .sp-node,
+  #score-pass .sp-bar,
+  #score-pass .sp-cap { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="score-pass">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous round">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next round">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-sp-net></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Score passing, one round per step. Every number below was produced by
+   multiplying the adjacency matrix of the five-node network by the previous
+   column — the same arithmetic the table above shows for rounds 0 to 3 — and
+   pasted in. Nothing here runs a graph algorithm. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* Same five nodes, same shape as the still figure at the top of the page. */
+  const NODE  = [[75,55],[75,140],[160,98],[245,98],[320,98]];
+  /* Where the raw score is printed: above node 1, 4 and 5; below node 2 and 3. */
+  const SLOT  = [[75,26],[75,177],[160,139],[245,68],[320,68]];
+  const EDGE  = [[0,1],[0,2],[1,2],[2,3],[3,4]];
+
+  const COL = [66,132,198,264,330], BASE = 280, TALL = 85, WIDE = 40;
+
+  /* raw: the score printed beside each node. bar: that score divided by the
+     largest of its own round, which is what the bar height shows.
+       round 1  2 2 3 2 1        round 4   25  25  30 18  8
+       round 2  5 5 6 4 2        round 5   55  55  68 38 18
+       round 3  11 11 14 8 4     round 6  123 123 148 86 38
+     Rounds 4 and 5 are skipped on screen so the jump is visible; the settled
+     row is the principal eigenvector, largest entry scaled to 1. */
+  const R = [
+    { lab: "Everyone starts with one point",
+      raw: ["1","1","1","1","1"],
+      bar: [1, 1, 1, 1, 1],
+      note: "Five nodes, five equal scores. The bar under each node is its score divided by the largest score of the round, so at the start every bar is full. Nothing has been passed yet." },
+    { lab: "Round 1: add up your neighbours",
+      raw: ["2","2","3","2","1"],
+      bar: [2/3, 2/3, 1, 2/3, 1/3],
+      note: "Each node throws its own score away and takes the sum of its neighbours' scores. Starting from all ones, that is simply the number of neighbours — 2, 2, 3, 2, 1. Round one of this game is degree centrality." },
+    { lab: "Round 2",
+      raw: ["5","5","6","4","2"],
+      bar: [5/6, 5/6, 1, 4/6, 2/6],
+      note: "Node 4's bar drops below nodes 1 and 2 — and all three have exactly two neighbours. Node 4 spends one of its two on node 5, a dead end, while nodes 1 and 2 feed each other and the hub. Degree can no longer tell them apart; this can." },
+    { lab: "Round 3",
+      raw: ["11","11","14","8","4"],
+      bar: [11/14, 11/14, 1, 8/14, 4/14],
+      note: "The raw scores have grown from 1 to 14 in three rounds. The bars have barely moved since round 2." },
+    { lab: "Round 6",
+      raw: ["123","123","148","86","38"],
+      bar: [123/148, 123/148, 1, 86/148, 38/148],
+      note: "Three rounds later the raw scores are past a hundred and still climbing. The bars are almost exactly where they were at round 3. That gap between the two is the whole trick." },
+    { lab: "It has stopped moving",
+      raw: ["0.82","0.82","1.00","0.57","0.26"],
+      bar: [0.824, 0.824, 1, 0.567, 0.256],
+      note: "The raw scores have been dropped; the numbers beside the nodes are now the settled bar heights themselves. One more round from here multiplies every score by 2.21 and changes nothing else. Those five heights are the eigenvector centrality." }
+  ];
+
+  const scenes = R.map(function (r, k) {
+    return {
+      label: r.lab,
+      note: r.note,
+      async run(ctx) {
+        if (k === 0) ctx.draw();
+        await ctx.sleep(k === 0 ? 700 : 200);
+        ctx.setRound(k);
+        await ctx.sleep(k === 0 ? 2400 : 3200);
+      }
+    };
+  });
+
+  mountScenes(document.getElementById("score-pass"), scenes, {
+    stepsLabel: "Passing the scores around",
+
+    /* No [data-anim-clear] inside the canvas, on purpose: the drawing is built
+       once and every later round only re-sizes it. */
+    helpers(ctx) {
+      const host = ctx.$("[data-sp-net]");
+      const S = { built: false };
+
+      function draw() {
+        if (S.built) return;
+        host.textContent = "";
+        const svg = ctx.svgRoot("34 8 336 300");
+        const g = function () { return svg.appendChild(ctx.svgEl("g")); };
+        const gEdge = g(), gNode = g(), gId = g(), gScore = g(), gBar = g();
+
+        EDGE.forEach(function (e) {
+          gEdge.appendChild(ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge"
+          }));
+        });
+
+        S.nodes = NODE.map(function (q, i) {
+          const gg = ctx.svgEl("g", { "class": "sp-node" });
+          gg.style.transform = "translate(" + q[0] + "px," + q[1] + "px) scale(1.6)";
+          gg.appendChild(ctx.svgEl("circle",
+            { r: 10, "class": "anim-node" + (i === 2 ? " sp-king" : "") }));
+          return gNode.appendChild(gg);
+        });
+
+        NODE.forEach(function (q, i) {
+          const t = ctx.svgEl("text",
+            { x: q[0], y: q[1] + 4.5, "text-anchor": "middle", "class": "sp-id" });
+          t.textContent = String(i + 1);
+          gId.appendChild(t);
+        });
+
+        S.score = SLOT.map(function (q) {
+          const t = ctx.svgEl("text",
+            { x: q[0], y: q[1], "text-anchor": "middle", "class": "anim-knockout sp-score" });
+          return gScore.appendChild(t);
+        });
+
+        gBar.appendChild(ctx.svgEl("line",
+          { x1: 40, y1: BASE, x2: 356, y2: BASE, "class": "anim-axis" }));
+
+        S.bars = []; S.caps = [];
+        COL.forEach(function (cx, i) {
+          const b = ctx.svgEl("g", { "class": "sp-bar" });
+          b.style.transform = "translate(" + cx + "px," + BASE + "px) scale(1,1)";
+          b.appendChild(ctx.svgEl("rect", {
+            x: -WIDE / 2, y: -TALL, width: WIDE, height: TALL,
+            rx: 3, "class": i === 2 ? "anim-amber-fill" : "anim-accent-fill"
+          }));
+          gBar.appendChild(b);
+          S.bars.push(b);
+
+          const c = ctx.svgEl("g", { "class": "sp-cap" });
+          const t = ctx.svgEl("text",
+            { x: cx, y: BASE - TALL - 7, "text-anchor": "middle", "class": "anim-knockout sp-val" });
+          c.appendChild(t);
+          gBar.appendChild(c);
+          S.caps.push({ box: c, txt: t });
+
+          const lbl = ctx.svgEl("text",
+            { x: cx, y: BASE + 15, "text-anchor": "middle", "class": "sp-tick" });
+          lbl.textContent = "node " + (i + 1);
+          gBar.appendChild(lbl);
+        });
+
+        host.appendChild(svg);
+        host.appendChild(ctx.el("div", "anim-caption",
+          "Top: the network. The white digit inside a node is its name; the coloured number beside it is its score this round, and its size is that score rescaled. Bottom: the same rescaled scores as bars."));
+        S.built = true;
+      }
+
+      /* Pure lookup: every number on screen is an array entry. */
+      function setRound(k) {
+        if (!S.built) return;
+        const r = R[k];
+        S.nodes.forEach(function (gg, i) {
+          gg.style.transform = "translate(" + NODE[i][0] + "px," + NODE[i][1] +
+            "px) scale(" + (0.8 + 0.8 * r.bar[i]).toFixed(3) + ")";
+        });
+        S.score.forEach(function (t, i) { t.textContent = r.raw[i]; });
+        S.bars.forEach(function (b, i) {
+          b.style.transform = "translate(" + COL[i] + "px," + BASE +
+            "px) scale(1," + r.bar[i].toFixed(3) + ")";
+        });
+        S.caps.forEach(function (c, i) {
+          c.box.style.transform = "translate(0px," + (TALL * (1 - r.bar[i])).toFixed(1) + "px)";
+          c.txt.textContent = r.bar[i].toFixed(2);
+        });
+      }
+
+      return { draw, setRound };
+    }
+  });
+});
+</script>
+```
 
 Written as an equation, "settled" means that one more round of passing scores around only rescales the vector by some constant $\lambda$:
 
@@ -696,6 +985,17 @@ Notice what happens as $\alpha$ approaches the ceiling: the longest walks come t
 
 **PageRank** is the celebrated idea behind Google Search and can be seen as a cousin of Katz centrality.
 
+PageRank was invented for the Web, where a link has a *direction*: this page links to that one, not the other way round. That forces a convention on us, and it is the first time in this module that the order of the two indices matters.
+
+::: {.callout-important title="Which way does an edge point?"}
+From here on, $A_{ij} = 1$ means there is an edge **from $i$ to $j$**. Two sums that look almost identical then mean opposite things:
+
+- $\sum_j A_{ij}(\cdot)_j$ runs over the nodes that $i$ **points to**. Counting them gives $i$'s *out-degree*, $d^{\text{out}}_i = \sum_j A_{ij}$.
+- $\sum_j A_{ji}(\cdot)_j$ runs over the nodes that **point to** $i$. Counting them gives $i$'s *in-degree*, $d^{\text{in}}_i = \sum_j A_{ji}$.
+
+Every formula before this one summed over $A_{ij}$ and got away with it, because an undirected edge points both ways and the two sums are the same thing. PageRank is about score *arriving*, so it must sum over $A_{ji}$. Getting this index order right is the whole game in PageRank and in HITS.
+:::
+
 $$
 c_i = \underbrace{(1-r) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{score arriving from neighbors}} + \underbrace{r \cdot \frac{1}{N}}_{\text{teleportation}}
 $$
@@ -705,7 +1005,28 @@ The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided
 
 The teleportation term is what stops the traffic from getting stuck. With probability $r$ (typically 0.15) the visitor abandons the links entirely and jumps to a page chosen uniformly at random, which guarantees that every page keeps receiving some traffic and that the scores settle to a single answer.
 
-<!-- TODO(anim): traffic flowing along the edges of the five-node network, splitting evenly at each node, with a small fraction teleporting. -->
+#### PageRank on the five-node network
+
+Our little network is undirected, so every edge points both ways and $d^{\text{out}}_j$ is simply the degree $d_j$. Start every node with an equal share of the traffic, $c_i = 1/5 = 0.200$, and take $r = 0.15$. Now do one round by hand, for node 4:
+
+- Node 4 is pointed at by node 3 and by node 5.
+- Node 3 has three edges, so it splits its 0.200 three ways and sends $0.200/3 = 0.067$ along each. Node 5 has one edge, so it sends its whole $0.200/1 = 0.200$ to node 4.
+- Arriving in total: $0.067 + 0.200 = 0.267$. Keep 85% of it: $0.85 \times 0.267 = 0.227$.
+- Add the teleportation share, $0.15/5 = 0.030$.
+- New score: $0.227 + 0.030 = 0.257$.
+
+Do that for all five nodes, then again, and the traffic settles:
+
+| Round     | node 1 | node 2 | node 3 | node 4 | node 5 |
+| --------- | ------ | ------ | ------ | ------ | ------ |
+| 0         | 0.200  | 0.200  | 0.200  | 0.200  | 0.200  |
+| 1         | 0.172  | 0.172  | 0.285  | 0.257  | 0.115  |
+| 2         | 0.184  | 0.184  | 0.285  | 0.209  | 0.139  |
+| settled   | 0.192  | 0.192  | 0.283  | 0.213  | 0.120  |
+
+(Rounded to three decimals; the exact rows each add up to 1, because the scores are shares of one visitor's time.)
+
+Node 3 wins again — but look at node 4. Eigenvector centrality ranked this network $(0.82,\, 0.82,\, 1,\, 0.57,\, 0.26)$ and put node 4 **below** nodes 1 and 2. PageRank puts it **above** them, 0.213 against 0.192. The whole difference is the division by out-degree. Node 5 is a dead end with a single edge, so everything it has comes straight back to node 4 — all 0.120 of it. Node 2 has two edges, so node 1 only ever receives half of node 2's score, 0.096. Eigenvector centrality punished node 4 for spending half its links on an unimportant neighbor; PageRank rewards it, because an unimportant neighbor with nowhere else to go hands back everything it is given. Whether a dead-end friend is a liability or an asset depends on which of the two you asked.
 
 ::: {.column-margin}
 A visual walkthrough of the algorithm: [How PageRank works](https://www.youtube.com/watch?v=v7n7wZhHJj8).

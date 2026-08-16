@@ -849,24 +849,515 @@ Can you beat random vaccination by choosing targets this way? Try to control an 
 
 ## Why the Obvious Histogram Lies
 
-The very first step to understand degree distribution is to visualize it. But visualizing degree distribution is not as simple as it seems. Take for example, the following histogram of a degree distribution.
+The first thing anyone does with a degree distribution is plot it, and the obvious plot is a histogram: degree along the bottom, fraction of nodes up the side. On a heavy-tailed network that plot comes out very nearly blank.
 
-![A histogram of a scale-free degree distribution on a linear scale. It's nearly impossible to see the structure of the tail.](../figs/linear-hist.svg){#fig-linear-hist width=80%}
+Below is one network's worth of degrees: $N = 5{,}000$ nodes and $M = 10{,}890$ edges, so $\langle k \rangle = 2M/N = 4.36$. Sixty-two different degrees occur in it, from 2 up to a single node with 227 neighbors. Step through the figure, then drag the dial and watch those sixty-two bars unfold.
 
-This is a plot you would often see for a real-world network. Most nodes have a very small degree, so they are all crammed into the first few bins on the left. The long tail of high-degree nodes---which hold most edges in the network---is invisible because there are very few of them. This is the heavy tail we met earlier, seen through the wrong lens.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The log lens — only the rules this one widget needs. Paper, panels, buttons,
+   knob and motion all come from assets/anim.css; the sequencer from anim.js.
+   Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
 
-To solve this, we can plot the same histogram but with both axes on a logarithmic scale. This is called a **log–log plot**.
+/* A chart with two labelled axes and four decades of tick text needs the whole
+   column; the kit's 310px default is sized for a dozen-node diagram. */
+#log-lens [data-ll-chart], #log-lens [data-ll-side] { --anim-svg-max: 100%; }
 
-![The same degree histogram on a log-log scale. The structure becomes much clearer, revealing a roughly linear relationship.](../figs/loglog-hist.svg){#fig-loglog-hist width=80%}
+#log-lens .ll-bar   { fill: var(--_accent); fill-opacity: 0.72; stroke: var(--_accent); stroke-width: 0.3; }
+#log-lens .ll-tick  { stroke: var(--_ink); stroke-width: 1; }
+#log-lens .ll-tick-m{ stroke: var(--_ink-faint); stroke-width: 0.8; }
+#log-lens .ll-num   { font-family: var(--_hand); font-size: 8.2px; fill: var(--_ink-soft); }
+#log-lens .ll-cap   { font-family: var(--_hand); font-size: 8.6px; fill: var(--_ink); }
+#log-lens .ll-dot   { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.1; }
 
-<!-- TODO(anim): morph the linear histogram into the log-log one by sliding both axes from linear to logarithmic, so the reader sees the same data unfold into a straight line rather than comparing two separate pictures. -->
+/* The law the degrees were drawn from, the 1/N floor, and the tail they both
+   explain — all amber, because all three are the figure pointing at itself. */
+#log-lens .ll-ref   { stroke: var(--_amber); stroke-width: 1.8; fill: none; stroke-dasharray: 5 3; }
+#log-lens .ll-floor { stroke: var(--_amber); stroke-width: 1.3; stroke-dasharray: 2.5 2.5; }
+#log-lens .ll-band  { fill: var(--_amber); fill-opacity: 0.10; }
+#log-lens .ll-hand  { font-family: var(--_hand); font-size: 8px; fill: var(--_amber); font-weight: 700; }
+</style>
 
-A log–log plot (@fig-loglog-hist) makes both low- and high-degree nodes visible, revealing heavy-tailed patterns. If the tail is roughly linear, it suggests a power-law degree distribution: the probability a node has degree $k$ falls off as $k^{-\gamma}$. The slope of the line shows how quickly high-degree nodes become rare. A steeper slope (higher $\gamma$) means fewer hubs; a shallower slope means more.
-Interestingly, many real-world networks exhibit power-law(-like) degree distributions, whether they are biological, technical, or social. This universality of power-law degree distributions is one of the foundational insights of Network Science.
+<figure class="anim-stage" id="log-lens">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-ll-chart></div>
+    <div data-anim-clear data-ll-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One histogram, two rulers. Markup above, scenes below, and nothing in
+   between: the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing in
+     this file samples, fits, or runs a graph algorithm.
+
+     THE DEGREES. 5,000 nodes drawn from the discrete power law
+     p(k) = C k^-2.5 on k = 2 … 20000, by exact inverse-transform sampling:
+
+       import numpy as np
+       from collections import Counter
+       k   = np.arange(2, 20001, dtype=float)
+       w   = k ** -2.5
+       C   = 1 / w.sum()                       # 2.928369
+       cdf = np.cumsum(w / w.sum())
+       d   = np.searchsorted(cdf, np.random.default_rng(7).random(5000)) + 2
+       sorted(Counter(d.tolist()).items())     # -> DIST below
+
+     What comes out, all checkable against DIST by hand:
+       N = 5000, sum(k) = 21780, so M = 10890 and <k> = 4.356
+       62 distinct degrees, the largest 227; the sequence is graphical
+       2644 + 889 = 3533 nodes — 70.7% — sit in the first two bars
+       101 nodes (2.02%) have k > 20, and own 4723 of the 21780 edge
+         endpoints, 21.7%
+       21 of the 62 bins hold exactly one node
+       past k = 40 only 26 of the 188 possible degrees occur at all,
+         holding 35 nodes between them
+       the law itself: p(2) = 0.51767, p(200) = 0.0000051767, ratio 10^5,
+         and it crosses the 10^-4 floor of the y axis at k = 61.19
+     ------------------------------------------------------------------------ */
+  const DIST = [[2,2644],[3,889],[4,429],[5,278],[6,173],[7,119],[8,89],[9,54],[10,46],[11,45],[12,31],[13,16],[14,18],[15,21],[16,14],[17,10],[18,10],[19,9],[20,4],[21,7],[22,5],[23,3],[24,6],[25,5],[26,2],[27,5],[28,2],[29,2],[30,4],[31,1],[32,2],[33,4],[34,4],[35,7],[37,5],[39,2],[41,1],[42,4],[43,1],[44,2],[47,1],[49,1],[50,2],[53,1],[56,1],[57,2],[59,1],[63,1],[64,1],[71,1],[75,3],[77,2],[79,1],[85,1],[91,1],[98,1],[151,1],[153,1],[163,1],[183,1],[211,1],[227,1]];
+  const N = 5000, CFIT = 2.928369, GAM = 2.5, KREF = 61.19;
+
+  /* --- the plot area, and the two rulers laid over each axis -------------- */
+  const X0 = 34, X1 = 240, YT = 24, YB = 150;
+  const W = X1 - X0, H = YB - YT;
+  const KTOP = 250, LK = Math.log10(KTOP);   /* the x axis runs 0…250 / 1…250 */
+
+  const xlin = (k) => X0 + (k / KTOP) * W;
+  const xlog = (k) => X0 + (Math.log10(Math.max(k, 1)) / LK) * W;
+  const ylin = (p) => YB - p * H;                                  /* 0 … 1    */
+  const ylog = (p) => YB - ((Math.log10(Math.max(p, 1e-4)) + 4) / 4) * H;  /* 1e-4 … 1 */
+  const XX = (k, t) => xlin(k) * (1 - t) + xlog(k) * t;
+  const YY = (p, t) => ylin(p) * (1 - t) + ylog(p) * t;
+
+  /* One knob, two jobs: the first half of its travel stretches the x axis,
+     the second half the y axis. "Both axes on a log scale" is two separate
+     acts, and the dial makes you perform them one at a time. */
+  const DET = 40;
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+  const XL = [0, 50, 100, 150, 200, 250];              /* linear x labels */
+  const XG = [1, 10, 100];                             /* log x labels    */
+  const XGM = [2, 3, 5, 20, 30, 50, 200];              /* log x, unlabelled */
+  const YL = [0, 0.2, 0.4, 0.6, 0.8, 1];               /* linear y labels */
+  const YG = [1, 0.1, 0.01, 0.001, 0.0001];            /* log y labels    */
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "The picture that hides them",
+      note: "5,000 nodes, average degree 4.36. Degree along the bottom, fraction of nodes up the side, both axes ordinary. Two bars hold 71% of everyone and the other sixty are drawn a fraction of a pixel tall.",
+      async run(ctx) {
+        ctx.drawChart();
+        await ctx.sleep(ctx.fast() ? 0 : 1500);
+        const c = ctx.card("the network on the page");
+        [["nodes", "5,000"], ["edges", "10,890"], ["average degree", "4.36"],
+         ["largest degree", "227"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(1800);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "101 of these people have more than 20 friends. Between them they " +
+          "own 22% of every friendship in the network — and you cannot see " +
+          "one of them on this chart."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "What a log ruler is",
+      note: "Before touching the chart, look at a ruler. On an ordinary ruler a step of the same width is the same addition. On a log ruler a step of the same width is the same multiplication — so 1, 10 and 100 come out equally spaced.",
+      async run(ctx) {
+        const c = ctx.card("two rulers, same three marks");
+        await ctx.ruler(c);
+        c.appendChild(ctx.el("div", "anim-caption anim-fade",
+          "1 &rarr; 10 and 10 &rarr; 100 are both &times;10. The ordinary ruler " +
+          "gives the second one ten times the room; the log ruler gives them the same."));
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "Stretch the x axis",
+      note: "Now re-rule the bottom axis. The spike at the left opens into sixty-two separate bars; degrees 100 to 250, which had a third of the axis to themselves, squeeze into the last strip. Nothing about the data moved.",
+      async run(ctx) {
+        const c = ctx.card("re-rule the bottom axis");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "the dial's first half slides the x axis from ordinary to log"));
+        await ctx.sleep(ctx.fast() ? 0 : 500);
+        for (let i = 1; i <= DET / 2; i++) { ctx.dial(i); await ctx.sleep(ctx.fast() ? 0 : 70); }
+        [["bars you can now separate", "62"], ["bars before", "about 3"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "wide bars on the left, hairline bars on the right: a log axis " +
+          "squeezes each bin to a tenth of the width of the one a decade below."));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Stretch the y axis too",
+      note: "Now the side axis. Four decades — 1, one tenth, one hundredth, one thousandth, one ten-thousandth — get equal room, and the bars that were a pixel tall stand up. The tops of the first fifteen fall on a line.",
+      async run(ctx) {
+        const c = ctx.card("re-rule the side axis");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "the dial's second half does the same to the y axis"));
+        await ctx.sleep(ctx.fast() ? 0 : 500);
+        for (let i = DET / 2 + 1; i <= DET; i++) { ctx.dial(i); await ctx.sleep(ctx.fast() ? 0 : 70); }
+        await ctx.sleep(ctx.fast() ? 0 : 600);
+        ctx.showRef(true);
+        ctx.dial(DET);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the dashed line is p(k) = 2.93&thinsp;k<sup>&minus;2.5</sup>, the law " +
+          "these degrees were drawn from. Go right by &times;100 and it falls " +
+          "by &times;100,000 — and 100<sup>2.5</sup> = 100,000. " +
+          "That ratio <em>is</em> the exponent."));
+        await ctx.sleep(3600);
+      }
+    },
+    {
+      label: "The tail is a picket fence",
+      note: "One honest catch. A histogram of 5,000 nodes cannot draw a fraction below 1/5000 = 0.0002, so every bin holding a single person lands on the same shelf, and the degrees that drew nobody are missing outright. That shelf is the instrument, not the network.",
+      async run(ctx) {
+        const c = ctx.card("what the right-hand shelf really is");
+        ctx.showTail(true);
+        ctx.dial(DET);
+        await ctx.sleep(ctx.fast() ? 0 : 900);
+        [["degrees past 40", "26 of 188"],
+         ["people out there", "35"],
+         ["one-person bins", "21"],
+         ["one person is", "0.0002"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(2600);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the dashed law dives under the shelf at k = 61 and keeps going. " +
+          "The shelf does not follow it, because no histogram of 5,000 nodes " +
+          "can plot anything smaller than one node. Drag the dial back and " +
+          "forth — it is the same 5,000 people either way."));
+        await ctx.sleep(4200);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("log-lens"), scenes, {
+    stepsLabel: "Plotting steps",
+
+    /* The one thing only this animation has: a chart that persists across all
+       five scenes while a single knob re-rules its axes underneath it. Built
+       once in scene 1, mutated by every scene after. */
+    helpers(ctx) {
+      const left = ctx.$("[data-ll-chart]");
+      const side = ctx.$("[data-ll-side]");
+      const S = { showR: false, showT: false };
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* "10" with a superscript exponent, built from tspans rather than
+         entity soup so it lands the same in every SVG renderer. */
+      function pow10(node, exp) {
+        node.textContent = "10";
+        const t = ctx.svgEl("tspan", { dy: "-3.2", "font-size": "5.6" });
+        t.textContent = exp;
+        node.appendChild(t);
+      }
+
+      function tick(g, v, label, vertical, minor, pow) {
+        const ln = ctx.svgEl("line", { "class": minor ? "ll-tick-m" : "ll-tick" });
+        g.appendChild(ln);
+        let tx = null;
+        if (label != null) {
+          tx = ctx.svgEl("text", {
+            "class": "ll-num",
+            "text-anchor": vertical ? "end" : "middle"
+          });
+          if (pow) pow10(tx, label); else tx.textContent = label;
+          g.appendChild(tx);
+        }
+        return { v: v, ln: ln, tx: tx, vertical: !!vertical, minor: !!minor };
+      }
+
+      function drawChart() {
+        left.textContent = "";
+        S.showR = false;
+        S.showT = false;
+        const svg = ctx.svgRoot("0 0 250 190");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gBand = g(), gBar = g(), gRef = g(), gAx = g(),
+              gXL = g(), gXG = g(), gYL = g(), gYG = g();
+
+        S.band = gBand.appendChild(ctx.svgEl("rect",
+          { "class": "ll-band", y: YT, height: H }));
+        S.band.style.opacity = 0;
+
+        const slow = !ctx.fast();
+        S.bars = DIST.map(function (d, i) {
+          const r = gBar.appendChild(ctx.svgEl("rect",
+            { "class": "ll-bar" + (slow ? " anim-fade" : "") }));
+          if (slow) r.style.animationDelay = (0.3 + i * 0.018) + "s";
+          return r;
+        });
+
+        S.ref = gRef.appendChild(ctx.svgEl("polyline", { "class": "ll-ref" }));
+        S.ref.style.opacity = 0;
+        S.refT = gRef.appendChild(ctx.svgEl("text",
+          { "class": "ll-hand", x: 146, y: 44 }));
+        S.refT.textContent = "p(k) = 2.93 k";
+        const sup = ctx.svgEl("tspan", { dy: "-3", "font-size": "5.6" });
+        sup.textContent = "−2.5";
+        S.refT.appendChild(sup);
+        S.refT.style.opacity = 0;
+
+        S.floor = gRef.appendChild(ctx.svgEl("line", { "class": "ll-floor", x2: X1 }));
+        S.floorT = gRef.appendChild(ctx.svgEl("text",
+          { "class": "ll-hand anim-knockout", x: X1, "text-anchor": "end" }));
+        S.floorT.textContent = "one person = 1/5000";
+        S.floor.style.opacity = 0;
+        S.floorT.style.opacity = 0;
+
+        gAx.appendChild(ctx.svgEl("line",
+          { "class": "anim-axis", x1: X0, y1: YB, x2: X1 + 5, y2: YB }));
+        gAx.appendChild(ctx.svgEl("line",
+          { "class": "anim-axis", x1: X0, y1: YT - 5, x2: X0, y2: YB }));
+        const head = ctx.svgEl("text", { "class": "ll-cap", x: X0 - 2, y: 13 });
+        head.textContent = "p(k) — fraction of nodes with degree k";
+        gAx.appendChild(head);
+        const foot = ctx.svgEl("text",
+          { "class": "ll-cap", x: (X0 + X1) / 2, y: 178, "text-anchor": "middle" });
+        foot.textContent = "degree k";
+        gAx.appendChild(foot);
+
+        S.xlin = XL.map((v) => tick(gXL, v, String(v), false, false, false));
+        S.xlog = XG.map((v) => tick(gXG, v, String(v), false, false, false))
+          .concat(XGM.map((v) => tick(gXG, v, null, false, true, false)));
+        S.ylin = YL.map((v) => tick(gYL, v, v.toFixed(1), true, false, false));
+        S.ylog = YG.map((v, i) => tick(gYG, v, i === 0 ? "0" : "−" + i, true, false, true));
+
+        left.appendChild(svg);
+
+        /* The dial lives under the chart it re-rules, not in the side card,
+           because scenes 3, 4 and 5 all drive the same one. */
+        const range = ctx.el("div", "anim-range");
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        range.appendChild(track);
+        left.appendChild(range);
+
+        const read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>x axis <b data-rx>ordinary</b></span>' +
+          '<span>y axis <b data-ry>ordinary</b></span>');
+        left.appendChild(read);
+        left.appendChild(ctx.el("div", "anim-caption",
+          "drag: the first half re-rules the bottom axis, the second half the side axis"));
+
+        S.rx = read.querySelector("[data-rx]");
+        S.ry = read.querySelector("[data-ry]");
+
+        S.knob = ctx.mountKnob(knob, {
+          min: 0, max: DET, step: 1, value: 0,
+          label: "Linear to log-log",
+          format: (i) => i <= DET / 2
+            ? "x axis " + Math.round(200 * i / DET) + "% log"
+            : "y axis " + Math.round(200 * (i - DET / 2) / DET) + "% log",
+          onGrab: () => ctx.pause(),
+          onInput: (i) => paint(i)
+        });
+        S.knob.set(0);
+      }
+
+      /* Everything the chart shows at detent i. Pure arithmetic on the two
+         rulers — no state beyond the two "has this been revealed yet" flags. */
+      function paint(i) {
+        const t = i / DET;
+        const tx = clamp01(t / 0.5), ty = clamp01((t - 0.5) / 0.5);
+
+        DIST.forEach(function (d, j) {
+          const p = d[1] / N;
+          const a = XX(d[0], tx), b = XX(d[0] + 1, tx), y = YY(p, ty);
+          ctx.attr(S.bars[j], {
+            x: a.toFixed(2), width: Math.max(0.7, b - a).toFixed(2),
+            y: y.toFixed(2), height: Math.max(0.35, YB - y).toFixed(2)
+          });
+        });
+
+        /* Both labellings slide with their own axis and cross-fade, because
+           re-ruling is exactly what happened: same paper, new numbers. */
+        const place = (k, o) => {
+          if (k.vertical) {
+            const y = YY(k.v, ty);
+            ctx.attr(k.ln, { x1: X0 - (k.minor ? 2.4 : 4), y1: y, x2: X0, y2: y });
+            if (k.tx) ctx.attr(k.tx, { x: X0 - 6, y: y + 2.6 });
+          } else {
+            const x = XX(k.v, tx);
+            ctx.attr(k.ln, { x1: x, y1: YB, x2: x, y2: YB + (k.minor ? 2.4 : 4) });
+            if (k.tx) ctx.attr(k.tx, { x: x, y: YB + 13 });
+          }
+          k.ln.style.opacity = o;
+          if (k.tx) k.tx.style.opacity = o;
+        };
+        const oL = Math.max(0, 1 - 1.7 * tx), oG = clamp01((tx - 0.3) / 0.5);
+        S.xlin.forEach((k) => place(k, oL));
+        S.xlog.forEach((k) => place(k, oG));
+        const pL = Math.max(0, 1 - 1.7 * ty), pG = clamp01((ty - 0.3) / 0.5);
+        S.ylin.forEach((k) => place(k, pL));
+        S.ylog.forEach((k) => place(k, pG));
+
+        const pts = [];
+        for (let s = 0; s <= 30; s++) {
+          const k = 2 * Math.pow(KREF / 2, s / 30);
+          pts.push(XX(k, tx).toFixed(2) + "," + YY(CFIT * Math.pow(k, -GAM), ty).toFixed(2));
+        }
+        S.ref.setAttribute("points", pts.join(" "));
+        const oR = S.showR ? clamp01((ty - 0.55) / 0.35) : 0;
+        S.ref.style.opacity = oR;
+        S.refT.style.opacity = oR;
+
+        const fy = YY(1 / N, ty);
+        ctx.attr(S.floor, { x1: XX(2, tx), y1: fy, y2: fy });
+        ctx.attr(S.floorT, { y: fy - 6 });
+        const oF = S.showT ? clamp01((ty - 0.55) / 0.35) : 0;
+        S.floor.style.opacity = oF;
+        S.floorT.style.opacity = oF;
+
+        const bx = XX(40, tx);
+        ctx.attr(S.band, { x: bx, width: Math.max(1, X1 - bx) });
+        S.band.style.opacity = S.showT ? 1 : 0;
+
+        const word = (v) => (v < 0.02 ? "ordinary" : v > 0.98 ? "log" : "…");
+        S.rx.textContent = word(tx);
+        S.ry.textContent = word(ty);
+      }
+
+      /* Scene 2's aside: the same three marks on two rulers. */
+      async function ruler(box) {
+        const oX = (v) => 16 + (v / 100) * 190;
+        const gX = (v) => 16 + (Math.log10(v) / 2) * 190;
+        const svg = ctx.svgRoot("0 0 220 124");
+        let h = '<text class="ll-cap" x="16" y="11">an ordinary ruler: equal widths, equal additions</text>' +
+                '<line class="anim-axis" x1="16" y1="34" x2="210" y2="34"/>';
+        for (let v = 0; v <= 100; v += 10) {
+          h += '<line class="ll-tick-m" x1="' + oX(v).toFixed(1) +
+               '" y1="34" x2="' + oX(v).toFixed(1) + '" y2="38"/>';
+        }
+        h += '<text class="ll-cap" x="16" y="72">a log ruler: equal widths, equal multiplications</text>' +
+             '<line class="anim-axis" x1="16" y1="92" x2="210" y2="92"/>';
+        svg.innerHTML = h;
+        box.appendChild(svg);
+
+        /* One mark: a dot with its number above it, parked at (x, y). */
+        const mark = (v, x, y, glide) => {
+          const gg = ctx.svgEl("g", glide ? { "class": "anim-glide" } : null);
+          gg.appendChild(ctx.svgEl("circle", { r: 3.2, "class": "ll-dot" }));
+          const t = ctx.svgEl("text",
+            { "class": "ll-num", "text-anchor": "middle", y: -7 });
+          t.textContent = String(v);
+          gg.appendChild(t);
+          gg.style.transform = "translate(" + x.toFixed(1) + "px," + y + "px)";
+          svg.appendChild(gg);
+          return gg;
+        };
+
+        /* The ordinary ruler keeps its own three marks; a second set is what
+           travels, so both rulers are still labelled when the dust settles. */
+        const MK = [1, 10, 100];
+        MK.forEach((v) => mark(v, oX(v), 34, false));
+        const dots = MK.map((v) => mark(v, oX(v), 34, true));
+
+        /* A span with two end posts and a label under it. */
+        const span = (a, b, y, txt) => {
+          const gg = ctx.svgEl("g", { "class": "anim-fade" });
+          gg.appendChild(ctx.svgEl("line",
+            { "class": "ll-tick", x1: a, y1: y, x2: b, y2: y }));
+          [a, b].forEach((x) => gg.appendChild(ctx.svgEl("line",
+            { "class": "ll-tick", x1: x, y1: y - 3, x2: x, y2: y + 3 })));
+          const t = ctx.svgEl("text",
+            { "class": "ll-hand", x: (a + b) / 2, y: y + 11, "text-anchor": "middle" });
+          t.textContent = txt;
+          gg.appendChild(t);
+          svg.appendChild(gg);
+          return gg;
+        };
+
+        await ctx.sleep(ctx.fast() ? 0 : 1100);
+        span(oX(1), oX(10), 48, "×10");
+        span(oX(10), oX(100), 48, "×10");
+        await ctx.sleep(ctx.fast() ? 0 : 2000);
+
+        dots.forEach(function (gg, i) {
+          gg.style.transform = "translate(" + gX(MK[i]).toFixed(1) + "px,92px)";
+        });
+        await ctx.sleep(ctx.fast() ? 0 : 1000);
+        span(gX(1), gX(10), 106, "×10");
+        span(gX(10), gX(100), 106, "×10");
+        await ctx.sleep(ctx.fast() ? 0 : 900);
+      }
+
+      /* S is filled by drawChart(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return {
+        drawChart, card, ruler,
+        dial: (i) => { if (S.knob) S.knob.set(i); },
+        showRef: (v) => { S.showR = v; },
+        showTail: (v) => { S.showT = v; }
+      };
+    }
+  });
+});
+</script>
+```
+
+Nothing in that figure changed the data. Every bar you saw at the end was already on the page at the start, drawn a fraction of a pixel tall. What changed was the ruler.
+
+::: {.callout-note title="What a logarithmic axis does"}
+On an **ordinary** axis, equal widths mean equal *additions*: 0 to 50 takes the same room as 200 to 250.
+
+On a **logarithmic** axis, equal widths mean equal *multiplications*: 1, 10, 100 and 1000 come out equally spaced, because each is ten times the one before.
+
+So a tick labelled $10^{-3}$ is not "a little below" $10^{-2}$ — it is one tenth of it, and on a four-decade axis it gets a full quarter of the height to itself. Put *both* axes on logarithmic rulers and you have a **log–log plot**.
+:::
+
+A log–log plot earns its keep because a power law becomes a straight line on one. If $p(k) \propto k^{-\gamma}$, then multiplying $k$ by 100 always divides $p(k)$ by $100^{\gamma}$, wherever you start from — a fixed multiplication along the bottom always buys the same fixed multiplication up the side, and that is exactly what a straight line on log rulers means.
+
+The slope of that line is $-\gamma$, and you can read it off the figure with two fingers. The dashed line is $p(k) = 2.93\,k^{-2.5}$, the law these 5,000 degrees were drawn from. Walk from $k = 2$ to $k = 200$ — a factor of 100 to the right — and it falls from $0.52$ to $0.0000052$, a factor of $100{,}000$. And $100^{2.5} = 10^5$. A steeper slope (larger $\gamma$) means hubs are rarer; a shallower one means more of them.
+
+Many real networks — biological, technical, social — have degree distributions that look like this, and that recurrence is one of the foundational observations of network science.
 
 A straight line on a log-log plot is not, by itself, proof of a power law. A mixture of Poisson distributions, or a lognormal, can look just as straight over the range of degrees you actually observe. Whether the power law is a good model for real-world networks is actively contested [@artico2020rare; @holme2019rare; @voitalov2019scale; @broido2019scale], and settling it for a given network requires a statistical test, not a visual inspection.
 
-The log-log plot above shows $p(k)$, the degree distribution defined earlier: the fraction of nodes with degree exactly $k$. It is useful but often noisy, especially in the tail where there are few observations. A better, more stable choice is the *complementary cumulative distribution function* (CCDF):
+There is also one thing the log rulers cannot fix, and the last step of the figure names it. A histogram of $N$ nodes cannot draw a fraction smaller than $1/N$: a bin holding a single person reads $1/5000 = 0.0002$ whether that person has 41 friends or 227. So the whole right-hand side collapses onto one horizontal shelf, broken by gaps where a degree happened to draw nobody at all. That shelf is not a property of the network — it is the resolution limit of the instrument, which is why the tail of a $p(k)$ plot should never be fitted by eye. The usual repair is to stop asking "how many nodes have degree exactly $k$?" and ask instead "how many have degree *more* than $k$?" That is the *complementary cumulative distribution function* (CCDF):
 
 $$
 \text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
@@ -874,7 +1365,104 @@ $$
 
 CCDF represents the fraction of nodes with degree greater than $k$, or equivalently, the fraction of nodes that survive the degree cutoff $k$. It is also known as the *survival function* of the degree distribution. For a side-by-side comparison of the CCDF and the plain histogram, see Figure 3 of @newman2005power.
 
-![The CCDF of the degree distribution on a log-log scale.](../figs/ccdf-hist.svg){#fig-ccdf-hist width=80%}
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The CCDF of the very same 5,000 degrees, on the very same log rulers as the
+   figure above, so the two can be laid on top of each other in your head.
+   Static: no sequencer, no script — just ink. Tokens come from .anim-stage.
+   -------------------------------------------------------------------------- */
+#ccdf-fig { --anim-svg-max: 540px; }
+#ccdf-fig .cf-num    { font-family: var(--_hand); font-size: 8.2px; fill: var(--_ink-soft); }
+#ccdf-fig .cf-cap    { font-family: var(--_hand); font-size: 8.6px; fill: var(--_ink); }
+#ccdf-fig .cf-tick   { stroke: var(--_ink); stroke-width: 1; }
+#ccdf-fig .cf-tick-m { stroke: var(--_ink-faint); stroke-width: 0.8; }
+#ccdf-fig .cf-grid   { stroke: var(--_ink-faint); stroke-width: 0.6; stroke-dasharray: 2 3; }
+#ccdf-fig .cf-emp    { stroke: var(--_accent); stroke-width: 2; fill: none; stroke-linejoin: round; }
+#ccdf-fig .cf-law    { stroke: var(--_amber); stroke-width: 1.6; fill: none; stroke-dasharray: 5 3; }
+#ccdf-fig .cf-read   { stroke: var(--_ink); stroke-width: 1.2; stroke-dasharray: 3 2; }
+#ccdf-fig .cf-hand   { font-family: var(--_hand); font-size: 8.6px; font-weight: 700; fill: var(--_ink); }
+</style>
+
+<figure class="anim-stage" id="ccdf-fig">
+  <svg class="anim-svg" viewBox="0 0 250 190" focusable="false" role="img"
+       aria-label="The CCDF of the same 5,000 degrees on log-log axes. It falls
+       as a smooth staircase from 0.47 at degree 2 to 0.0002 at degree 226,
+       with none of the picket-fence gaps that broke up the tail of the
+       histogram. A dashed line shows the CCDF of the power law the degrees
+       were drawn from. From degree 10 to degree 100 the curve drops by a
+       factor of about 30, a slope of about minus 1.5.">
+
+    <!-- decade gridlines: 10^0, 10^-1, 10^-2, 10^-3, 10^-4 -->
+    <line class="cf-grid" x1="34" y1="24"    x2="240" y2="24"/>
+    <line class="cf-grid" x1="34" y1="55.5"  x2="240" y2="55.5"/>
+    <line class="cf-grid" x1="34" y1="87"    x2="240" y2="87"/>
+    <line class="cf-grid" x1="34" y1="118.5" x2="240" y2="118.5"/>
+
+    <!-- the CCDF of the law the degrees were drawn from: exact sum of
+         C k^-2.5 over k' > k, C = 2.928369, sampled at 38 log-spaced k -->
+    <path class="cf-law" d="M 59.9 34.0 L 75.0 40.7 L 85.7 45.8 L 94.0 49.9 L 100.8 53.3 L 106.6 56.2 L 111.6 58.8 L 116.0 61.1 L 119.9 63.1 L 123.5 65.0 L 126.7 66.7 L 129.7 68.3 L 135.0 71.1 L 139.7 73.6 L 143.9 75.8 L 147.6 77.8 L 152.6 80.5 L 155.6 82.1 L 160.9 85.0 L 164.5 86.9 L 168.7 89.2 L 172.5 91.3 L 176.8 93.6 L 181.4 96.1 L 185.5 98.3 L 189.7 100.7 L 194.1 103.0 L 198.0 105.2 L 202.3 107.5 L 206.6 109.9 L 210.7 112.1 L 214.7 114.3 L 219.2 116.8 L 223.3 119.1 L 227.5 121.4 L 231.7 123.6 L 235.7 125.9 L 240.0 128.2"/>
+
+    <!-- this network's own CCDF: one step per observed degree, from
+         CCDF(2) = 0.4712 down to CCDF(226) = 1/5000 = 0.0002 -->
+    <path class="cf-emp" d="M 59.9 34.3 L 75.0 34.3 L 75.0 40.8 L 85.7 40.8 L 85.7 45.5 L 94.0 45.5 L 94.0 49.8 L 100.8 49.8 L 100.8 53.3 L 106.6 53.3 L 106.6 56.4 L 111.6 56.4 L 111.6 59.3 L 116.0 59.3 L 116.0 61.4 L 119.9 61.4 L 119.9 63.5 L 123.5 63.5 L 123.5 65.9 L 126.7 65.9 L 126.7 67.8 L 129.7 67.8 L 129.7 69.0 L 132.5 69.0 L 132.5 70.3 L 135.0 70.3 L 135.0 72.2 L 137.4 72.2 L 137.4 73.5 L 139.7 73.5 L 139.7 74.6 L 141.8 74.6 L 141.8 75.7 L 143.9 75.7 L 143.9 76.9 L 145.8 76.9 L 145.8 77.4 L 147.6 77.4 L 147.6 78.4 L 149.3 78.4 L 149.3 79.1 L 151.0 79.1 L 151.0 79.6 L 152.6 79.6 L 152.6 80.6 L 154.1 80.6 L 154.1 81.5 L 155.6 81.5 L 155.6 81.8 L 157.0 81.8 L 157.0 82.8 L 158.3 82.8 L 158.3 83.2 L 159.6 83.2 L 159.6 83.6 L 160.9 83.6 L 160.9 84.5 L 162.1 84.5 L 162.1 84.7 L 163.3 84.7 L 163.3 85.2 L 164.5 85.2 L 164.5 86.2 L 165.6 86.2 L 165.6 87.3 L 166.6 87.3 L 166.6 89.4 L 168.7 89.4 L 168.7 91.1 L 170.7 91.1 L 170.7 91.9 L 172.5 91.9 L 172.5 92.3 L 173.4 92.3 L 173.4 94.0 L 174.3 94.0 L 174.3 94.5 L 175.2 94.5 L 175.2 95.4 L 177.6 95.4 L 177.6 95.9 L 179.2 95.9 L 179.2 96.5 L 180.0 96.5 L 180.0 97.6 L 182.1 97.6 L 182.1 98.2 L 184.2 98.2 L 184.2 98.9 L 184.8 98.9 L 184.8 100.2 L 186.1 100.2 L 186.1 101.0 L 188.6 101.0 L 188.6 101.8 L 189.2 101.8 L 189.2 102.6 L 193.0 102.6 L 193.0 103.5 L 195.1 103.5 L 195.1 106.5 L 196.1 106.5 L 196.1 109.0 L 197.0 109.0 L 197.0 110.5 L 199.8 110.5 L 199.8 112.1 L 202.3 112.1 L 202.3 113.9 L 205.1 113.9 L 205.1 116.0 L 221.2 116.0 L 221.2 118.5 L 221.7 118.5 L 221.7 121.6 L 224.0 121.6 L 224.0 125.5 L 228.4 125.5 L 228.4 131.0 L 233.7 131.0 L 233.7 140.5 L 236.2 140.5"/>
+
+    <!-- reading the slope with two fingers: across from k = 10 to k = 100,
+         then down. 0.0573 / 0.00194 = 29.6, and log10(29.6) = 1.47 -->
+    <line class="cf-read" x1="119.9" y1="63.1" x2="205.8" y2="63.1"/>
+    <line class="cf-read" x1="205.8" y1="63.1" x2="205.8" y2="109.5"/>
+    <text class="cf-hand" x="162.9" y="72" text-anchor="middle">&#215;10 across</text>
+    <text class="cf-hand" x="209" y="90">&#247;30 down</text>
+
+    <!-- axes -->
+    <line class="anim-axis" x1="34" y1="150" x2="245" y2="150"/>
+    <line class="anim-axis" x1="34" y1="19"  x2="34"  y2="150"/>
+
+    <line class="cf-tick"   x1="34"    y1="150" x2="34"    y2="154"/>
+    <line class="cf-tick"   x1="119.9" y1="150" x2="119.9" y2="154"/>
+    <line class="cf-tick"   x1="205.8" y1="150" x2="205.8" y2="154"/>
+    <line class="cf-tick-m" x1="59.9"  y1="150" x2="59.9"  y2="152.4"/>
+    <line class="cf-tick-m" x1="75.0"  y1="150" x2="75.0"  y2="152.4"/>
+    <line class="cf-tick-m" x1="94.0"  y1="150" x2="94.0"  y2="152.4"/>
+    <line class="cf-tick-m" x1="145.8" y1="150" x2="145.8" y2="152.4"/>
+    <line class="cf-tick-m" x1="160.9" y1="150" x2="160.9" y2="152.4"/>
+    <line class="cf-tick-m" x1="180.0" y1="150" x2="180.0" y2="152.4"/>
+    <line class="cf-tick-m" x1="231.7" y1="150" x2="231.7" y2="152.4"/>
+    <text class="cf-num" x="34"    y="163" text-anchor="middle">1</text>
+    <text class="cf-num" x="119.9" y="163" text-anchor="middle">10</text>
+    <text class="cf-num" x="205.8" y="163" text-anchor="middle">100</text>
+
+    <line class="cf-tick" x1="30" y1="24"    x2="34" y2="24"/>
+    <line class="cf-tick" x1="30" y1="55.5"  x2="34" y2="55.5"/>
+    <line class="cf-tick" x1="30" y1="87"    x2="34" y2="87"/>
+    <line class="cf-tick" x1="30" y1="118.5" x2="34" y2="118.5"/>
+    <line class="cf-tick" x1="30" y1="150"   x2="34" y2="150"/>
+    <text class="cf-num" x="28" y="26.6"  text-anchor="end">10<tspan dy="-3.2" font-size="5.6">0</tspan></text>
+    <text class="cf-num" x="28" y="58.1"  text-anchor="end">10<tspan dy="-3.2" font-size="5.6">&#8722;1</tspan></text>
+    <text class="cf-num" x="28" y="89.6"  text-anchor="end">10<tspan dy="-3.2" font-size="5.6">&#8722;2</tspan></text>
+    <text class="cf-num" x="28" y="121.1" text-anchor="end">10<tspan dy="-3.2" font-size="5.6">&#8722;3</tspan></text>
+    <text class="cf-num" x="28" y="152.6" text-anchor="end">10<tspan dy="-3.2" font-size="5.6">&#8722;4</tspan></text>
+
+    <text class="cf-cap" x="30" y="13">CCDF(k) &#8212; fraction of nodes with degree above k</text>
+    <text class="cf-cap" x="137" y="178" text-anchor="middle">degree k</text>
+
+    <!-- legend, parked in the empty lower-left corner -->
+    <line class="cf-emp" x1="42" y1="126" x2="56" y2="126"/>
+    <text class="cf-num" x="60" y="129">these 5,000 nodes</text>
+    <line class="cf-law" x1="42" y1="139" x2="56" y2="139"/>
+    <text class="cf-num" x="60" y="142">the law they were drawn from</text>
+  </svg>
+
+  <figcaption class="anim-note">The CCDF of the same 5,000 degrees, on the same
+  log rulers. Every node is counted at every k below its own degree, so the curve
+  only ever goes down &mdash; and the picket fence is gone. There are no bins here
+  to fall empty, and nothing lands on the 1/5000 floor until the single largest
+  node. Read the slope off the dashed law with two fingers: from k&nbsp;=&nbsp;10
+  to k&nbsp;=&nbsp;100 it falls from 0.057 to 0.0019, a factor of about 30, and
+  log<sub>10</sub>30&nbsp;=&nbsp;1.47 &mdash; a slope of about &minus;1.5, which is
+  the next section's point.</figcaption>
+</figure>
+```
 
 A nice feature of the CCDF compared to a histogram of $p(k)$ is that it does not require any binning of the data. To draw the histogram of a heavy tail you must group degrees into bins, and the shape you see depends on the bin width you chose. The CCDF has no bins to choose.
 
@@ -891,6 +1479,8 @@ P(k' > k) \propto k^{-(\gamma - 1)}
 $$
 
 Take logarithms of both sides and you get a straight line whose slope is $-(\gamma - 1) = 1 - \gamma$. The one-paragraph calculation behind this is in [the appendix](04-appendix.qmd).
+
+You can see the shift happen in the two figures above. Read both slopes off the *dashed* line, which is the law itself and not a sample of it. In the histogram it falls a factor of $10^5$ across a factor of 100 in $k$: slope $-2.5$, which is $-\gamma$. In the CCDF of the very same degrees it falls a factor of 30 across a factor of 10 in $k$: since $\log_{10} 30 \approx 1.47$, that is a slope of about $-1.5$, which is $1 - \gamma$. The two slopes differ by exactly one, and the CCDF is the shallower of the two. (Measure the purple staircase over that same stretch instead — 279 nodes have more than 10 friends, 6 have more than 100 — and you get a factor of about 46, not 30. That is not an error in the figure: 5,000 draws are a *sample* of the law, not the law, and reading a slope off one short window of one sample is a poor way to estimate an exponent. It is good enough to tell $-1.5$ from $-2.5$, which is all this section is asking you to do.)
 
 ::: {.callout-important title="Do not lose the −1"}
 **On a log-log plot, the slope of the CCDF is $1 - \gamma$, not $-\gamma$.**
@@ -927,11 +1517,213 @@ The degree distribution says how many hubs there are. It says nothing about **wh
 
 Ask: when you follow an edge, does a high-degree node tend to find another high-degree node on the other end, or a low-degree one?
 
-- **Assortative**: hubs connect to hubs. The high-degree nodes form a densely connected core. Social networks are typically assortative — popular people know popular people.
-- **Disassortative**: hubs connect to peripheral nodes. Technological and biological networks are typically disassortative — a big router serves many small ones, a hub protein binds many specific partners.
-- **Neutral**: no preference either way. The configuration model, which rewires edges at random while preserving degrees, is neutral by construction.
+Below are three networks that are identical in every way this module has measured so far. Each has twelve nodes and sixteen edges; each has exactly four nodes of degree 4 and eight of degree 2; so all three have the same $\langle k \rangle = 32/12 = 2.67$, the same $p(k)$, the same $\text{Var}(k)$, the same friendship-paradox gap. The only difference is who is wired to whom.
 
-This is measured by the **degree assortativity coefficient** $r$, defined as the Pearson correlation between the degrees at the two ends of an edge. It runs from $-1$ to $+1$, with $r > 0$ assortative, $r < 0$ disassortative and $r \approx 0$ neutral.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Three wirings of one degree sequence. Static ink, no script. Tokens come
+   from .anim-stage; only the grid and the two node styles are local.
+   -------------------------------------------------------------------------- */
+#assort-fig .ar-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 0.5rem 0.7rem;
+}
+#assort-fig .ar-cell { --anim-svg-max: 100%; }
+#assort-fig .ar-title {
+  font-family: var(--_hand); font-size: 0.92rem; line-height: 1.4;
+  color: var(--_ink); text-align: center;
+}
+#assort-fig .ar-title b { color: var(--_accent); font-weight: 700; }
+#assort-fig .ar-tally {
+  font-family: var(--_mono); font-size: 0.6rem; line-height: 1.5;
+  color: var(--_amber); text-align: center;
+}
+#assort-fig .ar-sub {
+  font-family: var(--_hand); font-size: 0.76rem; line-height: 1.35;
+  color: var(--_ink-soft); margin-top: 0.15rem;
+}
+
+#assort-fig .ar-edge { stroke: var(--_ink); stroke-width: 1.9; stroke-linecap: round; }
+#assort-fig .ar-hub  { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.6; }
+#assort-fig .ar-leaf { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.6; }
+#assort-fig .ar-nh   { font-family: var(--_hand); font-size: 9px; font-weight: 700; fill: var(--_white); }
+#assort-fig .ar-nl   { font-family: var(--_hand); font-size: 8px; fill: var(--_ink); }
+</style>
+
+<figure class="anim-stage" id="assort-fig">
+  <div class="ar-row">
+  <div class="ar-cell">
+    <svg class="anim-svg" viewBox="0 0 168 156" focusable="false" role="img"
+         aria-label="assortative wiring: The four 4s are wired to each other; the 2s are strung together in two chains. r = +0.5">
+      <line class="ar-edge" x1="64" y1="52" x2="64" y2="100"/>
+      <line class="ar-edge" x1="64" y1="52" x2="104" y2="52"/>
+      <line class="ar-edge" x1="64" y1="52" x2="104" y2="100"/>
+      <line class="ar-edge" x1="64" y1="100" x2="104" y2="52"/>
+      <line class="ar-edge" x1="64" y1="100" x2="104" y2="100"/>
+      <line class="ar-edge" x1="104" y1="52" x2="104" y2="100"/>
+      <line class="ar-edge" x1="64" y1="52" x2="42" y2="30"/>
+      <line class="ar-edge" x1="42" y1="30" x2="20" y2="52"/>
+      <line class="ar-edge" x1="20" y1="52" x2="20" y2="100"/>
+      <line class="ar-edge" x1="20" y1="100" x2="42" y2="122"/>
+      <line class="ar-edge" x1="42" y1="122" x2="64" y2="100"/>
+      <line class="ar-edge" x1="104" y1="52" x2="126" y2="30"/>
+      <line class="ar-edge" x1="126" y1="30" x2="148" y2="52"/>
+      <line class="ar-edge" x1="148" y1="52" x2="148" y2="100"/>
+      <line class="ar-edge" x1="148" y1="100" x2="126" y2="122"/>
+      <line class="ar-edge" x1="126" y1="122" x2="104" y2="100"/>
+      <circle class="ar-hub" cx="64" cy="52" r="8.5"/>
+      <text class="ar-nh" x="64" y="55" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="64" cy="100" r="8.5"/>
+      <text class="ar-nh" x="64" y="103" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="104" cy="52" r="8.5"/>
+      <text class="ar-nh" x="104" y="55" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="104" cy="100" r="8.5"/>
+      <text class="ar-nh" x="104" y="103" text-anchor="middle">4</text>
+      <circle class="ar-leaf" cx="42" cy="30" r="6.2"/>
+      <text class="ar-nl" x="42" y="32.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="20" cy="52" r="6.2"/>
+      <text class="ar-nl" x="20" y="54.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="20" cy="100" r="6.2"/>
+      <text class="ar-nl" x="20" y="102.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="42" cy="122" r="6.2"/>
+      <text class="ar-nl" x="42" y="124.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="126" cy="30" r="6.2"/>
+      <text class="ar-nl" x="126" y="32.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="148" cy="52" r="6.2"/>
+      <text class="ar-nl" x="148" y="54.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="148" cy="100" r="6.2"/>
+      <text class="ar-nl" x="148" y="102.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="126" cy="122" r="6.2"/>
+      <text class="ar-nl" x="126" y="124.6" text-anchor="middle">2</text>
+    </svg>
+    <div class="ar-title">assortative<br><b>r = +0.5</b></div>
+    <div class="ar-tally">6&#215;(4,4) &nbsp;4&#215;(4,2) &nbsp;6&#215;(2,2)</div>
+    <div class="ar-sub">The four 4s are wired to each other; the 2s are strung together in two chains.</div>
+  </div>
+  <div class="ar-cell">
+    <svg class="anim-svg" viewBox="0 0 168 156" focusable="false" role="img"
+         aria-label="neutral wiring: Half of each 4's edges go to other 4s, half to 2s — no preference either way. r = 0">
+      <line class="ar-edge" x1="60" y1="50" x2="108" y2="50"/>
+      <line class="ar-edge" x1="108" y1="50" x2="108" y2="100"/>
+      <line class="ar-edge" x1="108" y1="100" x2="60" y2="100"/>
+      <line class="ar-edge" x1="60" y1="100" x2="60" y2="50"/>
+      <line class="ar-edge" x1="60" y1="50" x2="48" y2="22"/>
+      <line class="ar-edge" x1="60" y1="50" x2="22" y2="42"/>
+      <line class="ar-edge" x1="108" y1="50" x2="120" y2="22"/>
+      <line class="ar-edge" x1="108" y1="50" x2="146" y2="42"/>
+      <line class="ar-edge" x1="108" y1="100" x2="146" y2="108"/>
+      <line class="ar-edge" x1="108" y1="100" x2="120" y2="128"/>
+      <line class="ar-edge" x1="60" y1="100" x2="48" y2="128"/>
+      <line class="ar-edge" x1="60" y1="100" x2="22" y2="108"/>
+      <line class="ar-edge" x1="48" y1="22" x2="120" y2="22"/>
+      <line class="ar-edge" x1="146" y1="42" x2="146" y2="108"/>
+      <line class="ar-edge" x1="120" y1="128" x2="48" y2="128"/>
+      <line class="ar-edge" x1="22" y1="108" x2="22" y2="42"/>
+      <circle class="ar-hub" cx="60" cy="50" r="8.5"/>
+      <text class="ar-nh" x="60" y="53" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="108" cy="50" r="8.5"/>
+      <text class="ar-nh" x="108" y="53" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="108" cy="100" r="8.5"/>
+      <text class="ar-nh" x="108" y="103" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="60" cy="100" r="8.5"/>
+      <text class="ar-nh" x="60" y="103" text-anchor="middle">4</text>
+      <circle class="ar-leaf" cx="48" cy="22" r="6.2"/>
+      <text class="ar-nl" x="48" y="24.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="22" cy="42" r="6.2"/>
+      <text class="ar-nl" x="22" y="44.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="120" cy="22" r="6.2"/>
+      <text class="ar-nl" x="120" y="24.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="146" cy="42" r="6.2"/>
+      <text class="ar-nl" x="146" y="44.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="146" cy="108" r="6.2"/>
+      <text class="ar-nl" x="146" y="110.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="120" cy="128" r="6.2"/>
+      <text class="ar-nl" x="120" y="130.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="48" cy="128" r="6.2"/>
+      <text class="ar-nl" x="48" y="130.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="22" cy="108" r="6.2"/>
+      <text class="ar-nl" x="22" y="110.6" text-anchor="middle">2</text>
+    </svg>
+    <div class="ar-title">neutral<br><b>r = 0</b></div>
+    <div class="ar-tally">4&#215;(4,4) &nbsp;8&#215;(4,2) &nbsp;4&#215;(2,2)</div>
+    <div class="ar-sub">Half of each 4's edges go to other 4s, half to 2s &mdash; no preference either way.</div>
+  </div>
+  <div class="ar-cell">
+    <svg class="anim-svg" viewBox="0 0 168 156" focusable="false" role="img"
+         aria-label="disassortative wiring: No 4 touches another 4. Every single edge joins a 4 to a 2. r = minus 1">
+      <line class="ar-edge" x1="52" y1="44" x2="74" y2="20"/>
+      <line class="ar-edge" x1="74" y1="20" x2="120" y2="44"/>
+      <line class="ar-edge" x1="52" y1="44" x2="98" y2="20"/>
+      <line class="ar-edge" x1="98" y1="20" x2="120" y2="44"/>
+      <line class="ar-edge" x1="120" y1="44" x2="152" y2="66"/>
+      <line class="ar-edge" x1="152" y1="66" x2="120" y2="112"/>
+      <line class="ar-edge" x1="120" y1="44" x2="152" y2="90"/>
+      <line class="ar-edge" x1="152" y1="90" x2="120" y2="112"/>
+      <line class="ar-edge" x1="120" y1="112" x2="98" y2="136"/>
+      <line class="ar-edge" x1="98" y1="136" x2="52" y2="112"/>
+      <line class="ar-edge" x1="120" y1="112" x2="74" y2="136"/>
+      <line class="ar-edge" x1="74" y1="136" x2="52" y2="112"/>
+      <line class="ar-edge" x1="52" y1="112" x2="20" y2="90"/>
+      <line class="ar-edge" x1="20" y1="90" x2="52" y2="44"/>
+      <line class="ar-edge" x1="52" y1="112" x2="20" y2="66"/>
+      <line class="ar-edge" x1="20" y1="66" x2="52" y2="44"/>
+      <circle class="ar-hub" cx="52" cy="44" r="8.5"/>
+      <text class="ar-nh" x="52" y="47" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="120" cy="44" r="8.5"/>
+      <text class="ar-nh" x="120" y="47" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="120" cy="112" r="8.5"/>
+      <text class="ar-nh" x="120" y="115" text-anchor="middle">4</text>
+      <circle class="ar-hub" cx="52" cy="112" r="8.5"/>
+      <text class="ar-nh" x="52" y="115" text-anchor="middle">4</text>
+      <circle class="ar-leaf" cx="74" cy="20" r="6.2"/>
+      <text class="ar-nl" x="74" y="22.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="98" cy="20" r="6.2"/>
+      <text class="ar-nl" x="98" y="22.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="152" cy="66" r="6.2"/>
+      <text class="ar-nl" x="152" y="68.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="152" cy="90" r="6.2"/>
+      <text class="ar-nl" x="152" y="92.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="98" cy="136" r="6.2"/>
+      <text class="ar-nl" x="98" y="138.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="74" cy="136" r="6.2"/>
+      <text class="ar-nl" x="74" y="138.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="20" cy="90" r="6.2"/>
+      <text class="ar-nl" x="20" y="92.6" text-anchor="middle">2</text>
+      <circle class="ar-leaf" cx="20" cy="66" r="6.2"/>
+      <text class="ar-nl" x="20" y="68.6" text-anchor="middle">2</text>
+    </svg>
+    <div class="ar-title">disassortative<br><b>r = &minus;1</b></div>
+    <div class="ar-tally">0&#215;(4,4) &nbsp;16&#215;(4,2) &nbsp;0&#215;(2,2)</div>
+    <div class="ar-sub">No 4 touches another 4. Every single edge joins a 4 to a 2.</div>
+  </div>
+  </div>
+
+  <figcaption class="anim-note">The same twelve nodes and the same twelve
+  degrees, wired three ways. Under each drawing is its list of sixteen edges
+  written as pairs of degrees &mdash; that list is the whole of what <em>r</em>
+  measures.</figcaption>
+</figure>
+```
+
+The number under each drawing is the **degree assortativity coefficient** $r$. To see where it comes from, do what the tallies do: walk over every edge and write down the pair *(degree at this end, degree at that end)*. That gives a list of sixteen pairs. Then ask the question a **correlation coefficient** always asks — *when the first number of a pair is above average, is the second one too?* The answer is squeezed into a single number between $-1$ and $+1$: $+1$ means always, $-1$ means never, and $0$ means knowing one end tells you nothing about the other.
+
+The right-hand picture makes $-1$ concrete. Every one of its sixteen edges is a 4 paired with a 2; big *never* goes with big, so the correlation is as negative as a correlation can be. The left-hand picture has six 4–4 edges and six 2–2 edges against only four mixed ones, so big usually does go with big, and $r$ comes out positive. The middle one splits the difference exactly.
+
+Because all three share a degree sequence, the arithmetic collapses to something you can do in your head. With *these* degrees,
+
+$$
+r = \frac{1}{16}\sum_{\text{edges}} j\,k \; - \; 9,
+$$
+
+where $j$ and $k$ are the degrees at the two ends of an edge. Read the products straight off the tallies: $6(16) + 4(8) + 6(4) = 152$, and $152/16 - 9 = 0.5$. The middle wiring gives $4(16) + 8(8) + 4(4) = 144$ and $144/16 - 9 = 0$; the right-hand one gives $16(8) = 128$ and $128/16 - 9 = -1$. Where the 16 and the 9 come from — and why they depend on the degree sequence alone, so that only $\sum j\,k$ can move — is worked out in [the appendix](04-appendix.qmd).
+
+So the vocabulary:
+
+- **Assortative** ($r > 0$): hubs connect to hubs, and a densely connected core forms. Social networks are typically assortative — popular people know popular people.
+- **Disassortative** ($r < 0$): hubs connect to peripheral nodes. Technological and biological networks are typically disassortative — a big router serves many small ones, a hub protein binds many specific partners.
+- **Neutral** ($r \approx 0$): no preference either way. The configuration model, which rewires edges at random while preserving degrees, is neutral by construction.
 
 Why care? Because degree correlations change everything downstream:
 
@@ -944,6 +1736,8 @@ Why care? Because degree correlations change everything downstream:
 - Compute a node's degree, the degree sum $2M$, and the degree distribution $p(k)$ of a small network by hand.
 - Say why the average friend is better connected than the average person in *every* network — and predict the size of the gap from $\text{Var}(k)/\langle k \rangle$.
 - Choose between a linear histogram, a log-log histogram, and a CCDF, and read a power-law exponent off a CCDF slope without losing the $-1$.
+- Say what a logarithmic axis does to a plot, and why the flat shelf at the right of a $p(k)$ log-log plot is the histogram's resolution limit rather than the network's shape.
 - Explain acquaintance immunization to someone who has never heard of a network.
+- Wire one degree sequence assortatively and disassortatively, and compute the resulting $r$ from the list of (degree, degree) pairs along the edges.
 
 Next: put it into code in [the hands-on notebook](02-coding.qmd), practice in [the exercises](03-exercises.qmd), or read the two derivations in [the appendix](04-appendix.qmd).

@@ -397,9 +397,9 @@ where $k_i$ is the degree (i.e., the number of edges) of node $i$.
 Here's what it means in simple terms:
 
 - We look at each color ($c$) one by one (the outer sum).
-- For each color, we figure out how many balls of that color are in our bag ($\frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i)$).
-- We divide by $2m$ to get the probability of drawing a ball of that color.
-- We then calculate the chance of grabbing that color twice in a row ($\left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2$).
+- For each color, we *count* the balls of that color in the bag: $\sum_{i=1}^n k_i \delta(c, c_i)$. Node $i$ contributed $k_i$ balls, and $\delta(c, c_i)$ keeps only the nodes wearing color $c$, so this is a plain head count — a whole number between $0$ and $2m$.
+- We divide that count by the $2m$ balls in the bag, which turns it into the probability of drawing color $c$: $\frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i)$. The division happens once, here, and nowhere else.
+- We then calculate the chance of grabbing that color twice in a row, which is that probability squared ($\left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2$).
 - Finally, we add up these chances for all $C$ colors.
 
 Putting altogether, the modularity is defined by
@@ -1214,15 +1214,401 @@ Round 2 suggested that modularity picks the number of communities on its own. It
 
 ### It merges small communities: the resolution limit
 
-Modularity happily splits two cliques joined by a single edge into two communities. Now add a third, much larger community somewhere else in the network. Communities are *local* structure, so a distant addition should not change what happens to our two cliques. Play the round and see. [Two cliques plus a big one, three colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json)
+Round 1 showed modularity splitting two cliques joined by a single edge into two communities, exactly as you would want. Communities are *local* structure: a tight group of friends is a tight group of friends whether the world around them holds a thousand people or a million. So adding another group somewhere far away, with no edge to either clique, should not change that verdict.
 
-::: {.callout-note collapse="true" title="Click here to see the solution" appearance="simple"}
+It changes it. Here is the cleanest known case [@fortunato2007resolution], and it is small enough to check with a pencil: a ring of triangles, each joined to the next by a single edge. The two triangles at the top are yours. They never change — same three nodes each, same three edges, same one bridge between them, and nothing you add ever touches them. All the dial does is add more triangles on the far side of the ring.
 
-The best modularity score now comes from merging our two cliques into one community. This is the **resolution limit** [@fortunato2007resolution].
+Watch for the moment modularity stops calling your two triangles two communities and starts calling them one.
 
-The reason is in the null model. The chance term $k_ik_j/2m$ has the total edge count $m$ in it, so *every* community is judged against the size of the whole network. As $m$ grows, a small group's internal edges stop looking surprising, and merging it into its neighbor becomes the better deal. Fortunato and Barthélemy showed the scale: modularity maximization cannot reliably resolve a community with fewer than roughly $\sqrt{2m}$ internal edges.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   m05 — the resolution dial. Only the rules this one widget needs: the paper,
+   the pen, the panels, the buttons, the knob and the motion all come from
+   assets/anim.css. Colours are the kit's resolved tokens (var(--_ink),
+   var(--_accent), …), never literals.
+   -------------------------------------------------------------------------- */
 
-Note the square root — this is not a fixed threshold, and it is not $m$. In a network with $m = 5{,}000$ edges the blind spot covers communities smaller than about $100$ edges. Grow the same network to $m = 500{,}000$ and the blind spot grows to about $1{,}000$ edges: groups that were resolved before are now swallowed, without anything about them having changed.
+/* A ring of twenty triangles wants its whole column, not the kit's 310px. */
+#res-limit { --anim-svg-max: 100%; }
+
+/* The far side of the ring: present, countable, and plainly not the subject. */
+#res-limit .rl-far { stroke: var(--_ink-faint); stroke-width: 1.5; }
+
+/* The reader's own pair, shaded a little harder than the rest of the ring. */
+#res-limit .rl-hot { fill-opacity: 0.32; }
+
+/* The exact tie at eight triangles, marked on the chart. */
+#res-limit .rl-cross { fill: var(--_ink); stroke: var(--_paper); stroke-width: 1.6; }
+
+/* ---- the two scores, winner ticked ---- */
+#res-limit .rl-gauge { margin: 0.4rem 0 0.2rem; }
+#res-limit .rl-row {
+  display: grid;
+  grid-template-columns: 1rem 1fr 3.1rem;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-family: var(--_hand);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+#res-limit .rl-row i { font-style: normal; color: var(--_ink); }
+#res-limit .rl-row b {
+  font-family: var(--_mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: right;
+}
+#res-limit .rl-l0 { color: var(--_accent); }
+#res-limit .rl-l1 { color: var(--_amber); }
+#res-limit .rl-form {
+  font-family: var(--_mono);
+  font-size: 0.68rem;
+  color: var(--_ink-soft);
+  margin-top: 0.2rem;
+}
+</style>
+
+<figure class="anim-stage" id="res-limit">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rl-ring></div>
+    <div data-anim-clear data-rl-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The resolution dial. Markup above, scenes below, and nothing in between:
+   the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     The network: a ring of n triangles, each joined to the next by a single
+     edge. So 3n nodes and 4n edges — 3n inside the triangles, n bridges.
+     Nothing here runs a graph algorithm: the ring's coordinates are plain
+     trigonometry and the two scores are a closed form.
+
+     Two partitions, compared:
+       KEEP APART   every triangle is its own community
+       MERGE PAIRS  triangles (0,1), (2,3), … glued two at a time
+
+     Worked by hand and then checked by brute force in Python at every n
+     below, in exact fractions rather than floats — the two agreed on the nose:
+       keep apart   internal edges 3n of 4n = 3/4; a community's volume is
+                    2*3 + 2 = 8 out of 2m = 8n, so n terms of (8/8n)^2 = 1/n
+                    Q = 3/4 - 1/n
+       merge pairs  internal edges 3n + n/2 of 4n = 7/8; a community's volume
+                    is 16, so n/2 terms of (16/8n)^2 = 2/n
+                    Q = 7/8 - 2/n
+     Difference = 1/8 - 1/n, which changes sign at exactly n = 8.
+     ------------------------------------------------------------------------ */
+  const NC = [4, 6, 8, 10, 12, 14, 16, 18, 20];
+  const QS = [0.500, 0.583, 0.625, 0.650, 0.667, 0.679, 0.688, 0.694, 0.700];
+  const QM = [0.375, 0.542, 0.625, 0.675, 0.708, 0.732, 0.750, 0.764, 0.775];
+  const TIE = 2;      /* NC[2] = 8, where the two scores are exactly equal */
+  const PARK = 3;     /* NC[3] = 10, the first detent where merging wins */
+
+  /* The drawing. One circle of radius R; triangle c sits at angle th with its
+     two rim nodes spread either side and its apex pushed inwards. */
+  const CX = 122, CY = 126, R = 96;
+  const SPREAD = 0.30;   /* half-width of a triangle, as a fraction of a step */
+  const PAD = 0.13;      /* how far a shaded blob overhangs its triangles */
+
+  function layout(n) {
+    const step = 2 * Math.PI / n, d = step * SPREAD;
+    const base = 2 * R * Math.sin(d);
+    const h = Math.max(16, Math.min(46, 0.8 * base));
+    const at = (a, r) => [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+    const T = [];
+    for (let c = 0; c < n; c++) {
+      /* the -0.5 puts the reader's pair (triangles 0 and 1) astride the top
+         of the ring, with the bridge that joins them at twelve o'clock */
+      const th = -Math.PI / 2 + (c - 0.5) * step;
+      T.push({ th: th, A: at(th - d, R), B: at(th + d, R), C: at(th, R - h) });
+    }
+    return { T: T, step: step, d: d, rIn: R - h };
+  }
+
+  /* A slice of the ring: the blob that says "these triangles are one
+     community". Two arcs and two radial jumps. */
+  function sector(a0, a1, r0, r1) {
+    const p = (a, r) => (CX + r * Math.cos(a)).toFixed(1) + " " +
+                        (CY + r * Math.sin(a)).toFixed(1);
+    const big = (a1 - a0) > Math.PI ? 1 : 0;
+    return "M " + p(a0, r1) + " A " + r1 + " " + r1 + " 0 " + big + " 1 " + p(a1, r1) +
+           " L " + p(a1, r0) + " A " + r0 + " " + r0 + " 0 " + big + " 0 " + p(a0, r0) + " Z";
+  }
+
+  const px = (i) => 34 + (i / (NC.length - 1)) * 172;
+  const py = (v) => 96 - ((v - 0.35) / 0.45) * 82;
+  const poly = (a) => a.map((v, i) => px(i) + "," + py(v)).join(" ");
+  const d3 = (x) => x.toFixed(3);
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "A ring of triangles",
+      note: "Four triangles in a ring, each joined to the next by a single edge: twelve people, sixteen friendships. Keep your eye on the two at the top. They are the only part of this picture that will never change.",
+      async run(ctx) {
+        ctx.draw(0, "split");
+        const c = ctx.card("the ring");
+        [["triangles", "4"], ["nodes", "3 × 4 = 12"], ["edges", "4 × 4 = 16"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (1.2 + i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "the two filled in purple are yours: six nodes, seven edges, one bridge between them");
+        last.style.animationDelay = ctx.fast() ? "0s" : "2.4s";
+        c.appendChild(last);
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "One community, or two?",
+      note: "Ask modularity about your two triangles. Every triangle kept apart scores 0.500. Gluing yours into one community — and every other pair along with them — scores 0.375. Modularity is sure: keep them apart.",
+      async run(ctx) {
+        const c = ctx.card("four triangles: which partition wins?");
+        const gauge = ctx.gauge(c);
+        gauge(0);
+        await ctx.sleep(900);
+        ctx.draw(0, "merged");
+        await ctx.sleep(1800);
+        ctx.draw(0, "split");
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "0.500 beats 0.375. Keep them apart."));
+        await ctx.sleep(2400);
+      }
+    },
+    {
+      label: "Now grow the ring",
+      note: "Add triangles on the far side. Nothing about your two changes: same three nodes each, same three edges, same one bridge, not one new edge touching them. At eight triangles the two partitions tie exactly. Past eight, modularity swallows your pair into a single community.",
+      async run(ctx) {
+        const c = ctx.card("turn the dial");
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const gauge = ctx.gauge(c);
+
+        const svg = ctx.svgRoot("0 0 220 122");
+        svg.innerHTML =
+          '<line class="anim-axis" x1="34" y1="96" x2="212" y2="96"/>' +
+          '<line class="anim-axis" x1="34" y1="14" x2="34" y2="96"/>' +
+          '<polyline class="anim-amber-stroke" points="' + poly(QM) + '"/>' +
+          '<polyline class="anim-accent-stroke" points="' + poly(QS) + '"/>' +
+          '<circle class="rl-cross" cx="' + px(TIE).toFixed(1) + '" cy="' +
+            py(QS[TIE]).toFixed(1) + '" r="4"/>' +
+          '<line class="anim-marker anim-marker--faint" data-mark x1="34" y1="12" x2="34" y2="99"/>' +
+          '<text class="anim-label" x="2" y="18">0.80</text>' +
+          '<text class="anim-label" x="2" y="100">0.35</text>' +
+          '<text class="anim-label" x="30" y="115">4</text>' +
+          '<text class="anim-label" x="' + (px(TIE) - 3).toFixed(1) + '" y="115">8</text>' +
+          '<text class="anim-label" x="198" y="115">20</text>' +
+          '<text class="anim-label anim-knockout anim-accent-fill" x="112" y="54">keep apart</text>' +
+          '<text class="anim-label anim-knockout anim-amber-fill" x="108" y="22">merge in pairs</text>';
+        c.appendChild(svg);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "Q against the number of triangles in the ring; the dot is the exact tie at 8"));
+
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+        const say = (t) => { verdict.textContent = t; verdict.style.visibility = "visible"; };
+
+        const mark = svg.querySelector("[data-mark]");
+        let last = -1;
+
+        /* One knob, and it is a real one: pointer, touch and arrow keys all
+           land in onInput, and grabbing it pauses the sequence so the ring is
+           yours until you let go. A drag fires onInput on every pointer move,
+           so redraw only when the detent actually changes. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: NC.length - 1, step: 1, value: 0,
+          label: "Number of triangles in the ring",
+          format: (i) => NC[i] + " triangles",
+          onGrab: () => ctx.pause(),
+          onInput: (i) => {
+            if (i === last) return;
+            last = i;
+            ctx.draw(i, QM[i] > QS[i] ? "merged" : "split");
+            gauge(i);
+            mark.setAttribute("x1", px(i).toFixed(1));
+            mark.setAttribute("x2", px(i).toFixed(1));
+          }
+        });
+        dial.set(0);
+
+        /* Skipping or reading without motion: land on the flip, because the
+           flip is the thing this figure is about. */
+        if (ctx.fast()) {
+          dial.set(PARK);
+          say("ten triangles: your two are now one community.");
+          return;
+        }
+
+        await ctx.sleep(900);
+        for (let i = 1; i <= TIE; i++) { dial.set(i); await ctx.sleep(640); }
+        say("eight triangles: a dead heat. 0.625 either way.");
+        await ctx.sleep(2600);
+
+        for (let i = TIE + 1; i <= PARK + 1; i++) { dial.set(i); await ctx.sleep(720); }
+        say("and now merging wins — without one edge of yours moving.");
+        await ctx.sleep(3000);
+
+        for (let i = PARK + 2; i < NC.length; i++) { dial.set(i); await ctx.sleep(440); }
+        say("keep going and the gap only widens. Now drag it back across 8 yourself.");
+        await ctx.sleep(2800);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("res-limit"), scenes, {
+    stepsLabel: "Resolution steps",
+    /* The last scene hands the dial to the reader; looping back to scene 1
+       would take it away again mid-drag. Replay restarts it. */
+    loop: false,
+
+    /* The two things only this animation has: a ring all three scenes redraw,
+       and a card on the right that each scene rewrites. */
+    helpers(ctx) {
+      const ring = ctx.$("[data-rl-ring]");
+      const side = ctx.$("[data-rl-side]");
+      const S = {};
+
+      /* Redraw the ring at detent i, shaded by `mode`. Cheap enough to do on
+         every detent: twenty triangles is sixty circles and eighty segments,
+         and the blobs only fade when the partition itself changes. */
+      function draw(i, mode) {
+        const n = NC[i], L = layout(n);
+        ring.textContent = "";
+
+        const svg = ctx.svgRoot("0 0 244 252");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gShade = g(), gEdge = g(), gNode = g();
+        const flip = mode !== S.mode && !ctx.fast();
+
+        const r0 = L.rIn - 9, r1 = R + 9, pad = L.step * PAD;
+        const blob = (c0, c1) => gShade.appendChild(ctx.svgEl("path", {
+          d: sector(L.T[c0].th - L.d - pad, L.T[c1].th + L.d + pad, r0, r1),
+          "class": "anim-shade" + (c1 <= 1 ? " rl-hot" : "") + (flip ? " anim-fade" : "")
+        }));
+        if (mode === "merged") { for (let c = 0; c < n; c += 2) blob(c, c + 1); }
+        else { for (let c = 0; c < n; c++) blob(c, c); }
+
+        const line = (p, q, cls) => gEdge.appendChild(ctx.svgEl("line", {
+          x1: p[0].toFixed(1), y1: p[1].toFixed(1),
+          x2: q[0].toFixed(1), y2: q[1].toFixed(1), "class": cls
+        }));
+
+        for (let c = 0; c < n; c++) {
+          const t = L.T[c], cls = "anim-edge" + (c < 2 ? "" : " rl-far");
+          line(t.A, t.B, cls);
+          line(t.B, t.C, cls);
+          line(t.C, t.A, cls);
+          /* the single bridge out of triangle c into triangle c+1 */
+          line(t.B, L.T[(c + 1) % n].A, "anim-edge" + (c === 0 ? "" : " rl-far"));
+        }
+        for (let c = 0; c < n; c++) {
+          const t = L.T[c], hot = c < 2;
+          [t.A, t.B, t.C].forEach((q) => gNode.appendChild(ctx.svgEl("circle", {
+            cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: hot ? 5 : 3.6,
+            "class": hot ? "anim-node" : "anim-node-off"
+          })));
+        }
+
+        ring.appendChild(svg);
+        ring.appendChild(ctx.el("div", "anim-caption",
+          n + " triangles · " + (3 * n) + " nodes · " + (4 * n) + " edges — " +
+          (mode === "merged"
+            ? "modularity now shades them two at a time"
+            : "modularity shades every triangle on its own")));
+        S.mode = mode;
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* The two scores side by side, winner ticked. Returns the setter,
+         because every scene moves n. */
+      function gauge(c) {
+        const w = ctx.el("div", "rl-gauge",
+          '<div class="rl-row"><i data-t0></i>' +
+            '<span class="rl-l0">keep every triangle apart</span><b data-q0>—</b></div>' +
+          '<div class="rl-row"><i data-t1></i>' +
+            '<span class="rl-l1">merge them in pairs</span><b data-q1>—</b></div>' +
+          '<div class="rl-form" data-form></div>');
+        c.appendChild(w);
+        const q = (s) => w.querySelector(s);
+        const q0 = q("[data-q0]"), q1 = q("[data-q1]");
+        const t0 = q("[data-t0]"), t1 = q("[data-t1]"), form = q("[data-form]");
+        return function (i) {
+          q0.textContent = d3(QS[i]);
+          q1.textContent = d3(QM[i]);
+          t0.textContent = QS[i] >= QM[i] ? "✓" : "";
+          t1.textContent = QM[i] >= QS[i] ? "✓" : "";
+          form.innerHTML = "3/4 − 1/" + NC[i] + "&nbsp; vs &nbsp;7/8 − 2/" + NC[i];
+        };
+      }
+
+      return { draw: draw, card: card, gauge: gauge };
+    }
+  });
+});
+</script>
+```
+
+At four triangles, keeping them apart wins by $0.500$ to $0.375$. At eight it is an exact dead heat. At ten, merging wins — and your two triangles have not changed by one node or one edge. This is the **resolution limit** [@fortunato2007resolution]: modularity's verdict about a small group depends on how big the rest of the network is.
+
+::: {.callout-note collapse="true" title="Where the crossover comes from — arithmetic you can check yourself" appearance="simple"}
+
+The ring has $n$ triangles. Each one carries $3$ internal edges and one bridge to its neighbour, so the whole ring has $m = 4n$ edges and $2m = 8n$ edge-ends.
+
+**Keep every triangle apart.** $3n$ of the $4n$ edges have both ends in the same community, so the observed term is $3n/4n = 3/4$. A triangle's volume is $6$ edge-ends inside plus $2$ bridge ends $= 8$, so each community contributes $(8/8n)^2 = 1/n^2$ to the chance term, and $n$ of those add up to $1/n$:
+
+$$
+Q_{\text{apart}} = \frac{3}{4} - \frac{1}{n}
+$$
+
+**Merge them in pairs.** Each pair now holds $3 + 3 + 1 = 7$ internal edges, because the bridge between the two is swallowed. There are $n/2$ pairs, so the observed term is $(7n/2)/(4n) = 7/8$. A pair's volume is $8 + 8 = 16$, so each community contributes $(16/8n)^2 = 4/n^2$, and $n/2$ of those add up to $2/n$:
+
+$$
+Q_{\text{pairs}} = \frac{7}{8} - \frac{2}{n}
+$$
+
+**Subtract.**
+
+$$
+Q_{\text{pairs}} - Q_{\text{apart}} = \left(\frac{7}{8} - \frac{3}{4}\right) - \left(\frac{2}{n} - \frac{1}{n}\right) = \frac{1}{8} - \frac{1}{n}
+$$
+
+Merging buys you a fixed $1/8$ of the edges and costs you $1/n$. That is a bad trade while $n < 8$, exactly even at $n = 8$, and profitable forever after. Check it against the dial at $n = 20$: $3/4 - 1/20 = 0.700$ against $7/8 - 2/20 = 0.775$.
+
+Now read the derivation again and notice what is missing from it. Nothing about your two triangles appears anywhere. The only quantity that decided their fate is $n$ — the size of the rest of the network — and it got in through the chance term $k_ik_j/2m$, which carries the total edge count $m$. Every community is judged against the whole network, so as the network grows, a small group's internal edges stop looking surprising and merging it into its neighbour becomes the better deal.
+
+Fortunato and Barthélemy give the general scale: a community with fewer than roughly $\sqrt{2m}$ internal edges is at risk of being swallowed. Read that as a danger zone, not a sharp line. In the ring $m = 4n$, so $\sqrt{2m} = \sqrt{8n}$, which already clears a triangle's $3$ internal edges from $n = 2$ onwards — and yet the merge only starts paying past $n = 8$. The square root tells you which communities to worry about; where the crossover actually falls depends on the network.
+
+Note also that the scale is $\sqrt{2m}$ and not $m$. In a network with $m = 5{,}000$ edges the blind spot covers communities smaller than about $100$ edges. Grow the same network to $m = 500{,}000$ and the blind spot grows to about $1{,}000$ edges: groups that were resolved before are now swallowed, without anything about them having changed.
 
 :::
 
@@ -1334,7 +1720,17 @@ $$
 \phi(V_c) = \frac{\text{number of edges leaving } V_c}{\min\left(\text{vol}(V_c),\; \text{vol}(\overline{V_c})\right)}
 $$
 
-where $\text{vol}(V_c) = \sum_{i \in V_c} k_i$ is the total degree of the community. Low conductance means few edges escape relative to the community's size — a well-isolated group. Unlike modularity, conductance scores communities one at a time, which makes it useful when you care about a particular group rather than the whole partition.
+where $\text{vol}(V_c) = \sum_{i \in V_c} k_i$ is the total degree of the community — add up the degrees of its members. The bar in $\overline{V_c}$ means *everything outside* $V_c$: all the other nodes in the network, taken together. So $\text{vol}(\overline{V_c})$ is the total degree of the rest of the world, and the $\min$ picks whichever side of the boundary is smaller. That $\min$ is there to stop a community from cheating by being the whole network: a group holding almost every edge would otherwise get a huge denominator for free.
+
+Low conductance means few edges escape relative to the community's size — a well-isolated group. Unlike modularity, conductance scores communities one at a time, which makes it useful when you care about a particular group rather than the whole partition.
+
+**A worked number**, on the twelve-node network from the two-bags widget above. Take group A, the six nodes on the left. Their degrees are $5, 3, 4, 4, 3, 1$, so $\text{vol}(A) = 20$. Everything outside A is group B, whose degrees are $4, 3, 4, 3, 3, 3$, so $\text{vol}(\overline{A}) = 20$ as well — and the two must sum to $2m = 40$, which they do. Two edges cross the boundary. So
+
+$$
+\phi(A) = \frac{2}{\min(20,\,20)} = \frac{2}{20} = 0.1
+$$
+
+Read that as a fraction of edge-ends: every crossing edge has exactly one end inside A, so two of A's twenty edge-ends point out of the group — one in ten. Now do the damage: move the leaf (the degree-$1$ node) across into B. Its one edge now crosses, so the cut goes from $2$ to $3$, $\text{vol}(A)$ drops to $19$ and $\text{vol}(\overline{A})$ rises to $21$, and $\phi(A) = 3/\min(19, 21) = 3/19 = 0.158$ — worse, which is the right verdict, and you got it with two additions and one division.
 
 **Internal versus external density** is the crudest version of the same idea: compare the edge density inside a group to the density of its connections outward.
 

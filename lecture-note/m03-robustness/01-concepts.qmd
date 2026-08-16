@@ -40,7 +40,15 @@ Borůvka delivered the first algorithm to solve this problem, **Borůvka's algor
 
 The algorithm works by first sorting every possible connection from cheapest to most expensive, like arranging all the cable segments by cost. Then it examines each connection in order, asking a crucial question: "If I add this cable, will it create a redundant loop?" If the answer is no, the cable joins the growing network. If adding it would create a cycle --- meaning the two locations are already connected through some other path --- the algorithm skips it as wasteful. This process continues until every location is connected, guaranteeing both minimum cost and complete coverage.
 
-Why is being greedy enough? Take any group of towns that are already joined to one another, and look at the cheapest cable leaving that group. Some minimum spanning tree has to use that cable --- because a tree that reached out of the group by a dearer one could drop the dearer cable, put this one in its place, stay connected, and cost less, which would contradict its being minimum. So greedy is not gambling: at every step it is taking an edge that *no* cheapest solution could have done without.
+Why is being greedy enough? Do one swap by hand on @fig-mst and the whole argument becomes visible.
+
+The middle panel is a spanning tree. Read its four cables off the left panel and you get its price: $1 + 5 + 2 + 6 = 14$. Now cut the 5-cable, the one running across the middle. A tree carries no spare routes, so cutting any one of its cables always leaves exactly **two** pieces --- here the three towns on the left and the two on the right. Ask what the cheapest cable joining *those two pieces* is: back in the left panel, it is the 3-cable from the bottom-left town to the right-hand one. Put it in. Every town is reachable again, there is still no loop, and the bill is
+
+$$14 - 5 + 3 = 12,$$
+
+which is the right-hand panel ($1 + 2 + 3 + 6 = 12$, the same five towns joined for two less). Any tree you can improve by a swap like that was not minimum to begin with. (The figure below runs the same swap once more, in motion, on a six-town grid.)
+
+Now run the swap the other way, and it becomes Kruskal's guarantee. Take any group of towns already joined to one another, and let $e$ be the cheapest cable leaving that group --- the cable greedy is about to grab. Suppose some minimum tree left the group without it. Add $e$ to that tree: you now have exactly one loop, and a loop that leaves the group has to come back, so it contains a *second* cable crossing out of the group, priced at least as dear as $e$. Drop that one instead. What is left is still connected (the loop supplied the detour), still loop-free, and costs no more than the tree you started with. So some minimum tree does contain $e$. Greedy is not gambling: at every step it takes a cable that some cheapest solution could not have done without.
 
 #### Prim: Grow Outward From the Power Plant
 
@@ -54,15 +62,352 @@ This local expansion strategy mirrors how many real-world infrastructure project
 The two algorithms find the *same* tree when all connection costs are different. When several cables cost the same, there can be several minimum spanning trees of equal total cost, and which one you get depends on the algorithm --- and, for Prim, on where you started.
 :::
 
-Step both algorithms through the same graph in the [Kruskal vs Prim demo](../assets/vis/kruskal-vs-prime.html) and watch them arrive at the same total from opposite directions.
+Below, both algorithms step through the same six towns --- a power plant at **A**, five towns, and nine surveyed stretches of cable priced 1 to 9. Watch the bill climb under each grid; watch Kruskal refuse the 3-cable because it would close a loop; watch Prim walk past the 5-cable because it cannot yet reach it. They arrive at the same five cables from opposite directions. The last step does the swap from the previous section in motion.
 
-<!-- TODO(anim): Kruskal vs Prim step-through. Side-by-side view of the same
-     7-node power-grid graph, with a step slider (0-6) that adds one MST edge
-     per step: Kruskal in globally-sorted weight order, Prim growing outward
-     from A. Edges already chosen are solid, candidates dashed; nodes already
-     attached to the growing tree are highlighted. A toggle for "all weights
-     unique" vs "some weights tied" shows that the two algorithms agree in the
-     first case and may disagree in the second (see the note in the margin). -->
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Kruskal and Prim on one grid — only the rules this one figure needs. The
+   paper, the panels, the buttons, the type and the motion all come from
+   assets/anim.css; the sequencer from assets/anim.js. Colours are the kit's
+   resolved tokens (var(--_ink), var(--_accent), …) — never literals.
+   Everything is scoped to #mst-race: this page carries two stages.
+   -------------------------------------------------------------------------- */
+
+#mst-race .mst-col { text-align: center; transition: opacity 0.35s ease; }
+#mst-race .mst-wait { opacity: 0.32; }
+#mst-race .mst-head {
+  font-family: var(--_hand);
+  font-size: 0.92rem;
+  line-height: 1.3;
+  font-weight: 700;
+  min-height: 1.3em;
+}
+#mst-race .mst-net { max-width: 300px; margin: 0 auto; --anim-svg-max: 300px; }
+#mst-race .mst-bill { max-width: 220px; margin: 0.15rem auto 0; }
+/* Four lines held open, so a longer line of narration never shoves the grid
+   above it up the page mid-step. */
+#mst-race .mst-log {
+  max-width: 290px;
+  margin: 0.1rem auto 0;
+  min-height: 4.2em;
+  text-align: left;
+}
+
+/* ---- the five states a cable can be in ---- */
+#mst-race .anim-edge { transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.3s ease; }
+#mst-race .mst-idle  { stroke: var(--_ink-faint); stroke-width: 1.5; }
+#mst-race .mst-look  { stroke: var(--_amber); stroke-width: 3.6; }
+#mst-race .mst-take  { stroke: var(--_accent); stroke-width: 3.4; }
+#mst-race .mst-piece { stroke: var(--_amber); stroke-width: 3.4; }
+#mst-race .mst-skip  { stroke: var(--_amber); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0.5; }
+#mst-race .mst-gone  { stroke: var(--_ink-faint); stroke-width: 1.5; opacity: 0; }
+
+/* ---- the price written on each cable, wearing that cable's state ---- */
+#mst-race .mst-w { font-size: 10px; font-weight: 700; transition: fill 0.25s ease, opacity 0.3s ease; }
+#mst-race .mst-w-off  { fill: var(--_ink-faint); }
+#mst-race .mst-w-look { fill: var(--_amber); }
+#mst-race .mst-w-on   { fill: var(--_accent); }
+#mst-race .mst-w-two  { fill: var(--_amber); }
+#mst-race .mst-w-gone { opacity: 0; }
+#mst-race .mst-name { font-size: 9px; fill: var(--_ink-soft); }
+/* A town in the far piece after the cut. Deliberately not .anim-node, whose
+   accent fill is what "joined to the rest" means everywhere else here. */
+#mst-race .mst-node-two { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* Stacked, the two grids would otherwise inflate to the full column width. */
+@media (max-width: 820px) {
+  #mst-race .mst-net { max-width: 360px; --anim-svg-max: 360px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mst-race .anim-edge, #mst-race .mst-w, #mst-race .mst-col { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="mst-race">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div class="mst-col" data-anim-clear data-mst-left></div>
+    <div class="mst-col" data-anim-clear data-mst-right></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Kruskal and Prim on one grid. Markup above, scenes below, and nothing in
+   between: the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Six towns and the nine surveyed cables between them. The prices are
+     1 through 9, all different, so this network has exactly one minimum
+     spanning tree and the two algorithms are obliged to agree on it.
+
+     Every number this figure prints was worked out once, offline, and pasted
+     in. Nothing here runs a graph algorithm at load; the only arithmetic is
+     the geometry that places the labels. Reproduce with:
+
+       import itertools
+       E = [("A","B",1),("B","E",2),("A","E",3),("A","D",4),("C","F",5),
+            ("B","C",6),("D","E",7),("C","E",8),("E","F",9)]
+       # 55 spanning trees in all; cheapest 18, next cheapest 19 — unique MST
+       # Kruskal : 1 take, 2 take, 3 SKIP (loop), 4 take, 5 take, 6 take = 18
+       # Prim(A) : 1, 2, 4, 6, 5                                          = 18
+       # scene 4 : A-B,B-E,A-D,C-F,E-F = 21; cut the 9 -> {A,B,D,E} | {C,F};
+       #           cheapest cable across that cut is B-C = 6; 21-9+6 = 18
+     ------------------------------------------------------------------------ */
+  const POS = { A: [28, 40], B: [100, 22], C: [174, 42], D: [30, 118], E: [104, 88], F: [172, 120] };
+  const NAME = ["A", "B", "C", "D", "E", "F"];
+  const E = [["A","B",1], ["B","E",2], ["A","E",3], ["A","D",4], ["C","F",5],
+             ["B","C",6], ["D","E",7], ["C","E",8], ["E","F",9]];
+
+  /* Kruskal walks the price list. `tot` is the running bill after this line. */
+  const KRUSKAL = [
+    { e: 0, take: true,  tot: 1,  log: "the 1-cable A–B: take it." },
+    { e: 1, take: true,  tot: 3,  log: "the 2-cable B–E: take it." },
+    { e: 2, take: false, tot: 3,  log: "the 3-cable A–E: refuse it — A and E are already joined through B, so this would only close a loop." },
+    { e: 3, take: true,  tot: 7,  log: "the 4-cable A–D: take it." },
+    { e: 4, take: true,  tot: 12, log: "the 5-cable C–F: two towns that were both on their own. take it." },
+    { e: 5, take: true,  tot: 18, log: "the 6-cable B–C: the last two towns join the rest. take it." }
+  ];
+
+  /* Prim only ever looks at cables with exactly one end inside the grid. */
+  const PRIM = [
+    { e: 0, tot: 1,  log: "cables out of the grid: 1, 3, 4. cheapest is the 1-cable A–B." },
+    { e: 1, tot: 3,  log: "now out of the grid: 2, 3, 4, 6. take the 2-cable B–E." },
+    { e: 3, tot: 7,  log: "now out of the grid: 4, 6, 7, 8, 9. take the 4-cable A–D." },
+    { e: 5, tot: 13, log: "now out of the grid: 6, 8, 9. the 5-cable is cheaper — but C and F are both still outside, so it is out of reach. take the 6-cable B–C." },
+    { e: 4, tot: 18, log: "C is inside now, so the 5-cable finally reaches out. take it." }
+  ];
+
+  const ALT = [0, 1, 3, 4, 8];   /* a spanning tree costing 21 */
+  const ALT_TOT = 21;
+  const CUT = 8;                 /* the 9-cable E–F it reached the far side by */
+  const FAR = ["C", "F"];        /* the piece left holding the far side */
+  const FAR_EDGE = 4;            /* C–F, that piece's own cable */
+  const BRIDGE = 5;              /* B–C, the cheapest cable across the cut */
+
+  /* Label geometry, not analysis: each price sits nine units off its own
+     cable, on the side away from the middle of the drawing. The town letters
+     are hand-placed just outside their dots. */
+  const MID = [101, 72];
+  const WPOS = E.map(function (e) {
+    const p = POS[e[0]], q = POS[e[1]];
+    const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+    let nx = p[1] - q[1], ny = q[0] - p[0];
+    const m = Math.hypot(nx, ny) || 1;
+    nx /= m; ny /= m;
+    if ((mx - MID[0]) * nx + (my - MID[1]) * ny < 0) { nx = -nx; ny = -ny; }
+    return [mx + 9 * nx, my + 9 * ny + 3.4];
+  });
+  const LPOS = { A: [16, 40], B: [100, 12], C: [186, 42], D: [19, 129], E: [94, 106], F: [184, 129] };
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "Six towns, nine possible cables",
+      note: "A power plant at A, five towns, and nine surveyed stretches of cable; the number on each is what that stretch costs. Any five cables that reach all six towns without closing a loop form a spanning tree. The question is which five are cheapest — and both algorithms work on this same grid.",
+      async run(ctx) {
+        ctx.build();
+        ctx.head("left", "Kruskal");
+        ctx.head("right", "Prim");
+        ctx.log("left", "sort every cable by price, then walk down the list.");
+        ctx.log("right", "start at the power plant and grow outward.");
+        await ctx.sleep(3800);
+      }
+    },
+    {
+      label: "Kruskal: cheapest cable anywhere",
+      note: "Walk down the price list and take each cable unless both of its towns are already joined — then it would buy a route that exists, which is what a loop is. The 3-cable is refused for exactly that reason. Five cables in, all six towns are joined and the bill is 18; the 7, 8 and 9-cables are never even considered.",
+      async run(ctx) {
+        ctx.wait("right", true);
+        ctx.wait("left", false);
+        ctx.head("left", "Kruskal: cheapest cable first");
+        for (let i = 0; i < KRUSKAL.length; i++) {
+          const s = KRUSKAL[i];
+          ctx.edge("left", s.e, "look");
+          ctx.log("left", s.log);
+          await ctx.sleep(750);
+          ctx.edge("left", s.e, s.take ? "take" : "skip");
+          if (s.take) { ctx.join("left", s.e); ctx.bill("left", s.tot); }
+          await ctx.sleep(s.take ? 650 : 1900);
+        }
+        ctx.log("left", "five cables, six towns, no loop. the 7, 8 and 9-cables were never even asked.");
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "Prim: grow out from the power plant",
+      note: "Same grid, opposite discipline. Prim only ever looks at cables with exactly one end inside the grid it has built so far. That is why it walks past the 5-cable while the 5-cable is the cheapest thing left on the map: both of its towns are still outside. Two steps later C is inside, the 5-cable is reachable, and Prim finishes on the same five cables and the same bill of 18.",
+      async run(ctx) {
+        ctx.wait("left", false);
+        ctx.wait("right", false);
+        ctx.head("right", "Prim: grow from A");
+        ctx.log("right", "the grid starts as one town: the power plant A.");
+        ctx.node("right", "A", "on");
+        await ctx.sleep(1100);
+        for (let i = 0; i < PRIM.length; i++) {
+          const s = PRIM[i];
+          ctx.edge("right", s.e, "look");
+          ctx.log("right", s.log);
+          await ctx.sleep(i === 3 ? 2200 : 950);
+          ctx.edge("right", s.e, "take");
+          ctx.join("right", s.e);
+          ctx.bill("right", s.tot);
+          await ctx.sleep(650);
+        }
+        ctx.log("right", "the same five cables Kruskal found, in a different order, for the same 18.");
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Why greedy could not have gone wrong",
+      note: "On the left is a different spanning tree of the same towns, reaching the far side by the 9-cable, for 21. Cut that cable. A tree carries no spare route, so it falls into exactly two pieces: A, B, D, E on one side and C, F on the other. The cheapest cable joining those two pieces is the 6-cable. Put it in and everything is connected again with no loop, for 18 — the tree on the right. A tree you can improve by such a swap was never the minimum.",
+      async run(ctx) {
+        ctx.head("right", "the cheapest tree");
+        ctx.head("left", "a tree that used the 9-cable");
+        ctx.reset("left");
+        for (let i = 0; i < ALT.length; i++) { ctx.edge("left", ALT[i], "take"); ctx.join("left", ALT[i]); }
+        ctx.bill("left", ALT_TOT);
+        ctx.log("left", "five cables, six towns, no loop — a perfectly good spanning tree, for 21.");
+        await ctx.sleep(3000);
+
+        ctx.edge("left", CUT, "look");
+        ctx.log("left", "cut the 9-cable and watch what the tree does.");
+        await ctx.sleep(1400);
+        ctx.edge("left", CUT, "gone");
+        ctx.edge("left", FAR_EDGE, "piece");
+        for (let i = 0; i < FAR.length; i++) ctx.node("left", FAR[i], "two");
+        ctx.bill("left", ALT_TOT - E[CUT][2]);
+        ctx.log("left", "exactly two pieces: A, B, D, E — and C, F.");
+        await ctx.sleep(2800);
+
+        ctx.edge("left", BRIDGE, "look");
+        ctx.log("left", "the cheapest cable joining those same two pieces is the 6-cable B–C.");
+        await ctx.sleep(2000);
+        ctx.edge("left", BRIDGE, "take");
+        ctx.edge("left", FAR_EDGE, "take");
+        for (let i = 0; i < FAR.length; i++) ctx.node("left", FAR[i], "on");
+        ctx.head("left", "the same tree, three cheaper");
+        ctx.bill("left", 18);
+        ctx.log("left", "connected again, still no loop: 21 − 9 + 6 = 18. the tree on the right.");
+        await ctx.sleep(3600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("mst-race"), scenes, {
+    stepsLabel: "Minimum spanning tree steps",
+
+    /* Two identical grids that persist across all four scenes, each with its
+       own running bill and its own line of narration. Built once per run and
+       handed to every scene on ctx, so a cable's colour, its price and the
+       bill under it can never drift apart. */
+    helpers(ctx) {
+      const host = { left: ctx.$("[data-mst-left]"), right: ctx.$("[data-mst-right]") };
+      const S = { left: null, right: null };
+
+      function draw(which) {
+        const h = host[which];
+        h.textContent = "";
+        const head = ctx.el("div", "mst-head", "");
+        h.appendChild(head);
+
+        const wrap = ctx.el("div", "mst-net");
+        const svg = ctx.svgRoot("0 0 202 142");
+        const gEdge = svg.appendChild(ctx.svgEl("g"));
+        const gNode = svg.appendChild(ctx.svgEl("g"));
+        const gText = svg.appendChild(ctx.svgEl("g"));
+
+        const edges = E.map(function (e) {
+          return gEdge.appendChild(ctx.svgEl("line", {
+            x1: POS[e[0]][0], y1: POS[e[0]][1], x2: POS[e[1]][0], y2: POS[e[1]][1],
+            "class": "anim-edge mst-idle"
+          }));
+        });
+        const weights = E.map(function (e, i) {
+          const t = ctx.svgEl("text", {
+            x: WPOS[i][0], y: WPOS[i][1], "text-anchor": "middle",
+            "class": "anim-label anim-knockout mst-w mst-w-off"
+          });
+          t.textContent = e[2];
+          return gText.appendChild(t);
+        });
+        const nodes = {};
+        NAME.forEach(function (n) {
+          nodes[n] = gNode.appendChild(ctx.svgEl("circle",
+            { cx: POS[n][0], cy: POS[n][1], r: 7, "class": "anim-node-off" }));
+          const t = ctx.svgEl("text", {
+            x: LPOS[n][0], y: LPOS[n][1], "text-anchor": "middle",
+            "class": "anim-label anim-knockout mst-name"
+          });
+          t.textContent = n;
+          gText.appendChild(t);
+        });
+
+        wrap.appendChild(svg);
+        h.appendChild(wrap);
+        const bill = ctx.el("div", "anim-tally mst-bill", "<span>cable bill</span><b>0</b>");
+        h.appendChild(bill);
+        const log = ctx.el("div", "anim-caption mst-log", "");
+        h.appendChild(log);
+        S[which] = { col: h, head: head, edges: edges, weights: weights,
+                     nodes: nodes, bill: bill.querySelector("b"), log: log };
+      }
+
+      /* clear() empties the columns but leaves their classes alone, so the
+         dimming has to be lifted here or a jump back to scene 1 inherits it. */
+      function build() {
+        draw("left");
+        draw("right");
+        wait("left", false);
+        wait("right", false);
+      }
+
+      /* One cable, one of five states, price and ink moving together. */
+      const WCLASS = { idle: "off", look: "look", take: "on", piece: "two", skip: "off", gone: "gone" };
+      function edge(which, i, kind) {
+        const s = S[which];
+        s.edges[i].setAttribute("class", "anim-edge mst-" + kind);
+        s.weights[i].setAttribute("class",
+          "anim-label anim-knockout mst-w mst-w-" + WCLASS[kind]);
+      }
+      function node(which, n, kind) {
+        S[which].nodes[n].setAttribute("class",
+          kind === "on" ? "anim-node" : kind === "two" ? "mst-node-two" : "anim-node-off");
+      }
+      /* Taking a cable is also what puts its two towns in the grid. */
+      function join(which, i) { node(which, E[i][0], "on"); node(which, E[i][1], "on"); }
+
+      function bill(which, n) { S[which].bill.textContent = n; }
+      function log(which, t) { S[which].log.textContent = t; }
+      function head(which, t) { S[which].head.textContent = t; }
+      function wait(which, on) { S[which].col.classList.toggle("mst-wait", !!on); }
+
+      function reset(which) {
+        for (let i = 0; i < E.length; i++) edge(which, i, "idle");
+        NAME.forEach(function (n) { node(which, n, "off"); });
+        bill(which, 0);
+      }
+
+      return { build: build, edge: edge, node: node, join: join,
+               bill: bill, log: log, head: head, wait: wait, reset: reset };
+    }
+  });
+});
+</script>
+```
 
 ## The Cheapest Grid Is the Easiest to Break
 
@@ -92,7 +437,7 @@ where $N$ is the number of nodes in the *original* network. Note what the numera
 
 ![Five towns; each panel removes one. Four of the five removals leave the rest intact --- four towns remain and all four are still linked, so connectivity is $4/5 = 0.8$. The top-right panel removes the best-connected town, and now one survivor is stranded with no cable at all: only three towns are still linked to each other, so connectivity is $3/5 = 0.6$. Same number of removals, different node, different damage.](../figs/single-node-failure.jpg){#fig-single-node-failure width=100% fig-alt="Six panels showing a five-node network and the effect of removing each node in turn, with the resulting connectivity printed above each panel."}
 
-Try it yourself: pull nodes out of a network by hand, at random or hub-first, in the [network robustness demo](../assets/vis/network-robustness.html).
+Try it yourself in the [network defence demo](../assets/vis/network-robustness.html) (it needs an internet connection). It hands you twelve unconnected towns and a budget of twenty cables: click two towns to lay a cable between them --- click the same two again to take it back --- and spend the budget however you like. Then press **Random Attack** or **Targeted Attack**, and it removes towns one at a time, drawing the connectivity after every removal. Wire the same twenty cables two ways, spread evenly and then piled onto two or three towns, and see which wiring holds up under which attack. That contrast is the rest of this module.
 
 ### The Whole Story in One Curve, and One Number
 
@@ -875,7 +1220,7 @@ Borůvka's tree is one end of a spectrum: minimum cost, zero slack. What the res
 - Compute $\kappa$ from a degree sequence and predict the critical fraction $f_c$ before running a single simulation.
 - Say precisely why a hub-heavy network is simultaneously the most robust and the most fragile network on the table.
 
-Next: [run the attacks yourself](02-coding.qmd) on a real network, then [do the pen-and-paper design exercise](03-exercises.qmd), where you build a nine-station grid, break it, and buy back its resilience one cable at a time.
+Next, in this order. First the [pen-and-paper design exercise](03-exercises.qmd): nine stations, a table of cable costs, and an attacker who deletes one of them --- you build the cheapest grid, break it, find the station the attacker will pick, and buy the resilience back one cable at a time. Do it with your own hands *before* you touch code; the notebook computes in a line what the worksheet asks you to discover, and discovering it is the point. Then [run the attacks yourself](02-coding.qmd) on a real network and watch the same thing happen at a scale no worksheet can reach.
 
 ## References
 

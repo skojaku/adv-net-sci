@@ -1,8 +1,8 @@
 ---
-title: "Appendix: Where the Gap and the CCDF Slope Come From"
+title: "Appendix: Where the Gap, the CCDF Slope and r Come From"
 ---
 
-Two results in [the concepts page](01-concepts.qmd) were stated without their algebra: that friends have $\text{Var}(k)/\langle k \rangle$ more friends than people do, and that the CCDF of a power law has slope $1 - \gamma$ rather than $-\gamma$. Both derivations are short. Neither is needed to use the result.
+Three results in [the concepts page](01-concepts.qmd) were stated without their algebra: that friends have $\text{Var}(k)/\langle k \rangle$ more friends than people do, that the CCDF of a power law has slope $1 - \gamma$ rather than $-\gamma$, and that the degree assortativity of those three twelve-node wirings is $+0.5$, $0$ and $-1$. All three derivations are short. None is needed to use the result.
 
 Throughout, $p(k)$ is the degree distribution — the fraction of nodes with degree exactly $k$ — and $\langle \cdot \rangle$ denotes an average over nodes, so that
 
@@ -85,3 +85,72 @@ m = -(\gamma-1) = 1-\gamma.
 $$
 
 So a measured CCDF slope of $-1.3$ means $\gamma = 2.3$, not $1.3$. The integral is where the $-1$ comes from, and it is why the exponent you read off a CCDF is never the exponent you want to report.
+
+## Computing Degree Assortativity by Hand
+
+The three drawings on the concepts page share a degree sequence: twelve nodes, four of degree 4 and eight of degree 2, joined by $M = 16$ edges. Only the wiring differs. Here is where their $r$ values come from.
+
+### The list r is computed on
+
+Walk over every edge and write it down **twice**, once looked at from each end, as a pair
+
+$$
+(x, y) = (\text{degree at this end},\ \text{degree at the other end}).
+$$
+
+Writing each edge both ways is what makes the list symmetric — an edge has no direction, so it should not matter which end you call $x$. That gives $n = 2M = 32$ pairs, and $r$ is the ordinary Pearson correlation of those 32 pairs:
+
+$$
+r = \frac{\overline{xy} - \bar{x}\,\bar{y}}{\sqrt{\overline{x^2} - \bar{x}^2}\sqrt{\overline{y^2} - \bar{y}^2}},
+$$
+
+where a bar denotes an average over the 32 pairs. Because the list is symmetric, $\bar{x} = \bar{y}$ and $\overline{x^2} = \overline{y^2}$, and the whole thing collapses to
+
+$$
+r = \frac{\overline{xy} - \bar{x}^2}{\overline{x^2} - \bar{x}^2}.
+$$
+
+### Two of the three averages never move
+
+Here is the useful part. The $x$ column contains each node's degree written once per edge touching it — so a node of degree $k$ contributes $k$ copies of $k$. Therefore
+
+$$
+\sum x = \sum_i k_i \cdot k_i = \sum_i k_i^2,
+\qquad
+\sum x^2 = \sum_i k_i^3,
+$$
+
+and neither sum knows anything about the wiring. For our degree sequence,
+
+$$
+\sum x = 4(4^2) + 8(2^2) = 64 + 32 = 96, \qquad \bar{x} = 96/32 = 3,
+$$
+$$
+\sum x^2 = 4(4^3) + 8(2^3) = 256 + 64 = 320, \qquad \overline{x^2} = 320/32 = 10.
+$$
+
+So the denominator is $10 - 3^2 = 1$ for all three wirings, and
+
+$$
+r = \overline{xy} - 9.
+$$
+
+Only $\overline{xy}$ can move. And since each edge appears twice, $\sum xy = 2\sum_{\text{edges}} j\,k$, which gives the pocket formula quoted on the concepts page:
+
+$$
+r = \frac{1}{16}\sum_{\text{edges}} j\,k \; - \; 9.
+$$
+
+### The three answers
+
+Each wiring has 16 edges, and every edge is one of three kinds, so the sum is a three-term tally.
+
+| wiring | $(4,4)$ | $(4,2)$ | $(2,2)$ | $\sum_{\text{edges}} j\,k$ | $\overline{xy}$ | $r$ |
+|---|---|---|---|---|---|---|
+| assortative | 6 | 4 | 6 | $6(16)+4(8)+6(4) = 152$ | $9.5$ | $+0.5$ |
+| neutral | 4 | 8 | 4 | $4(16)+8(8)+4(4) = 144$ | $9.0$ | $0$ |
+| disassortative | 0 | 16 | 0 | $16(8) = 128$ | $8.0$ | $-1$ |
+
+The bottom row is worth a second look. Every pair in that list is either $(4,2)$ or $(2,4)$, so the points sit exactly on the line $y = 6 - x$: a perfect straight-line relationship with a negative slope, which is precisely what $r = -1$ means. You cannot make a degree correlation more negative than that.
+
+The hub stubs also cap the top row. Four nodes of degree 4 have 16 stubs between them, and a $(4,4)$ edge uses two of them; with only four such nodes available, at most $\binom{4}{2} = 6$ distinct $(4,4)$ edges exist. The assortative wiring already uses all six, so $r = +0.5$ is the largest value this degree sequence can reach in a simple graph.

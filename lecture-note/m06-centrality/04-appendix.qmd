@@ -103,12 +103,7 @@ is an important hub if it points to many important authorities; a node is an
 important authority if it is pointed to by many important hubs.
 
 ::: {.callout-note title="Notation: edge direction"}
-In a directed network we write $A_{ij} = 1$ when there is an edge **from $i$ to $j$**, and $A_{ij} = 0$ otherwise. Consequently:
-
-- $\sum_j A_{ij} (\cdot)_j$ sums over the nodes that $i$ **points to**. This is $i$'s out-degree, $d^{\text{out}}_i = \sum_j A_{ij}$.
-- $\sum_j A_{ji} (\cdot)_j$ sums over the nodes that **point to** $i$. This is $i$'s in-degree, $d^{\text{in}}_i = \sum_j A_{ji}$.
-
-Getting this convention right is the whole game in HITS and PageRank.
+The convention stated in [the main text](01-concepts.qmd), repeated here: $A_{ij} = 1$ when there is an edge **from $i$ to $j$**, so $\sum_j A_{ij}(\cdot)_j$ sums over the nodes $i$ points to (their count is the out-degree $d^{\text{out}}_i$) and $\sum_j A_{ji}(\cdot)_j$ sums over the nodes that point to $i$ (their count is the in-degree $d^{\text{in}}_i$).
 :::
 
 Let $x_i$ and $y_i$ be the hub and authority scores of node $i$. Following the
