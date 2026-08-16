@@ -13,12 +13,15 @@
 | `slides/` | Marp decks (`m01`–`m06`, `intro`) plus the old Quarto revealjs decks under `slides/legacy/`. See [slides/README.md](slides/README.md). |
 | `notebooks/` | Marimo/Jupyter coding exercises. Linked from the lecture note by URL — do not move or rename. |
 | `syllabus/` | `syllabus.tex` and the built PDF. |
-| `exam/` | Quiz sources (`quiz.json`) and the Marp generator. |
 | `tutor-references/` | Per-module concept and code reference extracts. |
-| `tutor-prototype/` | **Pair Notebook** — the AI-guided assignment: the `pi-pair-notebook` toolkit and the module folders, published to `sk-classroom`. |
-| `tools/` | Figure build, hands-on page generation, grading helpers. |
+| `tools/` | Figure build and page generation. See [tools/README.md](tools/README.md). |
 | `data/` | Course datasets. |
-| `curriculum.yml` | Hand-authored concept inventory. Source of truth, not generated. |
+| `curriculum.yml` | Hand-authored concept inventory: every concept the course teaches, and which activity covers it. Source of truth, not generated. |
+
+Everything here is material a student may read. The exam bank, the tutor
+prototype, the LLM gateway and the operational scripts live in a separate
+private repository — if you are looking for one of those, that is where it
+went.
 
 Nothing generated is committed — no `_site/`, no `_freeze/`, no rendered slides,
 no script-built figures. Build them:
