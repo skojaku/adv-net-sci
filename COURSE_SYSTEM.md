@@ -184,11 +184,11 @@ membership. Nothing else crosses.
 
 ## 4. Assignments
 
-### The Studio (individual)
+### The Pair Notebook (individual)
 
 Not a problem set. The student runs a **marimo notebook driven by a pi agent
 tutor** — authored in [`tutor-prototype/`](tutor-prototype/) — and submits the
-lecture note that session produced. One Studio per module: *Studio 02 — The
+lecture note that session produced. One per module: *Pair Notebook 02 — The
 Small-World Puzzle*, and so on.
 
 The session is a one-on-one dialogue: the tutor asks the student to predict,
@@ -206,11 +206,11 @@ the second one is where their work is committed:
 
 | repo | what |
 |---|---|
-| [`pi-studio`](https://github.com/sk-classroom/pi-studio) | the pi package: `nb_*` toolkit, chapter orchestration, checkpoint ceremony, verbatim logging, referee. Installed by pi from the module's `.pi/settings.json`, pinned by tag |
-| [`advnetsci-studio-m02-small-world`](https://github.com/sk-classroom/advnetsci-studio-m02-small-world) | the module: curriculum, premade cells, assets, launcher |
+| [`pi-pair-notebook`](https://github.com/sk-classroom/pi-pair-notebook) | the pi package: `nb_*` toolkit, chapter orchestration, checkpoint ceremony, verbatim logging, referee. Installed by pi from the module's `.pi/settings.json`, pinned by tag |
+| [`advnetsci-pair-notebook-m02-small-world`](https://github.com/sk-classroom/advnetsci-pair-notebook-m02-small-world) | the module: curriculum, premade cells, assets, launcher |
 
-Both are exports of this repo — publish with `tools/publish_studio.sh`, never
-by committing to them directly.
+Both are exports of this repo — publish with
+`tools/publish_pair_notebook.sh`, never by committing to them directly.
 
 Distribution and submission: Classroom 50, `mode: individual`. The tutor runs
 on the course gateway's three aliases (`tutor`, `vision`, `referee`), so a
@@ -308,7 +308,7 @@ gateway are things Hermes already ships.
 - **No attendance.** Removed with Chibi. Attendance is handled in class.
 - **No "stump the LLM" challenge.** The Discord game is retired.
 - **No LLM quiz-question generation as an assignment.** The graded artifact is
-  the Studio notebook now.
+  the Pair Notebook now.
 - **No reading Brightspace.**
 - **No numeric grades to students in a shared channel.**
 

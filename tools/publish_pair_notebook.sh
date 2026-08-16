@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Publish the Studio folders to the GitHub repos students clone.
+# Publish the Pair Notebook folders to the GitHub repos students clone.
 #
-#   tools/publish_studio.sh package        # tutor-prototype/pi-studio
-#   tools/publish_studio.sh module         # tutor-prototype/m02-small-world
-#   tools/publish_studio.sh all [-m "..."]
+#   tools/publish_pair_notebook.sh package        # tutor-prototype/pi-pair-notebook
+#   tools/publish_pair_notebook.sh module         # tutor-prototype/m02-small-world
+#   tools/publish_pair_notebook.sh all [-m "..."]
 #
 # Exports **HEAD**, not the working tree: what students get is always something
 # that exists in this repo's history. Commit first.
@@ -14,8 +14,8 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-PKG_REPO="sk-classroom/pi-studio"
-MODULE_REPO="sk-classroom/advnetsci-studio-m02-small-world"
+PKG_REPO="sk-classroom/pi-pair-notebook"
+MODULE_REPO="sk-classroom/advnetsci-pair-notebook-m02-small-world"
 
 MSG=""
 DO_PKG=0
@@ -39,7 +39,7 @@ publish() { # publish <subdir> <owner/repo>
     { echo "error: $src is not in HEAD — commit it first" >&2; return 1; }
 
   echo "publishing $src -> $repo"
-  work=$(mktemp -d "${TMPDIR:-/tmp}/publish-studio-XXXXXX")
+  work=$(mktemp -d "${TMPDIR:-/tmp}/publish-pair-notebook-XXXXXX")
   status=0
   if gh repo clone "$repo" "$work/repo" >/dev/null 2>&1; then
     # Wipe and re-export, so deletions here become deletions there.
@@ -47,7 +47,7 @@ publish() { # publish <subdir> <owner/repo>
     git archive "HEAD:$src" | tar -x -C "$work/repo"
     # Authoring-only, and the golden is a FINISHED session — an answer key in
     # the repo the student clones. Neither is read at runtime.
-    if [ "$src" != "tutor-prototype/pi-studio" ]; then
+    if [ "$src" != "tutor-prototype/pi-pair-notebook" ]; then
       rm -f "$work/repo/notebook.golden.py" "$work/repo/review_golden_sync.py"
     fi
     git -C "$work/repo" add -A
@@ -67,6 +67,6 @@ publish() { # publish <subdir> <owner/repo>
   return $status
 }
 
-[ "$DO_PKG" = 1 ] && publish tutor-prototype/pi-studio "$PKG_REPO"
+[ "$DO_PKG" = 1 ] && publish tutor-prototype/pi-pair-notebook "$PKG_REPO"
 [ "$DO_MODULE" = 1 ] && publish tutor-prototype/m02-small-world "$MODULE_REPO"
 exit 0

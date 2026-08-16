@@ -70,7 +70,7 @@ notebook re-learnable.
    - templates are **self-describing** (`# describe:` line) — the tutor
      describes artifacts only from it, never from guesswork;
    - improvised cells pass a **deterministic review** before insertion
-     (pi-studio's `extensions/nb_review.py`, run inside the kernel): marimo shows
+     (pi-pair-notebook's `extensions/nb_review.py`, run inside the kernel): marimo shows
      only a cell's last expression, so a cell ending in
      `netviz(...)` + `mo.md(...)` loses the picture — the review wraps
      those displays in one `mo.vstack`, refuses cells whose display can't
@@ -158,10 +158,10 @@ Named cells are wiped by `nb_fresh_start`; unnamed template cells persist.
 | Curriculum + note skeletons + fresh variants | `lesson/ch*.yaml` |
 | Premade visuals (self-describing) | `cells/*.py` |
 | Theme, deps, `netviz`, `run_student_code`, bug-report line | `notebook.template.py` |
-| Tools, chapter orchestration, headers, focus, logging | pi-studio: `extensions/notebook-tool.ts` |
-| Improvised-cell review (AST) | pi-studio: `extensions/nb_review.py` |
+| Tools, chapter orchestration, headers, focus, logging | pi-pair-notebook: `extensions/notebook-tool.ts` |
+| Improvised-cell review (AST) | pi-pair-notebook: `extensions/nb_review.py` |
 | Launch: sandbox venv, app view, vision model | `run_tutor.sh` |
 
-The two pi-studio rows are the shared toolkit, not this module:
-[`sk-classroom/pi-studio`](https://github.com/sk-classroom/pi-studio), pinned by
+The two pi-pair-notebook rows are the shared toolkit, not this module:
+[`sk-classroom/pi-pair-notebook`](https://github.com/sk-classroom/pi-pair-notebook), pinned by
 tag in `.pi/settings.json` and installed by pi on first run.

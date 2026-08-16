@@ -15,7 +15,7 @@ A module directory contains:
 | Notebook (product) | `notebook.py`, `notebook.template.py`, session copies in `session_artifacts/notebook-*.py` | Part S |
 | Curriculum | `lesson/ch*.yaml`, `lesson/index.json`, `cells/*.py`, `AGENTS.md` | Part C |
 | Session process | `session_artifacts/session_log*.jsonl`, `session_artifacts/reviewer_log.jsonl`, `session_artifacts/session_summary.md` | Part P |
-| Live behavior | the running tutor (pi + the `pi-studio` toolkit) | Part D |
+| Live behavior | the running tutor (pi + the `pi-pair-notebook` toolkit) | Part D |
 
 Module-level design contracts live in `DESIGN.md` and `AGENTS.md` — read both
 before reviewing; every checklist item below traces to one of them.
@@ -28,7 +28,7 @@ before reviewing; every checklist item below traces to one of them.
    `tutor-prototype/review/` — a live tutor session driven by scripted
    student personas. Also rerun Part D whenever a behavior-carrying file
    changed since the last clean E2E: `AGENTS.md`, `lesson/`, `cells/`,
-   `notebook.template.py`, `run_tutor.sh`, or `pi-studio/extensions/`.
+   `notebook.template.py`, `run_tutor.sh`, or `pi-pair-notebook/extensions/`.
 3. Report findings in the format below. Do not fix anything.
 
 ### Findings format
@@ -55,7 +55,7 @@ Minors are listed but do not block.
 Findings indict the *system*, not a past session. Fixes go to the controlling
 file: `AGENTS.md` (tutor behavior), `lesson/ch*.yaml` (curriculum),
 `cells/*.py` (premade builds), `notebook.template.py` (theme/deps/helpers),
-`pi-studio/extensions/notebook-tool.ts` (tools, ceremony, tips, dialogs),
+`pi-pair-notebook/extensions/notebook-tool.ts` (tools, ceremony, tips, dialogs),
 `run_tutor.sh` (launch). **Never edit `session_artifacts/`** — logs and
 session notebooks are evidence — and never edit a real student's answers.
 
@@ -131,7 +131,7 @@ read — `const x = said.some(...)` twenty lines above `const said = ...` —
 which throws on every call at runtime. One such line once made every
 checkpoint in the module unclosable and passed an esbuild check:
 `npx -p typescript tsc --noEmit --skipLibCheck --target es2022 --module esnext
---moduleResolution bundler ../pi-studio/extensions/notebook-tool.ts`, then ignore the
+--moduleResolution bundler ../pi-pair-notebook/extensions/notebook-tool.ts`, then ignore the
 `Cannot find name 'process'/'console'/'setInterval'` and `Cannot find module`
 lines (no ambient Node types) and read everything else.
 
@@ -325,7 +325,7 @@ what the student meets, not about who types the student's lines.
 
 Fidelity requirements: course model
 (`TUTOR_MODEL`, default `ollama/glm-5.2:cloud`), global agent
-extensions disabled (`--no-extensions -e <pi-studio>/extensions/notebook-tool.ts`,
+extensions disabled (`--no-extensions -e <pi-pair-notebook>/extensions/notebook-tool.ts`,
 which `e2e_setup.sh` resolves to the working tree it is run from),
 a browser page connected **before** the tutor's first nb_* call (the marimo
 kernel wakes only when a client connects), sandbox copy of the module (never

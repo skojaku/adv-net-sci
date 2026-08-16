@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-command launcher for the Studio 02 session.
+# One-command launcher for the Pair Notebook 02 session.
 #
 # What it does:
 #   1. Asks continue-or-fresh (before anything loads)
@@ -36,11 +36,11 @@ die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
 command -v uv >/dev/null 2>&1 || die "uv is not installed. Install it first: https://docs.astral.sh/uv/  (macOS: brew install uv)"
 command -v pi >/dev/null 2>&1 || die "pi is not installed. Run: npm install -g @earendil-works/pi-coding-agent  (see README.md)"
 
-# The tutor's toolkit (nb_* tools, logging, the referee) is the pi-studio
+# The tutor's toolkit (nb_* tools, logging, the referee) is the pi-pair-notebook
 # package, declared in .pi/settings.json. pi installs it on startup; say so,
 # because the first run pauses here for a few seconds and a silent pause on a
 # student's first evening looks like a hang.
-[ -d ".pi/git/github.com/sk-classroom/pi-studio" ] ||
+[ -d ".pi/git/github.com/sk-classroom/pi-pair-notebook" ] ||
   say "First run: fetching your tutor's toolkit (a few seconds)..."
 
 # A missing provider block is the single most common setup mistake, and pi's

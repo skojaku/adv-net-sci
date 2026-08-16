@@ -172,7 +172,7 @@ function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; f
   if (!script) {
     return Promise.resolve({
       out:
-        "The notebook bridge (bridge/scripts/execute-code.sh, inside the pi-studio package) " +
+        "The notebook bridge (bridge/scripts/execute-code.sh, inside the pi-pair-notebook package) " +
         "is missing, so " +
         "nothing can reach the notebook. Tell the student, in one warm sentence, that the " +
         "notebook needs restarting with ./run_tutor.sh — then keep teaching in the terminal.",

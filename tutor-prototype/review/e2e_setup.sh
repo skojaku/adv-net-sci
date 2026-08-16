@@ -27,25 +27,25 @@ rsync -a --exclude session_artifacts --exclude __marimo__ --exclude .skill-cache
 cp "$SANDBOX/notebook.template.py" "$SANDBOX/notebook.py"
 mkdir -p "$SANDBOX/session_artifacts"
 
-# The nb_* toolkit is the pi-studio package, not part of the module. Test the
+# The nb_* toolkit is the pi-pair-notebook package, not part of the module. Test the
 # WORKING TREE by default — the whole point of the harness is to exercise the
 # fix you just made — and fall back to the copy pi installed in the module.
 # Fail loudly: with the wrong toolkit (or none) every nb_* call fails and the
 # whole run is a silent write-off. Its bridge/ carries execute-code.sh, so
 # nothing needs staging any more.
-STUDIO_EXTENSION="${STUDIO_EXTENSION:-}"
-if [ -z "$STUDIO_EXTENSION" ]; then
-  for cand in "$(cd "$(dirname "$0")/../pi-studio" 2>/dev/null && pwd)/extensions/notebook-tool.ts" \
-              "$MODULE_DIR/.pi/git/github.com/sk-classroom/pi-studio/extensions/notebook-tool.ts"; do
-    [ -f "$cand" ] && { STUDIO_EXTENSION="$cand"; break; }
+PAIR_NOTEBOOK_EXTENSION="${PAIR_NOTEBOOK_EXTENSION:-}"
+if [ -z "$PAIR_NOTEBOOK_EXTENSION" ]; then
+  for cand in "$(cd "$(dirname "$0")/../pi-pair-notebook" 2>/dev/null && pwd)/extensions/notebook-tool.ts" \
+              "$MODULE_DIR/.pi/git/github.com/sk-classroom/pi-pair-notebook/extensions/notebook-tool.ts"; do
+    [ -f "$cand" ] && { PAIR_NOTEBOOK_EXTENSION="$cand"; break; }
   done
 fi
-[ -f "$STUDIO_EXTENSION" ] || {
-  echo "error: no pi-studio toolkit found — set STUDIO_EXTENSION=/path/to/extensions/notebook-tool.ts" >&2
+[ -f "$PAIR_NOTEBOOK_EXTENSION" ] || {
+  echo "error: no pi-pair-notebook toolkit found — set PAIR_NOTEBOOK_EXTENSION=/path/to/extensions/notebook-tool.ts" >&2
   exit 1
 }
-[ -f "$(dirname "$STUDIO_EXTENSION")/../bridge/scripts/execute-code.sh" ] || {
-  echo "error: $STUDIO_EXTENSION has no bridge/scripts/execute-code.sh beside it — incomplete checkout?" >&2
+[ -f "$(dirname "$PAIR_NOTEBOOK_EXTENSION")/../bridge/scripts/execute-code.sh" ] || {
+  echo "error: $PAIR_NOTEBOOK_EXTENSION has no bridge/scripts/execute-code.sh beside it — incomplete checkout?" >&2
   exit 1
 }
 
@@ -123,7 +123,7 @@ fi
 # them tests the wrong tutor: it falls back to plain text and P8 can never be
 # assessed. Explicit -e still works under --no-extensions, so load each
 # declared package by path.
-EXTS=(-e "$STUDIO_EXTENSION")
+EXTS=(-e "$PAIR_NOTEBOOK_EXTENSION")
 while IFS= read -r pkg; do
   # git: entries are the toolkit itself, loaded above from the working tree.
   case "$pkg" in ""|git:*|https://*|ssh://*|/*|./*) continue ;; esac

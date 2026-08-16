@@ -2,7 +2,7 @@
 
 Drives a **live tutor session** for Part D of `../TUTOR_REVIEW_RUBRIC.md`:
 the reviewer plays the student against the real tutor agent (pi + the
-`pi-studio` toolkit) in an isolated sandbox. Requires `herdr`, `uv`,
+`pi-pair-notebook` toolkit) in an isolated sandbox. Requires `herdr`, `uv`,
 `pi`, `python3`, and credentials for whatever `TUTOR_MODEL` names.
 
 ## Scripts
@@ -19,13 +19,13 @@ STATE=$(./e2e_setup.sh ../m02-small-world)   # sandbox + marimo + browser + tuto
   `marimo edit --sandbox --headless`, opens the notebook page in a browser
   (**required** — the kernel wakes only when a client connects; without it
   every `nb_*` call fails), then starts pi in a herdr pane with
-  `--no-extensions -e <pi-studio>/extensions/notebook-tool.ts` so the
+  `--no-extensions -e <pi-pair-notebook>/extensions/notebook-tool.ts` so the
   machine's global pi extensions can't contaminate the run.
-  The toolkit it loads is the **working tree** (`../pi-studio`), so a fix you
-  just made is what gets tested; `STUDIO_EXTENSION` overrides that with any
+  The toolkit it loads is the **working tree** (`../pi-pair-notebook`), so a fix you
+  just made is what gets tested; `PAIR_NOTEBOOK_EXTENSION` overrides that with any
   other checkout, and the module's installed copy is the fallback.
   Env overrides: `TUTOR_MODEL` (default `ollama/glm-5.2:cloud`),
-  `TUTOR_VISION_MODEL`, `STUDIO_EXTENSION`.
+  `TUTOR_VISION_MODEL`, `PAIR_NOTEBOOK_EXTENSION`.
 - `student_turn.sh` / `dialog_choice.sh` block until the tutor goes idle
   (override wait with `TURN_TIMEOUT` seconds), then print the screen.
   If the screen shows an option list ("Where to next?"), the next call must

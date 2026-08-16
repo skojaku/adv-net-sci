@@ -1,4 +1,4 @@
-# pi-studio
+# pi-pair-notebook
 
 A [pi](https://pi.dev) package that turns a coding agent into a **Socratic
 tutor teaching one student inside a [marimo](https://marimo.io) notebook**.
@@ -11,13 +11,13 @@ session produces is a notebook the student keeps and an instructor grades.
 This is the machinery. The lesson is not in here: a **module folder** supplies
 the curriculum, the premade cells and the tutor's behaviour contract, and this
 package supplies the tools that operate on them. See
-[`sk-classroom/advnetsci-studio-m02-small-world`](https://github.com/sk-classroom/advnetsci-studio-m02-small-world)
+[`sk-classroom/advnetsci-pair-notebook-m02-small-world`](https://github.com/sk-classroom/advnetsci-pair-notebook-m02-small-world)
 for a complete module.
 
 ## Install
 
 ```bash
-pi install git:github.com/sk-classroom/pi-studio@v0.1.1
+pi install git:github.com/sk-classroom/pi-pair-notebook@v0.2.0
 pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0   # required companion
 ```
 
@@ -27,7 +27,7 @@ installs them itself on startup — students run nothing by hand:
 ```json
 {
   "packages": [
-    "git:github.com/sk-classroom/pi-studio@v0.1.1",
+    "git:github.com/sk-classroom/pi-pair-notebook@v0.2.0",
     "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
   ]
 }
@@ -123,13 +123,13 @@ tutor is told to describe the artifact *only* from it — a tutor once called a
 ## Local development
 
 ```bash
-pi -e /path/to/pi-studio/extensions/notebook-tool.ts   # load the working tree
+pi -e /path/to/pi-pair-notebook/extensions/notebook-tool.ts   # load the working tree
 ```
 
 `-e` also works under `--no-extensions`, which is how the review harness pins a
 run to exactly one copy of the toolkit. To iterate against a checkout instead of
 a tag, point `.pi/settings.json` at the directory: a local path package
-(`"../pi-studio"`, relative to the settings file) is loaded in place, without
+(`"../pi-pair-notebook"`, relative to the settings file) is loaded in place, without
 copying.
 
 Releases are pinned by tag. Bump `version` in `package.json`, tag `vX.Y.Z`, and

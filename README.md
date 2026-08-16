@@ -15,7 +15,7 @@
 | `syllabus/` | `syllabus.tex` and the built PDF. |
 | `exam/` | Quiz sources (`quiz.json`) and the Marp generator. |
 | `tutor-references/` | Per-module concept and code reference extracts. |
-| `tutor-prototype/` | **Studio** — the AI-guided notebook assignment: the `pi-studio` toolkit and the module folders, published to `sk-classroom`. |
+| `tutor-prototype/` | **Pair Notebook** — the AI-guided assignment: the `pi-pair-notebook` toolkit and the module folders, published to `sk-classroom`. |
 | `tools/` | Figure build, hands-on page generation, grading helpers. |
 | `data/` | Course datasets. |
 | `curriculum.yml` | Hand-authored concept inventory. Source of truth, not generated. |

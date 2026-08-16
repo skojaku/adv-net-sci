@@ -1,4 +1,4 @@
-# Studio 02 — The Small-World Puzzle
+# Pair Notebook 02 — The Small-World Puzzle
 
 **This is an assignment.** Instead of submitting code, you work through a
 **one-on-one tutoring session**: an AI tutor builds a [marimo](https://marimo.io)
@@ -62,9 +62,9 @@ Your key has a per-week allowance; `GET /v1/usage` on the same base URL tells
 you what is left of it.
 
 **4. Nothing else.** The tutor's own toolkit —
-[`pi-studio`](https://github.com/sk-classroom/pi-studio) and its dialog
-companion — is listed in `.pi/settings.json`, and `pi` fetches it the first time
-you run. That first start takes a few seconds longer than the rest.
+[`pi-pair-notebook`](https://github.com/sk-classroom/pi-pair-notebook) and its
+dialog companion — is listed in `.pi/settings.json`, and `pi` fetches it the
+first time you run. That first start takes a few seconds longer than the rest.
 
 ### Every session
 
@@ -99,11 +99,11 @@ The session produces everything automatically — you don't "write up" anything:
 - `session_artifacts/session_summary.md` — a summary for the instructor
 
 **You submit by pushing them to your own GitHub repository** — the one the
-course assignment link creates for you. Clone that repo, run the studio inside
+course assignment link creates for you. Clone that repo, run the session inside
 it, and when you are done:
 
 ```bash
-git add -A && git commit -m "Studio 02" && git push
+git add -A && git commit -m "Pair Notebook 02" && git push
 ```
 
 The commit history is part of the picture: it shows when the work happened, and
@@ -130,10 +130,10 @@ detours counts in your favor — it's the whole point.
 | `.pi/settings.json` | Thinking level, compaction budget, and the two packages pi installs on startup: the toolkit and the dialog extension. **Pinned by tag** — a module and its toolkit are tested together. |
 
 The `nb_*` toolkit itself — tools, chapter orchestration, the checkpoint
-ceremony, the verbatim capture, the referee, the improvised-cell review — lives
-in [`sk-classroom/pi-studio`](https://github.com/sk-classroom/pi-studio) and is
-shared by every module. Its README documents the module contract this folder
-implements.
+ceremony, the verbatim capture, the referee, the improvised-cell review — is
+shared by every module and lives in
+[`sk-classroom/pi-pair-notebook`](https://github.com/sk-classroom/pi-pair-notebook).
+Its README documents the module contract this folder implements.
 
 ### Design decisions
 
