@@ -56,6 +56,9 @@ class Alias:
     max_tokens: int = 8192
     reasoning: bool = False
     input: tuple[str, ...] = ("text",)
+    # Prepended to every request on this alias. The gateway is the only place
+    # that can enforce this for all clients regardless of local pi config.
+    system_prompt: str | None = None
 
 
 @dataclass(frozen=True)
@@ -178,6 +181,7 @@ def load_config(path: str | os.PathLike | None = None, *, env: dict | None = Non
             max_tokens=int(spec.get("max_tokens", 8192)),
             reasoning=bool(spec.get("reasoning", False)),
             input=tuple(spec.get("input") or ("text",)),
+            system_prompt=(spec.get("system_prompt") or "").strip() or None,
         )
 
     quota_raw = raw.get("quota") or {}

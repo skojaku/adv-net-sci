@@ -111,6 +111,11 @@ def build_payload(
     payload = {k: v for k, v in body.items() if k in ALLOWED_FIELDS}
     payload["model"] = target.model
 
+    if alias.system_prompt:
+        payload["messages"] = _with_system_prompt(
+            payload.get("messages") or [], alias.system_prompt
+        )
+
     # Clamp so a single request cannot swallow a whole quota, and so an alias
     # cannot be asked for more than the model behind it can produce.
     requested = body.get("max_tokens")
@@ -122,6 +127,29 @@ def build_payload(
         # fall back to estimating tokens from character counts.
         payload["stream_options"] = {"include_usage": True}
     return payload
+
+
+def _with_system_prompt(messages: list, prompt: str) -> list:
+    """Put the alias's system prompt in front of whatever the client sent.
+
+    Merged into an existing leading system message rather than added as a
+    second one: several OpenAI-compatible servers accept only one, and a
+    rejected request here would take the alias down entirely.
+    """
+    messages = list(messages)
+    head = messages[0] if messages else None
+    if isinstance(head, dict) and head.get("role") == "system":
+        content = head.get("content")
+        if isinstance(content, str):
+            merged = dict(head, content=f"{prompt}\n\n{content}")
+        elif isinstance(content, list):
+            # Multimodal content is a list of parts; prepend a text part.
+            merged = dict(head, content=[{"type": "text", "text": prompt}, *content])
+        else:
+            merged = dict(head, content=prompt)
+        messages[0] = merged
+        return messages
+    return [{"role": "system", "content": prompt}, *messages]
 
 
 def headers_for(target: Target) -> dict[str, str]:

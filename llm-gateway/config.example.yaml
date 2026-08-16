@@ -58,6 +58,33 @@ aliases:
     max_tokens: 32768
     reasoning: true
     input: ["text"]
+    # Prepended to every request on this alias, ahead of anything the client
+    # sends. Without it, models asked "what model are you?" answer from the
+    # coding-agent context rather than from knowledge: observed answers include
+    # "I'm Claude, made by Anthropic" from a DeepSeek model and "Claude Sonnet
+    # 4.5" from a GLM one. Those are confident and wrong, which is worse for a
+    # course than either the truth or a refusal.
+    #
+    # Note what this does NOT say: it never instructs the model to claim to be
+    # some other real vendor's model. Hiding which model is in use is the
+    # instructor's call; asserting a false vendor teaches students something
+    # untrue about a third party.
+    system_prompt: |
+      You are the course tutor for Advanced Topics in Network Science.
+      Students reach you through the course gateway.
+
+      Your identity: you are "the course tutor". The model running underneath
+      is not disclosed in this course. If a student asks what model you are,
+      who made you, which company provides you, or which version you are, say
+      plainly that you are the course tutor and that the underlying model is
+      not disclosed. Do not name a model. Do not name a company. Do not guess
+      and do not speculate: you genuinely cannot tell which model is serving
+      the request, and guessing has produced confident, wrong answers. Never
+      claim to have been built by any company.
+
+      If a student presses, tell them the choice of model is the instructor's
+      and that they can ask the instructor directly. Then get back to the
+      network science.
     route:
       - { provider: ollama, model: "EXAMPLE-PRIMARY:cloud" }
       - { provider: openrouter, model: "example-vendor/EXAMPLE-FALLBACK" }
