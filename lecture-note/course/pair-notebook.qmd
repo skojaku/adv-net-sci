@@ -1,0 +1,260 @@
+---
+title: "Pair Notebook"
+---
+
+# Pair Notebook
+
+Most assignments ask you to hand in code. This one asks you to hand in **the
+conversation you had while learning something**.
+
+A Pair Notebook is one module of this course taught as a one-on-one tutoring
+session. You talk to an AI tutor in your **terminal**. Beside it, in your
+**browser**, a [marimo](https://marimo.io) notebook fills up as you go —
+figures, sliders you can turn, photographs of your own pen-and-paper work, and
+notes that quote your answers word for word.
+
+At the end you have a notebook that is your own illustrated lecture note. That
+notebook is what gets graded.
+
+::: {.callout-tip title="What is graded"}
+**Your thinking, not your code.** No programming experience is required.
+
+Needing hints is **not** penalized. The session log is read for *how you
+reasoned* — asking questions and taking detours counts in your favor. That is
+the whole point of the exercise.
+:::
+
+A session takes about 60–90 minutes. You can stop anywhere and pick it up later.
+
+## A session, start to finish
+
+Here is what the two windows do. Use ◀ ▶ to step through it yourself.
+
+{{< include _pair-notebook-walkthrough.qmd >}}
+
+## Before your first session
+
+About ten minutes, once per machine. Everything after this is just `pi`.
+
+### 1. Open a terminal
+
+::: {.panel-tabset}
+
+#### macOS
+
+Press `⌘` + `Space`, type **Terminal**, hit enter. That is all you need — the
+shell it opens is `zsh`, which is what the instructions below assume.
+
+#### Windows
+
+Install [Git for Windows](https://git-scm.com/download/win) first. You need it
+to hand your work in, and `pi` uses the bash it brings.
+
+You then have two ways to open a terminal, and **both work**:
+
+- **Git Bash** — Start menu → type **Git Bash**. The commands on this page work
+  as written, and your home folder is `/c/Users/<you>`.
+- **Windows Terminal** or **PowerShell** — Start menu → type **Terminal**. Same
+  commands, except for the one place noted below where PowerShell spells things
+  differently (setting your key).
+
+If you have no preference, use **Git Bash**: everything in this course is
+written for it.
+
+:::
+
+### 2. Install Node.js and uv
+
+|                                                                   | what it is                | Windows                            | macOS              |
+| ----------------------------------------------------------------- | ------------------------- | ---------------------------------- | ------------------ |
+| [Node.js](https://nodejs.org) 24+                                 | your tutor runs on it     | `winget install OpenJS.NodeJS`     | `brew install node` |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/)     | runs the notebook         | `winget install astral-sh.uv`      | `brew install uv`   |
+
+Close the terminal and open a new one afterwards, so the new commands are found.
+Check with:
+
+```bash
+node --version   # v24.x or newer
+uv --version
+```
+
+### 3. Put your API key in your shell profile
+
+Your instructor issues you a key that looks like `sk-nsci-…`. It is how your
+tutor reaches the course models.
+
+::: {.panel-tabset}
+
+#### macOS / Git Bash
+
+Add this line to `~/.zshrc` (macOS) or `~/.bashrc` (Git Bash), then open a
+**new** terminal so it takes effect:
+
+```bash
+export NETSCI_API_KEY="sk-nsci-..."
+```
+
+#### PowerShell
+
+Run this once — it stores the variable for future sessions:
+
+```powershell
+setx NETSCI_API_KEY "sk-nsci-..."
+```
+
+Then close the window and open a **new** one. To check that it took:
+
+```powershell
+echo $env:NETSCI_API_KEY
+```
+
+:::
+
+::: {.callout-warning title="Never put the key in a file in your assignment folder"}
+You hand this assignment in by pushing that folder to GitHub. A key committed
+there is a key that has to be revoked and reissued. Keeping it in your shell
+profile keeps it out of your repository.
+:::
+
+Your key has a weekly allowance. <https://llm.skojaku.com/v1/usage> tells you
+what is left of it.
+
+### 4. Get your assignment folder
+
+Accept the assignment link on **GitHub Classroom**. It creates a repository for
+you. Clone it and go into it — this is the folder you will run everything in:
+
+```bash
+git clone https://github.com/sk-classroom/advnetsci-pair-notebook-m02-small-world-<your-github-id>
+cd advnetsci-pair-notebook-m02-small-world-<your-github-id>
+```
+
+### 5. Run the setup script
+
+Inside that folder:
+
+```bash
+node setup-pi.mjs
+```
+
+It is the same command on Windows and macOS. It installs `pi` (the agent your
+tutor runs on), registers the course models in `~/.pi/agent/models.json`, and
+makes **one real request** so you find out here — not mid-lesson — whether your
+key works. It is safe to re-run, it backs up any `models.json` you already had,
+and it leaves your other providers alone.
+
+When it prints `You are set`, you are done.
+
+### 6. The tutor's toolkit installs itself
+
+You do not install it by hand. The folder's `.pi/settings.json` pins the two
+packages your tutor needs, and `pi` fetches them the first time you run:
+
+```json
+"packages": [
+  "git:github.com/sk-classroom/pi-pair-notebook@v0.3.0",
+  "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
+]
+```
+
+That first start therefore takes a few seconds longer than every one after it.
+
+<details>
+<summary>If the fetch fails and you want to install them by hand</summary>
+
+```bash
+pi install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0
+pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0
+pi list     # both should be listed
+```
+
+Use the **same version tags** as the folder — a module and its toolkit are
+tested together.
+
+</details>
+
+## Starting a session
+
+Inside your assignment folder, type:
+
+```bash
+pi
+```
+
+That is the whole command. **There is no slash command to start** — say hello in
+plain words and your tutor takes it from there. It starts the notebook itself,
+opens it in your browser, and shuts it down again when you are done.
+
+::: {.callout-note title="Have pen and paper ready"}
+Three steps happen off-screen, on real paper — a table, a drawing, a
+derivation. You photograph each with your phone and drop it into the notebook.
+:::
+
+## The two windows
+
+| Window                    | What it is                                                                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Terminal** (tutor)      | Where you and your tutor talk. Every question and every answer happens here.                                                          |
+| **Browser** (notebook)    | The whiteboard: figures, interactive experiments, and photo uploads. It is built one cell at a time as you go.                        |
+
+Three things in the notebook are worth knowing about:
+
+**📨 Send to my tutor.** A drop box or a code box has this button under it.
+Press it and your tutor sees your work. A slider or a radio button has no
+button — play with it, then just say what you saw in the terminal.
+
+**📷 Photo uploads.** Photograph your paper with your phone, drop the image into
+the box, and press send. Your tutor reads the photograph. Wonky handwriting is
+fine; it is your reasoning that is being read.
+
+**⚖️ Stuck with your tutor?** Always the last thing on the page. If you think an
+answer should have counted, you want a fresh try, or you would rather move on —
+say so there and press the button. A second, stronger model reviews the whole
+situation and makes a call your tutor has to follow. Using it is never held
+against you.
+
+## Handing it in
+
+You do not upload anything by hand. When you are done for the day, tell your
+tutor in the terminal:
+
+> `hand it in`
+
+It commits your notebook, your session log and the summary, and pushes them to
+your GitHub Classroom repository. Three files land there:
+
+| File                                       | What it is                              |
+| ------------------------------------------ | --------------------------------------- |
+| `notebook.py`                              | the notebook the two of you built       |
+| `session_artifacts/session_log.jsonl`      | your answers, verbatim                  |
+| `session_artifacts/session_summary.md`     | a summary for your instructor           |
+
+Stopping halfway and picking it up tomorrow is fine — hand it in each time you
+stop. **A session finished in three sittings is worth exactly as much as one
+finished in a single evening**, and the commit history simply shows when the
+work happened.
+
+<details>
+<summary>Doing it yourself instead</summary>
+
+```bash
+git add -A && git commit -m "Pair Notebook 02" && git push
+```
+
+</details>
+
+## If something goes wrong
+
+**`pi: command not found`** — re-run `node setup-pi.mjs`, then open a new
+terminal. The install puts `pi` on your `PATH`, and an already-open terminal
+does not see it.
+
+**The notebook did not open in your browser** — tell your tutor. It has the
+address and will hand it to you.
+
+**Your tutor stops mid-sentence, or a request fails** — check your allowance at
+<https://llm.skojaku.com/v1/usage>. If there is plenty left, quit with
+`Ctrl` + `C` and run `pi` again; the session picks up where it left off.
+
+**Anything else** — ask on Discord. Getting stuck on setup is not part of the
+assignment.
