@@ -2,6 +2,19 @@
 title: "Centrality Concepts"
 ---
 
+::: {.callout-note title="What you'll learn in this module"}
+Centrality is one of the most widely used — and most quietly misused — ideas in network analysis. This module asks what "important" can mean, and what it costs to answer.
+
+You'll learn:
+
+- What **centrality** is, and why the question is meaningless until you say *important for what*.
+- How to **operationalize** importance three different ways: by counting connections, by measuring distance, and by following walks.
+- How each measure is actually **computed**, and what it costs on a large network.
+- The **limitations**: when centralities agree, when they disagree, and why the disagreement is the interesting part.
+
+**Keywords**: degree centrality, closeness centrality, harmonic centrality, eccentricity centrality, betweenness centrality, eigenvector centrality, Katz centrality, HITS, PageRank, personalized PageRank, random walk.
+:::
+
 ## What is centrality?
 
 Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
@@ -264,6 +277,18 @@ Thus, the eigenvector centrality is equivalent to the HITS centrality if the net
 :::
 :::
 
+::: {.column-margin}
+
+A second exercise, for the same undirected case. Suppose we normalize the hub score by the degree $d_j$ of the authority it points to:
+
+$$
+x_i = \sum_j \frac{A_{ji}}{d_j} y_j, \quad y_i = \sum_j A_{ij} x_j
+$$
+
+Then the hub centrality collapses to degree centrality. Confirm it by substituting $x_i = d_i$ — a small piece of algebra that shows how thin the line between "sophisticated" and "trivial" centralities can be.
+
+:::
+
 ### Katz centrality
 
 **Katz centrality** addresses a limitation of eigenvector centrality, which tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. The solution is to add a little bit of score to all nodes.
@@ -341,10 +366,7 @@ The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided
 
 
 ::: {.column-margin}
-See the following video for more details on PageRank:
-
-<iframe width="220" height="158" src="https://www.youtube.com/embed/v7n7wZhHJj8?si=qVfcEBCc-DEiiZ9w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+Video: [How PageRank works](https://www.youtube.com/watch?v=v7n7wZhHJj8), a visual walkthrough of the algorithm.
 :::
 
 

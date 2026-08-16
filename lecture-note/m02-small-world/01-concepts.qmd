@@ -60,11 +60,6 @@ At the end of the module, we will measure the average path length in a social ne
 ## Why is small-world networks non-trivial?
 
 
-::: {.column-margin}
-
-<iframe width="250" height="150" src="https://www.youtube.com/embed/TcxZSmzPw8k?si=J7DZ-7gmBPPruTSV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-:::
 
 When we think about social networks, it's natural to imagine that most people are friends with others who are nearby—friends of friends, classmates, colleagues, or neighbors. These are **local connections**, and they tend to form tightly-knit groups where everyone knows each other. In network terms, this means there are many **triangles**: if Alice is friends with Bob, and Bob is friends with Carol, then Alice is also likely to be friends with Carol.
 
@@ -80,11 +75,6 @@ In summary:
 
 ## Quantifying Small-World Properties
 
-::: {.column-margin}
-
-<iframe width="250" height="150" src="https://www.youtube.com/embed/mgcNO58BLk4?si=9wjqYyDzlMB0z6DH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-:::
 
 
 Let us approach the small-world properties from mathematical angle. Two key characteristics of small-world networks are:
@@ -376,30 +366,13 @@ The Watts-Strogatz model starts with a **ring lattice** and introduces randomnes
 
 At $p = 0$, the network is a regular ring lattice (high clustering, long paths); at $p = 1$, it becomes a random graph (low clustering, short paths). For $0 < p < 1$, the network combines high clustering with short path lengths---the hallmark of the small-world property.
 
-::: {.callout-tip title="interactive exploration"}
-
-Here is the interactive visualization of the Watts-Strogatz model 😎: [![Open in Marimo](https://marimo.io/static/badge.svg)](https://marimo.io/notebooks/nb_2qUDsuBA6KW2NrM4dTfxCJ).
-
-:::
-
 ### Why does the small-world property emerge?
 
 The Watts-Strogatz model explains that the small-world property emerges from a small number of long-range connections that connect distant parts of the network, despite the nodes being connected to their local neighbors. While we have focused on social networks, the same explanation applies to different domains, such as biological networks (e.g., neurons are primarily connected locally but have some long-range connections that enable rapid information transmission), and technological networks (e.g., the Internet topology is regional but has some long-range connections that span continents).
 
 ### Interactive Exploration
 
-<iframe
-  src="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/lecture-note/assets/marimo/watts_strogatz_wasm.py?embed=true&show-chrome=false&mode=app"
-  width="110%"
-  height="800"
-  frameborder="0"
-></iframe>
-
-
-Explore the Watts-Strogatz model interactively by adjusting the rewiring probability and observing how network properties change:
-
-
-
+<!-- TODO(anim): Watts-Strogatz rewiring dial -->
 
 In the next section, we will learn how to compute the shortest paths and connected components of a network using a library [igraph](https://python.igraph.org/en/stable/).
 

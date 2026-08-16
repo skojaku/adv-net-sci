@@ -103,8 +103,15 @@ $$
 P_{ij} = \frac{A_{ij}}{k_i}
 $$
 
-where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.
+where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$. Read it as a sentence: *if there is an edge, split the walker's chance evenly among all $k_i$ of them; if there is no edge, the chance is zero.*
 
+Written for the whole network at once, "divide every row of $\mathbf{A}$ by that node's degree" is exactly
+
+$$
+\mathbf{P} = \mathbf{D}^{-1} \mathbf{A}
+$$
+
+where $\mathbf{D}$ is the diagonal matrix holding the degrees, $D_{ii} = k_i$. This one-line form is worth memorising — it is how the transition matrix is built in code, and it is the object we take apart spectrally later in the module.
 
 We can represent all transition probabilities in a transition probability matrix $\mathbf{P}$:
 
@@ -220,6 +227,43 @@ In language of spectra of matrices, this means that the eigenvalue is not rescal
 
 The other eigenvalues are less than one in magnitude and describes the short-term behavior of random walks, which we will discuss in the next section.
 
+### Where does the walker actually end up?
+
+Calling $\boldsymbol{\pi}$ "the leading left eigenvector" describes it but does not tell you what it *is*. For an undirected network the answer is startlingly simple, and you can guess it before proving it.
+
+Feel it first. The walker never chooses a node — it chooses an **edge**. So a node with twice as many edges catches the walker roughly twice as often. That is the whole idea:
+
+$$
+\pi_i \propto k_i.
+$$
+
+To turn the proportionality into an equality, the probabilities must sum to one. Every edge contributes 2 to the total degree (one at each end), so $\sum_i k_i = 2m$ for a network with $m$ edges — the handshake count from Module 1. Dividing by that total gives
+
+::: {.callout-important title="The stationary distribution of a simple random walk"}
+$$
+\pi_i = \frac{k_i}{\sum_\ell k_\ell} = \frac{k_i}{2m}
+$$
+
+In the long run, the fraction of time the walker spends at a node is its share of the edge endpoints in the network. Nothing else about the structure survives.
+:::
+
+Checking the guess takes one line. Substitute it into the balance condition $\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}$:
+
+$$
+\left(\boldsymbol{\pi}\mathbf{P}\right)_j
+= \sum_i \pi_i P_{ij}
+= \sum_i \frac{k_i}{2m}\cdot\frac{A_{ij}}{k_i}
+= \frac{1}{2m}\sum_i A_{ij}
+= \frac{k_j}{2m}
+= \pi_j .
+$$
+
+The degrees cancel, which is the whole trick: the $k_i$ that makes a hub attractive is the same $k_i$ that thins out each of its outgoing steps.
+
+::: {.column-margin}
+Two consequences to carry forward. First, the stationary distribution of a simple walk on an undirected network *is* degree centrality, rescaled — which is why Module 6's walk-based measures needed teleportation to say anything new. Second, this holds only for undirected networks; on a directed network $\pi_i \propto k_i$ is false, and PageRank exists precisely to supply a well-behaved substitute.
+:::
+
 ### When does a stationary distribution exist?
 
 We said "assuming a stationary distribution exists (which is always true for undirected networks)". That parenthetical hides two conditions worth stating, because both fail in networks you will actually meet.
@@ -260,7 +304,15 @@ $$
 
 Thus, it is determined by the initial distribution $x(0)$ and the power of the transition probability matrix $P^t$. In long term, $P^t$ approaches to that for the stationary distribution $\pi$. Here we focus on the ehavior before the equilibrium is reached.
 
-To understand the short-term behavior, we represent $P$ as:
+Computing $P^t$ is easy when a matrix can be split as $\mathbf{Q}\mathbf{\Lambda}\mathbf{Q}^{-1}$, because then the power falls onto the diagonal alone: $\mathbf{Q}\mathbf{\Lambda}^t\mathbf{Q}^{-1}$. The obstacle is that $P = \mathbf{D}^{-1}\mathbf{A}$ is **not symmetric** — dividing each row by a different degree destroys the symmetry of $\mathbf{A}$ — so we cannot simply reach for the eigendecomposition of a symmetric matrix.
+
+The way around it is to move the degrees around until what remains *is* symmetric. Split $\mathbf{D}^{-1}$ into two halves and put one on each side:
+
+$$
+P = \mathbf{D}^{-1}\mathbf{A} = \mathbf{D}^{-\frac{1}{2}} \underbrace{\left( \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}} \right)}_{\overline{\mathbf{A}}} \mathbf{D}^{\frac{1}{2}}
+$$
+
+that is,
 $$
 P = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}
 $$
@@ -450,6 +502,24 @@ Modularity can be interpreted through random walks [@delvenne2010stability]:
 $$
 Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)
 $$
+
+::: {.callout-note collapse="true" title="Where this comes from — three lines of algebra"}
+Modularity as it is defined in Module 5 makes no mention of walks at all:
+
+$$
+Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{d_i d_j}{2m} \right) \delta(c_i, c_j)
+$$
+
+Push the constant $1/2m$ inside the bracket, then split each term so that a factor of $d_i/2m$ appears in front:
+
+$$
+\frac{A_{ij}}{2m} = \underbrace{\frac{d_i}{2m}}_{\pi_i} \cdot \underbrace{\frac{A_{ij}}{d_i}}_{P_{ij}} = \pi_i P_{ij},
+\qquad
+\frac{d_i d_j}{(2m)^2} = \underbrace{\frac{d_i}{2m}}_{\pi_i} \cdot \underbrace{\frac{d_j}{2m}}_{\pi_j} = \pi_i \pi_j .
+$$
+
+Substituting both gives the random-walk form. Nothing was assumed — modularity was a statement about random walks all along; we simply had not yet met $\pi_i = d_i/2m$ and $P_{ij} = A_{ij}/d_i$ to recognise it.
+:::
 
 where:
 - $\pi_i = \frac{d_i}{2m}$ is the stationary distribution of the random walk

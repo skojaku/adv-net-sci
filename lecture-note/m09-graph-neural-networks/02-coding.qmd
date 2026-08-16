@@ -5,17 +5,13 @@ title: "Hands-on: Building Graph Neural Networks"
 GCN, GraphSAGE and GAT on the same task, plus the failure mode that depth causes.
 
 ::: {.callout-note title="Where the code lives"}
-This course keeps its lecture note free of runnable code. Everything you
-execute lives in a marimo notebook, so it stays interactive and reactive
-instead of being a wall of output frozen into a web page.
+This module has no hosted notebook. PyTorch is a compiled package that the
+browser runtime cannot load, so this one runs locally only.
 
-### [▶ Run this notebook]({{< var molab.m09 >}})
-
-This one uses a compiled package that the browser runtime cannot load, so it runs on molab instead. You will need to sign in.
-
-Prefer to work locally? The notebook is in the repository at
+The notebook is in the repository at
 [`notebooks/m09-graph-neural-nets/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/coding.py).
-Run it with `marimo edit notebooks/m09-graph-neural-nets/coding.py`.
+Run it with `marimo edit notebooks/m09-graph-neural-nets/coding.py` in an
+environment that has PyTorch and PyTorch Geometric installed.
 :::
 
 ## What you will build
@@ -36,8 +32,8 @@ Run it with `marimo edit notebooks/m09-graph-neural-nets/coding.py`.
 
 **Image processing preliminaries** — Edge detection, kernels, and the Fourier transform worked through on real images — the concrete version of the theory in the preparation chapter.
 
-[Open in molab]({{< var molab.m09_image >}}) · [source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/image-processing.ipynb)
+[Source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/image-processing.ipynb) — run locally.
 
 **A GCN from scratch** — Bruna's spectral GCN and ChebNet implemented directly from the equations, without PyTorch Geometric's layers.
 
-[Open in molab]({{< var molab.m09_gcn >}}) · [source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/gcn-from-scratch.ipynb)
+[Source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/gcn-from-scratch.ipynb) — run locally.

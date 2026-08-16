@@ -1,0 +1,488 @@
+/*-----------------------------------------------------------------------------
+  minimal.scss — the single theme for the SSIE 641 lecture note.
+
+  ONE accent (#593196 purple) and ONE contrast (#c2410c amber). Nothing else
+  carries hue: rules, borders and code chrome are neutral greys. No green.
+
+  TYPE SCALE
+  ----------
+    root            18px      $font-size-root
+    line-height     1.65      $line-height-base
+    measure         68ch      on p / li only; figures, code, tables, animation
+                              stages and tables opt out
+    h1              2.05rem   margin-top 0
+    h2              1.55rem   margin-top 2.8rem   (section break)
+    h3              1.22rem   margin-top 2.0rem
+    h4              1.02rem   margin-top 1.5rem   (quieter than h3 — no rules,
+                              no underline, weight only)
+    small print     0.9rem    captions, TOC, footer
+
+  DESIGN TOKENS
+  -------------
+  The `:root` block in the rules section publishes --anim-* custom properties
+  that assets/anim.css and assets/anim.js consume. They are interpolated from
+  the SCSS variables below, so the page chrome and the animations cannot drift
+  apart: change $primary here and every animation follows.
+-----------------------------------------------------------------------------*/
+
+/*-- scss:defaults --*/
+
+// ---- ink & paper -----------------------------------------------------------
+$body-bg:                 #ffffff;
+$body-color:              #22212b;
+
+// ---- the two hues ----------------------------------------------------------
+$primary:                 #593196;   // THE accent
+$contrast:                #c2410c;   // THE contrast
+
+// Bootstrap insists on a full theme map. Collapse it: everything that is not
+// a warning is the accent, and every warning is the contrast hue.
+$secondary:               mix($body-color, $body-bg, 55%);
+$success:                 $primary;
+$info:                    $primary;
+$warning:                 $contrast;
+$danger:                  $contrast;
+$light:                   #fbfbfa;
+$dark:                    $body-color;
+
+// Bootstrap also emits its raw crayon box (--bs-green, --bs-teal,
+// --quarto-scss-export-green-*, --bs-form-valid-color). Nothing on this site
+// paints with them, but the standing rule is that no green survives a grep of
+// the built CSS, so retire the two green crayons at the source.
+$green:                   $primary;
+$teal:                    $primary;
+
+// ---- rules -----------------------------------------------------------------
+$border-color:            #e6e4e0;
+$table-border-color:      $border-color;
+$hr-color:                $border-color;
+$hr-opacity:              1;
+
+// ---- type ------------------------------------------------------------------
+$font-size-root:          18px;
+$line-height-base:        1.65;
+
+// A serif heading face from the system stack. No webfont, no network request.
+$font-family-serif:       "Iowan Old Style", "Palatino Linotype", Palatino,
+                          "Book Antiqua", "Hoefler Text", Georgia,
+                          "Times New Roman", serif;
+$headings-font-family:    $font-family-serif;
+$headings-color:          $body-color;
+$headings-font-weight:    600;
+$headings-line-height:    1.25;
+
+$h1-font-size:            2.05rem;
+$h2-font-size:            1.55rem;
+$h3-font-size:            1.22rem;
+$h4-font-size:            1.02rem;
+$h5-font-size:            0.95rem;
+$h6-font-size:            0.9rem;
+
+// ---- links -----------------------------------------------------------------
+// Body text stays one colour; a link announces itself by its underline and
+// only turns accent on hover.
+$link-color:              $body-color;
+$link-hover-color:        $primary;
+$link-decoration:         underline;
+$link-shade-percentage:   0%;
+
+// ---- code ------------------------------------------------------------------
+$code-color:              $primary;
+$code-bg:                 #f6f4f9;
+$code-block-bg:           #fbfbfa;
+$code-block-border-left:  #e0ded9;
+
+// ---- chrome ----------------------------------------------------------------
+$navbar-bg:               $body-bg;
+$navbar-fg:               $body-color;
+$navbar-light-color:      $body-color;
+$navbar-light-hover-color:$primary;
+$navbar-light-active-color:$primary;
+$navbar-padding-y:        0.5rem;
+
+$table-striped-bg:        transparent;
+$table-hover-bg:          rgba(0, 0, 0, 0.02);
+$table-cell-padding-y:    0.45rem;
+$table-cell-padding-x:    0.6rem;
+
+// ---- callouts --------------------------------------------------------------
+// Five names, two colours, zero fill (see rules).
+$callout-color-note:      $primary;
+$callout-color-tip:       $primary;
+$callout-color-important: $contrast;
+$callout-color-caution:   $contrast;
+$callout-color-warning:   $contrast;
+$callout-border-scale:    0%;
+$callout-icon-scale:      0%;
+
+// ---- animation-kit source values -------------------------------------------
+// Only these two are pinned by hand, so the existing pair-notebook walkthrough
+// keeps its exact palette. Everything else is derived.
+$anim-paper:              #fffdf8;   // warm sketch paper
+$anim-accent-soft:        #f0e9fb;   // the walkthrough's accent wash
+
+/*-- scss:rules --*/
+
+/* `mix()` returns fractional channels; these tokens get read and copied by
+   hand, so round them back to whole numbers. */
+@function tidy($c) {
+  @return rgb(round(red($c)), round(green($c)), round(blue($c)));
+}
+
+/* ===========================================================================
+   Design tokens for assets/anim.css + assets/anim.js
+   Interpolated from the SCSS variables above — single source of truth.
+   Change $primary here and every animation on the site follows.
+   =========================================================================== */
+:root {
+  --anim-ink:         #{$body-color};
+  --anim-ink-soft:    #{tidy(mix($body-color, $body-bg, 62%))};
+  --anim-ink-faint:   #{tidy(mix($body-color, $body-bg, 30%))};
+  --anim-paper:       #{$anim-paper};
+  --anim-white:       #{$body-bg};
+  --anim-accent:      #{$primary};
+  --anim-accent-soft: #{$anim-accent-soft};
+  --anim-amber:       #{$contrast};
+  --anim-amber-soft:  #{tidy(mix($contrast, $body-bg, 12%))};
+  --rule:             #{$border-color};
+}
+
+/* ===========================================================================
+   Measure
+   Prose is capped at 68ch. Everything that is not a sentence opts out.
+   =========================================================================== */
+main.content {
+  p,
+  li {
+    max-width: 68ch;
+  }
+
+  .anim-stage,
+  figure,
+  div.sourceCode,
+  table,
+  details,
+  .cell-output,
+  .cell,
+  .callout,
+  iframe {
+    max-width: none;
+  }
+
+  /* Inside those, prose goes back to flowing full width. */
+  .anim-stage p, .anim-stage li,
+  figure p,      figure li,
+  table p,       table li,
+  .cell-output p, .cell-output li {
+    max-width: none;
+  }
+}
+
+/* ===========================================================================
+   Type scale
+   =========================================================================== */
+body {
+  font-size: $font-size-root;
+  line-height: $line-height-base;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .h1 { margin-top: 0;      margin-bottom: 1.2rem; letter-spacing: -0.01em; }
+h2, .h2 { margin-top: 2.8rem; margin-bottom: 0.9rem; }
+h3, .h3 { margin-top: 2.0rem; margin-bottom: 0.7rem; }
+h4, .h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+h5, .h5,
+h6, .h6 { margin-top: 1.3rem; margin-bottom: 0.4rem; font-weight: 600;
+          color: mix($body-color, $body-bg, 70%); }
+
+/* h4 must stay quieter than h3: weight only, never a rule or an underline. */
+h4, .h4 { text-decoration: none; border: none; }
+
+p { margin-bottom: 1.05rem; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  opacity: 1;
+  margin: 2.4rem 0;
+}
+
+blockquote {
+  margin: 1.6rem 0;
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  border-left: 2px solid var(--rule);
+  color: mix($body-color, $body-bg, 78%);
+}
+
+/* Links: underline in the text colour, accent on hover. */
+a { text-underline-offset: 0.15em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-color: $primary; }
+
+/* ===========================================================================
+   Navbar — white, one hairline, no fill
+   =========================================================================== */
+.navbar {
+  background-color: $body-bg !important;
+  background-image: none;
+  border-bottom: 1px solid var(--rule);
+  box-shadow: none;
+}
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar .dropdown-item {
+  color: $body-color;
+}
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .dropdown-item:hover { color: $primary; }
+.navbar .navbar-brand > img { max-height: 34px; width: auto; }
+.navbar .dropdown-menu {
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* ===========================================================================
+   Sidebar — a hairline, and a 2px accent inset on the current page
+   =========================================================================== */
+#quarto-sidebar {
+  background-color: $body-bg;
+  border-right: 1px solid var(--rule);
+}
+#quarto-sidebar .sidebar-item-text,
+#quarto-sidebar .sidebar-link {
+  color: mix($body-color, $body-bg, 80%);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+#quarto-sidebar .sidebar-item-container { border-left: 2px solid transparent; }
+#quarto-sidebar .sidebar-item-container:hover .sidebar-link { color: $primary; }
+#quarto-sidebar .sidebar-link.active {
+  color: $primary;
+  font-weight: 600;
+}
+#quarto-sidebar .sidebar-item-container:has(> .sidebar-item-text.active),
+#quarto-sidebar .sidebar-item-container:has(> a.active) {
+  border-left-color: $primary;
+}
+#quarto-sidebar .sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-weight: 600;
+  color: $body-color;
+}
+
+/* ===========================================================================
+   Table of contents (right margin)
+   =========================================================================== */
+#quarto-margin-sidebar,
+nav[role="doc-toc"] {
+  font-size: 0.86rem;
+}
+nav[role="doc-toc"] > h2,
+nav[role="doc-toc"] > .h2 {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: mix($body-color, $body-bg, 55%);
+  margin: 0 0 0.6rem 0;
+  border: none;
+}
+nav[role="doc-toc"] ul { border-left: 1px solid var(--rule); }
+nav[role="doc-toc"] ul > li > a {
+  color: mix($body-color, $body-bg, 72%);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+  padding-left: 0.6rem;
+  max-width: none;
+}
+nav[role="doc-toc"] ul > li > a:hover { color: $primary; }
+nav[role="doc-toc"] ul > li > a.active {
+  color: $primary;
+  border-left-color: $primary;
+  font-weight: 600;
+}
+
+/* ===========================================================================
+   Callouts — a left rule and nothing else.
+   Every type is identical; only the rule colour changes.
+   =========================================================================== */
+/* `.callout.callout-style-default` (0,2,0) draws a full box, so the reset has
+   to out-specify it — hence the doubled class. */
+div.callout.callout,
+div.callout.callout-style-default,
+div.callout.callout-style-simple {
+  margin: 1.6rem 0;
+  padding: 0;
+  border: none;
+  border-left: 3px solid var(--rule);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+div.callout > .callout-header,
+div.callout.callout-style-default > .callout-header {
+  background-color: transparent !important;
+  border-bottom: none;
+  padding: 0 0 0.15rem 0.9rem;
+  font-weight: 600;
+  opacity: 1;
+}
+div.callout > .callout-body,
+div.callout .callout-body-container {
+  padding: 0.1rem 0 0.1rem 0.9rem;
+  background-color: transparent;
+}
+div.callout > .callout-body > :last-child { margin-bottom: 0; }
+
+div.callout.callout-note,
+div.callout.callout-tip       { border-left-color: $primary; }
+div.callout.callout-warning,
+div.callout.callout-caution,
+div.callout.callout-important { border-left-color: $contrast; }
+
+/* The icons are the only remaining hue carriers; drop them. */
+div.callout .callout-icon-container { display: none; }
+
+/* ===========================================================================
+   Code
+   =========================================================================== */
+pre, code, kbd, samp {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+}
+
+/* Inline code: one wash, one hue, no border. */
+:not(pre) > code {
+  font-size: 0.88em;
+  color: $code-color;
+  background-color: $code-bg;
+  padding: 0.12em 0.32em;
+  border-radius: 2px;
+}
+a > code { color: inherit; }
+
+div.sourceCode {
+  background-color: $code-block-bg;
+  border: 1px solid var(--rule);
+  border-left: 3px solid $code-block-border-left;
+  border-radius: 2px;
+  margin: 1.2rem 0;
+}
+div.sourceCode pre.sourceCode {
+  background-color: transparent;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  padding: 0.8rem 0.9rem;
+  overflow-x: auto;
+}
+
+/* ===========================================================================
+   Folded code
+   `details.code-fold` is Quarto's own (executed cells); `details.qfold` is
+   filters/fold-static-code.lua (plain fences). They must be indistinguishable.
+   =========================================================================== */
+details.code-fold,
+details.qfold {
+  margin: 1.2rem 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+details.code-fold > summary,
+details.qfold > summary {
+  cursor: pointer;
+  display: list-item;
+  list-style-position: outside;
+  margin-left: 1.1rem;
+  padding: 0.1rem 0;
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: mix($body-color, $body-bg, 62%);
+  background: transparent;
+  border: none;
+  user-select: none;
+}
+details.code-fold > summary::marker,
+details.qfold > summary::marker {
+  color: mix($body-color, $body-bg, 40%);
+  font-size: 0.8em;
+}
+details.code-fold > summary:hover,
+details.qfold > summary:hover { color: $primary; }
+details.code-fold[open] > summary,
+details.qfold[open] > summary { margin-bottom: 0.35rem; }
+details.code-fold > summary::-webkit-details-marker,
+details.qfold > summary::-webkit-details-marker { color: mix($body-color, $body-bg, 40%); }
+/* `code-copy: hover` inserts a .code-copy-outer-scaffold between the details
+   and the block, so reach the block by descent, not by child. */
+details.code-fold div.sourceCode,
+details.qfold div.sourceCode { margin-top: 0; margin-bottom: 0; }
+
+/* ===========================================================================
+   Tables — hairlines only, and they scroll rather than push the page wide
+   =========================================================================== */
+main.content table,
+.table {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin: 1.5rem 0;
+}
+main.content table > :not(caption) > * > *,
+.table > :not(caption) > * > * {
+  box-shadow: none;
+  background-color: transparent;
+  border-bottom: 1px solid var(--rule);
+  padding: $table-cell-padding-y $table-cell-padding-x;
+}
+main.content table thead th,
+.table thead th {
+  border-bottom: 1px solid mix($body-color, $body-bg, 35%);
+  border-top: none;
+  font-weight: 600;
+}
+main.content table caption,
+.table caption {
+  caption-side: bottom;
+  font-size: 0.85rem;
+  color: mix($body-color, $body-bg, 60%);
+}
+
+/* ===========================================================================
+   Figures & media
+   =========================================================================== */
+figure { margin: 1.8rem 0; }
+figure img, .figure img, img { max-width: 100%; height: auto; }
+figcaption, .figure-caption {
+  font-size: 0.85rem;
+  color: mix($body-color, $body-bg, 62%);
+  margin-top: 0.5rem;
+}
+
+/* ===========================================================================
+   Footer & odds and ends
+   =========================================================================== */
+.nav-footer {
+  background-color: $body-bg;
+  border-top: 1px solid var(--rule);
+  font-size: 0.85rem;
+  color: mix($body-color, $body-bg, 60%);
+}
+.nav-page a, .nav-footer a { text-decoration: none; }
+.nav-page a:hover { color: $primary; }
+
+#quarto-back-to-top { color: mix($body-color, $body-bg, 60%); }
+
+.aa-DetachedSearchButton,
+.aa-Autocomplete .aa-Form {
+  border-color: var(--rule);
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+::selection { background: $anim-accent-soft; }

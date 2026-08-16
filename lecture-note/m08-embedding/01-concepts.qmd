@@ -178,8 +178,6 @@ word2vec learns word meanings from context, following the linguistic principle: 
 
 ::: {.column-margin}
 This phrase means a person is similar to those they spend time with. It comes from Aesop's fable *The Ass and his Purchaser* (500s B.C.): a man brings an ass to his farm on trial. The ass immediately seeks out the laziest, greediest ass in the herd. The man returns the ass, knowing it will be lazy and greedy based on the company it chose.
-
-<iframe width="100%" height="200" src="https://www.youtube.com/embed/gQddtTdmG_8?si=x8DUQnll2Rnj8qkn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 :::
 
 **The Core Idea**: Given a target word, predict its surrounding context words within a fixed window. For example, in:
@@ -422,7 +420,7 @@ Hyperbolic embedding of wordnet nouns [@nickel2018learning]. Abstract terms like
 
 We have now seen two families that look nothing alike: one solves an eigenproblem in closed form, the other runs stochastic gradient descent on random walks. It is natural to assume they compute different things. They mostly do not.
 
-The bridge is a result of Levy and Goldberg, extended to graphs by Qiu et al. [@qiu2018network]: **skip-gram with negative sampling is implicitly factorizing a matrix.** Specifically, the optimum of the word2vec objective is reached when the dot product of two embeddings equals the shifted pointwise mutual information of the corresponding pair:
+The bridge is a result of Levy and Goldberg [@levy2014neural], extended to graphs by Qiu et al. [@qiu2018network]: **skip-gram with negative sampling is implicitly factorizing a matrix.** Specifically, the optimum of the word2vec objective is reached when the dot product of two embeddings equals the shifted pointwise mutual information of the corresponding pair:
 
 $$
 {\bf u}_i^\top {\bf v}_j = \log \frac{P(i,j)}{P(i)P(j)} - \log b

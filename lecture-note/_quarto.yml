@@ -1,10 +1,18 @@
 project:
   type: website
   output-dir: _site
+  # `*.qmd` / `*.md` match at every depth, so anything not excluded here becomes
+  # a live page. The exclusions are load-bearing, not tidiness.
   render:
     - "*.qmd"
     - "*.md"
-    - "!figs/src/"  # figure generators, not pages
+    - "!figs/src/"            # figure generators, not pages
+    - "!assets/**"            # a legacy revealjs deck lives under assets/slides
+    - "!**/pen-and-paper/**"  # LaTeX worksheet sources; the PDFs ship as resources
+    - "!_*.qmd"               # include partials, e.g. _pair-notebook-walkthrough
+    - "!_*.md"
+    - "!**/_*.qmd"
+    - "!**/_*.md"
 
 title: "Advanced Topics in Network Science"
 author: Sadamori Kojaku
@@ -28,7 +36,8 @@ website:
 
   sidebar:
     style: "docked"
-    search: true
+    # No `search:` here — the navbar already carries one, and setting both
+    # renders two search boxes on every page.
     collapse-level: 1
     border: false
     background: "white"
@@ -37,11 +46,10 @@ website:
         contents:
           - course/welcome.md
           - course/about.md
+          - course/activities.md
           - course/discord.md
-          - course/minidora-usage.qmd
           - course/setup.qmd
           - course/pair-notebook.qmd
-          - course/how-to-submit-assignment.md
       - section: "Introduction"
         contents:
           - intro/why-networks.qmd
@@ -73,6 +81,7 @@ website:
           - m05-clustering/01-concepts.qmd
           - m05-clustering/02-coding.qmd
           - m05-clustering/03-exercises.qmd
+          - m05-clustering/04-appendix.md
       - section: "M06: Centrality"
         contents:
           - m06-centrality/01-concepts.qmd
@@ -98,8 +107,11 @@ website:
           - m09-graph-neural-networks/04-appendix.qmd
 
   navbar:
-    logo: logo.jpg
-    background: primary
+    # logo.jpg is a 4.6 MB 10156x4449 original; this is the same mark resampled
+    # to 200px for the 34px slot it actually occupies.
+    logo: assets/logo.png
+    # No `background:` — a solid #593196 bar puts white-at-70% labels at ~2.6:1,
+    # below WCAG AA. The navbar is white with a hairline (see scss/minimal.scss).
     search: true
     left:
       - text: "Home"
@@ -110,10 +122,10 @@ website:
             file: course/welcome.md
           - text: "About"
             file: course/about.md
+          - text: "Activities & grading"
+            file: course/activities.md
           - text: "Discord"
             file: course/discord.md
-          - text: "Minidora"
-            file: course/minidora-usage.qmd
           - text: "Setup"
             file: course/setup.qmd
           - text: "Pair Notebook"
@@ -167,6 +179,8 @@ website:
             file: m05-clustering/02-coding.qmd
           - text: "Exercises"
             file: m05-clustering/03-exercises.qmd
+          - text: "Appendix"
+            file: m05-clustering/04-appendix.md
           - text: "─── M06: Centrality ───"
           - text: "Concepts"
             file: m06-centrality/01-concepts.qmd
@@ -215,33 +229,51 @@ execute:
   enabled: false
   freeze: true
 
+# Code folding.
+#
+# `code-fold: true` alone does nothing on this site. Quarto's own filter
+# (share/filters/main.lua, render_folded_block) opens with
+#   `if (not block.attr.classes:includes("cell-code") ...) then return block end`
+# and only an execution engine adds `cell-code`. With `execute: enabled: false`
+# every fence is a plain fence, so Quarto walks past it. The flag is kept for
+# the day a cell does execute; filters/fold-static-code.lua does the real work
+# for plain fences. Both flavours are styled identically in scss/minimal.scss.
+filters:
+  - at: post-quarto
+    path: filters/fold-static-code.lua
+
 format:
   html:
     theme:
-      - pulse
-      - scss/style.scss
-    toc: false
+      - scss/minimal.scss
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    toc-title: "On this page"
     page-layout: article
-    toc-depth: 2
-    number-sections: true
-    number-depth: 2
+    # Off: it numbered prose pages, e.g. index.qmd rendered as
+    # "1 List of Exercises and Assignments".
+    number-sections: false
     html-math-method: katex
-    code-fold: false
+    code-fold: true
+    code-summary: "Show the code"
     code-copy: hover
-    code-tools: true
-    highlight-style: github-dark
-    #code-block-bg: true
-    code-block-border-left: "#22c55e"
-    #fontsize: 24px
-    #grid:
-      #body-width: 1200px
-      #sidebar-width: 200px
-      #margin-width: 200px
+    # Off: it injects a "</> Code" dropdown into the header of every page,
+    # including the many with no code at all.
+    code-tools: false
+    highlight-style: monochrome
+    code-block-bg: "#fbfbfa"
+    code-block-border-left: "#e0ded9"
     css:
-      - assets/custom.css
+      - assets/anim.css
+    include-after-body:
+      - _includes/anim.html
 
 resources:
   - "assets/**"
+  # PDF copying otherwise depends on link-discovery heuristics, and the M02
+  # worksheets 404 in production even though the files are on disk.
+  - "m0*/pen-and-paper/*.pdf"
 
 # Add a bibtex file so that we can create citations
 bibliography: references.bib

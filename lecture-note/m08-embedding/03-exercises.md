@@ -92,4 +92,3 @@ In this exercise, we implement the biased random walk mechanism that makes node2
 
 - **Software Packages**: Refer to the [01-concepts](01-concepts.qmd#software-for-network-embedding) for recommended implementations
 - **Mathematical Details**: See [04-appendix.md](04-appendix.md) for formal proofs and derivations
-- **Preparation Material**: Review [00-preparation.md](00-preparation.md) for background on random walks and linear algebra
