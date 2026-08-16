@@ -1,0 +1,94 @@
+---
+title: "Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit"
+---
+
+Three things the main text used without justifying: that Euler's conditions are not merely necessary but sufficient, that a matrix product counts walks, and that an adjacency matrix can be stored in a fraction of $N^2$ numbers. Here they are.
+
+## Why Euler's conditions are enough
+
+The [concepts page](01-concepts.qmd) proved one half of Euler's theorem: *if* a route crosses every edge exactly once, *then* at most two nodes have odd degree. That is what kills Königsberg. The other half — that a connected graph with zero or two odd-degree nodes always *has* such a route — needs a construction, and the construction is short.
+
+Take a connected graph in which **every** node has even degree, and start walking anywhere, never re-using an edge. Keep going until you are stuck. You can only get stuck at the node you started from: any other node you entered has been entered and left in pairs, so having just arrived, you have used an odd number of its edges, and its degree being even leaves at least one edge to depart by. So the walk closes into a circuit.
+
+That circuit may miss some edges. If it does, connectivity guarantees that some node *on* the circuit still has an unused edge. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.
+
+For the two-odd-node case, add a temporary extra edge joining the two odd nodes. Now every degree is even, so the construction above gives a circuit; delete the temporary edge from it and what remains is an Eulerian trail running from one odd node to the other. This is Hierholzer's algorithm, and it is also how you would code it.
+
+## Why matrix powers count walks
+
+Write ${\bf A}$ for the adjacency matrix, so $A_{ij}$ is the number of edges between $i$ and $j$.
+
+A walk of length 2 from $i$ to $j$ consists of a choice of intermediate node $\ell$, an edge from $i$ to $\ell$, and an edge from $\ell$ to $j$. There are $A_{i\ell}$ ways to make the first choice and $A_{\ell j}$ ways to make the second, so $A_{i\ell}A_{\ell j}$ walks pass through that particular $\ell$. The intermediate node can be anything, and the possibilities do not overlap, so add them up:
+
+$$
+\#\{\text{walks of length } 2 \text{ from } i \text{ to } j\} = \sum_{\ell} A_{i\ell} A_{\ell j} = \left({\bf A}^2\right)_{ij}.
+$$
+
+That sum — run along row $i$ and down column $j$, multiply entry by entry, add — is the definition of the matrix product, which is why the answer is $\left({\bf A}^2\right)_{ij}$ and not merely something resembling it.
+
+Now induct on the length. A walk of length $k+1$ from $i$ to $j$ is a walk of length $k$ from $i$ to some node $\ell$, followed by a single edge from $\ell$ to $j$. Assuming the claim for $k$, the number of such walks is
+
+$$
+\sum_{\ell} \left({\bf A}^{k}\right)_{i\ell} A_{\ell j} = \left({\bf A}^{k}{\bf A}\right)_{ij} = \left({\bf A}^{k+1}\right)_{ij},
+$$
+
+which is the claim for $k+1$. The base case $k=1$ is the definition of ${\bf A}$ itself.
+
+Two footnotes. The argument never asks whether a node or an edge is reused, which is precisely why it counts walks and not paths. And it never uses symmetry, so it holds verbatim for directed networks, with $A_{ij}$ counting edges pointing from $i$ to $j$.
+
+## Storing a matrix that does not fit
+
+A dense adjacency matrix for Earth's 8 billion people would have $(8\times 10^{9})^2 = 6.4\times 10^{19}$ entries; at 8 bytes each, that is 512 exabytes. Real networks are sparse, and this notebook is about exploiting that.
+
+Storing an adjacency matrix as a full table wastes almost all of it: a real network has a handful of edges per node, so nearly every entry is zero. The fix is to write down only the entries that are not zero.
+
+Start from an **adjacency list** — for each row of the matrix, the column IDs that carry a value, and the values themselves:
+
+$$
+\{\text{Row ID}: (\text{Column ID}, \text{Value})\}
+$$
+
+**Compressed Sparse Row (CSR)** is nothing more than this list flattened into three plain arrays:
+
+| Array | What it holds |
+| :--- | :--- |
+| `indices` | the column IDs of every non-zero entry, row after row |
+| `data` | the matching values, in the same order |
+| `indptr` | where each row *starts* inside those two arrays |
+
+`indptr` is the only one that needs a moment's thought. It is the running total of how many entries each row contributed, beginning at 0 — so `indptr[i]` is the position in `indices` where row $i$ begins, and `indptr[i+1]` is where it ends. Row 0 occupies positions `0 … indptr[1]-1`, row 1 picks up at `indptr[1]`, and so on.
+
+Once you see that, two network operations become one-liners that need no library at all:
+
+- **Degree of node $i$**: `indptr[i+1] - indptr[i]` — the number of non-zero entries in row $i$.
+- **Neighbours of node $i$**: `indices[indptr[i]:indptr[i+1]]` — the column IDs in row $i$, which are exactly the nodes $i$ connects to. The matching edge weights are `data[indptr[i]:indptr[i+1]]`.
+
+This is why CSR is the format every network library reaches for: the operation you perform most often — "give me this node's neighbours" — is a contiguous slice.
+
+Now go and build it.
+
+::: {.callout-note title="Where the code lives"}
+**[Open the sparse-matrix notebook]({{< var molab.m01_sparse >}})**
+
+Prefer to work locally? The same notebook is in the repository at
+[`notebooks/m01-euler-tour/sparse-matrices.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/sparse-matrices.py).
+Run it with `marimo edit notebooks/m01-euler-tour/sparse-matrices.py`.
+:::
+
+### What you will build
+
+1. Construct a CSR matrix from an edge list with `scipy.sparse`.
+2. Take the format apart and read `data`, `indices` and `indptr` directly.
+3. Recover a node's degree and its neighbour list straight from `indptr` and `indices`, without any library call.
+4. Measure the memory a dense array and a CSR matrix need for the same network, as the network grows.
+5. Use sparse matrix-vector products to run the component-finding code from earlier in the module at a scale where dense arrays would not fit.
+
+### What to watch for
+
+- Plot memory against network size for both formats. The curves diverge faster than intuition suggests: dense storage grows with the square of the number of nodes, while CSR grows in proportion to nodes plus edges.
+- CSR is fast for row-based operations and matrix-vector products, and slow at repeatedly reading single entries. Time both and you will remember which is which.
+- Compare CSR against COO and CSC on the same operations. The right format depends entirely on what you are about to do with the matrix.
+
+::: {.column-margin}
+[A good visual introduction to sparse formats](https://matteding.github.io/2019/04/25/sparse-matrices/) by Matt Eding.
+:::

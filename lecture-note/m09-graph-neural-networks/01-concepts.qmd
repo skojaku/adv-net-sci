@@ -1,21 +1,30 @@
 ---
-title: "Concepts - From image to graph"
+title: "Every Node Asks Its Neighbors"
 ---
 
-## Analogy between image and graph data
-We can think of a convolution of an image from the perspective of networks.
-In the convolution of an image, a pixel is convolved with its *neighbors*. We can regard each pixel as a node, and each node is connected to its neighboring nodes (pixels) that are involved in the convolution.
+> **The big question of this module.** An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?
 
-![](https://av-eks-lekhak.s3.amazonaws.com/media/__sized__/article_images/conv_graph-thumbnail_webp-600x300.webp)
+Here is the answer in one sentence, before any mathematics: **a layer replaces each node's value with a combination of its neighbors' values, and learns what that combination should be.** Everything below is a variation on that sentence — which combination, computed how, and what goes wrong when you do it too many times.
+
+## A pixel is a node, and a kernel is a rule about neighbors
+
+We can think of a convolution of an image from the perspective of networks.
+In the convolution of an image, a pixel is convolved with its *neighbors*. We can regard each pixel as a node, and each node is connected to its neighboring nodes (pixels) that are involved in the convolution. An image is then a very orderly network: a grid in which every node has exactly eight neighbors, always in the same eight positions.
+
+<!-- TODO(anim): morph a 5x5 pixel grid into a graph — pixels lift off into nodes, the 3x3 kernel footprint becomes edges — then perturb it into an irregular network so the reader sees the grid was a special case. -->
 
 Building on this analogy, we can extend the idea of convolution to general graph data.
 Each node has a pixel value(s) (e.g., feature vector), which is convolved with the values of its neighbors in the graph.
 This is the key idea of graph convolutional networks.
-But, there is a key difference: while the number of neighbors for an image is homogeneous, the number of neighbors for a node in a graph can be heterogeneous. Each pixel has the same number of neighbors (except for the boundary pixels), but nodes in a graph can have very different numbers of neighbors. This makes it non-trivial to define the "kernel" for graph convolution.
+But, there is a key difference: while the number of neighbors for an image is homogeneous, the number of neighbors for a node in a graph can be heterogeneous. Each pixel has the same number of neighbors (except for the boundary pixels), but nodes in a graph can have very different numbers of neighbors. A kernel is a *fixed* table of nine weights; a node with three neighbors and a node with three hundred cannot share one.
 
-There is a second difference, less obvious but just as constraining. In an image, "the pixel above" is a well-defined position, and the same kernel weight always applies to it. In a graph, a node's neighbors arrive as an unordered *set*. If we relabel the nodes — feed the same network in with the rows of ${\bf A}$ shuffled — nothing about the network has changed, so nothing about our answer should change either.
+There is a second difference, less obvious but just as constraining. In an image, "the pixel above" is a well-defined position, and the same kernel weight always applies to it. In a graph, a node's neighbors arrive as an unordered *set*. Nothing tells you which neighbor is "first".
 
-::: {.callout-important title="Key Concept: Permutation invariance and equivariance"}
+Concretely: draw a triangle and label its corners $1, 2, 3$. Now swap the names of nodes $2$ and $3$. The picture on the page has not changed at all — but the adjacency matrix has, because both its rows and its columns got swapped. Written with a **permutation matrix** ${\bf P}$ (an identity matrix with its rows shuffled, so that ${\bf P}{\bf v}$ reorders the entries of ${\bf v}$), renaming the nodes turns ${\bf A}$ into ${\bf P}{\bf A}{\bf P}^\top$: the ${\bf P}$ on the left reorders the rows, and the ${\bf P}^\top$ on the right reorders the columns to match. Same network, different bookkeeping.
+
+Our answers must not care about the bookkeeping.
+
+::: {.callout-note title="Permutation invariance and equivariance"}
 Let ${\bf P}$ be a permutation matrix that relabels nodes. A function $f$ on graphs is:
 
 - **Permutation invariant** if $f({\bf P}{\bf A}{\bf P}^\top, {\bf P}{\bf X}) = f({\bf A}, {\bf X})$. The output does not move at all. This is what we need for **graph-level** predictions — "is this molecule toxic?" cannot depend on the order we happened to list the atoms in.
@@ -24,8 +33,11 @@ Let ${\bf P}$ be a permutation matrix that relabels nodes. A function $f$ on gra
 
 This is not a technicality; it dictates the architecture. It is why every layer we build below aggregates neighbors with an operation that ignores order — sum, mean, max — and never with anything that depends on which neighbor came "first". It is also why an MLP applied to a flattened adjacency matrix, which would in principle be more expressive, is useless in practice: it has to learn from data that all $N!$ relabelings mean the same thing.
 
-## Spectral filter on graphs
-Just like we can define a convolution on images in the frequency domain, we can also define a ''frequency domain'' for graphs.
+## What "frequency" means when there is no time axis
+
+On the previous page a kernel turned out to be a filter: it kept some waves and discarded others. To reuse that idea we need waves on a network. A network has no time axis and no rows of pixels, so we have to say what "fast" and "slow" mean using nothing but the edges.
+
+Here is the definition that does it. Put one number on each node and ask: **how much do connected nodes disagree?**
 
 Consider a network of $N$ nodes, where each node has a feature variable ${\mathbf x}_i \in \mathbb{R}$. We are interested in:
 
@@ -33,7 +45,19 @@ $$
 J = \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2,
 $$
 
-where $A_{ij}$ is the adjacency matrix of the graph. The quantity $J$ represents *the total variation* of $x$ between connected nodes; a small $J$ means that connected nodes have similar $x$ (low variation; low frequency), while a large $J$ means that connected nodes have very different $x$ (high variation; high frequency).
+where $A_{ij}$ is the adjacency matrix of the graph. The quantity $J$ is *the total variation* of $x$: the sum of the squared disagreement across every edge. (The factor $\frac{1}{2}$ is there because the double sum visits each edge twice.) Small $J$ means connected nodes hold similar values — a **slow, low-frequency** signal. Large $J$ means neighbors disagree sharply — a **fast, high-frequency** signal.
+
+Try it on the smallest interesting network: four nodes in a line, $1 - 2 - 3 - 4$, with three edges. Put three different signals on it and add up the squared disagreements edge by edge.
+
+| signal ${\bf x}$ | edge (1,2) | edge (2,3) | edge (3,4) | $J$ |
+|---|---|---|---|---|
+| $(1, 1, 1, 1)$ | $0$ | $0$ | $0$ | $\mathbf{0}$ |
+| $(1, 1, -1, -1)$ | $0$ | $4$ | $0$ | $\mathbf{4}$ |
+| $(1, -1, 1, -1)$ | $4$ | $4$ | $4$ | $\mathbf{12}$ |
+
+The constant signal has no variation at all. The one that splits the line into a left half and a right half changes sign once, across a single edge. The alternating one changes sign at every edge and scores three times as high. That ordering — $0 < 4 < 12$ — is the entire content of "frequency" on a network. No waves needed, just disagreement across edges.
+
+<!-- TODO(anim): the same four-node line with draggable node values, J recomputed live, and the three signals above as presets, so the reader feels J rise as they make neighbors disagree. -->
 
 We can rewrite $J$ as
 
@@ -53,7 +77,7 @@ $$
 
 and ${\bf x} = [x_1,x_2,\ldots, x_N]^\top$ is a column vector of feature variables. Equivalently, ${\bf L} = {\bf D} - {\bf A}$, where ${\bf D}$ is the diagonal degree matrix with $D_{ii} = k_i$.
 
-::: {.callout-important title="Notation: two Laplacians"}
+::: {.callout-note title="Notation: two Laplacians"}
 We will need **two** Laplacians in this module, and mixing them up breaks every formula that follows. Keep them distinct:
 
 $$
@@ -64,170 +88,97 @@ ${\bf L}$ is what appears in the total-variation identity ${\bf x}^\top {\bf L} 
 :::
 
 
-::: {.callout-note title="Detailed derivation"}
+Multiplying out $(x_i - x_j)^2$ and collecting terms is what turns the edge-by-edge sum into ${\bf x}^\top {\bf L} {\bf x}$; the four lines of algebra are in the [appendix](04-appendix.qmd#total-variation).
 
-The above derivation shows that the total variation of $x$ between connected nodes is proportional to ${\bf x}^\top {\bf L} {\bf x}$.
+### The network's own basis waves
 
-$$
-\begin{aligned}
-J &= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2 \\
-&= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N \underbrace{A_{ij}\left( x_i^2 +x_j^2\right)}_{\text{symmetric}} - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \sum_{i=1}^Nx_i^2\underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree of node } i, k_i} - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \sum_{i=1}^Nx_i^2 k_i - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \underbrace{[x_1,x_2,\ldots, x_N]}_{{\bf x}} \underbrace{\begin{bmatrix} k_1 & 0 & \cdots & 0 \\ 0 & k_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & k_N \end{bmatrix}}_{{\bf D}} \underbrace{\begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_N \end{bmatrix}}_{{\bf x}} - 2\underbrace{\sum_{i=1}^N\sum_{j=1}^N A_{ij}}_{{\bf x}^\top {\mathbf A} {\bf x}} {\bf x} \\
-&= {\bf x}^\top {\bf D} {\bf x} - {\bf x}^\top {\mathbf A} {\bf x} \\
-&= {\bf x}^\top {\bf L} {\bf x},
-\end{aligned}
-$$
-:::
-
-Let us showcase the analogy between the Fourier transform and the Laplacian matrix.
-In the Fourier transform, a signal is decomposed into sinusoidal basis functions. Similarly, for a graph, we can decompose the variation $J$ into eigenvector bases.
+Now the analogy with the Fourier transform pays off. There, a signal was rebuilt from sinusoids. Here, the Laplacian is a symmetric matrix, so it has $N$ eigenvectors ${\mathbf u}_1, \ldots, {\mathbf u}_N$ that form a basis: *any* assignment of numbers to nodes can be written as a combination of them. These eigenvectors are the network's basis waves, and the variation splits along them:
 
 $$
-J = \sum_{i=1}^N \lambda_i  {\bf x}^\top {\mathbf u}_i {\mathbf u}_i^\top {\bf x} = \sum_{i=1}^N \lambda_i  ||{\bf x}^\top {\mathbf u}_i||^2.
+J = \sum_{i=1}^N \lambda_i  ||{\bf x}^\top {\mathbf u}_i||^2 .
 $$
 
-where ${\mathbf u}_i$ is the eigenvector corresponding to the eigenvalue $\lambda_i$.
-^\top {\mathbf u}_i)$ is a dot-product between the feature vector ${\bf x}$ and the eigenvector ${\mathbf u}_i$, which measures how much ${\bf x}$ *coheres* with eigenvector ${\mathbf u}_i$, similar to how Fourier coefficients measure coherency with sinusoids.
-- Each $||{\bf x}^\top {\mathbf u}_i||^2$ is the ''strength'' of ${\bf x}$ with respect to the eigenvector ${\mathbf u}_i$, and the total variation $J$ is a weighted sum of these strengths.
+Read the two pieces separately.
 
-Some eigenvectors correspond to low-frequency components, while others correspond to high-frequency components. For example, the total variation $J$ for an eigenvector ${\mathbf u}_i$ is given by
+- $({\bf x}^\top {\mathbf u}_i)$ is a dot product between the signal ${\bf x}$ and the basis wave ${\mathbf u}_i$: how much of that wave the signal contains. It plays exactly the role of a Fourier coefficient.
+- $\lambda_i$ is the price tag on that wave. Feed the wave itself in as the signal and the sum collapses to ${\mathbf u}_i^\top {\bf L} {\mathbf u}_i = \lambda_i$: **the eigenvalue of a basis wave is literally its own total variation.**
 
-$$
-J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u}_i^\top {\mathbf L} {\mathbf u}_i = \lambda_i.
-$$
+So the eigenvalues sort the basis waves from smoothest to roughest. The smallest is always $\lambda = 0$, whose eigenvector is constant on each connected component — the flat picture, the wave with no variation, the graph's version of "overall brightness". Large $\lambda$ means neighbors disagree violently. A signal made mostly of small-$\lambda$ waves is smooth across the network; one made of large-$\lambda$ waves is jagged.
 
-This equation provides key insight into the meaning of eigenvalues:
+That is a frequency domain, built from edges alone.
 
-1. For an eigenvector ${\mathbf u}_i$, its eigenvalue $\lambda_i$ measures the total variation for ${\mathbf u}_i$.
-2. Large eigenvalues mean large differences between neighbors (high frequency), while small eigenvalues mean small differences (low frequency).
+### Turning the dial: keep the smooth part, or keep the rough part
 
-Thus, if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a large $\lambda_i$, then ${\bf x}$ has a strong high-frequency component; if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a small $\lambda_i$, then ${\bf x}$ has strong low-frequency component.
+Once every wave carries a number $\lambda_i$, we can rescale wave $i$ by any function $h(\lambda_i)$ we like before rebuilding the signal. That is a **filter**, exactly as on the previous page, and the choice of $h$ decides what survives:
 
-### Spectral Filtering
+**Low-pass**, $h_{\text{low}}(\lambda) = \dfrac{1}{1 + \alpha\lambda}$, divides each wave by its own roughness. Smooth waves pass nearly untouched, jagged ones are shrunk, and the output is a smoothed version of the input in which neighbors have been pulled toward each other.
 
-Eigenvalues $\lambda_i$ can be thought of as a *filter* that controls which frequency components pass through. Instead of using the filter associated with the Laplacian matrix, we can design a filter $h(\lambda_i)$ to control which frequency components pass through. This leads to the idea of *spectral filtering*. Two common filters are:
+**High-pass**, $h_{\text{high}}(\lambda) = \dfrac{\alpha\lambda}{1 + \alpha\lambda}$, does the reverse: it deletes the constant wave entirely (at $\lambda = 0$ it is exactly $0$) and keeps what varies between neighbors. It is the graph's edge detector.
 
-1. **Low-pass Filter**:
-   $$h_{\text{low}}(\lambda) = \frac{1}{1 + \alpha\lambda}$$
-   - Preserves low frequencies (small λ)
-   - Suppresses high frequencies (large λ)
-   - Results in smoother signals
+![Filter response against eigenvalue. Low-pass keeps the smooth waves; high-pass keeps the rough ones. $\alpha$ sets how sharply the dial turns.](../figs/m09-fig-00.svg){#fig-m09-fig-00 width=80% fig-align="center"}
 
-2. **High-pass Filter**:
-   $$h_{\text{high}}(\lambda) = \frac{\alpha\lambda}{1 + \alpha\lambda}$$
-   - Preserves high frequencies
-   - Suppresses low frequencies
-   - Emphasizes differences between neighbors
-
-![](../figs/m09-fig-00.svg){#fig-m09-fig-00}
+Keep the low-pass curve in mind. When we get to over-smoothing, it will turn out that a stack of GCN layers is this curve applied over and over.
 
 
-# Graph Convolutional Networks
-We have seen that spectral filters give us a principled way to think about "convolution" on irregular graph structures, and controlling the frequency components brings out different aspects of the data. We now go one step further: instead of designing filters by hand, we can learn them from data for specific tasks.
+## Stop designing the filter, learn it
 
+Spectral filters give us a principled way to think about "convolution" on irregular graph structures, and turning the dial between smooth and rough brings out different aspects of the data. We now go one step further: instead of choosing $h(\lambda)$ by hand, **let the data choose it**. That single move is what turns a filter into a neural network.
 
-## Spectral Graph Convolutional Networks
+### Bruna's filter: one weight per basis wave
 
-A simplest form of learnable spectral filter is given by
+The simplest learnable filter puts a free parameter on each basis wave:
 
 $$
 {\bf L}_{\text{learn}} = \sum_{k=1}^K \theta_k {\mathbf u}_k {\mathbf u}_k^\top,
 $$
 
-where ${\mathbf u}_k$ are the eigenvectors and $\theta_k$ are the learnable parameters. The variable $K$ is the number of eigenvectors used (i.e., the rank of the filter). The weight $\theta_k$ is learned to maximize the performance of the task at hand.
+where ${\mathbf u}_k$ are the Laplacian's eigenvectors and $\theta_k$ are learnable. $K$ is how many waves we keep. Compare this with the hand-designed low-pass filter: there, wave $k$ was scaled by the fixed number $1/(1 + \alpha\lambda_k)$; here it is scaled by $\theta_k$, and gradient descent decides what $\theta_k$ should be.
 
-Building on this idea, [@bruna2014spectral] added a nonlinearity to the filter and proposed a spectral convolutional neural network (GCN) by
-
-$$
-{\bf x}^{(\ell+1)} = h\left( L_{\text{learn}} {\bf x}^{(\ell)}\right),
-$$
-
-where $h$ is an activation function, and ${\bf x}^{(\ell)}$ is the feature vector of the $\ell$-th convolution. They further extend this idea to convolve on multidimensional feature vectors, ${\bf X} \in \mathbb{R}^{N \times f_{\text{in}}}$ to produce new feature vectors of different dimensionality, ${\bf X}' \in \mathbb{R}^{N \times f_{\text{out}}}$.
+[@bruna2014spectral] added a nonlinearity and made this a layer:
 
 $$
-\begin{aligned}
-{\bf X}^{(\ell+1)}_i &= h\left( \sum_j L_{\text{learn}}^{(i,j)} {\bf X}^{(\ell)}_j\right),\quad \text{where} \quad L^{(i,j)}_{\text{learn}} = \sum_{k=1}^K \theta_{k, (i,j)} {\mathbf u}_k {\mathbf u}_k^\top,
-\end{aligned}
+{\bf x}^{(\ell+1)} = h\left( {\bf L}_{\text{learn}} {\bf x}^{(\ell)}\right),
 $$
 
-Notice that the learnable filter $L_{\text{learn}}^{(i,j)}$ is defined for each pair of input $i$ and output $j$ dimensions.
+where $h$ is an activation function and ${\bf x}^{(\ell)}$ holds one number per node at layer $\ell$. Real nodes carry a whole feature *vector*, not one number, and the extension — a separate set of $\theta$'s for each pair of input and output feature channels, exactly as a CNN has one kernel per input-output channel pair — is written out in the [appendix](04-appendix.qmd#bruna).
 
+We will call this model **Bruna's spectral GCN** to keep it distinct from the model that everyone means by "GCN", which appears two sections below.
 
-::: {.column-margin}
-Many GCNs simple when it comes to implementation despite the complicated formula. And this is one of my ways to learn GNNs. Check out the [Appendix for the Python implementation](04-appendix.qmd).
+### Two reasons the elegant version is unusable
 
-:::
+**It is too expensive.** Getting the ${\mathbf u}_k$ means eigendecomposing the Laplacian: ${\cal O}(N^3)$. On a network of a million nodes that is not slow, it is impossible.
 
-## From Spectral to Spatial
+**It is not local.** Every eigenvector is spread over the whole network, so a single ${\bf L}_{\text{learn}}$ can move information from one end of the graph to the other in one layer. That throws away the one property that made a kernel a kernel: it looked at a *neighborhood*. A filter with no notion of "nearby" also has no reason to generalize, since it has to relearn a coefficient for every wave of every graph it ever sees.
 
-Spectral GCNs are mathematically elegant but have two main limitations:
-1. **Computational Limitation**: Computing the spectra of the Laplacian is expensive ${\cal O}(N^3)$ and prohibitive for large graphs
-2. **Spatial Locality**: The learned filters are not spatially localized. A node can be influenced by all other nodes in the graph.
+Both problems have the same cure: never touch the eigenvectors.
 
-These two limitations motivate the development of spatial GCNs.
+### ChebNet: a filter you can compute without eigenvectors
 
-### ChebNet
+Here is the observation that unlocks it. If the filter is a **polynomial in the Laplacian**, then applying it needs no eigenvectors at all — only repeated multiplication by ${\bf L}$, which for a sparse network costs one pass over the edges. And a polynomial of degree $K$ reaches exactly $K$ hops: multiplying by ${\bf L}$ once mixes a node with its neighbors, twice with its neighbors' neighbors, and no further. Locality comes free with the degree.
 
-ChebNet [@defferrard2016convolutional] is one of the earliest spatial GCNs that bridges the gap between spectral and spatial domains.
-The key idea is to leverage Chebyshev polynomials to approximate ${\bf L}_{\text{learn}}$ by
+ChebNet [@defferrard2016convolutional] builds that polynomial out of Chebyshev polynomials $T_k$, which are numerically well-behaved:
 
 $$
-{\bf L}_{\text{learn}} \approx \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}), \quad \text{where} \quad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I},
+{\bf x}^{(\ell+1)} = h\left( \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}){\bf x}^{(\ell)}\right), \qquad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I},
 $$
 
-where ${\bf L}_{\text{sym}} = {\bf I} - {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ is the **symmetric normalized** Laplacian from the notation box above, $\lambda_{\text{max}}$ is its largest eigenvalue, and $\tilde{{\bf L}}$ is that matrix rescaled so its eigenvalues lie in $[-1,1]$ — the interval on which Chebyshev polynomials are well behaved. The Chebyshev polynomials $T_k(\tilde{{\bf L}})$ transforms the eigenvalues $\tilde{{\bf L}}$ to the following recursively:
+where ${\bf L}_{\text{sym}}$ is the **symmetric normalized** Laplacian from the notation box above and $\tilde{{\bf L}}$ is it, rescaled so its eigenvalues sit in $[-1, 1]$. The $\theta_k$ are the $K$ learnable numbers, and $K$ — typically $2$ or $3$ — is simultaneously the degree of the polynomial and the number of hops one layer can see. The recursion that generates $T_k$ is in the [appendix](04-appendix.qmd#chebnet).
+
+### Kipf and Welling: throw almost all of it away
+
+Kipf and Welling (2017) [@kipf2017semi] asked what happens if you take ChebNet and set $K = 2$ — keep only $T_0$ and $T_1$ — then tie the two remaining parameters together into one. Three lines of algebra (in the [appendix](04-appendix.qmd#kipf-welling)) collapse the whole apparatus to:
 
 $$
-\begin{aligned}
-T_0(\tilde{{\bf L}}) &= {\bf I} \\
-T_1(\tilde{{\bf L}}) &= \tilde{{\bf L}} \\
-T_k(\tilde{{\bf L}}) &= 2\tilde{{\bf L}} T_{k-1}(\tilde{{\bf L}}) - T_{k-2}(\tilde{{\bf L}})
-\end{aligned}
+g_{\theta} * {\bf x} \approx \theta\left({\bf I}_N + {\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}\right){\bf x}
 $$
 
-We then replace ${\bf L}_{\text{learn}}$ in the original spectral GCN with the Chebyshev polynomial approximation:
+Read that in words, because this is the model everyone means by **GCN** and the words are simple: *a node's new value is its own value plus a degree-normalized sum of its neighbors' values, scaled by one learned number.* No eigenvectors, no polynomial, one parameter. It is precisely the sentence at the top of this page.
 
-$$
-{\bf x}^{(\ell+1)} = h\left( \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}){\bf x}^{(\ell)}\right),
-$$
-
-where:
-- $T_k(\tilde{{\bf L}})$ applies the k-th Chebyshev polynomial to the scaled Laplacian matrix
-- $\theta_k$ are the learnable parameters
-- K is the order of the polynomial (typically small, e.g., K=3)
-
-### Graph Convolutional Networks by Kipf and Welling
-
-While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) [@kipf2017semi] proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.
-
-
-### First-order Approximation
-
-The key departure is to use the first-order approximation of the Chebyshev polynomials, i.e., to keep only $T_0$ and $T_1$. Two simplifications make this collapse neatly. First, we take $\lambda_{\text{max}} \approx 2$, which is exactly the upper bound on the spectrum of ${\bf L}_{\text{sym}}$ noted earlier, so $\tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I} \approx {\bf L}_{\text{sym}} - {\bf I}_N$. Second, ${\bf L}_{\text{sym}} - {\bf I}_N = -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ by definition. Putting the two together:
-
-$$
-g_{\theta'} * x \approx \theta'_0x + \theta'_1({\bf L}_{\text{sym}} - {\bf I}_N)x = \theta'_0x - \theta'_1{\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}x
-$$
-
-This is crude approximation but it leads to a much simpler form, leaving only two learnable parameters, instead of $K$ parameters in the original ChebNet.
-
-::: {.column-margin}
-Note that ${\bf L}_{\text{sym}}$, not the unnormalized ${\bf L} = {\bf D} - {\bf A}$, is what appears here. With the unnormalized Laplacian the second equality would be false, since ${\bf L} - {\bf I}_N = {\bf D} - {\bf A} - {\bf I}_N \neq -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$.
-:::
-
-Additionally, they further simplify the formula by using the same $\theta$ for both remaining parameters (i.e., $\theta_0 = \theta$ and $\theta_1 = -\theta$). The result is the following convolutional filter:
-
-$$
-g_{\theta} * x \approx \theta(I_N + D^{-\frac{1}{2}}AD^{-\frac{1}{2}})x
-$$
-
-While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.
+The filter is crude — a fixed low-pass shape with a single knob — but layers stack, and stacking $\ell$ of them reaches $\ell$ hops.
 
 ### Deep GCNs can suffer from vanishing and exploding gradients
 
-GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called *gradient vanishing/exploding*, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.
+GCN models can be deep, and when they are too deep they start suffering from a problem familiar throughout deep learning, *vanishing and exploding gradients*: the gradients of the loss become too small, or too large, to update the model parameters usefully.
 
 The graph convolution has its own version of this. The operator ${\bf I}_N + {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ has eigenvalues in $[0, 2]$. Applying it once is harmless, but a deep model applies it over and over: a mode with eigenvalue near $0$ is crushed toward nothing, while a mode with eigenvalue near $2$ is amplified as $2^\ell$ over $\ell$ layers. Repeated multiplication therefore drives the signal — and with it the gradient — either to zero or to infinity.
 
@@ -244,15 +195,12 @@ Altogether, this leads to the following layer-wise propagation rule:
 $$X^{(\ell+1)} = \sigma(\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}X^{(\ell)}W^{(\ell)})$$
 
 where:
+
 - $X^{(\ell)}$ is the matrix of node features at layer $\ell$
 - $W^{(\ell)}$ is the layer's trainable weight matrix
 - $\sigma$ is a nonlinear activation function (e.g., ReLU)
 
-These simplifications offer several advantages:
-- **Efficiency**: Linear complexity in number of edges
-- **Localization**: Each layer only aggregates information from immediate neighbors
-- **Depth**: Fewer parameters allow building deeper models
-- **Performance**: Despite (or perhaps due to) its simplicity, it often outperforms more complex models
+This one line is the GCN layer as it is implemented in every library, and it is worth pausing on how little it contains: a fixed sparse matrix, a weight matrix, a nonlinearity. Its cost is linear in the number of edges, each layer sees only immediate neighbors, and despite — or because of — that simplicity it routinely beats more elaborate models.
 
 ### Deep GCNs can also suffer from over-smoothing
 
@@ -262,9 +210,9 @@ Look again at what one GCN layer does, ignoring the weights and the nonlinearity
 
 In the spectral picture the effect is precise. Write the node signal in the Laplacian eigenbasis. Each layer multiplies the component along ${\bf u}_i$ by a factor that shrinks with the eigenvalue $\lambda_i$. Only the smoothest mode — the one with $\lambda = 0$, which is constant within each connected component — survives untouched. As $\ell \rightarrow \infty$ every other mode is suppressed, and every node in a component converges to the *same* representation.
 
-::: {.callout-warning title="Over-smoothing"}
-**Over-smoothing** is the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. This is why most GCNs in practice are only 2-3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
-:::
+This is **over-smoothing**: the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. It is why most GCNs in practice are only 2 or 3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
+
+<!-- TODO(anim): a small network with node colors updated one GCN layer at a time; by layer 6 every node is the same color. A slider for depth, and a readout of how far apart the two most different nodes still are. -->
 
 Note that this is a different failure from vanishing gradients. Vanishing gradients are an *optimization* problem: the model cannot be trained. Over-smoothing is a *representational* problem: even trained perfectly, the model has thrown away what distinguishes one node from another.
 
@@ -276,17 +224,13 @@ Several remedies are used in practice:
 - **Normalization**: PairNorm and related graph-specific normalizations explicitly prevent node representations from collapsing onto each other.
 - **Just stay shallow**: often the most effective option.
 
-::: {.callout-note title="Exercise"}
+This is the point at which to go and cause over-smoothing yourself: the [hands-on page](02-coding.qmd) trains a GCN on a real network and asks you to stack it too deep on purpose.
 
-Let's implement a simple GCN model for node classification.
-[Coding exercise notebook](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/exercise-m09-graph-neural-net.ipynb) — run it locally; PyTorch does not run in the browser.
-:::
-
-## The message passing framework
+## Every GNN is the same three steps
 
 Before meeting more architectures, it helps to name the pattern they all share. Look again at the GCN layer, ignoring the matrix notation: each node collects its neighbors' representations, combines them into one, and uses that to update itself. Every GNN in this module — and essentially every GNN in the literature — is a choice of how to do those three things.
 
-::: {.callout-important title="Key Concept: Message passing"}
+::: {.callout-note title="Message passing"}
 One layer of a GNN updates node $v$ as
 
 $$
@@ -313,27 +257,23 @@ Two consequences follow immediately from this form.
 
 **Features and structure are learned jointly.** A GNN consumes two inputs: the graph ${\bf A}$ and the node features ${\bf X}$. If the features are informative the model can lean on them; if they are uninformative (all-ones, or a one-hot node ID) the model has nothing but topology and degenerates into a structural method. This is worth checking before blaming an architecture: on a network with no meaningful node attributes, a GNN often does no better than the embeddings of Module 8.
 
-# Popular Graph Neural Networks
+## Three ways to change one line of the recipe
 
-In this note, we will introduce three popular GNNs: GraphSAGE, Graph Attention Networks (GAT), and Graph Isomorphism Network (GIN).
+The three architectures below are famous, and it is easy to lose that behind the notation. Read them through the table above and each one changes exactly one slot: GraphSAGE changes *which* neighbors send messages, GAT changes *how much* each message counts, and GIN changes *how the messages are added up*.
 
-## GraphSAGE: Sample and Aggregate
+### GraphSAGE: don't ask all the neighbors
 
-GraphSAGE [@hamilton2017graphsage] introduced a different GCN that can be ***generalized to unseen nodes*** (they called it "inductive"). While previous approaches like ChebNet and GCN operate on the entire graph, GraphSAGE proposes an inductive framework that generates embeddings by sampling and aggregating features from a node's neighborhood.
+GraphSAGE [@hamilton2017graphsage] introduced a graph convolution that ***generalizes to unseen nodes*** (they called it "inductive"). While previous approaches like ChebNet and GCN operate on the entire graph, GraphSAGE generates embeddings by sampling and aggregating features from a node's neighborhood — two ideas, sampling and aggregation, which we take in turn.
 
-![](https://theaisummer.com/static/02e23adc75fe68e5dd249a94f3c1e8cc/c483d/graphsage.png)
+<!-- TODO(anim): a hub with 40 neighbors; press "sample" and watch 5 get picked at random each round, with the running mean of their features shown converging. -->
 
-### Key Ideas
-
-GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.
-
-### Neighborhood Sampling
+#### Neighborhood sampling
 
 The key idea is the *neighborhood sampling*. Instead of using all neighbors, GraphSAGE samples a fixed-size set of neighbors for each node. This controls memory complexity, a key limitation of the previous GNNs.
 
 Another key advantage of neighborhood sampling is that it enables GraphSAGE to handle dynamic, growing networks. Consider a citation network where new papers (nodes) are continuously added. Traditional GCNs would need to recompute filters for the entire network with each new addition. In contrast, GraphSAGE can immediately generate embeddings for new nodes by simply sampling their neighbors, without any retraining or recomputation.
 
-### Aggregation
+#### Aggregation
 
 Another key idea is the *aggregation*. GraphSAGE makes a distinction between self-information and neighborhood information. While previous GNNs treat them equally and aggregate them, GraphSAGE treats them differently. Specifically, GraphSAGE introduces an additional step: it concatenates the self-information and the neighborhood information as the input of the convolution.
 
@@ -343,12 +283,13 @@ $$
 
 where $X_v$ is the feature of the node itself and $X_{\mathcal{N}(v)}$ is the aggregation of the features of its neighbors. GraphSAGE introduces different ways to aggregate information from neighbors:
 
-   $$X_{\mathcal{N}(v)} = \text{AGGREGATE}_k(\{X_u, \forall u \in \mathcal{N}(v)\})$$
+$$X_{\mathcal{N}(v)} = \text{AGGREGATE}_k(\{X_u, \forall u \in \mathcal{N}(v)\})$$
 
-   Common aggregation functions include:
-   - Mean aggregator: $\text{AGGREGATE} = \text{mean}(\{h_u, \forall u \in \mathcal{N}(v)\})$
-   - Max-pooling: $\text{AGGREGATE} = \max(\{\sigma(W_{\text{pool}}h_u + b), \forall u \in \mathcal{N}(v)\})$
-   - LSTM aggregator: Apply LSTM to randomly permuted neighbors
+Common aggregation functions include:
+
+- Mean aggregator: $\text{AGGREGATE} = \text{mean}(\{h_u, \forall u \in \mathcal{N}(v)\})$
+- Max-pooling: $\text{AGGREGATE} = \max(\{\sigma(W_{\text{pool}}h_u + b), \forall u \in \mathcal{N}(v)\})$
+- LSTM aggregator: apply an LSTM to the neighbors in a random order. This one is not order-independent, which breaks permutation invariance; the random ordering is a patch, not a fix.
 
 The concatenated feature $Z_v$ is normalized by the L2 norm.
 
@@ -362,23 +303,19 @@ $$
 X_v^k = \sigma(W^k \hat{Z}_v + b^k)
 $$
 
-## Graph Attention Networks (GAT): Differentiate Individual Neighbors
+### GAT: let a neighbor argue for its own importance
 
-A key innovation of GraphSAGE is to treat the self and neighborhood information differently. But should all neighbors be treated equally? Graph Attention Networks (GAT) address this by letting the model learn which neighbors to pay attention to.
+GraphSAGE separates a node from its neighborhood. But within the neighborhood, should all neighbors count the same? A GCN says yes — its weights $1/\sqrt{\tilde k_v \tilde k_u}$ depend only on degrees, never on what the neighbor actually says. Graph Attention Networks (GAT) let the model learn which neighbors to listen to.
 
+<!-- TODO(anim): the same node updated twice — once with uniform GCN weights, once with attention weights drawn as edge thickness — so the reader sees one loud neighbor dominate. -->
 
-
-### Attention Mechanism
-
-![](https://substackcdn.com/image/fetch/$s_!9JX2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F1e4bb0f1-420a-4d61-a017-e6a998c9f4f3_1458x928.png)
-
-The core idea is beautifully simple: instead of using fixed weights like GCN, let's learn attention weights $\alpha_{ij}$ that determine how much node $i$ should attend to node $j$. These weights are computed dynamically based on node features:
+The core idea is beautifully simple: replace the fixed weights with **attention weights** $\alpha_{ij}$ saying how much node $i$ should attend to node $j$, computed from the node features themselves:
 
 $$
 \alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})}
 $$
 
-where $e_{ij}$ represents the importance of the edge between node $i$ and node $j$. Variable $e_{ij}$ is a *learnable* parameter and can be negative, and the exponential function is applied to transform it to a non-negative value, with the normalization term $\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})$ to ensure the weights sum to 1.
+where $e_{ij}$ is a score for the edge between node $i$ and node $j$. The score is not a stored parameter — it is computed from the two nodes' features by the small network below, and can be negative, which is why the exponential is applied. Dividing by $\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})$ makes the weights over $i$'s neighbors sum to 1.
 
 How to compute $e_{ij}$? One simple choice is to use a neural network with a shared weight matrix $W$ and a LeakyReLU activation function. Specifically:
 
@@ -407,59 +344,63 @@ In the **final** layer concatenation no longer makes sense (the output dimension
 
 $$\mathbf{h}'_i = \sigma\left(\frac{1}{K}\sum_{k=1}^K \sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k\mathbf{h}_j\right)$$
 
-## Graph Isomorphism Network (GIN): Differentiate the Aggregation
+### GIN: sum instead of average, and never lose a count
 
-Graph Isomorphism Networks (GIN) is another popular GNN that born out of a question: what is the maximum discriminative power achievable by Graph Neural Networks? The answer lies in its theoretical connection to **the Weisfeiler-Lehman (WL) test**, a powerful algorithm for graph isomorphism testing.
+The Graph Isomorphism Network was born out of a sharper question than "does it work?": **how much can any message-passing network possibly tell apart?** The answer runs through a 1968 algorithm, the Weisfeiler-Lehman test.
 
+#### The Weisfeiler-Lehman test
 
-### Weisfeiler-Lehman Test
+Suppose someone hands you two networks and asks whether they are the same network drawn differently — *isomorphic*, in the sense that you can rename the nodes of one and get the other exactly. Nobody knows a fast algorithm for that in general. The **Weisfeiler-Lehman (WL) test** is the cheap, standard substitute, and it works by refining node labels round after round.
 
-Are two graphs structurally identical? Graph isomorphism testing determines if two graphs are structurally identical, with applications in graph classification, clustering, and other tasks.
+![One WL round on a six-node network. Every node starts with label 0; after one round its label encodes its degree, and after two rounds it encodes the degrees of its neighbors as well.](../figs/weisfeiler-lehman-test.jpg){#fig-wl width=95% fig-align="center"}
 
-![](https://i.sstatic.net/j5sGu.png)
+The algorithm:
 
-While the general problem has no known polynomial-time solution, the WL test is an efficient heuristic that works well in practice. The WL test iteratively refines node labels by hashing the multiset of neighboring labels
+1. Give every node the same initial label, say $0$.
+2. Each node writes down a *signature*: its own current label, together with the **multiset** of its neighbors' labels (a multiset, not a set, because repeats count). A hash function converts each distinct signature into a fresh label.
+3. Repeat for a fixed number of rounds, or until no new labels appear.
 
+Work through the first round on the network in the figure, which has one node at the top, two in the middle, a hub in the center and two at the bottom:
 
-![](../figs/weisfeiler-lehman-test.jpg)
+- The top node has two neighbors, so its signature is $(0, \{0,0\})$, hashed to the new label $1$.
+- Each middle node also has two neighbors: $(0, \{0,0\})$, so they also become $1$.
+- The hub has four neighbors: $(0, \{0,0,0,0\})$, hashed to $2$.
+- Each bottom node has one neighbor: $(0, \{0\})$, hashed to $3$.
 
-The WL test works as follows:
+After one round the labels are just the degrees — that is all a single round of neighbor-counting can possibly know. Round two is where it earns its keep: the top node and the middle nodes both have degree 2, but the top node's neighbors have degrees $(2,2)$ while a middle node's have degrees $(2,4)$, so their signatures differ and they finally split apart. Each round lets a label see one hop further.
 
-1. Assign all nodes the same initial label.
-2. For each node, collect the labels of all its neighbors and *aggregate them* into a hash (e.g., new label). For example, the top node gets {0} from its neighbors, resulting in a collection {0,0}. A new label is created via a hash function $h$ that maps {0, {0, 0}} to a new label 1.
-3. Repeat the process for a fixed number of iterations or until convergence.
-å
-After these iterations:
-- Nodes with the same label are structurally identical, meaning that they are indistinguishable unless we label them differently.
-- Two graphs are structurally identical if and only if they have the same node labels after the WL test.
+<!-- TODO(anim): step the WL rounds forward on two side-by-side networks, recoloring nodes as labels refine, with the label histograms underneath so the reader sees the moment two graphs separate — or fail to. -->
 
-The WL test is a heuristic and can fail on some graphs. For example, it cannot distinguish regular graphs with the same number of nodes and edges.
+Now the part that is easy to state backwards, so state it carefully. **The test can prove two graphs are different; it can never prove they are the same.** If the two label histograms ever disagree, the graphs are certainly not isomorphic. If they agree at every round, the test has simply failed to find a difference, and the graphs may or may not be isomorphic. The standard counterexample is a pair of non-isomorphic 3-regular graphs on the same number of nodes: every node has degree 3, so every node keeps the same label as every other one forever, and WL sees two identical label histograms for two genuinely different networks.
+
+The same caution applies within a single graph: two nodes ending with the same label are ones the test *could not distinguish*, which is weaker than being structurally interchangeable.
 
 ::: {.column-margin}
-The WL test above is called the 1-WL test. There are higher-order WL tests that can distinguish more graphs, which are the basis of advanced GNNs. The $k$-WL hierarchy colours $k$-tuples of nodes rather than single nodes, and each step up distinguishes strictly more graphs at a strictly higher cost.
+The test above is the 1-WL test. Higher-order $k$-WL tests color $k$-tuples of nodes rather than single nodes; each step up the hierarchy distinguishes strictly more graphs at a strictly higher cost, and each is the basis of a family of more expressive GNNs.
 :::
 
-### GIN
+#### From the test to the layer
 
-GIN [@xu2018how] is a GNN that is based on the WL test.
-The key idea is to focus on the parallel between the WL test and the GNN update rule.
-- In the WL test, we iteratively collect the labels of neighbors and aggregate them through a *hash function*.
-- In the GraphSAGE and GAT, the labels are the nodes' features, and the aggregation is some arithmetic operations such as mean or max.
+GIN [@xu2018how] comes from noticing that the WL test and a GNN layer are the same loop:
 
-The key difference is that the hash function in the WL test always distinguishes different sets of neighbors' labels, while the aggregation in GraphSAGE and GAT does not always do so. For example, if all nodes have the same feature (e.g., all 1), the aggregation by the mean or max will result in the same value for all nodes, whereas the hash function in the WL test can still distinguish different sets of neighbors' labels by *the count of each label*.
+- In the WL test, each node collects its neighbors' labels and aggregates them with a *hash function*.
+- In GraphSAGE and GAT, each node collects its neighbors' *features* and aggregates them with mean or max.
 
-The resulting convolution update rule is:
+The difference is that the hash never confuses two different multisets, while mean and max do. Give every node the identical feature $1$: the mean of $\{1,1\}$ and the mean of $\{1,1,1,1\}$ are both $1$, so a node with two neighbors and a node with four become indistinguishable — while WL separates them immediately, because it can still count. A **sum** keeps the count ($2 \ne 4$), which is why GIN sums.
+
+The resulting update rule is:
 
 $$
 h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_{u \in \mathcal{N}(v)} h_u^{(k)}\right)
 $$
 
-where $\text{MLP}^{(k)}$ is a multi-layer perceptron (MLP) with $k$ layers, and $\epsilon^{(k)}$ is a fixed or trainable parameter.
-# What are GNNs used for?
+Here $k$ is the **layer index**, the same $k$ as in $h_v^{(k)}$: $\text{MLP}^{(k)}$ is the multi-layer perceptron belonging to layer $k$ (its own depth is a design choice, usually two), and $\epsilon^{(k)}$ is that layer's fixed or trainable weight on the node's own state. With a sum aggregator and an MLP expressive enough to act like a hash, GIN is provably as discriminative as the 1-WL test — and no message-passing GNN can do better. That upper bound is the reason this architecture matters.
+
+## What comes out the other end: node, edge and graph tasks
 
 So far we have built layers without saying what comes out the other end. Three task levels cover almost everything, and they differ in how node representations are turned into a prediction.
 
-## Node-level tasks
+### Node-level tasks: a prediction per node
 
 Attach a classifier to each node's final representation.
 
@@ -467,7 +408,7 @@ Attach a classifier to each node's final representation.
 
 **Node regression** is the same with a continuous target.
 
-## Edge-level tasks
+### Edge-level tasks: a prediction per pair
 
 Here the prediction concerns a *pair*, so we combine two node representations into an edge score:
 
@@ -481,7 +422,7 @@ where the score can be a dot product, a distance, or a small MLP on the concaten
 
 **Edge classification** predicts the *type* of a relationship rather than its existence.
 
-## Graph-level tasks
+### Graph-level tasks: one prediction for the whole network
 
 Now the prediction concerns an entire graph — is this molecule soluble, is this program malicious — so we must compress $N$ node vectors into one graph vector. That step is called **readout** or **pooling**, and it must be permutation invariant:
 
@@ -493,7 +434,7 @@ $$
 
 **Hierarchical pooling** is the more ambitious answer: instead of collapsing everything at once, progressively coarsen the graph, merging clusters of nodes into super-nodes over several rounds, mirroring the pooling layers of a CNN. Methods like DiffPool learn which nodes to merge. This preserves multi-scale structure that global pooling destroys, at a substantial cost in complexity.
 
-# Training GNNs at scale
+## Why you cannot just grab 32 nodes and call it a mini-batch
 
 One practical matter deserves attention because it has no analogue in ordinary deep learning.
 
@@ -511,7 +452,7 @@ The alternatives all trade exactness for feasibility:
 This is why the "neighborhood explosion" is such a recurring phrase in the GNN literature. With average degree 10 and 3 layers, one node pulls in roughly 1,000 others. On a graph with hubs of degree 10,000, one unlucky node pulls in the entire network.
 :::
 
-# Beyond message passing: Graph Transformers
+## When one hop per layer is not enough: graph transformers
 
 Message passing has a built-in restriction: information moves one hop per layer, so distant nodes communicate only through depth — and depth brings over-smoothing. **Graph Transformers** attack this by letting every node attend to every other node directly, as in the Transformers used for text.
 
@@ -521,7 +462,7 @@ That solves the distance problem and creates two new ones.
 
 **Cost.** All-pairs attention is $O(N^2)$, which is fine for molecules with 50 atoms and hopeless for a social network with millions of nodes. Practical variants restrict attention to a sampled or local subset.
 
-# What is still hard
+## Four things nobody has solved yet
 
 Four open problems, each an active research area:
 
@@ -530,7 +471,7 @@ Four open problems, each an active research area:
 - **Dynamics.** Most models assume a fixed graph. Real networks add and remove nodes and edges continuously, and temporal GNNs are far less settled than static ones.
 - **Robustness, fairness and privacy.** GNN predictions can be flipped by a handful of adversarially added edges. Message passing propagates the majority group's signal into minority nodes, which can encode and amplify bias. And because a node's prediction depends on its neighbors' data, a GNN can leak information about people who never supplied their own.
 
-# Where this module sits in the course
+## Almost none of this was new
 
 It is worth closing by noticing how little of this module was actually new.
 
@@ -541,3 +482,19 @@ It is worth closing by noticing how little of this module was actually new.
 - **Over-smoothing** is a statement about the spectral gap, the same quantity that controls mixing time in Module 7 and bottlenecks in Module 8.
 
 Graph neural networks are not a separate subject bolted onto the end of the course. They are what happens when the structures we spent eight modules measuring become the substrate for learning.
+
+## What you can now do
+
+- Say why an image kernel cannot be copied onto a network, in two ways: neighbors vary in number, and they arrive without an order.
+- Compute the total variation $J$ of a signal on a small network by hand, and use it to say which of two signals is the smoother one.
+- Explain what a Laplacian eigenvalue *is*: the total variation of its own eigenvector.
+- Write down the GCN layer and read it back in English, without matrices.
+- Place GCN, GraphSAGE, GAT and GIN in the MESSAGE / AGGREGATE / UPDATE table and say which slot each one changed.
+- Diagnose a GNN that gets worse with depth, and tell over-smoothing apart from vanishing gradients.
+- State what the WL test can and cannot prove, and why GIN sums rather than averages.
+
+## Where to go next
+
+- [Hands-on: Filter a Network, Then Let It Learn the Filter](02-coding.qmd) — build the low-pass and high-pass filters of this page on a real network, then train a GCN and make it over-smooth on purpose.
+- [Exercises and Assignments](03-exercises.qmd) — the worksheet, the Pair Notebook and the group mini-project.
+- [Appendix: The Algebra We Set Aside](04-appendix.qmd) — the derivations this page pointed at, plus a from-scratch implementation.

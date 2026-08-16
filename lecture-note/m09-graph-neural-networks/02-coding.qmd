@@ -1,8 +1,8 @@
 ---
-title: "Hands-on: Building Graph Neural Networks"
+title: "Hands-on: Filter a Network, Then Let It Learn the Filter"
 ---
 
-GCN, GraphSAGE and GAT on the same task, plus the failure mode that depth causes.
+Two halves, in the same order as the concepts chapter: first a hand-designed spectral filter applied to a real network, then a GCN that learns its own filter from eight labelled nodes.
 
 ::: {.callout-note title="Where the code lives"}
 This module has no hosted notebook. PyTorch is a compiled package that the
@@ -11,29 +11,42 @@ browser runtime cannot load, so this one runs locally only.
 The notebook is in the repository at
 [`notebooks/m09-graph-neural-nets/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/coding.py).
 Run it with `marimo edit notebooks/m09-graph-neural-nets/coding.py` in an
-environment that has PyTorch and PyTorch Geometric installed.
+environment that has PyTorch and PyTorch Geometric installed:
+`pip install torch torch_geometric` on a CPU machine, or follow the
+[PyTorch Geometric install guide](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html)
+if you want GPU wheels. Everything in the first half runs without PyTorch.
 :::
 
 ## What you will build
 
-1. Set up PyTorch Geometric and turn a network into a Data object with node features.
-2. Implement GCN, GAT and GraphSAGE and train them for node classification.
-3. Compare their accuracy on the same train/validation split.
-4. Build a link prediction model on top of the learned representations.
-5. Assemble a graph classification model with a readout layer.
-6. Visualize the learned node embeddings, and the attention weights for GAT.
+**Part 1 — a filter you designed yourself.** On Zachary's karate club:
+
+1. Form the Laplacian ${\bf L} = {\bf D} - {\bf A}$ and eigendecompose it.
+2. Build the low-pass and high-pass filter matrices straight from the formulas of the concepts chapter, $h_{\text{low}}(\lambda) = 1/(1+\alpha\lambda)$ and $h_{\text{high}}(\lambda) = \alpha\lambda/(1+\alpha\lambda)$, by rescaling each eigenvalue and reassembling.
+3. Apply both to a random signal on the nodes, and then to eigenvector centrality, and draw the network colored by the result.
+
+**Part 2 — a filter the model learns.** On the same network:
+
+4. Turn the network into a PyTorch Geometric `Data` object: an edge list, node features (the leading nontrivial eigenvectors of the normalized Laplacian), and the true club membership as labels.
+5. Label only 8 of the 34 nodes, 4 per side, and train a 2-layer `GCNConv` model on those alone.
+6. Plot the loss and the train/test accuracy over 200 epochs, then draw the network with predicted labels beside the true ones and count the mistakes.
 
 ## What to watch for
 
-- Train GCNs with 2, 4, 8 and 16 layers. Accuracy will peak early and then fall — plot it, because over-smoothing is much more convincing when you have caused it yourself.
-- Replace the node features with all-ones and re-run. Whatever accuracy remains came from topology alone.
+- In Part 1, compare the two pictures of the *same* signal. The low-pass version has neighbors sharing a color; the high-pass version keeps only the places where neighbors disagree. That is the filter-response figure of the [concepts chapter](01-concepts.qmd) happening on a real network.
+- In Part 2, notice how few labels the model needs. Eight nodes out of thirty-four, and the rest are classified by message passing alone — the semi-supervised advantage in its smallest form.
+- The nodes it gets wrong are worth staring at. They are usually the ones sitting between the two factions, which is a statement about the network, not about the model.
+
+## Take it further
+
+Two extensions worth the time, neither of them in the notebook yet:
+
+- Rebuild the GCN with 2, 4, 8 and 16 layers and plot final accuracy against depth. It will peak early and then fall. Over-smoothing is much more convincing when you have caused it yourself.
+- Replace the node features with a column of ones and re-run. Whatever accuracy survives came from topology alone.
 
 ## Also in this module
 
-**Image processing preliminaries** — Edge detection, kernels, and the Fourier transform worked through on real images — the concrete version of the theory in the preparation chapter.
+**Image processing preliminaries** — edge detection, kernels, and the Fourier transform worked through on real images: the runnable version of [How a Camera Finds an Edge](00-preparation.qmd).
+[`notebooks/m09-graph-neural-nets/image-processing.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/image-processing.py) — run locally.
 
-[Source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/image-processing.ipynb) — run locally.
-
-**A GCN from scratch** — Bruna's spectral GCN and ChebNet implemented directly from the equations, without PyTorch Geometric's layers.
-
-[Source](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/gcn-from-scratch.ipynb) — run locally.
+**A GCN from scratch** — Bruna's spectral GCN and ChebNet implemented directly from the equations, without PyTorch Geometric's layers. See the [appendix](04-appendix.qmd#from-scratch).

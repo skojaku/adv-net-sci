@@ -1,172 +1,295 @@
-
 ---
-title: Setup
+title: "Set up your machine"
 ---
 
-## Python and Virtual Environments
+Reading these notes needs nothing, and neither does the code in them: every
+hands-on page carries a **Run this notebook** link that opens in your browser
+and fetches Python for you.
 
-We'll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.
+This page is for the work you **hand in**. The
+[Pair Notebook](pair-notebook.qmd) and the
+[group mini-project](mini-project.qmd) both live in a GitHub repository on your
+own computer, and both need the same things: a terminal, git, a GitHub login,
+two small runtimes, and one environment variable.
 
-We strongly recommend using **virtual environments** to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:
+About twenty minutes, once per machine. Do it before the second week. Getting
+stuck here is not part of any assignment — ask in `#network-science` on
+[Discord](discord.md).
 
+## 1. Open a terminal
 
-::: {.column-margin}
+A terminal is an app where you type commands instead of clicking. Every command
+on this page goes in one.
 
-Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.
+::: {.panel-tabset}
+
+#### macOS
+
+Press `⌘` + `Space`, type **Terminal**, press enter. The shell it opens is
+`zsh`, which is what the commands below assume.
+
+#### Windows
+
+Start menu → type **Terminal** → open **Windows Terminal** (it starts
+PowerShell).
+
+Step 2 also installs **Git Bash**, a second terminal that understands the same
+commands as macOS. Everything on this site is written for Git Bash, so once you
+have it, prefer it: Start menu → type **Git Bash**. Your home folder there is
+`/c/Users/<you>`. Where a command differs between the two, this page says so.
 
 :::
 
-- **Reproducibility**: Your code will work consistently across different machines and over time
-- **Flexibility**: You can use different versions of packages for different projects without conflicts
-- **Prevent project interference**: Changes to one project won't break another project's dependencies
+Five commands get you anywhere:
 
-::: {#fig-python-ecosystem}
+| Command | What it does |
+|---|---|
+| `pwd` | prints which folder you are in right now |
+| `ls` | lists what is in that folder (`dir` in PowerShell) |
+| `cd some-folder` | goes into `some-folder` |
+| `cd ..` | goes back up one folder |
+| `cd ~` | goes to your home folder |
 
-![](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)
+Two habits that save a lot of typing: press **Tab** to finish a name you have
+half-typed, and press **↑** to bring back the command you just ran. To paste,
+use `⌘` + `V` on macOS and `Ctrl` + `Shift` + `V` (or a right-click) on Windows.
 
-Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.
+## 2. Install the tools
+
+Four installs, whatever your operating system. Run the command for your system
+in the terminal you just opened.
+
+| Install | What it is for | Windows | macOS |
+|---|---|---|---|
+| [git](https://git-scm.com) | keeps the history of your work, and hands it in | `winget install Git.Git` | `xcode-select --install` |
+| [GitHub CLI](https://cli.github.com) | signs git in to GitHub | `winget install GitHub.cli` | `brew install gh` |
+| [Node.js](https://nodejs.org) 24+ | your AI tutor runs on it | `winget install OpenJS.NodeJS` | `brew install node` |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/) | fetches Python and runs the notebooks | `winget install astral-sh.uv` | `brew install uv` |
+
+`winget` ships with Windows 11, so a Windows machine is ready to run those four
+commands as they stand.
+
+::: {.callout-note title="macOS: `brew: command not found`"}
+`brew` is [Homebrew](https://brew.sh), and it is **not** on a new Mac. Install
+it once — paste this in, press enter, and answer the prompts (it asks for your
+password and takes a few minutes):
+
+```{.bash .no-fold}
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+The installer finishes by printing two or three commands to run — run them, or
+`brew` will still be missing in your next terminal. Then:
+
+```{.bash .no-fold}
+brew install gh node uv
+```
+
+Prefer not to install Homebrew? Every tool has an installer of its own:
+Node.js has a macOS `.pkg` at [nodejs.org](https://nodejs.org), uv installs with
+`curl -LsSf https://astral.sh/uv/install.sh | sh`, `gh` has a `.pkg` on its
+[releases page](https://github.com/cli/cli/releases), and `git` comes with
+`xcode-select --install`.
+:::
+
+**Close the terminal and open a new one** — a terminal never notices programs
+that were installed after it started. Then check all four:
+
+```{.bash .no-fold}
+git --version
+gh --version
+node --version   # v24 or newer
+uv --version
+```
+
+Four version numbers means you are done. `command not found` means either the
+install did not finish, or this window was open while it ran.
+
+## 3. Sign in to GitHub
+
+1. Create an account at [github.com](https://github.com) if you do not have one.
+   Pick a username you do not mind classmates seeing: your assignment
+   repositories are named after it.
+
+2. Watch your Binghamton email for an invitation to the course's GitHub
+   organization, and accept it. **Until you do, no grade can reach you**:
+   enrollment here is GitHub membership, not the class list.
+
+3. Sign git in to GitHub, once per machine:
+
+   ```{.bash .no-fold}
+   gh auth login
+   ```
+
+   Answer **GitHub.com** → **HTTPS** → **Login with a web browser**, and paste
+   the code it shows into the page it opens. This is what makes `git clone` and
+   `git push` work silently. GitHub stopped accepting account passwords from git
+   in 2021, so without this step a push fails with a confusing authentication
+   error.
+
+4. Tell git whose commits these are:
+
+   ```{.bash .no-fold}
+   git config --global user.name "Your Name"
+   git config --global user.email "you@binghamton.edu"
+   ```
+
+## 4. Set your course API key
+
+An **environment variable** is a named value your terminal hands to every
+program it starts. Your AI tutor reads one called `NETSCI_API_KEY`; that key is
+how it reaches the course's language models, so you never need an account or a
+credit card of your own.
+
+**Where the key comes from.** The instructor issues one key per student and
+sends it to your Binghamton email in the first week. It looks like
+`sk-nsci-…`, and it is yours alone — its usage is logged against your name. If
+it has not arrived before your first Pair Notebook session, or you have lost it,
+email the instructor: keys are reissued, never looked up.
+
+Set it once, in the file your shell reads at startup, so every future terminal
+has it.
+
+::: {.panel-tabset}
+
+#### macOS / Git Bash
+
+Add this line to the end of `~/.zshrc` (macOS) or `~/.bashrc` (Git Bash), with
+your own key in place of the dots:
+
+```{.bash .no-fold}
+export NETSCI_API_KEY="sk-nsci-..."
+```
+
+Rather not open an editor? This appends the same line for you, creating the
+file if it does not exist. Put your own key in first, then paste the whole
+command:
+
+```{.bash .no-fold}
+echo 'export NETSCI_API_KEY="sk-nsci-..."' >> ~/.zshrc   # ~/.bashrc in Git Bash
+```
+
+Then open a **new** terminal and check:
+
+```{.bash .no-fold}
+echo $NETSCI_API_KEY
+```
+
+#### PowerShell
+
+Run this once. `setx` only affects terminals opened *afterwards*, so the window
+you type it in will not see it:
+
+```{.powershell .no-fold}
+setx NETSCI_API_KEY "sk-nsci-..."
+```
+
+Then close the window, open a **new** one, and check:
+
+```{.powershell .no-fold}
+echo $env:NETSCI_API_KEY
+```
 
 :::
 
+Your key printed back means it is set. Nothing printed means either this window
+was open before you set it, or the line went into a file this shell does not
+read.
 
-We recommend using [mamba](https://mamba.readthedocs.io/) and [uv](https://docs.astral.sh/uv/).
-Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects.
-uv is a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. [See here for installation instructions](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
+Paste the key on **one line**, with nothing around it. A key that arrives in an
+email is often wrapped onto two lines; join it back up.
 
-Follow the following steps to install mamba, uv, along with the minimum Python packages required for this course.
-
-1. [Install mamba](https://github.com/conda-forge/miniforge)
-2. Run the following command to create a new environment with the minimum Python packages required for this course.
-
-```bash
-mamba create -n advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv
-```
-
-3. Activate the environment.
-
-```bash
-mamba activate advnetsci
-```
-
-4. Pip install marimo.
-
-```bash
-pip install marimo
-```
-
-#### Other Options
-
-If you prefer tools other than uv, here are some alternatives:
-
-- [venv](https://docs.python.org/3/library/venv.html): The standard library for creating virtual environments;
-- [pyenv](https://github.com/pyenv/pyenv): Great for managing multiple Python versions;
-- [Conda](https://docs.conda.io/): Popular in data science, includes non-Python packages;
-- [Mamba](https://mamba.readthedocs.io/): Faster drop-in replacement for conda;
-- [Miniforge](https://github.com/conda-forge/miniforge): Community-driven conda distribution with mamba included;
-
-
-
-## Marimo Notebook
-
-We'll use [Marimo](https://marimo.io/) ([GitHub](https://github.com/marimo-team/marimo)) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.
-
-Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.
-
-Creating a sandboxed notebook:
-```bash
-uvx marimo edit --sandbox my_notebook.py
-```
-
-This command installs marimo in a temporary environment, tracks your dependencies and stores them in the notebook file, and automatically downloads any existing dependencies.
-
-Running sandboxed notebooks:
-```bash
-uv run my_notebook.py
-```
-
-Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.
-
-#### Alternative Installation
-
-If you're not using uv, you can install marimo with pip:
-```bash
-pip install marimo
-```
-
-#### Running Marimo
-
-To start a new marimo notebook:
-
-```bash
-marimo edit
-```
-
-To open an existing marimo notebook:
-
-```bash
-marimo edit notebook.py
-```
-
-
-## Github and GitHub Copilot
-
-We'll use GitHub for assignment collection and auto-grading in this course.
-
-### Minimum Requirements
-
-At the minimum level, you only need to:
-
-1. Create a GitHub account at [github.com](https://github.com)
-2. Know how to upload files to GitHub
-
-Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this [assignment example](https://github.com/sk-classroom/starter) to get familiar with the format.
-
-### Subscribing to GitHub Copilot
-
-We strongly encourage you to use [GitHub Copilot](https://github.com/features/copilot), an AI-powered coding assistant that helps you write code faster and more efficiently.
-GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in code editor, including VS Code and Marimo.
-
-Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the [GitHub Copilot Pro free access page](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro) to get started.
-
-Marimo notebook supports GitHub Copilot out of the box. [See the instruction](https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot) to enable it. If you are using VS Code, you can also install the [GitHub Copilot extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) to get the same experience.
-
-
-
-### For Students Interested in Learning More {.unnumbered}
-
-Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.
-
-
-::: {.column-margin}
-
-Git(Hub) and AI tools are like a pair of best friends. Git ensures that all edits are tracked and can be reverted. GitHub makes it easy for you to collaborate with (multiple) AI agents with you.
+::: {.callout-warning title="Never put the key in a file inside an assignment folder"}
+You hand in assignments by pushing that folder to GitHub. A key committed there
+is a key that has to be revoked and reissued. Keeping it in your shell profile —
+which lives in your home folder, not in any repository — keeps it out of your
+history.
 :::
 
+## 5. How your work is collected
 
-#### GitHub Desktop (Recommended for Beginners)
+The course uses **[Classroom 50](https://classroom50.org)** to hand out and
+collect assignments. Accepting one creates a **private GitHub repository** that
+belongs to you. You copy it to your computer, work in it, and push it back.
+There is no upload button anywhere.
 
-If you want to learn more about version control, start with [GitHub Desktop](https://desktop.github.com/), a user-friendly graphical interface:
+Copy it down once per assignment:
 
-1. Go to [desktop.github.com](https://desktop.github.com/)
-2. Download for your operating system
-3. Install and sign in with your GitHub account
+```{.bash .no-fold}
+git clone <the repository URL Classroom 50 created for you>
+cd <the folder it made>
+```
 
-#### Understanding Git and Version Control
+Then, every time you want to save and send what you have done:
 
-Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated "save" system that:
+```{.bash .no-fold}
+git add -A                     # take every file you changed
+git commit -m "what I did"     # save a snapshot, with a note
+git push                       # send the snapshots to GitHub
+```
 
-- Keeps a complete history of all changes to your files
-- Lets you go back to any previous version
-- Allows multiple people to work on the same project simultaneously
-- Helps you manage different versions or "branches" of your work
+`git status` prints what has changed and whether it has been sent yet. Run it
+whenever you are unsure.
 
-GitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.
+Three things worth knowing:
 
-#### Learning Resources
+- **Committing saves; pushing sends.** Work you committed but never pushed is on
+  your laptop only, and nobody else can see it.
+- **Push often.** The history shows *when* the work happened, and for the Pair
+  Notebook that is part of what is read: three short sittings count exactly as
+  much as one long one.
+- **In a Pair Notebook session you never type these.** You say `hand it in` to
+  your tutor and it runs all three for you.
 
-Essential resources to understand Git concepts:
+<!-- TODO(anim): commit vs push — a file changes on the laptop, a commit stacks one snapshot on a local pile, a push copies the pile to GitHub; nothing leaves the laptop until the third step. -->
 
-- [Interactive Git Tutorial](https://learngitbranching.js.org/) - Visual, hands-on learning
-- [GitHub Desktop Documentation](https://docs.github.com/en/desktop) - Official desktop app guide
-- [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials) - Detailed tutorials with examples
+## You are set. What now?
 
+- **[Pair Notebook](pair-notebook.qmd)** — your first assignment. One more
+  command (`node setup-pi.mjs`) inside the folder you clone, and then a single
+  word starts every session.
+- **[Group Mini-Project](mini-project.qmd)** — the in-class team assignment, and
+  the one rule about accepting it that decides whether your team is a team.
+
+## Optional: run a module notebook on your own machine
+
+The **Run this notebook** link on each hands-on page needs nothing installed.
+If you would rather run one locally, uv does the rest — it fetches Python and
+the packages listed inside the notebook itself:
+
+```{.bash .no-fold}
+git clone https://github.com/skojaku/adv-net-sci.git
+cd adv-net-sci
+uvx marimo edit --sandbox notebooks/m02-small-world/coding.py
+```
+
+`uvx` runs a tool without installing it permanently, and `--sandbox` builds a
+throwaway environment from the dependency list at the top of the notebook, so
+nothing is added to your system Python. The first run takes a minute while
+Python and the packages arrive; later runs are instant.
+
+[marimo](https://marimo.io) is a reactive notebook: change one cell and every
+cell that depends on it recomputes, so what you see on screen is always what the
+code says. It is also a plain `.py` file, which is why git can track it.
+
+## Optional: GitHub Copilot
+
+Students get [GitHub Copilot Pro for free](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro).
+It suggests code as you type in VS Code and in marimo
+([how to enable it](https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot)).
+Using it is entirely up to you — the Pair Notebook is read for your reasoning,
+which no autocomplete can supply.
+
+## If something goes wrong
+
+| What you see | What it means | What to do |
+|---|---|---|
+| `command not found` right after installing something | this terminal was open while the install ran | close it, open a new one |
+| `brew: command not found` (macOS) | Homebrew is not installed | the box in step 2 |
+| git asks for a username and password when you push | git is not signed in to GitHub | `gh auth login` |
+| `repository not found` when cloning | you are signed in as the wrong account, or you never accepted the assignment | `gh auth status`, then accept the assignment again |
+| `echo $NETSCI_API_KEY` prints nothing | the variable is not set in *this* window | reread step 4, then open a new terminal |
+| `winget` is not recognized (Windows 10) | `winget` ships with Windows 11 | install [App Installer](https://apps.microsoft.com/detail/9nblggh4nns1) from the Microsoft Store, or use each tool's own installer |
+
+Anything else: ask on [Discord](discord.md). Setup problems are not part of any
+assignment, and someone else has usually hit the same one.

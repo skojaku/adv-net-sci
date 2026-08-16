@@ -1,26 +1,139 @@
 ---
-title: "Hands-on: A GCN from Scratch"
+title: "Appendix: The Algebra We Set Aside"
 ---
 
-The [core concepts](01-concepts.qmd) chapter derives graph convolution twice — once in the spectral domain, once as message passing — and then hands the implementation to a library. This notebook does not use the library.
+The main text of this module keeps the intuition and the result, and sends the derivations here. Nothing on this page introduces a new idea; everything here is a calculation you can check line by line, plus one notebook that writes the layers out from the equations.
 
-Writing the layers directly from the equations is the fastest way to see that there is nothing mysterious in them: a GCN layer is a normalized adjacency matrix, a weight matrix, and a nonlinearity.
+## The Fourier transform, written out {#fourier}
+
+Referenced from [How a Camera Finds an Edge](00-preparation.qmd).
+
+For a discrete signal $x[n]$ with $N$ points, the Fourier transform $\mathcal{F}$ is
+
+$$
+\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-2\pi i \frac{nk}{N}}
+$$
+
+where $i$ is the imaginary unit. Using Euler's formula $e^{i\phi} = \cos(\phi) + i\sin(\phi)$, the same thing without complex exponentials:
+
+$$
+\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot \left[ \cos\left(2\pi \frac{nk}{N}\right) - i \sin\left(2\pi \frac{nk}{N}\right) \right]
+$$
+
+Read the second form as a pair of dot products. For each frequency $k$, the real part measures how much the signal looks like a cosine of that frequency, and the imaginary part how much it looks like the matching sine. Two numbers per frequency, because a wave needs both a size and a position — and a complex number is a convenient way to carry a 2D quantity in one symbol. For instance $e^{i\pi/2} = \cos(\pi/2) + i \sin(\pi/2) = i$ stands for the 2D vector $(0, 1)$.
+
+For an image $X$ of size $H \times W$, the 2D transform is the 1D transform applied along the rows and then along the columns, which written in one line is
+
+$$
+\begin{aligned}
+\mathcal{F}(X)[h, w] &= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] \cdot e^{-2\pi i \frac{hk}{H}} \cdot e^{-2\pi i \frac{w\ell}{W}} \\
+&= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] \, e^{-2\pi i \left(\frac{hk}{H} + \frac{w\ell}{W}\right)}
+\end{aligned}
+$$
+
+Functionally it is the 1D case with two indices instead of one: $h$ counts how fast the wave varies down the columns, $w$ how fast it varies along the rows.
+
+## Adding up disagreements produces the Laplacian {#total-variation}
+
+Referenced from [Every Node Asks Its Neighbors](01-concepts.qmd).
+
+Expand the square, then use $\sum_j A_{ij} = k_i$ and the symmetry $A_{ij} = A_{ji}$:
+
+$$
+\begin{aligned}
+J &= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2 \\
+&= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}\left( x_i^2 + x_j^2 \right) - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
+&= \frac{1}{2}\left( \sum_{i=1}^N x_i^2 \underbrace{\sum_{j=1}^N A_{ij}}_{k_i} + \sum_{j=1}^N x_j^2 \underbrace{\sum_{i=1}^N A_{ij}}_{k_j} \right) - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
+&= \sum_{i=1}^N k_i x_i^2 - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
+&= {\bf x}^\top {\bf D} {\bf x} - {\bf x}^\top {\bf A} {\bf x} \\
+&= {\bf x}^\top ({\bf D} - {\bf A}) {\bf x} = {\bf x}^\top {\bf L} {\bf x}.
+\end{aligned}
+$$
+
+The two bracketed sums in the third line are the same quantity written twice, which is exactly what cancels the $\frac{1}{2}$: the double sum visits every edge once from each end.
+
+## Bruna's spectral filter with many feature channels {#bruna}
+
+Referenced from [Every Node Asks Its Neighbors](01-concepts.qmd).
+
+In the main text each node carried a single number, so the layer was ${\bf x}^{(\ell+1)} = h({\bf L}_{\text{learn}} {\bf x}^{(\ell)})$. Real nodes carry a feature vector, and a layer maps ${\bf X} \in \mathbb{R}^{N \times f_{\text{in}}}$ to ${\bf X}' \in \mathbb{R}^{N \times f_{\text{out}}}$. Write $p$ for an input channel and $q$ for an output channel, and give every $(p, q)$ pair its own filter:
+
+$$
+{\bf X}^{(\ell+1)}_{:,q} = h\left( \sum_{p=1}^{f_{\text{in}}} {\bf L}_{\text{learn}}^{(p,q)} \, {\bf X}^{(\ell)}_{:,p}\right),
+\qquad
+{\bf L}_{\text{learn}}^{(p,q)} = \sum_{k=1}^K \theta_{k,(p,q)} \, {\mathbf u}_k {\mathbf u}_k^\top .
+$$
+
+Note which indices are which: $p$ and $q$ number *feature channels*, not nodes — the node indices are hidden inside the matrix-vector product. This is the direct analogue of a CNN, which also has one kernel per input-output channel pair. The parameter count is $K \cdot f_{\text{in}} \cdot f_{\text{out}}$, on top of the ${\cal O}(N^3)$ eigendecomposition needed to obtain the ${\mathbf u}_k$ at all.
+
+## The Chebyshev recursion {#chebnet}
+
+Referenced from [Every Node Asks Its Neighbors](01-concepts.qmd).
+
+ChebNet's filter is $\sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}})$ with $\tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I}$, and the polynomials are generated by
+
+$$
+\begin{aligned}
+T_0(\tilde{{\bf L}}) &= {\bf I} \\
+T_1(\tilde{{\bf L}}) &= \tilde{{\bf L}} \\
+T_k(\tilde{{\bf L}}) &= 2\tilde{{\bf L}} \, T_{k-1}(\tilde{{\bf L}}) - T_{k-2}(\tilde{{\bf L}}).
+\end{aligned}
+$$
+
+Two things to notice. First, computing $T_k(\tilde{{\bf L}}){\bf x}$ never forms a matrix: you keep two vectors and multiply by the sparse $\tilde{{\bf L}}$ once per step, so the whole filter costs ${\cal O}(K |E|)$. Second, $T_k$ is a polynomial of degree $k$, and the $k$-th power of the Laplacian is nonzero only between nodes within $k$ hops — which is why a degree-$(K-1)$ filter is localized to $K-1$ hops.
+
+The rescaling $\tilde{{\bf L}}$ exists because Chebyshev polynomials are only well behaved on $[-1, 1]$. Since the eigenvalues of ${\bf L}_{\text{sym}}$ lie in $[0, \lambda_{\text{max}}] \subseteq [0,2]$, the map $\lambda \mapsto \frac{2\lambda}{\lambda_{\text{max}}} - 1$ sends them into $[-1, 1]$.
+
+## From ChebNet to the GCN layer {#kipf-welling}
+
+Referenced from [Every Node Asks Its Neighbors](01-concepts.qmd).
+
+Keep only $T_0$ and $T_1$:
+
+$$
+g_{\theta'} * {\bf x} \approx \theta'_0 {\bf x} + \theta'_1 \tilde{{\bf L}} {\bf x}.
+$$
+
+Take $\lambda_{\text{max}} \approx 2$, which is the upper bound on the spectrum of ${\bf L}_{\text{sym}}$, so $\tilde{{\bf L}} \approx {\bf L}_{\text{sym}} - {\bf I}_N$. And by the definition ${\bf L}_{\text{sym}} = {\bf I} - {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ we have ${\bf L}_{\text{sym}} - {\bf I}_N = -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$. Substituting:
+
+$$
+g_{\theta'} * {\bf x} \approx \theta'_0 {\bf x} - \theta'_1 {\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}{\bf x}.
+$$
+
+::: {.column-margin}
+It must be ${\bf L}_{\text{sym}}$ here, not the unnormalized ${\bf L} = {\bf D} - {\bf A}$. With the unnormalized Laplacian the second equality is false: ${\bf L} - {\bf I}_N = {\bf D} - {\bf A} - {\bf I}_N \neq -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$.
+:::
+
+Finally tie the two parameters, $\theta'_0 = \theta$ and $\theta'_1 = -\theta$:
+
+$$
+g_{\theta} * {\bf x} \approx \theta\left({\bf I}_N + {\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}\right){\bf x}.
+$$
+
+One learnable number per layer. The renormalization trick then replaces ${\bf A}$ by $\tilde{{\bf A}} = {\bf A} + {\bf I}_N$ with $\tilde{D}_{ii} = \sum_j \tilde{A}_{ij}$, which keeps the operator's eigenvalues away from the extremes of $[0,2]$, and restoring the feature channels and a nonlinearity gives the layer as implemented everywhere:
+
+$$
+{\bf X}^{(\ell+1)} = \sigma\left(\tilde{{\bf D}}^{-\frac{1}{2}}\tilde{{\bf A}}\tilde{{\bf D}}^{-\frac{1}{2}}{\bf X}^{(\ell)}{\bf W}^{(\ell)}\right).
+$$
+
+## A GCN from scratch, without a library {#from-scratch}
+
+The concepts chapter derives graph convolution twice — once in the spectral domain, once as message passing — and then hands the implementation to a library. This notebook does not use the library. Writing the layers directly from the equations above is the fastest way to see that there is nothing mysterious in them: a GCN layer is a normalized adjacency matrix, a weight matrix, and a nonlinearity.
 
 ::: {.callout-note title="Where the code lives"}
-This module has no hosted notebook — PyTorch will not run in the browser
-runtime. The notebook is in the repository at
-[`notebooks/m09-graph-neural-nets/gcn-from-scratch.ipynb`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/gcn-from-scratch.ipynb).
+This module has no hosted notebook — PyTorch will not run in the browser runtime. The notebook is in the repository at
+[`notebooks/m09-graph-neural-nets/gcn-from-scratch.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/gcn-from-scratch.py).
 Run it locally with `marimo edit notebooks/m09-graph-neural-nets/gcn-from-scratch.py`.
 :::
 
-## What you will build
+What you will build:
 
-1. **Bruna's spectral GCN.** Eigendecompose the Laplacian, learn one weight per eigenvector, and classify nodes in the karate club network. This is the $O(N^3)$ version that motivated everything after it.
-2. **ChebNet.** Replace the free-form spectral filter with a Chebyshev polynomial of the scaled Laplacian, computed by the recursion $T_k = 2\tilde{{\bf L}}T_{k-1} - T_{k-2}$. No eigendecomposition, and the filter is localized to $K$ hops.
+1. **Bruna's spectral GCN.** Eigendecompose the Laplacian, learn one weight per eigenvector, and classify nodes in the karate club network. This is the ${\cal O}(N^3)$ version that motivated everything after it.
+2. **ChebNet.** Replace the free-form spectral filter with a Chebyshev polynomial of the scaled Laplacian, computed by the recursion above. No eigendecomposition, and the filter is localized to $K$ hops.
 3. Train both, and visualize the representations they learn.
 
-## What to watch for
+What to watch for:
 
-- Time the eigendecomposition as you grow the network. The $O(N^3)$ cost is the entire reason ChebNet exists, and it is more persuasive as a measured curve than as a claim.
+- Time the eigendecomposition as you grow the network. The ${\cal O}(N^3)$ cost is the entire reason ChebNet exists, and it is more persuasive as a measured curve than as a claim.
 - Increase $K$ in ChebNet and watch the receptive field grow. At $K = 1$ with the parameters tied you should recover something close to the Kipf-Welling GCN.
 - Check that the eigenvector with the smallest nonzero eigenvalue splits the karate club roughly along its known division. That is the Fiedler vector from Module 8 showing up inside a neural network.

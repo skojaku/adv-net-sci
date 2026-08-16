@@ -1,13 +1,15 @@
 ---
-title: "Appendix: Proof of the Molloy-Reed Criterion"
+title: "Appendix: One Number Decides Whether a Network Holds Together"
 ---
 
-In the main text we used two results without proving them:
+In the main text we used several results without proving them:
 
 1. A giant component exists when $\kappa = \dfrac{\langle k^2 \rangle}{\langle k \rangle} > 2$.
 2. Under random failures the network falls apart once a fraction $f_c = 1 - \dfrac{1}{\kappa - 1}$ of nodes is removed.
+3. A network with enough degree heterogeneity has $f_c \rightarrow 1$: essentially every node must fail before it breaks.
+4. That same network breaks under a *targeted* attack at a few percent.
 
-This appendix derives both. The only tool we need is a careful answer to one question: **if I follow a random edge, what do I find at the other end?**
+This appendix derives all four. The only tool we need is a careful answer to one question: **if I follow a random edge, what do I find at the other end?**
 
 ## Setup: what kind of network are we talking about?
 
@@ -149,6 +151,76 @@ $$
 
 Essentially every node must be removed before the giant component dies. This is the mathematical content of the claim that scale-free networks are extraordinarily robust to random failure — and, as the main text shows, it says nothing at all about targeted attack, where those same hubs become the network's weakness.
 
+Note the scope: the divergence is what makes $f_c \rightarrow 1$, and it happens only for $2 < \gamma < 3$. For $\gamma > 3$ the second moment is finite, $\kappa_0$ is an ordinary number, and $f_c$ is strictly below 1. The next step makes both regimes explicit.
+
+## Step 6: putting numbers on the heterogeneous case
+
+A real network is finite, so $\langle k^2 \rangle$ is never literally infinite — it is capped by the largest hub. Treat the degree distribution as a continuous power law $p(k) = C k^{-\gamma}$ running from $k_{\min}$ to $k_{\max}$, with $C = (\gamma - 1) k_{\min}^{\gamma-1}$ fixing the normalisation, and integrate:
+
+$$
+\langle k \rangle = C\!\!\int_{k_{\min}}^{k_{\max}}\!\! k^{1-\gamma}\,dk = \frac{\gamma-1}{\gamma-2}\,k_{\min},
+\qquad
+\langle k^2 \rangle = C\!\!\int_{k_{\min}}^{k_{\max}}\!\! k^{2-\gamma}\,dk = C\,\frac{k_{\max}^{3-\gamma} - k_{\min}^{3-\gamma}}{3-\gamma}.
+$$
+
+(For $\gamma > 2$ the upper limit contributes negligibly to $\langle k \rangle$, so $\langle k \rangle$ is set by $k_{\min}$ alone; for $\gamma \le 2$ even the average degree diverges, which is why the whole discussion is restricted to $\gamma > 2$.) Which term of $\langle k^2 \rangle$ dominates depends on the sign of $3 - \gamma$, and that is where the two regimes come from:
+
+$$
+\kappa =
+\begin{cases}
+\dfrac{\gamma-2}{3-\gamma}\, k_{\min}^{\gamma-2}\, k_{\max}^{3-\gamma} & \text{if } 2 < \gamma < 3 \quad (k_{\max}\text{ dominates}) \\[10pt]
+\dfrac{\gamma-2}{\gamma-3}\, k_{\min} & \text{if } \gamma > 3 \quad (k_{\min}\text{ dominates}).
+\end{cases}
+$$
+
+Feeding each branch into $f_c = 1 - 1/(\kappa - 1)$ gives the critical fraction quoted for heterogeneous networks:
+
+$$
+f_c =
+\begin{cases}
+1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\min}^{\gamma-2} k_{\max}^{3-\gamma} - 1} & \text{if } 2 < \gamma < 3 \\[10pt]
+1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\min} - 1} & \text{if } \gamma > 3 .
+\end{cases}
+$$
+
+Reading the two cases:
+
+- For $2 < \gamma < 3$, $f_c$ is set by the *largest* hub. In a growing network $k_{\max}$ grows with $N$, so $\kappa$ grows without bound and $f_c \rightarrow 1$. The bigger the network, the harder it is to break by chance.
+- For $\gamma > 3$, $f_c$ is set by the *smallest* degree $k_{\min}$, which does not grow with $N$. So $\kappa$ stays finite, $f_c$ stays below 1, and a fixed fraction of random failures is enough to shatter the network at any size.
+
+## Step 7: targeted attack, mapped back onto random failure
+
+An attack is not a random removal, so the results above do not apply directly. Cohen, Erez, ben-Avraham and Havlin (2001) get around this by noticing that removing the top $f$ fraction of nodes does exactly two things to the network, and both can be expressed as changes a random-failure calculation can absorb.
+
+1. **It truncates the tail.** After deleting the highest-degree $f$ fraction, the largest surviving degree is
+   $$k'_{\max} = k_{\min} f^{\,1/(1-\gamma)} .$$
+   (Set the fraction of nodes above $k'_{\max}$ equal to $f$ and solve; the exponent is negative for $\gamma > 1$, so a smaller $f$ leaves a larger surviving hub, as it must.)
+2. **It removes the edges those hubs carried.** Those edges had one end on a deleted hub and one end on a surviving node, so from the survivors' point of view a further fraction of their edges has simply vanished. That is an *unbiased* thinning of the surviving degrees — the same kind of dilution Step 3 already knows how to handle.
+
+Combining the two and setting $\kappa = 2$ gives an equation for the attack threshold:
+
+$$
+f_c^{\frac{2-\gamma}{1-\gamma}} = 2 + \frac{2-\gamma}{3-\gamma}\, k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right).
+$$
+
+This is implicit in $f_c$ — there is no closed form — but for particular $\gamma$ it collapses to something you can solve by hand.
+
+::: {.callout-tip title="Worked example: how small is 'a few percent'?"}
+Take $\gamma = 2.5$ and $k_{\min} = 1$. The exponents are
+$$\frac{2-\gamma}{1-\gamma} = \frac{-0.5}{-1.5} = \tfrac13,
+\qquad
+\frac{3-\gamma}{1-\gamma} = \frac{0.5}{-1.5} = -\tfrac13,$$
+and the prefactor is $(2-\gamma)/(3-\gamma) = -1$. Writing $x = f_c^{1/3}$, the equation becomes
+
+$$x = 2 - \left(\frac1x - 1\right) = 3 - \frac1x \quad\Longrightarrow\quad x^2 - 3x + 1 = 0 .$$
+
+The root in $(0,1)$ is $x = (3-\sqrt5)/2 \approx 0.382$, so $f_c = x^3 \approx 0.056$. **Removing the best-connected 5.6% of nodes destroys the giant component**, in a network that random failure could barely dent.
+
+Raising the minimum degree helps a lot: with $k_{\min} = 2$ the same substitution gives $x^2 - 4x + 2 = 0$, root $x = 2 - \sqrt2 \approx 0.586$, hence $f_c \approx 0.20$. Giving every node a second connection is the cheapest defence there is.
+:::
+
+One warning about reading the exponents. It is tempting to say "both exponents are negative for $\gamma < 3$", but that is false: at $\gamma = 2.5$ the exponent $(2-\gamma)/(1-\gamma) = +1/3$ is **positive** and only $(3-\gamma)/(1-\gamma) = -1/3$ is negative. The two sides of the equation therefore move in opposite directions as $f_c$ grows, which is exactly why they cross once, and cross early.
+
 ## What the proof assumes
 
 Two assumptions are doing real work, and both can fail:
@@ -159,5 +231,6 @@ Two assumptions are doing real work, and both can fail:
 ## References
 
 - Molloy, M., & Reed, B. (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180.
-- Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S. (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629.
+- Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S. (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629. [Steps 3-6]
+- Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S. (2001). Breakdown of the Internet under intentional attack. *Physical Review Letters*, 86(16), 3682-3685. [Step 7]
 - Newman, M. E. J. (2018). *Networks* (2nd ed.), Chapter 11. Oxford University Press.

@@ -1,0 +1,103 @@
+---
+title: "Group Mini-Project"
+---
+
+The [Pair Notebook](pair-notebook.qmd) is you and a tutor. The **mini-project**
+is you and up to two classmates, in class, with real data and code that has to
+run.
+
+| | |
+|---|---|
+| Who | **Teams of up to 3.** One shared repository, one shared grade. |
+| When | **In class**, in the sessions set aside for it on the schedule. |
+| Which modules | **Modules 2 through 6** — five of them. |
+| What it is worth | **10 points of your final grade**, the five together. |
+| What you hand in | A marimo notebook in your team's repository, pushed before the deadline. |
+
+Each project takes a module you have just met and points it at data: measure
+the small-world effect on a real network, break a network and watch it come
+apart, rank nodes by five different notions of importance. The repository's own
+`README.md` states the tasks — it is the authoritative instruction, and this
+page is only about how the machinery works.
+
+## The one rule that decides whether your team is a team
+
+**Exactly one person accepts the assignment. Everybody else waits to be
+invited.**
+
+This is the mistake that will actually happen: three teammates each click
+accept, and Classroom 50 dutifully creates three separate one-person
+repositories that cannot be merged afterwards. Sort out who accepts *before*
+anyone clicks.
+
+## How it runs
+
+1. **Form the team.** Up to three people. Agree who the founder is.
+
+2. **The founder accepts** the assignment on
+   [Classroom 50](https://classroom50.org), the site this course uses to hand
+   out and collect work. Accepting creates the shared repository, and it is
+   named after the founder's GitHub username — there are no custom team names.
+
+3. **The founder invites the others** by their GitHub usernames. Classroom 50
+   prints the command when you accept (it looks like
+   `gh student invite <username>`); the same thing can be done from the
+   repository page on GitHub under **Settings → Collaborators**.
+
+   ::: {.callout-warning title="A teammate who has not joined the course organization is invisible to grading"}
+   Credit is given to collaborators who are **also on the course's GitHub
+   team** — that is, students who accepted the organization invitation the
+   instructor sent. Someone who skipped that email is added to the repository,
+   commits happily all afternoon, and receives **nothing**. Check on day one,
+   not on the deadline.
+   :::
+
+4. **Everyone clones the same repository** and works in it:
+
+   ```{.bash .no-fold}
+   git clone <the team repository URL>
+   cd <the folder it made>
+   uvx marimo edit --sandbox assignment/assignment.py
+   ```
+
+   (The notebook's exact path is in the repository README. If `git`, `uv` or
+   your GitHub sign-in are not set up yet, do
+   [Set up your machine](setup.qmd) first.)
+
+5. **Push as you go.**
+
+   ```{.bash .no-fold}
+   git pull                        # take your teammates' work first
+   git add -A
+   git commit -m "what I did"
+   git push
+   ```
+
+   `git pull` before you start and before you push. Two people editing the same
+   notebook cell at the same time is the one way to make git unpleasant, so
+   split the tasks and say who is doing which.
+
+## How it is graded
+
+The tests run **once, in the founder's repository**, and every teammate on the
+course's GitHub team receives that same score. Nothing else is collected, and
+there is no separate per-person submission.
+
+Each push runs the autograder in GitHub Actions, so you can see whether you
+passed without waiting for anyone: the **Actions** tab of your repository shows
+the run, and the score is written back into the repository itself. The
+class-wide gradebook is rebuilt overnight, so it can be up to a day behind what
+your repository already says — believe your repository.
+
+There is no attempt limit. Push as many times as you like before the deadline;
+the last one before it counts.
+
+## If something goes wrong
+
+| What happened | What to do |
+|---|---|
+| Two of you accepted, and there are two repositories | Pick one to keep and tell the instructor which — the other has to be discarded before grading. |
+| A teammate cannot push to the team repository | They were never invited, or never accepted the invitation. The founder re-invites them; they check their GitHub notifications. |
+| The autograder never ran | Look at the **Actions** tab. A red run is a failed test; no run at all usually means nothing was pushed. |
+| `git pull` reports a conflict | Two people changed the same lines. Ask on [Discord](discord.md) rather than deleting and re-cloning — the fix is usually two minutes. |
+| Your team ended up with two members, or one | Fine. The cap is three; there is no floor, and a smaller team is graded the same way. |

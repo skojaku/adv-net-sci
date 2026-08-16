@@ -1,28 +1,28 @@
 ---
-title: "Network Embedding Concepts"
+title: "From Wiring Diagram to Map"
 ---
 
-## What is Network Embedding?
+> **The big question of this module.** How do you turn a network into coordinates
+> without throwing away what makes it a network?
 
+## Why would you give a node coordinates?
 
-::: {#fig-karate-to-embedding}
+::: {#fig-karate-to-map}
 
-![](https://transformerswsz.github.io/2022/09/09/DeepWalk%E8%A7%A3%E8%AF%BB/karate_to_embedding.jpg)
+![](../figs/m08-karate-to-map.svg){width=100% fig-align="center"}
 
-This figure is taken from [DeepWalk: Online Learning of Social Representations](https://arxiv.org/abs/1403.6652).
+The same 34 people, twice. On the left, Zachary's karate club as a wiring diagram: the only thing you can say about a person is who they are joined to. On the right, the same club after embedding: every person now carries two numbers, and the two factions separate on their own.
 :::
 
-Networks are high-dimensional discrete data that can be difficult to analyze with traditional machine learning methods that assume continuous and smooth data. Network embedding is a technique to represent networks in low-dimensional continuous spaces, enabling us to apply standard machine learning algorithms.
+Right now the only description you have of a node is its row of the adjacency matrix. For the karate club that is 34 numbers per person, most of them zero. That is what people mean when they call a network *high-dimensional data*: each node is described by as many numbers as there are nodes, nearly all of them zero, and the numbers are not quantities you can compare — entry 7 answers "is person 7 your friend", not "how much".
 
-The goal of network embedding is to map each node in a network to a point in a low-dimensional space (typically $\mathbb{R}^d$ where $d \ll N$) while preserving important structural properties of the network.
+Every tool you already know wants the opposite. $k$-means, logistic regression, a scatter plot: all of them want a short list of numbers per item, where being close in those numbers means being similar. **Network embedding** builds exactly that — a map sending each node to a point in $\mathbb{R}^d$ with $d \ll N$ (two if you want a picture, 64 or 128 in practice), chosen so that nodes sitting in similar positions in the network land near each other.
 
-## Exercises
+Once the map exists, everything downstream is ordinary machine learning: cluster the points, classify them, or find pairs of points that are suspiciously close and call those your predicted links.
 
-- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
+## Spectral embedding
 
-## Spectral Embedding
-
-### Network Compression Approach
+### Compression: from $N$ numbers per node down to $d$
 
 Let us approach spectral embedding from the perspective of network compression.
 Suppose we have an adjacency matrix $\mathbf{A}$ of a network.
@@ -37,29 +37,65 @@ $$
 
 where:
 
-1. $\mathbf{U}\mathbf{U}^\top$ is the outer product of $\mathbf{U}$ and represents the reconstructed network.
-2. $\|\cdot\|_F$ is the Frobenius norm, which is the sum of the squares of the elements in the matrix.
+1. $\mathbf{U}\mathbf{U}^\top$ is an $N \times N$ matrix built back out of the $d$ coordinates — the *reconstructed* network. Its $(i,j)$ entry is the dot product $u_i^\top u_j$ of the two nodes' coordinate vectors, so "reconstruction" literally means: two nodes are predicted to be connected when their coordinates point the same way.
+2. $\|\cdot\|_F$ is the Frobenius norm: the square root of the sum of the squares of all entries of a matrix. Squaring it, as above, gives the plain sum of squared entries — so $J(\mathbf{U})$ adds up one squared error per node pair.
 3. $J(\mathbf{U})$ is the loss function that measures the difference between the original network $\mathbf{A}$ and the reconstructed network $\mathbf{U}\mathbf{U}^\top$.
 
-By minimizing the Frobenius norm with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.
+By minimizing $J$ with respect to $\mathbf{U}$, we obtain the best low-dimensional embedding of the network.
 
-### Spectral Decomposition Solution
+### What an eigenvector is
 
-Consider the spectral decomposition of $\mathbf{A}$:
+The solution is written in eigenvectors, so here is the one-paragraph version.
+
+Take the smallest possible network: two nodes joined by one edge, with adjacency matrix
+
+$$
+\mathbf{A} = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+$$
+
+Multiplying a vector by this matrix swaps its two entries, so $(3, 5)$ becomes $(5, 3)$ — a different direction. Two vectors survive the swap. $(1, 1)$ comes back as $(1, 1)$, unchanged. $(1, -1)$ comes back as $(-1, 1)$: the same line, flipped.
+
+A vector that a matrix only stretches or flips, never turns, is an **eigenvector** of that matrix, and the stretch factor is its **eigenvalue** $\lambda$, defined by $\mathbf{A}\mathbf{u} = \lambda \mathbf{u}$. Here $\mathbf{u}_1 = (1,1)/\sqrt{2}$ with $\lambda_1 = 1$, and $\mathbf{u}_2 = (1,-1)/\sqrt{2}$ with $\lambda_2 = -1$. Eigenvectors are conventionally rescaled to length 1, so an eigenvector carries only a direction; the size lives in $\lambda$.
+
+::: {.column-margin}
+Everything here relies on $\mathbf{A}$ being symmetric ($A_{ij} = A_{ji}$), which is true for an undirected network. A symmetric $N \times N$ matrix has exactly $N$ eigenvectors, they are mutually perpendicular, and every eigenvalue is a real number. A directed network gives no such guarantee — which is why spectral embedding is a story about undirected networks.
+:::
+
+### The network as a stack of layers: keep the heavy ones
+
+Those $N$ eigenvectors let you take the network apart:
 
 $$
 \mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top
 $$
 
-where $\lambda_i$ are eigenvalues (weights) and $\mathbf{u}_i$ are eigenvectors. Each term $\lambda_i \mathbf{u}_i \mathbf{u}_i^\top$ is a rank-one matrix that captures a part of the network's structure. The larger the weight $\lambda_i$, the more important that term is in describing the network.
+Each term $\lambda_i \mathbf{u}_i \mathbf{u}_i^\top$ is an *outer product* — an $N \times N$ matrix built from a single vector, so it has rank one — and $|\lambda_i|$ says how much of $\mathbf{A}$ that one layer accounts for. The network is a stack of $N$ transparencies: a few carry the picture and the rest are nearly blank.
 
-To compress the network, we can select the $d$ terms with the largest weights $\lambda_i$. By combining the corresponding $\mathbf{u}_i$ vectors into a matrix $\mathbf{U}$, we obtain a good low-dimensional embedding of the network.
+Check it on the two-node network. The two layers are
 
-![](../figs/spectral-decomposition.jpg)
+$$
+\mathbf{u}_1 \mathbf{u}_1^\top = \begin{bmatrix} 0.5 & 0.5 \\ 0.5 & 0.5 \end{bmatrix},
+\qquad
+\mathbf{u}_2 \mathbf{u}_2^\top = \begin{bmatrix} 0.5 & -0.5 \\ -0.5 & 0.5 \end{bmatrix}
+$$
 
-For a formal proof, please refer to the [Appendix section](./04-appendix.md).
+and $1 \times$ the first plus $(-1) \times$ the second returns $\begin{bmatrix} 0 & 1 \\ 1 & 0\end{bmatrix}$ exactly, which is $\mathbf{A}$.
 
-### Modularity Embedding
+To compress, keep only the $d$ heaviest layers. The embedding that does this is
+
+$$
+\mathbf{U} = \left[\, \sqrt{\lambda_1}\,\mathbf{u}_1,\ \sqrt{\lambda_2}\,\mathbf{u}_2,\ \ldots,\ \sqrt{\lambda_d}\,\mathbf{u}_d \,\right]
+$$
+
+because then $\mathbf{U}\mathbf{U}^\top = \sum_{i=1}^d \lambda_i \mathbf{u}_i \mathbf{u}_i^\top$, which is exactly the truncated stack. The $\sqrt{\lambda_i}$ is not decoration: eigenvectors all have length 1, so without it the first dimension and the fiftieth would be given equal weight even though the first explains a hundred times more of the network.
+
+Take the $d$ *largest* eigenvalues, and largest means signed, not largest in absolute value: $\mathbf{U}\mathbf{U}^\top$ can only ever add a layer with a positive sign, so a large negative $\lambda$ is of no use to it.
+
+![](../figs/spectral-decomposition.jpg){width=90% fig-align="center"}
+
+The derivation — take the derivative of $J$, set it to zero, and see which $\mathbf{U}$ satisfies it — is in the [appendix](./04-appendix.qmd).
+
+### Modularity embedding
 
 In a similar vein, we can use the modularity matrix to generate a low-dimensional embedding of the network.
 Let us define the modularity matrix $\mathbf{Q}$ as follows:
@@ -70,9 +106,9 @@ $$
 
 where $k_i$ is the degree of node $i$, and $m$ is the number of edges in the network.
 
-We then compute the eigenvectors of $\mathbf{Q}$ and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix. The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes with the same sign of the second eigenvector [@newman2006modularity].
+We then compute the eigenvectors of $\mathbf{Q}$ and use them to embed the network into a low-dimensional space just as we did for the adjacency matrix. The modularity embedding can be used to bipartition the network into two communities using a simple algorithm: group nodes by the sign of the **leading** eigenvector — the one with the largest eigenvalue [@newman2006modularity]. Positive entries form one community, negative entries the other.
 
-### Laplacian Eigenmap
+### Laplacian eigenmap
 
 Laplacian Eigenmap [@belkin2003laplacian] is another approach to compress a network into a low-dimensional space. The fundamental idea behind this method is to position connected nodes close to each other in the low-dimensional space. This approach leads to the following optimization problem:
 
@@ -80,27 +116,9 @@ $$
 \min_{\mathbf{U}} J_{LE}(\mathbf{U}),\quad J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
 $$
 
-::: {.column-margin}
-**Derivation steps:**
+Read it as a physical system: every edge is a spring pulling its two endpoints together, and we are looking for the resting position.
 
-Starting from $J_{LE}(\mathbf{U})$, we expand:
-
-$$
-\begin{aligned}
-&= \frac{1}{2}\sum_{i,j} A_{ij} \left( \| u_i \|^2 - 2 u_i^\top u_j + \| u_j \|^2 \right) \\
-&= \sum_{i} k_i \| u_i \|^2 - \sum_{i,j} A_{ij} u_i^\top u_j\\
-&= \sum_{i,j} L_{ij} u_i^\top u_j
-\end{aligned}
-$$
-
-where $L_{ij} = k_i$ if $i=j$ and $L_{ij} = -A_{ij}$ otherwise.
-
-In matrix form: $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$
-
-See [Appendix](./04-appendix.md) for full details.
-:::
-
-The solution minimizes distances between connected nodes. Through algebraic manipulation (see margin), we can rewrite the objective as $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$, where $\mathbf{L}$ is the graph Laplacian matrix:
+A few lines of algebra (in the [appendix](./04-appendix.qmd)) rewrite this as $J_{LE}(\mathbf{U}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$, where $\mathbf{L}$ is the graph Laplacian matrix:
 
 $$
 L_{ij} = \begin{cases}
@@ -109,13 +127,13 @@ k_i & \text{if } i = j \\
 \end{cases}
 $$
 
-By taking the derivative and setting it to zero:
+As written, though, the springs win outright: put every node at the origin and the objective is zero. To rule that answer out we require the $d$ coordinate columns to be orthonormal, $\mathbf{U}^\top \mathbf{U} = \mathbf{I}$ — the embedding must actually spread the nodes out and must actually use all $d$ of its dimensions. Minimizing under that constraint (via a Lagrange multiplier, which is where the $\lambda$ comes from) turns the problem into an eigenvalue problem:
 
 $$
-\frac{\partial J_{LE}}{\partial \mathbf{U}} = 0 \implies \mathbf{L} \mathbf{U} = \lambda \mathbf{U}
+\mathbf{L}\mathbf{u} = \lambda \mathbf{u}
 $$
 
-**Solution**: The $d$ eigenvectors associated with the $d$ smallest eigenvalues of the Laplacian matrix $\mathbf{L}$.
+**Solution**: the $d$ eigenvectors associated with the $d$ smallest **nonzero** eigenvalues of $\mathbf{L}$. The very smallest eigenvalue is always $0$, and its eigenvector is the all-ones vector, which places every node at the same point — the collapsed answer we just excluded, so it is discarded.
 
 ### The normalized Laplacian
 
@@ -133,7 +151,7 @@ Dividing by $\sqrt{k_i k_j}$ discounts each edge by the degrees at its ends, so 
 There is a third variant, the random-walk Laplacian $\mathbf{L}_{\text{rw}} = \mathbf{D}^{-1}\mathbf{L} = \mathbf{I} - \mathbf{P}$, where $\mathbf{P}$ is the transition matrix from Module 7. Its eigenvectors are those of $\mathbf{L}_{\text{sym}}$ rescaled by $\mathbf{D}^{-1/2}$, so the three Laplacians are three views of the same object — which is why spectral embedding, spectral clustering and random walks keep turning out to be the same theory.
 :::
 
-### The Fiedler vector and what the eigenvalues mean
+### The Fiedler vector splits a network in two
 
 Both Laplacians have smallest eigenvalue $\lambda_1 = 0$, with the constant vector as its eigenvector — the trivial solution we discard. The interesting one is the **second** smallest.
 
@@ -148,7 +166,7 @@ So the simplest possible spectral algorithm is: compute the Fiedler vector, spli
 $\lambda_2$ also fixes the mixing time of a random walk (Module 7): a small $\lambda_2$ means a bottleneck, a bottleneck means slow mixing, and slow mixing means the walker gets trapped in communities. The same number governs geometry, dynamics and clustering.
 :::
 
-### Spectral clustering
+### Spectral clustering is normalized cut, relaxed
 
 Generalizing beyond two groups gives **spectral clustering**, one of the most used clustering algorithms anywhere:
 
@@ -160,24 +178,18 @@ Step 3 is ordinary clustering in Euclidean space — which is the whole point of
 
 This also closes a loop back to Module 5. The normalized cut objective there was NP-hard as stated. If you relax it — allow the community indicator vector to take continuous values instead of just $\{0,1\}$ — the resulting optimization is exactly the Laplacian eigenproblem above. **Spectral clustering is the relaxation of normalized cut**, and the eigenvectors are the relaxed solution that $k$-means then rounds back into discrete groups.
 
-::: {.column-margin}
-The smallest eigenvalue is always zero (with eigenvector of all ones). In practice, compute $d+1$ smallest eigenvectors and discard the trivial one.
-:::
+## A detour through language: word2vec
 
-## Neural Embedding
-
-### Introduction to word2vec
-
-Neural embedding methods leverage neural network architectures to learn node representations. Before discussing graph-specific methods, we first introduce *word2vec*, which forms the foundation for many neural graph embedding techniques.
+The most widely used *graph* embedding methods are not graph methods at all. They are word2vec — a model built for text — fed with random walks instead of sentences. So we detour through language first. Once word2vec is understood, the graph part takes three lines.
 
 word2vec is a neural network model that learns word embeddings in a continuous vector space. It was introduced by Tomas Mikolov and his colleagues at Google in 2013 [@mikolov2013distributed].
 
-### How word2vec Works
+### How word2vec works
 
-word2vec learns word meanings from context, following the linguistic principle: "You shall know a word by the company it keeps" [@church1988word].
+word2vec learns word meanings from context, following a slogan coined by the linguist J. R. Firth in 1957: *"You shall know a word by the company it keeps."*
 
 ::: {.column-margin}
-This phrase means a person is similar to those they spend time with. It comes from Aesop's fable *The Ass and his Purchaser* (500s B.C.): a man brings an ass to his farm on trial. The ass immediately seeks out the laziest, greediest ass in the herd. The man returns the ass, knowing it will be lazy and greedy based on the company it chose.
+Firth was echoing a much older proverb — a person is known by the company they keep — which goes back to Aesop's fable *The Ass and his Purchaser*. A man takes an ass on trial; it immediately seeks out the laziest, greediest ass in the herd; the man returns it, having learned everything he needed from the company it chose.
 :::
 
 **The Core Idea**: Given a target word, predict its surrounding context words within a fixed window. For example, in:
@@ -203,10 +215,6 @@ Both *fox* and *dog* appear with words like "quick," "brown," and "jumps/runs," 
 - **Skip-gram**: Given a target word → predict context words (we'll use this)
 - **CBOW**: Given context words → predict target word
 
-::: {.column-margin}
-Skip-gram works better for small datasets and rare words. CBOW is faster to train.
-:::
-
 **Network Architecture**: word2vec uses a simple 3-layer neural network:
 
 ![](../figs/word2vec.png){width="70%" fig-align="center"}
@@ -217,53 +225,41 @@ Skip-gram works better for small datasets and rare words. CBOW is faster to trai
 
 The hidden layer activations become the word embeddings—dense, low-dimensional vectors that capture semantic relationships.
 
+One detail matters later: **each word gets two vectors, not one.** The input side stores an *in* vector $\mathbf{u}_w$, used when $w$ is the target; the output side stores an *out* vector $\mathbf{v}_w$, used when the same $w$ is somebody else's context. Training pushes $\mathbf{u}_{\text{target}}$ and $\mathbf{v}_{\text{context}}$ toward each other. Implementations normally discard the out vectors at the end and hand you $\mathbf{u}$.
+
 ::: {.column-margin}
 For a visual walkthrough of word2vec, see [The Illustrated Word2vec](https://jalammar.github.io/illustrated-word2vec/) by Jay Alammar.
 :::
 
-### Key Technical Components
-
-#### The Computational Challenge
+### The bill for the softmax, and two ways to dodge it
 
 To predict context word $w_c$ given target word $w_t$, we compute:
 
 $$
-P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c} \cdot \mathbf{v}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_w \cdot \mathbf{v}_{w_t})}
+P(w_c | w_t) = \frac{\exp(\mathbf{v}_{w_c}^\top \mathbf{u}_{w_t})}{\sum_{w \in V} \exp(\mathbf{v}_{w}^\top \mathbf{u}_{w_t})}
 $$
 
-::: {.column-margin}
-This is the softmax function—it converts dot products into probabilities that sum to 1.
-:::
+This is the softmax function: it turns dot products into probabilities that sum to 1.
 
-**The problem**: The denominator sums over all vocabulary words (e.g., 100,000+ terms), making training prohibitively slow.
+#### Every training step sums over the whole vocabulary
 
-#### Two Solutions
+Look at the denominator. It runs over $V$, the entire vocabulary — 100,000 words is typical. That sum has to be recomputed for *every* target-context pair in the corpus, and a corpus has billions of pairs. Training as written is not slow; it is impossible.
 
-**Hierarchical Softmax**: Organizes vocabulary as a binary tree with words at leaves. Computing probability becomes traversing root-to-leaf paths, reducing complexity from $O(|V|)$ to $O(\log |V|)$.
+#### Hierarchical softmax and negative sampling
 
-::: {#fig-hierarchical-softmax}
-![](https://building-babylon.net/wp-content/uploads/2017/07/hs4-1536x834.png)
-This figure is taken from [Hierarchical Softmax](https://building-babylon.net/2017/08/01/hierarchical-softmax/) by Building Babylon.
-:::
+**Hierarchical Softmax**: Organizes vocabulary as a binary tree with words at leaves. Computing a probability becomes walking one root-to-leaf path, which reduces the cost from $O(|V|)$ to $O(\log |V|)$ — for 100,000 words, from 100,000 terms to about 17.
 
-**Negative Sampling**: Instead of normalizing over all words, sample a few "negative" (non-context) words. Contrast the target's true context with these random words. This approximates the full softmax much more efficiently.
+**Negative Sampling**: Instead of normalizing over all words, sample a handful of "negative" (non-context) words and train the model only to tell the true context apart from those. Five to twenty negatives per pair is enough in practice.
 
-::: {.column-margin}
-Typically, 5-20 negative samples are enough. The model learns to distinguish true context words from random words.
-:::
+<!-- TODO(anim): the softmax bill — a vocabulary bar of 100k terms shrinking to a 17-step tree path (hierarchical softmax) and to 5 sampled bars (negative sampling). -->
 
-### What's Special About word2vec?
+### What word2vec bought us
 
 With word2vec, words are represented as dense vectors, enabling us to explore their relationships using simple linear algebra. This is in contrast to traditional natural language processing (NLP) methods, such as bag-of-words and topic modeling, which represent words as discrete units or high-dimensional vectors.
 
-::: {#fig-word2vec-embedding}
-![](https://miro.medium.com/v2/resize:fit:678/1*5F4TXdFYwqi-BWTToQPIfg.jpeg)
-This figure is taken from [Word2Vec](https://medium.com/@laura.wj.w/word2vec-207131259292) by Laura Wang.
-:::
+The famous consequence is that analogies become arithmetic: *king* $-$ *man* $+$ *woman* lands near *queen*, and every country sits at roughly the same offset from its capital, so the country-capital pairs form a set of parallel arrows in the embedding space. The [notebook](02-coding.qmd) runs both of these on a pre-trained model.
 
-word2vec embeddings can capture semantic relationships, such as analogies (e.g., *man* is to *woman* as *king* is to *queen*) and can visualize relationships between concepts (e.g., countries and their capitals form parallel vectors in the embedding space).
-
-## Graph Embedding with word2vec
+## Graph embedding with word2vec
 
 How can we apply word2vec to graph data? There is a critical challenge: word2vec takes sequences of words as input, while graph data are discrete and unordered. A solution to fill this gap is *random walk*, which transforms graph data into a sequence of nodes. Once we have a sequence of nodes, we can treat it as a sequence of words and apply word2vec.
 
@@ -272,8 +268,6 @@ Random walks create "sentences" from graphs: each walk is a sequence of nodes, j
 :::
 
 ### DeepWalk
-
-![](https://dt5vp8kor0orz.cloudfront.net/7c56c256b9fbf06693da47737ac57fae803a5a4f/1-Figure1-1.png)
 
 DeepWalk is one of the pioneering works to apply word2vec to graph data [@perozzi2014deepwalk]. It views the nodes as words and the random walks on the graph as sentences, and applies word2vec to learn the node embeddings.
 
@@ -284,35 +278,31 @@ More specifically, the method contains the following steps:
 
 DeepWalk typically uses the skip-gram model with hierarchical softmax for efficient training.
 
+<!-- TODO(anim): the DeepWalk pipeline — a walker tracing a path on a small network while the visited node ids stack up as a "sentence" below, then that sentence sliding into the word2vec window. -->
+
 ### node2vec
 
-node2vec [@grover2016node2vec] extends DeepWalk with **biased random walks** controlled by two parameters:
+node2vec [@grover2016node2vec] extends DeepWalk with **biased random walks**. A plain random walk picks the next node uniformly. node2vec re-weights the choice using two parameters, $p$ and $q$, based on where the walker came from:
 
 $$
-P(v_{t+1} = x | v_t = v, v_{t-1} = t) \propto
+P(v_{t+1} = x \mid v_t = v,\ v_{t-1} = s) \propto
 \begin{cases}
-\frac{1}{p} & \text{if } d(t,x) = 0 \text{ (return to previous)} \\
-1 & \text{if } d(t,x) = 1 \text{ (close neighbor)} \\
-\frac{1}{q} & \text{if } d(t,x) = 2 \text{ (explore further)} \\
+1/p & \text{if } x = s \quad \text{(step straight back)} \\
+1 & \text{if } x \text{ is adjacent to both } s \text{ and } v \\
+1/q & \text{if } x \text{ is adjacent to } v \text{ but not to } s
 \end{cases}
 $$
 
-where $d(t,x)$ is the shortest path distance from the previous node $t$ to candidate node $x$.
+Here $s$ is the node the walker just came from, $v$ is where it stands now, and $x$ is a candidate for its next step. Concretely: the walker moved $s \to v$ and must choose. Going back to $s$ is weighted $1/p$. Stepping to a mutual neighbor of $s$ and $v$ — sideways, staying inside the same little cluster — is weighted 1. Stepping to a node $v$ knows but $s$ does not — outward, into new territory — is weighted $1/q$.
 
-**Controlling Exploration**:
+So $q$ is the dial that matters. Set $q = 4$ and the outward step is four times less likely than the sideways one, and the walk grinds around $v$'s immediate neighborhood. Set $q = 0.25$ and the outward step is four times *more* likely, and the walk marches away. ($p$ works the same way for the single move of doubling back: large $p$ discourages it.)
 
-- Low $p$ → return bias (local revisiting)
-- Low $q$ → outward bias (exploration)
-- High $q$ → inward bias (stay local)
+![](../figs/m08-node2vec-pq.svg){width=100% fig-align="center"}
 
-**Two Exploration Strategies**:
+Which walk you take decides what the embedding means:
 
-![](https://www.researchgate.net/publication/354654762/figure/fig3/AS:1069013035655173@1631883977008/A-biased-random-walk-procedure-of-node2vec-B-BFS-and-DFS-search-strategies-from-node-u.png)
-
-- **BFS-like** (high $q$): Explore immediate neighborhoods → captures **structural roles** (structural equivalence)
-- **DFS-like** (low $q$): Explore deep paths → captures **community structure** (homophily)
-
-![](https://miro.medium.com/v2/resize:fit:1138/format:webp/1*nCyF5jFSU5uJVdAPdf-0HA.png)
+- **BFS-like** (high $q$): a walk that stays close describes what is immediately around a node → captures **structural roles** (structural equivalence). Two hubs in different parts of the network end up near each other.
+- **DFS-like** (low $q$): a walk that runs far describes the region a node lives in → captures **community structure** (homophily). Two nodes in the same community end up near each other, hub or not.
 
 ::: {.column-margin}
 **Technical Note**: node2vec uses **negative sampling** instead of hierarchical softmax, which affects embedding characteristics [@kojaku2021neurips; @dyer2014notes].
@@ -322,121 +312,63 @@ where $d(t,x)$ is the shortest path distance from the previous node $t$ to candi
 
 LINE [@tang2015line] is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with $p=1$, $q=1$, and window size 1.
 
-::: {.column-margin}
-Neural methods are less transparent, but recent work establishes equivalences to spectral methods under specific conditions [@qiu2018network; @kojaku2024network]. Surprisingly, DeepWalk, node2vec, and LINE are also provably optimal for the stochastic block model [@kojaku2024network].
-:::
+## Hyperbolic embeddings: beyond flat space
 
+All the embedding methods above place nodes in Euclidean space — ordinary flat geometry, where the amount of room within distance $r$ of a point grows like $r^d$. That is a problem for a network shaped like a hierarchy. A tree where every node has three children holds $3^\ell$ nodes at depth $\ell$: the population grows exponentially, but flat space does not, so the deep parts of the tree get crushed together no matter how you place them.
 
-## Hyperbolic Embeddings: Beyond Euclidean Space
+**Hyperbolic space** is the geometry where room grows *exponentially* with radius. A tree fits into it without distortion, and so does anything tree-like.
 
-All the embedding methods we've discussed so far operate in Euclidean space (standard flat geometry). However, many real-world networks exhibit hierarchical structures and scale-free properties that are difficult to capture in Euclidean space. **Hyperbolic embeddings** offer a powerful alternative by embedding networks in hyperbolic geometry—a curved space with negative curvature.
+### Popularity and similarity are radius and angle
 
-### The Popularity-Similarity Framework
+The foundation for hyperbolic network embeddings comes from a discovery about how networks grow: **real networks trade off popularity against similarity** [@papadopoulos2012popularity]. Studying the evolution of the Internet, metabolic networks, and social networks, Papadopoulos et al. found that new connections are not formed simply by attaching to popular nodes. Instead, each new node balances two pulls:
 
-The foundation for hyperbolic network embeddings comes from a seminal discovery: **real networks grow by optimizing trade-offs between popularity and similarity** [@papadopoulos2012popularity]. When analyzing the evolution of the Internet, metabolic networks, and social networks, Papadopoulos et al. found that new connections are not formed simply by preferential attachment to popular nodes. Instead, nodes balance two factors:
+- **Popularity**: connect to well-established, highly connected nodes
+- **Similarity**: connect to nodes with similar characteristics or interests
 
-- **Popularity**: Connecting to well-established, highly connected nodes
-- **Similarity**: Connecting to nodes with similar characteristics or interests
+The elegant part is that this trade-off *is* geometry. Put every node on a disk:
 
-This popularity × similarity optimization has a remarkable geometric interpretation: it naturally emerges as **optimization in hyperbolic space**. In this framework:
+- **popularity** becomes the radial position — old, well-connected nodes sit near the center
+- **similarity** becomes the angular position — nodes with shared interests sit at similar angles
+- a new node connects to the $m$ nodes that are **hyperbolically closest**, and hyperbolic distance already mixes the two: $x_{ij} \approx r_i + r_j + \ln(\theta_{ij}/2)$, small when either both radii are small (popular) or the angle is small (similar)
 
-- Node **popularity** maps to radial position (birth time, with older = more central)
-- Node **similarity** maps to angular distance on a circle
-- New connections form to nodes that are **hyperbolically closest**
+This explains **why preferential attachment happens** rather than assuming it. Attachment probability comes out proportional to degree, exactly as in Module 3 — but now as a consequence of nodes optimizing a local geometric trade-off, not as a primitive rule. And it makes a sharper prediction: *which* popular node gets the link depends on similarity, which pure preferential attachment cannot say at all.
 
-![](https://openmetric.org/assets/posts/popularity-similarity-in-networks/internet-routers.png)
+<!-- TODO(anim): the popularity-similarity disk — nodes appearing one at a time on a disk, radius set by birth time and angle at random, each connecting to its m hyperbolically nearest predecessors, with the degree distribution filling in as a power law alongside. -->
 
+### Why hyperbolic space?
 
-::: {.column-margin}
-In the popularity-similarity model, hyperbolic distance $x_{ij} \approx r_i + r_j + \ln(\theta_{ij}/2)$ combines popularity (radial coordinates $r$) and similarity (angular distance $\theta$). New nodes connect to the $m$ hyperbolically closest nodes.
-:::
+The study of hyperbolic geometry in complex networks emerged from foundational work showing that **networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath** [@krioukov2010hyperbolic]. Because volume grows exponentially with radius, the geometry naturally produces:
 
-This framework elegantly explains why **preferential attachment emerges** as a phenomenon: it's not a primitive mechanism, but rather a consequence of local geometric optimization. The probability that a node of degree $k$ attracts a new link follows $\Pi(k) \propto k$, exactly as in preferential attachment—but now with crucial differences in which specific nodes get connected based on their similarity.
+- **Scale-free degree distributions**: power-law degrees emerge from negative curvature
+- **Strong clustering**: nodes form tight communities based on metric proximity
+- **Small-world property**: short paths exist despite high clustering
+- **Self-similarity and navigability**: arise from the underlying hyperbolic geometry [@serrano2008self; @boguna2009navigability]
 
-::: {.column-margin}
-The popularity-similarity framework directly validates against real network evolution: the probability of new connections as a function of hyperbolic distance matches theoretical predictions for Internet, metabolic, and social networks, while pure preferential attachment is off by orders of magnitude [@papadopoulos2012popularity].
-:::
+To actually compute in hyperbolic space you need coordinates for it, and there are two standard choices — the Poincaré ball [@nickel2017poincare] and the Lorentzian hyperboloid [@nickel2018learning]. They describe the same geometry and differ only in how painful the optimization is. The formulas are in the [appendix](./04-appendix.qmd); nothing later in this module or in Module 9 depends on them.
 
-### Why Hyperbolic Space?
-
-The study of hyperbolic geometry in complex networks emerged from foundational work showing that **networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath** [@krioukov2010hyperbolic]. Hyperbolic space has a unique property: its volume grows **exponentially** with radius, similar to how tree-like hierarchies grow. This naturally captures key network properties:
-
-- **Scale-free degree distributions**: Power-law degrees emerge from negative curvature
-- **Strong clustering**: Nodes form tight communities based on metric proximity
-- **Small-world property**: Short paths exist despite high clustering
-- **Self-similarity and navigability**: Arise from underlying hyperbolic geometry [@serrano2008self; @boguna2009navigability]
-
-::: {.column-margin}
-The connection between hyperbolic geometry and network structure was established through a series of papers by Krioukov, Boguñá, and colleagues (2008-2010), showing that the statistical mechanics of complex networks maps directly to geometric properties of hyperbolic space.
-:::
-
-### Mathematical Models of Hyperbolic Space
-
-Hyperbolic space can be represented through different mathematical models, each with different computational properties:
-
-**Poincaré Ball Model**: Points lie within the unit ball $\mathcal{B}^n = \{\mathbf{x} \in \mathbb{R}^n : \|\mathbf{x}\| < 1\}$. The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{B}^n$ is:
-
-$$
-d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
-$$
-
-::: {.column-margin}
-![](https://mathworld.wolfram.com/images/eps-svg/HyperbolicTessellation_1000.svg){width=100%}
-
-The **Poincaré disk** (2D version of the ball) visualizes hyperbolic space within a circle. Although shapes appear to shrink near the boundary in Euclidean terms, they are actually all the same size in hyperbolic geometry—the disk has infinite hyperbolic area. Geodesics (shortest paths) appear as circular arcs perpendicular to the boundary. This model is intuitive for visualization but requires careful handling of Riemannian gradients during optimization.
-:::
-
-**Lorentzian (Hyperboloid) Model**: Points lie on the hyperboloid $\mathcal{H}^n = \{\mathbf{x} \in \mathbb{R}^{n+1} : \langle\mathbf{x}, \mathbf{x}\rangle_L = -1, x_0 > 0\}$ where the Lorentzian inner product is:
-
-$$
-\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
-$$
-
-The distance between two points $\mathbf{u}, \mathbf{v} \in \mathcal{H}^n$ is:
-
-$$
-d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
-$$
-
-::: {.column-margin}
-
-![](https://bjlkeng.io/images/poincare_projection.png){width=100%}
-
-The **hyperboloid model** embeds hyperbolic space as a sheet in Minkowski space (the geometry of special relativity). Points on the hyperboloid can be projected onto the Poincaré disk, showing the equivalence between models. The Lorentzian model enables more efficient optimization because gradients can be computed in the ambient Euclidean space $\mathbb{R}^{n+1}$, avoiding complex Riemannian operations.
-:::
-
-These models are isometric (distance-preserving transformations exist between them), but differ in computational efficiency. The Poincaré model [@nickel2017poincare] is intuitive but requires complex Riemannian optimization. The Lorentzian model [@nickel2018learning] trades geometric purity for efficiency by computing gradients in ambient Euclidean space, making hyperbolic embeddings practical for large networks.
-
-::: {#fig-hyperbolic0-embedding-knowledge-graph}
-
-![](https://www.researchgate.net/publication/384245499/figure/fig3/AS:11431281279545169@1727060754985/Wordnet-nouns-embedded-in-hyperbolic-space-Nickel-2018.jpg)
-
-Hyperbolic embedding of wordnet nouns [@nickel2018learning]. Abstract terms like "Entity" positions near the center. As we go towards the boundary, we see more concrete concepts like  "Material", "Wood", and "Hardwood".
-
-:::
-
+<!-- TODO(anim): a Poincaré disk with a hierarchy embedded in it — dragging the disk's center shows that every tile is really the same size and the boundary is infinitely far away. -->
 
 ## Are spectral and neural embeddings really different?
 
 We have now seen two families that look nothing alike: one solves an eigenproblem in closed form, the other runs stochastic gradient descent on random walks. It is natural to assume they compute different things. They mostly do not.
 
-The bridge is a result of Levy and Goldberg [@levy2014neural], extended to graphs by Qiu et al. [@qiu2018network]: **skip-gram with negative sampling is implicitly factorizing a matrix.** Specifically, the optimum of the word2vec objective is reached when the dot product of two embeddings equals the shifted pointwise mutual information of the corresponding pair:
+The bridge is a result of Levy and Goldberg [@levy2014neural], extended to graphs by Qiu et al. [@qiu2018network]: **skip-gram with negative sampling is implicitly factorizing a matrix.** Specifically, the optimum of the word2vec objective is reached when the dot product of a node's *in* vector and another node's *out* vector equals the shifted pointwise mutual information of that pair:
 
 $$
 {\bf u}_i^\top {\bf v}_j = \log \frac{P(i,j)}{P(i)P(j)} - \log b
 $$
 
-where $P(i,j)$ is the probability that $i$ and $j$ co-occur in a window, $P(i)$ and $P(j)$ are their marginals, and $b$ is the number of negative samples. So DeepWalk and node2vec are performing a matrix factorization after all — just of a walk-derived PMI matrix rather than of $\mathbf{A}$ or $\mathbf{L}$.
+where $P(i,j)$ is the probability that $i$ and $j$ co-occur in a window, $P(i)$ and $P(j)$ are their marginals, and $b$ is the number of negative samples. The quantity being fitted, $\log P(i,j)/P(i)P(j)$, is pointwise mutual information — the same statistic Church and Hanks proposed for measuring word association decades earlier [@church1988word]. So DeepWalk and node2vec are performing a matrix factorization after all, just of a walk-derived PMI matrix rather than of $\mathbf{A}$ or $\mathbf{L}$.
 
 That does not make the two families interchangeable in practice:
 
 | | Spectral | Neural |
 |---|---|---|
-| **Solution** | Closed form, globally optimal, deterministic | Stochastic, local optimum, different every run |
-| **What it captures** | The proximity written into the matrix you chose | Higher-order proximity, set by walk length and window |
-| **Scale** | Eigendecomposition is costly on very large networks | Trains by sampling; scales to millions of nodes |
-| **Tuning** | Essentially just $d$ | $d$, walk length, window, $p$, $q$, negative samples, epochs |
-| **Interpretability** | Eigenvalues say how much structure each dimension carries | Little direct interpretation |
+| **Solution** | Closed form, deterministic | Stochastic, differs every run |
+| **Captures** | Whatever the chosen matrix encodes | Higher-order proximity, set by walk length |
+| **Scale** | Costly on huge networks | Samples; scales to millions of nodes |
+| **Tuning** | Essentially just $d$ | $d$, walk length, window, $p$, $q$, negatives |
+| **Interpretability** | Eigenvalues rank the dimensions | Little direct interpretation |
 
 There is one more result worth knowing: for networks generated by a stochastic block model, DeepWalk, node2vec and LINE are provably *optimal* at recovering the communities [@kojaku2024network]. When the assumptions hold, the neural methods are not heuristics — they are the right answer.
 
@@ -458,7 +390,15 @@ Usually more informative — embed once, then measure downstream performance.
 - **Link prediction.** Hide a random 10% of edges, embed the remainder, and score the hidden edges against an equal number of non-edges. This is the standard benchmark, and the right one to run first: it directly tests whether the embedding learned the structure rather than memorizing it.
 - **Node classification.** Use the vectors as features for a simple classifier predicting node labels. Keep the classifier simple (logistic regression) — a powerful classifier can compensate for a poor embedding and hide the difference you are trying to measure.
 - **Clustering.** Run $k$-means in the embedding space and compare against known communities with NMI or ARI (Module 5).
-- **Visualization.** Project to 2D and look. **t-SNE** and **UMAP** are the standard tools, and both preserve *neighborhoods*, not distances. Do not read meaning into the size of clusters or the gaps between them; those are artifacts of the projection.
+- **Visualization.** Project to 2D and look. **t-SNE** and **UMAP** are the two standard tools for this: both take high-dimensional points and lay them out on a plane so that near-neighbors stay near-neighbors. Both preserve *neighborhoods*, not distances, so do not read meaning into the size of clusters or the gaps between them; those are artifacts of the projection.
+
+## What to actually use {#sec-in-practice}
+
+You will almost never implement these from scratch outside a course exercise.
+
+- **Spectral methods**: `scipy.sparse.linalg.eigsh` gives you the extreme eigenvectors of a sparse symmetric matrix directly, which is all a spectral embedding is. `scikit-network` and `scikit-learn`'s `SpectralEmbedding` wrap it.
+- **DeepWalk / node2vec**: generate the walks yourself (twenty lines), then hand them to `gensim`'s `Word2Vec` as if they were sentences. This is what the notebook does, and it is the standard approach.
+- **Faster node2vec on large graphs**: `pecanpy`, a drop-in reimplementation that avoids materializing the biased transition probabilities.
 
 ## What embeddings cannot do
 
@@ -468,10 +408,18 @@ Four limitations to keep in view.
 
 **Embeddings are not unique or stable.** Neural methods use random initialization and random walks, so two runs give different vectors. Worse, *every* embedding is defined only up to rotation: if $\mathbf{U}$ is optimal, so is $\mathbf{U}\mathbf{R}$ for any orthogonal $\mathbf{R}$, since $\mathbf{U}\mathbf{R}(\mathbf{U}\mathbf{R})^\top = \mathbf{U}\mathbf{U}^\top$.
 
-::: {.callout-warning title="A practical consequence"}
-You cannot compare individual coordinates across two runs, and you cannot compare embeddings of two networks trained separately. Only *relative* quantities within a single embedding — distances, angles, rankings — carry meaning. This trips people up constantly when they try to track how a node "moved" between two snapshots of an evolving network.
-:::
+The practical consequence bites constantly: you cannot compare individual coordinates across two runs, and you cannot compare embeddings of two networks trained separately. Only *relative* quantities within a single embedding — distances, angles, rankings — carry meaning. Anyone trying to track how a node "moved" between two snapshots of an evolving network has to align the two embeddings first.
 
 **You cannot preserve everything at once.** Local structure (who is adjacent to whom) and global structure (the large-scale shape) compete for the same $d$ dimensions. Methods differ mainly in which they sacrifice: Laplacian eigenmaps favor local, node2vec with long walks favors global.
 
 **Most methods assume the network is static and undirected.** A new node requires retraining from scratch under DeepWalk or node2vec, since its vector never existed. Handling that — generating embeddings for unseen nodes — is the *inductive* problem, and it is one of the motivations for the graph neural networks of Module 9.
+
+## What you can now do
+
+You can take a network with no coordinates and produce a table of $d$ numbers per node — by eigendecomposition or by random walks plus word2vec — say what those numbers preserve and what they threw away, and defend the choice with a link-prediction score rather than a pretty picture.
+
+Next:
+
+- [Hands-on notebook](02-coding.qmd) — build spectral, DeepWalk and node2vec embeddings of the karate club and compare them.
+- [Exercises and assignments](03-exercises.qmd) — including the pen-and-paper worksheet, which is best done *before* the lecture.
+- [Appendix](04-appendix.qmd) — the derivations skipped above, plus the hyperbolic coordinate systems.

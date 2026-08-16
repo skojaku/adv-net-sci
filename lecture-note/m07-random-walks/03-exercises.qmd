@@ -1,13 +1,21 @@
 ---
-title: "Exercises & Assignments"
+title: "Exercises and Assignments"
 ---
 
-We will implement and analyze random walks on real-world networks, exploring their applications for centrality measures and community detection.
+## Pen and Paper: Walk It By Hand Before the Lecture
 
-- **For students enrolled in SSIE 641**
-  - You will receive a dedicated link to the assignment repository from the instructor.
-- *For those who are not enrolled in SSIE 641*
-  - You can access the assignment repository at [Github](https://github.com/sk-classroom/adv-net-sci-random-walks).
-  - This repository does not offer auto-grading. But you can grade the assignment by yourself by
-    - `bash grading-toolkit/grade_notebook.sh tests/test_01.py assignment/assignment.ipynb`
-    - `bash grading-toolkit/grade_notebook.sh tests/test_02.py assignment/assignment.ipynb`
+Do this *before* the lecture. It is designed so that you discover the
+stationary distribution yourself, with nothing but a pencil: you fill in a
+transition matrix by hand, push a distribution forward step by step, and notice
+what the numbers settle on before anybody tells you the formula.
+
+- [Where Does the Drunkard Sleep?](pen-and-paper/exercise.pdf): transition probabilities, one- and two-step distributions, and the long-run visit frequencies of a four-node network.
+
+## Interactive Demos
+
+- [Ladder Lottery](../assets/vis/amida-kuji.html): a fixed board, an unpredictable outcome. Add rungs and watch where you land become a coin flip.
+- [Random walk simulator](../assets/vis/random-walks/index.html): the karate club by default. Then run it on a network with [two obvious communities](../assets/vis/random-walks/index.html?dataFile=two-cliques.json) and count how long the walker stays on one side.
+
+## Assignments
+
+Neither graded assignment runs in this module. The [Pair Notebook](../course/pair-notebook.qmd) covers Modules 1 through 6, and the [Group Mini-Project](../course/mini-project.qmd) covers Modules 2 through 6. The worksheet and the notebook above are practice, not submissions.

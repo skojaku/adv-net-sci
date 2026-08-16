@@ -1,21 +1,14 @@
 ---
-title: "Core Concepts"
+title: "Why Your Friends Have More Friends Than You Do"
 ---
 
-::: {.callout-note title="What you'll learn in this module"}
-This module introduces a single, powerful idea — the node's degree — and shows how that simple number reveals a network's structure and behavior.
+> **The big question of this module.** Why do your friends have more friends than you do?
 
-You'll learn:
+This module is built on one number — a node's **degree**, the count of edges touching it. From that single count come two counting rules you will reuse for the rest of the course, a way of drawing degree distributions that does not mislead you, and one genuinely surprising result: in *every* network, the average **friend** is better connected than the average **person**. Along the way we meet degree bias, heavy tails, and what they mean for robustness, spreading, and targeted interventions.
 
-- What **degree** and **degree distribution** mean and how to read them.
-- How to **visualize** degree distributions so underlying patterns become clear.
-- The counterintuitive **Friendship Paradox** and the notion of **degree bias**.
-- Practical consequences for network robustness, spreading processes, and targeted interventions.
-:::
+## Count the Lines That Touch You
 
-## Node degree
-
-Let's talk about node degree. A node's degree is the number of edges touching it. Here we focus on why that simple count matters.
+A node's degree is the number of edges touching it. Here we focus on why that simple count matters.
 
 At the level of an individual node, degree measures visibility and influence: high-degree nodes see and can spread information (or infection) quickly; low-degree nodes have limited reach. At the level of a network, the collection of degrees reveals how centralized or evenly distributed connectivity is — and that shape drives many collective behaviors.
 
@@ -29,7 +22,7 @@ At the level of an individual node, degree measures visibility and influence: hi
 graph G {
   layout=fdp;
   sep=1.5;
-  A [label="A (3)", shape=circle, style=filled, fillcolor="#f5cbcc"];
+  A [label="A (3)", shape=circle, color="#593196", fontcolor="#593196", penwidth=1.6];
   B [label="B (1)", shape=circle];
   C [label="C (1)", shape=circle];
   D [label="D (1)", shape=circle];
@@ -39,52 +32,50 @@ graph G {
 }
 ```
 
-The tiny graph above makes the point visually: node A has degree 3 (it connects to three nodes) while B, C, and D each have degree 1. That asymmetry — a mix of hubs and leaves — is common in real networks and underlies many of the phenomena we study.
+The tiny graph above makes the point visually: node A has degree 3 (it connects to three nodes) while B, C, and D each have degree 1. That asymmetry — one **hub** (a node with far more edges than the average node) surrounded by three **leaves** (nodes with exactly one edge) — is common in real networks and underlies many of the phenomena we study.
 
 
-### Two facts you get for free
+### Every Edge Has Two Ends — and Two Facts Follow
 
 Before moving on, two counting facts fall straight out of the definition of degree. They look like trivia and are used constantly.
 
-Count the degrees of every node and add them up. Each edge has two endpoints, so each edge gets counted exactly twice — once from each end. Therefore:
+Count the degrees of every node and add them up. Each edge has two endpoints, so each edge gets counted exactly twice — once from each end. Therefore
 
-::: {.callout-important title="Degree sum formula"}
 $$
 \sum_{i=1}^N k_i = 2M
 $$
-where $M$ is the number of edges. Equivalently, the average degree is $\langle k \rangle = 2M/N$.
-:::
 
-This is why $2m$ keeps appearing in formulas throughout the course (modularity in Module 5, the stationary distribution of a random walk in Module 7): it is just "the total number of edge endpoints."
+where $N$ is the number of nodes and $M$ is the number of edges. Equivalently, the **average degree** is $\langle k \rangle = 2M/N$. The angle brackets $\langle \cdot \rangle$ are read "average over all nodes", and we will use them for the rest of the course. In the four-node graph above, $3 + 1 + 1 + 1 = 6 = 2 \times 3$, and $\langle k \rangle = 6/4 = 1.5$.
 
-A second fact follows immediately. The left side, $\sum_i k_i$, equals $2M$ and is therefore **even**. Split the sum into even-degree nodes and odd-degree nodes. The even-degree part is even. So the odd-degree part must be even too — and a sum of odd numbers is even only when there is an even *number* of them:
+This is why $2M$ keeps appearing in formulas throughout the course (modularity in [Module 5](../m05-clustering/01-concepts.qmd), the stationary distribution of a random walk in [Module 7](../m07-random-walks/01-concepts.qmd)): it is just "the total number of edge endpoints."
 
-::: {.callout-important title="Handshaking lemma"}
-In any network, the number of nodes with odd degree is even.
-:::
+A second fact follows immediately. The left side, $\sum_i k_i$, equals $2M$ and is therefore **even**. Split the sum into even-degree nodes and odd-degree nodes. The even-degree part is even. So the odd-degree part must be even too — and a sum of odd numbers is even only when there is an even *number* of them. This is the **handshaking lemma**: *in any network, the number of nodes with odd degree is even.*
 
-::: {.column-margin}
-The name comes from the party version: if everyone reports how many hands they shook, the number of people reporting an odd count must be even. This is also the hidden reason Euler's condition in Module 1 allows *zero or two* odd-degree nodes and never one — one is arithmetically impossible.
-:::
+The name comes from the party version: if everyone reports how many hands they shook, the number of people reporting an odd count must be even. It is also the hidden reason Euler's condition in [Module 1](../m01-euler_tour/01-concepts.qmd) allows *zero or two* odd-degree nodes and never one — one is arithmetically impossible.
 
-### Degree distribution
+### How Common Is Each Degree?
 
-Shift your attention from single nodes to the whole network by asking: how common is each degree? The **degree distribution** answers that question — it lists the fraction of nodes with degree 1, degree 2, degree 3, and so on. Reading this distribution quickly tells you whether connectivity is evenly spread or concentrated in a few nodes.
+Shift your attention from single nodes to the whole network by asking: how common is each degree? The **degree distribution** answers that question. Write $p(k)$ for the fraction of nodes whose degree is exactly $k$:
 
-Why does that summary matter in practice? Because the distribution shapes how networks behave. We have already seen this in the previous modules:
+$$
+p(k) = \frac{\text{number of nodes with degree } k}{N}
+$$
 
-- Robustness vs. fragility — Networks with heavy-tailed degree distributions tolerate random node loss (most removals hit low-degree nodes) but are fragile to targeted hub removal, which can fragment the network.
+In the four-node graph above, three of the four nodes have degree 1 and one has degree 3, so $p(1) = 3/4$, $p(3) = 1/4$, and $p(k) = 0$ for every other $k$. That whole list of fractions — one number per degree — is the degree distribution. Because degree is a whole number, $p(k)$ is a probability *mass* function: a fraction of nodes sitting at each degree, not a curve you integrate.
 
-- Small-world effects — If a few hubs dominate the degree distribution, they act as shortcuts that dramatically reduce distances between nodes.
+Reading this distribution quickly tells you whether connectivity is evenly spread or concentrated in a few nodes. Why does that summary matter in practice? Because the distribution shapes how networks behave, as we have already seen in previous modules:
+
+- Robustness vs. fragility — In many real networks a few nodes have enormously more edges than the rest, with a long thin stretch of intermediate degrees in between. Such a distribution is called **heavy-tailed** (you will also see *fat-tailed* and *degree-heterogeneous*; all three name the same picture). These networks tolerate random node loss, because a random removal almost always hits a low-degree node, but they are fragile to targeted hub removal, which can fragment them ([Module 3](../m03-robustness/01-concepts.qmd)).
+
+- Small-world effects — If a few hubs dominate the degree distribution, they act as shortcuts that dramatically reduce distances between nodes ([Module 2](../m02-small-world/01-concepts.qmd)).
 
 We will add an additional interesting example, called the **Friendship Paradox**, in the next section.
 
-## The Friendship Paradox
+## Why Your Friends Are More Popular Than You Are
 
 The **Friendship Paradox** [@feld1991why] states that *your friends have more friends than you do on average*. This is not an insult — it is a statistical consequence of how connections are counted in most social networks. This counterintuitive phenomenon emerges from the mathematical properties of networks and has profound implications for how we understand social structures, information flow, and even public health interventions.
 
-
-At its core, the Friendship Paradox reveals a fundamental asymmetry in social networks: high-degree nodes (popular individuals) are more likely to be counted as friends by others, while low-degree nodes are less likely to be referenced. This creates a sampling bias where the average degree of your friends tends to be higher than your own degree, and indeed higher than the average degree of the entire network.
+At its core, the Friendship Paradox reveals a fundamental asymmetry in social networks: high-degree nodes (popular individuals) get counted as somebody's friend many times over, while low-degree nodes are counted rarely. This creates a sampling bias: the average degree of a randomly chosen **friend** comes out higher than the average degree of a randomly chosen **person**.
 
 ```{dot}
 //| fig-width: 4
@@ -93,8 +84,8 @@ At its core, the Friendship Paradox reveals a fundamental asymmetry in social ne
 //| label: fig-friendship-dot
 graph G {
   layout=neato
-  Alex  [label="Alex\n(1)",  shape=circle, style=filled, fillcolor="#f5cbcc"];
-  Bob   [label="Bob\n(3)",   shape=circle, style=filled, fillcolor="#ffd9a6"];
+  Alex  [label="Alex\n(1)",  shape=circle];
+  Bob   [label="Bob\n(3)",   shape=circle, color="#593196", fontcolor="#593196", penwidth=1.6];
   Carol [label="Carol\n(1)", shape=circle];
   David [label="David\n(1)", shape=circle];
   Alex -- Bob;
@@ -113,54 +104,51 @@ Let us list all the friendship ties in adjacency list format, along with the deg
 - Carol: Bob (3)
 - David: Bob (3)
 
-Now, let's compute the average degree of a friend.
+Now, let's compute the average degree of a friend. There are six entries in that list — one per (person, friend) pair, which is also the number of edge endpoints, $2M = 6$:
 
 $$
-\frac{\overbrace{1 + 1 + 1}^{\text{Bob's friends}} + \overbrace{3 + 3 + 3}^{\text{The friends of Alex, Carol, and David}}}{\underbrace{6}_{\text{\# of friends}}} = 2
+\frac{\overbrace{1 + 1 + 1}^{\text{Bob's friends}} + \overbrace{3 + 3 + 3}^{\text{The friends of Alex, Carol, and David}}}{\underbrace{6}_{\text{\# of (person, friend) pairs}}} = 2
 $$
 
-which confirms the friendship paradox, i.e., a someone's friend tends to have more friends than that someone.
+So the average **person** in this network has 1.5 friends, while the average **friend** has 2. That is the friendship paradox.
 
-Why this produces the paradox? Notice that high-degree nodes like Bob are referenced multiple times when computing the average degree of a friend. This is because Bob are a friend of many friends! On the other hand, low-degree nodes are referenced less often.
-This bias towards high-degree nodes is what makes the friendship paradox a paradox.
+Read that claim carefully: it compares two *averages*, not two people. Bob himself does better than his friends — he has 3, each of them has 1. What holds for the network as a whole need not hold for any particular person in it.
 
-#### Why it is guaranteed, not a coincidence
+Why does the average tilt upward? Because the list above counts Bob three times: Alex, Carol, and David each name him. Alex appears only once, since only Bob names Alex. Every person shows up once per friendship they have, so the well-connected are counted over and over and the poorly-connected barely at all. That systematic over-counting of high-degree nodes is called **degree bias**.
 
-The four-node example is suggestive, but is the paradox *always* true? We can settle it in three lines.
+<!-- TODO(anim): draw a random edge endpoint from the four-node star over and over, tallying the degree drawn each time, so the reader watches Bob's 3 come up three times as often as each leaf's 1 and the running average settle at 2. -->
 
-Picking a random *friend* means picking a random edge endpoint. A node with degree $k$ owns $k$ of the $2M$ endpoints, so it is chosen with probability proportional to $k \cdot p(k)$, not $p(k)$. The average degree of a randomly chosen friend is therefore
+### It Is Always True, and the Gap Is Var(k)/⟨k⟩
 
-$$
-\langle k \rangle_{\text{friend}} = \sum_k k \cdot \frac{k\, p(k)}{\langle k \rangle} = \frac{\langle k^2 \rangle}{\langle k \rangle}.
-$$
+The four-node example is suggestive, but is the paradox *always* true? It is, and the reason is exactly the counting we just did.
 
-Now use the definition of variance, $\text{Var}(k) = \langle k^2 \rangle - \langle k \rangle^2$, to rewrite it:
+Picking a random *friend* means picking a random edge endpoint, not a random node. A node with degree $k$ owns $k$ of the $2M$ endpoints, so a person with 10 friends is 10 times as likely to be drawn as a person with 1. Averaging degree over endpoints instead of over nodes therefore over-weights precisely the high-degree nodes — and the average can only move up.
 
-$$
-\langle k \rangle_{\text{friend}} = \frac{\langle k \rangle^2 + \text{Var}(k)}{\langle k \rangle} = \underbrace{\langle k \rangle}_{\text{your degree, on average}} + \underbrace{\frac{\text{Var}(k)}{\langle k \rangle}}_{\text{the paradox}}
-$$
+Pushing that counting through gives an exact answer. The algebra is short and lives in [the appendix](04-appendix.qmd); the result is what you need here.
 
 ::: {.callout-important title="The friendship paradox, exactly"}
-Your friends have, on average, $\text{Var}(k)/\langle k \rangle$ more friends than you do.
+Averaged over the whole network, friends have
 
-Since a variance is never negative, the gap is **never negative**: the paradox holds in *every* network. It vanishes only when $\text{Var}(k) = 0$, i.e. when everyone has exactly the same degree. And the more unequal the degrees, the larger the gap — which is why it is so dramatic in social networks and invisible in a lattice.
+$$
+\frac{\text{Var}(k)}{\langle k \rangle}
+$$
+
+more friends than people do.
 :::
 
-::: {.column-margin}
-The quantity $\langle k^2 \rangle / \langle k \rangle$ has a name, $\kappa$, and you have already met it: it is the degree heterogeneity that decides whether a network survives random failure in Module 3. The friendship paradox and network robustness are the same piece of mathematics wearing different clothes.
-:::
+Here $\text{Var}(k)$ is the **variance** of the degrees — the standard measure of how spread out a list of numbers is. It is the average squared distance from the mean: for the degrees $3, 1, 1, 1$ with mean $1.5$, that is $(1.5^2 + 0.5^2 + 0.5^2 + 0.5^2)/4 = 0.75$. It equals zero when every node has the same degree, and grows as the degrees become more unequal.
 
-::: {.callout-tip title="Check your understanding"}
-Can you build a network in which the paradox is *absent* — where your friends have exactly as many friends as you? The formula tells you the answer before you draw anything: you need $\text{Var}(k) = 0$, so every node must have identical degree. A ring, a complete graph, or any regular lattice will do. Try it in the [Friendship Paradox Game 🎮](../assets/vis/friendship-paradox-game.html).
-:::
+Check the formula against the network above: $\text{Var}(k)/\langle k \rangle = 0.75/1.5 = 0.5$, and the gap we counted by hand was $2 - 1.5 = 0.5$. Exactly.
 
-Beyond a fun trivia, the friendship paradox has practical implications. In social networks, most people will find that their friends have more friends than they do, not because they're unpopular, but because of this statistical bias. The same principle applies to many other networks: in scientific collaboration networks, your coauthors tend to have more collaborators than you do; in the internet, the websites you link to tend to have more incoming links than your website.
+A variance is never negative, so the gap is **never negative**: in every network, the average friend is at least as connected as the average person. It vanishes only when $\text{Var}(k) = 0$ — when everyone has identical degree. And the more unequal the degrees, the wider the gap, which is why it is dramatic in social networks and invisible in a lattice.
 
-::: {.callout-tip title="Try it yourself"}
-- **Challenge**: Can you build a network where your friends always have *more* friends than you? Test ideas with this interactive [Friendship Paradox Game 🎮](../assets/vis/friendship-paradox-game.html).
-:::
+The average friend's degree, $\langle k \rangle + \text{Var}(k)/\langle k \rangle$, even has a name you have already met: it is the degree heterogeneity $\kappa$ that decides whether a network survives random failure in [Module 3](../m03-robustness/01-concepts.qmd). The friendship paradox and network robustness are the same piece of mathematics wearing different clothes.
 
-### The friendship paradox in public health
+**Try it.** Can you build a network in which the paradox is *absent* — where your friends have exactly as many friends as you? And one where the gap is as large as you can make it? Test your ideas in the [Friendship Paradox Game](../assets/vis/friendship-paradox-game.html).
+
+Beyond fun trivia, the friendship paradox has practical consequences. Most people find that their friends have more friends than they do, not because they are unpopular, but because of this counting bias. The same principle applies elsewhere: in scientific collaboration networks, the average coauthor has more collaborators than the average researcher; on the Web, a page you arrive at by following a random link has more incoming links than a page picked at random.
+
+### Vaccinate the Friend, Not the Person
 
 This observation has profound practical consequences, especially in public health and epidemiology. To slow an epidemic you can use the friendship paradox to find better targets, called **acquaintance immunization** [@cohen2003efficient], which goes as follows:
 
@@ -168,125 +156,64 @@ This observation has profound practical consequences, especially in public healt
 2. Ask each to nominate one friend.
 3. Vaccinate the nominated friends (who tend to be better connected).
 
-This works because when people nominate a friend, they're more likely to name someone with many social connections. By targeting these nominated friends, public health officials can reach the most connected individuals in a network without needing to map the entire social structure.
+This works because when people nominate a friend, they're more likely to name someone with many social connections. By targeting these nominated friends, public health officials can reach the most connected individuals in a network without needing to map the entire social structure — which matters, because in exactly the settings where an epidemic must be slowed, nobody has that map.
 
-::: {.column-margin}
+Can you beat random vaccination by choosing targets this way? Try to control an outbreak in the [Vaccination Game](../assets/vis/vaccination-game.html).
 
-The acquaintance immunization does not require the knowledge of the entire network structure, which makes it a practical and effective way to slow an epidemic.
-
-:::
-
-::: {.callout-note title="Put the idea to the test"}
-**Challenge**: Can you control an outbreak by vaccinating people chosen via the friendship paradox? Try to outperform random vaccination in this [Vaccination Game 🎮](../assets/vis/vaccination-game.html).
-:::
-
-
-## Visualizing degree distributions
+## Why the Obvious Histogram Lies
 
 The very first step to understand degree distribution is to visualize it. But visualizing degree distribution is not as simple as it seems. Take for example, the following histogram of a degree distribution.
 
-![A histogram of a scale-free degree distribution on a linear scale. It's nearly impossible to see the structure of the tail.](../figs/linear-hist.svg){#fig-linear-hist width="6"}
+![A histogram of a scale-free degree distribution on a linear scale. It's nearly impossible to see the structure of the tail.](../figs/linear-hist.svg){#fig-linear-hist width=80%}
 
-
-This is a plot you would often see for a real-world network. Most nodes have a very small degree, so they are all crammed into the first few bins on the left. The long tail of high-degree nodes---which hold most edges in the network---is invisible because there are very few of them. This is a **fat-tailed distribution**, which is a common characteristics of real-world networks.
+This is a plot you would often see for a real-world network. Most nodes have a very small degree, so they are all crammed into the first few bins on the left. The long tail of high-degree nodes---which hold most edges in the network---is invisible because there are very few of them. This is the heavy tail we met earlier, seen through the wrong lens.
 
 To solve this, we can plot the same histogram but with both axes on a logarithmic scale. This is called a **log–log plot**.
 
-![The same degree histogram on a log-log scale. The structure becomes much clearer, revealing a roughly linear relationship.](../figs/loglog-hist.svg){#fig-loglog-hist width="6"}
+![The same degree histogram on a log-log scale. The structure becomes much clearer, revealing a roughly linear relationship.](../figs/loglog-hist.svg){#fig-loglog-hist width=80%}
 
+<!-- TODO(anim): morph the linear histogram into the log-log one by sliding both axes from linear to logarithmic, so the reader sees the same data unfold into a straight line rather than comparing two separate pictures. -->
 
 A log–log plot (@fig-loglog-hist) makes both low- and high-degree nodes visible, revealing heavy-tailed patterns. If the tail is roughly linear, it suggests a power-law degree distribution: the probability a node has degree $k$ falls off as $k^{-\gamma}$. The slope of the line shows how quickly high-degree nodes become rare. A steeper slope (higher $\gamma$) means fewer hubs; a shallower slope means more.
 Interestingly, many real-world networks exhibit power-law(-like) degree distributions, whether they are biological, technical, or social. This universality of power-law degree distributions is one of the foundational insights of Network Science.
 
-::: {.column-margin}
+A straight line on a log-log plot is not, by itself, proof of a power law. A mixture of Poisson distributions, or a lognormal, can look just as straight over the range of degrees you actually observe. Whether the power law is a good model for real-world networks is actively contested [@artico2020rare; @holme2019rare; @voitalov2019scale; @broido2019scale], and settling it for a given network requires a statistical test, not a visual inspection.
 
-Barabási and Albert (1999) [@barabasi1999emergence] reported the universality of power-law degree distribution in real-world networks. They proposed a mechanism of the emergence of power-law degree distribution, called preferential attachment, which is a subject of a separate module.
-
-Whether power-law degree distribution is a good model for real-world networks is a topic of debate  [@artico2020rare] [@holme2019rare] [@voitalov2019scale] [@broido2019scale]. A straight line on a log-log plot is not a unique signature of power-law degree distribution. One can construct it by a mixture of poisson distributions, or some other distributions. Testing whether a network is a power-law or not requires statistical assessment going beyond the visual inspection.
-
-:::
-
-The log-log plot above shows *probability density function* (PDF) of the degree distribution. It is defined as the fraction of nodes with degree exactly $k$.
-
-$$
-p(k) = \frac{\text{number of nodes with degree } k}{N}
-$$
-
-where $N$ is the total number of nodes in the network.
-
-The PDF is useful but often noisy, especially in the tail where there are few observations. A better, more stable choice is the *complementary cumulative distribution function* (CCDF), which is useful for plotting heavy-tailed distributions.
-
-::: {.column-margin}
-For a visual comparison of CCDF and PDF, see Figure 3 in [@newman2005power]
-:::
+The log-log plot above shows $p(k)$, the degree distribution defined earlier: the fraction of nodes with degree exactly $k$. It is useful but often noisy, especially in the tail where there are few observations. A better, more stable choice is the *complementary cumulative distribution function* (CCDF):
 
 $$
 \text{CCDF}(k) = P(k' > k) = \sum_{k'=k+1}^\infty p(k')
 $$
 
-CCDF represents the fraction of nodes with degree greater than $k$, or equivalently, the fraction of nodes that survive the degree cutoff $k$. It is also known as the *survival function* of the degree distribution.
+CCDF represents the fraction of nodes with degree greater than $k$, or equivalently, the fraction of nodes that survive the degree cutoff $k$. It is also known as the *survival function* of the degree distribution. For a side-by-side comparison of the CCDF and the plain histogram, see Figure 3 of @newman2005power.
 
-![The CCDF of the degree distribution on a log-log scale. ](../figs/ccdf-hist.svg){#fig-ccdf-hist width="6"}
+![The CCDF of the degree distribution on a log-log scale.](../figs/ccdf-hist.svg){#fig-ccdf-hist width=80%}
 
+A nice feature of the CCDF compared to a histogram of $p(k)$ is that it does not require any binning of the data. To draw the histogram of a heavy tail you must group degrees into bins, and the shape you see depends on the bin width you chose. The CCDF has no bins to choose.
 
-A nice feature of the CCDF compared to the PDF is that it does not require any binning of the data. When calculating the PDF, we need to bin the data into a finite number of bins, which is subject to the choice of bin size. CCDF does not require any binning of the data.
+There is a related function, the *cumulative distribution function* (CDF): the fraction of nodes with degree less than or equal to $k$, i.e. $1 - \text{CCDF}(k)$. For heavy-tailed networks the CCDF is the one to plot, because the CDF squeezes the whole interesting tail into a flat line just below 1.
 
-::: {.column-margin}
+### The CCDF Slope Is 1 − γ, Not −γ
 
+For networks whose degree distribution follows a power law, $p(k) \propto k^{-\gamma}$, the CCDF offers a direct path to estimating the exponent $\gamma$ — provided you do not misread the slope.
 
-There is a related function called the *cumulative distribution function* (CDF), which is the fraction of nodes with degree less than or equal to $k$, i.e., $1 - \text{CCDF}(k)$.
+Adding up a power-law tail leaves a power law behind, but with the exponent reduced by one:
 
-For degree-heterogenous networks, the CCDF is preferred over the CDF because the CDF does not show the tail of the distribution clearly.
+$$
+P(k' > k) \propto k^{-(\gamma - 1)}
+$$
 
-![The CDF of the degree distribution on a log-log scale. ](../figs/cdf-hist.svg){#fig-cdf-hist width="4"}
+Take logarithms of both sides and you get a straight line whose slope is $-(\gamma - 1) = 1 - \gamma$. The one-paragraph calculation behind this is in [the appendix](04-appendix.qmd).
 
+::: {.callout-important title="Do not lose the −1"}
+**On a log-log plot, the slope of the CCDF is $1 - \gamma$, not $-\gamma$.**
 
+If you measure a CCDF slope of $-1.3$, the degree exponent is $\gamma = 2.3$, not $1.3$ (since $-1.3 = 1 - 2.3$). Forgetting the shift is the most common way to report a wrong exponent.
 :::
 
-### Interpreting the CCDF for Power-Law Distributions
+## Hubs Come from Growth Plus "the Rich Get Richer"
 
-For networks whose degree distribution follows a power law, the CCDF offers a direct path to estimating the power-law exponent, $\gamma$. Let's walk through the derivation to see how.
-
-A continuous power-law distribution is defined by the probability density function (PDF):
-$$
-p(k) = Ck^{-\gamma}
-$$
-where $C$ is a normalization constant ensuring the total probability is 1.
-
-The CCDF, which we denote as $P(k)$, is the probability that a node's degree $k'$ is greater than some value $k$. We calculate this by integrating the PDF from $k$ to infinity:
-$$
-P(k) = \int_{k}^{\infty} p(k') dk' = \int_{k}^{\infty} Ck'^{-\gamma} dk'
-$$
-Performing the integration gives us:
-$$
-P(k) = C \left[ \frac{k'^{-\gamma+1}}{-\gamma+1} \right]_{k}^{\infty}
-$$
-Assuming $\gamma > 1$, which is typical for real-world networks, the term $k'^{-\gamma+1}$ approaches zero as $k'$ approaches infinity. The expression simplifies to:
-$$
-P(k) = -C \left( \frac{k^{-\gamma+1}}{-\gamma+1} \right) = \frac{C}{\gamma-1} k^{-(\gamma-1)}
-$$
-This result shows that the CCDF itself follows a power law, $P(k) \propto k^{-(\gamma-1)}$.
-
-To see what this means for a log-log plot, we take the logarithm of both sides:
-$$
-\log P(k) = \log\left(\frac{C}{\gamma-1}\right) - (\gamma-1)\log(k)
-$$
-This equation is in the form of a straight line, $y = b + mx$, where:
-
-- $y = \log P(k)$
-- $x = \log(k)$
-- The y-intercept $b = \log\left(\frac{C}{\gamma-1}\right)$
-- The slope $m = -(\gamma-1) = 1-\gamma$
-
-::: {.callout-important title="Key Relationship"}
-**For a power-law distribution, the slope of the CCDF on a log-log plot is $1 - \gamma$.**
-
-This is a crucial point for accurately estimating the scaling exponent from empirical data. For example, if you measure the slope of the CCDF plot to be -1.3, the estimated power-law exponent $\gamma$ is $2.3$, not $1.3$ (since $-1.3 = 1 - 2.3$).
-:::
-
-## Where do hubs come from?
-
-We have described heavy-tailed degree distributions but not explained them. Why should any network develop hubs at all? A random network does not: wire $N$ nodes at random and you get a Poisson degree distribution, tightly concentrated around its mean, with no hubs worth the name.
+We have described heavy-tailed degree distributions but not explained them. Why should any network develop hubs at all? A random network does not: wire $N$ nodes at random and you get a **Poisson** degree distribution, in which almost every node sits within a few edges of the average and the chance of anyone having ten times the average degree is essentially nil — no hubs worth the name.
 
 The classic answer is the **Barabási-Albert model** [@barabasi1999emergence], which needs only two ingredients.
 
@@ -305,11 +232,9 @@ The consequence — which you can verify by simulation before believing any deri
 Neither ingredient suffices alone. Growth with *uniform* attachment gives an exponential degree distribution, not a power law. Preferential attachment on a *fixed* set of nodes eventually connects everything to everything. It is the combination that produces hubs.
 :::
 
-::: {.callout-note title="Is 'rich get richer' the real mechanism?"}
-Preferential attachment is the most famous explanation, not the only one, and probably not the right one everywhere. Copying models (a new paper cites the references of a paper it read), fitness models (some nodes are intrinsically more attractive regardless of degree), and optimization models all produce heavy tails too. In Module 8 we will meet another: nodes trading off **popularity against similarity** in an underlying hyperbolic geometry, where preferential attachment turns out to be an *emergent consequence* rather than a primitive rule.
-:::
+Preferential attachment is the most famous explanation, not the only one, and probably not the right one everywhere. Copying models (a new paper cites the references of a paper it read), fitness models (some nodes are intrinsically more attractive regardless of degree), and optimization models all produce heavy tails too. In [Module 8](../m08-embedding/01-concepts.qmd) we will meet another: nodes trading off **popularity against similarity** in an underlying hyperbolic geometry, where preferential attachment turns out to be an *emergent consequence* rather than a primitive rule.
 
-## Degree correlations: who connects to whom?
+## Two Networks with the Same Degrees Can Behave Nothing Alike
 
 The degree distribution says how many hubs there are. It says nothing about **where they sit relative to each other** — and two networks with identical degree distributions can behave completely differently depending on the answer.
 
@@ -325,4 +250,13 @@ Why care? Because degree correlations change everything downstream:
 
 - **Robustness.** An assortative network has a hub core that holds together under attack; a disassortative one fragments faster once its hubs go, since the periphery hangs off them and nothing else.
 - **Spreading.** Assortativity concentrates an epidemic in the hub core, giving a lower epidemic threshold but slower escape to the periphery.
-- **Our theory's assumptions.** The Molloy-Reed derivation in the appendix assumes a node reached by an edge has $\kappa - 1$ onward edges on average. That is a *neutral*-network statement. When degrees are correlated, the branching factor changes and the predicted threshold shifts.
+- **Our theory's assumptions.** The Molloy-Reed derivation in [Module 3's appendix](../m03-robustness/04-appendix.qmd) assumes a node reached by an edge has $\kappa - 1$ onward edges on average. That is a *neutral*-network statement. When degrees are correlated, the branching factor changes and the predicted threshold shifts.
+
+## What You Can Now Do
+
+- Compute a node's degree, the degree sum $2M$, and the degree distribution $p(k)$ of a small network by hand.
+- Say why the average friend is better connected than the average person in *every* network — and predict the size of the gap from $\text{Var}(k)/\langle k \rangle$.
+- Choose between a linear histogram, a log-log histogram, and a CCDF, and read a power-law exponent off a CCDF slope without losing the $-1$.
+- Explain acquaintance immunization to someone who has never heard of a network.
+
+Next: put it into code in [the hands-on notebook](02-coding.qmd), practice in [the exercises](03-exercises.qmd), or read the two derivations in [the appendix](04-appendix.qmd).

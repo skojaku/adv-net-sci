@@ -1,0 +1,198 @@
+---
+title: "Appendix: Where the Eigenvectors Come From"
+---
+
+Three derivations the [concepts page](01-concepts.qmd) states without proof, plus the coordinate systems for hyperbolic space. Nothing here is needed to use an embedding; it is here so that "the answer is the top eigenvectors" is a result you can check rather than a rule you have to trust.
+
+## Why the top eigenvectors minimize the reconstruction error
+
+The spectral embedding of the adjacency matrix is the solution of
+
+$$
+\min_{\mathbf{U}} J(\mathbf{U}),\quad J(\mathbf{U}) = \| \mathbf{A} - \mathbf{U}\mathbf{U}^\top \|_F^2
+$$
+
+where $\mathbf{A}$ is symmetric ($N \times N$) and $\mathbf{U}$ is $N \times d$. We find the stationary point, then check which stationary point is the minimum.
+
+### Step 1: the objective is three traces
+
+For any matrix $\mathbf{M}$,
+
+$$
+\|\mathbf{M}\|_F^2 = \sum_{i,j} M_{ij}^2 = \text{Tr}(\mathbf{M}\mathbf{M}^\top)
+$$
+
+so
+
+$$
+J(\mathbf{U}) = \text{Tr}\left[(\mathbf{A} - \mathbf{U}\mathbf{U}^\top)(\mathbf{A} - \mathbf{U}\mathbf{U}^\top)^\top\right]
+= \text{Tr}(\mathbf{A}\mathbf{A}^\top) - 2\,\text{Tr}(\mathbf{A}\mathbf{U}\mathbf{U}^\top) + \text{Tr}(\mathbf{U}\mathbf{U}^\top\mathbf{U}\mathbf{U}^\top)
+$$
+
+### Step 2: differentiate with respect to the embedding
+
+Using the standard matrix-calculus rules, and $\mathbf{A} = \mathbf{A}^\top$:
+
+$$
+\frac{\partial \,\text{Tr}(\mathbf{A}\mathbf{A}^\top)}{\partial \mathbf{U}} = 0,
+\qquad
+\frac{\partial \,\text{Tr}(\mathbf{A}\mathbf{U}\mathbf{U}^\top)}{\partial \mathbf{U}} = 2\mathbf{A}\mathbf{U},
+\qquad
+\frac{\partial \,\text{Tr}(\mathbf{U}\mathbf{U}^\top\mathbf{U}\mathbf{U}^\top)}{\partial \mathbf{U}} = 4\mathbf{U}\mathbf{U}^\top\mathbf{U}
+$$
+
+Combining:
+
+$$
+\frac{\partial J}{\partial \mathbf{U}} = -4\mathbf{A}\mathbf{U} + 4\mathbf{U}\mathbf{U}^\top\mathbf{U}
+$$
+
+### Step 3: the stationary condition
+
+$$
+\mathbf{A}\mathbf{U} = \mathbf{U}\mathbf{U}^\top\mathbf{U}
+$$
+
+### Step 4: scaled eigenvectors satisfy it, unscaled ones do not
+
+Let $\mathbf{U}_d = [\mathbf{u}_1, \ldots, \mathbf{u}_d]$ hold $d$ orthonormal eigenvectors of $\mathbf{A}$, so $\mathbf{A}\mathbf{U}_d = \mathbf{U}_d \boldsymbol{\Lambda}_d$ with $\boldsymbol{\Lambda}_d = \text{diag}(\lambda_1, \ldots, \lambda_d)$ and $\mathbf{U}_d^\top \mathbf{U}_d = \mathbf{I}$. The claim is that
+
+$$
+\mathbf{U} = \mathbf{U}_d \boldsymbol{\Lambda}_d^{1/2}
+= \left[\sqrt{\lambda_1}\,\mathbf{u}_1, \ldots, \sqrt{\lambda_d}\,\mathbf{u}_d\right]
+$$
+
+is a stationary point. Check both sides of Step 3:
+
+$$
+\mathbf{A}\mathbf{U} = \mathbf{A}\mathbf{U}_d\boldsymbol{\Lambda}_d^{1/2} = \mathbf{U}_d\boldsymbol{\Lambda}_d\boldsymbol{\Lambda}_d^{1/2} = \mathbf{U}_d\boldsymbol{\Lambda}_d^{3/2}
+$$
+
+$$
+\mathbf{U}^\top\mathbf{U} = \boldsymbol{\Lambda}_d^{1/2}\mathbf{U}_d^\top\mathbf{U}_d\boldsymbol{\Lambda}_d^{1/2} = \boldsymbol{\Lambda}_d
+\quad\Longrightarrow\quad
+\mathbf{U}\mathbf{U}^\top\mathbf{U} = \mathbf{U}_d\boldsymbol{\Lambda}_d^{1/2}\boldsymbol{\Lambda}_d = \mathbf{U}_d\boldsymbol{\Lambda}_d^{3/2}
+$$
+
+The two agree, so the equation holds.
+
+**The $\sqrt{\lambda_i}$ scaling is not optional.** Plain orthonormal eigenvectors, $\mathbf{U} = \mathbf{U}_d$, do *not* solve Step 3: they give $\mathbf{U}\mathbf{U}^\top\mathbf{U} = \mathbf{U}_d$ on the right but $\mathbf{U}_d\boldsymbol{\Lambda}_d$ on the left, which would force every $\lambda_i = 1$. Note also that $\boldsymbol{\Lambda}_d^{1/2}$ is real only when the chosen $\lambda_i$ are non-negative — which is the first hint of what Step 5 concludes.
+
+### Step 5: keep the d largest eigenvalues, signed
+
+Write $\mathbf{A}$ as its full stack of rank-one layers, $\mathbf{A} = \sum_{i=1}^N \lambda_i \mathbf{u}_i \mathbf{u}_i^\top$. The layers are mutually orthogonal under the Frobenius inner product, because
+
+$$
+\langle \mathbf{u}_i\mathbf{u}_i^\top,\ \mathbf{u}_j\mathbf{u}_j^\top \rangle_F
+= \text{Tr}(\mathbf{u}_i\mathbf{u}_i^\top\mathbf{u}_j\mathbf{u}_j^\top) = (\mathbf{u}_i^\top\mathbf{u}_j)^2 = \begin{cases}1 & i = j\\ 0 & i \neq j\end{cases}
+$$
+
+If we keep the layers in a set $S$ of size $d$, then $\mathbf{A} - \mathbf{U}\mathbf{U}^\top = \sum_{i \notin S} \lambda_i \mathbf{u}_i \mathbf{u}_i^\top$, and by orthogonality the squared error is simply the sum of the squares of the discarded eigenvalues:
+
+$$
+J(\mathbf{U}) = \sum_{i \notin S} \lambda_i^2
+$$
+
+So keep the heaviest layers you are allowed to keep. The constraint is the one Step 4 exposed: $\mathbf{U}\mathbf{U}^\top$ is built from $\sqrt{\lambda_i}$, so only non-negative eigenvalues can be represented at all. Hence the rule stated on the concepts page — **take the $d$ largest eigenvalues, largest in the signed sense, not in absolute value.** A large negative eigenvalue contributes to the error no matter what you do, so it cannot be traded against a positive one.
+
+## From the spring objective to the Laplacian
+
+The Laplacian eigenmap starts from
+
+$$
+J_{LE}(\mathbf{U}) = \frac{1}{2}\sum_{i,j} A_{ij} \| u_i - u_j \|^2
+$$
+
+where $u_i$ is the row of $\mathbf{U}$ holding node $i$'s coordinates.
+
+### Step 1: expanding the square produces the Laplacian
+
+$$
+\begin{aligned}
+J_{LE}(\mathbf{U}) &= \frac{1}{2}\sum_{i,j} A_{ij} \left( \| u_i \|^2 - 2 u_i^\top u_j + \| u_j \|^2 \right) \\
+&= \sum_{i} k_i \| u_i \|^2 - \sum_{i,j} A_{ij} u_i^\top u_j \\
+&= \sum_{i,j} L_{ij}\, u_i^\top u_j
+\end{aligned}
+$$
+
+using $\sum_j A_{ij} = k_i$ in the middle line, and in the last line the definition $L_{ij} = k_i$ if $i = j$ and $L_{ij} = -A_{ij}$ otherwise — that is, $\mathbf{L} = \mathbf{D} - \mathbf{A}$.
+
+### Step 2: the sum is a trace
+
+Write $\mathbf{U}$ by its columns,
+
+$$
+\mathbf{U} =
+\begin{bmatrix}
+\vert & \vert & & \vert \\
+\mathbf{x}_1 & \mathbf{x}_2 & \cdots & \mathbf{x}_d \\
+\vert & \vert & & \vert
+\end{bmatrix}
+$$
+
+Expanding the dot product $u_i^\top u_j$ into its $d$ terms and reordering the sums,
+
+$$
+J_{LE}(\mathbf{U}) = \sum_{i}\sum_{j}\sum_{d'} L_{ij}\, u_{i,d'} u_{j,d'}
+= \sum_{d'} \sum_{i}\sum_{j} L_{ij}\, u_{i,d'} u_{j,d'}
+= \sum_{d'} \mathbf{x}_{d'}^\top \mathbf{L} \mathbf{x}_{d'}
+= \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})
+$$
+
+The trace form is what makes matrix calculus usable in the next step.
+
+### Step 3: the constraint is what creates the eigenproblem
+
+Minimizing $\text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U})$ on its own is pointless — $\mathbf{U} = \mathbf{0}$ gives zero. The embedding must be required to use its dimensions, which is the constraint $\mathbf{U}^\top\mathbf{U} = \mathbf{I}$. Attach it with a matrix of Lagrange multipliers $\boldsymbol{\Lambda}$:
+
+$$
+\mathcal{L}(\mathbf{U}, \boldsymbol{\Lambda}) = \text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U}) - \text{Tr}\!\left[\boldsymbol{\Lambda}(\mathbf{U}^\top\mathbf{U} - \mathbf{I})\right]
+$$
+
+Differentiating and setting to zero,
+
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{U}} = 2\mathbf{L}\mathbf{U} - 2\mathbf{U}\boldsymbol{\Lambda} = 0
+\quad\Longrightarrow\quad
+\mathbf{L}\mathbf{U} = \mathbf{U}\boldsymbol{\Lambda}
+$$
+
+This is the eigenvalue problem. Column by column it reads $\mathbf{L}\mathbf{x}_{d'} = \lambda_{d'} \mathbf{x}_{d'}$: the columns of $\mathbf{U}$ are eigenvectors of $\mathbf{L}$, and $\boldsymbol{\Lambda}$ holds their eigenvalues. Note that the $\lambda$ quoted on the concepts page is exactly this Lagrange multiplier — without the constraint there is no eigenproblem at all, only $\mathbf{L}\mathbf{U} = 0$.
+
+Substituting back, $\text{Tr}(\mathbf{U}^\top \mathbf{L} \mathbf{U}) = \text{Tr}(\boldsymbol{\Lambda}) = \sum_{d'} \lambda_{d'}$, so the objective is just the sum of the chosen eigenvalues and we should choose the smallest. The single smallest is always $\lambda = 0$ with the all-ones eigenvector, which places every node at one point; it satisfies the constraint but carries no information, so it is discarded and we take the $d$ smallest **nonzero** eigenvalues.
+
+## Two coordinate systems for hyperbolic space
+
+The concepts page argues that hierarchical networks want a space whose room grows exponentially with radius. Here are the two standard ways to put numbers on such a space. They are isometric — distance-preserving maps exist between them — and the choice is purely about how expensive the optimization is.
+
+### Poincaré ball
+
+Points live inside the unit ball $\mathcal{B}^n = \{\mathbf{x} \in \mathbb{R}^n : \|\mathbf{x}\| < 1\}$, and the distance between $\mathbf{u}, \mathbf{v} \in \mathcal{B}^n$ is
+
+$$
+d_P(\mathbf{u}, \mathbf{v}) = \text{arcosh}\left(1 + 2\frac{\|\mathbf{u} - \mathbf{v}\|^2}{(1 - \|\mathbf{u}\|^2)(1 - \|\mathbf{v}\|^2)}\right)
+$$
+
+The denominator blows up as either point approaches the boundary, so the boundary is infinitely far away: an unbounded space drawn inside a finite circle. Shapes near the rim *look* small in Euclidean terms but are all the same hyperbolic size, and geodesics appear as circular arcs meeting the boundary at right angles. The model is the easiest one to picture, but optimization in it needs Riemannian gradients — the ordinary gradient has to be rescaled by the local metric at every step, or the update walks straight out of the ball. This is the model of the original Poincaré embeddings [@nickel2017poincare].
+
+### Lorentzian (hyperboloid)
+
+Points live on one sheet of a hyperboloid,
+
+$$
+\mathcal{H}^n = \{\mathbf{x} \in \mathbb{R}^{n+1} : \langle\mathbf{x}, \mathbf{x}\rangle_L = -1,\ x_0 > 0\}
+$$
+
+where $\langle\cdot,\cdot\rangle_L$ is the Lorentzian (Minkowski) inner product — the ordinary dot product with the first coordinate's sign flipped:
+
+$$
+\langle\mathbf{x}, \mathbf{y}\rangle_L = -x_0 y_0 + x_1 y_1 + \cdots + x_n y_n
+$$
+
+The distance is then
+
+$$
+d_L(\mathbf{u}, \mathbf{v}) = \text{arcosh}(-\langle\mathbf{u}, \mathbf{v}\rangle_L)
+$$
+
+The payoff is computational: the hyperboloid sits inside a flat ambient space $\mathbb{R}^{n+1}$, so gradients can be computed there and then projected back onto the sheet, which is far cheaper and numerically better behaved than the Poincaré updates. That is what makes hyperbolic embedding practical at scale [@nickel2018learning].

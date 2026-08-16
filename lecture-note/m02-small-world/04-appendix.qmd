@@ -1,41 +1,121 @@
 ---
-title: "Appendix - Brief Introduction to igraph"
+title: "Appendix: Why a Random Network Is Already Small"
 ---
 
-## Erdős-Rényi Random Graphs
+The main text uses three results without proving them: that the local clustering
+coefficient can be written with the adjacency matrix, that a random graph's
+clustering is exactly $p$, and that its distances grow like $\log n$. Here are
+the derivations. Nothing on this page is needed to *use* the small-world index —
+it is here for readers who want to see where the baseline numbers come from.
 
+## The Erdős-Rényi Random Graph
 
+The Erdős-Rényi random graph is the structureless baseline against which
+everything else in the module is measured. It comes in two variants: $G(n,m)$
+creates $n$ nodes and places exactly $m$ edges at random, while $G(n,p)$ creates
+$n$ nodes and joins each of the $\binom{n}{2}$ possible pairs independently with
+probability $p$. We work with $G(n,p)$, because independence is what makes the
+algebra below go through.
 
-The Erdős-Rényi random graph model is one of the fundamental models in network science, serving as our baseline for understanding what makes small-world networks special. There are two variants of this model: $G(n,m)$ which creates $n$ vertices with exactly $m$ randomly chosen edges, and $G(n,p)$ which creates $n$ vertices where each possible edge exists with probability $p$. We focus on the $G(n,p)$ model because it provides better analytical tractability for deriving mathematical properties.
+Its average degree is $\langle k \rangle = p(n-1)$: node $i$ has $n-1$ possible
+partners and takes each with probability $p$.
 
-::: {#fig-erdos-renyi}
+## Writing Local Clustering with the Adjacency Matrix
 
-![](https://upload.wikimedia.org/wikipedia/commons/6/6e/Critical_1000-vertex_Erd%C5%91s%E2%80%93R%C3%A9nyi%E2%80%93Gilbert_graph.svg){width=30%}
+The main text defines the local clustering coefficient by counting:
 
-Erdős-Rényi random graph model.
+$$
+C_i = \frac{e_i}{k_i(k_i-1)/2}
+$$
 
-:::
+where $e_i$ is the number of edges among the neighbors of node $i$. The same
+quantity is often written with the adjacency matrix $A$:
 
-## Clustering Coefficient
+$$
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+$$
 
-The clustering coefficient measures the probability that two neighbors of a node are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically by exploiting the independence of edge formation.
+The two agree. The product $A_{ij}A_{j\ell}A_{\ell i}$ equals 1 exactly when
+$i$, $j$ and $\ell$ form a triangle, and 0 otherwise. Summing it over all $j$
+and all $\ell$ counts each triangle at $i$ twice, once as
+$i \rightarrow j \rightarrow \ell \rightarrow i$ and once as
+$i \rightarrow \ell \rightarrow j \rightarrow i$, so the numerator equals
+$2e_i$. The denominator $k_i(k_i-1)$ is likewise twice the number of neighbor
+pairs $\binom{k_i}{2} = k_i(k_i-1)/2$. The factors of 2 cancel and the two
+expressions are the same number.
 
-Consider a node $i$ with degree $k_i$ in an Erdős-Rényi graph $G(n,p)$. The local clustering coefficient is defined as $C_i = \frac{2e_i}{k_i(k_i-1)}$, where $e_i$ is the number of edges between neighbors of node $i$. The key insight is that in the $G(n,p)$ model, each possible edge exists with probability $p$ independently of all other edges.
+## Why a Random Graph's Clustering Is Exactly p
 
-For a node with $k$ neighbors, there are $\binom{k}{2} = \frac{k(k-1)}{2}$ possible edges between its neighbors. Since each potential edge exists with probability $p$, the expected number of edges between neighbors is $E[e_i | k_i = k] = \frac{k(k-1)}{2} \cdot p$. Therefore, the expected local clustering coefficient for a node with degree $k$ becomes:
+Consider a node $i$ with degree $k_i = k$ in $G(n,p)$. Between its $k$ neighbors
+there are $\binom{k}{2} = \frac{k(k-1)}{2}$ possible edges. Here is the point of
+using $G(n,p)$: whether any one of those edges exists is independent of the
+edges that made these nodes neighbors of $i$ in the first place. Each one is
+present with probability $p$, so
 
-$$E[C_i | k_i = k] = \frac{2 \cdot \frac{k(k-1)}{2} \cdot p}{k(k-1)} = p$$
+$$
+E[e_i \mid k_i = k] = \frac{k(k-1)}{2} \cdot p .
+$$
 
-This result shows that the expected local clustering coefficient is simply $p$, independent of the node degree. Since this holds for all vertices regardless of their degree, the expected global clustering coefficient is also $E[C] = p = \frac{\langle k \rangle}{n-1}$, where $\langle k \rangle = p(n-1)$ is the expected degree.
+Dividing by the number of pairs gives the expected local clustering coefficient:
 
+$$
+E[C_i \mid k_i = k] = \frac{\frac{k(k-1)}{2} \cdot p}{\frac{k(k-1)}{2}} = p .
+$$
 
-## Average Path Length Derivation
+The degree cancels out entirely, so the answer is $p$ for every node no matter
+how many friends it has. Averaging over nodes therefore also gives $p$, and
+substituting $\langle k \rangle = p(n-1)$ produces the reference value quoted in
+the main text:
 
-The average path length in Erdős-Rényi graphs can be derived using a tree-expansion argument that reveals why these networks exhibit the small-world property of short distances.
+$$
+\overline{C}_{\text{random}} = p = \frac{\langle k \rangle}{n-1} .
+$$
 
-Consider an Erdős-Rényi model with average degree $k = p(n-1)$. We can analyze the network structure by imagining a breadth-first expansion from any starting node, treating the resulting structure as a tree (this approximation works well because triangles and cycles are rare in sparse random graphs). From the root node, we can reach approximately $1 + k$ nodes in the first step. In the second step, each of these $k$ nodes connects to roughly $k$ new nodes (avoiding already-visited nodes), giving us $1 + k + k^2$ total reachable nodes. Continuing this pattern, after $h$ steps we can reach approximately $1 + k + k^2 + \ldots + k^h \approx k^h$ nodes.
+With $n = 1{,}000$ and $\langle k \rangle = 10$ this is $0.010$ — a hundredth. Any
+real network with clustering in the tenths is doing something a random graph
+does not.
 
-The critical insight is that since Erdős-Rényi random graphs have few triangles and local clusters, most nodes in the network are reached only at the final step of this expansion process. When the expansion covers the entire network, we have $k^h \approx n$. Solving for $h$: $h \approx \log_{k}(n) = \frac{\log(n)}{\log(k)} = \frac{\log(n)}{\log(p(n-1))}$.
+## Why Distances in a Random Graph Grow Only Logarithmically
 
-This derivation reveals that the average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size: $\langle d \rangle \approx \frac{\log(n)}{\log(k)}$. This logarithmic scaling demonstrates the "small-world" property inherent even in random graphs: even in large networks, the typical distance between nodes grows only logarithmically with network size, making the world surprisingly small despite its size.
+Now the other baseline. Write $\langle k \rangle = k$ for the average degree and
+imagine exploring the network outward from one node, one layer at a time.
 
+- Step 1 reaches roughly $k$ new nodes — the starting node's neighbors.
+- Step 2: each of those $k$ nodes has about $k$ neighbors of its own, giving about $k^2$ new nodes.
+- After $h$ steps you have reached about $1 + k + k^2 + \ldots + k^h \approx k^h$ nodes.
+
+The counting assumes that each step lands on nodes you have not already seen —
+that the exploration branches like a tree rather than looping back on itself.
+That is a good approximation in a *sparse* random graph precisely because we
+just showed its clustering is $p = \langle k \rangle / (n-1)$, which is tiny: a
+neighbor of a neighbor is almost never someone you have already met.
+
+The expansion stops when it has covered the network, that is when $k^h \approx n$.
+Solving for $h$:
+
+$$
+h \approx \log_{k}(n) = \frac{\log n}{\log k} .
+$$
+
+So the number of steps needed to reach the whole network — and hence the typical
+distance between two nodes — grows only like $\log n$:
+
+$$
+\overline{L}_{\text{random}} \approx \frac{\log n}{\log \langle k \rangle} .
+$$
+
+Strictly, the quantity this argument bounds is the depth of the exploration,
+which is closer to the network's *diameter* (the largest distance) than to the
+average. But in a random graph the two are within a constant factor of each
+other, because almost every node is reached on the very last layer, and the
+$\log n / \log \langle k \rangle$ formula is the standard estimate for both.
+
+The consequence is the one that reframes the whole module. Multiplying the
+number of nodes by a thousand adds only $\log 1000 / \log \langle k \rangle$
+steps — for $\langle k \rangle = 10$, three of them. A random graph of 1,000
+nodes with average degree 10 has typical distance $6.91/2.30 = 3.0$; grow it to
+a million and you get 6; grow it to a billion and you get 9. **Short paths are
+free.**
+Every network that is merely well-mixed already has them, which is why the
+surprising part of the small-world phenomenon is not the six degrees — it is
+that we get six degrees while still living in dense little clusters of friends.

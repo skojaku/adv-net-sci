@@ -2,7 +2,46 @@
 title: "Exercises and Assignments"
 ---
 
-## Assignment
+## Pen and Paper: Invent the Definitions Before You Are Given Them
 
-- For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.
-- For those who are not enrolled, fork [this assignment repository](https://github.com/sk-classroom/advnetsci-clustering) at Github.
+A pencil, two five-student friend groups, and no algorithm. The first half asks
+you to say exactly how much imperfection a "group" may contain — and in the
+process you reconstruct the $k$-plex, the $k$-core, the $\rho$-dense subgraph,
+the $n$-clique and the $k$-truss yourself. The second half hands you eight
+students in a ladder and asks you to cut it in two: first the cheapest cut, then
+the cheapest *balanced* cut, which is where the ratio cut and the normalized cut
+come from.
+
+- [Discovering Friend Groups](./pen-and-paper/exercise.pdf)
+
+Do this **before** the lecture. Everything the lecture formalizes, you will have
+already argued about with your own hands.
+
+## Push the Nodes Around Yourself
+
+The community-detection game from the concepts page, with all four networks:
+
+- [Two cliques, modularity](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+- [Two cliques, graph cut](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+- [Karate club](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
+- [Two cliques plus a big one — the resolution limit](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json)
+- [A random network with no communities at all](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json)
+
+Compare the last two against the first. If the random network scores higher than
+the one with real cliques, what does a modularity score actually tell you?
+
+## Assignments
+
+### Pair Notebook
+
+Work through this module with the AI tutor and hand in the notebook that the session builds. What is graded is your reasoning, not your code — see [the Pair Notebook guide](../course/pair-notebook.qmd) for the setup and a walkthrough of a full session.
+
+- Repository for M05: coming soon. Your invitation link arrives through Classroom 50.
+
+### Group Mini-Project
+
+Groups of up to three. One repository per group, graded once, with the same score going to every member of the group. Read [how a mini-project runs](../course/mini-project.qmd) first — exactly one person accepts the assignment and invites the rest, and that is the step teams get wrong.
+
+- Repository for M05: [`adv-net-sci-mini-proj-clustering`](https://github.com/sk-classroom/adv-net-sci-mini-proj-clustering). Accept the invitation through Classroom 50 first — the repository is not public, so the link only opens once you are enrolled.
+
+Readers who are not enrolled in SSIE 641 cannot open the assignment repositories. The worksheet above and the [hands-on notebook](02-coding.qmd) cover the same material and need no enrollment.

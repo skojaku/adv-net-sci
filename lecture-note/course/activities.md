@@ -1,26 +1,59 @@
 ---
-title: "Learning activities"
+title: "How this course works"
 ---
 
-## In class
+Six things are graded. Everything else on this page exists to get you ready for
+them.
 
-- **Quiz**: Each lecture opens with a short paper-based quiz on the previous week's material, graded on the spot when possible, with the common mistakes discussed at the end of the lecture.
-- **Pen-and-paper exercise**: Before the lecture, you work through a short exercise with your own hands. We compare answers in class and build the concept out of what you found.
-- **Lecture**: Delivered by the instructor.
-- **Student Lecture**: Each week a student or group gives a 10-minute presentation on a network-related paper of their choice.
+## Every week
 
-## Outside class
+**Pen-and-paper exercise.** Before the lecture you work through a short
+worksheet with your own hands — cross the bridges, count the handshakes, break
+the network. We compare answers in class and build the concept out of what you
+found. It is not one of the six graded items, but the lecture starts from it and
+the quiz assumes you did it.
 
-- **Pair Notebook**: One module taught as a one-on-one session with an AI tutor that runs in your terminal. You build a marimo notebook as you go, and the session itself is what is graded — not the code. See the [Pair Notebook guide](pair-notebook.qmd).
-- **Group Mini-Project**: A small group project applying a module's ideas to real data.
+**Quiz.** Each class opens with a short written quiz on the previous week. You
+work it out on paper, then submit through the course quiz form: the
+multiple-choice part goes in directly, and you photograph your handwritten
+working into the same form. Sign in with your Binghamton account — that is how
+the answer reaches your name. **You may retake it, and your best attempt is the
+one that counts.** Online students submit through Brightspace.
+
+**Lecture.** Delivered by the instructor, starting from the worksheet.
+
+**Student Lecture.** Once in the semester you teach. Pick a topic from the list
+the instructor publishes and build a **15 to 20 minute** lecture on it. **An
+interactive part is required** — a worksheet, an exercise the room works
+through, live coding. A slide presentation on its own does not count.
+
+## Assignments
+
+**[Pair Notebook](pair-notebook.qmd)** — individual, one per module for modules
+1 through 6. A module taught as a one-on-one session with an AI tutor that runs
+in your terminal. A marimo notebook fills up beside it as you go, and that
+notebook, together with the log of the conversation, is what you hand in.
+**What is read is how you reasoned, not whether your code ran.** Needing hints
+is not penalized.
+
+**[Group Mini-Project](mini-project.qmd)** — in class, in teams of up to three,
+for modules 2 through 6. You apply the module's ideas to real data in a shared
+repository. It is autograded once, in your team's repository, and every member
+of the team receives that score.
+
+Both are handed out and collected through **Classroom 50**, which gives you a
+private GitHub repository for each one. Nothing is emailed and nothing is
+uploaded by hand.
 
 ## Project
 
-- **Project proposal**, **project paper**, and **project presentation** on a topic of your choice.
+A **proposal**, a **presentation**, and a **final paper** on a network topic of
+your choosing. Deadlines are in the syllabus.
 
 ## Exam
 
-A take-home final exam during the exam period, distributed via Brightspace.
+One take-home final exam covering every module, multiple choice, submitted
+through Brightspace during exam week.
 
 ## Grading
 
@@ -33,7 +66,10 @@ A take-home final exam during the exam period, distributed via Brightspace.
 | Exam | 30 |
 | Project | 30 |
 
-There are no bonus points. Discord is used for discussion and help, but nothing on it is graded.
+There are no bonus points: the hundred points in that table are the whole grade.
+
+Discord is for questions, announcements and community. **Nothing on Discord is
+graded.**
 
 ## Resources
 

@@ -22,7 +22,15 @@ reasoned* — asking questions and taking detours counts in your favor. That is
 the whole point of the exercise.
 :::
 
-A session takes about 30 minutes. You can stop anywhere and pick it up later.
+The plain facts, before anything else:
+
+| | |
+|---|---|
+| Who | **You, alone.** The team assignment is the [mini-project](mini-project.qmd) — a different thing. |
+| How many | **One per module, for modules 1 through 6.** Each is handed out on Classroom 50 — the site this course uses to distribute and collect work — when its module starts. |
+| What it is worth | **10 points of your final grade**, the six together. See [how this course works](activities.md). |
+| How long | **About 60 to 90 minutes.** You can stop anywhere and pick it up later, as many times as you like. |
+| What you need | A terminal, git, Node.js, uv, and your course API key — see [Set up your machine](setup.qmd). |
 
 ## A session, start to finish
 
@@ -32,125 +40,87 @@ Here is what the two windows do. Use ◀ ▶ to step through it yourself.
 
 ## Before your first session
 
-About ten minutes, once per machine. Everything after this is just `pi`.
+Everything on this page assumes you have already done the one-time
+**[machine setup](setup.qmd)**: a terminal, git, GitHub CLI, Node.js 24+, uv,
+and `NETSCI_API_KEY` in your shell profile. That page also says where the key
+comes from and what to do if yours has not arrived.
 
-### 1. Open a terminal
+Ten seconds to check you are ready. In a terminal:
 
-::: {.panel-tabset}
-
-#### macOS
-
-Press `⌘` + `Space`, type **Terminal**, hit enter. That is all you need — the
-shell it opens is `zsh`, which is what the instructions below assume.
-
-#### Windows
-
-Install [Git for Windows](https://git-scm.com/download/win) first. You need it
-to hand your work in, and `pi` uses the bash it brings.
-
-You then have two ways to open a terminal, and **both work**:
-
-- **Git Bash** — Start menu → type **Git Bash**. The commands on this page work
-  as written, and your home folder is `/c/Users/<you>`.
-- **Windows Terminal** or **PowerShell** — Start menu → type **Terminal**. Same
-  commands, except for the one place noted below where PowerShell spells things
-  differently (setting your key).
-
-If you have no preference, use **Git Bash**: everything in this course is
-written for it.
-
-:::
-
-### 2. Install Node.js and uv
-
-|                                                                   | what it is                | Windows                            | macOS              |
-| ----------------------------------------------------------------- | ------------------------- | ---------------------------------- | ------------------ |
-| [Node.js](https://nodejs.org) 24+                                 | your tutor runs on it     | `winget install OpenJS.NodeJS`     | `brew install node` |
-| [uv](https://docs.astral.sh/uv/getting-started/installation/)     | runs the notebook         | `winget install astral-sh.uv`      | `brew install uv`   |
-
-Close the terminal and open a new one afterwards, so the new commands are found.
-Check with:
-
-```bash
-node --version   # v24.x or newer
+```{.bash .no-fold}
+node --version          # v24 or newer
 uv --version
+git --version
+echo $NETSCI_API_KEY    # your key, starting sk-nsci-
 ```
 
-### 3. Put your API key in your shell profile
-
-Your instructor issues you a key that looks like `sk-nsci-…`. It is how your
-tutor reaches the course models.
-
-::: {.panel-tabset}
-
-#### macOS / Git Bash
-
-Add this line to `~/.zshrc` (macOS) or `~/.bashrc` (Git Bash), then open a
-**new** terminal so it takes effect:
-
-```bash
-export NETSCI_API_KEY="sk-nsci-..."
-```
-
-#### PowerShell
-
-Run this once — it stores the variable for future sessions:
-
-```powershell
-setx NETSCI_API_KEY "sk-nsci-..."
-```
-
-Then close the window and open a **new** one. To check that it took:
-
-```powershell
-echo $env:NETSCI_API_KEY
-```
-
+::: {.callout-note title="Windows: which terminal?"}
+Both **Git Bash** and **Windows Terminal / PowerShell** work. The commands on
+this page are written for Git Bash; in PowerShell the last check above is
+`echo $env:NETSCI_API_KEY`. If you have no preference, use Git Bash.
 :::
 
-::: {.callout-warning title="Never put the key in a file in your assignment folder"}
-You hand this assignment in by pushing that folder to GitHub. A key committed
-there is a key that has to be revoked and reissued. Keeping it in your shell
-profile keeps it out of your repository.
-:::
+Four of those five printed something, but not the key? Go back to
+[step 4 of the setup page](setup.qmd#set-your-course-api-key) — a missing key is
+the one thing that stops a session dead in the middle.
 
-Your key has a weekly allowance. <https://llm.skojaku.com/v1/usage> tells you
-what is left of it.
+To see how much of this week's allowance you have left:
 
-### 4. Get your assignment folder
+```{.bash .no-fold}
+curl -H "Authorization: Bearer $NETSCI_API_KEY" https://llm.skojaku.com/v1/usage
+```
+
+(Opening that address in a browser will not work — it needs your key.)
+
+### 1. Get your assignment folder
 
 Accept the assignment on **[Classroom 50](https://classroom50.org)**, which is
 what this course uses to hand out and collect work. It creates a private GitHub
 repository for you. Copy that repository's URL, clone it, and go into it — this
 is the folder you will run everything in:
 
-```bash
+```{.bash .no-fold}
 git clone <the repository Classroom 50 created for you>
 cd <the folder it made>
 ```
 
-### 5. Run the setup script
+### 2. Run the setup script
 
 Inside that folder:
 
-```bash
+```{.bash .no-fold}
 node setup-pi.mjs
 ```
 
 It is the same command on Windows and macOS. It installs `pi` (the agent your
-tutor runs on), registers the course models in `~/.pi/agent/models.json`, and
-makes **one real request** so you find out here — not mid-lesson — whether your
-key works. It is safe to re-run, it backs up any `models.json` you already had,
-and it leaves your other providers alone.
+tutor runs on), registers the course models in `~/.pi/agent/models.json`, tells
+`pi` that this folder is yours, downloads the notebook's Python packages so your
+first session starts fast, and makes **one real request** so you find out here —
+not mid-lesson — whether your key works. It is safe to re-run, it backs up any
+`models.json` you already had, and it leaves your other providers alone.
+
+::: {.callout-important title="It will look like it has hung. It has not."}
+The package download is **a few hundred megabytes** and takes a couple of
+minutes on a slow connection. That is the slowest part of the whole setup, and
+it happens exactly once. Leave it alone until it finishes.
+:::
+
+::: {.callout-note title="If `pi` ever asks \"Trust project folder?\""}
+Answer **Trust**, the first option. It is asking whether this folder may set up
+your tutor, and this folder is your own assignment. The setup script normally
+answers it for you, so you will only see the question if you skipped the script
+or moved the folder. If you answered "Do not trust" by mistake, your tutor will
+start but have no notebook and no tools; run `pi --approve` once to undo it.
+:::
 
 When it prints `You are set`, you are done.
 
-### 6. The tutor's toolkit installs itself
+### 3. The tutor's toolkit installs itself
 
 You do not install it by hand. The folder's `.pi/settings.json` pins the two
 packages your tutor needs, and `pi` fetches them the first time you run:
 
-```json
+```{.json .no-fold}
 "packages": [
   "git:github.com/sk-classroom/pi-pair-notebook@v0.3.0",
   "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
@@ -162,7 +132,7 @@ That first start therefore takes a few seconds longer than every one after it.
 <details>
 <summary>If the fetch fails and you want to install them by hand</summary>
 
-```bash
+```{.bash .no-fold}
 pi install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0
 pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0
 pi list     # both should be listed
@@ -177,7 +147,7 @@ tested together.
 
 Inside your assignment folder, type:
 
-```bash
+```{.bash .no-fold}
 pi
 ```
 
@@ -189,6 +159,21 @@ opens it in your browser, and shuts it down again when you are done.
 Three steps happen off-screen, on real paper — a table, a drawing, a
 derivation. You photograph each with your phone and drop it into the notebook.
 :::
+
+**Getting the photo from your phone onto this computer** is the one step nothing
+on screen can do for you:
+
+- **iPhone → Mac:** AirDrop it. It lands in `Downloads`.
+- **Android → Windows:** the Phone Link app, or email it to yourself.
+- **Anything → anything:** email or message it to yourself and save the
+  attachment.
+
+Then drag the file from `Downloads` into the drop box in the notebook and press
+**📨 Send to my tutor**. Dropped the wrong picture? Drop another into the same
+box and send again, as often as you like.
+
+If photographing genuinely will not work for you, say so in the terminal and
+type the work out instead. **That counts.**
 
 ## The two windows
 
@@ -237,7 +222,7 @@ work happened.
 <details>
 <summary>Doing it yourself instead</summary>
 
-```bash
+```{.bash .no-fold}
 git add -A && git commit -m "Pair Notebook 02" && git push
 ```
 
@@ -245,16 +230,33 @@ git add -A && git commit -m "Pair Notebook 02" && git push
 
 ## If something goes wrong
 
-**`pi: command not found`** — re-run `node setup-pi.mjs`, then open a new
-terminal. The install puts `pi` on your `PATH`, and an already-open terminal
-does not see it.
+**Nothing you have already done is ever lost.** Your answers are written to
+`session_artifacts/` as they happen, and the notebook is saved as it is built.
+Whatever the problem, closing the terminal and running `pi` again picks up where
+you stopped — it asks whether to continue or start fresh.
 
-**The notebook did not open in your browser** — tell your tutor. It has the
-address and will hand it to you.
+Find the line you actually saw on screen:
 
-**Your tutor stops mid-sentence, or a request fails** — check your allowance at
-<https://llm.skojaku.com/v1/usage>. If there is plenty left, quit with
-`Ctrl` + `C` and run `pi` again; the session picks up where it left off.
+| What you see | What it means | What to do |
+|---|---|---|
+| `pi: command not found` | the install put `pi` on your `PATH`, and this terminal started before that | open a new terminal; if it persists, re-run `node setup-pi.mjs` |
+| `⚠ Your tutor cannot reach the course server` | your key or the address is wrong — the message says which | do what it says; it usually means re-running `node setup-pi.mjs` |
+| `invalid_api_key` | the key is wrong, or was never set in *this* terminal window | check it, open a new terminal, run `node setup-pi.mjs` again |
+| `Connection error.`, repeated | your computer cannot reach the internet, or the course server is down | check your connection, wait a few minutes, run `pi` again |
+| something about your **allowance**, or `402` | you have used this week's quota | tell your instructor; your work is saved and you can carry on when it resets |
+| `model backend is unavailable` + a `request_id` | the course server's own upstream is having a moment — not your fault | wait a few minutes and run `pi` again; send your instructor the `request_id` if it persists |
+| the notebook page went blank, or you closed the tab | the whiteboard lost its connection | nothing — your tutor reopens it. If it does not, say so in the terminal |
+| the notebook never opened in your browser | same thing, earlier | tell your tutor; it has the address and will hand it to you |
+| `⚠ something hiccuped — your tutor is on it` | a notebook operation failed and your tutor is retrying | nothing. Keep talking |
+| your tutor keeps asking the same thing | it is stuck | use the **⚖️** box at the bottom of the notebook — that is exactly what it is for |
 
-**Anything else** — ask on Discord. Getting stuck on setup is not part of the
-assignment.
+To check your allowance directly:
+
+```{.bash .no-fold}
+curl -H "Authorization: Bearer $NETSCI_API_KEY" https://llm.skojaku.com/v1/usage
+```
+
+(Again: that address does not work in a browser — it needs your key.)
+
+**Anything else** — ask on [Discord](discord.md), with the line you saw copied
+out. Getting stuck on setup is not part of the assignment.

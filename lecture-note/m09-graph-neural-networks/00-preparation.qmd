@@ -1,39 +1,20 @@
 ---
-title: "Preparation - Image processing"
+title: "How a Camera Finds an Edge"
 ---
 
+Graph neural networks are neural networks for graph data, and they come from two different places. One branch grew out of language modeling: that is where node2vec and DeepWalk of Module 8 come from, where a random walk on the network is treated as a sentence. This module follows the other branch, which grew out of image processing.
 
+So this page contains no graphs at all. You will detect an edge in a six-by-six picture by hand, discover that the operation you just performed has a name — *convolution* — and then see that the same operation can be described as *keeping some waves and discarding others*. That last sentence is the one we carry over to networks on the next page.
 
-## Preliminaries: Image Processing
-
-Graph Neural Networks are a type of neural network for graph data. node2vec and deepwalk stem from the idea of language modeling.
-In this module, we will focus on another branch of graph neural networks that stem from image processing.
-
-### Pen and paper exercises
-
-- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
-
-The pen and paper exercises will help you understand the mathematical foundations of graph neural networks, including:
-
-1. **Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices
-2. **Fourier Analysis on Graphs**: Extending classical signal processing to graph domains
-3. **Convolution Operations**: Defining convolution for irregular graph structures
-4. **Message Passing**: Mathematical formulation of information aggregation in graphs
-5. **Network Architecture Design**: Principles for designing effective GNN architectures
-
-These exercises provide the theoretical foundation necessary to understand how graph neural networks process and learn from graph-structured data.
-
-## Edge Detection Problem in Image Processing
+## Edge detection: finding a boundary by subtraction
 
 Edge detection is a classical problem in image processing. The goal is to identify the boundaries of objects in an image.
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/20240616211411/Screenshot-(85).webp)
+An image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image is a 2D matrix, where each element is the brightness of one pixel.
 
-To approach the problem, let us first remind that an image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image can be represented as a 2D matrix, where each element in the matrix represents the brightness of a pixel.
+<!-- TODO(anim): a grayscale photo with a hover-readout showing the brightness number under the cursor, so "an image is a matrix" becomes something the reader checks rather than reads. -->
 
-![](https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png)
-
-### An example
+### Six by six pixels with a bright stripe down the middle
 
 Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a *significant brightness change between adjacent pixels*. To be more concrete, let's consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.
 
@@ -48,26 +29,33 @@ X = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-Let's zoom on the pixel at (3, 3) and its surrounding pixels.
+Let's zoom on the pixel at row 3, column 2 — the pixel immediately to the left of the bright stripe — together with its eight surrounding pixels.
 
 $$
 Z = \begin{bmatrix}
-10 & 80 & 10 \\
-\textcolor{blue}{10} & \textcolor{red}{80} & \textcolor{purple}{10} \\
-10 & 80 & 10
+10 & 10 & 80 \\
+\textcolor{#593196}{10} & 10 & \textcolor{#c2410c}{80} \\
+10 & 10 & 80
 \end{bmatrix}
 $$
 
-where the central pixel is highlighted in red. Since we are interested in the edge which is a sudden change in brightness along the horizontal direction, we take a derivative at the central pixel by
+The center of this $3 \times 3$ block, $Z_{22} = 10$, is our pixel; its left neighbor is colored and so is its right one. An edge is a sudden change of brightness as we move *sideways*, so we take a derivative at the central pixel by subtracting the right neighbor from the left one:
 
 $$
-\nabla Z_{22} = \textcolor{blue}{Z_{2,1}} - \textcolor{purple}{Z_{2,3}}
+\nabla Z_{22} = \textcolor{#593196}{Z_{2,1}} - \textcolor{#c2410c}{Z_{2,3}} = 10 - 80 = -70.
 $$
 
-Following the same process, we can compute the derivative at all pixels, which gives us the (horizontal) derivative of the image.
+A number of size 70 where the flat parts of the picture give 0: the operator has noticed the stripe.
+
+::: {.column-margin}
+We name an operator by the direction in which it differentiates. This one compares a left neighbor with a right neighbor, so it is the *horizontal* derivative. Note the consequence, which trips everyone up once: the horizontal derivative is what lights up a **vertical** stripe, because a vertical stripe is what changes as you move horizontally.
+:::
+
+Following the same process at every pixel gives us the horizontal derivative of the whole image.
 
 $$
 \begin{bmatrix}
+- & -70 & 0 & 70 & 0 & - \\
 - & -70 & 0 & 70 & 0 & - \\
 - & -70 & 0 & 70 & 0 & - \\
 - & -70 & 0 & 70 & 0 & - \\
@@ -77,9 +65,10 @@ $$
 $$
 
 The symbol `-` indicates that the derivative is not defined because one of the neighboring pixels is out of the image boundary.
-We observe that the derivative is high at the edge and low elsewhere. This is a simple but effective way to detect edges in an image.
 
-We can consider a derivative operator along the vertical direction that computes the difference between the vertical neighboring pixels.
+Read the row: $0$ in the flat regions, and a pair of large responses $-70$ and $+70$ in the two columns *flanking* the stripe. On the stripe itself (column 3) the answer is $0$, because there the left and right neighbors are both $10$ and the operator only ever compares those two. A bright line therefore shows up not as one big number but as a matched pair of opposite sign, one on each shoulder. What matters is the *magnitude*: it is $70$ next to the boundary and $0$ everywhere else.
+
+We can also build a derivative operator along the vertical direction, which subtracts the pixel below from the pixel above.
 
 $$
 \nabla Z_{22} = Z_{1,2} - Z_{3,2}
@@ -93,11 +82,12 @@ $$
 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 \\
 - & - & - & - & - & -
 \end{bmatrix}
 $$
 
-The all entries are zero, meaning that there is no edge in the vertical direction.
+Every defined entry is zero. Nothing in this picture changes as you move *down* a column — every row is identical — so the vertical derivative finds nothing at all. The stripe is invisible to it.
 
 We can combine the horizontal and vertical derivatives to get the gradient of the image. For example,
 
@@ -105,11 +95,11 @@ $$
 \nabla Z_{22} = Z_{12} - Z_{32} + Z_{21} - Z_{23}
 $$
 
-When applied to the entire image, the result is the same as the horizontal derivative.
+On this picture the vertical part contributes nothing, so wherever all four neighbors exist the result is exactly the horizontal derivative computed above.
 
-### Convolution
+### One small table of weights, slid over every pixel
 
-We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.
+We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighboring pixels, with the same weights at every pixel. This motivates us to generalize the operation to a more general form.
 
 $$
 \nabla Z_{22} = \sum_{i=-1}^1 \sum_{j=-1}^1 K_{h-(i+1),w-(j+1)} Z_{2+i, 2+j}
@@ -153,7 +143,7 @@ Why do we reverse the kernel? This is to match with the mathematical definition 
 :::
 
 ::: {.column-margin}
-In the previous example, we used a $3 \times 3$ kernels called the Prewitt operator, which in terms of $K$ is
+The kernel used in the example above is a $3 \times 3$ **Prewitt operator**, which in terms of $K$ is
 
 $$
 K_h = \begin{bmatrix}
@@ -169,7 +159,7 @@ K_v = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-where $K_h$ is the horizontal Prewitt operator and $K_v$ is the vertical Prewitt operator.
+where $K_h$ is the horizontal Prewitt operator (it differentiates left-to-right, so it finds vertical edges) and $K_v$ is the vertical one (it differentiates top-to-bottom, so it finds horizontal edges).
 :::
 
 A kernel represents a local pattern we want to detect. The new pixel value after the convolution is maximized when the pattern is most similar to the kernel in terms of the inner product. This can be confirmed by:
@@ -184,13 +174,11 @@ where $\langle \cdot, \cdot \rangle$ is the inner product, and $\hat K$ is the o
 Check out this awesome interactive demo to see how different kernels work: [Demo](https://setosa.io/ev/image-kernels/)
 :::
 
-## Fourier Transform
-
-![](https://miro.medium.com/v2/resize:fit:1400/1*D6iRfzDkz-sEzyjYoVZ73w.gif)
+## Every row of pixels is a stack of waves
 
 Convolution computes the new pixel values by sliding a kernel over an image. How is the resulting image related to the original image?
 
-
+<!-- TODO(anim): a kernel sliding along a row of pixels with the running dot product drawn underneath, so the reader watches the output being built one position at a time. -->
 
 To answer this question, let us consider a row of an image and convolve it with a kernel $K$.
 
@@ -213,9 +201,9 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 & X_2 K_3 + X_3 K_2 + X_4 K_1 & X_3 K_3 + X_4 K_2 + 
 \end{bmatrix}
 $$
 
-...which is complicated, right? 😅 So let's make it simple by using a useful theorem called **the convolution theorem**.
+Written out, convolution is bookkeeping: four different sums, each one a shifted copy of the same three multiplications. That is awkward to compute and, worse, awkward to *think* about. A theorem called **the convolution theorem** replaces the whole thing with a single multiplication, at the price of first changing coordinates.
 
-The convolution theorem gives us a simpler way to think about convolution. Instead of doing the complex sliding window operation in the original domain (like pixel values), we can:
+Instead of doing the sliding-window operation on the pixel values, we can:
 
 1. Transform both signals to the frequency domain using Fourier transform
 2. Multiply them together (much simpler!)
@@ -227,127 +215,73 @@ Mathematically, the above steps can be written as:
 2. $\mathcal{F}(X) \cdot \mathcal{F}(K)$ - Multiply the transformed signals
 3. $\mathcal{F}^{-1}(\mathcal{F}(X) \cdot \mathcal{F}(K))$ - Transform back to get $X * K$
 
-where $\mathcal{F}^{-1}$ is the inverse Fourier transform that brings us back to the original domain. This is much easier than computing the convolution directly!
+where $\mathcal{F}^{-1}$ is the inverse Fourier transform that brings us back to the original domain.
 
-For a discrete signal $x[n]$ with $N$ points, the Fourier transform $\mathcal{F}$ is defined as:
+What does $\mathcal{F}$ actually do? It takes a signal — our row of six pixel values — and reports how much of each *wave* that signal is made of: a slow wave that rises and falls once across the row, a faster one that does it twice, and so on up to the fastest wave six pixels can carry. A row of constant brightness is pure slow wave. A row that alternates bright, dark, bright, dark is pure fast wave. Our row `[10, 10, 80, 10, 10, 10]` is a bit of everything, because a single sharp spike needs many waves to build.
 
-$$
-\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-2\pi i \frac{nk}{N}}
-$$
+That is all you need to carry forward. The formula that computes those weights uses complex exponentials, and it is written out in the [appendix](04-appendix.qmd) for anyone who wants it; nothing on the next page depends on reading it. What does matter is the one-sentence version:
 
-where $i$ is the imaginary unit. Or equivalently,
+> The Fourier transform re-describes a signal by *which waves it is made of*, and the convolution theorem says that convolving with a kernel simply *rescales each of those waves*.
 
-$$
-\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot \left[ \cos\left(2\pi \frac{nk}{N}\right) - i \sin\left(2\pi \frac{nk}{N}\right) \right]
-$$
-
-using Euler's formula $e^{ix} = \cos(x) + i\sin(x)$.
+<!-- TODO(anim): add wave components one at a time with a slider and watch the six-pixel row assemble; alongside it, the same row's frequency weights as a bar chart. -->
 
 ::: {.column-margin}
-Complex number can be thought of as a way to represent a 2D vector using a single value (which is a computer science perspective; mathematically, it is a bit more subtle). For example, $e^{i\pi/2} = \cos(\pi/2) + i\sin(\pi/2)$ represents the 2D vector $(\cos(\pi/2), \sin(\pi/2))$. In the context of Fourier transform, we interpret $e^{-2\pi i \frac{nk}{N}}$ as two *base waves*, i.e., sine and cosine, with phase $\frac{2\pi k}{N}$.
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Euler%27s_formula.svg/360px-Euler%27s_formula.svg.png)
+3Blue1Brown makes a beautiful video explaining the Fourier transform: [Video](https://www.youtube.com/watch?v=spUNpyF58BY). Here is a great interactive demo by Jez Swanson: [Demo](https://www.jezzamon.com/fourier/).
 :::
 
-In simple terms, $\mathcal{F}$ takes a signal (like our row of pixel values) and breaks it down into sine and cosine waves of different frequencies. Each frequency component $k$ tells us "how much" of that frequency exists in our original signal.
-Don't worry too much about the complex math. The key idea is that $\mathcal{F}$ represents a signal as a sum of multiple waves with different frequencies, so we can understand the signal in terms of its frequencies rather than its original values.
+### The same convolution, done by multiplying
 
+Take the row and the kernel we already have, $X = [10, 10, 80, 10, 10, 10]$ and $K = [-1, 0, 1]$.
 
-![](https://devincody.github.io/Blog/post/an_intuitive_interpretation_of_the_fourier_transform/img/FFT-Time-Frequency-View_hu24c1c8fe894ecd0dad24174b2bed08c9_99850_800x0_resize_lanczos_2.png)
-
-
-::: {.column-margin}
-3Blue1Brown makes a beautiful video explaining Fourier transform: [Video](https://www.youtube.com/watch?v=spUNpyF58BY). Here is a great interactive demo on Fourier transform by Jez Swanson: [Demo](https://www.jezzamon.com/fourier/).
-:::
-
-### An example for the Fourier transform
-
-Now, let's perform the convolution using the Fourier transform using an example.
-
-Let us first perform the convolution directly.
-
-Let us now perform the convolution using the Fourier transform. We compute the Fourier transform of $X$ and $K$.
-
-- We add zeros to $K$ to make it the same length as $X$ before applying the Fourier transform. This is necessary because the convolution theorem requires the signals to have the same length.
-- `FX` is the Fourier transform of $X$, which is a complex number. Each entry $FX[k]$ represents the weight of the cosine wave in its real part and the weight of the sine wave in its imaginary part, with phase $2\pi k / N$. Similarly for `FK`.
-
-Next, we multiply the transformed signals.
-
-This is the convolution in the frequency domain. Finally, we transform back to get the convolution.
-
-- We take the real part. The imaginary part is due to numerical artifacts that do not matter in practice.
-- The Fourier transform convolution produces a longer output than direct convolution because it includes partial overlaps between K and X at the boundaries. Since we only want the full overlaps, we need to truncate the first two elements of `XKconv_ft` (as K has length 3) to match the length of the direct convolution result.
-- For example, let's look at what happens at the beginning of the convolution:
-  - At position -2: Only the last element of K overlaps with X: `[0, 0, 10] * [-1, 0, 1] = 10`
-  - At position -1: Two elements of K overlap with X: `[0, 10, 10] * [-1, 0, 1] = 10`
-  - At position 0: Full overlap begins: `[10, 10, 80] * [-1, 0, 1] = 70`
-
-  The Fourier transform method gives us all these positions (-2, -1, 0, ...), but we only want the full overlaps starting from position 0, which is why we truncate the first two elements.
-
-This gives us the same result as the direct convolution up to numerical errors.
-
-## Fourier Transform of Images
-
-Let's extend the above example to an image which is a 2D matrix.
-The idea is the same: we take the Fourier transform of each row and column of the image, and then multiply them together to get the convolution in the frequency domain.
-More specifically, for an image $X$ with size $H \times W$, the Fourier transform of $X$ is
+Done directly, the sliding window gives four numbers:
 
 $$
-\begin{aligned}
-\mathcal{F}(X)[h, w] &= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] \cdot e^{-2\pi i \frac{hk}{H}} \cdot e^{-2\pi i \frac{w\ell}{W}} \\
-&= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] e^{-2\pi i \left(\frac{hk}{H} + \frac{w\ell}{W}\right)}
-\end{aligned}
+X * K = \begin{bmatrix} -70 & 0 & 70 & 0 \end{bmatrix}
 $$
 
-Comparing with the 1D case, we see that the 2D Fourier transform is *functionally* the same as the 1D Fourier transform, except that we now have two indices $h$ and $w$ to represent the frequency in both dimensions.
-The basis waves are 2D waves as shown below.
+which are exactly the four defined entries of one row of the horizontal derivative we computed by hand at the start of this page.
 
-**Cosine waves**
+Done through the convolution theorem, we first pad $K$ with zeros to $[-1, 0, 1, 0, 0, 0]$, because entrywise multiplication needs the two signals to have the same length. Transforming both, multiplying, and transforming back returns six numbers:
 
-![](../figs/m09prep-fig-00.svg){#fig-m09prep-fig-00}
+$$
+\mathcal{F}^{-1}\left(\mathcal{F}(X) \cdot \mathcal{F}(K)\right) = \begin{bmatrix} 0 & 0 & -70 & 0 & 70 & 0 \end{bmatrix}
+$$
 
+The first two are the positions where the kernel hangs off the left end of the row and wraps around to the other side — the transform treats the row as a loop. Drop those two and what remains is $[-70, 0, 70, 0]$: the direct convolution, to the last digit.
 
-**Sine waves**
+Two routes, one answer. The second route is the one that will survive the move to networks, because it never mentions "left" or "right".
 
-![](../figs/m09prep-fig-01.svg){#fig-m09prep-fig-01}
+## Take a photograph apart into waves
 
+An image is a 2D matrix, and the 2D Fourier transform is just the 1D one applied twice: transform every row, then transform every column of the result. The convolution theorem is unchanged — multiply $\mathcal{F}(X)$ by $\mathcal{F}(K)$ entry by entry and transform back. (The formula is in the [appendix](04-appendix.qmd).)
 
-The Fourier transform of an image is a decomposition of an image into the sum of these basis waves.
+What changes is the basis. In 1D the waves are ripples along a line; in 2D they are corrugations across a plane, indexed by *two* frequencies, one for each direction.
 
-### An example of Fourier transform
+![The 256 cosine basis images for a $16 \times 16$ picture. The top-left tile is flat — no variation at all. Moving right makes the pattern vary faster from left to right, giving finer vertical stripes; moving down makes it vary faster from top to bottom, giving finer horizontal stripes.](../figs/m09prep-fig-00.svg){#fig-m09prep-fig-00 width=70% fig-align="center"}
 
-Let us apply the Fourier transform to an image.
+![The matching sine basis images, in the same layout. Each frequency needs both a cosine and a sine so that the wave can be slid to any position.](../figs/m09prep-fig-01.svg){#fig-m09prep-fig-01 width=70% fig-align="center"}
 
-![](../figs/m09prep-fig-02.svg){#fig-m09prep-fig-02}
+Any grayscale picture, however complicated, is a weighted sum of these — and the Fourier transform is the list of weights.
 
+### A real photograph, taken apart into waves
 
-Take the Fourier transform of the image.
+Here is a real photograph, converted to grayscale.
 
-This decomposes the image into a sum of basis waves. Let's see the weights of the basis waves.
+![A grayscale photograph. To the Fourier transform this is not a lawn and some buildings; it is a recipe of a few hundred thousand waves.](../figs/m09prep-fig-02.svg){#fig-m09prep-fig-02 width=70% fig-align="center"}
 
-![](../figs/m09prep-fig-03.svg){#fig-m09prep-fig-03}
+Its Fourier transform is a matrix the same size as the photograph, one weight per basis wave. Plotted as an image (on a log scale, because the weights span many orders of magnitude), the weights concentrate overwhelmingly in the low frequencies at the corners: most of a photograph is slow, smooth variation, and only the object boundaries need fast waves.
 
+![The magnitude of the photograph's Fourier transform. Bright means "a lot of this wave".](../figs/m09prep-fig-03.svg){#fig-m09prep-fig-03 width=55% fig-align="center"}
 
-The corresponding basis waves look like this:
+![The sine half of the same basis, re-indexed so the slowest wave sits at the middle of the grid rather than at a corner.](../figs/m09prep-fig-04.svg){#fig-m09prep-fig-04 width=70% fig-align="center"}
 
-![](../figs/m09prep-fig-04.svg){#fig-m09prep-fig-04}
+Now convolve the photograph with the *vertical* Prewitt operator $K_v$ — the one that differentiates down the columns, and therefore responds to horizontal edges. By the convolution theorem we can do it by multiplying, so look first at the kernel's own transform.
 
+![The magnitude of the Prewitt operator's Fourier transform. It is exactly zero for waves that do not vary down the columns, and largest for waves that change over a few pixels.](../figs/m09prep-fig-05.svg){#fig-m09prep-fig-05 width=55% fig-align="center"}
 
-Now, let's see the convolution of the image with a Prewitt operator.
+This is the crucial picture. The kernel's transform acts as a **filter**: multiplying $\mathcal{F}(X)$ by $\mathcal{F}(K)$ entrywise scales every wave in the photograph by the corresponding number in this plot. Waves that do not vary vertically are multiplied by zero and disappear — including the flat one, which is why the overall brightness of the picture is deleted. Fast vertical variation survives. In other words, the Prewitt kernel *is* a high-pass filter, written in the pixel domain.
 
-The Fourier transform of the Prewitt operator looks like this:
-
-![](../figs/m09prep-fig-05.svg){#fig-m09prep-fig-05}
-
-
-We can think of the frequency domain of the kernel as a **filter** that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel `FK` has a low value around the center of the image. The product $FX \cdot FK$ then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.
-
-Let's see the convolution result.
-
-![](../figs/m09prep-fig-06.svg){#fig-m09prep-fig-06}
-
-
-We observe that the horizontal edges are highlighted.
+![The result: the smooth interiors are gone and the horizontal boundaries remain.](../figs/m09prep-fig-06.svg){#fig-m09prep-fig-06 width=70% fig-align="center"}
 
 ::: {.column-margin}
 A widespread application of the 2D Fourier transform is JPEG format. Here's how it works:
@@ -362,10 +296,19 @@ These steps make the file much smaller while still looking good to us.
 
 
 
-## A key lesson from image processing
+## The one sentence to carry to the next page
 
-We have seen an equivalence between convolution in the pixel (spatial) domain and multiplication in the frequency domain.
-Using the Fourier transform, an image is decomposed into a sum of basis waves.
-The *kernel* can be thought of as *a filter* that suppresses some basis waves and allows others to pass through.
+Convolving with a kernel in the pixel domain is the same thing as multiplying wave by wave in the frequency domain. An image is a sum of basis waves; a **kernel is a filter** that turns some of those waves down and lets others through. Edge detection is not really about edges — it is about keeping the fast waves.
 
-This idea is the key to understand graph convolutional networks we will see in the next page.
+Now notice what that sentence does *not* mention. It says nothing about "left neighbor", "the pixel above", or a $3 \times 3$ square. It only needs a set of basis waves and one number per wave.
+
+A network has no rows and no columns, so "the pixel above" means nothing on a network. But a network does have basis waves — that is the next page's first job — and once we have them, everything above transfers.
+
+**What you can now do**
+
+- Detect an edge in a small image by hand, and say why the response sits *beside* a bright line rather than on it.
+- Write any local pixel operation as a kernel, and name what pattern that kernel is looking for.
+- State the convolution theorem and say what it buys: one multiplication instead of a sliding sum.
+- Explain what makes a kernel a low-pass or a high-pass filter.
+
+Next: [Every Node Asks Its Neighbors](01-concepts.qmd), where the same three ideas are rebuilt on a network.

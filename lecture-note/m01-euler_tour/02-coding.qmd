@@ -1,5 +1,5 @@
 ---
-title: "Hands-on: Representing and Traversing a Network"
+title: "Hands-on: Three Ways to Store a Network"
 ---
 
 Königsberg is small enough to solve by staring at it. The point of this notebook is to solve it the way you would solve a network with a million nodes.
@@ -9,9 +9,9 @@ This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m01 >}})
-
-It runs in your browser — nothing to install, nothing to sign into. The first load takes a few seconds while Python itself is downloaded.
+**[Run this notebook]({{< var molab.m01 >}})** — it runs in your browser, with
+nothing to install and nothing to sign into. The first load takes a few seconds
+while Python itself is downloaded.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m01-euler-tour/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py).
@@ -20,7 +20,7 @@ Run it with `marimo edit notebooks/m01-euler-tour/coding.py`.
 
 ## What you will build
 
-1. Store the same network three ways — edge list, adjacency list, adjacency matrix — and convert between them.
+1. Store the same network three ways — edge list, adjacency list, adjacency matrix, all three defined on the [vocabulary page](01b-vocabulary.qmd) — and convert between them.
 2. Compute degree from each representation and confirm the three agree.
 3. Write checks that decide whether a given sequence is a walk, a trail, or a path.
 4. Find connected components with depth-first search.
@@ -28,5 +28,5 @@ Run it with `marimo edit notebooks/m01-euler-tour/coding.py`.
 
 ## What to watch for
 
-- The three representations are not interchangeable in cost. Ask, for each operation, which one makes it cheap — that instinct is what the rest of the course runs on.
-- Your component finder is the same algorithm you will use in Module 3 to measure how much network survives an attack.
+- The three representations are not interchangeable in cost. For each operation, ask which representation makes it cheap — that instinct is what the rest of the course runs on.
+- Your component finder is the same algorithm you will use in Module 3 to measure how much of a network survives an attack.

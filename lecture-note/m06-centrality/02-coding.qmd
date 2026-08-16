@@ -2,16 +2,16 @@
 title: "Hands-on: Who Is Important, and In What Sense"
 ---
 
-Eight centralities on one network, and the interesting part is where they disagree.
+Seven centralities on one network, and the interesting part is where they disagree.
 
 ::: {.callout-note title="Where the code lives"}
 This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m06 >}})
-
-It runs in your browser — nothing to install, nothing to sign into. The first load takes a few seconds while Python itself is downloaded.
+**[Run this notebook]({{< var molab.m06 >}})** — it runs in your browser, with
+nothing to install and nothing to sign into. The first load takes a few seconds
+while Python itself is downloaded.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m06-centrality/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/coding.py).
@@ -20,13 +20,16 @@ Run it with `marimo edit notebooks/m06-centrality/coding.py`.
 
 ## What you will build
 
+The notebook hands you the networks and a worked closeness and Katz cell. The
+rest is yours to write.
+
 1. Compute degree, closeness, harmonic, betweenness, eigenvector, Katz and PageRank on a small social network.
-2. Implement Katz centrality yourself, including choosing a safe value for lambda.
+2. Implement Katz centrality yourself, including choosing a safe value for the attenuation factor.
 3. Apply the measures to the Roman road network and map the results geographically.
 4. Compute the correlation matrix between centralities and interpret it.
 
 ## What to watch for
 
 - Find the node whose betweenness rank is far above its degree rank. Look at where it sits — that is a broker.
-- Set lambda above 1/lambda_max in your Katz implementation and watch it break. Understanding the failure is the point.
+- Set the attenuation factor above $1/\lambda_{\max}$ in your Katz implementation and watch it break. Understanding the failure is the point.
 - Compute the correlations on a star graph and on a path graph. Near-total agreement in one, near-total disagreement in the other.

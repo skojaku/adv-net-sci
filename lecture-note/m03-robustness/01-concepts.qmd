@@ -1,62 +1,48 @@
 ---
-title: "Core Concepts"
+title: "Build It Cheap, Then Watch It Break"
 ---
 
-## What to learn in this module
+> **The big question of this module.** How much of a network can you destroy before it falls apart --- and does it matter whether the damage is random or deliberate?
 
-In this module, we will explore network robustness through the lens of infrastructure design. Starting from the historical challenge of building cost-effective power grids, we will learn:
+## Moravia, 1926: Every Town Needs Power and There Is No Money
 
-- How minimum spanning trees provide optimal cost-efficiency for network connectivity
-- Why real-world networks have redundancies beyond minimum connectivity requirements
-- How networks respond to random failures versus targeted attacks
-- Quantitative measures of network robustness and percolation theory
-- Design principles for balancing cost efficiency with resilience
-
-**Keywords**: minimum spanning tree, Kruskal's algorithm, Prim's algorithm, network redundancy, random failures, targeted attacks, connectivity loss, R-index, percolation, robustness paradox
-
-## Pen-and-Paper Exercise: From MST to Robust Grid Design
-
-- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf): Starting with a minimum spanning tree for cost efficiency, design a power grid network that maintains connectivity even when key components fail.
-
-## Network Design Challenges
-
-[🚀 Interactive Demo](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
-
-## Power Grid Design Challenge
-
-In the aftermath of World War I, the newly formed Czechoslovakia faced massive reconstruction challenges. Cities and towns across [Moravia](https://en.wikipedia.org/wiki/Moravia) needed electricity, but the young nation had limited resources. Every resources spent on unnecessary infrastructure was a resource not available for hospitals, schools, or economic recovery. Engineers at the West Moravian Power Company faced a critical question: How do you connect every town and village to the electrical grid while using the minimum length of cable?
+In the aftermath of World War I, the newly formed Czechoslovakia faced massive reconstruction challenges. Cities and towns across [Moravia](https://en.wikipedia.org/wiki/Moravia) needed electricity, but the young nation had limited resources. Every resource spent on unnecessary infrastructure was a resource not available for hospitals, schools, or economic recovery. Engineers at the West Moravian Power Company faced a critical question: How do you connect every town and village to the electrical grid while using the minimum length of cable?
 
 ::: {.column-margin}
-**Otakar Borůvka** (1899-1995) was a Czech mathematician who is best known for his work on the minimum spanning tree problem.
+**Otakar Borůvka** (1899--1995), the Czech mathematician who gave the first answer.
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Otakar_Boruvka_1981.jpg/500px-Otakar_Boruvka_1981.jpg)
+![](../figs/boruvka-portrait.png){width=100% fig-alt="Portrait photograph of the mathematician Otakar Borůvka."}
+
+Photograph via Wikimedia Commons.
 :::
-
-
 
 The problem reached mathematician Otakar Borůvka through his friend at the power company. Borůvka's 1926 solution gave us the first systematic approach to what we now call **the minimum spanning tree problem**: finding the cheapest way to connect all locations in a network.
 
-#### Minimum Spanning Tree
+### The Cheapest Network That Still Reaches Everyone
 
-A **minimum spanning tree (MST)** of a weighted network is a tree that:
+Borůvka's question is about a **weighted network**: a network in which every edge carries a number, here the cost of laying that stretch of cable. A **minimum spanning tree (MST)** of a weighted network is a set of edges that:
 
 - **Spans** all nodes (connects every location in the network)
-- Is a **tree** (connected with no cycles - no redundant loops)
+- Is a **tree** (connected with no cycles --- no redundant loops)
 - Has **minimum total weight** among all possible spanning trees
 
-Otakar Borůvka delivered the first algorithm to solve this problem: **Borůvka's algorithm**. But it is not the only algorithm to find the minimum spanning tree.
-In fact, there are several algorithms. We will cover two algorithms: **Kruskal's algorithm** and **Prim's algorithm**, which are easier to understand and implement.
+![Five towns, and the cost of every possible cable between them. The middle panel is a perfectly good spanning tree: it reaches all five towns, and costs 14. The right panel reaches the same five towns for 12. Both are trees with exactly four cables --- any spanning tree of five towns has four --- so the saving comes entirely from *which* four.](../figs/minimum-spanning-tree.jpg){#fig-mst width=100% fig-alt="Three panels: a weighted five-node network with edge costs, a spanning tree costing 14, and the minimum spanning tree costing 12."}
 
-### Finding the Minimum Spanning Tree
+A tree on $N$ nodes always has exactly $N-1$ edges, so every spanning tree buys you the same number of cables. Choosing the minimum one is choosing where to spend, not how much to spend.
 
+Borůvka delivered the first algorithm to solve this problem, **Borůvka's algorithm**. It is not the only one. We will cover two others, **Kruskal's algorithm** and **Prim's algorithm**, which are easier to understand and implement.
 
-#### Kruskal's Algorithm
+### Two Ways to Build It, One Answer
 
-**Kruskal's algorithm** embodies a remarkably simple yet powerful intuition: always choose the cheapest available option, but never create wasteful loops. While sounds heuristic, this algorithm in fact leads to the global optimial solution!
+#### Kruskal: Always Take the Cheapest Cable That Adds Something
 
-The algorithm works by first sorting every possible connection from cheapest to most expensive like arranging all the cable segments by cost. Then, it examines each connection in order, asking a crucial question: "If I add this cable, will it create a redundant loop?" If the answer is no, the cable joins the growing network. If adding it would create a cycle---meaning the two locations are already connected through some other path---the algorithm skips it as wasteful. This process continues until every location is connected, guaranteeing both minimum cost and complete coverage.
+**Kruskal's algorithm** embodies a remarkably simple yet powerful intuition: always choose the cheapest available option, but never create wasteful loops. It sounds like a rule of thumb --- a *heuristic*, a shortcut with no guarantee attached --- and yet it provably lands on the globally cheapest tree, every time.
 
-#### Prim's Algorithm
+The algorithm works by first sorting every possible connection from cheapest to most expensive, like arranging all the cable segments by cost. Then it examines each connection in order, asking a crucial question: "If I add this cable, will it create a redundant loop?" If the answer is no, the cable joins the growing network. If adding it would create a cycle --- meaning the two locations are already connected through some other path --- the algorithm skips it as wasteful. This process continues until every location is connected, guaranteeing both minimum cost and complete coverage.
+
+Why is being greedy enough? Take any group of towns that are already joined to one another, and look at the cheapest cable leaving that group. Some minimum spanning tree has to use that cable --- because a tree that reached out of the group by a dearer one could drop the dearer cable, put this one in its place, stay connected, and cost less, which would contradict its being minimum. So greedy is not gambling: at every step it is taking an edge that *no* cheapest solution could have done without.
+
+#### Prim: Grow Outward From the Power Plant
 
 **Prim's algorithm** takes a fundamentally different approach, embodying the intuition of organic growth from a single starting point. Picture an engineer beginning at the central power plant and asking: "What's the cheapest way to connect one more location to our existing grid?" This local growth strategy builds the network incrementally, always expanding from what's already been constructed.
 
@@ -64,66 +50,82 @@ The algorithm begins by selecting any location as its starting point, often the 
 
 This local expansion strategy mirrors how many real-world infrastructure projects actually develop. Engineers often start from existing facilities and expand outward, always seeking the most cost-effective way to serve additional areas. Prim's algorithm formalizes this natural growth process.
 
+::: {.column-margin}
+The two algorithms find the *same* tree when all connection costs are different. When several cables cost the same, there can be several minimum spanning trees of equal total cost, and which one you get depends on the algorithm --- and, for Prim, on where you started.
+:::
+
+Step both algorithms through the same graph in the [Kruskal vs Prim demo](../assets/vis/kruskal-vs-prime.html) and watch them arrive at the same total from opposite directions.
+
 <!-- TODO(anim): Kruskal vs Prim step-through. Side-by-side view of the same
      7-node power-grid graph, with a step slider (0-6) that adds one MST edge
      per step: Kruskal in globally-sorted weight order, Prim growing outward
      from A. Edges already chosen are solid, candidates dashed; nodes already
      attached to the growing tree are highlighted. A toggle for "all weights
      unique" vs "some weights tied" shows that the two algorithms agree in the
-     first case and may disagree in the second (see the note below). -->
+     first case and may disagree in the second (see the note in the margin). -->
 
-::: {.callout-note}
+## The Cheapest Grid Is the Easiest to Break
 
-Two algorithms find the same minimum spanning tree when all connection costs are different. If there are connections with the same cost, there are multiple minimum spanning trees of the same cost, and which tree to find depends on the algorithm. In particular, Prim's algorithm finds different trees when starting from different locations.
+A minimum spanning tree connects everyone for the least money. It also has no spare parts. Because a tree has no cycles, *every single edge is a bridge*: cut any one of the $N-1$ cables and the grid splits in two. Remove a town in the middle and it splits into as many pieces as that town had cables. There is no second route anywhere, because a second route is exactly what the algorithm was told to avoid.
 
-:::
+This is why real power grids carry far more line than a tree would need.
 
+::: {#fig-us-power-grid}
 
+![](https://geni.org/globalenergy/library/national_energy_grid/united-states-of-america/graphics/UnitedStatesPowerGrid.jpg){width=80% fig-alt="Map of the high-voltage transmission network of the United States, showing many closed loops between regions."}
 
-## Why Minimum Spanning Tree is Not Enough
-
-Minimum spanning tree is an efficient way to connect all locations in a network with the minimum total cost. However, such a network is vulnerable to failures, e.g., the network can be disconnected when a single node fails, in particular those close to the center of the network. This is why our power grid has a lot of redundancies beyond the minimum spanning tree, for the sake of resilience against failures.
-
-
-::: {#fig-us-powe-grid}
-
-![](https://www.geni.org/globalenergy/library/national_energy_grid/united-states-of-america/graphics/UnitedStatesPowerGrid.jpg){width=50%}
-
-This is the power grid of the United States.
+The high-voltage grid of the United States. Trace any two regions and you will find several independent paths between them --- closed loops that a minimum spanning tree would never contain. Every one of those loops is money spent on redundancy rather than reach. (Map: Global Energy Network Institute, geni.org.)
 
 :::
 
-### Measuring Network Damage
+### One Node Down: Sometimes Nothing, Sometimes Everything
 
-Not every failure is equal. Some failures are more damaging than others. For example, removing somee nodes in a grid network can be catastrophic, while removing other nodes can be more tolerable.
+Not every failure is equal. Some failures are more damaging than others: removing some nodes is catastrophic, while removing others is barely noticed.
 
-While there can be many metrics to quantify network damage, we will focus on a purely topological metric: the fraction of nodes remaining in the largest connected component after removal.
+Many measures of damage are possible. We will use a purely topological one --- how much of the network is still holding together:
 
 $$
-\text{Connectivity} = \frac{\text{Size of largest component after removal}}{\text{Original network size}}
+\text{Connectivity} = \frac{\text{Size of largest connected component after removal}}{N}
 $$
 
-![](../figs/single-node-failure.jpg){#fig-single-node-failure fig-alt="The impact of removing a single node varies based on which node is removed."}
+where $N$ is the number of nodes in the *original* network. Note what the numerator counts: not survivors, but survivors still reachable from one another. A node that lives through the attack but ends up cut off from everyone contributes nothing.
 
-The **robustness profile** plots connectivity against the fraction of nodes removed, revealing how networks fragment. Crucially, the shape of this profile depends entirely on the **order** in which nodes are removed - random removal creates one pattern, while strategic targeting creates dramatically different patterns.
+![Five towns; each panel removes one. Four of the five removals leave the rest intact --- four towns remain and all four are still linked, so connectivity is $4/5 = 0.8$. The top-right panel removes the best-connected town, and now one survivor is stranded with no cable at all: only three towns are still linked to each other, so connectivity is $3/5 = 0.6$. Same number of removals, different node, different damage.](../figs/single-node-failure.jpg){#fig-single-node-failure width=100% fig-alt="Six panels showing a five-node network and the effect of removing each node in turn, with the resulting connectivity printed above each panel."}
 
-![](../figs/robustness-profile.jpg){#fig-multiple-node-failure fig-alt="Robustness profile of a network for a sequential failure of nodes."}
+Try it yourself: pull nodes out of a network by hand, at random or hub-first, in the [network robustness demo](../assets/vis/network-robustness.html).
 
-To compare networks with a single metric, we use the **R-index** - the area under this curve:
+### The Whole Story in One Curve, and One Number
+
+Removing one node tells you one thing. Keep going --- remove a second, a third, all the way down --- and record the connectivity after every removal. The result is the **robustness profile**: connectivity plotted against the fraction of nodes removed.
+
+![The robustness profile of a five-town network, with the surviving network drawn above each point. Read the curve off the panels: five towns linked (connectivity 1), then one removal leaves three still linked (0.6), then two removals leave two still linked (0.4). Once no two towns are still joined by a cable, the curve sits on the floor. The area under the curve is the R-index.](../figs/robustness-profile.jpg){#fig-robustness-profile width=100% fig-alt="A curve of connectivity against the fraction of nodes removed, decreasing from 1 to 0, with the surviving network drawn at each step."}
+
+<!-- TODO(anim): Robustness profile builder. One network, a removal slider, and
+     the profile curve drawing itself point by point as the slider advances,
+     with the area under the curve shading in so the R-index is visibly an area.
+     Nodes still in the largest component filled, cut-off survivors hollow.
+     A toggle switches the removal order between random and hub-first so the
+     two curves can be laid over each other. -->
+
+To compare whole networks with a single number, we take the area under that curve --- the **R-index**:
 
 $$
 R = \frac{1}{N} \sum_{k=1}^{N-1} y_k
 $$
 
-The robustness index is a measure of how robust a network is to under a sequential failure of nodes. The higher the R-index, the more robust the network is.
+where $y_k$ is the connectivity measured after $k$ nodes have been removed, and $N$ is the size of the original network. The higher the R-index, the longer the network kept working as it was dismantled.
 
-Networks can exhibit different robustness profiles under different attack strategies. One form of an attack is a **random failure**, where nodes are removed randomly. Another form of an attack is a **targeted attack**, where nodes are removed strategically.
+It is worth knowing the scale before you compute one. The best a network can possibly do is lose exactly one node's worth of connectivity per removal, which traces a straight line from $1$ down to $0$; averaging that line gives $R \approx 0.5$. A network that shatters on the first removal gives $R \approx 0$. So $R = 0.35$ is not "35% robust" --- it is seven-tenths of the way to the best any network could do.
 
-Random failures are like earthquakes or equipment malfunctions; they strike unpredictably. In power grids, generators might fail due to technical problems. In computer networks, servers might crash randomly.
+### Random Failure or Targeted Attack?
 
-Even if a network survives random failures beautifully, it might crumble under **targeted attacks**. Adversaries strategically choose which nodes to attack for maximum damage. The most intuitive strategy targets **high-degree nodes** (hubs) first, i.e., like targeting the busiest airports to disrupt air travel.
+The shape of the profile depends entirely on the **order** in which nodes are removed, and there are two orders worth distinguishing.
 
-#### Fixed order or recomputed order?
+**Random failure** removes nodes with no regard for what they do. This is earthquakes, storms, and equipment wearing out: in a power grid, a generator fails because a bearing seized; on the Internet, a server crashes because a disk died. Nothing chose it.
+
+**Targeted attack** removes nodes chosen for maximum damage. An adversary who can see the network structure will go after the **hubs** --- the nodes with the most connections --- the way you would ground the busiest airports to paralyse air travel. A network can survive random failure beautifully and still fall apart under a targeted attack, and the rest of this module is about why.
+
+#### Fixed Order or Recomputed Order?
 
 There is a subtlety hiding in "attack the hubs first" that is easy to miss and matters a great deal in practice: *when* do you decide the order?
 
@@ -132,155 +134,140 @@ There is a subtlety hiding in "attack the hubs first" that is easy to miss and m
 
 These differ because removing a hub changes its neighbors' degrees. A node that looked unimportant initially can become the most connected node left once the hubs around it are gone; a fixed ranking never notices. Adaptive attacks are consistently more destructive than fixed ones for the same number of removals, so an adaptive strategy gives the more honest estimate of worst-case fragility.
 
-The same choice applies to any attack criterion, not just degree — you can attack by betweenness (Module 6) and recompute it after every removal. That is more damaging still, and far more expensive to compute, which is the usual trade-off: better targeting costs the attacker more information and more computation.
+The same choice applies to any attack criterion, not just degree --- you can attack by betweenness (Module 6) and recompute it after every removal. That is more damaging still, and far more expensive to compute, which is the usual trade-off: better targeting costs the attacker more information and more computation.
 
-::: {.column-margin}
-The asymmetry between random failures and targeted attacks is one of the most counterintuitive discoveries in network science. A network that seems robust can have hidden vulnerabilities that smart adversaries can exploit.
-:::
+## Attack Is Percolation Run Backwards
 
-## Theoretical Framework for Network Robustness
+To understand these curves mathematically, we borrow a piece of physics. **Percolation theory** was invented to describe how a liquid seeps through a porous rock, and it asks: as more and more of the material is opened up at random, when does a path suddenly appear all the way through?
 
-To understand these patterns mathematically, we can view network attacks as the **reverse process of percolation**. **Percolation theory** studies phase transitions in connectivity by asking: as we randomly add nodes to a grid, when does a giant connected component emerge? Network robustness asks the opposite: as we remove nodes, when does the giant component disappear?
+That is our question with the sign flipped:
 
-::: {.column-margin}
-Percolation theory originated in physics to understand how liquids flow through porous materials. The same mathematics explains how networks fragment under node removal - a beautiful example of how physics concepts illuminate network behavior.
-:::
+- Percolation asks *"starting from isolation, how much must we connect before one giant component appears?"* --- connectivity increasing from $p = 0$ to $p = 1$.
+- Robustness asks *"starting from a working network, how much must we remove before the giant component disappears?"* --- connectivity decreasing from $p = 1$ to $p = 0$.
+
+These are the same process traversed in opposite directions along the same parameter, so every result about one is a result about the other. A **giant component** here means a single connected component that holds a finite fraction of all the nodes --- the difference between a grid and a scatter of neighbourhood islands.
+
+### Nothing, Nothing, Then Everything at Once
+
+Percolation is easiest to *see* on a square grid, so picture one for a moment: a large sheet of squares, each of which independently becomes a puddle with probability $p$. Neighbouring puddles merge. At small $p$ you get isolated ponds. Raise $p$ a little and you get slightly bigger ponds. Nothing, nothing, nothing --- and then, over a very narrow range of $p$, the ponds join up and one puddle spans the entire sheet. That sudden change is a **phase transition**, and the value of $p$ where it happens is the **critical probability** $p_c$.
+
+Two things about that sentence are worth pinning down.
+
+First, *which* squares filled first does not matter, only how many. Fill them in any order you like and the picture at a given $p$ is statistically the same, because each square was chosen with no regard for its surroundings. This is exactly why random failure is easy to analyse and targeted attack is not: an attacker chooses *which*, and then order is the whole story.
+
+Second, $p_c$ belongs to the object you are studying. For this particular square grid it sits at $p_c \approx 0.593$; a triangular grid has a different one, and a network with hubs has a different one again. The two sections below work out the equivalent threshold for *networks*, and the answer will not look anything like $0.593$ --- do not carry that number across.
 
 <!-- TODO(anim): Percolation grid dial. A 50x50 lattice where each cell is
      filled with probability p, driven by a p slider (0 to 1). Cells belonging
      to the largest connected component are drawn in the accent colour, all
      other filled cells in a muted tone, empty cells white. A readout reports
      the size of the largest component as a fraction of the grid, so the reader
-     watches the giant component appear as p crosses p_c. -->
+     watches the giant component appear as p crosses p_c = 0.593. Pair it with
+     the phase-transition curve: fraction of the grid in the largest component
+     against p, a marker riding the curve at the current p, and a dashed
+     vertical line at p_c. -->
+
+### One Number Decides: The Molloy-Reed Criterion
+
+For networks, the question "is there a giant component?" has a startlingly compact answer. Let $\langle k \rangle$ be the average degree of the network and $\langle k^2 \rangle$ the average of the *squared* degrees, and form their ratio
+
+$$
+\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle}.
+$$
+
+The **Molloy-Reed criterion** (Molloy & Reed 1995) says that a randomly wired network has a giant component exactly when
+
+$$
+\kappa > 2 .
+$$
 
 ::: {.column-margin}
-**Percolation vs. Robustness: Two Sides of the Same Coin**
+Writing $\langle k^2 \rangle = \text{Var}(k) + \langle k \rangle^2$ turns the ratio into
 
-Percolation theory asks: *"Starting from isolation, how many nodes must we connect to form a giant component?"* - increasing connectivity from $p = 0$ to $p = 1$.
+$$\kappa = \langle k \rangle + \frac{\text{Var}(k)}{\langle k \rangle},$$
 
-Robustness analysis asks: *"Starting from full connectivity, how many nodes must we remove to fragment the network?"* - decreasing connectivity from $p = 1$ to $p = 0$.
-
-These are mathematically equivalent processes, just viewed in opposite directions along the same connectivity parameter.
+which is why $\kappa$ is read as a measure of **degree heterogeneity**: it is the average degree, plus a term that grows with how unequal the degrees are.
 :::
 
-### The Phase Transition
+Where does a threshold of exactly 2 come from? Follow a cable out of a town and arrive somewhere. The average degree of the town you land on is not $\langle k \rangle$ but $\kappa$, because a town with many cables is many times more likely to be at the far end of the one you followed. One of its cables is the one you arrived on, so on average it offers $\kappa - 1$ *new* ways onward. If $\kappa - 1 < 1$ the exploration shrinks at every step and dies; if $\kappa - 1 > 1$ it grows at every step and swallows a finite fraction of the network. The threshold is $\kappa - 1 = 1$. [The appendix](04-appendix.qmd) does this argument properly.
 
-Imagine a grid where each square randomly becomes a "puddle" with probability $p$. As $p$ increases, something dramatic happens - suddenly, a giant puddle spanning the entire grid appears! This **phase transition** occurs at a critical probability $p_c$. Crucially, the exact timing doesn't matter; only the fraction of nodes present or removed determines connectivity.
-
-<!-- TODO(anim): Phase-transition curve, sharing the p slider with the
-     percolation grid above. Plots the fraction of the grid in the largest
-     component against p, with a marker riding the curve at the current p and a
-     dashed vertical line at the 2D-lattice critical point p_c = 0.593. Label
-     the two sides "disconnected phase" and "connected phase". -->
-
-### The Molloy-Reed Criterion
-
-For networks with arbitrary degree distributions, the **Molloy-Reed criterion** determines whether a **giant component** exists - that is, whether the network contains a single large connected component that includes most of the nodes:
+The same idea gives the **critical fraction** $f_c$: the fraction of nodes that must be removed *at random* before the giant component dies. Removing a fraction $f$ leaves each onward cable in place with probability $1-f$, so the branching factor falls to $(1-f)(\kappa - 1)$, and the network dies when that reaches 1:
 
 $$
-\kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2
+f_c = 1 - \frac{1}{\kappa - 1}.
 $$
 
-where $\langle k \rangle$ is the average degree and $\langle k^2 \rangle$ is the average of squared degrees. The ratio $\kappa$ measures **degree heterogeneity** - networks with hubs have high $\kappa$, while degree homogeneous networks have low $\kappa$. When $\kappa > 2$, a giant component forms that dominates the network connectivity. See the Appendix for the proof of the Molloy-Reed criterion.
-
-The Molloy-Reed criterion is a powerful tool to predict the existence of a giant component in a network and allows us to find the critical fraction of nodes that must be **removed** to break the network. This critial fraction depends on the strategy of the attack, along with the degree distribution. For simplicity, let us restrict ourselves into the random failures. For the random failure case, the critical fraction is given by:
+A worked case. Take a randomly wired network in which towns have on average 4 cables, with the degrees scattered the way random wiring scatters them (a Poisson distribution, whose variance equals its mean, so $\text{Var}(k) = 4$ too). Then $\kappa = 4 + 4/4 = 5$, and
 
 $$
-f_c = 1 - \frac{1}{\kappa - 1}
+f_c = 1 - \frac{1}{5 - 1} = 0.75 .
 $$
 
-The value of $\kappa$ depends on the degree distribution, and below, we showcase two examples of degree distributions.
+Three-quarters of the towns have to go before the grid stops being a grid. Denser wiring pushes $f_c$ up --- for Poisson degrees the formula collapses to $f_c = 1 - 1/\langle k \rangle$ --- but it never reaches 1: a homogeneous network always falls apart at some definite fraction.
 
-#### Degree homogeneous network
+### Hubs Inflate the One Number That Matters
 
-In case of a degree homogeneous network like a random network considered in the exercise above, the critical fraction is given by:
+Now hold the budget fixed and change only how the cables are distributed. Here are three ways to wire 100 towns with 200 cables. All three have the same average degree, $\langle k \rangle = 4$; they differ only in the spread.
 
-$$
-f_c = 1 - \frac{1}{\langle k \rangle}
-$$
+| Wiring of 100 towns, 200 cables | degrees | $\kappa$ | $f_c$ (random failure) |
+|---|---|---|---|
+| every town identical | all 4 | 4 | 0.67 |
+| random wiring (Poisson) | mean 4, variance 4 | 5 | 0.75 |
+| ten hubs | 90 towns with 2, 10 hubs with 22 | 13 | 0.92 |
 
-given that a Poisson degree distribution with mean $\langle k \rangle$ has $\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$, and thus $\kappa = \langle k \rangle + 1$, which makes $\kappa - 1 = \langle k \rangle$. This suggests that the threshold is determined by the average degree $\langle k \rangle$. A large $\langle k \rangle$ results in a larger $f_c$, meaning that the network is more robust against random failures.
+Read the last row off the definition: $\langle k^2 \rangle = (90 \times 2^2 + 10 \times 22^2)/100 = 52$, so $\kappa = 52/4 = 13$ and $f_c = 1 - 1/12 \approx 0.92$. Same money, same number of cables, and the hub-heavy grid survives random failure far longer --- you have to knock out 92 towns out of 100 instead of 67. (These thresholds are statements about large randomly wired networks; on exactly 100 towns read them as the trend, not as a guarantee.)
 
+This is not a quirk of the numbers chosen. $\kappa$ grows with the *variance* of the degrees, and real networks --- airline routes, the Internet, who-cites-whom --- have enormous degree variance: a handful of nodes with hundreds of connections while the typical node has two or three. Module 4 measures that spread properly. For networks with that much spread, $\kappa$ can be so large that $f_c$ sits within a whisker of 1: essentially *every* node has to fail before the network stops working. Random breakdown, in such a network, is almost harmless.
 
-#### Degree heterogeneous network
+[The appendix](04-appendix.qmd) turns "enormous degree variance" into a formula and works out $f_c$ exactly.
 
-Most real-world networks are degree heterogeneous, i.e., the degree distribution $P(k) \sim k^{-\gamma}$ follows a power law (called *scale-free* network).
-The power-law degree distribution has infinite second moment, i.e., $\langle k^2 \rangle = \infty$ and thus $f_c = 1.0$, which means that all nodes must be removed to break the network into disconnected components.
-This is the case where the number of nodes is infinite (i.e., so that a node has a very large degree for the degree distribution to be a valid power law). When restricting the maximum degree to be finite, the critical fraction is given by:
+## Robust Yet Fragile: The Hubs Are the Achilles' Heel
 
-$$
-f_c =
-\begin{cases}
-1 - \dfrac{1}{\frac{\gamma-2}{3-\gamma} k_{\text{min}} ^{\gamma-2} k_{\text{max}}^{3-\gamma} -1} & \text{if } 2 < \gamma < 3 \\
-1 - \dfrac{1}{\frac{\gamma-2}{\gamma-3} k_{\text{min}} - 1} & \text{if } \gamma > 3 \\
-\end{cases}
-$$
+The hub-heavy grid in the table above shrugs off random failure. Now let an adversary choose.
 
-where $k_{\text{min}}$ and $k_{\text{max}}$ are the minimum and maximum degree, respectively.
-The variable $\gamma$ is the exponent of the power law degree distribution, controlling the degree heterogeneity, where a lower $\gamma$ results in a more degree heterogeneous network.
+Delete the ten hubs. That is 10 towns out of 100 --- one node in ten. Those ten hubs account for $10 \times 22 = 220$ of the 400 cable-ends in the network. Even in the worst case for the attacker, where all ten hubs happen to be cabled to one another (at most $\binom{10}{2} = 45$ cables), deleting them still takes at least $220 - 45 = 175$ of the 200 cables with them. Ninety towns are left holding no more than 25 cables between them. The grid is dust.
 
-- For regime $2 < \gamma < 3$, the critical threshold $f_c$ is determined by the extreme values of the degree distribution, $k_{\text{min}}$ and $k_{\text{max}}$.
-And $f_c \rightarrow 1$ when the maximum degree $k_{\text{max}} \in [k_{\text{min}}, N-1]$ increases.
-Notably, in this regime, the maximum degree $k_{\text{max}}$ increases as the network size $N$ increases, and this makes $f_c \rightarrow 1$.
+Compare the same attack on the row above it, where every town has exactly 4 cables. Deleting any 10 towns removes at most 40 of the 200 cables. Nothing dramatic happens; you have to keep going.
 
-- For regime $\gamma > 3$, the critical threshold $f_c$ is influenced by the minimum degree $k_{\text{min}}$. In contrast to $k_{\text{max}}$, $k_{\text{min}}$ remains constant as the network size $N$ grows. Consequently, the network disintegrates when a finite fraction of its nodes are removed.
+That is the **robust-yet-fragile** paradox, and it is the same structural fact read twice. The hubs make $\langle k^2 \rangle$ huge, which is what protects the network against a blind attacker who is unlikely to hit one --- and they concentrate the connectivity into a handful of nodes, which is what dooms it against an attacker who can see. Robustness is not a property of a network; it is a property of a network *and a threat*.
 
-<!-- TODO(anim): Critical fraction f_c against maximum degree k_max, for
-     gamma = 2.1, 2.5, 2.9 with k_min = 1, using the piecewise formula above.
-     The point to make visible: for 2 < gamma < 3 the curves climb towards
-     f_c = 1 as k_max grows, so a larger heterogeneous network is harder and
-     harder to break by random failure. -->
+The numbers get more extreme, not less, as networks get bigger and more hub-heavy. [The appendix](04-appendix.qmd) works out the attack threshold for the heavy-tailed degree distributions that Module 4 will measure on real data (Cohen, Erez, ben-Avraham & Havlin 2001). For one standard case worked there in full, the answer is $f_c \approx 0.056$: delete the best-connected one node in eighteen and the rest is rubble.
 
-### Robustness Under Attack
+This is why the operators of real infrastructure spend their protection budget so unevenly --- extra transformers and armed fences at the major substations, hot-standby routers at the large Internet exchange points, spare landing slots at the big hub airports --- while a rural distribution line gets none of it. It is also why the same reasoning turns up in epidemiology: if you can only vaccinate a few people, vaccinate the hubs. Module 4 shows you how to find them without ever seeing the whole network.
 
-While scale-free networks show remarkable robustness against random failures, they exhibit a fundamental vulnerability to targeted attacks that deliberately target high-degree nodes (hubs). This asymmetry reveals the "Achilles' heel" property of complex networks, where the same structural features that provide robustness against random failures create critical vulnerabilities to strategic attacks.
+## What This Buys You: Redundancy Costs Money, Hubs Cost Risk
 
-Rather than removing nodes randomly, an adversary with knowledge of the network structure can systematically remove the highest-degree nodes first, followed by the next highest-degree nodes, and so on. Under this targeted hub removal strategy, scale-free networks fragment rapidly and dramatically. The critical threshold for attacks, $f_c^{\text{attack}}$, is dramatically lower than for random failures. While random failures require $f_c^{\text{random}} \approx 1$ (nearly all nodes must be removed), targeted attacks need only $f_c^{\text{attack}} \ll 1$ (a small fraction of hubs) to fragment the network.
+Borůvka's tree is one end of a spectrum: minimum cost, zero slack. What the rest of this module adds is a way to price the other end.
 
-To understand how networks fragment under targeted attacks, we must consider two key effects that occur when the highest-degree nodes are systematically removed. First, the removal of hub nodes changes the maximum degree of the remaining network from $k_{\max}$ to a new lower value $k'_{\max}$. Second, since these removed hubs had many connections, their elimination also removes many links from the network, effectively changing the degree distribution of the surviving nodes.
+1. **Redundancy is the thing you are actually buying.** Every cable beyond the $N-1$ in the spanning tree exists to give some pair of towns a second route. Adding cables raises $\langle k \rangle$, which raises $\kappa$, which raises $f_c$ --- you can now say how much robustness a given cable bought.
+2. **Concentrating those cables is efficient and dangerous.** Hub-heavy wiring buys the highest $f_c$ per cable against random failure and the lowest threshold against a deliberate attacker. Which one you want depends on what you expect to face.
+3. **If you must have hubs, protect them explicitly.** The paradox says the vulnerability is localized in a small number of identifiable nodes. That is bad news for an unprepared operator and good news for a prepared one: the list of things to defend is short.
 
-The mathematical analysis of this process relies on mapping the attack problem back to the random failure framework through careful accounting of these structural changes. When we remove an $f$ fraction of the highest-degree nodes in a scale-free network, the new maximum degree becomes $k'_{\max} = k_{\min} f^{1/(1-\gamma)}$, where the power-law exponent $\gamma$ determines how rapidly the degree sequence declines.
+## What You Can Now Do
 
-For scale-free networks with degree exponent $\gamma$, the critical attack threshold $f_c$ satisfies:
+- Build the cheapest network that connects everything, by hand, with Kruskal's or Prim's algorithm --- and say why greedy is enough.
+- Measure how much of a network survives an attack, draw its robustness profile, and reduce that profile to a single R-index.
+- Compute $\kappa$ from a degree sequence and predict the critical fraction $f_c$ before running a single simulation.
+- Say precisely why a hub-heavy network is simultaneously the most robust and the most fragile network on the table.
 
-$$
-f_c^{\frac{2-\gamma}{1-\gamma}} = \frac{2 + 2^{-\gamma}}{3-\gamma} k_{\min} \left(f_c^{\frac{3-\gamma}{1-\gamma}} - 1\right)
-$$
-
-The fractional exponents $(2-\gamma)/(1-\gamma)$ and $(3-\gamma)/(1-\gamma)$ arise from the power-law degree distribution and determine how quickly the network fragments as hubs are removed. For networks with $\gamma < 3$ (highly heterogeneous degree distributions), these exponents are negative, leading to extremely small values of $f_c$, i.e., meaning just a tiny fraction of hub removal can destroy network connectivity.
-
-This vulnerability has profound real-world implications across multiple domains. Power grids invest heavily in protecting major substations and transmission hubs because their failure could cascade throughout the system. Internet infrastructure includes hub redundancy and protection protocols to maintain connectivity when major routing nodes are compromised. Transportation networks maintain backup routes and alternative pathways when major airports or train stations fail. Even biological systems have evolved protective mechanisms for critical proteins that serve as hubs in cellular networks.
-
-The robustness paradox demonstrates that no single network structure can be optimal against all types of failures. There's always a fundamental trade-off between efficiency, which naturally favors hub-based architectures for optimal resource distribution, and security, which requires redundancy and distributed connectivity to prevent catastrophic failures from targeted attacks.
-
-## Design Principles for Robust Networks
-
-How do we design networks that resist both random failures and targeted attacks? Key principles include:
-
-1. **Balanced Degree Distribution**: Avoid both extreme homogeneity and extreme hub concentration
-2. **Multiple Redundant Pathways**: Ensure removing any single node doesn't isolate large portions
-3. **Strategic Hub Protection**: In hub-based networks, invest heavily in protecting critical nodes
-4. **Hierarchical Design**: Combine local clusters with hub connections and redundant backbones
-5. **Adaptive Responses**: Design systems that can reconfigure when attacks are detected
-
-These strategies reflect lessons learned from our historical power grid challenge: moving beyond the minimum spanning tree to create networks that balance efficiency with resilience.
-
-
+Next: [run the attacks yourself](02-coding.qmd) on a real network, then [do the pen-and-paper design exercise](03-exercises.qmd), where you build a nine-station grid, break it, and buy back its resilience one cable at a time.
 
 ## References
 
 1. **Borůvka, O.** (1926). O jistém problému minimálním [About a certain minimal problem]. *Práce Moravské Přírodovědecké Společnosti*, 3, 37-58. [Original work on minimum spanning trees]
 
-2. **Molloy, M., & Reed, B.** (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180. [Molloy-Reed criterion]
+2. **Molloy, M., & Reed, B.** (1995). A critical point for random graphs with a given degree sequence. *Random Structures & Algorithms*, 6(2-3), 161-180. [The $\kappa > 2$ criterion]
 
-3. **Albert, R., Jeong, H., & Barabási, A. L.** (2000). Error and attack tolerance of complex networks. *Nature*, 406(6794), 378-382. [Seminal paper on network robustness and the "Achilles' heel" property]
+3. **Albert, R., Jeong, H., & Barabási, A. L.** (2000). Error and attack tolerance of complex networks. *Nature*, 406(6794), 378-382. [The robust-yet-fragile paradox, measured]
 
-4. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629. [Mathematical framework for random failures]
+4. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2000). Resilience of the Internet to random breakdowns. *Physical Review Letters*, 85(21), 4626-4629. [$f_c$ for random failure]
 
-5. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2001). Breakdown of the Internet under intentional attack. *Physical Review Letters*, 86(16), 3682-3685. [Mathematical analysis of targeted attacks]
+5. **Cohen, R., Erez, K., ben-Avraham, D., & Havlin, S.** (2001). Breakdown of the Internet under intentional attack. *Physical Review Letters*, 86(16), 3682-3685. [$f_c$ for targeted attack; the equation solved in the appendix]
 
-6. **Callaway, D. S., Newman, M. E., Strogatz, S. H., & Watts, D. J.** (2000). Network robustness and fragility: Percolation on random graphs. *Physical Review Letters*, 85(25), 5468-5471. [Percolation theory approach to network robustness]
+6. **Callaway, D. S., Newman, M. E., Strogatz, S. H., & Watts, D. J.** (2000). Network robustness and fragility: Percolation on random graphs. *Physical Review Letters*, 85(25), 5468-5471. [Percolation treatment of both cases]
 
-7. **Cohen, R., & Havlin, S.** (2010). *Complex Networks: Structure, Robustness and Function*. Cambridge University Press. [Comprehensive treatment of network robustness theory]
+7. **Schneider, C. M., Moreira, A. A., Andrade, J. S., Havlin, S., & Herrmann, H. J.** (2011). Mitigation of malicious attacks on networks. *PNAS*, 108(10), 3838-3841. [The R-index]
 
-8. **Newman, M. E. J.** (2018). *Networks*. Oxford University Press. [Modern textbook covering network robustness and percolation]
+8. **Cohen, R., & Havlin, S.** (2010). *Complex Networks: Structure, Robustness and Function*. Cambridge University Press.
+
+9. **Newman, M. E. J.** (2018). *Networks* (2nd ed.). Oxford University Press. [Chapter 11 covers percolation and robustness]

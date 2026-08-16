@@ -1,0 +1,246 @@
+---
+title: "Appendix: The Algebra Behind the Rankings"
+---
+
+Everything on this page is optional for a first reading. The main text keeps the
+intuition and the results; here are the derivations, stated for a reader who is
+comfortable with matrices and eigenvectors.
+
+## Perron-Frobenius, stated precisely
+
+Eigenvector centrality is well defined only because of the following theorem.
+
+> Let $\mathbf{A}$ be a non-negative matrix ($A_{ij} \geq 0$) that is
+> **irreducible** — for an undirected network this means exactly that the
+> network is connected. Then the largest eigenvalue $\lambda_1$ of $\mathbf{A}$
+> is real and positive, it is a simple root of the characteristic polynomial,
+> and its eigenvector can be chosen with all entries strictly positive
+> ($v_i > 0$ for every $i$). No other eigenvector of $\mathbf{A}$ has all-positive
+> entries.
+
+Two consequences matter for us. First, "the eigenvector with the largest
+eigenvalue" picks out one vector, not a family, so eigenvector centrality is
+unambiguous. Second, that vector is the only eigenvector that can be read as an
+importance score, since every other one has both positive and negative entries.
+
+If the network is disconnected, the theorem does not apply and eigenvector
+centrality is computed per component. If the network is connected but
+**bipartite**, $-\lambda_1$ is also an eigenvalue: $\lambda_1$ remains simple and
+its eigenvector remains positive, but power iteration will oscillate instead of
+settling, and needs averaging over consecutive iterates.
+
+## Why power iteration converges
+
+Power iteration starts from any positive vector and repeats
+
+$$
+{\bf c} \leftarrow \frac{{\bf A}{\bf c}}{\|{\bf A}{\bf c}\|}.
+$$
+
+Write the starting vector in the eigenvector basis, ${\bf c}^{(0)} = \sum_i a_i {\bf v}_i$. Applying ${\bf A}$ $t$ times gives
+
+$$
+{\bf A}^t {\bf c}^{(0)} = \sum_i a_i \lambda_i^t {\bf v}_i = \lambda_1^t \left( a_1 {\bf v}_1 + \sum_{i \geq 2} a_i \left(\frac{\lambda_i}{\lambda_1}\right)^t {\bf v}_i \right).
+$$
+
+Since $|\lambda_i / \lambda_1| < 1$ for every $i \geq 2$, every term except the
+first decays geometrically. After enough iterations only ${\bf v}_1$ survives,
+which is why the normalized vector settles. The convergence rate is governed by
+the ratio $|\lambda_2|/|\lambda_1|$ — the closer those two eigenvalues, the
+slower it converges.
+
+For the five-node network of the main text the eigenvalues are
+$2.21, 1, -0.54, -1, -1.68$, so $|\lambda_2|/|\lambda_1| = 1.68/2.21 = 0.76$ and
+each round cuts the error by about a quarter. That is why the numbers in the
+table were still visibly moving after three rounds.
+
+## Katz centrality as a matrix inverse
+
+Katz centrality is defined by $c_i = \beta + \alpha \sum_j A_{ij} c_j$, or in vector form
+
+$$
+\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}
+$$
+
+where $\mathbf{1}$ is the vector of ones. Collecting the $\mathbf{c}$ terms,
+
+$$
+\left( \mathbf{I} - \alpha \mathbf{A} \right) \mathbf{c} = \beta \mathbf{1},
+\qquad\text{so}\qquad
+\mathbf{c} = \beta \left( \mathbf{I} - \alpha \mathbf{A} \right)^{-1} \mathbf{1}
+$$
+
+where $\mathbf{I}$ is the identity matrix. This closed form is what a library
+actually computes, and it is also where the walk-counting interpretation comes
+from. For a scalar, $1/(1-x) = 1 + x + x^2 + \cdots$ whenever $|x| < 1$; the same
+identity holds for matrices when the series converges:
+
+$$
+\left( \mathbf{I} - \alpha \mathbf{A} \right)^{-1} = \mathbf{I} + \alpha \mathbf{A} + \alpha^2 \mathbf{A}^2 + \alpha^3 \mathbf{A}^3 + \cdots
+$$
+
+Recall from Module 1 that $\left(\mathbf{A}^t\right)_{ij}$ is the number of walks of length $t$ from $i$ to $j$. Multiplying by $\beta \mathbf{1}$ therefore gives
+
+$$
+c_i = \beta \sum_{t=0}^{\infty} \alpha^t \left(\text{number of walks of length } t \text{ ending at } i\right),
+$$
+
+which is the statement quoted in the main text.
+
+**The convergence condition.** A geometric series in a matrix converges exactly
+when the spectral radius of $\alpha \mathbf{A}$ is below 1, i.e. when
+$\alpha < 1 / \lambda_{\max}(\mathbf{A})$. Above that value the series diverges,
+$\mathbf{I} - \alpha \mathbf{A}$ has a non-positive eigenvalue, and the "solution"
+returned by a linear solver contains negative entries that mean nothing. As
+$\alpha \rightarrow 1/\lambda_{\max}$ the longest walks dominate the sum and Katz
+centrality converges to eigenvector centrality.
+
+## HITS: two centralities that define each other
+
+**HITS** (Hyperlink-Induced Topic Search) extends eigenvector centrality to
+directed networks by splitting importance into two: *hub* and *authority*. A node
+is an important hub if it points to many important authorities; a node is an
+important authority if it is pointed to by many important hubs.
+
+::: {.callout-note title="Notation: edge direction"}
+In a directed network we write $A_{ij} = 1$ when there is an edge **from $i$ to $j$**, and $A_{ij} = 0$ otherwise. Consequently:
+
+- $\sum_j A_{ij} (\cdot)_j$ sums over the nodes that $i$ **points to**. This is $i$'s out-degree, $d^{\text{out}}_i = \sum_j A_{ij}$.
+- $\sum_j A_{ji} (\cdot)_j$ sums over the nodes that **point to** $i$. This is $i$'s in-degree, $d^{\text{in}}_i = \sum_j A_{ji}$.
+
+Getting this convention right is the whole game in HITS and PageRank.
+:::
+
+Let $x_i$ and $y_i$ be the hub and authority scores of node $i$. Following the
+eigenvector-centrality convention — the rescaling constant sits on the left, so
+it is an eigenvalue — node $i$ is a good hub when the nodes **it points to** are
+good authorities, and a good authority when the nodes **pointing to it** are good
+hubs:
+
+$$
+\underbrace{\lambda_x x_i = \sum_j A_{ij} y_j}_{\text{hub: sum over what } i \text{ points to}}, \quad \underbrace{\lambda_y y_i = \sum_j A_{ji} x_j}_{\text{authority: sum over what points to } i}
+$$
+
+Or equivalently,
+
+$$
+\lambda_x \mathbf{x} = \mathbf{A} \mathbf{y}, \quad \lambda_y \mathbf{y} = \mathbf{A}^\top \mathbf{x}
+$$
+
+Substituting each into the other,
+
+$$
+\lambda_x \lambda_y \mathbf{x} = \mathbf{A} \mathbf{A}^\top \mathbf{x}, \quad \lambda_x \lambda_y \mathbf{y} = \mathbf{A}^\top \mathbf{A} \mathbf{y}
+$$
+
+Again, we obtain eigenvector equations. The hub centrality $\mathbf{x}$ is the
+principal eigenvector of $\mathbf{A} \mathbf{A}^\top$, and the authority
+centrality $\mathbf{y}$ is the principal eigenvector of
+$\mathbf{A}^\top \mathbf{A}$, both with eigenvalue $\lambda_x \lambda_y$.
+
+A useful sanity check on those two matrices: $(\mathbf{A}\mathbf{A}^\top)_{ij}$
+counts how many nodes **both** $i$ and $j$ point to, so two hubs look similar
+when they cite the same sources. $(\mathbf{A}^\top\mathbf{A})_{ij}$ counts how
+many nodes point to **both** $i$ and $j$, so two authorities look similar when
+they are cited together.
+
+::: {.callout collapse="true" title="Exercise: on an undirected network, is HITS the same as eigenvector centrality?"}
+Yes. If the graph is undirected then $\mathbf{A}^\top = \mathbf{A}$, the hub and
+authority equations become identical, and both reduce to the principal
+eigenvector of $\mathbf{A}^\top \mathbf{A}$. Start from the eigenvector equation
+for $\mathbf{A}$,
+
+$$
+\lambda \mathbf{c} = \mathbf{A} \mathbf{c},
+$$
+
+and multiply both sides by $\mathbf{A}^\top$:
+
+$$
+\begin{aligned}
+\lambda \mathbf{A}^\top \mathbf{c} &= \mathbf{A}^\top \mathbf{A} \mathbf{c} \\
+\iff \lambda \cdot \lambda \mathbf{c} &= \mathbf{A}^\top \mathbf{A} \mathbf{c}
+\end{aligned}
+$$
+
+using $\mathbf{A}^\top \mathbf{c} = \mathbf{A}\mathbf{c} = \lambda \mathbf{c}$.
+So the eigenvector of $\mathbf{A}^\top \mathbf{A}$ is the same as that of
+$\mathbf{A}$, with the eigenvalue squared. On an undirected network HITS returns
+eigenvector centrality.
+:::
+
+::: {.callout collapse="true" title="Exercise: normalize by degree and watch HITS collapse to degree centrality"}
+Stay on an undirected network and divide each score by the degree of the node it
+came from:
+
+$$
+x_i = \sum_j \frac{A_{ij}}{d_j} y_j, \qquad y_i = \sum_j \frac{A_{ji}}{d_j} x_j
+$$
+
+Substitute $y_j = d_j$ into the first equation:
+$x_i = \sum_j (A_{ij}/d_j) \, d_j = \sum_j A_{ij} = d_i$. Substitute $x_j = d_j$
+into the second and you get $y_i = d_i$ as well. So $\mathbf{x} = \mathbf{y} = \mathbf{d}$
+is an exact solution, and since $\mathbf{A}\mathbf{D}^{-1}$ is column-stochastic
+it is the leading one.
+
+One normalization turns a "sophisticated" recursive centrality into plain degree
+counting — the line between the two is thinner than it looks. The same
+degree-proportional vector reappears in Module 7 as the stationary distribution
+of a random walk.
+:::
+
+## Personalized PageRank
+
+**Personalized PageRank** contextualizes importance from the point of view of one
+node. Suppose a random walker starts at node $\ell$. It moves to a neighboring
+node just like in PageRank, but at every step, with probability $r$, it teleports
+back to $\ell$ rather than to a uniformly random node. Its long-run visiting
+probabilities solve
+
+$$
+c_i = \underbrace{(1-r) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{score arriving from neighbors}} + \underbrace{r \cdot (p_{\ell})_i}_{\text{teleport back to the start}}
+$$
+
+where $p_{\ell}$ is a one-hot vector, equal to 1 at position $\ell$ and 0
+elsewhere. The only change from PageRank is that the teleportation term sends all
+its mass to one node instead of spreading it over all $N$. It can be solved by
+power iteration exactly as PageRank is, or by solving the linear system directly.
+
+There is a second reading of the same quantity. Let $p_{\ell i}^{(k)}$ be the
+probability of being at node $i$ exactly $k$ steps after leaving $\ell$. Then
+
+$$
+c_i = \sum_{k=0}^{\infty} r (1-r)^k \, p_{\ell i}^{(k)}
+$$
+
+where $r(1-r)^k$ is the probability that the walker takes exactly $k$ steps
+before its next restart — a geometric distribution over walk length, not a
+probability about node $i$. Personalized PageRank is therefore a weighted average
+of "where am I after $k$ steps?" over all $k$, with long excursions weighted
+exponentially less. Nodes close to $\ell$ collect weight early and often, which
+is why the measure reads as proximity to $\ell$.
+
+## What each centrality costs to compute
+
+Practical choice is constrained by computation. Below, $N$ is the number of nodes
+and $M$ the number of edges, and $O(\cdot)$ states how the running time grows
+with them: $O(M)$ means "proportional to the number of edges".
+
+| Centrality             | Time complexity      | Notes                                                          |
+| ---------------------- | -------------------- | -------------------------------------------------------------- |
+| Degree                 | $O(M)$               | One pass over the edges. Essentially free.                      |
+| Closeness / Harmonic   | $O(NM)$              | One breadth-first search per node. Expensive, but parallel.     |
+| Betweenness            | $O(NM)$              | Brandes' algorithm, which accumulates path counts during those same searches. The practical bottleneck on large graphs. |
+| Eigenvector / PageRank | $O(M)$ per iteration | Power iteration; the number of iterations needed depends on $\lvert\lambda_2\rvert/\lvert\lambda_1\rvert$. |
+
+A **breadth-first search** (Module 1) explores a network one layer at a time from
+a starting node, and the layer at which it reaches a node is the shortest path
+length to that node. Closeness, harmonic and betweenness all need this from
+*every* node, which is where their $N$ factor comes from.
+
+The pattern is that shortest-path measures scale badly because they need
+all-pairs information, while walk-based measures scale well because they only
+ever need one matrix-vector product at a time. On a million-node network,
+PageRank is routine and exact betweenness is not — which is why approximate
+betweenness, computed by sampling source nodes instead of using all of them, is
+common practice.

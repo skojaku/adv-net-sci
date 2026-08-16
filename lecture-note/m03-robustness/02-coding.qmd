@@ -2,16 +2,16 @@
 title: "Hands-on: Breaking Networks on Purpose"
 ---
 
-The theory says scale-free networks shrug off random failure and collapse under targeted attack. Here you make that happen and measure it.
+The theory says hub-heavy networks shrug off random failure and collapse under targeted attack. Here you make that happen and measure it.
 
 ::: {.callout-note title="Where the code lives"}
 This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m03 >}})
-
-It runs in your browser — nothing to install, nothing to sign into. The first load takes a few seconds while Python itself is downloaded.
+**[Run this notebook]({{< var molab.m03 >}})** — it runs in your browser, with
+nothing to install and nothing to sign into. The first load takes a few seconds
+while Python itself is downloaded.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m03-robustness/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/coding.py).
@@ -21,13 +21,20 @@ Run it with `marimo edit notebooks/m03-robustness/coding.py`.
 ## What you will build
 
 1. Measure connectivity as the fraction of nodes left in the largest component.
-2. Simulate random failure, averaging over many runs to get confidence intervals.
-3. Simulate targeted attack, both with a fixed ranking and with degrees recomputed after every removal.
-4. Plot robustness profiles and reduce each to a single R-index.
-5. Compare network types — random, scale-free, lattice — under both attack modes.
+2. Simulate random failure on the karate-club network and plot its robustness profile.
+3. Simulate an adaptive targeted attack — degrees recomputed after every removal — and lay the two profiles on top of each other.
+4. Build a minimum spanning tree of a weighted network with `igraph`.
+5. Watch a lattice percolate as the occupation probability rises.
+6. Compute $\kappa$ for a real airport network and check the predicted threshold against the simulated one.
 
 ## What to watch for
 
-- Run random failure once and it looks smooth; run it fifty times and the variance is the story. Always plot the spread, not just the mean.
-- Compare adaptive against fixed-order attack on the same network. The gap is the value of information to an attacker.
-- Check your measured threshold against f_c = 1 - 1/(kappa - 1) from the appendix.
+- The notebook runs random failure **once**, and one run looks deceptively smooth. Wrap it in a loop, run it fifty times, and plot the spread: for random failure the variance is the story.
+- The targeted attack in the notebook is the *adaptive* one. Write the fixed-ranking version too — rank by degree once, on the original network — and compare. The gap between the two curves is the value of information to an attacker.
+- Check your measured threshold against $f_c = 1 - 1/(\kappa - 1)$, derived in [the appendix](04-appendix.qmd). Expect agreement in order of magnitude, not to three decimals: the formula is an asymptotic result for randomly wired networks, and the karate club has 34 nodes and a great deal of structure.
+
+::: {.callout-note title="If the last cells fail in the browser"}
+The airport network is loaded over the network with `pd.read_csv` from a GitHub
+URL. The in-browser runtime sandboxes some network access, so if those cells
+error out, run the notebook locally instead.
+:::

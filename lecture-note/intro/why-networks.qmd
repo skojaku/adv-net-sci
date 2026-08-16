@@ -1,119 +1,319 @@
 ---
-title: Networks
+title: "The Pandemic That Ignored the Map"
 ---
 
-## Networks are everywhere and they matter
+> **The big question of this module.** Why do we need a science of networks instead of ordinary statistics?
 
-In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
+## H1N1 Started in Mexico. Spain Was Infected Before Guatemala.
 
-The most natural way to think about disease spread is through geographic distance.
-If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:
+In April 2009 a new strain of influenza, H1N1, began spreading out of Mexico. Nobody had immunity, and every health ministry in the world was asking the same question: when does it get here?
 
-::: {#fig-geo-vs-arrival-time}
+The natural way to answer that is with a map. Disease moves from person to person, people are spread across the ground, so an outbreak ought to grow like an ink stain — neighbours first, then outward in rings. Guatemala shares a land border with Mexico. Spain is nine thousand kilometres away, across an ocean.
 
-![](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
+The first country outside Mexico to confirm a case was the United States. Spain confirmed its first case before Guatemala did.
 
-Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
+One country pair proves nothing, so here is every country at once: its distance from Mexico in kilometres, against the day the virus arrived.
 
+<figure class="anim-stage">
+<svg class="anim-svg" viewBox="0 0 460 260" role="img" style="max-width:470px"
+     aria-label="Scatter plot of arrival day against distance in kilometres. The points form a broad cloud: at nine thousand kilometres, some countries were reached within weeks and others after months.">
+  <line class="anim-axis" x1="52" y1="210" x2="438" y2="210"/>
+  <line class="anim-axis" x1="52" y1="210" x2="52" y2="26"/>
+  <line class="anim-axis" x1="47" y1="210" x2="52" y2="210"/>
+  <text class="anim-label" x="43" y="214" text-anchor="end">0</text>
+  <line class="anim-axis" x1="47" y1="149" x2="52" y2="149"/>
+  <text class="anim-label" x="43" y="153" text-anchor="end">50</text>
+  <line class="anim-axis" x1="47" y1="87" x2="52" y2="87"/>
+  <text class="anim-label" x="43" y="91" text-anchor="end">100</text>
+  <line class="anim-axis" x1="47" y1="26" x2="52" y2="26"/>
+  <text class="anim-label" x="43" y="30" text-anchor="end">150</text>
+  <line class="anim-axis" x1="52" y1="210" x2="52" y2="215"/>
+  <text class="anim-label" x="52" y="228" text-anchor="middle">0</text>
+  <line class="anim-axis" x1="148" y1="210" x2="148" y2="215"/>
+  <text class="anim-label" x="148" y="228" text-anchor="middle">5</text>
+  <line class="anim-axis" x1="245" y1="210" x2="245" y2="215"/>
+  <text class="anim-label" x="245" y="228" text-anchor="middle">10</text>
+  <line class="anim-axis" x1="342" y1="210" x2="342" y2="215"/>
+  <text class="anim-label" x="342" y="228" text-anchor="middle">15</text>
+  <line class="anim-axis" x1="438" y1="210" x2="438" y2="215"/>
+  <text class="anim-label" x="438" y="228" text-anchor="middle">20</text>
+  <text class="anim-label" x="245" y="248" text-anchor="middle">distance from Mexico (1000 km)</text>
+  <text class="anim-label" x="16" y="118" text-anchor="middle" transform="rotate(-90 16 118)">arrival day</text>
+  <circle class="anim-faint" cx="129.2" cy="93.5" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="152.4" cy="136.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="167.8" cy="72.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="210.3" cy="116.8" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="283.6" cy="99.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="364.7" cy="87.3" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="380.1" cy="142.5" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="306.8" cy="65.3" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="177.4" cy="163.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="273.9" cy="169.5" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="403.3" cy="109.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="113.8" cy="53.0" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="237.3" cy="126.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="322.2" cy="156.0" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="187.1" cy="82.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="256.6" cy="109.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="351.2" cy="53.0" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="102.2" cy="133.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="295.2" cy="133.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="221.8" cy="65.3" r="4.6" opacity="0.75"/>
+  <circle class="anim-faint" cx="52.0" cy="185.5" r="5.4"/>
+  <text class="anim-label" x="58" y="199" text-anchor="start">Mexico</text>
+  <circle class="anim-faint" cx="100.2" cy="176.9" r="5.4"/>
+  <text class="anim-label" x="106" y="189" text-anchor="start">USA</text>
+  <circle class="anim-faint" cx="119.5" cy="105.7" r="5.4"/>
+  <text class="anim-label" x="112" y="98" text-anchor="end">Barbados</text>
+  <circle class="anim-faint" cx="229.6" cy="158.5" r="5.4"/>
+  <text class="anim-label" x="230" y="173" text-anchor="middle">Spain</text>
+  <circle class="anim-faint" cx="225.7" cy="152.3" r="5.4"/>
+  <text class="anim-label" x="218" y="152" text-anchor="end">UK</text>
+  <circle class="anim-faint" cx="264.3" cy="130.3" r="5.4"/>
+  <text class="anim-label" x="272" y="134" text-anchor="start">Japan</text>
+  <circle class="anim-faint" cx="245.0" cy="80.0" r="5.4"/>
+  <text class="anim-label" x="237" y="74" text-anchor="end">Latvia</text>
+  <circle class="anim-faint" cx="302.9" cy="152.3" r="5.4"/>
+  <text class="anim-label" x="311" y="156" text-anchor="start">China</text>
+  <circle class="anim-faint" cx="331.8" cy="62.8" r="5.4"/>
+  <text class="anim-label" x="324" y="55" text-anchor="end">Afghanistan</text>
+</svg>
+<figcaption class="anim-caption">Arrival day of H1N1 against geographic distance from Mexico, one dot per country. Redrawn schematically after Brockmann and Helbing (2013).</figcaption>
+</figure>
+
+There is a trend — far-away places do tend to be later. But look along the vertical line at nine thousand kilometres. Some of those countries were infected within six weeks; others waited four months. Kilometres put them in the same place; the epidemic did not. Whatever sets the arrival day, it is not the distance you can measure on a map.
+
+<!-- TODO(anim): the two scatters as one stage - the same dots, x-axis swapped from kilometres to effective distance, cloud collapsing onto the line. -->
+
+## Redraw the Map and the Cloud Becomes a Line
+
+Dirk Brockmann and Dirk Helbing [@brockmann2013hidden] asked what happens if you stop measuring distance across the ground and start measuring it along the routes people actually travel.
+
+Air travel is the obvious candidate, and it is easy to write down. Take every commercial airport and call it a **node**. Wherever a scheduled route connects two airports, draw an **edge** between them. Dots and lines — that is the whole vocabulary of this course, and you have now met all of it.
+
+Here is the move that makes it work. The edges are not all the same length. Of everyone who boards a plane in Mexico City, a large share land in Los Angeles and a very small share land in Ljubljana. A route that carries a big share of the traffic is a *short* route, because a traveller — and therefore the virus — is likely to take it. A route that carries a trickle is a long one. The **effective distance** between two airports is then the smallest total you can accumulate along any chain of flights joining them, exactly the way a road atlas gives you the shortest drive, except that "long" and "short" now mean traffic share instead of kilometres.
+
+Put numbers on it. Suppose one in ten passengers leaving Mexico City lands in Madrid, and one in a thousand lands in Guatemala City. On Brockmann and Helbing's scale the Madrid leg has length 3.3 and the Guatemala City leg has length 7.9. Madrid is the near neighbour, Guatemala City the far one, and the map says the opposite.
+
+::: {.callout-note title="The formula, if you want it"}
+If a fraction $p$ of the passengers leaving an airport take a particular route, that leg is given length $1 - \log p$ (natural log). A leg carrying all the traffic, $p = 1$, has length 1; halving the share adds about 0.7. The effective distance between two airports is the smallest sum of leg lengths over all routes between them — an ordinary shortest path, on these lengths. That is the whole definition; $p = 0.1$ gives $1 - \log 0.1 = 3.3$ and $p = 0.001$ gives $7.9$.
 :::
 
+Now plot the same arrival days against effective distance instead of kilometres.
 
-Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
+<figure class="anim-stage">
+<svg class="anim-svg" viewBox="0 0 460 260" role="img" style="max-width:470px"
+     aria-label="The same arrival days plotted against effective distance. The points now lie close to a straight rising line.">
+  <line class="anim-axis" x1="52" y1="210" x2="438" y2="210"/>
+  <line class="anim-axis" x1="52" y1="210" x2="52" y2="26"/>
+  <line class="anim-axis" x1="47" y1="210" x2="52" y2="210"/>
+  <text class="anim-label" x="43" y="214" text-anchor="end">0</text>
+  <line class="anim-axis" x1="47" y1="149" x2="52" y2="149"/>
+  <text class="anim-label" x="43" y="153" text-anchor="end">50</text>
+  <line class="anim-axis" x1="47" y1="87" x2="52" y2="87"/>
+  <text class="anim-label" x="43" y="91" text-anchor="end">100</text>
+  <line class="anim-axis" x1="47" y1="26" x2="52" y2="26"/>
+  <text class="anim-label" x="43" y="30" text-anchor="end">150</text>
+  <line class="anim-axis" x1="52" y1="210" x2="52" y2="215"/>
+  <text class="anim-label" x="52" y="228" text-anchor="middle">0</text>
+  <line class="anim-axis" x1="181" y1="210" x2="181" y2="215"/>
+  <text class="anim-label" x="181" y="228" text-anchor="middle">5</text>
+  <line class="anim-axis" x1="309" y1="210" x2="309" y2="215"/>
+  <text class="anim-label" x="309" y="228" text-anchor="middle">10</text>
+  <line class="anim-axis" x1="438" y1="210" x2="438" y2="215"/>
+  <text class="anim-label" x="438" y="228" text-anchor="middle">15</text>
+  <text class="anim-label" x="245" y="248" text-anchor="middle">effective distance from Mexico</text>
+  <text class="anim-label" x="16" y="118" text-anchor="middle" transform="rotate(-90 16 118)">arrival day</text>
+  <line class="anim-marker" x1="52" y1="199" x2="438" y2="48"/>
+  <circle class="anim-accent-fill" cx="129.2" cy="168.8" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="175.5" cy="145.8" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="227.0" cy="137.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="252.7" cy="114.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="283.6" cy="113.3" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="304.2" cy="96.7" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="335.1" cy="94.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="355.7" cy="72.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="108.6" cy="173.2" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="185.8" cy="151.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="273.3" cy="110.0" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="319.6" cy="88.2" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="211.5" cy="129.2" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="237.3" cy="135.1" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="149.8" cy="164.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="360.8" cy="81.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="201.3" cy="136.9" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="160.1" cy="150.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="332.5" cy="84.4" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="257.9" cy="124.6" r="4.6" opacity="0.75"/>
+  <circle class="anim-accent-fill" cx="62.3" cy="185.5" r="5.4"/>
+  <text class="anim-label" x="68" y="198" text-anchor="start">Mexico</text>
+  <circle class="anim-accent-fill" cx="100.9" cy="176.9" r="5.4"/>
+  <text class="anim-label" x="109" y="185" text-anchor="start">USA</text>
+  <circle class="anim-accent-fill" cx="154.9" cy="160.9" r="5.4"/>
+  <text class="anim-label" x="147" y="163" text-anchor="end">UK</text>
+  <circle class="anim-accent-fill" cx="165.2" cy="152.3" r="5.4"/>
+  <text class="anim-label" x="169" y="166" text-anchor="start">Spain</text>
+  <circle class="anim-accent-fill" cx="196.1" cy="145.0" r="5.4"/>
+  <text class="anim-label" x="204" y="153" text-anchor="start">China</text>
+  <circle class="anim-accent-fill" cx="206.4" cy="133.9" r="5.4"/>
+  <text class="anim-label" x="198" y="130" text-anchor="end">Japan</text>
+  <circle class="anim-accent-fill" cx="263.0" cy="114.3" r="5.4"/>
+  <text class="anim-label" x="255" y="110" text-anchor="end">Barbados</text>
+  <circle class="anim-accent-fill" cx="324.8" cy="88.6" r="5.4"/>
+  <text class="anim-label" x="317" y="85" text-anchor="end">Latvia</text>
+  <circle class="anim-accent-fill" cx="376.2" cy="62.8" r="5.4"/>
+  <text class="anim-label" x="368" y="57" text-anchor="end">Afghanistan</text>
+</svg>
+<figcaption class="anim-caption">The same arrival days, the same countries, a different ruler. Redrawn schematically after Brockmann and Helbing (2013).</figcaption>
+</figure>
 
-This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
+The cloud straightens into a line. Brockmann and Helbing report a fit of $R^2 = 0.973$. (An $R^2$ runs from 0, meaning the line tells you nothing about arrival day, to 1, meaning the line is exact.) The same picture holds for the 2003 SARS outbreak. No new data was collected between the two plots and nothing about the virus changed. Only the ruler changed.
 
-::: {#fig-network-distance-vs-arrival-time}
+That is the claim the rest of this course rests on: **network structure, not geography, determines how things spread**.
 
-![](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
+## The Same Skeleton Under a Food Web, a Bank and Your Brain
 
-Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
-:::
+Nothing in that argument was about influenza. It needed only two things: a set of items, and a record of which pairs are joined. Any system that offers those two things gets the same treatment.
 
-::: {.column-margin}
-See [@brockmann2013hidden] for more details.
-:::
+| System | A node is | An edge is |
+|---|---|---|
+| Air travel | an airport | a scheduled route between two airports |
+| The brain | a neuron | a synapse from one neuron to another |
+| A cell | a protein | two proteins that bind to each other |
+| An ecosystem | a species | "this one eats that one" |
+| Banking | a bank | an overnight loan one bank owes another |
+| The power grid | a substation | a transmission line |
+| Wikipedia | an article | a hyperlink from one article to another |
 
-The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
+<!-- TODO(anim): one skeleton, several systems - the same dot-and-line drawing relabelled as airports, neurons, banks, substations, in a single ink colour. -->
 
-Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we're connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.
+Read the middle column again. Nothing in the raw data forced any of those choices. From the same airline timetable you could have made cities the nodes instead of airports, or countries; you could have said an edge exists when *any* route connects two places, or only when more than a thousand passengers a week do. **Deciding what counts as a node and what counts as an edge is a modelling decision, not something the data hands you.** It is also the decision that fixes what you will be able to see: effective distance is measurable at all only because the airports, not the countries, are the things that carry a measurable share of the traffic.
 
+## What a Brain and a Power Grid Have in Common Is a Table
 
-::: {layout-nrow=4}
+Once the nodes and edges are chosen, a network can be put down in two forms. You can draw it — dots with lines between them. Or you can write it down as a list of the joined pairs, one pair per row, which is called an **edge table**. They are the same object, and it is worth checking that claim by hand rather than taking it on trust: every line on the left is one row on the right.
 
-![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)
+<figure class="anim-stage">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="A network of five numbered nodes. Node 1 joins 2 and 3; node 2 joins 3 and 4; node 3 joins 5.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
+</div>
+<div class="anim-panel">
+<table>
+<thead><tr><th>Source</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>2</td></tr>
+<tr><td>1</td><td>3</td></tr>
+<tr><td>2</td><td>3</td></tr>
+<tr><td>2</td><td>4</td></tr>
+<tr><td>3</td><td>5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="anim-caption">One network, two forms. Five lines on the left, five rows on the right.</figcaption>
+</figure>
 
-![Food web](https://mlurgi.github.io/networks_for_r/images/food-web.png)
+<!-- TODO(anim): draw an edge in the picture and watch the matching row appear in the table, and the reverse. -->
 
-![Brain network](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp)
+Five nodes fit in a picture. The air-travel network behind the H1N1 result does not: it has thousands of airports and tens of thousands of routes, and drawn as dots and lines it is a black smudge in which no individual connection can be seen. Zooming does not help, and neither does a better layout algorithm — there is simply more ink than the page has room for. The edge table is unbothered by size. It just gets longer, and a computer reads a long table as happily as a short one.
 
-![Medicine network](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png)
+The table is also what makes this one field instead of ten. Two columns of labels look identical whether the labels are airports, neurons, banks or Wikipedia articles, so a method that works on one works on all of them. That is the bargain of the abstraction, and it is worth stating what each side of it costs: the table *keeps* exactly one kind of information, which pairs are joined, and *discards* everything else — how far apart the nodes are, how big they are, what they are made of, what year it is. The H1N1 story is what that bargain buys. Throwing away the kilometres is precisely what let the arrival times line up.
 
-![Protein-protein interaction](https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg)
+## If It Fits in a Spreadsheet, Why Is There a Whole Field?
 
-![Social network](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png)
+A two-column table is exactly the sort of thing statistics and machine learning already handle. So why not load the edge table into the usual tools and be done?
 
-![International financial network](https://www.researchgate.net/profile/Douglas-White-4/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)
+Because nothing interesting about a network lives in a row. It lives in how the rows combine.
 
-![US airport network](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)
+In 1739 Jacques de Vaucanson exhibited a mechanical duck in Paris. It flapped its wings, took grain from a visitor's hand, swallowed it, and some minutes later excreted pellets. It was the great advertisement for **reductionism**: understand each part, build each part, put the parts together, and the behaviour of the whole follows.
 
-![Power grid network](https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png)
+It was also a fraud. The duck digested nothing. The swallowed grain went into one compartment, and the pellets it produced had been loaded into a second compartment before the show — the conjurer Jean-Eugène Robert-Houdin, who restored the machine a century later, reported the hidden mechanism. Keep that image, because it is the honest one: a machine assembled from duck-shaped parts produced duck-shaped output, and there was still no duck inside it. ([Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck))
 
-![River network](https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png)
+Networks break the reductionist recipe in a specific and repeatable way: the properties that matter belong to the pattern of connections, not to any component. You can know every neuron in a brain and still not know how a memory is stored. You can profile every person in a movement and still not predict which slogan spreads. You can own every computer on the internet and still not explain a traffic jam that appears on it.
 
-![Internet network](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)
+Two things go wrong at once. Scale overwhelms intuition: you can hold the relationships among three people in your head, and you cannot do it for three million. And the effects of a change are wildly uneven. Go back to the five-node network above and take away a single edge.
 
-![Knowledge graph](https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png)
+<figure class="anim-stage">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="The same five-node network with the edge between 2 and 3 cut. All five nodes are still reachable.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line x1="165" y1="38" x2="105" y2="110" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"/>
+  <line class="anim-amber-stroke" x1="127" y1="66" x2="143" y2="82"/>
+  <line class="anim-amber-stroke" x1="143" y1="66" x2="127" y2="82"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
+<div class="anim-caption">Cut 2&ndash;3: nothing happens.</div>
+</div>
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="The same five-node network with the edge between 3 and 5 cut. Node 5 is now isolated.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line x1="105" y1="110" x2="48" y2="165" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"/>
+  <line class="anim-amber-stroke" x1="68" y1="130" x2="84" y2="146"/>
+  <line class="anim-amber-stroke" x1="84" y1="130" x2="68" y2="146"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node-off" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:var(--_ink-faint);font-size:13px">5</text>
+</svg>
+<div class="anim-caption">Cut 3&ndash;5: node 5 is gone.</div>
+</div>
+</div>
+<figcaption class="anim-caption">One edge removed, two different networks. The edge table gives no hint which removal is which.</figcaption>
+</figure>
 
-:::
+<!-- TODO(anim): let the reader click any edge of a small network to delete it, and colour the pieces that fall off. -->
 
-## How to represent a network
+Cut edge 2&ndash;3 and nothing is lost: 2 still reaches 3, by way of 1. Cut edge 3&ndash;5 instead and node 5 drops off the network entirely — nothing reaches it and it reaches nothing. Same network, same size of edit, opposite consequence. Both edges look identical in the edge table: one row of two numbers each. You cannot tell them apart by looking at a row; you have to look at the pattern the rows make together.
 
-Although networks come from vastly different fields, **we can represent them all using the same universal language** 😉. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This abstraction is what makes network science so interdisciplinary.
+Now scale that question up. Of the hundred thousand transmission lines in a power grid, which ones are the 3&ndash;5? That question has no answer in ordinary statistics, and it is the reason this field exists.
 
-A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
+## What You Can Now Do
 
+- Explain why distance measured through a network beats distance measured across a map when you want to predict when something arrives, and say what effective distance counts.
+- Take a system you care about and state what its nodes and edges are — while knowing that you decided that, and the data did not.
+- Write any network as an edge table, and say what the table keeps (which pairs are joined) and what it throws away (everything else).
+- Say why a table of pairs is where network science starts rather than where it stops.
 
-We can represent any network in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
-
-
-::: {layout-ncol=2}
-
-![Schematic network](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
-
-![A network of penguins in the Kyoto Aquarium.](https://www.kyoto-aquarium.com/sokanzu/assets/img/img_sokanzu_2022.jpg)
-
-:::
-
-While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to obtain a quantitative understanding of network properties and behaviors.
-
-**Tables** are a natural way to represent networks. The idea is to list the pairs of nodes that are connected by an edge. For example:
-
-| Source | Target |
-|--------|--------|
-| Node1 | Node2 |
-| Node1 | Node3 |
-| Node2 | Node3 |
-| Node2 | Node4 |
-| Node3 | Node5 |
-
-This is called an ***edge table***. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
-
-## Are we done with networks?
-
-If we can represent a network in a table---a familiar data format that can be analyzed by statistical methods, machine learning, and other tools---can we just use these tools to analyze networks? Why do we need to learn network science?
-
-**Long story short, a network is not just a collection of nodes and edges. They work in tandem to create a complex system**. And this view---that a system is not just a collection of parts---represents a critical shift in science.
-
-For centuries, scientists believed in **reductionism**. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century [Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck) seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.
-
-::: {.column-margin}
-
-![Vaucanson's Digesting Duck](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg)
-
-Find more details in [Wikipedia](https://en.wikipedia.org/wiki/Digesting_Duck)
-
-:::
-
-However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.
-
-The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition; while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences; removing one connection might fragment an entire network, while removing another has no effect at all. This is why network science exists as a distinct field: the traditional reductionist toolkit simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity!
+Next, [Module 1: A Stroll, Seven Bridges, and a Mathematical Revolution](../m01-euler_tour/01-concepts.qmd), where a Sunday walk through an 18th-century city turns into the first theorem of this subject — and where the act of throwing information away becomes a deliberate technique with a name.

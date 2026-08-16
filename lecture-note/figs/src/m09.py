@@ -30,15 +30,16 @@ lambdas = np.linspace(0, 10, 100)
 h_low = 1 / (1 + alpha * lambdas)
 h_high = (alpha * lambdas) / (1 + alpha * lambdas)
 
+ACCENT = "#593196"
+CONTRAST = "#c2410c"
+
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-sns.lineplot(x=lambdas, y=h_low, label="Low-pass filter", ax=axes[0])
-axes[0].legend(frameon=False).remove()
-sns.lineplot(x=lambdas, y=h_high, label="High-pass filter", ax=axes[1])
-axes[1].legend(frameon=False).remove()
+sns.lineplot(x=lambdas, y=h_low, ax=axes[0], color=ACCENT, linewidth=2.5)
+sns.lineplot(x=lambdas, y=h_high, ax=axes[1], color=CONTRAST, linewidth=2.5)
 axes[0].set_title("Low-pass filter")
 axes[1].set_title("High-pass filter")
-fig.text(0.5, 0.01, "Eigenvalue $\lambda$", ha="center")
-axes[0].set_ylabel("Filter response $h(\lambda)$")
+fig.text(0.5, 0.01, r"Eigenvalue $\lambda$", ha="center")
+axes[0].set_ylabel(r"Filter response $h(\lambda)$")
 sns.despine()
 plt.tight_layout()
 _save('m09-fig-00')

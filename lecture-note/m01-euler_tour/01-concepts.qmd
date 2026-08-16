@@ -2,222 +2,126 @@
 title: "A Stroll, Seven Bridges, and a Mathematical Revolution"
 ---
 
-## Why Was This Puzzle So Hard?
+> **The big question of this module.** Can you walk a city crossing each bridge exactly once — and how would you ever *prove* that you cannot?
+
+## Königsberg, 1736: seven bridges and a Sunday walk
 
 Our story begins not in a lab, but on the streets of an 18th-century Prussian city called Königsberg. It was a city of thinkers—most famously the philosopher Immanuel Kant—but the puzzle that would change mathematics belonged to everyone.
 
 The city was built around two islands in the Pregel River, connected to the mainland and each other by seven distinct bridges. During their Sunday strolls, the citizens amused themselves with a challenge:
 
-::: {.callout-note title="The Königsberg Bridge Problem"}
-Is it possible to design a walk through the city that crosses each of the seven bridges **exactly once** and return to the starting point?
-:::
+> Is it possible to design a walk through the city that crosses each of the seven bridges **exactly once** and returns to the starting point?
 
-Go ahead, try it yourself on the map below. Tracing a path with your finger, you'll soon discover the same frustrating problem the citizens did: you either get stuck, missing a bridge, or you have to cross one twice.
+Try it on the map below. Put a pencil down on any landmass and trace a route that uses every bridge once. You will soon hit the same frustrating wall the citizens did: you either get stranded with a bridge left unused, or you have to cross one twice.
 
-![A map of the seven bridges of Königsberg. Four landmasses are connected by seven bridges over the Pregel River.](https://99percentinvisible.org/wp-content/uploads/2022/02/bridges-with-water-600x418.png){#fig-seven-bridges fig-alt="The seven bridges of Königsberg" fig-align="center"}
+<!-- TODO(anim): interactive bridge tracer — click a landmass to start, click bridges to cross them, the widget refuses a second crossing of the same bridge and reports how many of the seven you managed. -->
 
-What makes this so difficult? No one could find a path, but more importantly, no one could *prove* it was impossible. The problem eventually reached the brilliant mathematician Leonhard Euler. His goal was not just to find an answer, but to understand the *reason* behind the answer.
+![The seven bridges of Königsberg, drawn schematically. Four landmasses — the north bank **C**, the south bank **B**, the Kneiphof island **A** and the east island **D** — are joined by seven bridges *a*–*g*. Note that *a* and *b* both run from A to B, and *c* and *d* both run from A to C.](figs/konigsberg-map.svg){#fig-seven-bridges fig-alt="Schematic map of a river with two banks and two islands, joined by seven labelled bridges." fig-align="center" width=95%}
 
-::: {.callout-tip title="Pause and Think Like a Mathematician"}
-Before we reveal Euler's solution, take a moment to be a mathematician yourself. This is how discovery happens. We **strongly recommend** working through this [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) to experience the discovery process.
+What makes this so difficult? No one could find a route, but more importantly, no one could *prove* it was impossible. The problem eventually reached the mathematician Leonhard Euler. His goal was not just to find an answer, but to understand the *reason* behind the answer.
 
-As you work, ask yourself:
-- What information is essential? The length of the bridge? The size of the island?
+**Before you read Euler's solution, be a mathematician for ten minutes.** This is how discovery happens, and we **strongly recommend** working through this [pen-and-paper worksheet](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) before going on. As you work, ask yourself:
+
+- What information is essential? The length of a bridge? The size of an island?
 - What are the fundamental constraints of the problem?
-- How can you move from "I can't find a path" to "A path cannot exist"?
+- How can you move from "I can't find a route" to "a route cannot exist"?
 
-:::
+## Euler throws away the map
 
-## A New Way of Seeing: The Power of Abstraction
-
-Euler's genius was to realize that most of the information in the map was a distraction. He performed a radical act of simplification, an approach we now call **abstraction**.
+Euler's genius was to realize that most of the information on the map was a distraction. He performed a radical act of simplification, an approach we now call **abstraction**.
 
 He stripped the problem down to its skeleton:
-1.  He turned each of the four distinct landmasses into a simple **dot** (a **node**).
+
+1.  He turned each of the four landmasses into a simple **dot** (a **node**).
 2.  He turned each of the seven bridges into a simple **line** connecting the dots (an **edge**).
 
-::: {#fig-euler-graph}
-![](https://towardsdatascience.com/wp-content/uploads/2024/05/15n0gkvpktkGYtAase5oYuw-1.png){width=800}
+<!-- TODO(anim): the map dissolves into the graph — the landmasses shrink to dots, the bridges straighten into lines, and the river fades away. -->
 
-Euler's abstraction of the Königsberg bridge problem. The complex city map is reduced to a simple network of nodes and edges. Image from [The Essential Guide to Graph Theory](https://towardsdatascience.com/the-essential-guide-to-graph-theory-from-an-18th-century-riddle-to-artificial-intelligence-c441cb9400de/).
-:::
+![The same city as a graph. Every landmass has become a node and every bridge an edge; the river, the distances and the shapes are gone. The labels are the ones on @fig-seven-bridges, so you can check each edge against the map.](figs/konigsberg-graph.svg){#fig-euler-graph fig-alt="Four labelled nodes A, B, C, D joined by seven labelled edges, with the degree of each node written beside it." fig-align="center" width=80%}
 
-This wasn't just a sketch; it was a new mathematical object. Euler had invented the **graph** (or **network**). He had created a new language to talk not about numbers or shapes, but about pure **relationships and connectivity**.
+This wasn't just a sketch; it was a new mathematical object. Euler had invented the **graph** (or **network**). He had created a language for talking not about numbers or shapes, but about pure **relationships and connectivity**.
 
-::: {.callout-important title="Key Concept: A graph, written down"}
+## What a graph is, formally
+
+::: {.callout-important title="Key concept: a graph, written down"}
 Formally, a graph is a pair
 
 $$
 G = (V, E)
 $$
 
-where $V$ is the set of **nodes** (also called vertices) and $E$ is the set of **edges**, each edge being a pair of nodes. For Königsberg, $V$ has four elements — the two shores and the two islands — and $E$ has seven.
+where $V$ is the set of **nodes** (also called vertices) and $E$ is the set of **edges**, each edge being a pair of nodes. For Königsberg, $V$ has four elements — the two banks and the two islands — and $E$ has seven.
 
 Everything else in this course is built on those two sets. Notice what the definition does *not* contain: no coordinates, no distances, no shapes.
 :::
 
 Two features of Königsberg are worth naming now, because the definition above quietly permits both.
 
-**Parallel edges.** Two of the bridges connect the same pair of landmasses. So $E$ contains that pair *twice*, and both copies count. A graph that allows repeated edges like this is a **multigraph**. If we collapsed the two bridges into one, we would be solving a different puzzle and would get a different answer — which is precisely why the multiplicity matters.
+**Parallel edges.** Königsberg has *two* pairs of bridges that connect the same two landmasses: *a* and *b* both run from the island A to the south bank B, and *c* and *d* both run from A to the north bank C. Each copy counts separately, so $E$ contains the pair $(A,B)$ twice and the pair $(A,C)$ twice. A graph that allows repeated edges like this is a **multigraph**. Collapse each pair into a single edge and you are solving a different puzzle with a different answer — which is precisely why the multiplicity matters.
 
-**Self-loops.** An edge may also join a node to itself; such an edge is a **self-loop**. Königsberg has none, but they appear all the time in real data (a paper citing itself, a bank lending to itself). A self-loop contributes **2** to the degree of its node, since both of its endpoints attach there. This is the convention that keeps the counting rules below consistent.
-
-::: {.column-margin}
-**Leonhard Euler (1707-1783)**
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Leonhard_Euler.jpg/200px-Leonhard_Euler.jpg)
-One of history's most prolific mathematicians. Despite losing his sight, he produced nearly half of his life's work while completely blind.
-:::
-
-## From a Walk to a Proof: The Idea of Degree
-
-With this new, simplified representation, Euler could stop thinking about walking and start thinking about rules. He focused on the nodes and asked a crucial question: how does a journey through a node work?
-
-Imagine you are on a walk. Every time you arrive at a landmass, you cross one bridge. Every time you leave, you cross another. This means that for any landmass that is **not** the start or end of your journey, you must use bridges in pairs: one "in" and one "out."
-
-This leads to the key insight. Let's count the number of bridges connected to each landmass. We'll call this the **degree** of the node.
-
-::: {.callout-important title="Key Concept: Node Degree"}
-The **degree** of a node is the number of edges connected to it. It is the most fundamental property of a node in a network.
-:::
-
--   If a node has an **even degree** (like 2, 4, or 6), you can always pass through it. For every "in" bridge, there is an "out" bridge.
--   If a node has an **odd degree** (like 1, 3, or 5), it must be special. The "in" and "out" bridges can't all be paired up. One bridge will be left over. This means an odd-degree node **must be the start or the end point** of your walk.
-
-A walk can only have one start and one end. Therefore, to cross every bridge, there can be at most **two nodes with an odd degree**.
-
-### The Verdict
-
-Let's apply this logic to the Königsberg graph:
-
-- **North Shore:** Degree 3 (Odd)
-- **South Shore:** Degree 3 (Odd)
-- **Island A:** Degree 5 (Odd)
-- **Island B:** Degree 3 (Odd)
-
-All four landmasses have an odd degree! Since a walk can have at most two odd-degree nodes (one for the start, one for the end), the desired walk is **mathematically impossible**. Euler didn't just fail to find a path; he proved, with logical certainty, that no such path could ever exist.
-
-::: {.callout-note title="Euler's Conditions for a Walk"}
-A walk that crosses every edge in a graph exactly once (an **Eulerian Path**) is possible if and only if:
-
-1.  The graph is **connected** (you can get from any node to any other).
-2.  And **one** of these is true:
-    -   **Zero nodes have an odd degree.** The walk must start and end at the same node (a closed loop, or **Eulerian Circuit**).
-    -   **Exactly two nodes have an odd degree.** The walk must start at one of the odd nodes and end at the other.
-:::
-
-### A Tragic Epilogue
-
-The story of the seven bridges has a sad, ironic twist. During World War II, the city of Königsberg was heavily bombed. Two of the seven bridges were destroyed, changing the layout of the city forever.
-
-![After WWII bombing, only five bridges remained—finally making an Euler path possible.](../figs/seven-bridge-bombared.png){#fig-bombed-bridges fig-alt="Map showing the new bridge configuration after the bombing."}
-
-With the two bridges gone, the network changed. Two of the landmasses now had an even degree, leaving just two with an odd degree. The impossible puzzle, which had fascinated people for over 200 years, was suddenly "solved" by the destruction of war.
-
-Euler’s solution was far more than fun trivia. It was the beginning of a new field of science. The idea of abstracting a system into nodes and edges is how we now understand our modern world. Every time you rely on a connected system, you are benefiting from the intellectual leap made by Euler over a puzzle about a Sunday stroll!
-
----
-
-## The Vocabulary of Networks
-
-To talk precisely about networks, we need to formalize the language Euler created. Here are the key terms.
-
-### Walk, Trail, and Path
-
-| Term      | Definition                                                                | Analogy: A Road Trip                                                                |
-| :-------- | :------------------------------------------------------------------------ | :---------------------------------------------------------------------------------- |
-| **Walk**  | A sequence of nodes where you can repeat both roads (edges) and cities (nodes). | A casual drive where you can go down the same street multiple times.                 |
-| **Trail** | A walk where you **cannot repeat edges**, but you can revisit nodes.    | A mail route. The carrier can't cover the same street twice but may pass the same intersection. |
-| **Path** | A walk where you **cannot repeat nodes** (or edges, by consequence).           | A trip visiting a sequence of cities, each one new.                                  |
-
-### Cycle and Circuit
-
-A journey that starts and ends at the same place is **closed**. This gives us two more terms:
-
-| Term      | Definition                                                 | Analogy: A Round Trip                                                              |
-| :-------- | :--------------------------------------------------------- | :--------------------------------------------------------------------------------- |
-| **Circuit** | A **trail** that starts and ends at the same node.      | A scenic drive from your hotel and back, never taking the same road twice.           |
-| **Cycle**   | A **path** that starts and ends at the same node.       | A perfect loop, like a lap on a racetrack.                                         |
-
-With this vocabulary, we can be more precise about the Königsberg problem.
-
-- An **Eulerian Trail/Path** is a *trail* that uses every edge in the graph.
-- An **Eulerian Circuit/Cycle** is a *circuit* that uses every edge in the graph.
-
-The citizens were looking for an Eulerian circuit. Euler proved that to have one, all nodes must have an even degree.
-
-### Counting walks with the adjacency matrix
-
-There is one more piece of vocabulary that pays off repeatedly later in the course, so it is worth meeting here.
-
-Write the network as an **adjacency matrix** ${\bf A}$: an $N \times N$ table where $A_{ij} = 1$ if nodes $i$ and $j$ are connected and $0$ otherwise. (For a multigraph, $A_{ij}$ is the *number* of edges between $i$ and $j$ — the two Königsberg bridges give an entry of 2.)
-
-Now ask: how many walks of length 2 run from $i$ to $j$? Such a walk must pass through some intermediate node $\ell$, using an edge $i \rightarrow \ell$ and then $\ell \rightarrow j$. The number of ways to do that through a particular $\ell$ is $A_{i\ell}A_{\ell j}$, so summing over all possibilities:
-
-$$
-\#\{\text{walks of length } 2 \text{ from } i \text{ to } j\} = \sum_{\ell} A_{i\ell} A_{\ell j} = \left({\bf A}^2\right)_{ij}.
-$$
-
-That is exactly the definition of matrix multiplication. Repeating the argument gives the general statement:
-
-::: {.callout-important title="Key Concept: Matrix powers count walks"}
-$$
-\left({\bf A}^k\right)_{ij} = \text{the number of walks of length } k \text{ from } i \text{ to } j.
-$$
-:::
-
-Note that it counts **walks**, not paths or trails — nodes and edges may repeat, which is why the formula is so simple. Counting paths, where repetition is forbidden, is vastly harder.
+**Self-loops.** An edge may also join a node to itself; such an edge is a **self-loop**. Königsberg has none, but they appear all the time in real data (a paper citing itself, a bank lending to itself). A self-loop contributes **2** to the count of edges at its node, since both of its endpoints attach there. That convention is what keeps the even/odd argument in the next section working: a self-loop is one arrival and one departure, so it never flips a node between odd and even.
 
 ::: {.column-margin}
-Two immediate consequences: $\left({\bf A}^2\right)_{ii}$ is the degree of node $i$ (go out along an edge, come straight back), and $\left({\bf A}^3\right)_{ii}$ counts closed walks of length 3 through $i$ — that is, twice the number of triangles containing $i$. We will use that in Module 2 to compute clustering, and matrix powers again in Module 6, where centrality turns out to be a weighted count of walks of every length.
+**Leonhard Euler (1707-1783)** — one of history's most prolific mathematicians. Despite losing his sight, he produced nearly half of his life's work while completely blind.
 :::
 
-### Network Connectivity
+## From a walk to a proof: the idea of degree
 
-Euler's theorem only applies if the graph is **connected**. If you can't get from one part of the network to another, then a single walk can't possibly cover all the edges.
+With this simplified representation, Euler could stop thinking about walking and start thinking about rules. He focused on the nodes and asked a crucial question: how does a journey *through* a node work?
 
--   A graph is **connected** if there is a path between any two nodes.
--   A **disconnected** graph is made of two or more separate "islands" of nodes, called **connected components**. More precisely, a connected component is a *maximal* set of mutually reachable nodes — maximal meaning you cannot add another node to it without breaking that property.
+Imagine you are on a walk. Every time you arrive at a landmass, you cross one bridge. Every time you leave, you cross another. This means that for any landmass that is **not** the start or the end of your journey, you must use bridges in pairs: one "in" and one "out."
 
-::: {#fig-connected-components}
-![](../figs/connected-component.jpg){width="50%"}
+This leads to the key insight. Let's count the number of bridges attached to each landmass. We'll call this the **degree** of the node.
 
-A graph with three distinct connected components, highlighted in different colors.
+::: {.callout-important title="Key concept: node degree"}
+The **degree** of a node is the number of edges attached to it. It is the most fundamental property of a node in a network.
 :::
 
-#### The giant component
+-   If a node has an **even degree** (2, 4, 6, …), you can always pass through it. For every "in" bridge, there is an "out" bridge.
+-   If a node has an **odd degree** (1, 3, 5, …), it must be special. The "in" and "out" bridges cannot all be paired up; one bridge is left over. That leftover bridge means an odd-degree node **must be the start or the end** of your walk.
 
-Real networks are almost never neatly connected, but they are rarely evenly broken either. What you typically find is one enormous component holding most of the nodes, surrounded by a scatter of tiny fragments and isolated nodes. That one dominant piece is called the **giant component**.
+A journey has only one start and one end. Therefore, if you can cross every bridge exactly once, then **at most two nodes have an odd degree**.
 
-::: {.column-margin}
-"Giant" is a statement about *fractions*, not counts: a component is giant when it contains a finite fraction of all nodes even as the network grows. A component of 1,000 nodes is giant in a network of 1,200 and negligible in a network of 10 million.
+### The verdict: all four landmasses are odd
+
+Count the bridges at each node in @fig-euler-graph:
+
+- **C, the north bank:** bridges *c*, *d*, *g* — degree 3 (odd)
+- **B, the south bank:** bridges *a*, *b*, *f* — degree 3 (odd)
+- **A, the Kneiphof island:** bridges *a*, *b*, *c*, *d*, *e* — degree 5 (odd)
+- **D, the east island:** bridges *e*, *f*, *g* — degree 3 (odd)
+
+All four landmasses have an odd degree. Since such a journey allows at most two odd-degree nodes — one to start at, one to end at — the walk the citizens wanted is **mathematically impossible**. Euler did not merely fail to find a route; he proved, with logical certainty, that no such route can ever exist.
+
+A route that crosses every edge exactly once is called an **Eulerian trail**. *Trail* is the technical word for a route that never repeats an *edge*, although it may pass through the same node more than once — which in Königsberg you are forced to do. The full vocabulary is on the [next page](01b-vocabulary.qmd).
+
+::: {.callout-important title="Key concept: Euler's condition"}
+A graph has an **Eulerian trail** — a route crossing every edge exactly once — if and only if:
+
+1.  The graph is **connected** (you can get from any node to any other), and
+2.  **one** of these holds:
+    -   **No node has an odd degree.** Then the route can start and end at the same node: it is a closed loop, an **Eulerian circuit**.
+    -   **Exactly two nodes have an odd degree.** Then the route must start at one of them and end at the other.
 :::
 
-The giant component matters practically because it is usually the object we analyze. Average path length is undefined across disconnected pieces; centrality on an isolated pair of nodes tells you nothing. In practice one extracts the giant component and works there — and asking *when a giant component exists at all*, and *what it takes to destroy it*, is the entire subject of Module 3.
+The argument above proves one direction: *if* such a route exists, *then* at most two nodes are odd. That direction is all Königsberg needs, since its four odd nodes already kill the possibility. The other direction — that these conditions are also *enough*, so that whenever they hold a route can actually be built — needs a short separate argument, sketched in the [appendix](04-appendix.qmd).
 
-#### How components are actually found
+### The bombs that changed the answer
 
-Reading components off a picture is easy; doing it on a million nodes needs an algorithm. The idea is simple enough to run by hand:
+The story of the seven bridges has an ironic epilogue. During World War II, Königsberg was heavily bombed, and two of the seven bridges — *b* and *d* in @fig-seven-bridges — did not survive.
 
-1. Pick any unvisited node and mark it as visited.
-2. Look at its neighbors. Any that are unvisited, visit them too.
-3. Repeat until nothing new can be reached. Everything you touched is one component.
-4. If unvisited nodes remain, pick one and start again — that is the next component.
+![The starbursts mark the two bridges lost in the war: *b*, from the island to the south bank, and *d*, from the island to the north bank. The red line traces a route across the five that survived.](../figs/seven-bridge-bombared.png){#fig-bombed-bridges fig-alt="Historical map of the Königsberg bridges with two of the seven marked as destroyed and a route drawn over the rest." fig-align="center" width=70%}
 
-Whether you always extend the most recently discovered node (**depth-first search**, DFS) or sweep outward one layer at a time (**breadth-first search**, BFS) changes the order of visits but not the resulting component. Each node and edge is examined a constant number of times, so the whole partition costs $O(N + M)$ for $N$ nodes and $M$ edges — linear, and therefore practical at any scale you are likely to meet.
+Recount the degrees with *b* and *d* gone. A keeps *a*, *c*, *e* — degree 3. B keeps *a*, *f* — degree 2. C keeps *c*, *g* — degree 2. D still has *e*, *f*, *g* — degree 3. Exactly two odd nodes remain, so a route crossing all five surviving bridges now exists, and it must start on one island and end on the other.
 
-::: {.column-margin}
-BFS gives you something extra for free: because it explores layer by layer, the layer at which it reaches a node is the *shortest path length* to that node. We will lean on this in Module 2 when we measure how small the world is.
-:::
+Note what that does *not* say. The citizens asked for a walk that **returns to where it started**, and that still requires zero odd nodes. The bombs made the trail possible; the circuit is as impossible as it ever was. Two words that sound interchangeable in English — trail and circuit — have different answers in the same city.
 
-#### Connectivity in Directed Networks
+Euler's solution was far more than fun trivia. It was the beginning of a new field of science. The idea of abstracting a system into nodes and edges is how we now understand our modern world. Every time you rely on a connected system, you are benefiting from the intellectual leap made by Euler over a puzzle about a Sunday stroll.
 
-What if edges have a direction, like one-way streets? We call these **directed graphs**. This introduces two flavors of connectivity:
+## What you can now do
 
-- **Weakly Connected**: The graph would be connected if you ignored the edge directions. You can get from A to B, but maybe not from B to A.
-- **Strongly Connected**: There is a directed path from every node to every other node. No matter where you start, you can get anywhere else by following the arrows.
+- Turn a physical layout into nodes and edges, and defend what you threw away.
+- Count degrees and decide whether an Eulerian trail or an Eulerian circuit exists.
+- Explain why "I could not find one" and "one cannot exist" are entirely different claims.
 
-::: {#fig-connected-components-directed}
-![](../figs/connected-component-directed.jpg){width="50%"}
-
-A directed graph showing strongly and weakly connected components.
-:::
+Next: [Five Words You Will Use All Semester](01b-vocabulary.qmd) — walk, trail, path, circuit, cycle — plus the two objects the rest of the course leans on hardest, the adjacency matrix and the connected component. Then write the code on the [hands-on page](02-coding.qmd), and hand in the [exercises](03-exercises.qmd).
