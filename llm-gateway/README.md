@@ -102,15 +102,43 @@ completions endpoint.
 
 Both work; set `base_url` to match what you chose.
 
-- **Hosted** — `https://ollama.com/v1` with an API key from ollama.com.
+- **Hosted** — `https://ollama.com/v1` with an API key from ollama.com. This is
+  what the example config assumes, and what the deployed gateway runs on.
 - **Local daemon** — `http://127.0.0.1:11434/v1`, with `ollama` installed on
-  the VM and signed in; it forwards `:cloud` models upstream with the
-  account's own credentials, and the gateway's `OLLAMA_API_KEY` is then just a
-  placeholder.
+  the VM and signed in; it forwards models upstream with the account's own
+  credentials, and the gateway's `OLLAMA_API_KEY` is then just a placeholder.
 
-The hosted form is what the example config assumes. **Confirm the endpoint and
-key format against Ollama's current docs before the first class** — this is the
-one integration detail here that was not verified against a live account.
+> **The two catalogues use different model ids.** The local daemon calls cloud
+> models `glm-5.2:cloud`; the hosted API calls the same model `glm-5.2`. Copying
+> an id from `ollama list` into a hosted-endpoint config yields a 404 — which is
+> retryable, so the gateway falls silently through to the paid provider and
+> everything keeps working while quietly costing money. List the ids you can
+> actually reach before trusting a mapping:
+>
+> ```bash
+> curl -s https://ollama.com/v1/models -H "Authorization: Bearer $OLLAMA_API_KEY" \
+>   | python3 -c 'import json,sys; [print(m["id"]) for m in json.load(sys.stdin)["data"]]'
+> ```
+>
+> After any model change, check that `gateway-admin usage` still shows a
+> `fallbacks` count of zero. A silent fallback is the failure mode this design
+> is most exposed to, precisely because nothing looks broken.
+
+### TLS without buying a domain
+
+Caddy needs a hostname, not an address — but it does not have to be a hostname
+you own. `sslip.io` resolves `<dashed-ip>.sslip.io` to that IP, and Let's
+Encrypt issues for it:
+
+```bash
+bash deploy/provision.sh 142-93-202-237.sslip.io   # your droplet's IP, dashed
+```
+
+Verified working: valid Let's Encrypt certificate, HTTP/2, streaming passes
+through Caddy unbuffered. The caveat is that sslip.io is not on the Public
+Suffix List, so Let's Encrypt's per-domain rate limit is shared with every
+other sslip.io user; issuance can be refused during a busy week. Fine for
+getting started, worth replacing with a real subdomain before the term.
 
 ## Running it
 
