@@ -1,24 +1,184 @@
 ---
-title: "Welcome to SSIE 641 Advanced Topics on Network Science"
+title: "SSIE 641 — Advanced Topics in Network Science"
+toc: false
+format:
+  html:
+    # The course map below is the only place these rules are used, so they live
+    # with the page rather than in scss/minimal.scss. Colours are the site's own
+    # tokens — no new hue is introduced.
+    include-in-header:
+      text: |
+        <style>
+        .course-map {
+          margin: 1.6rem 0 2.6rem;
+          border-top: 1px solid var(--rule);
+        }
+        .course-map .stop {
+          padding: 1rem 0 .95rem;
+          border-bottom: 1px solid var(--rule);
+        }
+        .course-map .stop p { margin: 0; }
+        .course-map .stop p + p { margin: .3rem 0 0 3.1rem; }
+        .stop-no {
+          display: inline-block;
+          min-width: 3.1rem;
+          font-size: .82rem;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          color: var(--anim-ink-soft);
+          font-variant-numeric: tabular-nums;
+        }
+        a.stop-title {
+          font-weight: 600;
+          font-size: 1.08rem;
+          color: var(--anim-ink);
+          text-decoration: none;
+        }
+        a.stop-title:hover,
+        a.stop-title:focus {
+          color: var(--anim-accent);
+          text-decoration: underline;
+        }
+        /* The question keeps body size even when it is the stop's last line. */
+        .stop-q {
+          display: block;
+          font-size: 1rem;
+          color: var(--anim-ink-soft);
+        }
+        /* The worksheet line is always the last paragraph of a stop. */
+        .course-map .stop p:last-child {
+          margin-top: .45rem;
+          font-size: .85rem;
+          color: var(--anim-ink-soft);
+        }
+        /* Links there are marked by their underline, as everywhere on the site. */
+        .course-map .stop p:last-child a { color: inherit; }
+        @media (max-width: 620px) {
+          .course-map .stop p + p { margin-left: 0; }
+          .stop-no { display: block; min-width: 0; }
+        }
+        </style>
 ---
 
+**"Don't think! Feeeeel."** — Bruce Lee, *Enter the Dragon*. That is the method
+here, and it is meant literally.
 
-``Don't think! Feeeeeel'' is a famous quote by Bruce Lee in the movie *Enter the Dragon*, and this is my guiding philosophy of learning.
+Every module starts with something you do with your own hands, before anything
+is defined. You trace the seven bridges of Königsberg on a map and fail, again,
+to cross each one exactly once. You count how many of your own friends know
+each other. You cut cables out of a power grid, one at a time, until the towns
+go dark. The definition arrives afterwards, as a name for something you have
+already felt.
 
-This course is designed to help you *feel* the concepts and tools of network science through pen-and-paper exercises and hands-on coding.
+No prior network science is assumed. The main text asks no linear algebra of
+you; the derivations sit on each module's appendix page, to take or to leave.
+Code is folded shut until you click it.
 
-## List of Exercises and Assignments
+Outside class you hand in two things: a [Pair Notebook](course/pair-notebook.qmd)
+— a module taught as a one-on-one session with an AI tutor in your terminal,
+where the conversation is what gets graded, not the code — and a [Group
+Mini-Project](course/mini-project.qmd) built with up to two teammates.
+[Activities and grading](course/activities.md) lists everything that counts.
 
-**New assignment format:** the [Pair Notebook](course/pair-notebook.qmd) — a one-on-one session with an AI tutor that you run in your terminal, building a marimo notebook as you go. Read the walkthrough before your first one.
+## The nine modules
 
-| Module | Pen and Paper Exercise | Assignment | Slides |
-|--------|------------------------|------------------|------------------|
-| M01: Euler Tour | [The Koningsberg Bridge](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) | - | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m01) |
-| M02: Small World | [Six Handshakes](m02-small-world/pen-and-paper/six-handshakes.pdf) · [Turning the Dial](m02-small-world/pen-and-paper/turning-the-dial.pdf) · [Do Your Friends Know Each Other?](m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf) | [Exercise](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/starter.ipynb) | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m02) |
-| M03: Robustness | [Build it, Break it, and Build it back!](m03-robustness/pen-and-paper/exercise.pdf) | [Exercise](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb) | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m03) |
-| M04: Friendship Paradox | [Data Visualization](m04-node-degree/pen-and-paper/exercise.pdf) | [Exercise](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m04-friendship-paradox/exercise.ipynb) | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m04) |
-| M05: Clustering | [Perfect vs. Almost Perfect](m05-clustering/pen-and-paper/exercise.pdf) | [Community detection](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m05-clustering/exercise-m05-clustering.ipynb) | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m05) |
-| M06: Centrality | [Who's the Big Cheese in the University Clubs?](m06-centrality/pen-and-paper/exercise.pdf) | [Roads to Rome](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/exercise-m06-centrality.ipynb) | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/m06) |
-| M07: Random Walks | [Random Walks on Networks](m07-random-walks/pen-and-paper/exercise.pdf) | - | [Slides](https://skojaku.github.io/adv-net-sci/assets/slides/m07/slide07.html) |
-| M08: Embedding | [Network Embeddings](m08-embedding/pen-and-paper/exercise.pdf) | - | [Slides](https://skojaku.github.io/adv-net-sci/assets/slides/m08/slide08.html) |
-| M09: Graph Neural Networks | [Graph Neural Networks](m09-graph-neural-networks/pen-and-paper/exercise.pdf) | - | [Slides](https://github.com/skojaku/adv-net-sci/tree/main/slides/legacy/m09) |
+One question opens the course, and each of the nine modules asks another. Every
+question is a link into the lecture note; the worksheet under it is the one you
+do before that lecture, with a pencil.
+
+<!-- TODO(anim): course-as-one-journey, nine stops -->
+
+:::: {.course-map}
+
+::: {.stop}
+[Start]{.stop-no} [Why Networks?](intro/why-networks.qmd){.stop-title}
+
+[Why do we need a science of networks instead of ordinary statistics?]{.stop-q}
+:::
+
+::: {.stop}
+[M01]{.stop-no} [Euler Tour](m01-euler_tour/01-concepts.qmd){.stop-title}
+
+[Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?]{.stop-q}
+
+Worksheet: [the Königsberg bridges](https://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) (PDF, hosted by Esteban Moro)
+:::
+
+::: {.stop}
+[M02]{.stop-no} [Small World](m02-small-world/01-concepts.qmd){.stop-title}
+
+[Why is a stranger on the other side of the world only about six handshakes away?]{.stop-q}
+
+Worksheets: [Six Handshakes](m02-small-world/pen-and-paper/six-handshakes.pdf) · [Turning the Dial](m02-small-world/pen-and-paper/turning-the-dial.pdf) · [Do Your Friends Know Each Other?](m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf)
+:::
+
+::: {.stop}
+[M03]{.stop-no} [Robustness](m03-robustness/01-concepts.qmd){.stop-title}
+
+[How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?]{.stop-q}
+
+Worksheet: [Build it, Break it, and Build it Back](m03-robustness/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M04]{.stop-no} [Friendship Paradox](m04-node-degree/01-concepts.qmd){.stop-title}
+
+[Why do your friends have more friends than you do?]{.stop-q}
+
+Worksheet: [Reading Heavy Tails](m04-node-degree/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M05]{.stop-no} [Clustering](m05-clustering/01-concepts.qmd){.stop-title}
+
+[What is a community in a network, and how would you know if the one you found is real?]{.stop-q}
+
+Worksheet: [Discovering Friend Groups](m05-clustering/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M06]{.stop-no} [Centrality](m06-centrality/01-concepts.qmd){.stop-title}
+
+[Which node is the most important — and important in what sense?]{.stop-q}
+
+Worksheet: [Who's the Big Cheese in the University Clubs?](m06-centrality/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M07]{.stop-no} [Random Walks](m07-random-walks/01-concepts.qmd){.stop-title}
+
+[What does a network look like to a walker who has no idea where they are going?]{.stop-q}
+
+Worksheet: [Where Does the Drunkard Sleep?](m07-random-walks/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M08]{.stop-no} [Embedding](m08-embedding/01-concepts.qmd){.stop-title}
+
+[How do you turn a network into coordinates without throwing away what makes it a network?]{.stop-q}
+
+Worksheet: [From Matrix to Map](m08-embedding/pen-and-paper/exercise.pdf)
+:::
+
+::: {.stop}
+[M09]{.stop-no} [Graph Neural Networks](m09-graph-neural-networks/01-concepts.qmd){.stop-title}
+
+[An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?]{.stop-q}
+
+Worksheet: [Convolution and the Weisfeiler-Lehman Test](m09-graph-neural-networks/pen-and-paper/exercise.pdf)
+:::
+
+::::
+
+## Everything else
+
+[Welcome](course/welcome.md) · [About the course](course/about.md) ·
+[Activities and grading](course/activities.md) · [Setup](course/setup.qmd) ·
+[Pair Notebook](course/pair-notebook.qmd) · [Group Mini-Project](course/mini-project.qmd) ·
+[Discord](course/discord.md)
+
+Slides are handed out in class and live in the course repository, not on this
+site: [slides/](https://github.com/skojaku/adv-net-sci/tree/main/slides) holds
+the current decks for the introduction and M01–M06, while M07–M09 are still the
+older decks under
+[slides/legacy/](https://github.com/skojaku/adv-net-sci/tree/main/slides/legacy).

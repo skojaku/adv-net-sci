@@ -1,60 +1,612 @@
 ---
-title: "Centrality Concepts"
+title: "Who Is the Most Important Node? It Depends What You Ask"
 ---
 
-## What is centrality?
+> **The big question of this module.** Which node is the most important — and important in what sense?
+
+::: {.callout-note title="What you'll learn in this module"}
+Centrality is one of the most widely used — and most quietly misused — ideas in network analysis. This module asks what "important" can mean, and what it costs to answer.
+
+You'll learn:
+
+- What **centrality** is, and why the question is meaningless until you say *important for what*.
+- How to **operationalize** importance three different ways: by counting connections, by measuring distance, and by following walks.
+- How each measure is actually **computed**, and what it costs on a large network.
+- The **limitations**: when centralities agree, when they disagree, and why the disagreement is the interesting part.
+:::
+
+## Important in what sense?
 
 Have you ever wondered who the most popular person in your school is? Or which idea is the most important in a subject? Or maybe which movie everyone's talking about right now?
 These questions are all about finding out what's important in a network of people, ideas, or things. In network science, we call this *centrality*.
 
 Centrality or *importance* is a question of how important a node is in a network.
 But the notion of *importance* is somewhat vague.
-In what sense we say a node is important?
+In what sense do we say a node is important?
 
-::: {.callout-note title="Exercise"}
+That vagueness is not a defect to be tidied away. It is the subject. Every measure in this module is one precise answer to "important in what sense?", and they are built to disagree with each other.
 
-Try out the pen and paper exercise below to get a sense of centrality: [School exercises](./pen-and-paper/exercise.pdf)
-
+::: {.callout-note title="Do this first, with a pencil"}
+[Who's the Big Cheese in the University Clubs?](./pen-and-paper/exercise.pdf) — thirteen students in eight clubs. Rank them by hand, four different ways, before you read a single formula. Four questions, three different winners.
 :::
 
-![](../figs/centrality.jpg){width="50%" fig-align="center"}
+### One small network, carried through the whole module
 
-## Distance-based centrality
+Every measure below is worked on the same five-node network, so you can compare the answers directly.
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Milliarium_Aureum_op_het_Forum_Romanum_te_Rome_Columna_Miliaria_in_Foro_Romano_%28titel_op_object%29_Antieke_monumenten_%28serietitel%29_Antiquae_Urbis_Splendor_%28serietitel%29%2C_RP-P-2016-345-28-1.jpg/1546px-thumbnail.jpg?20191217151048" alt="Roma Foro Romano Miliarium Aureum" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
+**Nodes** 1, 2, 3, 4, 5. **Edges** 1–2, 1–3, 2–3, 3–4, 4–5.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The running example, drawn once. A still picture, not an animation: it uses
+   the kit's paper and pen (assets/anim.css) and nothing from the sequencer.
+   The only rules here are the two the kit lacks — a label printed inside a
+   node, and a small annotation in the margin of the drawing.
+   -------------------------------------------------------------------------- */
+#five-net { --anim-svg-max: 440px; --anim-knockout-w: 3px; }
+#five-net .fn-in {
+  font-family: var(--_hand);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--_white);
+}
+#five-net .fn-tag { font-family: var(--_hand); font-size: 12px; fill: var(--_ink-soft); }
+#five-net .fn-lead { stroke: var(--_ink-faint); stroke-width: 1; stroke-dasharray: 3 3; }
+</style>
+
+<figure class="anim-stage" id="five-net">
+  <svg class="anim-svg" viewBox="0 0 320 160" role="img"
+       aria-label="Five nodes. Nodes 1, 2 and 3 form a triangle. Node 3 also joins to node 4, and node 4 joins to node 5, making a two-step tail off the triangle.">
+    <g>
+      <line class="anim-edge" x1="60" y1="40" x2="60" y2="114"></line>
+      <line class="anim-edge" x1="60" y1="40" x2="135" y2="77"></line>
+      <line class="anim-edge" x1="60" y1="114" x2="135" y2="77"></line>
+      <line class="anim-edge" x1="135" y1="77" x2="212" y2="77"></line>
+      <line class="anim-edge" x1="212" y1="77" x2="285" y2="77"></line>
+    </g>
+    <g>
+      <circle class="anim-node" cx="60" cy="40" r="15"></circle>
+      <circle class="anim-node" cx="60" cy="114" r="15"></circle>
+      <circle class="anim-node" cx="135" cy="77" r="15"></circle>
+      <circle class="anim-node" cx="212" cy="77" r="15"></circle>
+      <circle class="anim-node" cx="285" cy="77" r="15"></circle>
+    </g>
+    <g>
+      <text class="fn-in" x="60" y="45" text-anchor="middle">1</text>
+      <text class="fn-in" x="60" y="119" text-anchor="middle">2</text>
+      <text class="fn-in" x="135" y="82" text-anchor="middle">3</text>
+      <text class="fn-in" x="212" y="82" text-anchor="middle">4</text>
+      <text class="fn-in" x="285" y="82" text-anchor="middle">5</text>
+    </g>
+    <g>
+      <line class="fn-lead" x1="146" y1="128" x2="137" y2="97"></line>
+      <text class="fn-tag anim-knockout" x="60" y="16" text-anchor="middle">the triangle</text>
+      <text class="fn-tag anim-knockout" x="248" y="55" text-anchor="middle">the tail</text>
+      <text class="fn-tag anim-knockout" x="158" y="140" text-anchor="middle">the only way across</text>
+    </g>
+  </svg>
+  <figcaption class="anim-note">
+    The network every number in this module refers to. Node 3 sits in the
+    triangle with 1 and 2, <em>and</em> holds the only link to the tail; node 5
+    dangles off the end. Copy it once and keep it beside you.
+  </figcaption>
+</figure>
+```
+
+A network that small does not argue with itself. Whatever you ask of it, node 3
+answers: most connections, shortest distances to everyone, most paths running
+through it, best-connected friends — node 3 wins all four. That makes it a good
+place to check arithmetic and a bad place to learn what centrality *is*.
+
+So before any formula, here is a network of fifteen where the four questions
+give four different winners. One drawing, four buttons, and a crown that will
+not sit still. Press them in any order.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The moving crown — only the rules this one figure needs. Paper, panels,
+   buttons, tallies and motion all come from assets/anim.css; the sequencer
+   from assets/anim.js. Colours are the kit's resolved tokens (var(--_ink),
+   var(--_accent), …) — never literals.
+   -------------------------------------------------------------------------- */
+
+/* Two crowds and a bridge is a 2:1 picture, so it takes the whole width and
+   the card sits under it rather than beside it: the kit's 310px default cap
+   would leave this drawing unreadable. */
+#crown-move { --anim-svg-max: 100%; --anim-knockout-w: 2.6px; }
+#crown-move .cm-card-slot { max-width: 25rem; margin: 0.1rem auto 0; }
+
+/* A node is a <g> holding a unit circle, so "how big is this node under this
+   measure" is a transform — the one property that animates everywhere without
+   help. The outline is told not to scale with it. */
+#crown-move .cm-node { transition: transform 0.5s cubic-bezier(0.34, 1.25, 0.64, 1); }
+#crown-move .cm-node circle { vector-effect: non-scaling-stroke; }
+#crown-move .cm-king { fill: var(--_amber); }
+#crown-move .cm-crown { transition: transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1); }
+#crown-move .cm-crown path {
+  fill: var(--_amber);
+  stroke: var(--_ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+/* Every bit of type in the drawing sits on top of the ink, so each of these
+   is drawn with the kit's .anim-knockout as well; only size and fill are the
+   figure's own business. */
+#crown-move .cm-lbl,
+#crown-move .cm-rank,
+#crown-move .cm-row { font-family: var(--_hand); }
+#crown-move .cm-lbl { font-size: 10px; fill: var(--_ink-soft); }
+#crown-move .cm-rank { font-size: 9px; fill: var(--_ink-faint); }
+#crown-move .cm-row { font-size: 10px; fill: var(--_ink-soft); }
+#crown-move .cm-row-hi { font-size: 11.5px; font-weight: 700; fill: var(--_ink); }
+#crown-move .cm-legend { font-size: 10px; fill: var(--_amber); }
+#crown-move .cm-hd { font-family: var(--_hand); font-size: 12.5px; font-weight: 700; fill: var(--_ink); }
+#crown-move .cm-sub { font-family: var(--_hand); font-size: 9.5px; fill: var(--_ink-soft); }
+#crown-move .cm-thread { stroke: var(--_ink-faint); stroke-width: 0.9; fill: none; opacity: 0.32; }
+
+/* The four questions: this figure's only control. */
+#crown-move .cm-ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+}
+#crown-move .cm-ask-lead { font-family: var(--_hand); font-size: 0.82rem; color: var(--_ink-soft); }
+#crown-move .cm-ask-btn { font-size: 0.8rem; }
+#crown-move .cm-ask-btn[aria-pressed="true"] {
+  color: var(--_white);
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #crown-move .cm-node, #crown-move .cm-crown { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="crown-move">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-cm-net></div>
+    <div class="cm-card-slot" data-anim-clear data-cm-card></div>
+  </div>
+
+  <div class="cm-ask" role="group" aria-label="Choose the question">
+    <span class="cm-ask-lead">ask:</span>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="0" aria-pressed="false">most contacts?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="1" aria-pressed="false">closest to all?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="2" aria-pressed="false">most paths?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="3" aria-pressed="false">best-connected friends?</button>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The moving crown. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css +
+   assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     One network, drawn once. Fifteen people, numbered as they are labelled:
+
+       1        the hub of the left crowd, joined to all seven of 2..8
+       2..8     a ring of seven, each also joined to its two ring neighbours
+       9        joined to 2 and 3, and to the broker
+       10       the broker: two links into the left crowd, one into the right
+       11..15   five people who all know each other — every pair is joined
+
+     29 edges in all. Every score below was computed once, offline, with
+     networkx on exactly this edge list and pasted in; nothing in this file
+     runs a graph algorithm.
+
+       degree       crown 1  (7)      runner-up 2 and 11 (5)
+       closeness    crown 2  (0.519)  runner-up 10 (0.483), then 1 (0.467)
+       betweenness  crown 10 (45)     runner-up 2 (40.5), 11 (40)  [unnormalised]
+       eigenvector  crown 11 (1.000)  runner-up 12..15 (0.900)     [largest = 1]
+
+     Ties are listed worst-first for the four crowned nodes, so no protagonist
+     is ever shown a rank better than it earned: node 10's degree of 3 is the
+     lowest in the network, shared with six others, and it is drawn 15th.
+     ------------------------------------------------------------------------ */
+  const NODE = [[120,128],[176.2,101.8],[175.7,155.2],[133.5,188.5],[81.2,176.3],[58,127.8],[81.5,79.4],[133.9,67.6],[208,128],[258,128],[312,128],[345.2,82.3],[398.8,99.8],[398.8,156.2],[345.2,173.7]];
+  const LBL  = [[100.5,141],[192,88],[193.7,167.4],[137.9,211.5],[68.6,195.4],[38,131.2],[69.1,67.2],[138.4,51.6],[208,148],[258,152],[296,145],[339,66.8],[415,91.5],[415,171.5],[339,196.2]];
+  const EDGE = [[0,1],[1,2],[0,2],[2,3],[0,3],[3,4],[0,4],[4,5],[0,5],[5,6],[0,6],[6,7],[0,7],[7,1],[8,1],[8,2],[9,1],[9,8],[9,10],[10,11],[10,12],[10,13],[10,14],[11,12],[11,13],[11,14],[12,13],[12,14],[13,14]];
+  const BRIDGE = [16, 17, 18];      /* the broker's three edges: 10-2, 10-9, 10-11 */
+  const HOT = [0, 1, 9, 10];        /* the four nodes that ever wear the crown */
+
+  const ASK = [
+    { name: "degree", short: "how many?",
+      q: "who has the most direct contacts?",
+      line: "The hub of the left crowd, and it is not close. This is the answer everyone expects.",
+      v: [7,5,4,3,3,3,3,3,3,3,5,4,4,4,4],
+      ord: [0,1,10,2,11,12,13,14,3,4,5,6,7,8,9],
+      fmt: function (x) { return String(x); } },
+    { name: "closeness", short: "how far?",
+      q: "who can reach everyone else in the fewest steps?",
+      line: "Not the hub — the one standing at its edge, next to the bridge. The broker itself is a whisker behind.",
+      v: [0.467,0.519,0.424,0.350,0.341,0.341,0.341,0.412,0.438,0.483,0.412,0.318,0.318,0.318,0.318],
+      ord: [1,9,0,8,2,7,10,3,4,5,6,11,12,13,14],
+      fmt: function (x) { return x.toFixed(2); } },
+    { name: "betweenness", short: "in the way?",
+      q: "whose removal cuts the most paths?",
+      line: "Node 10 has three links, as few as anyone here. Cut it and the two crowds never speak again.",
+      v: [29.8,40.5,7.5,0.8,0.5,0.5,0.5,3.8,5,45,40,0,0,0,0],
+      ord: [9,1,10,0,2,8,7,3,4,5,6,11,12,13,14],
+      fmt: function (x) { return String(x); } },
+    { name: "eigenvector", short: "whose friends?",
+      q: "whose friends are themselves well connected?",
+      line: "Node 11 sits inside the tight five, where everyone knows everyone. Node 1, with seven friends, comes sixth.",
+      v: [0.816,0.680,0.575,0.436,0.401,0.395,0.407,0.463,0.430,0.513,1.000,0.900,0.900,0.900,0.900],
+      ord: [10,11,12,13,14,0,1,2,9,7,3,8,6,4,5],
+      fmt: function (x) { return x.toFixed(2); } }
+  ];
+
+  /* --------------------------------------------------------------- scenes */
+  function askScene(k, label, note) {
+    return {
+      label: label,
+      note: note,
+      async run(ctx) {
+        ctx.askCard(k);
+        await ctx.sleep(250);
+        ctx.setMeasure(k);
+        await ctx.sleep(4100);
+      }
+    };
+  }
+
+  const scenes = [
+    {
+      label: "One drawing, fifteen people",
+      note: "Fifteen people: nine on the left gathered around one hub, five on the right who all know each other, and one person in the middle who knows both. Nothing has been measured yet.",
+      async run(ctx) {
+        ctx.drawNet();
+        const c = ctx.card("the network");
+        [["people", "15"], ["links", "29"], ["crowds", "9 + 5"]].forEach(function (row, i) {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (2.1 + i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "and node 10, who knows two people on the left and one on the right");
+        last.style.animationDelay = ctx.fast() ? "0s" : "3.3s";
+        c.appendChild(last);
+        await ctx.sleep(4600);
+      }
+    },
+
+    askScene(0, "Ask: most contacts?",
+      "Degree asks who has the most direct contacts. The crown lands on node 1, the hub, with seven — the obvious node, and the answer everyone expects."),
+
+    askScene(1, "Ask: closest to all?",
+      "Closeness asks who can reach everyone else in the fewest steps. The crown moves to node 2, on the edge of the left crowd: 0.52 against the hub's 0.47."),
+
+    askScene(2, "Ask: most paths?",
+      "Betweenness asks whose removal cuts the most paths. The crown jumps to node 10, the broker — which has the fewest links of anyone here."),
+
+    askScene(3, "Ask: best-connected friends?",
+      "Eigenvector asks whose friends are themselves well connected. The crown crosses to node 11, inside the tight five. The hub falls to sixth."),
+
+    {
+      label: "Four questions, four kings",
+      note: "Four questions, four different winners, one unchanged network. The amber thread is node 10, the broker: joint last on direct contacts, first of fifteen on paths.",
+      async run(ctx) {
+        await ctx.board();
+        await ctx.sleep(2600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("crown-move"), scenes, {
+    stepsLabel: "Centrality questions",
+
+    /* The three things only this animation has: a network that persists across
+       five scenes, a card the scenes rewrite, and the four question buttons.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const net = ctx.$("[data-cm-net]");
+      const side = ctx.$("[data-cm-card]");
+      const asks = ctx.$$("[data-cm-ask]");
+      const S = { built: false };
+
+      /* Radius is min-max scaled inside each measure, so what you see is the
+         spread of that measure's scores rather than the size of its numbers —
+         degree runs 3..7 and eigenvector 0.32..1. */
+      ASK.forEach(function (m) {
+        const lo = Math.min.apply(null, m.v), hi = Math.max.apply(null, m.v);
+        m.r = m.v.map(function (x) { return 5 + 6.6 * (x - lo) / (hi - lo); });
+        m.row = [];
+        m.ord.forEach(function (n, i) { m.row[n] = i; });
+      });
+
+      const len = function (a, b) {
+        return Math.hypot(NODE[a][0] - NODE[b][0], NODE[a][1] - NODE[b][1]);
+      };
+
+      function press(k) {
+        asks.forEach(function (b, i) {
+          b.setAttribute("aria-pressed", i === k ? "true" : "false");
+        });
+      }
+
+      /* Scene 1 builds the network; scenes 2-5 only ever re-size it. */
+      function drawNet() {
+        net.textContent = "";
+        const svg = ctx.svgRoot("28 38 400 186");
+        const g = function () { return svg.appendChild(ctx.svgEl("g")); };
+        const gEdge = g(), gNode = g(), gLbl = g(), gCrown = g();
+        const slow = !ctx.fast();
+
+        S.edges = EDGE.map(function (e, i) {
+          const p = ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            p.style.setProperty("--dash", Math.ceil(len(e[0], e[1])) + 4);
+            p.style.animationDelay = (0.2 + i * 0.045) + "s";
+          }
+          return gEdge.appendChild(p);
+        });
+
+        S.nodes = NODE.map(function (q, i) {
+          const gg = ctx.svgEl("g", { "class": "cm-node" + (slow ? " anim-fade" : "") });
+          gg.style.transform = "translate(" + q[0] + "px," + q[1] + "px) scale(0.75)";
+          gg.appendChild(ctx.svgEl("circle", { r: 10, "class": "anim-node" }));
+          if (slow) gg.style.animationDelay = (1 + i * 0.05) + "s";
+          return gNode.appendChild(gg);
+        });
+
+        LBL.forEach(function (q, i) {
+          const t = ctx.svgEl("text", {
+            x: q[0], y: q[1], "text-anchor": "middle",
+            "class": "anim-knockout cm-lbl" + (slow ? " anim-fade" : "")
+          });
+          t.textContent = String(i + 1);
+          if (slow) t.style.animationDelay = (1.6 + i * 0.04) + "s";
+          gLbl.appendChild(t);
+        });
+
+        const cr = ctx.svgEl("g", { "class": "cm-crown" });
+        cr.appendChild(ctx.svgEl("path",
+          { d: "M -10 5 L -12 -7 L -6 -1 L 0 -9 L 6 -1 L 12 -7 L 10 5 Z" }));
+        cr.style.opacity = 0;
+        gCrown.appendChild(cr);
+
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "Fifteen people — a different network from the five-node one above, built so the four measures disagree. The numbers are names, not scores."));
+
+        S.crown = cr;
+        S.built = true;
+        press(-1);
+      }
+
+      /* Pure lookup: a node's size and the crown's seat are array entries. */
+      function setMeasure(k) {
+        if (!S.built) return;
+        const m = ASK[k], king = m.ord[0];
+        S.nodes.forEach(function (gg, i) {
+          gg.style.transform = "translate(" + NODE[i][0] + "px," + NODE[i][1] +
+            "px) scale(" + (m.r[i] / 10).toFixed(3) + ")";
+          gg.firstChild.setAttribute("class", "anim-node" + (i === king ? " cm-king" : ""));
+        });
+        S.crown.style.opacity = 1;
+        S.crown.style.transform =
+          "translate(" + NODE[king][0] + "px," + (NODE[king][1] - 24) + "px)";
+        /* Only betweenness is about the bridge, so only betweenness lights it. */
+        S.edges.forEach(function (e, i) {
+          e.setAttribute("class",
+            "anim-edge" + (k === 2 && BRIDGE.indexOf(i) >= 0 ? " anim-amber-stroke" : ""));
+        });
+        press(k);
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      function askCard(k) {
+        const m = ASK[k];
+        const c = card(m.name);
+        c.appendChild(ctx.el("div", "anim-quote", m.q));
+        m.ord.slice(0, 3).forEach(function (n, i) {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>node " + (n + 1) + "</span><b>" + m.fmt(m.v[n]) + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.5 + i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        const w = ctx.el("div", "anim-caption anim-fade", m.line);
+        w.style.animationDelay = ctx.fast() ? "0s" : "1.7s";
+        c.appendChild(w);
+        return c;
+      }
+
+      /* The last beat: the same fifteen nodes ranked four times, threaded so
+         the crossings show. It takes over the drawing's slot — except for a
+         reader who asked for no motion, who never sees the scenes play and
+         would otherwise be left with the rankings and no network at all. */
+      async function board() {
+        if (!ctx.reduced) {
+          S.built = false;
+          press(-1);
+          side.textContent = "";
+          net.textContent = "";
+        }
+
+        const COL = [104, 244, 384, 524], Y0 = 54, DY = 13.4;
+        const slow = !ctx.fast();
+        const svg = ctx.svgRoot("20 0 552 292");
+        const gThread = svg.appendChild(ctx.svgEl("g"));
+        const gHot = svg.appendChild(ctx.svgEl("g"));
+        const gTxt = svg.appendChild(ctx.svgEl("g"));   /* last, so type wins */
+        net.appendChild(svg);
+
+        function label(box, x, y, cls, text, anchor, delay) {
+          const t = ctx.svgEl("text", {
+            x: x, y: y, "text-anchor": anchor || "middle",
+            "class": cls + (slow ? " anim-fade" : "")
+          });
+          t.textContent = text;
+          if (slow) t.style.animationDelay = delay + "s";
+          return box.appendChild(t);
+        }
+
+        ASK.forEach(function (m, c) {
+          label(gTxt, COL[c], 18, "cm-hd", m.name, "middle", 0.1 + c * 0.15);
+          label(gTxt, COL[c], 32, "cm-sub", m.short, "middle", 0.2 + c * 0.15);
+        });
+        for (let i = 0; i < 15; i++) {
+          label(gTxt, 54, Y0 + i * DY + 3.4, "anim-knockout cm-rank", (i + 1) + ".", "end", 0.7 + i * 0.02);
+        }
+        await ctx.sleep(700);
+
+        ASK.forEach(function (m, c) {
+          m.ord.forEach(function (n, i) {
+            const hot = HOT.indexOf(n) >= 0;
+            label(gTxt, COL[c], Y0 + i * DY + 3.4,
+              "anim-knockout cm-row" + (hot ? " cm-row-hi" : ""), String(n + 1),
+              "middle", 0.9 + c * 0.35 + i * 0.02);
+          });
+        });
+        await ctx.sleep(2300);
+
+        const pts = function (n) {
+          return ASK.map(function (m, c) {
+            return COL[c] + "," + (Y0 + m.row[n] * DY);
+          }).join(" ");
+        };
+        for (let n = 0; n < 15; n++) {
+          if (HOT.indexOf(n) >= 0) continue;
+          const p = ctx.svgEl("polyline",
+            { points: pts(n), "class": "cm-thread" + (slow ? " anim-fade" : "") });
+          if (slow) p.style.animationDelay = (n * 0.05) + "s";
+          gThread.appendChild(p);
+        }
+        await ctx.sleep(900);
+
+        [0, 1, 10, 9].forEach(function (n, i) {
+          const broker = (n === 9);
+          const p = ctx.svgEl("polyline", {
+            points: pts(n),
+            "class": (broker ? "anim-amber-stroke" : "anim-accent-stroke") +
+                     (slow ? " anim-draw" : "")
+          });
+          p.style.strokeWidth = broker ? "2.8" : "1.7";
+          if (!broker) p.style.opacity = "0.72";
+          if (slow) {
+            p.style.setProperty("--dash", 900);
+            p.style.animationDuration = "0.7s";
+            p.style.animationDelay = (i * 0.45) + "s";
+          }
+          gHot.appendChild(p);
+        });
+        await ctx.sleep(2200);
+
+        label(gTxt, 54, 264, "anim-knockout cm-row cm-legend",
+          "amber: node 10, the broker. As few links as anyone here — and every", "start", 0);
+        label(gTxt, 54, 278, "anim-knockout cm-row cm-legend",
+          "path between the two crowds runs through it.", "start", 0.2);
+      }
+
+      /* The one control. Pressing a question pauses the sequence and re-asks
+         the drawing; on the last scene the drawing is gone, so it jumps back
+         to that question's step instead. */
+      asks.forEach(function (b) {
+        b.addEventListener("click", function () {
+          const k = parseInt(b.getAttribute("data-cm-ask"), 10);
+          if (!S.built) { ctx.go(k + 1); return; }
+          ctx.pause();
+          askCard(k);
+          setMeasure(k);
+        });
+      });
+
+      return { drawNet, setMeasure, card, askCard, board };
+    }
+  });
+});
+</script>
+```
+
+Nothing in the picture changed between those four crowns. Only the question
+did — and that is the whole module in one object. The rest of this page makes
+each question precise, and adds a few more.
+
+## Just count the friends
+
+The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
+**Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
+
+$$
+c_i = d_i = \sum_{j} A_{ij}
+$$
+
+where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
+
+On our five-node network: $d_1 = 2$, $d_2 = 2$, $d_3 = 3$, $d_4 = 2$, $d_5 = 1$. Node 3 wins, node 5 comes last, and nodes 1, 2 and 4 tie. Hold on to that three-way tie — almost every measure below breaks it, and each breaks it differently.
+
+![Degree centrality on a larger example. Darker, larger nodes have more direct connections.](../figs/degree.svg){#fig-degree}
+
+::: {.callout-note title="About the grey panels" collapse="true"}
+Every panel like the one above shows the *same* ten-node network — a different, bigger network from our five-node example, and one whose nodes are numbered 0 to 9 because that is how Python counts. Their job is to show how a measure spreads across a network at a glance. The numbers you can check by hand are the five-node ones in the running text.
+:::
+
+Degree centrality is a no brainer measure of centrality. It is also crude: it counts how many neighbors a node has and ignores entirely who those neighbors are.
+
+## The Golden Milestone: central means close to everyone
 
 Let's talk about an ancient Roman monument called the *Milliarium Aureum*, also known as the *Golden Milestone*.
 It was the starting point for measuring distances on all major roads in the Roman Empire.
-Emperor Augustus built it when Rome changed from a republic to an empire.
-The monument not only marked the distances but also represent a centralization of power, where Rome transitioned from a Republic to an Empire.
+Emperor Augustus built it when Rome changed from a republic to an empire — the monument marked distances, but it also announced that power now had a single center.
 Perhaps the Romans understood the importance of being central in terms of distance, and this concept can be applied to define *centrality* in networks.
 
-This family of centrality measures is based on shortest path distances between nodes. They consider a node important if it has short distances to other nodes or if it lies on many shortest paths.
+<!-- The Milliarium Aureum photograph used to be hotlinked from Wikimedia; that URL now returns HTTP 400. Commit a local copy under lecture-note/figs/ before putting the picture back. -->
 
+This family of centrality measures is based on shortest path distances between nodes. They consider a node important if it has short distances to other nodes or if it lies on many shortest paths.
 
 ### Closeness centrality
 
 **Closeness centrality** measures how close a node is to all other nodes in the network. A node is central if it is close to all other nodes, which is operationally defined as
 
 $$
-c_i = \frac{N - 1}{\sum_{j = 1}^N \text{shortest path length from } j \text{ to } i}
+c_i = \frac{N - 1}{\sum_{j \neq i} \text{shortest path length from } j \text{ to } i}
 $$
 
-![Closeness Centrality Visualization. Nodes with higher centrality (brighter colors) are closer to all other nodes on average.](../figs/closeness.svg){#fig-closeness}
-
-
 where $N$ is the number of nodes in the network. The numerator, $N - 1$, is the normalization factor to make the centrality have a maximum value of 1.
+
+Node 3 of our network reaches nodes 1, 2 and 4 in one step and node 5 in two, so its distances sum to $1+1+1+2 = 5$ and $c_3 = 4/5 = 0.8$. Node 5 needs $1+2+3+3 = 9$ steps in total, so $c_5 = 4/9 = 0.44$. The tie between nodes 1, 2 and 4 is already broken: node 4 scores $4/6 = 0.67$ against $4/7 = 0.57$ for nodes 1 and 2, because sitting next to the tail is a better place to stand than sitting inside the triangle.
+
+![Closeness centrality on a larger example. Darker, larger nodes are closer to all other nodes on average.](../figs/closeness.svg){#fig-closeness}
 
 ::: {.column-margin}
 
 Question: What would be a graph where a node has the maximum closeness centrality of value 1?
 
-::: {.callout collapse="true"}
-## Click to see the answer
+::: {.callout collapse="true" title="Click to see the answer"}
 
-The simplest example is a star graph, where one node is connected to all other nodes. The node at the center has the highest closeness centrality.
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_network_7.svg/1920px-Star_network_7.svg.png" alt="Star graph S7" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+A star graph: one center joined to all $N-1$ others. The center is one step from everybody, so its distances sum to exactly $N-1$ and $c = (N-1)/(N-1) = 1$.
 
 :::
 :::
@@ -69,10 +621,11 @@ $$
 c_i = \sum_{j\neq i} \frac{1}{\text{shortest path length from } j \text{ to } i}
 $$
 
-![Harmonic Centrality Visualization. A variant of closeness that works well with disconnected components.](../figs/harmonic.svg){#fig-harmonic}
+The distance between two nodes in different connected components has zero contribution to the harmonic centrality, making it a useful measure for disconnected networks. The reciprocal is taken *before* the sum rather than after, so one unreachable node adds zero instead of poisoning the whole score.
 
+On our network, node 3 scores $1 + 1 + 1 + \tfrac12 = 3.5$ and node 5 scores $1 + \tfrac12 + \tfrac13 + \tfrac13 = 2.17$ — the same ranking as closeness here, but it would survive a network that fell into pieces.
 
-The distance between two nodes in different connected components has zero contribution to the harmonic centrality, making it a useful measure for disconnected networks.
+![Harmonic centrality on a larger example. A variant of closeness that works well with disconnected components.](../figs/harmonic.svg){#fig-harmonic}
 
 ### Eccentricity centrality
 
@@ -82,14 +635,12 @@ $$
 c_i = \frac{1}{\max_{j} \text{shortest path length from } i \text{ to } j}
 $$
 
-![Eccentricity Centrality Visualization. High-centrality nodes (brighter colors) have the smallest maximum distance to any other node.](../figs/eccentricity.svg){#fig-eccentricity}
+Node 3's farthest node is node 5, two steps away, so $c_3 = 1/2$. Node 5's farthest nodes are 1 and 2, three steps away, so $c_5 = 1/3$.
 
+![Eccentricity centrality on a larger example. High-centrality nodes have the smallest maximum distance to any other node.](../figs/eccentricity.svg){#fig-eccentricity}
 
 ::: {.column-margin}
-::: {.callout-note title="When is eccentricity centrality useful?"}
-Unlike closeness or harmonic centrality, eccentricity centrality optimizes for the worst-case scenario, making it ideal when equity and maximum response times are critical. For example, placing emergency services or facilities to ensure no location is too far from help, designing robust communication or transportation networks that remain connected even if parts fail, and positioning distribution centers to guarantee reasonable delivery times to the most remote customers.
-
-:::
+Unlike closeness or harmonic centrality, eccentricity centrality optimizes for the worst case, which is what you want when the worst case is what hurts: placing emergency services so that no address is too far from help, designing a network that stays reachable when parts of it fail, or siting a depot so that even the most remote customer gets a reasonable delivery time.
 :::
 
 ### Betweenness centrality
@@ -97,319 +648,412 @@ Unlike closeness or harmonic centrality, eccentricity centrality optimizes for t
 **Betweenness centrality** considers that a node is important if it lies on many shortest paths between other nodes.
 
 $$
-c_i = \sum_{j < k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
+c_i = \sum_{\substack{j < k \\ j \neq i,\; k \neq i}} \frac{\sigma_{jk}(i)}{\sigma_{jk}}
 $$
 
-![Betweenness Centrality Visualization. Brighter nodes lie on a larger number of shortest paths between other nodes.](../figs/betweenness.svg){#fig-betweenness}
+where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of those shortest paths that pass through node $i$.
 
+Why divide by $\sigma_{jk}$ at all? Because two nodes can be joined by *several* different paths of the same shortest length, and then no single node deserves full credit for the connection. In a square 1–2–3–4–1, nodes 1 and 3 are two steps apart by two different routes, so $\sigma_{13} = 2$; node 2 lies on one of them and collects $1/2$, and so does node 4.
 
-where $\sigma_{jk}$ is the number of shortest paths between nodes $j$ and $k$, and $\sigma_{jk}(i)$ is the number of shortest paths between nodes $j$ and $k$ that pass through node $i$.
+On our five-node network, node 3 is the only route between $\{1,2\}$ and $\{4,5\}$, so it collects the four pairs $(1,4), (1,5), (2,4), (2,5)$ and scores 4. Node 4 collects $(1,5), (2,5), (3,5)$ and scores 3. Nodes 1, 2 and 5 lie on no shortest path between anyone and score 0 — including node 1, which is tied with node 4 on degree.
 
-## Walk-based centrality
+![Betweenness centrality on a larger example. Darker, larger nodes lie on more shortest paths between other nodes.](../figs/betweenness.svg){#fig-betweenness}
 
-"A man is known by the company he keeps" is a quote from Aesop who lived in the ancient Greece, a further back in time from the Roman Empire.
+## A man is known by the company he keeps
+
+"A man is known by the company he keeps" is a quote from Aesop, who lived in ancient Greece, further back in time than the Roman Empire.
 It suggests that a person's character is reflected by the people this person is friends with.
 This idea can be applied to define the *centrality* of a node in a network.
 
-This family of centrality measures considers that a node is important if it is connected to other important nodes, or if it receives many "walks" or "votes" from other nodes in the network. These measures often use recursive definitions and are computed using linear algebra techniques.
+This family of centrality measures considers that a node is important if it is connected to other important nodes, or if it receives many "walks" or "votes" from other nodes in the network.
 
 ::: {.column-margin}
-**Aesop** was an ancient Greek storyteller believed to have lived around the 6th century BCE. He is famous for his fables—short stories that use animals and everyday situations to teach moral lessons.
-
-
-![The Wolf and the Kid. Taken from [Aesop's Fables from Heritage History](https://www.heritage-history.com/index.php?c=read&author=winter&book=aesop&story=wolf)](https://www.heritage-history.com/books/winter/aesop/zpage010.gif)
+**Aesop** was an ancient Greek storyteller believed to have lived around the 6th century BCE. He is famous for his fables — short stories that use animals and everyday situations to teach moral lessons.
 :::
 
+### Centralities based on centralities
 
+**Eigenvector centrality** considers that a node is important if it is connected to other important nodes. Yes, it sounds circular! But it is actually computable, and the way to compute it is also the way to feel it.
 
-### Eigenvector centrality
+**Give every node one point. Then, over and over, replace each node's score with the sum of its neighbors' scores.** Nothing else. On our five-node network, starting from all ones:
 
-**Eigenvector centrality** considers that a node is important if it is connected to other important nodes. Yes, it sounds like circular! But it is actually computable! Let us define it more precisely by the following equation.
+| Round | node 1 | node 2 | node 3 | node 4 | node 5 |
+| ----- | ------ | ------ | ------ | ------ | ------ |
+| 0     | 1      | 1      | 1      | 1      | 1      |
+| 1     | 2      | 2      | 3      | 2      | 1      |
+| 2     | 5      | 5      | 6      | 4      | 2      |
+| 3     | 11     | 11     | 14     | 8      | 4      |
+
+Round 1 is just the degree. By round 2 something new has happened: node 4 has fallen behind nodes 1 and 2 even though all three have degree 2, because node 4 spends half its connections on the dead end node 5, while nodes 1 and 2 feed each other and the hub. That is "a man is known by the company he keeps", computed.
+
+The numbers keep growing, so divide by the largest each round to keep them in range. Then they settle:
+
+$$
+(c_1, c_2, c_3, c_4, c_5) \rightarrow (0.82,\; 0.82,\; 1,\; 0.57,\; 0.26)
+$$
+
+and they stop moving. This repeat-and-rescale procedure is called **power iteration**, and it is all you need to compute eigenvector centrality in practice.
+
+"They settle" is a claim you should not have to take on faith. Step through the
+rounds below. The white digit inside a node is its name; the coloured number
+beside it is its score for that round; the bar underneath is that same score
+divided by the largest score of the round. Watch the raw numbers and the bars
+behave completely differently.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Score passing on the five-node network. Same drawing as the still figure at
+   the top of the page, now carrying numbers. Paper, pen, buttons, motion and
+   the sequencer all come from assets/anim.css + assets/anim.js; the rules
+   below are only what this figure adds — a label printed inside a node, a
+   score printed beside it, and the bar row.
+   -------------------------------------------------------------------------- */
+#score-pass { --anim-svg-max: 420px; --anim-knockout-w: 3px; }
+
+/* A node is a <g> holding a unit circle, so "how big is this score" is a
+   transform. Its identity number lives in a separate, unscaled layer. */
+#score-pass .sp-node { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+#score-pass .sp-node circle { vector-effect: non-scaling-stroke; }
+/* Node 3 leads every round, so it wears the contrast colour — and so does its
+   bar, which is the only pairing the eye has to make. */
+#score-pass .sp-king { fill: var(--_amber); }
+#score-pass .sp-id {
+  font-family: var(--_hand);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--_white);
+}
+/* The white digit inside a node is its name; the coloured digit beside it is
+   its score. Two different jobs, so two different inks. */
+#score-pass .sp-score { font-family: var(--_hand); font-size: 14px; font-weight: 700; fill: var(--_accent); }
+#score-pass .sp-tick { font-family: var(--_hand); font-size: 11px; fill: var(--_ink-soft); }
+#score-pass .sp-val { font-family: var(--_hand); font-size: 11px; fill: var(--_ink-soft); }
+
+/* The bars carry the rescaled score. Scaling a <g> vertically is the one way
+   to get a height change that animates everywhere without help. */
+#score-pass .sp-bar { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+#score-pass .sp-cap { transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  #score-pass .sp-node,
+  #score-pass .sp-bar,
+  #score-pass .sp-cap { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="score-pass">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous round">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next round">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-sp-net></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Score passing, one round per step. Every number below was produced by
+   multiplying the adjacency matrix of the five-node network by the previous
+   column — the same arithmetic the table above shows for rounds 0 to 3 — and
+   pasted in. Nothing here runs a graph algorithm. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* Same five nodes, same shape as the still figure at the top of the page. */
+  const NODE  = [[75,55],[75,140],[160,98],[245,98],[320,98]];
+  /* Where the raw score is printed: above node 1, 4 and 5; below node 2 and 3. */
+  const SLOT  = [[75,26],[75,177],[160,139],[245,68],[320,68]];
+  const EDGE  = [[0,1],[0,2],[1,2],[2,3],[3,4]];
+
+  const COL = [66,132,198,264,330], BASE = 280, TALL = 85, WIDE = 40;
+
+  /* raw: the score printed beside each node. bar: that score divided by the
+     largest of its own round, which is what the bar height shows.
+       round 1  2 2 3 2 1        round 4   25  25  30 18  8
+       round 2  5 5 6 4 2        round 5   55  55  68 38 18
+       round 3  11 11 14 8 4     round 6  123 123 148 86 38
+     Rounds 4 and 5 are skipped on screen so the jump is visible; the settled
+     row is the principal eigenvector, largest entry scaled to 1. */
+  const R = [
+    { lab: "Everyone starts with one point",
+      raw: ["1","1","1","1","1"],
+      bar: [1, 1, 1, 1, 1],
+      note: "Five nodes, five equal scores. The bar under each node is its score divided by the largest score of the round, so at the start every bar is full. Nothing has been passed yet." },
+    { lab: "Round 1: add up your neighbours",
+      raw: ["2","2","3","2","1"],
+      bar: [2/3, 2/3, 1, 2/3, 1/3],
+      note: "Each node throws its own score away and takes the sum of its neighbours' scores. Starting from all ones, that is simply the number of neighbours — 2, 2, 3, 2, 1. Round one of this game is degree centrality." },
+    { lab: "Round 2",
+      raw: ["5","5","6","4","2"],
+      bar: [5/6, 5/6, 1, 4/6, 2/6],
+      note: "Node 4's bar drops below nodes 1 and 2 — and all three have exactly two neighbours. Node 4 spends one of its two on node 5, a dead end, while nodes 1 and 2 feed each other and the hub. Degree can no longer tell them apart; this can." },
+    { lab: "Round 3",
+      raw: ["11","11","14","8","4"],
+      bar: [11/14, 11/14, 1, 8/14, 4/14],
+      note: "The raw scores have grown from 1 to 14 in three rounds. The bars have barely moved since round 2." },
+    { lab: "Round 6",
+      raw: ["123","123","148","86","38"],
+      bar: [123/148, 123/148, 1, 86/148, 38/148],
+      note: "Three rounds later the raw scores are past a hundred and still climbing. The bars are almost exactly where they were at round 3. That gap between the two is the whole trick." },
+    { lab: "It has stopped moving",
+      raw: ["0.82","0.82","1.00","0.57","0.26"],
+      bar: [0.824, 0.824, 1, 0.567, 0.256],
+      note: "The raw scores have been dropped; the numbers beside the nodes are now the settled bar heights themselves. One more round from here multiplies every score by 2.21 and changes nothing else. Those five heights are the eigenvector centrality." }
+  ];
+
+  const scenes = R.map(function (r, k) {
+    return {
+      label: r.lab,
+      note: r.note,
+      async run(ctx) {
+        if (k === 0) ctx.draw();
+        await ctx.sleep(k === 0 ? 700 : 200);
+        ctx.setRound(k);
+        await ctx.sleep(k === 0 ? 2400 : 3200);
+      }
+    };
+  });
+
+  mountScenes(document.getElementById("score-pass"), scenes, {
+    stepsLabel: "Passing the scores around",
+
+    /* No [data-anim-clear] inside the canvas, on purpose: the drawing is built
+       once and every later round only re-sizes it. */
+    helpers(ctx) {
+      const host = ctx.$("[data-sp-net]");
+      const S = { built: false };
+
+      function draw() {
+        if (S.built) return;
+        host.textContent = "";
+        const svg = ctx.svgRoot("34 8 336 300");
+        const g = function () { return svg.appendChild(ctx.svgEl("g")); };
+        const gEdge = g(), gNode = g(), gId = g(), gScore = g(), gBar = g();
+
+        EDGE.forEach(function (e) {
+          gEdge.appendChild(ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge"
+          }));
+        });
+
+        S.nodes = NODE.map(function (q, i) {
+          const gg = ctx.svgEl("g", { "class": "sp-node" });
+          gg.style.transform = "translate(" + q[0] + "px," + q[1] + "px) scale(1.6)";
+          gg.appendChild(ctx.svgEl("circle",
+            { r: 10, "class": "anim-node" + (i === 2 ? " sp-king" : "") }));
+          return gNode.appendChild(gg);
+        });
+
+        NODE.forEach(function (q, i) {
+          const t = ctx.svgEl("text",
+            { x: q[0], y: q[1] + 4.5, "text-anchor": "middle", "class": "sp-id" });
+          t.textContent = String(i + 1);
+          gId.appendChild(t);
+        });
+
+        S.score = SLOT.map(function (q) {
+          const t = ctx.svgEl("text",
+            { x: q[0], y: q[1], "text-anchor": "middle", "class": "anim-knockout sp-score" });
+          return gScore.appendChild(t);
+        });
+
+        gBar.appendChild(ctx.svgEl("line",
+          { x1: 40, y1: BASE, x2: 356, y2: BASE, "class": "anim-axis" }));
+
+        S.bars = []; S.caps = [];
+        COL.forEach(function (cx, i) {
+          const b = ctx.svgEl("g", { "class": "sp-bar" });
+          b.style.transform = "translate(" + cx + "px," + BASE + "px) scale(1,1)";
+          b.appendChild(ctx.svgEl("rect", {
+            x: -WIDE / 2, y: -TALL, width: WIDE, height: TALL,
+            rx: 3, "class": i === 2 ? "anim-amber-fill" : "anim-accent-fill"
+          }));
+          gBar.appendChild(b);
+          S.bars.push(b);
+
+          const c = ctx.svgEl("g", { "class": "sp-cap" });
+          const t = ctx.svgEl("text",
+            { x: cx, y: BASE - TALL - 7, "text-anchor": "middle", "class": "anim-knockout sp-val" });
+          c.appendChild(t);
+          gBar.appendChild(c);
+          S.caps.push({ box: c, txt: t });
+
+          const lbl = ctx.svgEl("text",
+            { x: cx, y: BASE + 15, "text-anchor": "middle", "class": "sp-tick" });
+          lbl.textContent = "node " + (i + 1);
+          gBar.appendChild(lbl);
+        });
+
+        host.appendChild(svg);
+        host.appendChild(ctx.el("div", "anim-caption",
+          "Top: the network. The white digit inside a node is its name; the coloured number beside it is its score this round, and its size is that score rescaled. Bottom: the same rescaled scores as bars."));
+        S.built = true;
+      }
+
+      /* Pure lookup: every number on screen is an array entry. */
+      function setRound(k) {
+        if (!S.built) return;
+        const r = R[k];
+        S.nodes.forEach(function (gg, i) {
+          gg.style.transform = "translate(" + NODE[i][0] + "px," + NODE[i][1] +
+            "px) scale(" + (0.8 + 0.8 * r.bar[i]).toFixed(3) + ")";
+        });
+        S.score.forEach(function (t, i) { t.textContent = r.raw[i]; });
+        S.bars.forEach(function (b, i) {
+          b.style.transform = "translate(" + COL[i] + "px," + BASE +
+            "px) scale(1," + r.bar[i].toFixed(3) + ")";
+        });
+        S.caps.forEach(function (c, i) {
+          c.box.style.transform = "translate(0px," + (TALL * (1 - r.bar[i])).toFixed(1) + "px)";
+          c.txt.textContent = r.bar[i].toFixed(2);
+        });
+      }
+
+      return { draw, setRound };
+    }
+  });
+});
+</script>
+```
+
+Written as an equation, "settled" means that one more round of passing scores around only rescales the vector by some constant $\lambda$:
 
 $$
 \lambda c_i = \sum_{j} A_{ij} c_j
-$$
-
-where $\lambda$ is a constant. It suggests that the centrality of a node ($c_i$), when multiplied by a constant $\lambda$, is the sum of the centralities of its neighbors ($A_{ij} c_j$; note that $A_{ij}=1$ if $j$ is a neighbor, and otherwise $A_{ij}=0$).
-Using vector notation, we can rewrite the equation as
-
-$$
-\lambda
-\begin{bmatrix}
-c_1 \\
-c_2 \\
-\vdots \\
-c_n
-\end{bmatrix} =
-\begin{bmatrix}
-A_{11} & A_{12} & \cdots & A_{1n} \\
-A_{21} & A_{22} & \cdots & A_{2n} \\
-\vdots & \vdots & \ddots & \vdots \\
-A_{n1} & A_{n2} & \cdots & A_{nn}
-\end{bmatrix}
-\begin{bmatrix}
-c_1 \\
-c_2 \\
-\vdots \\
-c_n
-\end{bmatrix}
-$$
-
-or equivalently,
-
-$$
+\qquad \text{or, in matrix form,} \qquad
 \lambda \mathbf{c} = \mathbf{A} \mathbf{c}
 $$
 
-Okay, but how do we solve this? Well, this is the standard eigenvector equation! The solution $\mathbf{c}$ is an eigenvector of the adjacency matrix $\mathbf{A}$, and $\lambda$ is its corresponding eigenvalue. But here's the tricky part - a matrix can have multiple eigenvectors. So which one should we choose?
+Note $A_{ij} = 1$ if $j$ is a neighbor of $i$, and otherwise $A_{ij} = 0$, so the right-hand side is exactly "the sum of my neighbors' scores". A vector $\mathbf{c}$ that satisfies this is called an **eigenvector** of $\mathbf{A}$, and the rescaling factor $\lambda$ is its **eigenvalue** — an eigenvector is simply a vector that the matrix does not turn, only stretches. For our network $\lambda = 2.21$: at the settled point, every round multiplies all scores by 2.21.
 
-Let's think about what we want again. We want our centrality measure to be positive. It wouldn't make much sense to have negative importance! So, we're looking for an eigenvector where all the elements are positive. And a good news is that there's a special eigenvector that fits the bill perfectly.
-The Perron-Frobenius theorem guarantees that the eigenvector associated with the largest eigenvalue always has all positive elements.
+A matrix has many eigenvectors, so which one is *the* centrality? We need the one whose entries are all positive — negative importance would be meaningless. The **Perron-Frobenius theorem** says that for a connected network there is exactly one such eigenvector, and it is the one belonging to the largest eigenvalue. That is what power iteration converges to, and that is the eigenvector centrality. The precise statement, and the proof that power iteration converges, are in [the appendix](04-appendix.qmd).
 
-![Eigenvector Centrality Visualization. Brighter nodes are connected to other highly central nodes.](../figs/eigenvector.svg){#fig-eigenvector}
-
-
-::: {.column-margin}
-**Perron-Frobenius theorem**: For a regular matrix $\mathbf{A}$ with and non-negative entries ($A_{ij} \geq 0$), there exists a unique largest eigenvalue $r > 0$ such that its corresponding eigenvector $\mathbf{v}$ has all positive entries: $v_i > 0$ for all $i$.
-:::
-
-Thus, the eigenvector centrality is the eigenvector of the adjacency matrix associated with the largest eigenvalue.
-
-#### How is it computed? Power iteration
-
-You do not need a full eigendecomposition to get the leading eigenvector, and the algorithm that gets it is worth knowing because it *is* the intuition.
-
-Start with any positive vector — say, give every node a score of 1. Then repeat:
-
-$$
-{\bf c} \leftarrow \frac{{\bf A}{\bf c}}{\|{\bf A}{\bf c}\|}
-$$
-
-Each multiplication by ${\bf A}$ replaces every node's score with the sum of its neighbors' scores; the normalization just stops the numbers from exploding. This is called **power iteration**, and it converges to the leading eigenvector.
-
-Why does it work? Write the starting vector in the eigenvector basis, ${\bf c}^{(0)} = \sum_i a_i {\bf v}_i$. Applying ${\bf A}$ $t$ times gives
-
-$$
-{\bf A}^t {\bf c}^{(0)} = \sum_i a_i \lambda_i^t {\bf v}_i = \lambda_1^t \left( a_1 {\bf v}_1 + \sum_{i \geq 2} a_i \left(\frac{\lambda_i}{\lambda_1}\right)^t {\bf v}_i \right).
-$$
-
-Since $|\lambda_i / \lambda_1| < 1$ for every $i \geq 2$, every term except the first decays geometrically. After enough iterations only ${\bf v}_1$ survives. The convergence rate is governed by the ratio $|\lambda_2|/|\lambda_1|$ — the closer those two eigenvalues, the slower it converges.
+![Eigenvector centrality on a larger example. Darker, larger nodes are connected to other highly central nodes.](../figs/eigenvector.svg){#fig-eigenvector}
 
 ::: {.column-margin}
 Read this in terms of Module 1: ${\bf A}^t$ counts walks of length $t$. So power iteration is literally saying "a node is important if many walks of length $t$ end there", and eigenvector centrality is the limit of that statement as $t \rightarrow \infty$. In Module 7 the same iteration reappears as a random walk converging to its stationary distribution.
 :::
 
-### Hyperlink-Induced Topic Search (HITS) centrality
-
-**HITS centrality** extends eigenvector centrality to directed networks. It introduces two notions of importance: *hub* and *authority*. A node is an important hub if it points to many important *authorities*. A node is an important authority if it is pointed by many important *hubs*.
-
-::: {.callout-important title="Notation: edge direction"}
-In a directed network we write $A_{ij} = 1$ when there is an edge **from $i$ to $j$**, and $A_{ij} = 0$ otherwise. Consequently:
-
-- $\sum_j A_{ij} (\cdot)_j$ sums over the nodes that $i$ **points to**. This is $i$'s out-degree, $d^{\text{out}}_i = \sum_j A_{ij}$.
-- $\sum_j A_{ji} (\cdot)_j$ sums over the nodes that **point to** $i$. This is $i$'s in-degree, $d^{\text{in}}_i = \sum_j A_{ji}$.
-
-Getting this convention right is the whole game in HITS and PageRank, so keep it in view.
-:::
-
-Let's put on a math hat to concretely define the hub and authority centralities.
-We introduce two vectors, $x_i$ and $y_i$, to denote the hub and authority centralities of node $i$, respectively. Following the idea of eigenvector centrality, node $i$ is a good hub when the nodes **it points to** are good authorities, and a good authority when the nodes **pointing to it** are good hubs:
-
-$$
-\underbrace{x_i = \lambda_x \sum_j A_{ij} y_j}_{\text{hub: sum over what } i \text{ points to}}, \quad \underbrace{y_i = \lambda_y \sum_j A_{ji} x_j}_{\text{authority: sum over what points to } i}
-$$
-
-Or equivalently,
-
-$$
-\mathbf{x} = \lambda_x \mathbf{A} \mathbf{y}, \quad \mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}
-$$
-
-Substituting $\mathbf{y} = \lambda_y \mathbf{A}^T \mathbf{x}$ into the first equation, and $\mathbf{x} = \lambda_x \mathbf{A}\mathbf{y}$ into the second, we get
-
-$$
-\mathbf{x} = \lambda_x \lambda_y \mathbf{A} \mathbf{A}^T \mathbf{x}, \quad \mathbf{y} = \lambda_x \lambda_y \mathbf{A}^T \mathbf{A} \mathbf{y}
-$$
-
-Again, we obtain eigenvector equations. The hub centrality $\mathbf{x}$ is the principal eigenvector of $\mathbf{A} \mathbf{A}^T$, and the authority centrality $\mathbf{y}$ is the principal eigenvector of $\mathbf{A}^T \mathbf{A}$.
-
-::: {.column-margin}
-A useful sanity check: $(\mathbf{A}\mathbf{A}^T)_{ij}$ counts how many nodes **both** $i$ and $j$ point to, so hubs are similar when they cite the same sources. $(\mathbf{A}^T\mathbf{A})_{ij}$ counts how many nodes point to **both** $i$ and $j$, so authorities are similar when they are cited together. This is co-citation and bibliographic coupling, respectively.
-:::
-
-::: {.column-margin}
-
-If the original network is *undirected*, is the HITS centrality equivalent to the eigenvector centrality? If so or not, explain why.
-
-::: {.callout collapse="true" title="Click to see the answer"}
-If the graph is undirected, the hub and authority centralities are equivalent. And the solution is given by the eigenvector of $\mathbf{A} \mathbf{A}^T$. Now, let us consider the eigenvector equation for the adjacency matrix $\mathbf{A}$.
-
-$$
-\mathbf{c} = \lambda \mathbf{A} \mathbf{c}
-$$
-
-By multiplying $\mathbf{A}$ on the both sides, we get
-
-$$
-\begin{aligned}
-\mathbf{A} \mathbf{c} &= \lambda \mathbf{A} \mathbf{A} \mathbf{c} \\
-\iff \mathbf{A}^\top \mathbf{A} \mathbf{c} &= \lambda \mathbf{A}^\top \mathbf{c} \\
-\iff \mathbf{A}^\top \mathbf{A} \mathbf{c} &= \lambda^2 \mathbf{c}
-\end{aligned}
-$$
-
-where we used the fact that $\mathbf{A}$ is symmetric. It suggests that the eigenvector of $\mathbf{A}^\top \mathbf{A}$ is the same as that of $\mathbf{A}$, and that the eigenvalue of $\mathbf{A}^\top \mathbf{A}$ is the square of that of $\mathbf{A}$.
-Thus, the eigenvector centrality is equivalent to the HITS centrality if the network is undirected.
-
-:::
-:::
-
 ### Katz centrality
 
-**Katz centrality** addresses a limitation of eigenvector centrality, which tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. The solution is to add a little bit of score to all nodes.
+**Katz centrality** addresses a limitation of eigenvector centrality, which tends to pay too much attention to a small number of nodes that are well connected to the network while under-emphasizing the importance of the rest of the nodes. The solution is to give every node a little score for free.
 
 $$
-c_i = \beta + \lambda \sum_{j} A_{ij} c_j
+c_i = \beta + \alpha \sum_{j} A_{ij} c_j
 $$
 
-The equation can be solved by
+Here $\beta$ is the free score every node gets just for existing, and $\alpha$ is an *attenuation factor* that decides how much a node's neighbors add on top. Solving this (the algebra is in [the appendix](04-appendix.qmd)) gives a result worth stating on its own:
+
+**Katz centrality counts every walk arriving at a node, discounting a walk of length $t$ by $\alpha^t$.**
 
 $$
-\mathbf{c} = \beta \mathbf{1} + \lambda \mathbf{A} \mathbf{c}
+c_i = \beta \sum_{t=0}^{\infty} \alpha^t \left(\text{number of walks of length } t \text{ ending at } i\right)
 $$
 
-where $\mathbf{1}$ is the vector of ones. By rewriting the equation, we get
+Take node 3 of our network, with $\beta = 1$ and $\alpha = 0.1$. There are 3 walks of length 1 ending at node 3 (its neighbors) and 6 walks of length 2, so
 
 $$
-\left( \mathbf{I} - \lambda \mathbf{A} \right) \mathbf{c} = \beta \mathbf{1}
+c_3 = 1 + 3(0.1) + 6(0.01) + \cdots = 1.38.
 $$
 
-By taking the inverse of $\mathbf{I} - \lambda \mathbf{A}$, we get
+Short walks — close neighbors — count heavily; long walks contribute progressively less. The parameter $\alpha$ sets how far influence travels: small $\alpha$ makes the measure behave almost like degree centrality, large $\alpha$ pushes it toward eigenvector centrality.
+
+#### How far can influence travel before the math breaks?
+
+There is a ceiling on $\alpha$. Each extra step multiplies the number of walks by roughly $\lambda_{\max}$, the largest eigenvalue of $\mathbf{A}$ — the very same number that appeared in eigenvector centrality. Each extra step also multiplies the discount by $\alpha$. So the terms shrink only when
 
 $$
-\mathbf{c} = \beta \left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} \mathbf{1}
+\alpha < \frac{1}{\lambda_{\max}}.
 $$
 
-#### What Katz centrality is really counting
+For our five-node network $\lambda_{\max} = 2.21$, so $\alpha$ must stay below $0.45$. Choose $\alpha$ above that ceiling and the walk counts grow faster than the discount shrinks: the sum diverges and you get meaningless, often negative, scores. In practice one computes $\lambda_{\max}$ first and picks $\alpha$ as a fraction of the ceiling, such as $0.9/\lambda_{\max}$.
 
-That matrix inverse has a revealing expansion. For a scalar, $1/(1-x) = 1 + x + x^2 + \cdots$; the same identity holds for matrices when the series converges:
+Notice what happens as $\alpha$ approaches the ceiling: the longest walks come to dominate, and Katz centrality converges to eigenvector centrality. The two measures are the two ends of a single dial.
 
-$$
-\left( \mathbf{I} - \lambda \mathbf{A} \right)^{-1} = \mathbf{I} + \lambda \mathbf{A} + \lambda^2 \mathbf{A}^2 + \lambda^3 \mathbf{A}^3 + \cdots
-$$
-
-Recall from Module 1 that $\left(\mathbf{A}^t\right)_{ij}$ is the number of walks of length $t$ from $i$ to $j$. So Katz centrality is
-
-$$
-c_i = \beta \sum_{t=0}^{\infty} \lambda^t \left(\text{number of walks of length } t \text{ ending at } i\right).
-$$
-
-**Katz centrality counts every walk arriving at a node, discounting a walk of length $t$ by $\lambda^t$.** Short walks — close neighbors — count heavily; long walks contribute progressively less. The parameter $\lambda$ sets how far influence travels: small $\lambda$ makes the measure behave almost like degree centrality, large $\lambda$ pushes it toward eigenvector centrality.
-
-#### The condition on $\lambda$
-
-The geometric series converges only when its terms shrink, which for matrices means
-
-$$
-\lambda < \frac{1}{\lambda_{\max}(\mathbf{A})}
-$$
-
-where $\lambda_{\max}(\mathbf{A})$ is the largest eigenvalue of the adjacency matrix — the same eigenvalue that appeared in eigenvector centrality.
-
-::: {.callout-warning title="This is not a technicality"}
-Choose $\lambda$ above $1/\lambda_{\max}$ and the walk counts grow faster than the discount shrinks. The sum diverges, $\mathbf{I} - \lambda \mathbf{A}$ stops being invertible in a useful way, and you get meaningless (often negative) scores. In practice one computes $\lambda_{\max}$ first and then picks $\lambda$ as a fraction of $1/\lambda_{\max}$, such as $0.9/\lambda_{\max}$.
-
-Note what happens at the boundary: as $\lambda \rightarrow 1/\lambda_{\max}$ the longest walks come to dominate and Katz centrality converges to eigenvector centrality. The two measures are the two ends of a single dial.
-:::
-
-![Katz Centrality Visualization. A measure of influence that accounts for both direct and indirect connections.](../figs/katz.svg){#fig-katz}
-
+![Katz centrality on a larger example. A measure of influence that accounts for both direct and indirect connections.](../figs/katz.svg){#fig-katz}
 
 ### PageRank
 
 **PageRank** is the celebrated idea behind Google Search and can be seen as a cousin of Katz centrality.
 
-$$
-c_i = \underbrace{(1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{Random walk from neighbors}} + \underbrace{\beta \cdot \frac{1}{N}}_{\text{teleportation}}
-$$
+PageRank was invented for the Web, where a link has a *direction*: this page links to that one, not the other way round. That forces a convention on us, and it is the first time in this module that the order of the two indices matters.
 
-![PageRank Centrality Visualization. Brighter nodes have a higher probability of being visited by a random walker.](../figs/pagerank.svg){#fig-pagerank}
+::: {.callout-important title="Which way does an edge point?"}
+From here on, $A_{ij} = 1$ means there is an edge **from $i$ to $j$**. Two sums that look almost identical then mean opposite things:
 
+- $\sum_j A_{ij}(\cdot)_j$ runs over the nodes that $i$ **points to**. Counting them gives $i$'s *out-degree*, $d^{\text{out}}_i = \sum_j A_{ij}$.
+- $\sum_j A_{ji}(\cdot)_j$ runs over the nodes that **point to** $i$. Counting them gives $i$'s *in-degree*, $d^{\text{in}}_i = \sum_j A_{ji}$.
 
-where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$).
-The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In the Web, this is like a web page distributes its score to the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
-
-
-::: {.column-margin}
-See the following video for more details on PageRank:
-
-<iframe width="220" height="158" src="https://www.youtube.com/embed/v7n7wZhHJj8?si=qVfcEBCc-DEiiZ9w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+Every formula before this one summed over $A_{ij}$ and got away with it, because an undirected edge points both ways and the two sums are the same thing. PageRank is about score *arriving*, so it must sum over $A_{ji}$. Getting this index order right is the whole game in PageRank and in HITS.
 :::
 
-
-### Personalized PageRank
-
-**Personalized PageRank** extends the standard PageRank algorithm by contextualizing the importance of nodes from a specific perspective in a network.
-To understand this, imagine you have a network of movies connected by similarity (sharing genres, actors, directors, etc.). Standard PageRank would rank movies based on their overall centrality in this similarity network. But suppose a student just watched "The Matrix" and wants to find similar movies. Personalized PageRank would start random walks from "The Matrix" and measure which movies are most reachable from it, effectively finding movies that are similar to "The Matrix" rather than just globally popular movies.
-
-Put it more formarmally, suppose a random walker starting from a node $\ell$. The walker moves to the neighboring nodes just like in PageRank, but with a probability $\beta$, it goes back to the starting node $\ell$ at every step.
-
-Thus,
 $$
-c_i = \underbrace{(1-\beta) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{Random walk from neighbors}} + \underbrace{\beta \cdot p_{\ell}}_{\text{Teleport to the starting node}}
+c_i = \underbrace{(1-r) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{score arriving from neighbors}} + \underbrace{r \cdot \frac{1}{N}}_{\text{teleportation}}
 $$
 
-where $p_{\ell}$ is a one-hot vector that is 1 at the $\ell$-th position and 0 elsewhere.
-The first term represents
-This equation can be solved numerically by taking the power iteration like we do for the PageRank. Alternatively, we can solve it by solving the linear system of equations.
+where $d^{\text{out}}_j$ is the out-degree of node $j$ (the number of edges pointing out from node $j$), and $r$ is the *teleportation probability*.
+The term $c_j/d^{\text{out}}_j$ represents that the score of node $j$ is divided by the number of nodes to which node $j$ points. In the Web, this is like a web page distributing its score among the web pages it points to. It is based on an idea of traffic, where the viewers of a web page are evenly transferred to the linked web pages. A web page is important if it has a high traffic of viewers.
+
+The teleportation term is what stops the traffic from getting stuck. With probability $r$ (typically 0.15) the visitor abandons the links entirely and jumps to a page chosen uniformly at random, which guarantees that every page keeps receiving some traffic and that the scores settle to a single answer.
+
+#### PageRank on the five-node network
+
+Our little network is undirected, so every edge points both ways and $d^{\text{out}}_j$ is simply the degree $d_j$. Start every node with an equal share of the traffic, $c_i = 1/5 = 0.200$, and take $r = 0.15$. Now do one round by hand, for node 4:
+
+- Node 4 is pointed at by node 3 and by node 5.
+- Node 3 has three edges, so it splits its 0.200 three ways and sends $0.200/3 = 0.067$ along each. Node 5 has one edge, so it sends its whole $0.200/1 = 0.200$ to node 4.
+- Arriving in total: $0.067 + 0.200 = 0.267$. Keep 85% of it: $0.85 \times 0.267 = 0.227$.
+- Add the teleportation share, $0.15/5 = 0.030$.
+- New score: $0.227 + 0.030 = 0.257$.
+
+Do that for all five nodes, then again, and the traffic settles:
+
+| Round     | node 1 | node 2 | node 3 | node 4 | node 5 |
+| --------- | ------ | ------ | ------ | ------ | ------ |
+| 0         | 0.200  | 0.200  | 0.200  | 0.200  | 0.200  |
+| 1         | 0.172  | 0.172  | 0.285  | 0.257  | 0.115  |
+| 2         | 0.184  | 0.184  | 0.285  | 0.209  | 0.139  |
+| settled   | 0.192  | 0.192  | 0.283  | 0.213  | 0.120  |
+
+(Rounded to three decimals; the exact rows each add up to 1, because the scores are shares of one visitor's time.)
+
+Node 3 wins again — but look at node 4. Eigenvector centrality ranked this network $(0.82,\, 0.82,\, 1,\, 0.57,\, 0.26)$ and put node 4 **below** nodes 1 and 2. PageRank puts it **above** them, 0.213 against 0.192. The whole difference is the division by out-degree. Node 5 is a dead end with a single edge, so everything it has comes straight back to node 4 — all 0.120 of it. Node 2 has two edges, so node 1 only ever receives half of node 2's score, 0.096. Eigenvector centrality punished node 4 for spending half its links on an unimportant neighbor; PageRank rewards it, because an unimportant neighbor with nowhere else to go hands back everything it is given. Whether a dead-end friend is a liability or an asset depends on which of the two you asked.
 
 ::: {.column-margin}
-
-Personalized PageRank can also be interpreted as the sum of probabilities of reaching each node from a focal set of nodes, where the probability decreases exponentially with distance.
-Let $p_{\ell i}^{(k)}$ be the probability of reaching node $i$ from node $\ell$ in $k$ steps. Then,
-the personalized PageRank is given by
-
-$$
-c_i = \sum_{k=0}^{\infty} \beta (1-\beta)^k p_{\ell i}^{(k)}
-$$
-
-where ther term $\beta (1-\beta)^k$ is the probability of reaching a node that is exactly $k$ steps away.
-Think of it as a "weight" that decreases with distance. As $i$ gets further away from the starting node $\ell$.
-In other words, centrality of node $i$ tends to be higher if it is closer to the starting node $\ell$.
-
+A visual walkthrough of the algorithm: [How PageRank works](https://www.youtube.com/watch?v=v7n7wZhHJj8).
 :::
+
+![PageRank on a larger example. Darker, larger nodes have a higher probability of being visited by a random walker.](../figs/pagerank.svg){#fig-pagerank}
+
+### Two more members of the family
+
+Two well-known relatives are worth knowing by name; both are worked out in [the appendix](04-appendix.qmd).
+
+**HITS** splits importance in two for directed networks. A node is a good *hub* if it points to good *authorities*, and a good authority if good hubs point to it. Think of a review site that links to the best restaurants (a hub) and the restaurant everyone links to (an authority) — the same network gives each node two different scores.
+
+**Personalized PageRank** asks the question from somewhere in particular. Imagine a network of movies connected by similarity. Standard PageRank ranks movies by overall centrality; but a student who just watched *The Matrix* wants what is central *from there*. Personalized PageRank sends the traffic out from *The Matrix* and keeps returning it there, so the scores measure closeness to that one node rather than global popularity.
 
 ::: {.column-margin}
 
 PageRank and Personalized PageRank have been one of the most influential ideas in network science.
 There are many variants and extensions of these ideas. Here are some of my favorites:
 
-1. [@lambiotte2012ranking] proposes a teleportation method that corrects the bias coming from the degree of the starting node of PageRank.
+1. [@lambiotte2012ranking] proposes a teleportation scheme that corrects the bias PageRank picks up from the degree of the node the walker teleports to.
 
-2. [@wu2017second] proposes a second-order random walk-based proximity measure that considers the importance of a node in the context of a ranking problem.
+2. [@wu2017second] proposes a second-order random walk whose next step depends on where the walker came from, not only where it is.
 
-3. [@tong2006fast] proposes a random walk with restart that considers the importance of a node in the context of a ranking problem.
-
+3. [@tong2006fast] gives a fast approximation algorithm for random walk with restart, which is what makes personalized ranking practical on large graphs.
 
 :::
-
-
-## Degree-based centrality
-
-The simplest approach to measuring centrality is to count the connections of each node. This gives us *degree centrality*, which considers a node important if it has many direct connections.
-**Degree centrality** is just the count of the number of edges connected to a node (i.e., the number of neighbors, or *degree* in network science terminology). The most important node is thus the one with the highest degree.
-
-$$
-c_i = d_i = \sum_{j} A_{ij}
-$$
-
-![Degree Centrality Visualization. The simplest measure: brighter nodes have more direct connections.](../figs/degree.svg){#fig-degree}
-
-
-where $A_{ij}$ is the adjacency matrix of the network, and $d_i$ is the degree of node $i$.
-
-Degree centrality is a no brainer measure of centrality. Interestingly, degree centralities are often strongly correlated with other centrality measures, such as the eigenvector centrality, pagerank, along with distance-based centralities (e.g., closeness centrality). Of course, degree centrality is a crude importance measure as it only focuses on the direct connections of a node and ignores who these connections are to.
 
 ## Bridges and brokers
 
@@ -425,9 +1069,13 @@ Such nodes are called **bridges** or **brokers**, and they are the reason betwee
 
 This is also why Girvan-Newman (Module 5) detects communities by deleting *edges* with the highest betweenness: the edges that bridge groups carry the most shortest paths, so removing them peels the communities apart.
 
-## Choosing a centrality
+The widget at the top of this module is exactly that picture. Press *most
+contacts?* and then *most paths?*, and watch node 10 — two crowds, one broker —
+travel from the bottom of the list to the top.
 
-There is no best centrality, only a centrality that matches the question. Decide what "important" means for your problem first, then pick.
+## There is no best centrality, only a matching question
+
+Decide what "important" means for your problem first, then pick.
 
 | If you want to find...            | Ask...                                        | Use                          |
 | --------------------------------- | --------------------------------------------- | ---------------------------- |
@@ -440,18 +1088,7 @@ There is no best centrality, only a centrality that matches the question. Decide
 
 A worked example: to place a new hospital you want eccentricity or closeness (nobody should be far from care). To decide which substation to armor you want betweenness (which failure severs the grid). To decide whom to vaccinate you want degree or PageRank (who spreads fastest). Three different "most important" nodes in the same network.
 
-### What does it cost to compute?
-
-Practical choice is also constrained by computation. For a network with $N$ nodes and $M$ edges:
-
-| Centrality             | Time complexity     | Notes                                                        |
-| ---------------------- | ------------------- | ------------------------------------------------------------ |
-| Degree                 | $O(M)$              | One pass over the edges. Essentially free.                    |
-| Closeness / Harmonic   | $O(NM)$             | A BFS from every node. Expensive but parallel.                |
-| Betweenness            | $O(NM)$             | Brandes' algorithm. The practical bottleneck on large graphs. |
-| Eigenvector / PageRank | $O(M)$ per iteration | Power iteration; iterations needed depend on the spectral gap. |
-
-The pattern is that shortest-path measures scale badly because they need all-pairs information, while walk-based measures scale well because they only ever need one matrix-vector product at a time. On a million-node network, PageRank is routine and exact betweenness is not — which is why approximate betweenness by sampling source nodes is common practice.
+Cost matters too. Closeness and betweenness need shortest paths between *all* pairs of nodes, so they slow down badly as the network grows; degree, eigenvector centrality and PageRank only ever look at one node and its neighbors at a time, so they stay cheap. On a million-node network PageRank is routine and exact betweenness is not, which is why practitioners approximate betweenness by sampling. [The appendix](04-appendix.qmd) puts numbers on this.
 
 ### Centralities usually agree — until they don't
 
@@ -464,7 +1101,7 @@ But the correlation is a property of the network, not a law. Two extreme cases m
 
 The lesson is that centralities diverge precisely where the structure is interesting — around bridges, bottlenecks and peripheries. When two measures disagree strongly on a real network, that disagreement is telling you about its structure.
 
-## Where centrality gets used
+## Six places this already decides something
 
 - **Robustness and infrastructure**: identifying which nodes to protect, or which an adversary would attack (Module 3).
 - **Epidemiology**: finding super-spreaders and choosing vaccination targets. Note that the friendship paradox (Module 4) gives a way to find high-centrality nodes *without* mapping the network.
@@ -473,3 +1110,11 @@ The lesson is that centralities diverge precisely where the structure is interes
 - **Economics and finance**: detecting systemically important institutions, and finding chokepoints in supply chains.
 - **Neuroscience and biology**: hub regions in brain connectomes; essential proteins in interaction networks, which tend to be high-degree.
 
+## What you can now do
+
+- Compute degree, closeness, harmonic, eccentricity and betweenness by hand on a small network, and say which one breaks a tie and why.
+- Run power iteration on paper and explain eigenvector centrality without the word "eigenvector".
+- Place Katz and PageRank on the dial between degree and eigenvector centrality, and pick a safe attenuation factor.
+- Given a stated goal, choose a centrality and defend the choice.
+
+Next: [compute all of them on a real network](02-coding.qmd), then [the exercises and assignments](03-exercises.qmd). The algebra behind eigenvector centrality, Katz, HITS and Personalized PageRank is in [the appendix](04-appendix.qmd).

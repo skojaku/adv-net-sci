@@ -1,35 +1,19 @@
 ---
-title: "Exercises: Graph Neural Networks"
+title: "Exercises and Assignments"
 ---
 
-## Theoretical Exercises
+## Pen and Paper: Convolve by Hand, Then Run the WL Test
 
-### Pen and Paper Exercises
+Do this *before* the lecture. Both halves are things you can only really believe once you have done them with a pencil.
 
-- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
+- [Convolution and the Weisfeiler-Lehman Test](pen-and-paper/exercise.pdf): slide a $3\times3$ kernel over a small image and read off what it detects; then run the WL test by hand on labelled graphs, on unlabelled ones, and finally on a pair it *cannot* tell apart — which is the exact ceiling on what any message-passing GNN can do. The last part maps each WL step onto the corresponding piece of a GCN layer.
 
-The pen and paper exercises cover fundamental concepts including:
+## Hands-on Notebook
 
-1. **Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices
-2. **Fourier Analysis on Graphs**: Extending classical signal processing to graph domains
-3. **Convolution Operations**: Defining convolution for irregular graph structures
-4. **Message Passing**: Mathematical formulation of information aggregation in graphs
-5. **Network Architecture Design**: Principles for designing effective GNN architectures
+The runnable work for this module is on the [hands-on page](02-coding.qmd): a hand-designed spectral filter on the karate club, then a GCN trained on eight labelled nodes. A separate practice notebook builds a GCN for node classification from a blank cell:
 
-## Programming Exercises
+- [`exercise-m09-graph-neural-net.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m09-graph-neural-nets/exercise-m09-graph-neural-net.py), in `notebooks/m09-graph-neural-nets/` — run it locally with `marimo edit`; PyTorch does not run in the browser.
 
-### Coding Exercise: GCN Implementation
+## Assignments
 
-::: {.callout-note title="Exercise"}
-:class: note
-
-Let's implement a simple GCN model for node classification.
-[Coding Exercise](../../notebooks/legacy/exercise-m09-graph-neural-net.ipynb)
-:::
-
-This coding exercise will guide you through:
-
-1. **Building a GCN from Scratch**: Implementing the basic GCN layer
-2. **Node Classification**: Training GCN for semi-supervised node classification
-3. **Spectral Filtering**: Understanding how GCNs relate to spectral graph theory
-4. **Comparison with Other Methods**: Benchmarking against traditional approaches
+Neither graded assignment runs in this module. The [Pair Notebook](../course/pair-notebook.qmd) covers Modules 1 through 6, and the [Group Mini-Project](../course/mini-project.qmd) covers Modules 2 through 6. The worksheet and the notebook above are practice, not submissions.

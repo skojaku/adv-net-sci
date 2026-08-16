@@ -61,7 +61,6 @@ A = np.array(g.get_adjacency().data)
 # Plot
 plt.figure(figsize=(8, 8))
 plt.imshow(A, cmap='binary')
-plt.title("Adjacency Matrix of Stochastic Block Model")
 plt.xlabel("Node Index")
 plt.ylabel("Node Index")
 plt.tight_layout()
@@ -79,16 +78,25 @@ def concave_function(x):
 x = np.linspace(0, 1, 100)
 y = concave_function(x)
 
-plt.figure(figsize=(10, 6))
-plt.plot(x, y, 'b-', linewidth=2)
-plt.title('Schematic of Likelihood Function (Concave)')
-plt.xlabel('Edge Probability p_c,c\'')
-plt.ylabel('Likelihood')
-plt.axvline(x=0.5, color='r', linestyle='--', label='Maximum')
-plt.annotate('Global Maximum', xy=(0.5, 0.25), xytext=(0.6, 0.2),
-             arrowprops=dict(facecolor='black', shrink=0.05))
-plt.legend()
-plt.grid(True)
+ACCENT = '#593196'
+CONTRAST = '#c2410c'
+INK = '#2c2a3a'
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(x, y, color=ACCENT, linewidth=2.4)
+ax.set_xlabel("Edge probability $p_{c,c'}$", color=INK)
+ax.set_ylabel('Log-likelihood', color=INK)
+ax.axvline(x=0.5, color=CONTRAST, linestyle='--', linewidth=1.4)
+ax.annotate('single peak: zero gradient', xy=(0.52, 0.249), xytext=(0.70, 0.225),
+            color=INK, ha='left', va='center',
+            arrowprops=dict(color=INK, arrowstyle='->', linewidth=1.2))
+ax.set_yticks([])
+for side in ('top', 'right'):
+    ax.spines[side].set_visible(False)
+for side in ('left', 'bottom'):
+    ax.spines[side].set_color(INK)
+ax.tick_params(colors=INK)
+plt.tight_layout()
 plt.show()
 _save('likelihood-function')
 
@@ -124,11 +132,10 @@ fig, ax = plt.subplots(figsize=(6, 6))
 ax.matshow(A, cmap='binary')
 mask = np.triu(np.ones_like(A, dtype=bool), k=1)
 
-# Highlight the upper triangle with yellow overlay
-ax.matshow(np.ma.masked_array(np.ones_like(A), ~mask), cmap='Reds_r', alpha=0.3)
-
-# Add a title
-plt.title("Adjacency Matrix with Highlighted Upper Triangle")
+# Wash the upper triangle - the region the sum over i < j runs over - in the
+# course accent, so it reads as one highlighted region rather than a colour map.
+accent_wash = matplotlib.colors.ListedColormap(['#593196'])
+ax.matshow(np.ma.masked_array(np.ones_like(A), ~mask), cmap=accent_wash, alpha=0.30)
 
 plt.show()
 _save('adjacency-matrix')

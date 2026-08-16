@@ -1,119 +1,709 @@
 ---
-title: Networks
+title: "The Pandemic That Ignored the Map"
 ---
 
-## Networks are everywhere and they matter
+> **The big question of this module.** Why do we need a science of networks instead of ordinary statistics?
 
-In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.
+## H1N1 Started in Mexico. Spain Was Infected Before Guatemala.
 
-The most natural way to think about disease spread is through geographic distance.
-If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:
+In April 2009 a new strain of influenza, H1N1, began spreading out of Mexico. Nobody had immunity, and every health ministry in the world was asking the same question: when does it get here?
 
-::: {#fig-geo-vs-arrival-time}
+The natural way to answer that is with a map. Disease moves from person to person, people are spread across the ground, so an outbreak ought to grow like an ink stain — neighbours first, then outward in rings. Guatemala shares a land border with Mexico. Spain is nine thousand kilometres away, across an ocean.
 
-![](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)
+The first country outside Mexico to confirm a case was the United States. Spain confirmed its first case before Guatemala did.
 
-Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
+One country pair proves nothing, so here is every country at once. Step through
+the stage below. It opens on the map's own answer — each country's distance from
+Mexico City in kilometres, against the day the virus arrived — and then hands you
+the ruler.
 
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The ruler swap — the only rules this one stage needs. Paper, pen, panels,
+   buttons, knob and motion all come from assets/anim.css; the sequencer from
+   assets/anim.js. Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
+
+/* A 28-point scatter needs the whole column, not the kit's 310px default.
+   A country's name travels with its dot and has to survive passing over the
+   others, so every label carries the kit's paper knockout (.anim-knockout),
+   a little heavier than its default because these letters cross whole dots. */
+#h1n1-ruler { --anim-svg-max: 100%; --anim-knockout-w: 3.4px; }
+#h1n1-ruler .h1-col { max-width: 520px; margin: 0 auto; }
+/* Reserve the tallest card so the page does not jump between steps. */
+#h1n1-ruler .h1-side { min-height: 200px; }
+
+/* One set of dots, moved by transform. 0.16s linear, not the kit's 0.34s
+   ease: across 21 detents a long ease reads as lag under your own finger. */
+#h1n1-ruler .h1-pt { transition: transform 0.16s linear; }
+#h1n1-ruler .h1-plot { transition: opacity 0.5s ease; }
+#h1n1-ruler .h1-named { stroke: var(--_ink); stroke-width: 1.5; }
+#h1n1-ruler .h1-hi { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  #h1n1-ruler .h1-pt, #h1n1-ruler .h1-plot { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="h1n1-ruler">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="h1-col" data-anim-canvas>
+    <div data-anim-clear data-h1-plot></div>
+    <div class="h1-side" data-anim-clear data-h1-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The ruler swap. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css
+   + assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here runs a shortest-path search, or any other algorithm, at page load.
+
+     28 countries. Four are named and carry the argument: Mexico (the origin,
+     day 0), the United States (3,030 km, day 29 — the first country outside
+     Mexico), Spain (9,070 km, day 41) and Guatemala (1,090 km, day 49).
+     Guatemala is 8.3x nearer than Spain and was reached 8 days later; that
+     pair is the paradox this page opens with. The other 24 are an anonymous
+     cloud shaped like panel D of Brockmann & Helbing: a weak rise, plus a
+     column of five countries at ~9,000 km whose arrival days run 41 to 121.
+
+     The effective distances were NOT re-derived from an airline timetable.
+     Each is the country's arrival day over a slope of 9.5 days per unit,
+     plus a residual, and the residuals were scaled by bisection until the
+     least-squares fit of arrival day on effective distance landed on exactly
+     the R^2 = 0.973 that Brockmann & Helbing report. The picture therefore
+     reproduces their published relationship rather than rediscovering it —
+     which is what "redrawn schematically" on the caption means.
+
+       R^2 of arrival day on kilometres           0.189
+       R^2 of arrival day on effective distance   0.973
+
+     Coordinates are stored already projected into the viewBox:
+       x_geo = 58 + km  / 20000 * 388     (axis 0 .. 20,000 km)
+       x_eff = 58 + eff / 16    * 388     (axis 0 .. 16)
+       y     = 214 - day / 150  * 184     (axis 0 .. 150 days)
+     ------------------------------------------------------------------------ */
+  const GEOX = [58,116.8,234,79.1,124,133.7,118.1,100.7,226.8,240.4,248.1,259.8,236.5,230.7,253.9,205.4,275.3,271.4,300.5,318,364.5,376.2,341.2,397.5,156.9,182.2,290.8,92.9];
+  const EFFX = [58,104.1,154.3,194,300,288.9,283.5,225.6,376.4,281.8,225.8,162.5,176.6,174.2,161.1,204.7,164.9,237.5,226.3,313.8,229.7,361.6,398.7,362.1,337.6,246.4,371.3,148.7];
+  const DAYY = [214,178.4,163.7,153.9,96.2,118.3,109.7,130.6,65.6,106.1,137.9,157.6,160,161.3,158.8,151.4,156.3,134.3,149,91.3,140.4,69.3,57,79.1,76.6,123.2,54.5,162.5];
+
+  /* The four named dots: index, label, and the offset its label sits at.
+     A label travels with its dot, so each offset had to clear every other
+     dot under BOTH rulers at once; these are the smallest that do, found by
+     sweeping the offset grid offline. They still get a paper-coloured
+     knockout (.anim-knockout) so a near miss is never a collision. */
+  const NAMED = [
+    [0, "Mexico", 8, -6, "start"],
+    [1, "USA", -8, 0, "end"],
+    [2, "Spain", -13, 3, "end"],
+    [3, "Guatemala", 21, 10, "start"]
+  ];
+  const SPAIN = 2, GUATEMALA = 3;
+
+  /* 21 detents of the blend x = (1-t) * x_geo + t * x_eff, t = i / 20.
+     R2B[i] is the least-squares R^2 of arrival day against that blended
+     coordinate; SEG[i] is the fitted line itself, already clipped to the
+     plot box as [x1, y1, x2, y2]. Both computed on the 28 points above. */
+  const DET = 21;
+  const R2B = [0.189,0.222,0.26,0.302,0.348,0.397,0.45,0.505,0.561,0.617,0.672,0.725,0.775,0.82,0.86,0.894,0.922,0.943,0.959,0.968,0.973];
+  const SEG = [[58,157.9,446,85.2],[58,161.7,446,80.5],[58,165.8,446,75.5],[58,170.1,446,70.3],[58,174.6,446,65],[58,179.3,446,59.7],[58,184,446,54.3],[58,188.7,446,49.1],[58,193.2,446,44.2],[58,197.5,446,39.7],[58,201.5,446,35.7],[58,205,446,32.3],[58,208,445.3,30],[58,210.4,441.3,30],[58,212.1,439.1,30],[58,213.2,438.5,30],[58,213.7,439.4,30],[58,213.6,441.6,30],[58,213,445.1,30],[58,212,446,31.7],[58,210.6,446,34.2]];
+
+  /* Step 2: three legs out of Mexico City, on the page's own numbers.
+     length = 1 - ln(p), so p = 1/5 -> 2.61, 1/10 -> 3.30, 1/1000 -> 7.91.
+     A leg is DRAWN at its effective length (x = 52 + 46 * len) and drawn
+     with thickness sqrt(p) * 24.6, so a fat pipe is visibly fat and visibly
+     short. The kilometres beside each destination run the other way. */
+  const LEGS = [
+    { y: 40, w: 11, x: 172.1, cls: "anim-edge", side: 1,
+      who: "Los Angeles · 2,500 km", how: "1 in 5 → length 2.6" },
+    { y: 92, w: 7, x: 203.8, cls: "anim-edge anim-accent-stroke", side: 1,
+      who: "Madrid · 9,100 km", how: "1 in 10 → length 3.3" },
+    { y: 144, w: 1.6, x: 415.9, cls: "anim-edge anim-amber-stroke", side: 0,
+      who: "Guatemala City · 1,100 km", how: "1 in 1000 → length 7.9" }
+  ];
+
+  const GEO_TICK = [[58, "0"], [155, "5"], [252, "10"], [349, "15"], [446, "20"]];
+  const EFF_TICK = [[58, "0"], [155, "4"], [252, "8"], [349, "12"], [446, "16"]];
+  const DAY_TICK = [[214, "0"], [152.7, "50"], [91.3, "100"], [30, "150"]];
+  const KM9 = 232.6;          /* where 9,000 km lands on the geographic axis */
+
+  const pct = (i) => Math.round((i / (DET - 1)) * 100);
+  const ruler = (i) => i === 0 ? "kilometres"
+    : i === DET - 1 ? "effective distance" : pct(i) + "% effective";
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "The map's answer",
+      note: "Twenty-eight countries: kilometres from Mexico City across, the day the virus arrived up. It is a cloud. Spain is eight times farther away than Guatemala and was infected eight days earlier.",
+      async run(ctx) {
+        ctx.drawPlot();
+        const c = ctx.card("the map's answer");
+        c.appendChild(ctx.el("div", "anim-readout",
+          "<span>ruler: <b>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b>0.19</b></span>"));
+
+        await ctx.sleep(2300);
+        ctx.spot(SPAIN, true);
+        ctx.spot(GUATEMALA, true);
+        [["Spain", "9,070 km · day 41"],
+         ["Guatemala", "1,090 km · day 49"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(1500);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "eight times nearer, eight days later"));
+        await ctx.sleep(1600);
+
+        ctx.mark(true);
+        c.appendChild(ctx.el("div", "anim-caption anim-fade",
+          "and along the dashed line: five countries, all within 400 km of " +
+          "nine thousand — the first reached on day 41, the last on day 121"));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "A fat pipe is a short pipe",
+      note: "The mechanism. Give a flight leg the length 1 minus the log of the share of passengers who take it. A leg carrying one traveller in five is short; a leg carrying one in a thousand is long. Madrid is nine thousand kilometres out and three units away.",
+      async run(ctx) {
+        ctx.dim(0.28);
+        ctx.mark(false);
+        ctx.spot(SPAIN, false);
+        ctx.spot(GUATEMALA, false);
+        const c = ctx.card("stop counting kilometres, start counting travellers");
+
+        const svg = ctx.svgRoot("0 0 470 194");
+        const put = (tag, attrs, cls, txt) => {
+          const n = ctx.svgEl(tag, attrs);
+          if (cls) n.setAttribute("class", cls);
+          if (txt != null) n.textContent = txt;
+          return svg.appendChild(n);
+        };
+        const slow = !ctx.fast();
+
+        put("text", { x: 6, y: 13 }, "anim-label",
+          "how long is one flight leg out of Mexico City?");
+        /* The ruler sits under the three legs, not over them: a leg is drawn
+           at its own length, so the scale has to be readable beside them. */
+        put("line", { x1: 52, y1: 168, x2: 420, y2: 168 }, "anim-axis");
+        [[52, "0"], [144, "2"], [236, "4"], [328, "6"], [420, "8"]].forEach((t) => {
+          put("line", { x1: t[0], y1: 168, x2: t[0], y2: 172 }, "anim-axis");
+          put("text", { x: t[0], y: 185, "text-anchor": "middle" }, "anim-label", t[1]);
+        });
+        put("line", { x1: 52, y1: 40, x2: 52, y2: 144 }, "anim-edge");
+
+        LEGS.forEach((g, i) => {
+          const p = put("line", { x1: 52, y1: g.y, x2: g.x, y2: g.y },
+            g.cls + (slow ? " anim-draw" : ""));
+          p.style.strokeWidth = g.w;
+          if (slow) {
+            /* --dash must clear the line's own length or it pops in late. */
+            p.style.setProperty("--dash", Math.ceil(g.x - 52) + 4);
+            p.style.animationDelay = (0.35 + i * 0.9) + "s";
+            p.style.animationDuration = "0.7s";
+          }
+          /* A leg that reaches the right-hand edge has to caption itself
+             leftwards, and then the caption would lie along its own pipe —
+             so that one is stacked above the pipe instead of astride it. */
+          const anch = g.side ? "start" : "end";
+          const tx = g.side ? g.x + 10 : g.x - 10;
+          const ty = g.side ? [g.y - 5, g.y + 9] : [g.y - 28, g.y - 13];
+          const kids = [
+            put("circle", { cx: g.x, cy: g.y, r: 5.5 }, "anim-node"),
+            put("text", { x: tx, y: ty[0], "text-anchor": anch }, "anim-label", g.who),
+            put("text", { x: tx, y: ty[1], "text-anchor": anch }, "anim-label anim-faint", g.how)
+          ];
+          if (slow) {
+            kids.forEach((n, k) => {
+              n.classList.add("anim-fade");
+              n.style.animationDelay = (1.0 + i * 0.9 + k * 0.12) + "s";
+            });
+          }
+        });
+        put("circle", { cx: 52, cy: 92, r: 6 }, "anim-node");
+        c.appendChild(svg);
+
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "the fat pipe is the short one — and Madrid is far fatter than Guatemala City");
+        q.style.animationDelay = ctx.fast() ? "0s" : "3.5s";
+        c.appendChild(q);
+        await ctx.sleep(5400);
+      }
+    },
+    {
+      label: "Change the ruler",
+      note: "Same countries, same arrival days, no new data. Only the axis changes: kilometres out, effective distance in. Spain slides left past Guatemala, and the cloud collapses onto a line.",
+      async run(ctx) {
+        ctx.dim(1);
+        ctx.land(true);
+        const c = ctx.card("same days. same countries. new ruler.");
+        const read = ctx.el("div", "anim-readout",
+          "<span>ruler: <b data-r>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b data-q>0.19</b></span>");
+        c.appendChild(read);
+        const outR = read.querySelector("[data-r]");
+        const outQ = read.querySelector("[data-q]");
+        ctx.watch((i) => {
+          outR.textContent = ruler(i);
+          outQ.textContent = R2B[i].toFixed(2);
+        });
+
+        ctx.spot(SPAIN, true);
+        ctx.spot(GUATEMALA, true);
+        await ctx.sleep(1000);
+
+        if (ctx.fast()) {
+          ctx.setX(DET - 1, true);
+        } else {
+          for (let i = 1; i < DET; i++) { ctx.setX(i); await ctx.sleep(95); }
+          await ctx.sleep(700);
+        }
+        ctx.fitLine(true);
+        await ctx.sleep(1000);
+
+        [["R²", "0.19 → 0.97"],
+         ["new data collected", "none"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(1200);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "it was spreading in circles all along — on the other map"));
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "Now you turn the ruler",
+      note: "Your hand on it now. Slide from kilometres to effective distance and back: the cloud gathers and scatters, and the fit climbs from 0.19 to 0.97. Nothing about the countries changes — only where you agree to stand.",
+      async run(ctx) {
+        ctx.dim(1);
+        ctx.land(true);
+        ctx.fitLine(true);
+        const c = ctx.card("now you turn it");
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          "<span>ruler: <b data-r>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b data-q>0.19</b></span>");
+        c.appendChild(read);
+        const outR = read.querySelector("[data-r]");
+        const outQ = read.querySelector("[data-q]");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag it: at 0% the axis is kilometres from Mexico City, at 100% it is effective distance"));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence, so the plot is yours
+           until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DET - 1, step: 1, value: 0,
+          label: "Blend the axis from geographic to effective distance",
+          format: (i) => pct(i) + " per cent effective distance",
+          onGrab: () => ctx.pause(),
+          onInput: (i) => {
+            outR.textContent = ruler(i);
+            outQ.textContent = R2B[i].toFixed(2);
+            ctx.setX(i);
+          }
+        });
+
+        /* Skipping, or reading with motion off: land on the answer, because
+           the answer is what this figure is about. */
+        if (ctx.fast()) {
+          ctx.setX(DET - 1, true);
+          dial.set(DET - 1);
+          say("<span>same dots, same days.</span><b>R&sup2; 0.19 → 0.97</b>");
+          return;
+        }
+
+        dial.set(0);
+        await ctx.sleep(1000);
+        for (let i = 1; i < DET; i++) { dial.set(i); await ctx.sleep(105); }
+        say("<span>gathered.</span><b>R&sup2; 0.97</b>");
+        await ctx.sleep(1900);
+
+        for (let i = DET - 2; i >= 0; i--) { dial.set(i); await ctx.sleep(70); }
+        say("<span>scattered again.</span><b>R&sup2; 0.19</b>");
+        await ctx.sleep(1500);
+
+        for (let i = 1; i < DET; i++) { dial.set(i); await ctx.sleep(80); }
+        say("<span>same dots, same days.</span><b>only the ruler moved</b>");
+        await ctx.sleep(2600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("h1n1-ruler"), scenes, {
+    stepsLabel: "Ruler steps",
+
+    /* The one thing only this animation has: a scatter that survives all four
+       steps, whose dots never change their arrival day and only ever slide
+       sideways. Built once per run by step 1, handed to every scene on ctx. */
+    helpers(ctx) {
+      const plot = ctx.$("[data-h1-plot]");
+      const side = ctx.$("[data-h1-side]");
+      const S = { hook: null };
+
+      function drawPlot() {
+        plot.textContent = "";
+        const svg = ctx.svgRoot("0 0 470 264", "h1-plot");
+        const put = (tag, attrs, cls, txt) => {
+          const n = ctx.svgEl(tag, attrs);
+          if (cls) n.setAttribute("class", cls);
+          if (txt != null) n.textContent = txt;
+          return svg.appendChild(n);
+        };
+
+        put("line", { x1: 58, y1: 214, x2: 446, y2: 214 }, "anim-axis");
+        put("line", { x1: 58, y1: 214, x2: 58, y2: 30 }, "anim-axis");
+        DAY_TICK.forEach((t) => {
+          put("line", { x1: 53, y1: t[0], x2: 58, y2: t[0] }, "anim-axis");
+          put("text", { x: 49, y: t[0] + 4, "text-anchor": "end" }, "anim-label", t[1]);
+        });
+        put("text", { x: 16, y: 122, "text-anchor": "middle",
+          transform: "rotate(-90 16 122)" }, "anim-label", "arrival day");
+        GEO_TICK.forEach((t) => {
+          put("line", { x1: t[0], y1: 214, x2: t[0], y2: 219 }, "anim-axis");
+        });
+
+        /* Both tick rows share one baseline and cross-fade in place, so the
+           axis relabels itself instead of sliding a second row in. */
+        const row = (ticks) => {
+          const g = ctx.svgEl("g");
+          ticks.forEach((t) => {
+            const n = ctx.svgEl("text",
+              { x: t[0], y: 232, "text-anchor": "middle", "class": "anim-label" });
+            n.textContent = t[1];
+            g.appendChild(n);
+          });
+          return svg.appendChild(g);
+        };
+        S.tGeo = row(GEO_TICK);
+        S.tEff = row(EFF_TICK);
+        S.title = put("text", { x: 252, y: 252, "text-anchor": "middle" },
+          "anim-label", "distance from Mexico City (1000 km)");
+
+        S.fit = put("line", { x1: SEG[0][0], y1: SEG[0][1], x2: SEG[0][2], y2: SEG[0][3] },
+          "anim-amber-stroke");
+        S.fit.style.opacity = 0;
+        S.mark = put("line", { x1: KM9, y1: 30, x2: KM9, y2: 219 }, "anim-marker");
+        S.mark.style.opacity = 0;
+
+        /* Two layers, so the four named dots always sit over the cloud. */
+        const gCloud = svg.appendChild(ctx.svgEl("g"));
+        const gNamed = svg.appendChild(ctx.svgEl("g"));
+        const named = {};
+        NAMED.forEach((n) => { named[n[0]] = n; });
+
+        const slow = !ctx.fast();
+        S.pts = [];
+        S.circ = [];
+        S.named = [];
+        GEOX.forEach((x, k) => {
+          const n = named[k];
+          const g = ctx.svgEl("g", { "class": "h1-pt" + (slow ? " anim-fade" : "") });
+          if (slow) g.style.animationDelay = (0.25 + k * 0.055) + "s";
+          const c = ctx.svgEl("circle", {
+            cx: x, cy: DAYY[k], r: n ? 5.6 : 4.4,
+            "class": n ? "anim-accent-fill h1-named" : "anim-faint"
+          });
+          if (!n) c.style.opacity = 0.72;
+          g.appendChild(c);
+          if (n) {
+            const t = ctx.svgEl("text", {
+              x: x + n[2], y: DAYY[k] + n[3], "text-anchor": n[4],
+              "class": "anim-label anim-knockout"
+            });
+            t.textContent = n[1];
+            g.appendChild(t);
+          }
+          (n ? gNamed : gCloud).appendChild(g);
+          S.pts.push(g);
+          S.circ.push(c);
+          S.named.push(!!n);
+        });
+
+        S.svg = svg;
+        plot.appendChild(svg);
+        plot.appendChild(ctx.el("div", "anim-caption",
+          "28 countries, redrawn schematically after Brockmann &amp; Helbing (2013). " +
+          "The R&sup2; on screen is measured on these redrawn points, and matches " +
+          "the 0.973 they publish."));
+        setX(0, true);
+      }
+
+      /* Detent i of the blend. Pure lookup: a dot is where the two rulers put
+         it, weighted i/20, and the fitted line is an array entry. */
+      function setX(i, instant) {
+        if (instant) S.pts.forEach((g) => { g.style.transition = "none"; });
+        const t = i / (DET - 1);
+        S.pts.forEach((g, k) => {
+          g.style.transform =
+            "translate(" + ((EFFX[k] - GEOX[k]) * t).toFixed(2) + "px,0px)";
+        });
+        if (instant) {
+          S.svg.getBoundingClientRect();            /* commit before re-arming */
+          S.pts.forEach((g) => { g.style.transition = ""; });
+        }
+        S.tGeo.style.opacity = Math.pow(1 - t, 1.5).toFixed(3);
+        S.tEff.style.opacity = Math.pow(t, 1.5).toFixed(3);
+        S.title.textContent = i === 0 ? "distance from Mexico City (1000 km)"
+          : i === DET - 1 ? "effective distance from Mexico City"
+          : "ruler: " + pct(i) + "% effective distance, " + (100 - pct(i)) + "% kilometres";
+        const s = SEG[i];
+        ctx.attr(S.fit, { x1: s[0], y1: s[1], x2: s[2], y2: s[3] });
+        if (S.hook) S.hook(i);
+      }
+
+      function fitLine(on) {
+        if (on && !ctx.fast() && S.fit.style.opacity !== "1") {
+          S.fit.style.setProperty("--dash", 460);
+          S.fit.classList.remove("anim-draw");
+          S.fit.getBoundingClientRect();
+          S.fit.classList.add("anim-draw");
+        }
+        S.fit.style.opacity = on ? 1 : 0;
+      }
+
+      /* The cloud arrives grey and lawless; once the ruler is the network's,
+         it is the same ink as everything else in the notes. */
+      function land(on) {
+        S.circ.forEach((c, k) => {
+          if (S.named[k]) return;
+          c.setAttribute("class", on ? "anim-accent-fill" : "anim-faint");
+        });
+      }
+
+      function spot(k, on) {
+        S.circ[k].setAttribute("class", on ? "h1-hi" : "anim-accent-fill h1-named");
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      const mark = (on) => { S.mark.style.opacity = on ? 1 : 0; };
+      const dim = (v) => { S.svg.style.opacity = v; };
+      const watch = (fn) => { S.hook = fn; };
+
+      /* S is filled by drawPlot(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { drawPlot, setX, fitLine, land, spot, mark, dim, watch, card };
+    },
+
+    clear(ctx) { ctx.watch(null); }
+  });
+});
+</script>
+```
+
+There is a trend: far-away places do tend to be later. But look along the dashed
+line at nine thousand kilometres in the first step. Five countries sit within
+four hundred kilometres of it, and the virus reached the first of them on day 41
+and the last on day 121 — six weeks against four months. Kilometres put them in
+the same place; the epidemic did not. Whatever sets the arrival day, it is not
+the distance you can measure on a map.
+
+## A Route That Carries More Traffic Is a Shorter Route
+
+Dirk Brockmann and Dirk Helbing [@brockmann2013hidden] asked what happens if you stop measuring distance across the ground and start measuring it along the routes people actually travel.
+
+Air travel is the obvious candidate, and it is easy to write down. Take every commercial airport and call it a **node**. Wherever a scheduled route connects two airports, draw an **edge** between them. Dots and lines — that is the whole vocabulary of this course, and you have now met all of it.
+
+Here is the move that makes it work. The edges are not all the same length. Of everyone who boards a plane in Mexico City, a large share land in Los Angeles and a very small share land in Ljubljana. A route that carries a big share of the traffic is a *short* route, because a traveller — and therefore the virus — is likely to take it. A route that carries a trickle is a long one. The **effective distance** between two airports is then the smallest total you can accumulate along any chain of flights joining them, exactly the way a road atlas gives you the shortest drive, except that "long" and "short" now mean traffic share instead of kilometres.
+
+Put numbers on it. Suppose one in ten passengers leaving Mexico City lands in Madrid, and one in a thousand lands in Guatemala City. On Brockmann and Helbing's scale the Madrid leg has length 3.3 and the Guatemala City leg has length 7.9. Madrid is the near neighbour, Guatemala City the far one, and the map says the opposite.
+
+::: {.callout-note title="The formula, if you want it"}
+If a fraction $p$ of the passengers leaving an airport take a particular route, that leg is given length $1 - \log p$ (natural log). A leg carrying all the traffic, $p = 1$, has length 1; halving the share adds about 0.7. The effective distance between two airports is the smallest sum of leg lengths over all routes between them — an ordinary shortest path, on these lengths. That is the whole definition; $p = 0.1$ gives $1 - \log 0.1 = 3.3$ and $p = 0.001$ gives $7.9$.
 :::
 
+That is the ruler the stage above switches to at step three, and it is the whole
+reason the cloud collapsed. Brockmann and Helbing report a fit of $R^2 = 0.973$.
+(An $R^2$ runs from 0, meaning the line tells you nothing about arrival day, to
+1, meaning the line is exact.) The same picture holds for the 2003 SARS outbreak.
+No new data was collected between the two rulers and nothing about the virus
+changed. Only the ruler changed.
 
-Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?
+That is the claim the rest of this course rests on: **network structure, not geography, determines how things spread**.
 
-This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.
+## The Same Skeleton Under a Food Web, a Bank and Your Brain
 
-::: {#fig-network-distance-vs-arrival-time}
+Nothing in that argument was about influenza. It needed only two things: a set of items, and a record of which pairs are joined. Any system that offers those two things gets the same treatment.
 
-![](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)
+| System | A node is | An edge is |
+|---|---|---|
+| Air travel | an airport | a scheduled route between two airports |
+| The brain | a neuron | a synapse from one neuron to another |
+| A cell | a protein | two proteins that bind to each other |
+| An ecosystem | a species | "this one eats that one" |
+| Banking | a bank | an overnight loan one bank owes another |
+| The power grid | a substation | a transmission line |
+| Wikipedia | an article | a hyperlink from one article to another |
 
-Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
-:::
+<!-- TODO(anim): one skeleton, several systems - the same dot-and-line drawing relabelled as airports, neurons, banks, substations, in a single ink colour. -->
 
-::: {.column-margin}
-See [@brockmann2013hidden] for more details.
-:::
+Read the middle column again. Nothing in the raw data forced any of those choices. From the same airline timetable you could have made cities the nodes instead of airports, or countries; you could have said an edge exists when *any* route connects two places, or only when more than a thousand passengers a week do. **Deciding what counts as a node and what counts as an edge is a modelling decision, not something the data hands you.** It is also the decision that fixes what you will be able to see: effective distance is measurable at all only because the airports, not the countries, are the things that carry a measurable share of the traffic.
 
-The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.
+## What a Brain and a Power Grid Have in Common Is a Table
 
-Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we're connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.
+Once the nodes and edges are chosen, a network can be put down in two forms. You can draw it — dots with lines between them. Or you can write it down as a list of the joined pairs, one pair per row, which is called an **edge table**. They are the same object, and it is worth checking that claim by hand rather than taking it on trust: every line on the left is one row on the right.
 
+<figure class="anim-stage">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="A network of five numbered nodes. Node 1 joins 2 and 3; node 2 joins 3 and 4; node 3 joins 5.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
+</div>
+<div class="anim-panel">
+<table>
+<thead><tr><th>Source</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>2</td></tr>
+<tr><td>1</td><td>3</td></tr>
+<tr><td>2</td><td>3</td></tr>
+<tr><td>2</td><td>4</td></tr>
+<tr><td>3</td><td>5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="anim-caption">One network, two forms. Five lines on the left, five rows on the right.</figcaption>
+</figure>
 
-::: {layout-nrow=4}
+<!-- TODO(anim): draw an edge in the picture and watch the matching row appear in the table, and the reverse. -->
 
-![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)
+Five nodes fit in a picture. The air-travel network behind the H1N1 result does not: it has thousands of airports and tens of thousands of routes, and drawn as dots and lines it is a black smudge in which no individual connection can be seen. Zooming does not help, and neither does a better layout algorithm — there is simply more ink than the page has room for. The edge table is unbothered by size. It just gets longer, and a computer reads a long table as happily as a short one.
 
-![Food web](https://mlurgi.github.io/networks_for_r/images/food-web.png)
+The table is also what makes this one field instead of ten. Two columns of labels look identical whether the labels are airports, neurons, banks or Wikipedia articles, so a method that works on one works on all of them. That is the bargain of the abstraction, and it is worth stating what each side of it costs: the table *keeps* exactly one kind of information, which pairs are joined, and *discards* everything else — how far apart the nodes are, how big they are, what they are made of, what year it is. The H1N1 story is what that bargain buys. Throwing away the kilometres is precisely what let the arrival times line up.
 
-![Brain network](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp)
+## If It Fits in a Spreadsheet, Why Is There a Whole Field?
 
-![Medicine network](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png)
+A two-column table is exactly the sort of thing statistics and machine learning already handle. So why not load the edge table into the usual tools and be done?
 
-![Protein-protein interaction](https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg)
+Because nothing interesting about a network lives in a row. It lives in how the rows combine.
 
-![Social network](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png)
+In 1739 Jacques de Vaucanson exhibited a mechanical duck in Paris. It flapped its wings, took grain from a visitor's hand, swallowed it, and some minutes later excreted pellets. It was the great advertisement for **reductionism**: understand each part, build each part, put the parts together, and the behaviour of the whole follows.
 
-![International financial network](https://www.researchgate.net/profile/Douglas-White-4/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)
+It was also a fraud. The duck digested nothing. The swallowed grain went into one compartment, and the pellets it produced had been loaded into a second compartment before the show — the conjurer Jean-Eugène Robert-Houdin, who restored the machine a century later, reported the hidden mechanism. Keep that image, because it is the honest one: a machine assembled from duck-shaped parts produced duck-shaped output, and there was still no duck inside it. ([Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck))
 
-![US airport network](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)
+Networks break the reductionist recipe in a specific and repeatable way: the properties that matter belong to the pattern of connections, not to any component. You can know every neuron in a brain and still not know how a memory is stored. You can profile every person in a movement and still not predict which slogan spreads. You can own every computer on the internet and still not explain a traffic jam that appears on it.
 
-![Power grid network](https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png)
+Two things go wrong at once. Scale overwhelms intuition: you can hold the relationships among three people in your head, and you cannot do it for three million. And the effects of a change are wildly uneven. Go back to the five-node network above and take away a single edge.
 
-![River network](https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png)
+<figure class="anim-stage">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="The same five-node network with the edge between 2 and 3 cut. All five nodes are still reachable.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line x1="165" y1="38" x2="105" y2="110" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"/>
+  <line class="anim-amber-stroke" x1="127" y1="66" x2="143" y2="82"/>
+  <line class="anim-amber-stroke" x1="143" y1="66" x2="127" y2="82"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
+<div class="anim-caption">Cut 2&ndash;3: nothing happens.</div>
+</div>
+<div class="anim-panel">
+<svg class="anim-svg" viewBox="0 0 260 190" role="img"
+     aria-label="The same five-node network with the edge between 3 and 5 cut. Node 5 is now isolated.">
+  <line class="anim-edge" x1="70" y1="42" x2="165" y2="38"/>
+  <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"/>
+  <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"/>
+  <line x1="105" y1="110" x2="48" y2="165" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"/>
+  <line class="anim-amber-stroke" x1="68" y1="130" x2="84" y2="146"/>
+  <line class="anim-amber-stroke" x1="84" y1="130" x2="68" y2="146"/>
+  <circle class="anim-node" cx="70" cy="42" r="14"/>
+  <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text>
+  <circle class="anim-node" cx="165" cy="38" r="14"/>
+  <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text>
+  <circle class="anim-node" cx="105" cy="110" r="14"/>
+  <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text>
+  <circle class="anim-node" cx="228" cy="92" r="14"/>
+  <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text>
+  <circle class="anim-node-off" cx="48" cy="165" r="14"/>
+  <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:var(--_ink-faint);font-size:13px">5</text>
+</svg>
+<div class="anim-caption">Cut 3&ndash;5: node 5 is gone.</div>
+</div>
+</div>
+<figcaption class="anim-caption">One edge removed, two different networks. The edge table gives no hint which removal is which.</figcaption>
+</figure>
 
-![Internet network](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)
+<!-- TODO(anim): let the reader click any edge of a small network to delete it, and colour the pieces that fall off. -->
 
-![Knowledge graph](https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png)
+Cut edge 2&ndash;3 and nothing is lost: 2 still reaches 3, by way of 1. Cut edge 3&ndash;5 instead and node 5 drops off the network entirely — nothing reaches it and it reaches nothing. Same network, same size of edit, opposite consequence. Both edges look identical in the edge table: one row of two numbers each. You cannot tell them apart by looking at a row; you have to look at the pattern the rows make together.
 
-:::
+Now scale that question up. Of the hundred thousand transmission lines in a power grid, which ones are the 3&ndash;5? That question has no answer in ordinary statistics, and it is the reason this field exists.
 
-## How to represent a network
+## What You Can Now Do
 
-Although networks come from vastly different fields, **we can represent them all using the same universal language** 😉. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This abstraction is what makes network science so interdisciplinary.
+- Explain why distance measured through a network beats distance measured across a map when you want to predict when something arrives, and say what effective distance counts.
+- Take a system you care about and state what its nodes and edges are — while knowing that you decided that, and the data did not.
+- Write any network as an edge table, and say what the table keeps (which pairs are joined) and what it throws away (everything else).
+- Say why a table of pairs is where network science starts rather than where it stops.
 
-A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.
-
-
-We can represent any network in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:
-
-
-::: {layout-ncol=2}
-
-![Schematic network](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)
-
-![A network of penguins in the Kyoto Aquarium.](https://www.kyoto-aquarium.com/sokanzu/assets/img/img_sokanzu_2022.jpg)
-
-:::
-
-While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to obtain a quantitative understanding of network properties and behaviors.
-
-**Tables** are a natural way to represent networks. The idea is to list the pairs of nodes that are connected by an edge. For example:
-
-| Source | Target |
-|--------|--------|
-| Node1 | Node2 |
-| Node1 | Node3 |
-| Node2 | Node3 |
-| Node2 | Node4 |
-| Node3 | Node5 |
-
-This is called an ***edge table***. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.
-
-## Are we done with networks?
-
-If we can represent a network in a table---a familiar data format that can be analyzed by statistical methods, machine learning, and other tools---can we just use these tools to analyze networks? Why do we need to learn network science?
-
-**Long story short, a network is not just a collection of nodes and edges. They work in tandem to create a complex system**. And this view---that a system is not just a collection of parts---represents a critical shift in science.
-
-For centuries, scientists believed in **reductionism**. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century [Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck) seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.
-
-::: {.column-margin}
-
-![Vaucanson's Digesting Duck](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg)
-
-Find more details in [Wikipedia](https://en.wikipedia.org/wiki/Digesting_Duck)
-
-:::
-
-However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.
-
-The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition; while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences; removing one connection might fragment an entire network, while removing another has no effect at all. This is why network science exists as a distinct field: the traditional reductionist toolkit simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity!
+Next, [Module 1: A Stroll, Seven Bridges, and a Mathematical Revolution](../m01-euler_tour/01-concepts.qmd), where a Sunday walk through an 18th-century city turns into the first theorem of this subject — and where the act of throwing information away becomes a deliberate technique with a name.

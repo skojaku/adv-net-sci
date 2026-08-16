@@ -2,15 +2,35 @@
 title: "Exercises and Assignments"
 ---
 
-## Pen-and-Paper Exercise: From MST to Robust Grid Design
+## Pen and Paper: Build it, Break it, and Build it Back
 
-- ✍️ [Pen and Paper Exercise](./pen-and-paper/exercise.pdf)
+Nine stations, a table of cable costs, and an attacker who gets to delete one of them. You build the cheapest grid that connects all nine, work out how much of it survives each possible failure, find the station the attacker will pick — and then redesign the grid, first with the same number of cables and then with four extra, to make that attack as weak as you can.
 
-## Network Design Challenges
+- [Build it, Break it, and Build it Back](./pen-and-paper/exercise.pdf)
 
-[🚀 Interactive Demo](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
+Do this **before** the coding notebook. The connectivity and the attack ordering that the notebook computes for you, you will already have worked out by hand on nine stations.
 
-## Assignment
+## Build a Network, Then Break It
 
-- For students enrolled in SSIE 641, you will receive a dedicated link to the assignment repository from the instructor.
-- For those who are not enrolled, fork [this assignment repository](https://github.com/sk-classroom/advnetsci-robustness) at Github.
+Twelve towns, no cables, and a budget of twenty: click two towns to lay a cable between them, spend the budget however you like, then run a random failure or a hub-first attack on your own design and watch the largest surviving piece shrink. Every attack you run stays on the chart, so you can put two wirings side by side. [Twelve towns, twenty cables](../assets/vis/network-robustness.html).
+
+Questions to consider:
+
+- Spend all twenty cables on a ring plus a few chords, so every town has about the same number. Then spend all twenty on two towns. Which wiring has the higher $R$ under random failure? Under targeted attack?
+- Can you build a wiring that beats both of those under targeted attack?
+
+## Assignments
+
+### Pair Notebook
+
+Work through this module with the AI tutor and hand in the notebook that the session builds. What is graded is your reasoning, not your code — see [the Pair Notebook guide](../course/pair-notebook.qmd) for the setup and a walkthrough of a full session.
+
+- Repository for M03: coming soon. Your invitation link arrives through Classroom 50.
+
+### Group Mini-Project
+
+Groups of up to three. One repository per group, graded once, with the same score going to every member of the group. Read [how a mini-project runs](../course/mini-project.qmd) first — exactly one person accepts the assignment and invites the rest, and that is the step teams get wrong.
+
+- Repository for M03: [`adv-net-sci-mini-proj-robustness`](https://github.com/sk-classroom/adv-net-sci-mini-proj-robustness). Accept the invitation through Classroom 50 first — the repository is not public, so the link only opens once you are enrolled.
+
+Readers who are not enrolled in SSIE 641 cannot open the assignment repositories. The worksheet above and the [hands-on notebook](02-coding.qmd) cover the same material and need no enrollment.

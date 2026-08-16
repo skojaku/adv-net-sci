@@ -1,21 +1,468 @@
 ---
-title: "Concepts - From image to graph"
+title: "Every Node Asks Its Neighbors"
 ---
 
-## Analogy between image and graph data
-We can think of a convolution of an image from the perspective of networks.
-In the convolution of an image, a pixel is convolved with its *neighbors*. We can regard each pixel as a node, and each node is connected to its neighboring nodes (pixels) that are involved in the convolution.
+> **The big question of this module.** An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?
 
-![](https://av-eks-lekhak.s3.amazonaws.com/media/__sized__/article_images/conv_graph-thumbnail_webp-600x300.webp)
+Here is the answer in one sentence, before any mathematics: **a layer replaces each node's value with a combination of its neighbors' values, and learns what that combination should be.** Everything below is a variation on that sentence — which combination, computed how, and what goes wrong when you do it too many times.
+
+## A pixel is a node, and a kernel is a rule about neighbors
+
+We can think of a convolution of an image from the perspective of networks.
+In the convolution of an image, a pixel is convolved with its *neighbors*. We can regard each pixel as a node, and each node is connected to its neighboring nodes (pixels) that are involved in the convolution. An image is then a very orderly network: a grid in which every node has exactly eight neighbors, always in the same eight positions.
+
+Watch that happen, and then watch it break. Twenty-five pixels lift off the page into nodes, the kernel's nine-cell footprint becomes edges — and then the grid is bent out of shape until nothing about it is regular any more.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The grid that becomes a graph (m09) — only the rules this one widget needs.
+   The paper, the panels, the buttons, the knob and the motion primitives all
+   come from assets/anim.css; the sequencer from assets/anim.js. Every colour
+   here is a kit token, and the node fills are interpolated between two of
+   them in JS.
+   -------------------------------------------------------------------------- */
+#grid-lift .gl-pix  { stroke: var(--_ink); stroke-width: 1.2; }
+#grid-lift .gl-node { stroke: var(--_ink); stroke-width: 1.6; }
+/* The kernel's own footprint, and later the edges it turns into: both accent,
+   because they are the same nine-cell fact drawn two ways. */
+#grid-lift .gl-foot { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+#grid-lift .gl-edge { stroke: var(--_ink); stroke-width: 1.6; stroke-linecap: round; }
+#grid-lift .gl-edge-hot { stroke: var(--_accent); stroke-width: 2.8; }
+/* A ring drawn straight onto a dark node vanishes, so it gets a paper collar. */
+#grid-lift .gl-ring-back { fill: none; stroke: var(--_paper); stroke-width: 5; }
+#grid-lift .gl-ring { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+/* The dial moves a node by rewriting cx/cy, which in CSS are animatable
+   geometry properties. Under prefers-reduced-motion the kit sets
+   `transition-duration: 1ms` on every element in the stage and the default
+   transition-property is `all`, so each step would become a tiny transition —
+   motion for a reader who asked for none, and a drawing that is a frame
+   behind its own numbers. Opt out by property, which the kit never sets. */
+#grid-lift .gl-node, #grid-lift .gl-edge { transition-property: none; }
+</style>
+
+<figure class="anim-stage" id="grid-lift">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-gl-net></div>
+    <div data-anim-clear data-gl-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One knob, and it bends a picture into a network. Markup above, scenes below,
+   and nothing in between: everything a scene calls arrives on `ctx` — see
+   assets/anim.js. The kit is loaded after this file, hence the animReady
+   queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing on
+     this page runs a graph algorithm or a layout solver.
+
+     THE GRID. 5x5 pixels, spaced 42 apart. Two pixels are joined when one
+     lies in the other's 3x3 kernel footprint, so this is the king's-move
+     grid: 72 edges, corner nodes of degree 3, border nodes 5, interior 8.
+     The pixel values are the vertical stripe of the previous page — column
+     index 2 is 80, everything else 10.
+
+     THE TARGET. The same 25 nodes after rewiring: 27 of the grid's edges are
+     deleted and 5 new ones added, giving 50 edges with degrees 2 … 7. Drawn
+     with a spring layout, then scaled into the same box.
+
+       import networkx as nx, numpy as np, itertools
+       G0 = king's-move 5x5 grid                    # 72 edges
+       rng = np.random.default_rng(11)              # drop each edge w.p. 0.42,
+       ...                                          # add 9 random non-edges,
+       ...                                          # keep only if connected,
+       ...                                          # degrees in [2,7], deg(12) in [3,5]
+       POS1 = nx.spring_layout(G1, seed=7, iterations=400)
+
+     THE DIAL. 24 detents. Node positions interpolate linearly from POS0 to
+     POS1. Edge i is drawn when KIND[i] is 0 (it survives), or KIND[i] is 1
+     and the detent is below WHEN[i] (it has not left yet), or KIND[i] is 2
+     and the detent has reached WHEN[i] (it has arrived). At detent 24 the
+     picture is exactly the target graph — asserted offline.
+     ------------------------------------------------------------------------ */
+  const POS0 = [[26,26],[68,26],[110,26],[152,26],[194,26],[26,68],[68,68],[110,68],[152,68],[194,68],[26,110],[68,110],[110,110],[152,110],[194,110],[26,152],[68,152],[110,152],[152,152],[194,152],[26,194],[68,194],[110,194],[152,194],[194,194]];
+  const POS1 = [[122.7,88.9],[149.0,64.6],[118.7,59.2],[72.0,41.5],[97.6,24.0],[156.8,81.7],[131.7,103.5],[127.0,124.0],[90.0,85.4],[87.7,42.3],[41.9,134.3],[84.8,116.3],[104.4,127.2],[138.9,150.9],[95.4,143.3],[24.0,196.0],[40.2,171.9],[74.5,159.0],[124.7,166.3],[145.5,179.2],[53.6,175.9],[47.8,192.4],[73.1,185.5],[112.7,163.8],[135.0,195.1]];
+  const EDGE = [[0,5],[0,6],[1,2],[1,6],[1,5],[2,8],[2,6],[3,4],[3,8],[4,9],[5,6],[6,7],[6,12],[7,13],[7,11],[8,9],[8,14],[8,12],[10,11],[10,16],[11,17],[12,17],[12,18],[13,14],[13,19],[14,18],[15,16],[15,20],[15,21],[16,17],[16,21],[16,22],[16,20],[17,22],[17,23],[17,21],[18,19],[18,23],[18,24],[19,24],[19,23],[20,21],[21,22],[22,23],[23,24],[12,13],[13,17],[2,7],[11,12],[8,13],[7,12],[17,18],[7,8],[0,1],[9,13],[5,11],[6,11],[11,16],[4,8],[1,7],[6,10],[2,3],[18,22],[10,15],[9,14],[3,9],[5,10],[13,18],[3,7],[12,16],[11,15],[14,19],[14,20],[6,23],[8,11],[2,4],[0,11]];
+  const KIND = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2];
+  const WHEN = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,3,4,5,6,7,8,8,9,10,11,12,13,14,15,16,16,17,18,19,20,21,22,23,24,1,6,12,18,24];
+
+  /* Read off the picture at each detent, so nothing has to be counted live. */
+  const NEDGE = [72,71,70,69,68,67,67,66,64,63,62,61,61,60,59,58,56,55,55,54,53,52,51,50,50];
+  const DEGM  = [8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,4,4];
+  const DMIN  = [3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2];
+  const DMAX  = [8,8,8,8,8,8,9,9,9,9,8,8,8,8,7,7,7,7,7,7,7,7,7,7,7];
+
+  const DET = 24;            /* the knob: 0 = the picture, 24 = the network */
+  const MARK = 12;           /* the ringed node: dead centre of the grid */
+  /* Its nine-cell kernel footprint, which is the whole point of scene 1. */
+  const FOOT = [6, 7, 8, 11, 12, 13, 16, 17, 18];
+  /* One number per pixel: the vertical stripe, column index 2. */
+  const VAL = POS0.map((p, i) => (i % 5 === 2 ? 0.8 : 0.1));
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "Nine pixels under the kernel",
+      note: "Twenty-five pixels, and the same vertical stripe as the previous page. A 3×3 kernel sitting on the middle pixel covers these nine — and it covers the same nine relative places wherever you put it. That is what makes one small table of weights enough.",
+      async run(ctx) {
+        ctx.draw();
+        await ctx.sleep(1600);
+        ctx.foot(true);
+        const c = ctx.card("one kernel, nine slots");
+        [["pixels under the kernel", "9"], ["weights in the kernel", "9"],
+         ["and at the next pixel", "the same 9"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "up-left, up, up-right, left, self, right, … — every pixel's " +
+          "neighbours arrive in the same nine places, in the same order"));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Every pixel is a node",
+      note: "Now redraw the same fact as a network. Each pixel becomes a node, and the kernel's footprint becomes edges: the middle node is joined to the eight around it. Do that everywhere and an image is a network — an extremely orderly one.",
+      async run(ctx) {
+        const c = ctx.card("the picture, as a network");
+        ctx.foot(true);
+        await ctx.lift();
+        await ctx.sleep(400);
+        await ctx.wire();
+        ctx.foot(false);
+        [["nodes", "25"], ["edges", "72"],
+         ["neighbours of the ringed node", "8"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "at the border a node has 3 or 5 instead of 8 — the boundary " +
+          "problem every convolution has to patch over"));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Bend it out of shape",
+      note: "Nothing about the drawing rule changes; only the picture does. Edges leave, a few new ones arrive, and the nodes drift out of their rows. The result is a perfectly ordinary network — and every regularity the kernel relied on is gone.",
+      async run(ctx) {
+        const c = ctx.card("bend it");
+        if (ctx.fast()) { ctx.setD(DET); }
+        else { for (let d = 1; d <= DET; d++) { ctx.setD(d); await ctx.sleep(105); } }
+        await ctx.sleep(500);
+        [["edges", "72 &rarr; 50"], ["degrees", "3–8 &rarr; 2–7"],
+         ["the ringed node", "8 &rarr; 4"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "no two nodes have the same neighbourhood any more, and no " +
+          "neighbour sits in a named place. One table of nine weights has " +
+          "nothing left to attach itself to."));
+        await ctx.sleep(3600);
+      }
+    },
+    {
+      label: "Now you bend it",
+      note: "Take the dial and run it the other way. A grid is not a different kind of object from a network; it is the one network in which every node happens to have the same neighbourhood, laid out in the same places. That coincidence is all a kernel ever needed.",
+      async run(ctx) {
+        const c = ctx.card("now you bend it");
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span style="color:var(--_accent)">ringed node <b data-n>4</b> nbrs</span>' +
+          '<span>degrees <b data-r>2–7</b></span>' +
+          '<span style="color:var(--_amber)">neighbours in fixed places? <b data-f>no</b></span>');
+        c.appendChild(read);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "left end of the dial: the picture. Right end: a network. " +
+          "Everything between is the same 25 nodes."));
+
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outN = read.querySelector("[data-n]");
+        const outR = read.querySelector("[data-r]");
+        const outF = read.querySelector("[data-f]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the drawing is
+           yours until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DET, step: 1, value: DET,
+          label: "How far the picture is bent",
+          format: (d) => (d === 0 ? "a picture" : d === DET ? "a network"
+                                                : "part way, " + d + " of " + DET),
+          onGrab: () => ctx.pause(),
+          onInput: (d) => {
+            outN.textContent = String(DEGM[d]);
+            outR.textContent = DMIN[d] + "–" + DMAX[d];
+            outF.textContent = d === 0 ? "yes" : "no";
+            ctx.setD(d);
+          }
+        });
+        dial.set(DET);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipped to, or read with motion off: land on the network, and let
+           the verdict name both ends of the dial — this is the only frame
+           such a reader gets. */
+        if (ctx.fast()) {
+          dial.set(DET);
+          say("left end of the dial: a grid, the one network in which every " +
+              "neighbourhood has the same shape. Right end, drawn here: the " +
+              "general case a graph neural network has to work on.");
+          return;
+        }
+
+        await ctx.sleep(900);
+        for (let d = DET - 1; d >= 0; d--) { dial.set(d); await ctx.sleep(95); }
+        say("a grid is a network in which every neighbourhood has the same " +
+            "shape, in the same places. <em>That</em> is the special case.");
+        await ctx.sleep(3400);
+
+        for (let d = 1; d <= DET; d++) { dial.set(d); await ctx.sleep(95); }
+        say("and this is the general case — the one a graph neural network " +
+            "has to work on.");
+        await ctx.sleep(3200);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("grid-lift"), scenes, {
+    stepsLabel: "Steps from picture to network",
+
+    /* The two things only this animation has: a drawing that persists across
+       all four scenes, and a card on the right that each scene rewrites.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const net = ctx.$("[data-gl-net]");
+      const side = ctx.$("[data-gl-side]");
+      const S = {};
+
+      /* ---- the colour of a number ----------------------------------------
+         Pale accent for 10, full accent for 80, both read off the stage so
+         the ramp follows the theme. The literals are the same fallbacks
+         assets/anim.css declares, reached only if a browser hands back
+         something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (t) => "rgb(" +
+        LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+
+      /* where node i sits at detent d */
+      const at = (i, d) => {
+        const t = d / DET;
+        return [POS0[i][0] + (POS1[i][0] - POS0[i][0]) * t,
+                POS0[i][1] + (POS1[i][1] - POS0[i][1]) * t];
+      };
+      const shown = (e, d) =>
+        KIND[e] === 0 || (KIND[e] === 1 ? d < WHEN[e] : d >= WHEN[e]);
+
+      /* ---- the drawing ---------------------------------------------------
+         Scene 1 builds it; scenes 2–4 only ever mutate it. Separate <g>s so
+         the footprint lands over the pixels, the edges under the nodes and
+         the ring over everything, with no z fiddling. */
+      function draw() {
+        net.textContent = "";
+        const svg = ctx.svgRoot("0 0 220 220");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gPix = g(), gEdge = g(), gNode = g(), gRing = g(), gFoot = g();
+        const slow = !ctx.fast();
+
+        S.pix = POS0.map((p, i) => {
+          const r = ctx.svgEl("rect", {
+            x: p[0] - 21, y: p[1] - 21, width: 42, height: 42,
+            "class": "gl-pix" + (slow ? " anim-fade" : "")
+          });
+          r.style.fill = hue(VAL[i]);
+          if (slow) r.style.animationDelay = (0.1 + i * 0.03) + "s";
+          return gPix.appendChild(r);
+        });
+
+        S.edges = EDGE.map(() => {
+          const l = ctx.svgEl("line", { "class": "gl-edge" });
+          l.style.opacity = 0;
+          return gEdge.appendChild(l);
+        });
+
+        S.nodes = POS0.map((p, i) => {
+          const c = ctx.svgEl("circle", { cx: p[0], cy: p[1], r: 9, "class": "gl-node" });
+          c.style.fill = hue(VAL[i]);
+          c.style.opacity = 0;
+          return gNode.appendChild(c);
+        });
+
+        S.ring = gRing;
+        S.foot = ctx.svgEl("rect", {
+          x: 47, y: 47, width: 126, height: 126, rx: 5, "class": "gl-foot"
+        });
+        S.foot.style.opacity = 0;
+        gFoot.appendChild(S.foot);
+
+        S.cap = ctx.el("div", "anim-caption",
+          "25 pixels, and the stripe from the previous page. Darker means a " +
+          "larger number.");
+        net.appendChild(svg);
+        net.appendChild(S.cap);
+        S.d = 0;
+      }
+
+      const foot = (on) => { S.foot.style.opacity = on ? 1 : 0; };
+
+      /* ---- the ring on the node we are following ---- */
+      function ringAt(d) {
+        S.ring.textContent = "";
+        const p = at(MARK, d);
+        ["gl-ring-back", "gl-ring"].forEach((cls) => {
+          S.ring.appendChild(ctx.svgEl("circle",
+            { cx: p[0], cy: p[1], r: 13, "class": cls }));
+        });
+      }
+
+      /* ---- scene 2: the pixels let go and become nodes ---- */
+      async function lift() {
+        if (ctx.fast()) {
+          S.pix.forEach((r) => { r.style.opacity = 0; });
+          S.nodes.forEach((c) => { c.style.opacity = 1; });
+          ringAt(0);
+          S.cap.textContent = "one node per pixel, joined wherever the kernel " +
+            "would have covered both.";
+          return;
+        }
+        for (let i = 0; i < S.pix.length; i++) {
+          S.pix[i].setAttribute("class", "gl-pix anim-fade-out");
+          S.nodes[i].style.opacity = 1;
+          if (i % 5 === 4) await ctx.sleep(150);
+        }
+        await ctx.sleep(500);
+        ringAt(0);
+        S.cap.textContent = "one node per pixel, joined wherever the kernel " +
+          "would have covered both.";
+      }
+
+      /* ---- scene 2: the footprint's eight pairs first, then the rest ---- */
+      async function wire() {
+        const hot = [], rest = [];
+        EDGE.forEach((e, i) => {
+          if (KIND[i] !== 2) {
+            (FOOT.indexOf(e[0]) >= 0 && FOOT.indexOf(e[1]) >= 0 &&
+             (e[0] === MARK || e[1] === MARK) ? hot : rest).push(i);
+          }
+        });
+        const put = (i) => {
+          const a = at(EDGE[i][0], 0), b = at(EDGE[i][1], 0);
+          ctx.attr(S.edges[i], { x1: a[0], y1: a[1], x2: b[0], y2: b[1] });
+          S.edges[i].style.opacity = 1;
+        };
+        if (ctx.fast()) { hot.concat(rest).forEach(put); paintHot(0); return; }
+        for (const i of hot) { put(i); await ctx.sleep(150); }
+        await ctx.sleep(600);
+        for (let k = 0; k < rest.length; k++) {
+          put(rest[k]);
+          if (k % 4 === 3) await ctx.sleep(50);
+        }
+        paintHot(0);
+      }
+
+      /* the edges touching the ringed node, so its degree is countable */
+      function paintHot(d) {
+        S.edges.forEach((l, i) => {
+          const on = shown(i, d) && (EDGE[i][0] === MARK || EDGE[i][1] === MARK);
+          l.setAttribute("class", "gl-edge" + (on ? " gl-edge-hot" : ""));
+        });
+      }
+
+      /* ---- the dial: the whole drawing at detent d ---- */
+      function setD(d) {
+        S.d = d;
+        S.nodes.forEach((c, i) => {
+          const p = at(i, d);
+          ctx.attr(c, { cx: p[0], cy: p[1] });
+          c.style.opacity = 1;
+        });
+        S.pix.forEach((r) => { r.style.opacity = 0; });
+        S.edges.forEach((l, i) => {
+          if (!shown(i, d)) { l.style.opacity = 0; return; }
+          const a = at(EDGE[i][0], d), b = at(EDGE[i][1], d);
+          ctx.attr(l, { x1: a[0], y1: a[1], x2: b[0], y2: b[1] });
+          l.style.opacity = 1;
+        });
+        paintHot(d);
+        ringAt(d);
+        S.foot.style.opacity = 0;
+        S.cap.textContent = d === 0
+          ? "one node per pixel, joined wherever the kernel would have covered both."
+          : "the same 25 nodes, " + NEDGE[d] + " edges, no rows and no columns.";
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by draw(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { draw, foot, lift, wire, setD, card };
+    }
+  });
+});
+</script>
+```
 
 Building on this analogy, we can extend the idea of convolution to general graph data.
 Each node has a pixel value(s) (e.g., feature vector), which is convolved with the values of its neighbors in the graph.
 This is the key idea of graph convolutional networks.
-But, there is a key difference: while the number of neighbors for an image is homogeneous, the number of neighbors for a node in a graph can be heterogeneous. Each pixel has the same number of neighbors (except for the boundary pixels), but nodes in a graph can have very different numbers of neighbors. This makes it non-trivial to define the "kernel" for graph convolution.
+But, there is a key difference: while the number of neighbors for an image is homogeneous, the number of neighbors for a node in a graph can be heterogeneous. Each pixel has the same number of neighbors (except for the boundary pixels), but nodes in a graph can have very different numbers of neighbors. A kernel is a *fixed* table of nine weights; a node with three neighbors and a node with three hundred cannot share one.
 
-There is a second difference, less obvious but just as constraining. In an image, "the pixel above" is a well-defined position, and the same kernel weight always applies to it. In a graph, a node's neighbors arrive as an unordered *set*. If we relabel the nodes — feed the same network in with the rows of ${\bf A}$ shuffled — nothing about the network has changed, so nothing about our answer should change either.
+There is a second difference, less obvious but just as constraining. In an image, "the pixel above" is a well-defined position, and the same kernel weight always applies to it. In a graph, a node's neighbors arrive as an unordered *set*. Nothing tells you which neighbor is "first".
 
-::: {.callout-important title="Key Concept: Permutation invariance and equivariance"}
+Concretely: draw a triangle and label its corners $1, 2, 3$. Now swap the names of nodes $2$ and $3$. The picture on the page has not changed at all — but the adjacency matrix has, because both its rows and its columns got swapped. Written with a **permutation matrix** ${\bf P}$ (an identity matrix with its rows shuffled, so that ${\bf P}{\bf v}$ reorders the entries of ${\bf v}$), renaming the nodes turns ${\bf A}$ into ${\bf P}{\bf A}{\bf P}^\top$: the ${\bf P}$ on the left reorders the rows, and the ${\bf P}^\top$ on the right reorders the columns to match. Same network, different bookkeeping.
+
+Our answers must not care about the bookkeeping.
+
+::: {.callout-note title="Permutation invariance and equivariance"}
 Let ${\bf P}$ be a permutation matrix that relabels nodes. A function $f$ on graphs is:
 
 - **Permutation invariant** if $f({\bf P}{\bf A}{\bf P}^\top, {\bf P}{\bf X}) = f({\bf A}, {\bf X})$. The output does not move at all. This is what we need for **graph-level** predictions — "is this molecule toxic?" cannot depend on the order we happened to list the atoms in.
@@ -24,8 +471,11 @@ Let ${\bf P}$ be a permutation matrix that relabels nodes. A function $f$ on gra
 
 This is not a technicality; it dictates the architecture. It is why every layer we build below aggregates neighbors with an operation that ignores order — sum, mean, max — and never with anything that depends on which neighbor came "first". It is also why an MLP applied to a flattened adjacency matrix, which would in principle be more expressive, is useless in practice: it has to learn from data that all $N!$ relabelings mean the same thing.
 
-## Spectral filter on graphs
-Just like we can define a convolution on images in the frequency domain, we can also define a ''frequency domain'' for graphs.
+## What "frequency" means when there is no time axis
+
+On the previous page a kernel turned out to be a filter: it kept some waves and discarded others. To reuse that idea we need waves on a network. A network has no time axis and no rows of pixels, so we have to say what "fast" and "slow" mean using nothing but the edges.
+
+Here is the definition that does it. Put one number on each node and ask: **how much do connected nodes disagree?**
 
 Consider a network of $N$ nodes, where each node has a feature variable ${\mathbf x}_i \in \mathbb{R}$. We are interested in:
 
@@ -33,7 +483,17 @@ $$
 J = \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2,
 $$
 
-where $A_{ij}$ is the adjacency matrix of the graph. The quantity $J$ represents *the total variation* of $x$ between connected nodes; a small $J$ means that connected nodes have similar $x$ (low variation; low frequency), while a large $J$ means that connected nodes have very different $x$ (high variation; high frequency).
+where $A_{ij}$ is the adjacency matrix of the graph. The quantity $J$ is *the total variation* of $x$: the sum of the squared disagreement across every edge. (The factor $\frac{1}{2}$ is there because the double sum visits each edge twice.) Small $J$ means connected nodes hold similar values — a **slow, low-frequency** signal. Large $J$ means neighbors disagree sharply — a **fast, high-frequency** signal.
+
+Try it on the smallest interesting network: four nodes in a line, $1 - 2 - 3 - 4$, with three edges. Put three different signals on it and add up the squared disagreements edge by edge.
+
+| signal ${\bf x}$ | edge (1,2) | edge (2,3) | edge (3,4) | $J$ |
+|---|---|---|---|---|
+| $(1, 1, 1, 1)$ | $0$ | $0$ | $0$ | $\mathbf{0}$ |
+| $(1, 1, -1, -1)$ | $0$ | $4$ | $0$ | $\mathbf{4}$ |
+| $(1, -1, 1, -1)$ | $4$ | $4$ | $4$ | $\mathbf{12}$ |
+
+The constant signal has no variation at all. The one that splits the line into a left half and a right half changes sign once, across a single edge. The alternating one changes sign at every edge and scores three times as high. That ordering — $0 < 4 < 12$ — is the entire content of "frequency" on a network. No waves needed, just disagreement across edges.
 
 We can rewrite $J$ as
 
@@ -53,7 +513,7 @@ $$
 
 and ${\bf x} = [x_1,x_2,\ldots, x_N]^\top$ is a column vector of feature variables. Equivalently, ${\bf L} = {\bf D} - {\bf A}$, where ${\bf D}$ is the diagonal degree matrix with $D_{ii} = k_i$.
 
-::: {.callout-important title="Notation: two Laplacians"}
+::: {.callout-note title="Notation: two Laplacians"}
 We will need **two** Laplacians in this module, and mixing them up breaks every formula that follows. Keep them distinct:
 
 $$
@@ -64,170 +524,97 @@ ${\bf L}$ is what appears in the total-variation identity ${\bf x}^\top {\bf L} 
 :::
 
 
-::: {.callout-note title="Detailed derivation"}
+Multiplying out $(x_i - x_j)^2$ and collecting terms is what turns the edge-by-edge sum into ${\bf x}^\top {\bf L} {\bf x}$; the four lines of algebra are in the [appendix](04-appendix.qmd#total-variation).
 
-The above derivation shows that the total variation of $x$ between connected nodes is proportional to ${\bf x}^\top {\bf L} {\bf x}$.
+### The network's own basis waves
 
-$$
-\begin{aligned}
-J &= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N A_{ij}(x_i - x_j)^2 \\
-&= \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N \underbrace{A_{ij}\left( x_i^2 +x_j^2\right)}_{\text{symmetric}} - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \sum_{i=1}^Nx_i^2\underbrace{\sum_{j=1}^N A_{ij}}_{\text{degree of node } i, k_i} - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \sum_{i=1}^Nx_i^2 k_i - \sum_{i=1}^N\sum_{j=1}^N A_{ij}x_ix_j \\
-&= \underbrace{[x_1,x_2,\ldots, x_N]}_{{\bf x}} \underbrace{\begin{bmatrix} k_1 & 0 & \cdots & 0 \\ 0 & k_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & k_N \end{bmatrix}}_{{\bf D}} \underbrace{\begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_N \end{bmatrix}}_{{\bf x}} - 2\underbrace{\sum_{i=1}^N\sum_{j=1}^N A_{ij}}_{{\bf x}^\top {\mathbf A} {\bf x}} {\bf x} \\
-&= {\bf x}^\top {\bf D} {\bf x} - {\bf x}^\top {\mathbf A} {\bf x} \\
-&= {\bf x}^\top {\bf L} {\bf x},
-\end{aligned}
-$$
-:::
-
-Let us showcase the analogy between the Fourier transform and the Laplacian matrix.
-In the Fourier transform, a signal is decomposed into sinusoidal basis functions. Similarly, for a graph, we can decompose the variation $J$ into eigenvector bases.
+Now the analogy with the Fourier transform pays off. There, a signal was rebuilt from sinusoids. Here, the Laplacian is a symmetric matrix, so it has $N$ eigenvectors ${\mathbf u}_1, \ldots, {\mathbf u}_N$ that form a basis: *any* assignment of numbers to nodes can be written as a combination of them. These eigenvectors are the network's basis waves, and the variation splits along them:
 
 $$
-J = \sum_{i=1}^N \lambda_i  {\bf x}^\top {\mathbf u}_i {\mathbf u}_i^\top {\bf x} = \sum_{i=1}^N \lambda_i  ||{\bf x}^\top {\mathbf u}_i||^2.
+J = \sum_{i=1}^N \lambda_i  ||{\bf x}^\top {\mathbf u}_i||^2 .
 $$
 
-where ${\mathbf u}_i$ is the eigenvector corresponding to the eigenvalue $\lambda_i$.
-^\top {\mathbf u}_i)$ is a dot-product between the feature vector ${\bf x}$ and the eigenvector ${\mathbf u}_i$, which measures how much ${\bf x}$ *coheres* with eigenvector ${\mathbf u}_i$, similar to how Fourier coefficients measure coherency with sinusoids.
-- Each $||{\bf x}^\top {\mathbf u}_i||^2$ is the ''strength'' of ${\bf x}$ with respect to the eigenvector ${\mathbf u}_i$, and the total variation $J$ is a weighted sum of these strengths.
+Read the two pieces separately.
 
-Some eigenvectors correspond to low-frequency components, while others correspond to high-frequency components. For example, the total variation $J$ for an eigenvector ${\mathbf u}_i$ is given by
+- $({\bf x}^\top {\mathbf u}_i)$ is a dot product between the signal ${\bf x}$ and the basis wave ${\mathbf u}_i$: how much of that wave the signal contains. It plays exactly the role of a Fourier coefficient.
+- $\lambda_i$ is the price tag on that wave. Feed the wave itself in as the signal and the sum collapses to ${\mathbf u}_i^\top {\bf L} {\mathbf u}_i = \lambda_i$: **the eigenvalue of a basis wave is literally its own total variation.**
 
-$$
-J = \frac{1}{2} \sum_{j}\sum_{\ell} A_{j\ell}(u_{ij} - u_{i\ell})^2 = {\mathbf u}_i^\top {\mathbf L} {\mathbf u}_i = \lambda_i.
-$$
+So the eigenvalues sort the basis waves from smoothest to roughest. The smallest is always $\lambda = 0$, whose eigenvector is constant on each connected component — the flat picture, the wave with no variation, the graph's version of "overall brightness". Large $\lambda$ means neighbors disagree violently. A signal made mostly of small-$\lambda$ waves is smooth across the network; one made of large-$\lambda$ waves is jagged.
 
-This equation provides key insight into the meaning of eigenvalues:
+That is a frequency domain, built from edges alone.
 
-1. For an eigenvector ${\mathbf u}_i$, its eigenvalue $\lambda_i$ measures the total variation for ${\mathbf u}_i$.
-2. Large eigenvalues mean large differences between neighbors (high frequency), while small eigenvalues mean small differences (low frequency).
+### Turning the dial: keep the smooth part, or keep the rough part
 
-Thus, if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a large $\lambda_i$, then ${\bf x}$ has a strong high-frequency component; if ${\bf x}$ aligns well with ${\mathbf u}_i$ with a small $\lambda_i$, then ${\bf x}$ has strong low-frequency component.
+Once every wave carries a number $\lambda_i$, we can rescale wave $i$ by any function $h(\lambda_i)$ we like before rebuilding the signal. That is a **filter**, exactly as on the previous page, and the choice of $h$ decides what survives:
 
-### Spectral Filtering
+**Low-pass**, $h_{\text{low}}(\lambda) = \dfrac{1}{1 + \alpha\lambda}$, divides each wave by its own roughness. Smooth waves pass nearly untouched, jagged ones are shrunk, and the output is a smoothed version of the input in which neighbors have been pulled toward each other.
 
-Eigenvalues $\lambda_i$ can be thought of as a *filter* that controls which frequency components pass through. Instead of using the filter associated with the Laplacian matrix, we can design a filter $h(\lambda_i)$ to control which frequency components pass through. This leads to the idea of *spectral filtering*. Two common filters are:
+**High-pass**, $h_{\text{high}}(\lambda) = \dfrac{\alpha\lambda}{1 + \alpha\lambda}$, does the reverse: it deletes the constant wave entirely (at $\lambda = 0$ it is exactly $0$) and keeps what varies between neighbors. It is the graph's edge detector.
 
-1. **Low-pass Filter**:
-   $$h_{\text{low}}(\lambda) = \frac{1}{1 + \alpha\lambda}$$
-   - Preserves low frequencies (small λ)
-   - Suppresses high frequencies (large λ)
-   - Results in smoother signals
+![Filter response against eigenvalue. Low-pass keeps the smooth waves; high-pass keeps the rough ones. $\alpha$ sets how sharply the dial turns.](../figs/m09-fig-00.svg){#fig-m09-fig-00 width=80% fig-align="center"}
 
-2. **High-pass Filter**:
-   $$h_{\text{high}}(\lambda) = \frac{\alpha\lambda}{1 + \alpha\lambda}$$
-   - Preserves high frequencies
-   - Suppresses low frequencies
-   - Emphasizes differences between neighbors
-
-![](../figs/m09-fig-00.svg){#fig-m09-fig-00}
+Keep the low-pass curve in mind. When we get to over-smoothing, it will turn out that a stack of GCN layers is this curve applied over and over.
 
 
-# Graph Convolutional Networks
-We have seen that spectral filters give us a principled way to think about "convolution" on irregular graph structures, and controlling the frequency components brings out different aspects of the data. We now go one step further: instead of designing filters by hand, we can learn them from data for specific tasks.
+## Stop designing the filter, learn it
 
+Spectral filters give us a principled way to think about "convolution" on irregular graph structures, and turning the dial between smooth and rough brings out different aspects of the data. We now go one step further: instead of choosing $h(\lambda)$ by hand, **let the data choose it**. That single move is what turns a filter into a neural network.
 
-## Spectral Graph Convolutional Networks
+### Bruna's filter: one weight per basis wave
 
-A simplest form of learnable spectral filter is given by
+The simplest learnable filter puts a free parameter on each basis wave:
 
 $$
 {\bf L}_{\text{learn}} = \sum_{k=1}^K \theta_k {\mathbf u}_k {\mathbf u}_k^\top,
 $$
 
-where ${\mathbf u}_k$ are the eigenvectors and $\theta_k$ are the learnable parameters. The variable $K$ is the number of eigenvectors used (i.e., the rank of the filter). The weight $\theta_k$ is learned to maximize the performance of the task at hand.
+where ${\mathbf u}_k$ are the Laplacian's eigenvectors and $\theta_k$ are learnable. $K$ is how many waves we keep. Compare this with the hand-designed low-pass filter: there, wave $k$ was scaled by the fixed number $1/(1 + \alpha\lambda_k)$; here it is scaled by $\theta_k$, and gradient descent decides what $\theta_k$ should be.
 
-Building on this idea, [@bruna2014spectral] added a nonlinearity to the filter and proposed a spectral convolutional neural network (GCN) by
-
-$$
-{\bf x}^{(\ell+1)} = h\left( L_{\text{learn}} {\bf x}^{(\ell)}\right),
-$$
-
-where $h$ is an activation function, and ${\bf x}^{(\ell)}$ is the feature vector of the $\ell$-th convolution. They further extend this idea to convolve on multidimensional feature vectors, ${\bf X} \in \mathbb{R}^{N \times f_{\text{in}}}$ to produce new feature vectors of different dimensionality, ${\bf X}' \in \mathbb{R}^{N \times f_{\text{out}}}$.
+[@bruna2014spectral] added a nonlinearity and made this a layer:
 
 $$
-\begin{aligned}
-{\bf X}^{(\ell+1)}_i &= h\left( \sum_j L_{\text{learn}}^{(i,j)} {\bf X}^{(\ell)}_j\right),\quad \text{where} \quad L^{(i,j)}_{\text{learn}} = \sum_{k=1}^K \theta_{k, (i,j)} {\mathbf u}_k {\mathbf u}_k^\top,
-\end{aligned}
+{\bf x}^{(\ell+1)} = h\left( {\bf L}_{\text{learn}} {\bf x}^{(\ell)}\right),
 $$
 
-Notice that the learnable filter $L_{\text{learn}}^{(i,j)}$ is defined for each pair of input $i$ and output $j$ dimensions.
+where $h$ is an activation function and ${\bf x}^{(\ell)}$ holds one number per node at layer $\ell$. Real nodes carry a whole feature *vector*, not one number, and the extension — a separate set of $\theta$'s for each pair of input and output feature channels, exactly as a CNN has one kernel per input-output channel pair — is written out in the [appendix](04-appendix.qmd#bruna).
 
+We will call this model **Bruna's spectral GCN** to keep it distinct from the model that everyone means by "GCN", which appears two sections below.
 
-::: {.column-margin}
-Many GCNs simple when it comes to implementation despite the complicated formula. And this is one of my ways to learn GNNs. Check out the [Appendix for the Python implementation](04-appendix.qmd).
+### Two reasons the elegant version is unusable
 
-:::
+**It is too expensive.** Getting the ${\mathbf u}_k$ means eigendecomposing the Laplacian: ${\cal O}(N^3)$. On a network of a million nodes that is not slow, it is impossible.
 
-## From Spectral to Spatial
+**It is not local.** Every eigenvector is spread over the whole network, so a single ${\bf L}_{\text{learn}}$ can move information from one end of the graph to the other in one layer. That throws away the one property that made a kernel a kernel: it looked at a *neighborhood*. A filter with no notion of "nearby" also has no reason to generalize, since it has to relearn a coefficient for every wave of every graph it ever sees.
 
-Spectral GCNs are mathematically elegant but have two main limitations:
-1. **Computational Limitation**: Computing the spectra of the Laplacian is expensive ${\cal O}(N^3)$ and prohibitive for large graphs
-2. **Spatial Locality**: The learned filters are not spatially localized. A node can be influenced by all other nodes in the graph.
+Both problems have the same cure: never touch the eigenvectors.
 
-These two limitations motivate the development of spatial GCNs.
+### ChebNet: a filter you can compute without eigenvectors
 
-### ChebNet
+Here is the observation that unlocks it. If the filter is a **polynomial in the Laplacian**, then applying it needs no eigenvectors at all — only repeated multiplication by ${\bf L}$, which for a sparse network costs one pass over the edges. And a polynomial of degree $K$ reaches exactly $K$ hops: multiplying by ${\bf L}$ once mixes a node with its neighbors, twice with its neighbors' neighbors, and no further. Locality comes free with the degree.
 
-ChebNet [@defferrard2016convolutional] is one of the earliest spatial GCNs that bridges the gap between spectral and spatial domains.
-The key idea is to leverage Chebyshev polynomials to approximate ${\bf L}_{\text{learn}}$ by
+ChebNet [@defferrard2016convolutional] builds that polynomial out of Chebyshev polynomials $T_k$, which are numerically well-behaved:
 
 $$
-{\bf L}_{\text{learn}} \approx \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}), \quad \text{where} \quad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I},
+{\bf x}^{(\ell+1)} = h\left( \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}){\bf x}^{(\ell)}\right), \qquad \tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I},
 $$
 
-where ${\bf L}_{\text{sym}} = {\bf I} - {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ is the **symmetric normalized** Laplacian from the notation box above, $\lambda_{\text{max}}$ is its largest eigenvalue, and $\tilde{{\bf L}}$ is that matrix rescaled so its eigenvalues lie in $[-1,1]$ — the interval on which Chebyshev polynomials are well behaved. The Chebyshev polynomials $T_k(\tilde{{\bf L}})$ transforms the eigenvalues $\tilde{{\bf L}}$ to the following recursively:
+where ${\bf L}_{\text{sym}}$ is the **symmetric normalized** Laplacian from the notation box above and $\tilde{{\bf L}}$ is it, rescaled so its eigenvalues sit in $[-1, 1]$. The $\theta_k$ are the $K$ learnable numbers, and $K$ — typically $2$ or $3$ — is simultaneously the degree of the polynomial and the number of hops one layer can see. The recursion that generates $T_k$ is in the [appendix](04-appendix.qmd#chebnet).
+
+### Kipf and Welling: throw almost all of it away
+
+Kipf and Welling (2017) [@kipf2017semi] asked what happens if you take ChebNet and set $K = 2$ — keep only $T_0$ and $T_1$ — then tie the two remaining parameters together into one. Three lines of algebra (in the [appendix](04-appendix.qmd#kipf-welling)) collapse the whole apparatus to:
 
 $$
-\begin{aligned}
-T_0(\tilde{{\bf L}}) &= {\bf I} \\
-T_1(\tilde{{\bf L}}) &= \tilde{{\bf L}} \\
-T_k(\tilde{{\bf L}}) &= 2\tilde{{\bf L}} T_{k-1}(\tilde{{\bf L}}) - T_{k-2}(\tilde{{\bf L}})
-\end{aligned}
+g_{\theta} * {\bf x} \approx \theta\left({\bf I}_N + {\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}\right){\bf x}
 $$
 
-We then replace ${\bf L}_{\text{learn}}$ in the original spectral GCN with the Chebyshev polynomial approximation:
+Read that in words, because this is the model everyone means by **GCN** and the words are simple: *a node's new value is its own value plus a degree-normalized sum of its neighbors' values, scaled by one learned number.* No eigenvectors, no polynomial, one parameter. It is precisely the sentence at the top of this page.
 
-$$
-{\bf x}^{(\ell+1)} = h\left( \sum_{k=0}^{K-1} \theta_k T_k(\tilde{{\bf L}}){\bf x}^{(\ell)}\right),
-$$
-
-where:
-- $T_k(\tilde{{\bf L}})$ applies the k-th Chebyshev polynomial to the scaled Laplacian matrix
-- $\theta_k$ are the learnable parameters
-- K is the order of the polynomial (typically small, e.g., K=3)
-
-### Graph Convolutional Networks by Kipf and Welling
-
-While ChebNet offers a principled way to approximate spectral convolutions, Kipf and Welling (2017) [@kipf2017semi] proposed an even simpler and highly effective variant called **Graph Convolutional Networks (GCN)**.
-
-
-### First-order Approximation
-
-The key departure is to use the first-order approximation of the Chebyshev polynomials, i.e., to keep only $T_0$ and $T_1$. Two simplifications make this collapse neatly. First, we take $\lambda_{\text{max}} \approx 2$, which is exactly the upper bound on the spectrum of ${\bf L}_{\text{sym}}$ noted earlier, so $\tilde{{\bf L}} = \frac{2}{\lambda_{\text{max}}}{\bf L}_{\text{sym}} - {\bf I} \approx {\bf L}_{\text{sym}} - {\bf I}_N$. Second, ${\bf L}_{\text{sym}} - {\bf I}_N = -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ by definition. Putting the two together:
-
-$$
-g_{\theta'} * x \approx \theta'_0x + \theta'_1({\bf L}_{\text{sym}} - {\bf I}_N)x = \theta'_0x - \theta'_1{\bf D}^{-\frac{1}{2}}{\bf A}{\bf D}^{-\frac{1}{2}}x
-$$
-
-This is crude approximation but it leads to a much simpler form, leaving only two learnable parameters, instead of $K$ parameters in the original ChebNet.
-
-::: {.column-margin}
-Note that ${\bf L}_{\text{sym}}$, not the unnormalized ${\bf L} = {\bf D} - {\bf A}$, is what appears here. With the unnormalized Laplacian the second equality would be false, since ${\bf L} - {\bf I}_N = {\bf D} - {\bf A} - {\bf I}_N \neq -{\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$.
-:::
-
-Additionally, they further simplify the formula by using the same $\theta$ for both remaining parameters (i.e., $\theta_0 = \theta$ and $\theta_1 = -\theta$). The result is the following convolutional filter:
-
-$$
-g_{\theta} * x \approx \theta(I_N + D^{-\frac{1}{2}}AD^{-\frac{1}{2}})x
-$$
-
-While this is a very simple filter, one can stack multiple layers of convolutions to perform high-order graph convolutions.
+The filter is crude — a fixed low-pass shape with a single knob — but layers stack, and stacking $\ell$ of them reaches $\ell$ hops.
 
 ### Deep GCNs can suffer from vanishing and exploding gradients
 
-GCN models can be deep, and when they are too deep, they start suffering from an ill-posed problem called *gradient vanishing/exploding*, where the gradients of the loss function becomes too small or too large to update the model parameters. It is a common problem in deep learning.
+GCN models can be deep, and when they are too deep they start suffering from a problem familiar throughout deep learning, *vanishing and exploding gradients*: the gradients of the loss become too small, or too large, to update the model parameters usefully.
 
 The graph convolution has its own version of this. The operator ${\bf I}_N + {\bf D}^{-1/2}{\bf A}{\bf D}^{-1/2}$ has eigenvalues in $[0, 2]$. Applying it once is harmless, but a deep model applies it over and over: a mode with eigenvalue near $0$ is crushed toward nothing, while a mode with eigenvalue near $2$ is amplified as $2^\ell$ over $\ell$ layers. Repeated multiplication therefore drives the signal — and with it the gradient — either to zero or to infinity.
 
@@ -244,15 +631,12 @@ Altogether, this leads to the following layer-wise propagation rule:
 $$X^{(\ell+1)} = \sigma(\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}X^{(\ell)}W^{(\ell)})$$
 
 where:
+
 - $X^{(\ell)}$ is the matrix of node features at layer $\ell$
 - $W^{(\ell)}$ is the layer's trainable weight matrix
 - $\sigma$ is a nonlinear activation function (e.g., ReLU)
 
-These simplifications offer several advantages:
-- **Efficiency**: Linear complexity in number of edges
-- **Localization**: Each layer only aggregates information from immediate neighbors
-- **Depth**: Fewer parameters allow building deeper models
-- **Performance**: Despite (or perhaps due to) its simplicity, it often outperforms more complex models
+This one line is the GCN layer as it is implemented in every library, and it is worth pausing on how little it contains: a fixed sparse matrix, a weight matrix, a nonlinearity. Its cost is linear in the number of edges, each layer sees only immediate neighbors, and despite — or because of — that simplicity it routinely beats more elaborate models.
 
 ### Deep GCNs can also suffer from over-smoothing
 
@@ -262,9 +646,557 @@ Look again at what one GCN layer does, ignoring the weights and the nonlinearity
 
 In the spectral picture the effect is precise. Write the node signal in the Laplacian eigenbasis. Each layer multiplies the component along ${\bf u}_i$ by a factor that shrinks with the eigenvalue $\lambda_i$. Only the smoothest mode — the one with $\lambda = 0$, which is constant within each connected component — survives untouched. As $\ell \rightarrow \infty$ every other mode is suppressed, and every node in a component converges to the *same* representation.
 
-::: {.callout-warning title="Over-smoothing"}
-**Over-smoothing** is the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. This is why most GCNs in practice are only 2-3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
-:::
+This is **over-smoothing**: the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. It is why most GCNs in practice are only 2 or 3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
+
+Reach and collapse are not two facts about depth. They are the same fact, seen
+from two ends, and one dial produces both. Below is a network of fifteen nodes,
+each carrying a single number drawn as a colour. Watch one node average its
+neighbours, then take the depth knob yourself and watch the two readouts move in
+opposite directions.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The depth dial (m09) — only the rules this one widget needs. The paper, the
+   panels, the buttons, the knob and the motion primitives all come from
+   assets/anim.css; the sequencer from assets/anim.js. Every colour here is a
+   kit token, and the node fills are interpolated between two of them in JS.
+   -------------------------------------------------------------------------- */
+#gcn-depth .gcn-node {
+  stroke: var(--_ink);
+  stroke-width: 1.8;
+  transition: fill 0.45s ease, opacity 0.35s ease;
+}
+#gcn-depth .anim-edge { transition: opacity 0.35s ease; }
+/* The receptive field: one soft disc behind each node inside the ball. */
+#gcn-depth .gcn-halo {
+  fill: var(--_accent);
+  fill-opacity: 0.3;
+  stroke: none;
+  transition: opacity 0.35s ease;
+}
+/* Two rings, and they mean different things: accent for the node whose reach
+   we are following, amber for the two nodes still furthest apart — the same
+   two colours as the two curves in the last scene. */
+#gcn-depth .gcn-ring-reach { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+#gcn-depth .gcn-ring-gap { fill: none; stroke: var(--_amber); stroke-width: 2.4; }
+/* A ring drawn straight onto a dark node vanishes, and the fills run the
+   whole ramp, so every ring gets a paper collar underneath it. */
+#gcn-depth .gcn-ring-back { fill: none; stroke: var(--_paper); stroke-width: 5; }
+#gcn-depth .gcn-tok { stroke: var(--_ink); stroke-width: 1.1; }
+#gcn-depth .gcn-swatch { stroke: var(--_ink); stroke-width: 0.7; }
+#gcn-depth .gcn-dim { opacity: 0.15; }
+/* The knob's own position line uses the kit's faint marker: .anim-marker is
+   amber, and amber is already spoken for by the falling curve. */
+#gcn-depth .gcn-barbg { fill: var(--_rule); }
+#gcn-depth .gcn-bar { fill: var(--_amber); transition: width 0.45s ease; }
+#gcn-depth .gcn-rule {
+  height: 0;
+  margin: 0.4rem 0 0.3rem;
+  border: 0;
+  border-top: 1.6px solid var(--_rule);
+}
+@media (prefers-reduced-motion: reduce) {
+  #gcn-depth .gcn-node,
+  #gcn-depth .gcn-halo,
+  #gcn-depth .anim-edge,
+  #gcn-depth .gcn-bar { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="gcn-depth">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-gcn-net></div>
+    <div data-anim-clear data-gcn-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One knob, two consequences. Markup above, scenes below, and nothing in
+   between: everything a scene calls arrives on `ctx` — see assets/anim.js.
+   The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing on
+     this page runs a graph algorithm or a matrix multiply.
+
+     The network: 15 nodes, 26 edges, drawn with no crossings. Degrees run
+     from 2 to 5 and the diameter is 5. Each node carries one number in
+     [0, 1], drawn as a colour.
+
+     One layer = the plain average over the closed neighbourhood,
+        x_i  <-  ( x_i + sum of x_j over the neighbours j of i ) / (k_i + 1),
+     which is the renormalized GCN operator with one D-tilde^-1 in place of
+     the two D-tilde^-1/2. Same low-pass, arithmetic you can check in your
+     head; the caption under the drawing says which one it is.
+     ------------------------------------------------------------------------ */
+  const POS = [[167.9,31.7],[193.5,74.6],[141.1,98.5],[178.9,162],[73.8,163.7],[98,117.2],[65.1,37.3],[90.3,73.5],[34.9,137.8],[32.6,181.1],[29.9,62],[139.9,143.2],[112.2,31.6],[199.2,121.3],[117.6,182.2]];
+  const EDGE = [[0,1],[0,12],[1,2],[1,13],[2,5],[2,7],[2,11],[2,13],[3,11],[3,13],[3,14],[4,5],[4,8],[4,9],[4,14],[5,7],[5,8],[5,11],[6,7],[6,10],[6,12],[7,10],[7,12],[8,9],[11,13],[11,14]];
+
+  /* VAL[l][i] = node i's number after l layers, l = 0 … 8. Row 0 is the
+     input. Read down any column and you are watching that node forget
+     itself: every column ends at 0.597, the degree-weighted mean of row 0. */
+  const VAL = [
+    [0.700,0.900,1.000,0.400,0.400,0.900,0.400,0.400,0.800,0.900,0.200,0.200,0.900,0.700,0.100],
+    [0.833,0.825,0.683,0.350,0.620,0.617,0.475,0.633,0.750,0.700,0.333,0.550,0.600,0.640,0.275],
+    [0.753,0.745,0.658,0.454,0.592,0.642,0.510,0.557,0.672,0.690,0.481,0.519,0.635,0.610,0.449],
+    [0.711,0.691,0.622,0.508,0.609,0.607,0.546,0.581,0.649,0.651,0.516,0.555,0.614,0.597,0.504],
+    [0.672,0.655,0.609,0.541,0.604,0.604,0.564,0.581,0.629,0.636,0.547,0.565,0.613,0.595,0.544],
+    [0.647,0.633,0.602,0.561,0.603,0.599,0.576,0.586,0.618,0.623,0.564,0.576,0.607,0.593,0.564],
+    [0.629,0.619,0.598,0.574,0.601,0.597,0.584,0.589,0.611,0.615,0.576,0.582,0.604,0.593,0.576],
+    [0.617,0.610,0.596,0.581,0.600,0.597,0.588,0.591,0.606,0.609,0.583,0.587,0.601,0.593,0.583],
+    [0.609,0.604,0.596,0.586,0.599,0.596,0.591,0.593,0.603,0.605,0.587,0.590,0.600,0.593,0.588]
+  ];
+
+  /* The widest gap in the network at each depth — max(VAL[l]) - min(VAL[l]) —
+     and which two nodes are holding it open. */
+  const GAP = [0.900,0.558,0.304,0.208,0.131,0.086,0.056,0.036,0.023];
+  const HI = [2,0,0,0,0,0,0,0,0];
+  const LO = [14,14,14,14,3,3,3,3,3];
+
+  /* Scene 1's node: 5, degree 5. Its own 0.90 plus 1.00, 0.40, 0.40, 0.80
+     and 0.20 makes 3.70, and 3.70 / 6 = 0.617 — which is VAL[1][5]. */
+  const HUB = 5, HUB_NB = [2,4,7,8,11], HUB_SUM = 3.70;
+
+  /* Scenes 3 and 5 follow node 9, in the bottom-left corner. DIST[i] is its
+     hop distance to node i, so the ball of radius l is {i : DIST[i] <= l},
+     and REACH[l] is how big that ball is. Node 9 is never the highest or the
+     lowest node, so its accent ring never lands on an amber one. */
+  const MARK = 9;
+  const DIST = [5,4,3,3,1,2,4,3,1,0,4,3,4,4,2];
+  const REACH = [1,3,5,9,14,15,15,15,15];
+
+  const DEPTH = 8;          /* the knob: 0 layers … 8 layers */
+  const PARK = 2;           /* where the auto-sweep stops to make its point */
+  const px = (l) => 26 + (l / DEPTH) * 186;
+  const py = (v) => 96 - v * 76;
+  const poly = (a) => a.map((v, i) => px(i) + "," + py(v)).join(" ");
+  const REACH_F = REACH.map((r) => r / 15);
+  const GAP_F = GAP.map((g) => g / GAP[0]);
+  /* Interpolating between the two arrays above, the rising curve overtakes
+     the falling one at 2.012 layers — the dot at (72.8, 70.4) below. */
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "One node collects",
+      note: "Fifteen nodes, one number each, drawn as a colour. Pick one: it takes its own number together with its five neighbours' numbers and keeps the average. 3.70 shared six ways is 0.62, so a dark node turns middling.",
+      async run(ctx) {
+        ctx.drawNet();
+        await ctx.sleep(2600);
+
+        const c = ctx.card("one node collects");
+        ctx.only([HUB].concat(HUB_NB));
+        ctx.markGap([HUB]);
+        await ctx.sleep(700);
+
+        /* One number to a line, so the column adds up on the page. The label
+           appears once: after that it is a bag of numbers, and a bag has no
+           first element. */
+        [["itself", VAL[0][HUB].toFixed(2)]].concat(
+          HUB_NB.map((n, k) => [k === 0 ? "its neighbours" : "", VAL[0][n].toFixed(2)])
+        ).forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.32) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "an unordered bag — nothing says which neighbour is first"));
+        await ctx.sleep(2400);
+
+        await ctx.flow(HUB_NB.map((n) => [n, HUB]));
+        ctx.setVal(HUB, VAL[1][HUB]);
+        await ctx.sleep(600);
+
+        c.appendChild(ctx.el("hr", "gcn-rule"));
+        [["sum", HUB_SUM.toFixed(2)], ["÷ 6", VAL[1][HUB].toFixed(2)]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "six, not five: a node's own value is in the sum. That is the +I in &Atilde; = A + I.");
+        last.style.animationDelay = ctx.fast() ? "0s" : "1s";
+        c.appendChild(last);
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "All fifteen at once",
+      note: "That is one layer: the same averaging at all fifteen nodes at the same instant, every node sending its number down every edge. The picture is already flatter — the widest gap in the network falls from 0.90 to 0.56.",
+      async run(ctx) {
+        const c = ctx.card("one layer, everywhere");
+        ctx.markGap([]);
+        ctx.only(null);
+        await ctx.sleep(500);
+
+        const both = [];
+        EDGE.forEach((e) => { both.push([e[0], e[1]]); both.push([e[1], e[0]]); });
+        await ctx.flow(both);
+        ctx.paint(1);
+        await ctx.sleep(800);
+
+        [["messages sent", "52"], ["nodes updated", "15"],
+         ["widest gap", "0.90 &rarr; 0.56"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "two messages per edge, one each way: 26 edges, 52 messages"));
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "The good news",
+      note: "Back to the raw numbers, and follow the ringed node in the corner. After one layer its value depends on 3 nodes, after two on 5, after three on 9. Depth is reach: stack ℓ layers and a node sees ℓ hops out, and nothing further.",
+      async run(ctx) {
+        const c = ctx.card("what one node can see");
+        ctx.markGap([]);
+        ctx.paint(0);
+        ctx.markReach(MARK);
+        ctx.ball(-1);
+        await ctx.sleep(800);
+
+        for (let l = 1; l <= 5; l++) {
+          ctx.ball(l);
+          ctx.only(DIST.map((d, i) => (d <= l ? i : -1)).filter((i) => i >= 0));
+          c.appendChild(ctx.el("div", "anim-tally anim-fade",
+            "<span>after " + l + (l === 1 ? " layer" : " layers") + "</span><b>" +
+            REACH[l] + " of 15</b>"));
+          await ctx.sleep(l < 5 ? 1150 : 500);
+        }
+        c.appendChild(ctx.el("div", "anim-caption anim-fade",
+          "five layers and it has reached everybody — this network is five hops wide"));
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "The bad news",
+      note: "Now keep averaging. Every layer pulls neighbours toward each other, and the two nodes still furthest apart — ringed here — close on one another. By layer 6 the widest gap anywhere in the network is 0.06. The picture is one colour.",
+      async run(ctx) {
+        const c = ctx.card("keep going");
+        ctx.only(null);
+        ctx.ball(-1);
+        ctx.markReach(-1);
+        ctx.paint(0);
+        ctx.markGap([HI[0], LO[0]]);
+
+        const big = ctx.el("div", "anim-big", "0");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "layers"));
+        const tal = ctx.el("div", "anim-tally", "<span>widest gap</span><b>0.90</b>");
+        c.appendChild(tal);
+        const bar = ctx.svgRoot("0 0 200 14");
+        bar.innerHTML =
+          '<rect class="gcn-barbg" x="0" y="3" width="200" height="8" rx="4"/>' +
+          '<rect class="gcn-bar" data-bar x="0" y="3" width="200" height="8" rx="4"/>';
+        c.appendChild(bar);
+        const val = tal.querySelector("b");
+        const fill = bar.querySelector("[data-bar]");
+
+        const put = (l) => {
+          ctx.paint(l);
+          ctx.markGap([HI[l], LO[l]]);
+          big.textContent = String(l);
+          val.textContent = GAP[l].toFixed(2);
+          fill.setAttribute("width", (200 * GAP[l] / GAP[0]).toFixed(1));
+        };
+
+        /* Skipped to, or read with motion off: the end state is the point. */
+        if (ctx.fast()) { put(DEPTH); return; }
+
+        await ctx.sleep(900);
+        for (let l = 1; l <= 6; l++) { put(l); await ctx.sleep(950); }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "0.90 &rarr; 0.06: the network has forgotten who is who"));
+        await ctx.sleep(2400);
+        for (let l = 7; l <= DEPTH; l++) { put(l); await ctx.sleep(750); }
+        await ctx.sleep(1800);
+      }
+    },
+    {
+      label: "Now you turn it",
+      note: "One knob, both consequences. Drag it: the rising curve is how much of the network the ringed node can see, the falling curve is how different the two most different nodes still are. They cross at two layers.",
+      async run(ctx) {
+        const c = ctx.card("now you turn it");
+        ctx.only(null);
+        ctx.markReach(MARK);
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          '<span>layers <b data-d>0</b></span>' +
+          '<span style="color:var(--_accent)">sees <b data-r>1</b> of 15</span>' +
+          '<span style="color:var(--_amber)">widest gap <b data-g>0.90</b></span>');
+        c.appendChild(read);
+
+        const svg = ctx.svgRoot("0 0 220 122");
+        svg.innerHTML =
+          '<line class="anim-axis" x1="26" y1="96" x2="212" y2="96"/>' +
+          '<line class="anim-axis" x1="26" y1="14" x2="26" y2="96"/>' +
+          '<polyline class="anim-amber-stroke" points="' + poly(GAP_F) + '"/>' +
+          '<polyline class="anim-accent-stroke" points="' + poly(REACH_F) + '"/>' +
+          '<circle class="anim-amber-fill" cx="72.8" cy="70.4" r="3.6"/>' +
+          '<line class="anim-marker anim-marker--faint" data-cursor x1="26" y1="12" x2="26" y2="99"/>' +
+          '<text class="anim-label" x="12" y="26">1</text>' +
+          '<text class="anim-label" x="12" y="100">0</text>' +
+          '<text class="anim-label" x="16" y="115">0 layers</text>' +
+          '<text class="anim-label" x="172" y="115">8 layers</text>' +
+          '<text class="anim-label anim-accent-fill" x="126" y="42">how far it sees</text>' +
+          '<text class="anim-label anim-amber-fill" x="140" y="80">widest gap</text>';
+        c.appendChild(svg);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "both curves are this same 15-node network, each drawn as a fraction " +
+          "of its own largest value. The dot is where they cross: 2.0 layers."));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outD = read.querySelector("[data-d]");
+        const outR = read.querySelector("[data-r]");
+        const outG = read.querySelector("[data-g]");
+        const cur = svg.querySelector("[data-cursor]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the drawing is
+           yours until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DEPTH, step: 1, value: 0,
+          label: "Number of GCN layers",
+          format: (l) => l + (l === 1 ? " layer" : " layers"),
+          onGrab: () => ctx.pause(),
+          onInput: (l) => {
+            outD.textContent = String(l);
+            outR.textContent = String(REACH[l]);
+            outG.textContent = GAP[l].toFixed(2);
+            cur.setAttribute("x1", px(l));
+            cur.setAttribute("x2", px(l));
+            ctx.paint(l);
+            ctx.ball(l);
+            ctx.markGap([HI[l], LO[l]]);
+          }
+        });
+        dial.set(0);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipping, or reading without motion: land on the crossing, because
+           the crossing is the thing this figure is about. */
+        if (ctx.fast()) {
+          dial.set(PARK);
+          say("<span>two layers</span><b>a third seen, a third kept</b>");
+          return;
+        }
+
+        await ctx.sleep(900);
+        for (let l = 1; l <= PARK; l++) { dial.set(l); await ctx.sleep(950); }
+        say("<span>two layers</span><b>a third seen, a third kept</b>");
+        await ctx.sleep(2800);
+
+        for (let l = PARK + 1; l <= DEPTH; l++) { dial.set(l); await ctx.sleep(650); }
+        say("<span>eight layers</span><b>all seen, nothing kept</b>");
+        await ctx.sleep(3000);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("gcn-depth"), scenes, {
+    stepsLabel: "Message-passing steps",
+
+    /* The two things only this animation has: a network that persists across
+       all five scenes, and a card on the right that each scene rewrites.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const net = ctx.$("[data-gcn-net]");
+      const side = ctx.$("[data-gcn-side]");
+      const S = {};
+
+      /* ---- the colour of a number ----------------------------------------
+         Low is --_accent-soft, high is --_accent, and both are read off the
+         stage rather than written here, so the ramp follows the theme. The
+         literals are the same fallbacks assets/anim.css declares, and are
+         reached only if a browser hands back something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (v) => {
+        const t = Math.max(0, Math.min(1, v));
+        return "rgb(" + LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+      };
+
+      /* ---- the drawing ---------------------------------------------------
+         Scene 1 builds it; scenes 2–5 only ever mutate it. Separate <g>s so
+         the haloes land under the edges, the messages over them and the rings
+         over everything, with no z fiddling. */
+      function drawNet() {
+        net.textContent = "";
+        const svg = ctx.svgRoot("14 12 202 200");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gHalo = g(), gEdge = g(), gNode = g(), gTok = g(), gRing = g();
+        const slow = !ctx.fast();
+
+        S.halos = POS.map((p) => {
+          const c = ctx.svgEl("circle", { cx: p[0], cy: p[1], r: 17, "class": "gcn-halo" });
+          c.style.opacity = 0;
+          return gHalo.appendChild(c);
+        });
+
+        S.edges = EDGE.map((e, i) => {
+          const l = ctx.svgEl("line", {
+            x1: POS[e[0]][0], y1: POS[e[0]][1], x2: POS[e[1]][0], y2: POS[e[1]][1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            /* --dash must clear the line's own length or it pops in late
+               instead of drawing. */
+            const d = Math.hypot(POS[e[0]][0] - POS[e[1]][0], POS[e[0]][1] - POS[e[1]][1]);
+            l.style.setProperty("--dash", Math.ceil(d) + 4);
+            l.style.animationDelay = (0.5 + i * 0.045) + "s";
+          }
+          return gEdge.appendChild(l);
+        });
+
+        S.nodes = POS.map((p, i) => {
+          const c = ctx.svgEl("circle", {
+            cx: p[0], cy: p[1], r: 10,
+            "class": "gcn-node" + (slow ? " anim-fade" : "")
+          });
+          c.style.fill = hue(VAL[0][i]);
+          if (slow) c.style.animationDelay = (1.7 + i * 0.05) + "s";
+          return gNode.appendChild(c);
+        });
+
+        /* The legend lives in the same viewBox, so it scales with the drawing
+           and cannot drift away from it. */
+        for (let i = 0; i <= 10; i++) {
+          const r = ctx.svgEl("rect", {
+            x: 44 + i * 13, y: 198, width: 13, height: 10, "class": "gcn-swatch"
+          });
+          r.style.fill = hue(i / 10);
+          svg.appendChild(r);
+        }
+        [[30, "0"], [190, "1"]].forEach((t) => {
+          const lab = ctx.svgEl("text", { x: t[0], y: 207, "class": "anim-label" });
+          lab.textContent = t[1];
+          svg.appendChild(lab);
+        });
+
+        S.toks = gTok;
+        S.ringBox = gRing;
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "one number per node, drawn as a colour. A layer replaces it with " +
+          "the plain average over the closed neighbourhood; GCN weights by " +
+          "&radic;degree instead and smooths the same way."));
+      }
+
+      /* ---- painting ---- */
+      const setVal = (i, v) => { S.nodes[i].style.fill = hue(v); };
+      const paint = (l) => { S.nodes.forEach((n, i) => { n.style.fill = hue(VAL[l][i]); }); };
+
+      /* ---- attention: dim everything that is not in `keep` (null = all) --- */
+      function only(keep) {
+        const on = keep ? new Set(keep) : null;
+        S.nodes.forEach((n, i) => { n.classList.toggle("gcn-dim", !!on && !on.has(i)); });
+        S.edges.forEach((e, i) => {
+          e.classList.toggle("gcn-dim",
+            !!on && !(on.has(EDGE[i][0]) && on.has(EDGE[i][1])));
+        });
+      }
+
+      /* ---- the receptive field: the ball of radius l around MARK ---- */
+      function ball(l) {
+        S.halos.forEach((h, i) => { h.style.opacity = (l >= 0 && DIST[i] <= l) ? 1 : 0; });
+      }
+
+      /* ---- the two kinds of ring, kept apart so setting one does not
+             disturb the other ---- */
+      function redraw() {
+        S.ringBox.textContent = "";
+        const put = (i, cls) => {
+          S.ringBox.appendChild(ctx.svgEl("circle", {
+            cx: POS[i][0], cy: POS[i][1], r: 13.5, "class": "gcn-ring-back"
+          }));
+          S.ringBox.appendChild(ctx.svgEl("circle", {
+            cx: POS[i][0], cy: POS[i][1], r: 13.5, "class": cls
+          }));
+        };
+        if (S.reach != null) put(S.reach, "gcn-ring-reach");
+        (S.gap || []).forEach((i) => put(i, "gcn-ring-gap"));
+      }
+      const markReach = (i) => { S.reach = (i >= 0 ? i : null); redraw(); };
+      const markGap = (list) => { S.gap = list || []; redraw(); };
+
+      /* ---- messages: a dot of the sender's colour sliding down the edge --- */
+      async function flow(pairs) {
+        if (ctx.fast()) return;
+        const dots = pairs.map((p) => {
+          const t = ctx.svgEl("g", { "class": "anim-glide" });
+          const c = ctx.svgEl("circle", { r: 4.5, "class": "gcn-tok" });
+          c.style.fill = S.nodes[p[0]].style.fill;
+          t.appendChild(c);
+          t.style.transform = "translate(" + POS[p[0]][0] + "px," + POS[p[0]][1] + "px)";
+          return S.toks.appendChild(t);
+        });
+        S.toks.getBoundingClientRect();            /* commit before re-arming */
+        dots.forEach((t, k) => {
+          t.style.transform =
+            "translate(" + POS[pairs[k][1]][0] + "px," + POS[pairs[k][1]][1] + "px)";
+        });
+        await ctx.sleep(720);
+        dots.forEach((t) => { t.style.opacity = 0; });
+        await ctx.sleep(280);
+        S.toks.textContent = "";
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by drawNet(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { drawNet, paint, setVal, only, ball, markReach, markGap, flow, card };
+    }
+  });
+});
+</script>
+```
 
 Note that this is a different failure from vanishing gradients. Vanishing gradients are an *optimization* problem: the model cannot be trained. Over-smoothing is a *representational* problem: even trained perfectly, the model has thrown away what distinguishes one node from another.
 
@@ -276,17 +1208,13 @@ Several remedies are used in practice:
 - **Normalization**: PairNorm and related graph-specific normalizations explicitly prevent node representations from collapsing onto each other.
 - **Just stay shallow**: often the most effective option.
 
-::: {.callout-note title="Exercise"}
+This is the point at which to go and cause over-smoothing yourself: the [hands-on page](02-coding.qmd) trains a GCN on a real network and asks you to stack it too deep on purpose.
 
-Let's implement a simple GCN model for node classification.
-[Coding Exercise](../../notebooks/legacy/exercise-m09-graph-neural-net.ipynb)
-:::
-
-## The message passing framework
+## Every GNN is the same three steps
 
 Before meeting more architectures, it helps to name the pattern they all share. Look again at the GCN layer, ignoring the matrix notation: each node collects its neighbors' representations, combines them into one, and uses that to update itself. Every GNN in this module — and essentially every GNN in the literature — is a choice of how to do those three things.
 
-::: {.callout-important title="Key Concept: Message passing"}
+::: {.callout-note title="Message passing"}
 One layer of a GNN updates node $v$ as
 
 $$
@@ -309,31 +1237,25 @@ Reading the architectures through this lens:
 
 Two consequences follow immediately from this form.
 
-**Depth equals reach.** After $\ell$ layers a node's representation depends on exactly its $\ell$-hop neighborhood, and nothing further. A 2-layer GNN cannot see anything 3 hops away. This is why the receptive field grows with depth — and, given over-smoothing, why the useful range of depths is so narrow.
+**Depth equals reach.** After $\ell$ layers a node's representation depends on exactly its $\ell$-hop neighborhood, and nothing further. A 2-layer GNN cannot see anything 3 hops away. This is why the receptive field grows with depth — and, given over-smoothing, why the useful range of depths is so narrow. It is the pair of crossing curves you turned the knob on above.
 
 **Features and structure are learned jointly.** A GNN consumes two inputs: the graph ${\bf A}$ and the node features ${\bf X}$. If the features are informative the model can lean on them; if they are uninformative (all-ones, or a one-hot node ID) the model has nothing but topology and degenerates into a structural method. This is worth checking before blaming an architecture: on a network with no meaningful node attributes, a GNN often does no better than the embeddings of Module 8.
 
-# Popular Graph Neural Networks
+## Three ways to change one line of the recipe
 
-In this note, we will introduce three popular GNNs: GraphSAGE, Graph Attention Networks (GAT), and Graph Isomorphism Network (GIN).
+The three architectures below are famous, and it is easy to lose that behind the notation. Read them through the table above and each one changes exactly one slot: GraphSAGE changes *which* neighbors send messages, GAT changes *how much* each message counts, and GIN changes *how the messages are added up*.
 
-## GraphSAGE: Sample and Aggregate
+### GraphSAGE: don't ask all the neighbors
 
-GraphSAGE [@hamilton2017graphsage] introduced a different GCN that can be ***generalized to unseen nodes*** (they called it "inductive"). While previous approaches like ChebNet and GCN operate on the entire graph, GraphSAGE proposes an inductive framework that generates embeddings by sampling and aggregating features from a node's neighborhood.
+GraphSAGE [@hamilton2017graphsage] introduced a graph convolution that ***generalizes to unseen nodes*** (they called it "inductive"). While previous approaches like ChebNet and GCN operate on the entire graph, GraphSAGE generates embeddings by sampling and aggregating features from a node's neighborhood — two ideas, sampling and aggregation, which we take in turn.
 
-![](https://theaisummer.com/static/02e23adc75fe68e5dd249a94f3c1e8cc/c483d/graphsage.png)
-
-### Key Ideas
-
-GraphSAGE involves two key ideas: (1) sampling and (2) aggregation.
-
-### Neighborhood Sampling
+#### Neighborhood sampling
 
 The key idea is the *neighborhood sampling*. Instead of using all neighbors, GraphSAGE samples a fixed-size set of neighbors for each node. This controls memory complexity, a key limitation of the previous GNNs.
 
 Another key advantage of neighborhood sampling is that it enables GraphSAGE to handle dynamic, growing networks. Consider a citation network where new papers (nodes) are continuously added. Traditional GCNs would need to recompute filters for the entire network with each new addition. In contrast, GraphSAGE can immediately generate embeddings for new nodes by simply sampling their neighbors, without any retraining or recomputation.
 
-### Aggregation
+#### Aggregation
 
 Another key idea is the *aggregation*. GraphSAGE makes a distinction between self-information and neighborhood information. While previous GNNs treat them equally and aggregate them, GraphSAGE treats them differently. Specifically, GraphSAGE introduces an additional step: it concatenates the self-information and the neighborhood information as the input of the convolution.
 
@@ -343,12 +1265,13 @@ $$
 
 where $X_v$ is the feature of the node itself and $X_{\mathcal{N}(v)}$ is the aggregation of the features of its neighbors. GraphSAGE introduces different ways to aggregate information from neighbors:
 
-   $$X_{\mathcal{N}(v)} = \text{AGGREGATE}_k(\{X_u, \forall u \in \mathcal{N}(v)\})$$
+$$X_{\mathcal{N}(v)} = \text{AGGREGATE}_k(\{X_u, \forall u \in \mathcal{N}(v)\})$$
 
-   Common aggregation functions include:
-   - Mean aggregator: $\text{AGGREGATE} = \text{mean}(\{h_u, \forall u \in \mathcal{N}(v)\})$
-   - Max-pooling: $\text{AGGREGATE} = \max(\{\sigma(W_{\text{pool}}h_u + b), \forall u \in \mathcal{N}(v)\})$
-   - LSTM aggregator: Apply LSTM to randomly permuted neighbors
+Common aggregation functions include:
+
+- Mean aggregator: $\text{AGGREGATE} = \text{mean}(\{h_u, \forall u \in \mathcal{N}(v)\})$
+- Max-pooling: $\text{AGGREGATE} = \max(\{\sigma(W_{\text{pool}}h_u + b), \forall u \in \mathcal{N}(v)\})$
+- LSTM aggregator: apply an LSTM to the neighbors in a random order. This one is not order-independent, which breaks permutation invariance; the random ordering is a patch, not a fix.
 
 The concatenated feature $Z_v$ is normalized by the L2 norm.
 
@@ -362,23 +1285,17 @@ $$
 X_v^k = \sigma(W^k \hat{Z}_v + b^k)
 $$
 
-## Graph Attention Networks (GAT): Differentiate Individual Neighbors
+### GAT: let a neighbor argue for its own importance
 
-A key innovation of GraphSAGE is to treat the self and neighborhood information differently. But should all neighbors be treated equally? Graph Attention Networks (GAT) address this by letting the model learn which neighbors to pay attention to.
+GraphSAGE separates a node from its neighborhood. But within the neighborhood, should all neighbors count the same? A GCN says yes — its weights $1/\sqrt{\tilde k_v \tilde k_u}$ depend only on degrees, never on what the neighbor actually says. Graph Attention Networks (GAT) let the model learn which neighbors to listen to.
 
-
-
-### Attention Mechanism
-
-![](https://substackcdn.com/image/fetch/$s_!9JX2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F1e4bb0f1-420a-4d61-a017-e6a998c9f4f3_1458x928.png)
-
-The core idea is beautifully simple: instead of using fixed weights like GCN, let's learn attention weights $\alpha_{ij}$ that determine how much node $i$ should attend to node $j$. These weights are computed dynamically based on node features:
+The core idea is beautifully simple: replace the fixed weights with **attention weights** $\alpha_{ij}$ saying how much node $i$ should attend to node $j$, computed from the node features themselves:
 
 $$
 \alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})}
 $$
 
-where $e_{ij}$ represents the importance of the edge between node $i$ and node $j$. Variable $e_{ij}$ is a *learnable* parameter and can be negative, and the exponential function is applied to transform it to a non-negative value, with the normalization term $\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})$ to ensure the weights sum to 1.
+where $e_{ij}$ is a score for the edge between node $i$ and node $j$. The score is not a stored parameter — it is computed from the two nodes' features by the small network below, and can be negative, which is why the exponential is applied. Dividing by $\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})$ makes the weights over $i$'s neighbors sum to 1.
 
 How to compute $e_{ij}$? One simple choice is to use a neural network with a shared weight matrix $W$ and a LeakyReLU activation function. Specifically:
 
@@ -407,60 +1324,517 @@ In the **final** layer concatenation no longer makes sense (the output dimension
 
 $$\mathbf{h}'_i = \sigma\left(\frac{1}{K}\sum_{k=1}^K \sum_{j \in \mathcal{N}(i) \cup \{i\}} \alpha_{ij}^k{\bf W}^k\mathbf{h}_j\right)$$
 
-## Graph Isomorphism Network (GIN): Differentiate the Aggregation
+### GIN: sum instead of average, and never lose a count
 
-Graph Isomorphism Networks (GIN) is another popular GNN that born out of a question: what is the maximum discriminative power achievable by Graph Neural Networks? The answer lies in its theoretical connection to **the Weisfeiler-Lehman (WL) test**, a powerful algorithm for graph isomorphism testing.
+The Graph Isomorphism Network was born out of a sharper question than "does it work?": **how much can any message-passing network possibly tell apart?** The answer runs through a 1968 algorithm, the Weisfeiler-Lehman test.
 
+#### The Weisfeiler-Lehman test
 
-### Weisfeiler-Lehman Test
+Suppose someone hands you two networks and asks whether they are the same network drawn differently — *isomorphic*, in the sense that you can rename the nodes of one and get the other exactly. Nobody knows a fast algorithm for that in general. The **Weisfeiler-Lehman (WL) test** is the cheap, standard substitute, and it works by refining node labels round after round.
 
-Are two graphs structurally identical? Graph isomorphism testing determines if two graphs are structurally identical, with applications in graph classification, clustering, and other tasks.
+![One WL round on a six-node network. Every node starts with label 0; after one round its label encodes its degree, and after two rounds it encodes the degrees of its neighbors as well.](../figs/weisfeiler-lehman-test.jpg){#fig-wl width=95% fig-align="center"}
 
-![](https://i.sstatic.net/j5sGu.png)
+The algorithm:
 
-While the general problem has no known polynomial-time solution, the WL test is an efficient heuristic that works well in practice. The WL test iteratively refines node labels by hashing the multiset of neighboring labels
+1. Give every node the same initial label, say $0$.
+2. Each node writes down a *signature*: its own current label, together with the **multiset** of its neighbors' labels (a multiset, not a set, because repeats count). A hash function converts each distinct signature into a fresh label.
+3. Repeat for a fixed number of rounds, or until no new labels appear.
 
+Work through the first round on the network in the figure, which has one node at the top, two in the middle, a hub in the center and two at the bottom:
 
-![](../figs/weisfeiler-lehman-test.jpg)
+- The top node has two neighbors, so its signature is $(0, \{0,0\})$, hashed to the new label $1$.
+- Each middle node also has two neighbors: $(0, \{0,0\})$, so they also become $1$.
+- The hub has four neighbors: $(0, \{0,0,0,0\})$, hashed to $2$.
+- Each bottom node has one neighbor: $(0, \{0\})$, hashed to $3$.
 
-The WL test works as follows:
+After one round the labels are just the degrees — that is all a single round of neighbor-counting can possibly know. Round two is where it earns its keep: the top node and the middle nodes both have degree 2, but the top node's neighbors have degrees $(2,2)$ while a middle node's have degrees $(2,4)$, so their signatures differ and they finally split apart. Each round lets a label see one hop further.
 
-1. Assign all nodes the same initial label.
-2. For each node, collect the labels of all its neighbors and *aggregate them* into a hash (e.g., new label). For example, the top node gets {0} from its neighbors, resulting in a collection {0,0}. A new label is created via a hash function $h$ that maps {0, {0, 0}} to a new label 1.
-3. Repeat the process for a fixed number of iterations or until convergence.
-å
-After these iterations:
-- Nodes with the same label are structurally identical, meaning that they are indistinguishable unless we label them differently.
-- Two graphs are structurally identical if and only if they have the same node labels after the WL test.
+Run it. Below are **two pairs** of networks. Each pair has the same number of nodes, the same number of edges, and the same list of degrees; and in each pair the two networks are genuinely *not* the same network. Step the rounds and compare the two rows of labels underneath each pair — that comparison is the whole test.
 
-The WL test is a heuristic and can fail on some graphs. For example, it cannot distinguish regular graphs with the same number of nodes and edges.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The Weisfeiler-Lehman rounds (m09) — only the rules this one widget needs.
+   The paper, the panels, the buttons, the knob and the motion primitives all
+   come from assets/anim.css; the sequencer from assets/anim.js. Every colour
+   here is a kit token, and the node and chip fills are interpolated between
+   two of them in JS.
+   -------------------------------------------------------------------------- */
+/* Two little networks and two rows of labels need the whole column; the kit's
+   310px default is sized for a single dozen-node diagram. */
+#wl-split [data-wl-a], #wl-split [data-wl-b] { --anim-svg-max: 100%; }
+#wl-split .anim-panel { max-width: 560px; margin-left: auto; margin-right: auto; }
+#wl-split .wl-dial { max-width: 380px; margin: 0 auto; }
+
+#wl-split .wl-edge  { stroke: var(--_ink); stroke-width: 1.6; stroke-linecap: round; }
+#wl-split .wl-node  { stroke: var(--_ink); stroke-width: 1.4; }
+#wl-split .wl-num   { font-family: var(--_hand); font-size: 9px; text-anchor: middle;
+                      fill: var(--_ink); }
+#wl-split .wl-head  { font-family: var(--_hand); font-size: 9px; text-anchor: middle;
+                      fill: var(--_ink); font-weight: 700; }
+#wl-split .wl-cap   { font-family: var(--_hand); font-size: 7.5px; text-anchor: middle;
+                      fill: var(--_ink-soft); }
+#wl-split .wl-chip  { stroke: var(--_ink); stroke-width: 0.7; }
+/* Amber says one thing here and one thing only: this label is held by a
+   different number of nodes in the two networks — the histograms disagree. */
+#wl-split .wl-chip-hot { stroke: var(--_amber); stroke-width: 2; }
+#wl-split .wl-verd  { font-family: var(--_hand); font-size: 8.5px; text-anchor: middle; }
+#wl-split .wl-same  { fill: var(--_ink-soft); }
+#wl-split .wl-diff  { fill: var(--_amber); font-weight: 700; }
+</style>
+
+<figure class="anim-stage" id="wl-split">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-wl-a></div>
+    <div data-anim-clear data-wl-b></div>
+  </div>
+  <div data-anim-canvas><div data-anim-clear data-wl-foot></div></div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One knob, four networks. Markup above, scenes below, and nothing in between:
+   everything a scene calls arrives on `ctx` — see assets/anim.js. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every label below was computed once, offline, and pasted in. Nothing on
+     this page runs the WL test, or any other graph algorithm, at load time.
+
+     THE FOUR NETWORKS, six nodes and six edges each.
+       pair 1  A1: a hub joined to two middles and two leaves, plus a top node
+                   joined to both middles.       degrees 1,1,2,2,2,4
+               A2: a hub joined to two mutually-joined nodes, one leaf, and a
+                   degree-2 node carrying a leaf. degrees 1,1,2,2,2,4
+       pair 2  B1: a 6-cycle.                     degrees 2,2,2,2,2,2
+               B2: two disjoint triangles.        degrees 2,2,2,2,2,2
+     Checked offline with networkx: neither pair is isomorphic.
+
+     THE LABELS. One shared hash table across all four networks, so a label
+     means the same signature everywhere and two histograms can be compared.
+     Round 1's signature is (own label, multiset of neighbour labels), which
+     with everyone starting at 0 is exactly the degree — so round 1's labels
+     ARE the degrees, and are printed as such. Round 2's seven signatures,
+     sorted, take the names 0 … 6:
+
+       0 = (1; {2})          1 = (1; {4})          2 = (2; {1,4})
+       3 = (2; {2,2})        4 = (2; {2,4})        5 = (4; {1,1,2,2})
+       6 = (4; {1,2,2,2})
+
+     Round 3 refines nothing: in all four networks the round-3 signatures
+     split no group that round 2 had not already split, so the partition — and
+     therefore the row of labels — is identical. The test has halted.
+
+       import networkx as nx
+       A1 = [(0,1),(0,2),(1,3),(2,3),(3,4),(3,5)]
+       A2 = [(3,1),(3,2),(3,4),(3,5),(1,2),(4,0)]
+       B1 = [(0,1),(1,2),(2,3),(3,4),(4,5),(5,0)]
+       B2 = [(0,1),(1,2),(2,0),(3,4),(4,5),(5,3)]
+       # refine (own label, sorted neighbour labels) with one shared hash
+     ------------------------------------------------------------------------ */
+  const POS = [
+    [[56,8],[28,28],[84,28],[56,44],[28,64],[84,64]],                    /* A1 */
+    [[16,66],[34,8],[84,8],[58,26],[36,50],[88,50]],                     /* A2 */
+    [[56,6],[88,21],[88,51],[56,66],[24,51],[24,21]],                    /* B1 */
+    [[26,8],[8,48],[44,48],[84,8],[66,48],[102,48]]                      /* B2 */
+  ];
+  const EDG = [
+    [[0,1],[0,2],[1,3],[2,3],[3,4],[3,5]],
+    [[3,1],[3,2],[1,2],[3,4],[3,5],[4,0]],
+    [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0]],
+    [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3]]
+  ];
+  /* LAB[network][round][node] */
+  const LAB = [
+    [[0,0,0,0,0,0], [2,2,2,4,1,1], [3,4,4,5,1,1], [3,4,4,5,1,1]],
+    [[0,0,0,0,0,0], [1,2,2,4,2,1], [0,4,4,6,2,1], [0,4,4,6,2,1]],
+    [[0,0,0,0,0,0], [2,2,2,2,2,2], [3,3,3,3,3,3], [3,3,3,3,3,3]],
+    [[0,0,0,0,0,0], [2,2,2,2,2,2], [3,3,3,3,3,3], [3,3,3,3,3,3]]
+  ];
+  /* the histogram, drawn as the sorted row of labels, and which of its
+     entries is held by a different number of nodes in the partner network */
+  const CHIP = LAB.map((g) => g.map((r) => r.slice().sort((a, b) => a - b)));
+  const NO = [false, false, false, false, false, false];
+  const YES = [true, true, true, false, false, true];
+  const RING = [
+    [NO, NO, YES, YES],   /* A1: labels 1, 3 and 5 are not matched in A2 */
+    [NO, NO, YES, YES],   /* A2: labels 0, 1, 2 and 6 are not matched in A1 */
+    [NO, NO, NO, NO],
+    [NO, NO, NO, NO]
+  ];
+  /* the tint of a label, per round: pale for a low signature, full accent for
+     a high one. Round 1's three labels are the degrees 1, 2 and 4. */
+  const T2 = { 0: 0.10, 1: 0.23, 2: 0.37, 3: 0.50, 4: 0.63, 5: 0.77, 6: 0.90 };
+  const TINT = [{ 0: 0.10 }, { 1: 0.10, 2: 0.48, 4: 0.86 }, T2, T2];
+
+  const ROUNDS = 4;         /* the knob: round 0 … 3 */
+  const SPLIT = 2;          /* the round pair 1 comes apart on */
+  const VERD = [
+    ["histograms match", "histograms match", "histograms differ", "histograms differ"],
+    ["histograms match", "histograms match", "histograms match", "histograms match"]
+  ];
+  const SAY = [
+    ["no difference found", "no difference found", "different networks", "different networks"],
+    ["no difference found", "no difference found", "no difference found", "no difference found"]
+  ];
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "Everyone starts the same",
+      note: "Four networks in two pairs, six nodes and six edges each. Every node begins with the same label, 0, so every row of labels underneath is six zeros. At this point the test knows nothing about anything.",
+      async run(ctx) {
+        ctx.draw();
+        ctx.setRound(0);
+        await ctx.sleep(1800);
+        const c = ctx.card("what is on the table");
+        [["nodes, each network", "6"], ["edges, each network", "6"],
+         ["pair 1, degrees", "1,1,2,2,2,4 &mdash; both"],
+         ["pair 2, degrees", "2,2,2,2,2,2 &mdash; both"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "in each pair the two networks are genuinely different networks &mdash; " +
+          "no relabelling turns one into the other. The test does not know that."));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Round 1: count your neighbours",
+      note: "Each node writes down its own label together with the labels of its neighbours, and that signature becomes its new label. With everyone starting at 0, round one can only be the degree. Both pairs still match.",
+      async run(ctx) {
+        const c = ctx.card("round 1");
+        ctx.setRound(1);
+        await ctx.sleep(1200);
+        [["pair 1", "histograms match"], ["pair 2", "histograms match"]]
+          .forEach((r, i) => {
+            const t = ctx.el("div", "anim-tally anim-fade",
+              "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+            t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+            c.appendChild(t);
+          });
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "one round of counting is exactly the degree, and both pairs were " +
+          "built with matching degrees. Nothing is proved yet."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Round 2: one hop further",
+      note: "Round two: the signature is now your degree together with your neighbours' degrees, so a node sees two hops out. Pair 1 comes apart — four of its six labels are held by different numbers of nodes, ringed here. Pair 2 does not move.",
+      async run(ctx) {
+        const c = ctx.card("round 2");
+        ctx.setRound(2);
+        await ctx.sleep(1400);
+        [["pair 1", "histograms differ"], ["pair 2", "histograms match"]]
+          .forEach((r, i) => {
+            const t = ctx.el("div", "anim-tally anim-fade",
+              "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+            t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+            c.appendChild(t);
+          });
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "pair 1 is settled, and settled <em>for good</em>: two networks whose " +
+          "label histograms disagree cannot be the same network. That is the " +
+          "one thing this test can prove."));
+        await ctx.sleep(3600);
+      }
+    },
+    {
+      label: "Round 3: nothing new",
+      note: "Round three splits no group anywhere, in any of the four networks, so the labels stop changing and the test halts. Pair 2 finishes where it started: two identical histograms — for a ring of six and two separate triangles.",
+      async run(ctx) {
+        const c = ctx.card("round 3");
+        ctx.setRound(3);
+        await ctx.sleep(1400);
+        [["groups split this round", "0"], ["pair 2, rounds run", "3"],
+         ["pair 2, difference found", "none"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "and now look at pair 2 with your own eyes: one is a single ring of " +
+          "six, the other is two separate triangles. Nothing that only ever " +
+          "counts its neighbours' labels can tell them apart &mdash; and no " +
+          "message-passing network can either."));
+        await ctx.sleep(4200);
+      }
+    },
+    {
+      label: "Now you step the rounds",
+      note: "One dial, four networks. Turn it and watch pair 1 come apart at round 2 while pair 2 stays locked together no matter how far you go. Different histograms prove two networks differ; matching histograms prove nothing at all.",
+      async run(ctx) {
+        const c = ctx.card("now you step it");
+
+        const wrap = ctx.el("div", "wl-dial");
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        wrap.appendChild(track);
+        c.appendChild(wrap);
+
+        const read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>round <b data-r>0</b></span>' +
+          '<span>pair 1 <b data-a>no difference found</b></span>' +
+          '<span>pair 2 <b data-b>no difference found</b></span>');
+        c.appendChild(read);
+
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outR = read.querySelector("[data-r]");
+        const outA = read.querySelector("[data-a]");
+        const outB = read.querySelector("[data-b]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the drawings are
+           yours until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: ROUNDS - 1, step: 1, value: 0,
+          label: "Weisfeiler-Lehman round",
+          format: (r) => "round " + r,
+          onGrab: () => ctx.pause(),
+          onInput: (r) => {
+            outR.textContent = String(r);
+            /* Amber is the figure's one word for "these two differ", so a
+               readout only takes it when it is actually saying that. */
+            [[outA, SAY[0][r]], [outB, SAY[1][r]]].forEach((o) => {
+              o[0].textContent = o[1];
+              o[0].parentNode.style.color =
+                (o[1] === "different networks") ? "var(--_amber)" : "";
+            });
+            ctx.setRound(r);
+          }
+        });
+        dial.set(0);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipped to, or read with motion off: land on the round the left
+           pair separates, because that separation is what this figure is
+           about. */
+        if (ctx.fast()) {
+          dial.set(SPLIT);
+          say("round 2: pair 1 has separated, pair 2 never will.");
+          return;
+        }
+
+        await ctx.sleep(900);
+        for (let r = 1; r <= SPLIT; r++) { dial.set(r); await ctx.sleep(1500); }
+        say("round 2: pair 1 has separated. <em>Certainly</em> two different " +
+            "networks &mdash; that is a proof.");
+        await ctx.sleep(3400);
+
+        dial.set(ROUNDS - 1);
+        await ctx.sleep(1200);
+        say("pair 2 has run out of rounds with nothing to show. Not a proof " +
+            "that they are the same &mdash; only a failure to find a difference.");
+        await ctx.sleep(4000);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("wl-split"), scenes, {
+    stepsLabel: "Weisfeiler-Lehman rounds",
+
+    /* The two things only this animation has: four little networks with a row
+       of labels under each, and a card underneath that each scene rewrites.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const boxA = ctx.$("[data-wl-a]");
+      const boxB = ctx.$("[data-wl-b]");
+      const foot = ctx.$("[data-wl-foot]");
+      const S = { node: [], num: [], chip: [], ctext: [], verd: [] };
+
+      /* ---- the colour of a label -----------------------------------------
+         Pale accent for a low signature, full accent for a high one, both
+         read off the stage so the ramp follows the theme. The literals are
+         the same fallbacks assets/anim.css declares, reached only if a
+         browser hands back something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (t) => "rgb(" +
+        LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+
+      const text = (x, y, s, cls) => {
+        const t = ctx.svgEl("text", { x: x, y: y, "class": cls });
+        t.textContent = s;
+        return t;
+      };
+
+      /* ---- one column: two networks, a row of labels under each ---------- */
+      function column(box, pair, head, cap) {
+        box.textContent = "";
+        /* The two networks of a pair sit side by side, and their two rows of
+           labels sit side by side under them, because comparing those two
+           rows IS the test. A 232-unit box lands the drawing at about 1.6x in
+           a half-width column, which keeps the hand type near the size of the
+           prose around it. */
+        const svg = ctx.svgRoot("0 0 232 146");
+        svg.appendChild(text(116, 9, head, "wl-head"));
+        const slow = !ctx.fast();
+
+        [0, 1].forEach((k) => {
+          const g = pair * 2 + k;
+          const left = 2 + k * 116;
+          const grp = ctx.svgEl("g", { transform: "translate(" + left + ",14)" });
+
+          EDG[g].forEach((e, i) => {
+            const l = ctx.svgEl("line", {
+              x1: POS[g][e[0]][0], y1: POS[g][e[0]][1],
+              x2: POS[g][e[1]][0], y2: POS[g][e[1]][1],
+              "class": "wl-edge" + (slow ? " anim-fade" : "")
+            });
+            if (slow) l.style.animationDelay = (0.2 + (g * 6 + i) * 0.03) + "s";
+            grp.appendChild(l);
+          });
+
+          S.node[g] = [];
+          S.num[g] = [];
+          POS[g].forEach((p, i) => {
+            const c = ctx.svgEl("circle", { cx: p[0], cy: p[1], r: 8, "class": "wl-node" });
+            grp.appendChild(c);
+            const n = text(p[0], p[1] + 3.2, "0", "wl-num");
+            grp.appendChild(n);
+            S.node[g].push(c);
+            S.num[g].push(n);
+          });
+
+          /* the histogram: the six labels, sorted, one chip each */
+          S.chip[g] = [];
+          S.ctext[g] = [];
+          for (let j = 0; j < 6; j++) {
+            const r = ctx.svgEl("rect", {
+              x: left + 9 + j * 16, y: 92, width: 14, height: 12, rx: 2, "class": "wl-chip"
+            });
+            svg.appendChild(r);
+            const t = text(left + 16 + j * 16, 101, "0", "wl-num");
+            svg.appendChild(t);
+            S.chip[g].push(r);
+            S.ctext[g].push(t);
+          }
+          svg.appendChild(grp);
+        });
+
+        svg.appendChild(text(116, 118, cap, "wl-cap"));
+        S.verd[pair] = text(116, 137, "", "wl-verd wl-same");
+        svg.appendChild(S.verd[pair]);
+        box.appendChild(svg);
+      }
+
+      function draw() {
+        const cap = "each strip: that network's six labels, sorted";
+        column(boxA, 0, "pair 1", cap);
+        column(boxB, 1, "pair 2", cap);
+        boxA.appendChild(ctx.el("div", "anim-caption",
+          "a hub with two leaves and a triangle-free top, against the same " +
+          "degrees rearranged"));
+        boxB.appendChild(ctx.el("div", "anim-caption",
+          "a ring of six, against two separate triangles"));
+      }
+
+      /* ---- the whole picture at round r: pure lookup ---- */
+      function setRound(r) {
+        for (let g = 0; g < 4; g++) {
+          LAB[g][r].forEach((lb, i) => {
+            const t = TINT[r][lb];
+            S.node[g][i].style.fill = hue(t);
+            S.num[g][i].textContent = String(lb);
+            S.num[g][i].style.fill = t > 0.55 ? "#fff" : "";
+          });
+          CHIP[g][r].forEach((lb, j) => {
+            const t = TINT[r][lb];
+            S.chip[g][j].style.fill = hue(t);
+            S.chip[g][j].setAttribute("class",
+              "wl-chip" + (RING[g][r][j] ? " wl-chip-hot" : ""));
+            S.ctext[g][j].textContent = String(lb);
+            S.ctext[g][j].style.fill = t > 0.55 ? "#fff" : "";
+          });
+        }
+        [0, 1].forEach((pair) => {
+          S.verd[pair].textContent = VERD[pair][r];
+          S.verd[pair].setAttribute("class",
+            "wl-verd " + (VERD[pair][r] === "histograms differ" ? "wl-diff" : "wl-same"));
+        });
+      }
+
+      function card(title) {
+        foot.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        foot.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by draw(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { draw, setRound, card };
+    }
+  });
+});
+</script>
+```
+
+Now the part that is easy to state backwards, so state it carefully. **The test can prove two graphs are different; it can never prove they are the same.** If the two label histograms ever disagree, the graphs are certainly not isomorphic. If they agree at every round, the test has simply failed to find a difference, and the graphs may or may not be isomorphic. That is precisely what happened to pair 2 above: a ring of six and two separate triangles are both 2-regular, so every node keeps the same label as every other one forever, and WL sees two identical label histograms for two networks you can tell apart at a glance. The counterexample usually quoted is the same trick one degree up — a pair of non-isomorphic 3-regular graphs on the same number of nodes.
+
+The same caution applies within a single graph: two nodes ending with the same label are ones the test *could not distinguish*, which is weaker than being structurally interchangeable.
 
 ::: {.column-margin}
-The WL test above is called the 1-WL test. There are higher-order WL tests that can distinguish more graphs, which are the basis of advanced GNNs.
-Check out [this note](https://www.moldesk.net/blog/weisfeiler-lehman-isomorphism-test/)
+The test above is the 1-WL test. Higher-order $k$-WL tests color $k$-tuples of nodes rather than single nodes; each step up the hierarchy distinguishes strictly more graphs at a strictly higher cost, and each is the basis of a family of more expressive GNNs.
 :::
 
-### GIN
+#### From the test to the layer
 
-GIN [@xu2018how] is a GNN that is based on the WL test.
-The key idea is to focus on the parallel between the WL test and the GNN update rule.
-- In the WL test, we iteratively collect the labels of neighbors and aggregate them through a *hash function*.
-- In the GraphSAGE and GAT, the labels are the nodes' features, and the aggregation is some arithmetic operations such as mean or max.
+GIN [@xu2018how] comes from noticing that the WL test and a GNN layer are the same loop:
 
-The key difference is that the hash function in the WL test always distinguishes different sets of neighbors' labels, while the aggregation in GraphSAGE and GAT does not always do so. For example, if all nodes have the same feature (e.g., all 1), the aggregation by the mean or max will result in the same value for all nodes, whereas the hash function in the WL test can still distinguish different sets of neighbors' labels by *the count of each label*.
+- In the WL test, each node collects its neighbors' labels and aggregates them with a *hash function*.
+- In GraphSAGE and GAT, each node collects its neighbors' *features* and aggregates them with mean or max.
 
-The resulting convolution update rule is:
+The difference is that the hash never confuses two different multisets, while mean and max do. Give every node the identical feature $1$: the mean of $\{1,1\}$ and the mean of $\{1,1,1,1\}$ are both $1$, so a node with two neighbors and a node with four become indistinguishable — while WL separates them immediately, because it can still count. A **sum** keeps the count ($2 \ne 4$), which is why GIN sums.
+
+The resulting update rule is:
 
 $$
 h_v^{(k+1)} = \text{MLP}^{(k)}\left((1 + \epsilon^{(k)}) \cdot h_v^{(k)} + \sum_{u \in \mathcal{N}(v)} h_u^{(k)}\right)
 $$
 
-where $\text{MLP}^{(k)}$ is a multi-layer perceptron (MLP) with $k$ layers, and $\epsilon^{(k)}$ is a fixed or trainable parameter.
-# What are GNNs used for?
+Here $k$ is the **layer index**, the same $k$ as in $h_v^{(k)}$: $\text{MLP}^{(k)}$ is the multi-layer perceptron belonging to layer $k$ (its own depth is a design choice, usually two), and $\epsilon^{(k)}$ is that layer's fixed or trainable weight on the node's own state. With a sum aggregator and an MLP expressive enough to act like a hash, GIN is provably as discriminative as the 1-WL test — and no message-passing GNN can do better. That upper bound is the reason this architecture matters.
+
+## What comes out the other end: node, edge and graph tasks
 
 So far we have built layers without saying what comes out the other end. Three task levels cover almost everything, and they differ in how node representations are turned into a prediction.
 
-## Node-level tasks
+### Node-level tasks: a prediction per node
 
 Attach a classifier to each node's final representation.
 
@@ -468,7 +1842,7 @@ Attach a classifier to each node's final representation.
 
 **Node regression** is the same with a continuous target.
 
-## Edge-level tasks
+### Edge-level tasks: a prediction per pair
 
 Here the prediction concerns a *pair*, so we combine two node representations into an edge score:
 
@@ -482,7 +1856,7 @@ where the score can be a dot product, a distance, or a small MLP on the concaten
 
 **Edge classification** predicts the *type* of a relationship rather than its existence.
 
-## Graph-level tasks
+### Graph-level tasks: one prediction for the whole network
 
 Now the prediction concerns an entire graph — is this molecule soluble, is this program malicious — so we must compress $N$ node vectors into one graph vector. That step is called **readout** or **pooling**, and it must be permutation invariant:
 
@@ -494,7 +1868,7 @@ $$
 
 **Hierarchical pooling** is the more ambitious answer: instead of collapsing everything at once, progressively coarsen the graph, merging clusters of nodes into super-nodes over several rounds, mirroring the pooling layers of a CNN. Methods like DiffPool learn which nodes to merge. This preserves multi-scale structure that global pooling destroys, at a substantial cost in complexity.
 
-# Training GNNs at scale
+## Why you cannot just grab 32 nodes and call it a mini-batch
 
 One practical matter deserves attention because it has no analogue in ordinary deep learning.
 
@@ -512,7 +1886,7 @@ The alternatives all trade exactness for feasibility:
 This is why the "neighborhood explosion" is such a recurring phrase in the GNN literature. With average degree 10 and 3 layers, one node pulls in roughly 1,000 others. On a graph with hubs of degree 10,000, one unlucky node pulls in the entire network.
 :::
 
-# Beyond message passing: Graph Transformers
+## When one hop per layer is not enough: graph transformers
 
 Message passing has a built-in restriction: information moves one hop per layer, so distant nodes communicate only through depth — and depth brings over-smoothing. **Graph Transformers** attack this by letting every node attend to every other node directly, as in the Transformers used for text.
 
@@ -522,7 +1896,7 @@ That solves the distance problem and creates two new ones.
 
 **Cost.** All-pairs attention is $O(N^2)$, which is fine for molecules with 50 atoms and hopeless for a social network with millions of nodes. Practical variants restrict attention to a sampled or local subset.
 
-# What is still hard
+## Four things nobody has solved yet
 
 Four open problems, each an active research area:
 
@@ -531,7 +1905,7 @@ Four open problems, each an active research area:
 - **Dynamics.** Most models assume a fixed graph. Real networks add and remove nodes and edges continuously, and temporal GNNs are far less settled than static ones.
 - **Robustness, fairness and privacy.** GNN predictions can be flipped by a handful of adversarially added edges. Message passing propagates the majority group's signal into minority nodes, which can encode and amplify bias. And because a node's prediction depends on its neighbors' data, a GNN can leak information about people who never supplied their own.
 
-# Where this module sits in the course
+## Almost none of this was new
 
 It is worth closing by noticing how little of this module was actually new.
 
@@ -542,3 +1916,19 @@ It is worth closing by noticing how little of this module was actually new.
 - **Over-smoothing** is a statement about the spectral gap, the same quantity that controls mixing time in Module 7 and bottlenecks in Module 8.
 
 Graph neural networks are not a separate subject bolted onto the end of the course. They are what happens when the structures we spent eight modules measuring become the substrate for learning.
+
+## What you can now do
+
+- Say why an image kernel cannot be copied onto a network, in two ways: neighbors vary in number, and they arrive without an order.
+- Compute the total variation $J$ of a signal on a small network by hand, and use it to say which of two signals is the smoother one.
+- Explain what a Laplacian eigenvalue *is*: the total variation of its own eigenvector.
+- Write down the GCN layer and read it back in English, without matrices.
+- Place GCN, GraphSAGE, GAT and GIN in the MESSAGE / AGGREGATE / UPDATE table and say which slot each one changed.
+- Diagnose a GNN that gets worse with depth, and tell over-smoothing apart from vanishing gradients.
+- State what the WL test can and cannot prove, and why GIN sums rather than averages.
+
+## Where to go next
+
+- [Hands-on: Filter a Network, Then Let It Learn the Filter](02-coding.qmd) — build the low-pass and high-pass filters of this page on a real network, then train a GCN and make it over-smooth on purpose.
+- [Exercises and Assignments](03-exercises.qmd) — the worksheet, the Pair Notebook and the group mini-project.
+- [Appendix: The Algebra We Set Aside](04-appendix.qmd) — the derivations this page pointed at, plus a from-scratch implementation.

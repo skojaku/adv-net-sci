@@ -1,47 +1,742 @@
 ---
-title: "Random Walks Concepts"
+title: "The Drunkard Who Maps the City"
 ---
 
-## What is a random walk?
+> **The big question of this module.** What does a network look like to a walker who has no idea where they are going?
+
+## A Walker With No Plan
 
 Suppose you walk in a city. You are drunk and your feet have no idea where to go. You just take a step wherever your feet take you. At every intersection, you make a random decision and take a step. This is the core idea of a random walk.
 
-While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network.
+You are not trying to get anywhere, and that is exactly the point. You have no map, no destination, no memory of the street you came from. Every decision you make is a coin flip among the streets in front of you.
 
-::: {.column-margin title="Real-World Random Walk Examples"}
-Random walks appear everywhere in daily life:
+While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network. The drunkard, who understood nothing, has produced a measurement.
 
-- **Netflix browsing**: You click on a movie, then another recommended movie, then another... Your viewing pattern follows a random walk through the recommendation network!
-- **Wikipedia surfing**: Starting from "Coffee", you click links to "Brazil" → "Soccer" → "Mathematics" → "Physics"... Each click is a step in a random walk through knowledge.
-- **Stock market movements**: Daily price changes can be modeled as random walks, where each day's price depends on the previous day plus some random fluctuation.
+Here is that measurement being made, on ten nodes. Take the first few steps one
+at a time to see the rule, then let the tally run: the bars are the walker's own
+record of where it has been.
 
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The walker's tally — only the rules this one stage needs. The paper, the
+   panels, the buttons, the ink and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals.
+   -------------------------------------------------------------------------- */
+#rw-degree .rw-nlabel {
+  font-family: var(--_hand);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--_white);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+#rw-degree .rw-tick {
+  font-family: var(--_hand);
+  font-size: 10.5px;
+  fill: var(--_ink);
+  text-anchor: middle;
+}
+#rw-degree .rw-dim { fill: var(--_ink-faint); }
+#rw-degree .rw-end { text-anchor: end; }
+
+/* The two states an edge takes while the walker is choosing. */
+#rw-degree .rw-edge-cand { stroke: var(--_accent); stroke-width: 3.4; }
+#rw-degree .rw-edge-hot { stroke: var(--_amber); stroke-width: 4.6; }
+
+/* The walker is a ring round the node it is standing on, not a disc, so the
+   node's own number still reads through it. */
+#rw-degree .rw-glow { fill: var(--_amber); fill-opacity: 0.16; stroke: none; }
+#rw-degree .rw-ring { fill: none; stroke: var(--_amber); stroke-width: 3.2; }
+
+/* The start picker of the last scene. Dead until that scene turns it on, so
+   the earlier scenes cannot be clicked out from under themselves. */
+#rw-degree .rw-hit { fill: transparent; pointer-events: none; }
+#rw-degree .rw-pick .rw-hit { pointer-events: auto; cursor: pointer; }
+#rw-degree .rw-pick .rw-hit:hover { fill: var(--_accent); fill-opacity: 0.2; }
+
+/* Bars for walkers two and three; walker one uses the kit's .anim-accent-fill. */
+#rw-degree .rw-bar-b { fill: var(--_amber); }
+#rw-degree .rw-bar-c { fill: var(--_ink-faint); }
+</style>
+
+<figure class="anim-stage" id="rw-degree">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rw-net></div>
+    <div>
+      <div data-anim-clear data-rw-bars></div>
+      <div data-anim-clear data-rw-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The walker's tally. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css +
+   assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, from one fixed seed, and
+     pasted in. Nothing here runs a graph algorithm or draws a random number at
+     page load, so every reader watches the identical walk and sees exactly the
+     numbers this caption claims.
+
+     The network is the one the rest of this module uses: 10 nodes, 13 edges,
+     degrees (2,4,3,4,4,3,2,1,2,1). So 2m = 26 and
+       k/2m = (.077, .154, .115, .154, .154, .115, .077, .038, .077, .038).
+     It is connected and it contains triangles, so the walk is neither
+     reducible nor periodic and a stationary distribution exists.
+     ------------------------------------------------------------------------ */
+  const NODE = [[38,70],[100,34],[166,48],[54,134],[126,104],[92,186],[158,162],[200,22],[196,118],[200,190]];
+  const EDGE = [[0,1],[0,3],[1,2],[1,3],[1,4],[2,4],[2,7],[3,4],[3,5],[4,5],[5,6],[6,8],[8,9]];
+  const DEG  = [2,4,3,4,4,3,2,1,2,1];
+  const ADJ  = [[1,3],[0,2,3,4],[1,4,7],[0,1,4,5],[1,2,3,5],[3,4,6],[5,8],[2],[6,9],[8]];
+  const TWO_M = 26;
+  const PI = DEG.map((k) => k / TWO_M);
+
+  /* One recorded walk, started at node 0. Each character is a node: SEQ[0] is
+     the start and SEQ[t] is where the walker stands after t steps. 600 steps,
+     replayed here one at a time. */
+  const SEQ =
+    "010141356898986865412143530135431345689898689898653568686868686865689898689865410301272421034303565456530354310303541353" +
+    "427272454312727241421012721035456898653531310356545689868654345301453434212424130303131272135353430313013010342103145456" +
+    "541035654303013568653124143568686565689868689865412724241431456568653012421434541303568989898989898654142724343535427242" +
+    "721214568989868689898989865431412435414243456541353030143014272143453124313135310354127245421245343014565435454312134356" +
+    "898653121242431342430310134342410121242727241272721303568989865421301272453568986545454568654210141245689868989868989898" +
+    "6";
+
+  /* The same walk carried past step 600 and tallied at nine checkpoints. Each
+     row is [steps, share of all visits per node in parts per thousand, the node
+     the walker is standing on]. Counting SEQ character by character reproduces
+     the first row exactly, so the hand-played part and the pasted part meet
+     without a seam. */
+  const LADDER = [
+    [   600, [62,123,100,143,148,125,98,30,113,58], 6],
+    [  1000, [66,143,124,153,154,112,80,44, 83,42], 2],
+    [  1700, [66,146,120,146,150,115,82,45, 86,44], 2],
+    [  3000, [68,145,116,152,151,116,80,43, 85,46], 9],
+    [  5200, [78,152,112,153,149,114,80,38, 82,42], 2],
+    [  9000, [73,145,115,151,153,118,81,40, 82,42], 4],
+    [ 16000, [74,147,113,154,153,119,79,38, 81,43], 8],
+    [ 28000, [73,152,118,152,153,117,78,41, 77,39], 7],
+    [ 50000, [75,152,117,153,154,117,78,39, 77,39], 3]
+  ];
+
+  /* Three more recorded walks, from three deliberately unalike nodes: the leaf
+     7, the hub 1, and the leaf 9 at the far end of the tail. Same tally, taken
+     at 6, 30, 200, 2000 and 20000 steps. */
+  const TRIO_T = [6, 30, 200, 2000, 20000];
+  const TRIO_START = [7, 1, 9];
+  const TRIO = [
+    [[0,143,143,143,286,143,0,143,0,0],[32,226,226,97,258,32,0,129,0,0],[95,159,114,174,199,124,60,55,20,0],[83,158,114,170,159,114,70,44,59,27],[76,157,120,155,154,115,76,41,72,35]],
+    [[0,143,0,143,429,286,0,0,0,0],[65,258,32,258,258,129,0,0,0,0],[55,159,90,179,179,154,75,10,65,35],[60,161,128,149,179,114,68,37,69,34],[76,152,116,152,154,117,78,40,77,38]],
+    [[0,0,143,0,286,143,143,0,143,143],[0,129,226,161,194,129,32,65,32,32],[75,174,124,129,144,119,90,25,80,40],[78,151,121,146,139,115,84,39,83,42],[76,154,113,157,153,118,77,37,77,39]]
+  ];
+
+  /* One recorded walk per possible starting node, for the scene the reader
+     drives. SHORT[s] is its first 20 steps written out node by node; MID[s] and
+     FIN[s] are that same walk's tally after 300 and after 20000 steps, again in
+     parts per thousand. */
+  const SHORT = ["031413542721427242413","121212134303568653542","242121031213013142424","356545421427272143013","456568689898686868989","568989865689868689898","653124565356898656898","727245656865653142413","865314245314213545427","986865653012131245454"];
+  const MID = [[56,126,166,130,133,113,80,90,73,33],[60,166,130,133,166,123,93,33,70,27],[80,186,176,150,163,113,47,60,20,7],[70,166,96,126,140,136,120,23,96,27],[73,150,140,130,136,100,86,63,86,37],[43,106,83,133,176,120,110,20,136,73],[63,133,113,126,143,116,90,40,110,66],[70,146,126,176,173,116,66,50,53,23],[113,163,83,206,176,120,47,20,47,27],[56,130,110,146,166,126,86,33,96,50]];
+  const FIN = [[74,153,115,152,153,118,79,38,78,39],[75,151,113,151,153,117,83,37,81,39],[79,154,112,157,152,121,80,36,74,36],[76,157,118,153,158,115,75,38,74,37],[81,153,113,161,151,112,73,38,77,40],[76,153,110,158,156,119,78,35,76,38],[77,157,112,153,152,111,76,38,81,42],[76,153,117,157,160,117,75,39,71,34],[76,153,117,156,159,120,77,37,72,34],[75,155,119,152,159,116,75,38,74,37]];
+
+  const SLOW = 7;              /* steps of SEQ played out one at a time */
+  const KEY = ["var(--_accent)", "var(--_amber)", "var(--_ink-faint)"];
+
+  /* ------------------------------------------------------------- geometry --- */
+  const GX = (i) => 46 + 21 * i;   /* centre of node i's bar group */
+  const YB = 132;                  /* the baseline */
+  const PLOT = 110;                /* full height of the plot */
+  /* The tally starts absurd — one visit, all of it at the start node — so the
+     top of the scale steps down through these as it settles. From about step 30
+     on it is pinned at 20 % and never moves again. */
+  const AXIS = [1, 0.6, 0.4, 0.3, 0.25, 0.2];
+  const axisFor = (mx) => {
+    let a = AXIS[0];
+    for (let i = 0; i < AXIS.length; i++) if (AXIS[i] >= mx + 0.004) a = AXIS[i];
+    return a;
+  };
+  const pct = (a) => Math.round(a * 100) + "%";
+  const f3 = (x) => x.toFixed(3);
+  const f2 = (x) => x.toFixed(2).replace(/^0/, "");
+  const thou = (n) => n.toLocaleString("en-US");
+  const swatch = (j) => '<span style="color:' + KEY[j] + '">&#9632;</span>';
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "One step: pick a neighbour",
+      note: "The whole rule, seven steps of it. Standing on a node, the walker looks at that node's neighbours and takes one at random — every one of them equally likely. Each landing raises that node's bar by one.",
+      async run(ctx) {
+        ctx.build();
+        const c = ctx.say("the rule");
+        const line = ctx.el("div", "anim-tally", "<span>standing on</span><b>0</b>");
+        const odds = ctx.el("div", "anim-caption", "");
+        c.appendChild(line);
+        c.appendChild(odds);
+
+        if (ctx.fast()) {
+          ctx.prefix(SEQ.slice(0, SLOW + 1));
+          line.querySelector("b").textContent = SEQ[SLOW];
+          odds.textContent = "landed on " + SEQ[SLOW] + " — its bar goes up by one";
+          return;
+        }
+
+        ctx.visit(0, false);
+        await ctx.sleep(900);
+        for (let t = 1; t <= SLOW; t++) {
+          const from = +SEQ[t - 1], to = +SEQ[t];
+          line.querySelector("b").textContent = String(from);
+          odds.textContent = "neighbours of " + from + ": " + ADJ[from].join(", ") +
+            " — each with chance 1/" + DEG[from];
+          ctx.offer(from);
+          await ctx.sleep(680);
+          ctx.take(from, to);
+          ctx.visit(to, true);
+          /* The card follows the walker, so it never reads as standing on the
+             node it has just left. */
+          line.querySelector("b").textContent = String(to);
+          odds.textContent = "landed on " + to + " — its bar goes up by one";
+          await ctx.sleep(540);
+          if (t === 2) {
+            c.appendChild(ctx.el("div", "anim-quote anim-fade",
+              "step 2 went straight back where step 1 came from — the walker keeps no memory of the street it just used"));
+          }
+        }
+        ctx.cool();
+        await ctx.sleep(1600);
+      }
+    },
+    {
+      label: "Let it run",
+      note: "Now let it go. Six hundred steps arrive one at a time and the bars stay lumpy: nodes 0 and 8 have the same degree, yet at step 600 node 8 has been visited nearly twice as often. Then the counter runs to fifty thousand, and the bars stop moving.",
+      async run(ctx) {
+        const c = ctx.say("let it run");
+        const big = ctx.el("div", "anim-big", "0");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+        const last = LADDER[LADDER.length - 1];
+
+        if (ctx.fast()) {
+          ctx.snapshot(last);
+          big.textContent = thou(last[0]);
+          verdict.innerHTML = "<span>they stopped moving.</span><b>at what?</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        /* SEQ replayed at a rising pace — single steps first, so one bar can
+           still be seen going up, then handfuls. */
+        let t = SLOW;
+        while (t < 600) {
+          const chunk = t < 34 ? 1 : t < 100 ? 3 : t < 260 ? 8 : 20;
+          for (let k = 0; k < chunk && t < 600; k++) { t++; ctx.visit(+SEQ[t], true); }
+          big.textContent = thou(t);
+          await ctx.sleep(1);
+        }
+        verdict.innerHTML = "<span>600 steps in</span><b>still lumpy</b>";
+        verdict.style.visibility = "visible";
+        await ctx.sleep(1600);
+
+        for (let i = 1; i < LADDER.length; i++) {
+          ctx.snapshot(LADDER[i]);
+          big.textContent = thou(LADDER[i][0]);
+          await ctx.sleep(540);
+        }
+        verdict.innerHTML = "<span>they stopped moving.</span><b>at what?</b>";
+        await ctx.sleep(2400);
+      }
+    },
+    {
+      label: "The bars are the degrees",
+      note: "Freeze it, and lay a dashed marker across each bar at k over 2m — that node's degree divided by the 26 edge endpoints in the network. Every bar is sitting on its marker. The bottom row of the chart is the answer.",
+      async run(ctx) {
+        const c = ctx.say("what the bars settled on");
+        ctx.marks(true);
+        if (!ctx.fast()) await ctx.sleep(1300);
+        ctx.degrees(true);
+        if (!ctx.fast()) await ctx.sleep(1300);
+
+        [["node 1, k = 4", "0.154 &rarr; 0.152"],
+         ["node 7, k = 1", "0.038 &rarr; 0.039"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.6) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "k/2m predicted &rarr; share measured over 50,000 steps"));
+        if (!ctx.fast()) await ctx.sleep(2000);
+
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "the walker&rsquo;s long-run share of time at a node is just that node&rsquo;s degree over the total");
+        c.appendChild(q);
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "It forgets where it started",
+      note: "Three walkers now, from a leaf, from the hub, and from the leaf at the far end of the tail. Six steps in, the three tallies have nothing in common. Twenty thousand steps in they are the same picture — and it is the one the markers already predicted.",
+      async run(ctx) {
+        const c = ctx.say("three walkers, three starting nodes");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "started at &nbsp;" + swatch(0) + " 7 &nbsp; " + swatch(1) + " 1 &nbsp; " +
+          swatch(2) + " 9"));
+        const big = ctx.el("div", "anim-big", "6");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken, each of the three"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        ctx.starts(TRIO_START);
+        const last = TRIO_T.length - 1;
+
+        if (ctx.fast()) {
+          ctx.trio(last);
+          big.textContent = thou(TRIO_T[last]);
+          verdict.innerHTML = "<span>same profile</span><b>start erased</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        for (let i = 0; i < TRIO_T.length; i++) {
+          ctx.trio(i);
+          big.textContent = thou(TRIO_T[i]);
+          if (i === 0) {
+            verdict.innerHTML = "<span>six steps in</span><b>nothing in common</b>";
+            verdict.style.visibility = "visible";
+          }
+          await ctx.sleep(i === 0 ? 2400 : 1600);
+        }
+        verdict.innerHTML = "<span>same profile</span><b>start erased</b>";
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Now you choose the start",
+      note: "Click any node in the network to drop the walker there and run it again. Twenty steps in, the tally is all about where you put it. Twenty thousand steps in it is back on the markers — every time, from every node.",
+      async run(ctx) {
+        const c = ctx.say("you choose where it starts");
+        const big = ctx.el("div", "anim-big", "&mdash;");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken"));
+        const hint = ctx.el("div", "anim-tally", "<span>click any node</span><b>&#9758;</b>");
+        c.appendChild(hint);
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const show = (n, txt) => {
+          big.innerHTML = n;
+          if (txt) { verdict.innerHTML = txt; verdict.style.visibility = "visible"; }
+        };
+
+        const tour = [9, 7, 4];
+        let rounds = 0;
+        let queued = null;
+
+        /* Waiting, in slices, so a click gets an answer inside a tenth of a
+           second instead of at the end of whatever pause is running. Returns
+           false once this run has been superseded. */
+        async function nap(ms, id) {
+          for (let left = ms; left > 0; left -= 110) {
+            await ctx.sleep(Math.min(110, left));
+            if (id !== ctx.runId()) return false;
+          }
+          return true;
+        }
+
+        /* One run from node s: twenty steps played out on the network, then the
+           same recorded walk's tally at 300 and at 20000 steps. */
+        async function runFrom(s, instant) {
+          const id = ctx.newRun();
+          ctx.reset();
+          hint.querySelector("b").textContent = "start = " + s;
+          show("0", "<span>starting at " + s + "</span><b>&hellip;</b>");
+          const w = SHORT[s];
+          if (!instant) {
+            for (let t = 0; t <= 20; t++) {
+              ctx.visit(+w[t], t > 0);
+              show(String(t));
+              if (!await nap(t < 6 ? 280 : 130, id)) return;
+            }
+            show("20", "<span>20 steps</span><b>nowhere near</b>");
+            if (!await nap(1600, id)) return;
+          }
+          ctx.snapshot([300, MID[s], -1]);
+          show(thou(300));
+          if (!instant && !await nap(950, id)) return;
+          ctx.snapshot([20000, FIN[s], -1]);
+          show(thou(20000), "<span>20,000 steps</span><b>on the markers</b>");
+          if (!instant) await nap(2400, id);
+        }
+
+        /* The one loop that ever starts a run, so the reader's node cannot be
+           stolen back by the tour. */
+        let looping = false;
+        async function pump() {
+          if (looping) return;
+          looping = true;
+          try {
+            while (rounds < tour.length || queued !== null) {
+              let s;
+              if (queued !== null) { s = queued; queued = null; }
+              else { s = tour[rounds]; rounds++; }
+              await runFrom(s, false);
+            }
+          } finally { looping = false; }
+        }
+
+        /* A click files a request and cancels whatever is in flight. A reader
+           who asked for no motion gets the finished tally in one shot instead. */
+        ctx.pickable(function (n) {
+          if (ctx.reduced) { runFrom(n, true).catch(function () {}); return; }
+          ctx.resume();
+          queued = n;
+          rounds = 0;
+          ctx.newRun();
+          pump().catch(function () {});
+        });
+
+        if (ctx.fast()) {
+          await runFrom(9, true);
+          return;
+        }
+        await pump();
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-degree"), scenes, {
+    stepsLabel: "Random-walk steps",
+
+    /* The two things only this animation has: a network the walker moves on and
+       a tally chart every scene writes into. Both are built once, in scene 1,
+       and only mutated afterwards — so jumping to a step still lands on a
+       drawing, because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const net = ctx.$("[data-rw-net]");
+      const bars = ctx.$("[data-rw-bars]");
+      const side = ctx.$("[data-rw-say]");
+      const S = { run: 0 };
+
+      /* Two index tables, not algorithms: which edges touch a node, and which
+         edge joins a given pair. */
+      const INC = NODE.map(() => []);
+      EDGE.forEach((e, i) => { INC[e[0]].push(i); INC[e[1]].push(i); });
+      const EIDX = {};
+      EDGE.forEach((e, i) => { EIDX[e[0] + "-" + e[1]] = i; EIDX[e[1] + "-" + e[0]] = i; });
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        net.textContent = "";
+        bars.textContent = "";
+        S.count = NODE.map(() => 0);
+        S.total = 0;
+        S.rows = null;
+        S.mode = "one";
+        S.cand = [];
+        S.hot = -1;
+        S.onPick = null;
+        const slow = !ctx.fast();
+
+        /* ---- the network ---- */
+        const svg = ctx.svgRoot("0 0 220 212");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gEdge = g(), gTok = g(), gNode = g(), gHit = g();
+
+        S.edges = EDGE.map((e, i) => {
+          const a = NODE[e[0]], b = NODE[e[1]];
+          const p = ctx.svgEl("line", {
+            x1: a[0], y1: a[1], x2: b[0], y2: b[1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            p.style.setProperty("--dash", Math.ceil(Math.hypot(a[0] - b[0], a[1] - b[1])) + 2);
+            p.style.animationDelay = (0.15 + i * 0.06) + "s";
+          }
+          return gEdge.appendChild(p);
+        });
+
+        S.startG = gTok.appendChild(ctx.svgEl("g"));
+        const tok = ctx.svgEl("g", { "class": "anim-glide" });
+        tok.appendChild(ctx.svgEl("circle", { r: 15, "class": "rw-glow" }));
+        tok.appendChild(ctx.svgEl("circle", { r: 15, "class": "rw-ring" }));
+        tok.style.opacity = 0;
+        gTok.appendChild(tok);
+        S.token = tok;
+        S.svg = svg;
+
+        NODE.forEach((q, i) => {
+          const h = ctx.svgEl("g", { "class": slow ? "anim-fade" : null });
+          if (slow) h.style.animationDelay = (0.9 + i * 0.05) + "s";
+          h.appendChild(ctx.svgEl("circle", { cx: q[0], cy: q[1], r: 10, "class": "anim-node" }));
+          const lb = ctx.svgEl("text", { x: q[0], y: q[1], "class": "rw-nlabel" });
+          lb.textContent = String(i);
+          h.appendChild(lb);
+          gNode.appendChild(h);
+
+          const hit = ctx.svgEl("circle", { cx: q[0], cy: q[1], r: 17, "class": "rw-hit" });
+          hit.addEventListener("click", function () { if (S.onPick) S.onPick(i); });
+          gHit.appendChild(hit);
+        });
+
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "ten nodes, thirteen edges &mdash; the network this module keeps coming back to"));
+
+        /* ---- the tally ---- */
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>steps <b data-t>0</b></span>' +
+          '<span>node 1 <b data-r1>&mdash;</b></span>' +
+          '<span>node 7 <b data-r7>&mdash;</b></span>');
+        bars.appendChild(S.read);
+        S.outT = S.read.querySelector("[data-t]");
+        S.out1 = S.read.querySelector("[data-r1]");
+        S.out7 = S.read.querySelector("[data-r7]");
+
+        const bsvg = ctx.svgRoot("0 0 250 168");
+        const bg = () => bsvg.appendChild(ctx.svgEl("g"));
+        const gBar = bg(), gMark = bg(), gAx = bg();
+
+        S.bar = [0, 1, 2].map((k) => NODE.map((_, i) =>
+          gBar.appendChild(ctx.svgEl("rect", {
+            x: GX(i) - 7, y: YB, width: 14, height: 0,
+            "class": k === 0 ? "anim-accent-fill" : k === 1 ? "rw-bar-b" : "rw-bar-c"
+          }))));
+
+        S.mark = NODE.map((_, i) => {
+          const l = ctx.svgEl("line",
+            { x1: GX(i) - 11, x2: GX(i) + 11, y1: YB, y2: YB, "class": "anim-marker" });
+          l.style.opacity = 0;
+          return gMark.appendChild(l);
+        });
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: 34, y1: YB, x2: 246, y2: YB, "class": "anim-axis" }));
+        S.top = ctx.svgEl("text", { x: 30, y: YB - PLOT + 4, "class": "rw-tick rw-end" });
+        gAx.appendChild(S.top);
+        const zero = ctx.svgEl("text", { x: 30, y: YB + 4, "class": "rw-tick rw-end" });
+        zero.textContent = "0";
+        gAx.appendChild(zero);
+
+        const rowLab = (y, txt) => {
+          const t = ctx.svgEl("text", { x: 30, y: y, "class": "rw-tick rw-end rw-dim" });
+          t.textContent = txt;
+          return gAx.appendChild(t);
+        };
+        rowLab(YB + 15, "node");
+        S.deg = [rowLab(YB + 29, "k")];
+        NODE.forEach((_, i) => {
+          const n = ctx.svgEl("text", { x: GX(i), y: YB + 15, "class": "rw-tick" });
+          n.textContent = String(i);
+          gAx.appendChild(n);
+          const d = ctx.svgEl("text", { x: GX(i), y: YB + 29, "class": "rw-tick rw-dim" });
+          d.textContent = String(DEG[i]);
+          gAx.appendChild(d);
+          S.deg.push(d);
+        });
+        S.deg.forEach((d) => { d.style.opacity = 0; });
+
+        bars.appendChild(bsvg);
+        bars.appendChild(ctx.el("div", "anim-caption",
+          "bar = share of every visit so far. One walk on the network at left, recorded once with a fixed seed, so this is the same walk for every reader."));
+        redraw();
+      }
+
+      /* Bars, markers and the top of the scale, from whatever S is holding. */
+      function redraw() {
+        const rows = S.rows ||
+          [S.total ? S.count.map((c) => c / S.total) : S.count.map(() => 0)];
+        let mx = 0;
+        rows.forEach((r) => r.forEach((v) => { if (v > mx) mx = v; }));
+        /* An empty chart shows the scale the first single visit will need. */
+        const axis = (!S.rows && !S.total) ? AXIS[0] : axisFor(Math.max(mx, PI[1]));
+        S.top.textContent = pct(axis);
+        const h = (v) => Math.max(0, (v / axis) * PLOT);
+
+        for (let k = 0; k < 3; k++) {
+          const r = rows[k] || null;
+          const one = S.mode === "one";
+          S.bar[k].forEach((rect, i) => {
+            rect.setAttribute("x", one ? GX(i) - 7 : GX(i) - 9.5 + k * 6.5);
+            rect.setAttribute("width", one ? 14 : 6);
+            const v = (r && !(one && k)) ? h(r[i]) : 0;
+            rect.setAttribute("y", YB - v);
+            rect.setAttribute("height", v);
+          });
+        }
+        S.mark.forEach((l, i) => {
+          const y = YB - h(PI[i]);
+          l.setAttribute("y1", y);
+          l.setAttribute("y2", y);
+        });
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* ----------------------------------------------------------- the walk */
+      function place(n, glide) {
+        S.token.style.opacity = 1;
+        if (!glide) S.token.classList.remove("anim-glide");
+        S.token.style.transform = "translate(" + NODE[n][0] + "px," + NODE[n][1] + "px)";
+        if (!glide) {
+          S.token.getBoundingClientRect();      /* commit before re-arming */
+          S.token.classList.add("anim-glide");
+        }
+      }
+
+      function readout(t, row) {
+        S.outT.textContent = thou(t);
+        S.out1.textContent = f3(row[1]);
+        S.out7.textContent = f3(row[7]);
+      }
+
+      /* One landing: the walker stands on n, and n's bar goes up by one. */
+      function visit(n, glide) {
+        place(n, glide);
+        S.count[n] += 1;
+        S.total += 1;
+        S.rows = null;
+        S.mode = "one";
+        readout(S.total - 1, S.count.map((c) => c / S.total));
+        redraw();
+      }
+
+      /* The neighbours the walker is about to choose between, then the one it
+         took. */
+      function offer(from) {
+        cool();
+        S.cand = INC[from];
+        S.cand.forEach((e) => S.edges[e].setAttribute("class", "anim-edge rw-edge-cand"));
+      }
+      function take(from, to) {
+        cool();
+        S.hot = EIDX[from + "-" + to];
+        S.edges[S.hot].setAttribute("class", "anim-edge rw-edge-hot");
+      }
+      function cool() {
+        S.cand.forEach((e) => S.edges[e].setAttribute("class", "anim-edge"));
+        if (S.hot >= 0) S.edges[S.hot].setAttribute("class", "anim-edge");
+        S.cand = [];
+        S.hot = -1;
+      }
+
+      /* ------------------------------------------------------- the pastings */
+      /* [steps, parts-per-thousand row, node the walker is on, or -1 for "not
+         claiming a position"]. */
+      function snapshot(row) {
+        cool();
+        S.mode = "one";
+        S.rows = [row[1].map((v) => v / 1000)];
+        S.total = row[0] + 1;
+        S.count = S.rows[0].map((v) => v * S.total);
+        if (row[2] >= 0) place(row[2], true); else S.token.style.opacity = 0;
+        readout(row[0], S.rows[0]);
+        redraw();
+      }
+
+      const triple = (i, k) => TRIO.map((w, j) =>
+        '<span style="color:' + KEY[j] + '">' + f2(w[k][i] / 1000) + "</span>").join("/");
+
+      function trio(k) {
+        cool();
+        S.mode = "three";
+        S.rows = TRIO.map((w) => w[k].map((v) => v / 1000));
+        S.token.style.opacity = 0;
+        S.outT.textContent = thou(TRIO_T[k]);
+        S.out1.innerHTML = triple(1, k);
+        S.out7.innerHTML = triple(7, k);
+        redraw();
+      }
+
+      /* A ring in each walker's own colour on the node it started from. */
+      function starts(list) {
+        S.startG.textContent = "";
+        list.forEach((n, j) => {
+          S.startG.appendChild(ctx.svgEl("circle", {
+            cx: NODE[n][0], cy: NODE[n][1], r: 15,
+            "class": "rw-ring", style: "stroke:" + KEY[j]
+          }));
+        });
+      }
+
+      function marks(on) { S.mark.forEach((l) => { l.style.opacity = on ? 1 : 0; }); }
+      function degrees(on) { S.deg.forEach((d) => { d.style.opacity = on ? 1 : 0; }); }
+
+      function reset() {
+        S.startG.textContent = "";
+        S.count = NODE.map(() => 0);
+        S.total = 0;
+        S.rows = null;
+        S.mode = "one";
+        S.token.style.opacity = 0;
+        cool();
+        readout(0, S.count);
+        redraw();
+      }
+
+      function pickable(fn) {
+        S.onPick = fn;
+        S.svg.classList.add("rw-pick");
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies these
+         onto ctx by value at mount time. */
+      return {
+        build: build, say: say, visit: visit, offer: offer, take: take, cool: cool,
+        snapshot: snapshot, trio: trio, starts: starts, marks: marks,
+        degrees: degrees, reset: reset, pickable: pickable,
+        newRun: function () { return ++S.run; },
+        runId: function () { return S.run; },
+        /* Skipping or reading without motion: lay down a recorded prefix with
+           no animation at all. */
+        prefix: function (str) {
+          for (let t = 0; t < str.length; t++) visit(+str[t], true);
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+The bars were not decoration. Two things happened in that widget, and the rest
+of this module is spent earning both: the tally settled onto the degrees, and it
+settled onto the *same* degrees no matter where the walk began.
+
+::: {.column-margin}
+Random walks are not a toy. Your Netflix session is one: you click a movie, then a recommended movie, then another. So is a Wikipedia binge from "Coffee" to "Brazil" to "Soccer". So is a day of stock prices. In each case the object being walked on is a network, and the walk is what reveals it.
 :::
 
-## Introduction through Games: Ladder Lottery
+Written out, the rule you just watched is:
 
-To make random walk concepts tangible, let's start with a fun game that perfectly illustrates random walk principles:
-
-::: {.callout-note title="Ladder Lottery"}
-
-Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuzi) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:
-1. A player is given a board with a set of vertical lines.
-2. The player chooses a line and starts to move along the line
-3. When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.
-4. The player wins if the player can hit a marked line at the bottom of the board.
-5. You cannot see the horizontal lines in advance!
-
-Play the [Ladder Lottery Game! 🎮✨]( https://skojaku.github.io/adv-net-sci/assets/vis/amida-kuji.html?) and try to answer the following questions:
-
-1. Is there a strategy to maximize the probability of winning?
-2. How does the probability of winning change as the number of horizontal lines increases?
-
-![](https://upload.wikimedia.org/wikipedia/commons/6/64/Amidakuji_2022-05-10.gif)
-
-:::
-
-The Ladder Lottery game is actually a perfect introduction to random walks! In this game, **states** are the vertical lines, **transitions** happen when you encounter horizontal connections, **randomness** comes from not knowing where the horizontal lines are placed, and **long-term behavior** determines your probability of winning. This simple game illustrates many key concepts we'll explore in random walks on networks.
-
-A random walk in undirected networks follows this process:
 1. Start at a node $i$
 2. Randomly choose an edge to traverse to a neighbor node $j$
 3. Repeat step 2 until you have taken $T$ steps
@@ -50,52 +745,57 @@ A random walk in undirected networks follows this process:
 In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.
 :::
 
-<img src="../figs/random-walk.png" alt="Random walk on a network" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+## Amida-kuji: A Ladder Decides Your Fate
 
-When studying random walks, we want to understand several key aspects: **short-term behavior** (where does the walker go in the first few steps?), **long-term behavior** (after many steps, where does the walker spend most of its time?), **structural insights** (what does the walker's behavior tell us about the network?), and **applications** (how can we use random walks for centrality and community detection?).
+::: {.callout-note title="Ladder Lottery"}
 
-::: {.callout-note title="Interactive Exploration"}
+Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) in Chinese, "阿弥陀籤" (Amida-kuji) in Japanese, "사다리타기" (Sadaritagi) in Korean, and "Ladder Lottery" in English. The game is played as follows:
 
-Play with the [Random Walk Simulator! 🎮✨](../assets/vis/random-walks/index.html) and try to answer the following questions:
+1. A player is given a board with a set of vertical lines.
+2. The player chooses a line and starts to move along the line.
+3. When hitting a horizontal line, the player must move along the horizontal line and then continue to move along the next vertical line.
+4. The player wins if the player can hit a marked line at the bottom of the board.
+5. You cannot see the horizontal lines in advance!
 
-1. When the random walker makes many steps, where does it tend to visit most frequently?
-2. When the walker makes only a few steps, where does it tend to visit?
-3. Does the behavior of the walker inform us about centrality of the nodes?
-4. Does the behavior of the walker inform us about communities in the network?
+Play the [Ladder Lottery game](../assets/vis/amida-kuji.html). It draws one board for you to trace, and behind it draws two thousand more with the same number of rungs, so the histogram underneath is where your chosen line actually comes out. One knob sets the rungs; **Gap from even** is how far that histogram is from flat. Try to answer:
 
-:::
-
-### Pen and Paper Exercises
-
-Before diving into the mathematical details and coding, it's important to work through some fundamental concepts by hand.
-
-- [✍️ Pen and paper exercises](pen-and-paper/exercise.pdf)
-
-These exercises will help you:
-- Understand the basic mechanics of random walks
-- Calculate transition probabilities manually
-- Explore simple examples of stationary distributions
-- Connect random walk concepts to network properties
-
-## Transition Probabilities
-
-::: {.column-margin}
-Let's see how this works with a more complex example. Consider a network with 10 nodes:
-
-![](../figs/m07-fig-00.svg){#fig-m07-fig-00}
-
-
-Let us consider the following graph.
-
-![](../figs/m07-fig-01.svg){#fig-m07-fig-01}
-
-
-The transition matrix is given by:
-
-![](../figs/m07-fig-02.svg){#fig-m07-fig-02}
-
+1. Suppose you knew you wanted to finish on line 7. With only four rungs on the board, is choosing where to start worth anything? Start at [four rungs](../assets/vis/amida-kuji.html?rungs=4) and look at the histogram.
+2. Now drag the rungs up, and watch **Gap from even** fall: about 0.6 at four rungs, 0.3 at twenty, [0.08 at sixty](../assets/vis/amida-kuji.html?rungs=60). At what point does your choice of starting line stop being worth anything at all?
 
 :::
+
+The ladder is the smallest honest picture of what is coming. The vertical lines are the **states** the walker can occupy; the horizontal rungs are the **transitions** that move it from one state to the next. Where you land is decided by a rule you cannot see.
+
+Be careful about *where* the randomness lives, because this is the one place the analogy could mislead you. A finished amida board is not random at all: it is a fixed permutation, and each starting line maps to exactly one ending line, every time. The uncertainty is in your ignorance of the board, not in your feet. What makes it a good rehearsal for random walks is the second question above: add more and more rungs, and the permutation the board induces becomes, from any starting line, as good as a uniform draw. Something unpredictable emerges from a pile of simple local rules. That emergence — and how many rungs it takes — is the subject of this module.
+
+When we study random walks, four questions recur:
+
+- **Short-term behavior**: where does the walker go in the first few steps?
+- **Long-term behavior**: after many steps, where does it spend most of its time?
+- **Structural insight**: what does the walker's behavior tell us about the network?
+- **Applications**: how do we turn this into centrality and community detection?
+
+Before going further, get the walk under your fingers. Open the [random walk simulator](../assets/vis/random-walks/index.html). **Walk** takes one step; **Run 5,000 steps** takes five thousand. The bar chart is the share of steps spent on each node, and the short mark across every bar is that node's $k/2m$ — the number this module is about to derive. **Distance to $k/2m$** is how far the whole chart still is from those marks. Answer these, first on the karate club network it loads by default, then on a [network with two obvious communities](../assets/vis/random-walks/index.html?dataFile=two-cliques.json):
+
+1. Click **Walk** twenty times. Does the chart look like anything yet?
+2. Now run five thousand steps, then five thousand more. Where does the walker spend most of its time, and how close do the bars get to their marks?
+3. Does the behavior of the walker inform us about the centrality of the nodes?
+4. On the two-community network, count how many consecutive steps the walker spends on one side before it crosses. Does the behavior of the walker inform us about communities?
+5. Turn the teleport knob up to 0.3 and run it again. The distance stops falling and settles well above zero. What has the teleport done to the answer? (This is the same knob that turns a random walk into PageRank, in the centrality section below.)
+
+## Why This Module Is the Hinge of the Course
+
+Before the machinery, here is what one blind walker will buy us. Random walks are worth this much attention because they unify things we developed separately:
+
+- **Centrality** (Module 6). PageRank *is* a random walk with teleportation; its stationary distribution is the ranking. Eigenvector centrality is what power iteration converges to, and power iteration is a walk. Degree centrality is the stationary distribution of the simple walk.
+- **Community structure** (Module 5). Modularity is the difference between one-step and long-run co-location probabilities. Infomap and Walktrap define communities purely as regions where walks linger.
+- **Distance**. Commute time and effective resistance give a notion of proximity that counts *all* routes rather than the shortest, often working better than shortest-path distance in practice.
+- **Embedding** (Module 8). DeepWalk and node2vec turn walks into "sentences" and feed them to a language model. The embedding you get is determined by what the walk explores.
+- **Spreading processes**. Diffusion and epidemic models are random walks with extra rules, so mixing time and spectral gap govern how fast a contagion spreads.
+
+One process, five chapters. That is the payoff, and every term in that list is defined below.
+
+## One Step: Divide by Your Degree
 
 A random walk is characterized by the transition probabilities between nodes. The transition probability from node $i$ to node $j$ is:
 
@@ -103,8 +803,35 @@ $$
 P_{ij} = \frac{A_{ij}}{k_i}
 $$
 
-where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$.
+where $A_{ij}$ is the adjacency matrix element and $k_i$ is the degree of node $i$. Read it as a sentence: *if there is an edge, split the walker's chance evenly among all $k_i$ of them; if there is no edge, the chance is zero.*
 
+::: {#fig-m07-net}
+
+![](../figs/m07-fig-01.svg){width=70%}
+
+A ten-node network with thirteen edges. Node 1 has four neighbors (0, 2, 3, 4); node 7 has exactly one (node 2).
+
+:::
+
+Take node 1 in @fig-m07-net. It has four neighbors, so a walker standing on it moves to each of them with probability $1/4 = 0.25$, and to any of the other five nodes with probability $0$. Node 7 has a single neighbor, so a walker on node 7 moves to node 2 with probability $1$ — it has no choice at all. Every row of the matrix below is one such list of odds.
+
+::: {#fig-m07-P}
+
+![](../figs/m07-fig-02.svg){width=80%}
+
+The transition matrix $\mathbf{P}$ of @fig-m07-net. Row $i$, column $j$ holds $P_{ij}$; each row sums to 1. Row 7 is a single 1 in column 2.
+
+:::
+
+Notice what the rule does *not* mention: how the walker arrived at node $i$. The next step depends only on where the walker is standing now, never on the route that brought it there. A process with this amnesia is called **Markovian**, and the amnesia itself is the **Markov property**. It is what lets us describe the entire future with one matrix.
+
+Written for the whole network at once, "divide every row of $\mathbf{A}$ by that node's degree" is exactly
+
+$$
+\mathbf{P} = \mathbf{D}^{-1} \mathbf{A}
+$$
+
+where $\mathbf{D}$ is the diagonal matrix holding the degrees, $D_{ii} = k_i$. This one-line form is worth memorising — it is how the transition matrix is built in code, and it is the object we take apart spectrally later in the module.
 
 We can represent all transition probabilities in a transition probability matrix $\mathbf{P}$:
 
@@ -127,7 +854,9 @@ Let's understand why $\mathbf{P}^2$ represents the transition probabilities afte
 
 First, recall that $\mathbf{P}_{ij}$ is the probability of moving from node $i$ to node $j$ in one step. Now, consider a two-step walk from $i$ to $j$. We can express this as:
 
-$(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}$
+$$
+(\mathbf{P}^2)_{ij} = \sum_k \mathbf{P}_{ik} \mathbf{P}_{kj}
+$$
 
 This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we must pass through some intermediate node $k$. Let's break this down step by step:
 
@@ -138,105 +867,598 @@ This equation encapsulates a key idea: to go from $i$ to $j$ in two steps, we mu
 
 And we can extend this reasoning for any number of steps $t$. In summary, for any number of steps $t$, $\left( \mathbf{P}^t \right)_{ij}$ gives the probability of being at node $j$ after $t$ steps, starting from node $i$.
 
-## Stationary Distribution
+## Where the Walker Ends Up: Degree, and Nothing Else
 
-::: {.column-margin}
+The **stationary distribution** is the probability distribution of the walker after infinitely many steps — the long-term behavior of the walker.
 
-Let's compute $\mathbf{P}^2$ for our larger network to see what happens after 2 steps:
-
-![](../figs/m07-fig-03.svg){#fig-m07-fig-03}
-
-
-This is after 10 steps.
-
-![](../figs/m07-fig-04.svg){#fig-m07-fig-04}
-
-
-This is after 1000 steps.
-
-![Transition Matrix after 100 steps](../figs/long-term-P.svg){#fig-long-term-P}
-
-
-:::
-
-
-Stationary distribution is the probability distribtion of the walker after infinite steps, representing the long-term behavior of the walker.
-
-Assuming that a stationary distribution exists (i.e., which is always true for undirected networks),
-the random walker at the stationary state must satisfy the following balance condition:
+Assume for the moment that such a distribution exists. (For an undirected network it does, provided two conditions hold; we state them below, because both fail in networks you will actually meet.) At the stationary state the walker must satisfy the balance condition
 
 $$
 x(t+1) = x(t) \; \text{for a large } t,
 $$
-where $x(t)$ is the probability distribution of the walker at time $t$, represented as a column vector, where
+
+where $x(t)$ is the probability distribution of the walker at time $t$. We write it as a **row** vector,
 
 $$
-x(t) =
-\begin{pmatrix}
-x_{i}(t) \\
-x_{j}(t) \\
-\vdots \\
-x_{N}(t)
-\end{pmatrix}
+x(t) = \begin{pmatrix} x_1(t) & x_2(t) & \cdots & x_N(t) \end{pmatrix}
 $$
 
-where $x_{i}(t)$ is the probability of being at node $i$ at time $t$. The balance condition means that the system becomes time invariant, meaning that the probability of being at node $i$ at time $t$ is the same as the probability of being at node $i$ at time $t+1$.
+with $x_i(t)$ the probability of being at node $i$ at time $t$, and $\sum_i x_i(t) = 1$. Writing it as a row is a convenience, not a deep choice: it lets one step of the walk be multiplication on the right by $\mathbf{P}$, so the formula reads left to right in the order things happen. The balance condition means the system has become time invariant: the probability of being at node $i$ is the same at time $t$ and at time $t+1$.
 
-What does $x(t)$ look like in the stationary state? To understand this, let us represent $x(t)$ using $P$ and an initial distribution $x(0)$, i.e.,
+What does $x(t)$ look like in the stationary state? Represent $x(t)$ using $\mathbf{P}$ and an initial distribution $x(0)$:
 
 $$
-x(t) = x^\top(t-1) P = x^\top(0) P^t.
+x(t) = x(t-1)\,\mathbf{P} = x(0)\,\mathbf{P}^t .
 $$
 
-To see how $P^t$ looks like, see the figure on the right column.
-Notice that each column of $P^t$ has the same values across all rows. Remind also that $P_{ij}$ represents the transition probability from node $i$ (row) to node $j$ (column).
-This means that a random walker at time $t$, not matter where it was at time $t-1$, it will have the same probability of being at any node at time $t$!
+So the question becomes: what does $\mathbf{P}^t$ look like for large $t$?
 
-Now, why $P^t$ has this peculiar property? This is because of the spectral property of matrix, $P$.
+Take the matrix apart before doing any algebra. Row $i$ of $\mathbf{P}^t$ is
+one walker's whole future: it lists where a walker that started at node $i$
+might be $t$ steps later. Below, every entry is drawn as a square of ink —
+darker for likelier — so a row is a stripe you can read at a glance. Step
+through the first three powers one at a time, then drag $t$ and watch what
+becomes of the rows.
 
-First of all, we can rewrite the balance condition as the following eigenvalue equation:
-$$
-\pi = \pi P
-$$
-where $\pi=\lim_{t\to\infty} x(t)$ is the stationary distribution. This means that the stationary distribution vector $\pi$ is parallel to the left eigenvector of $P$.
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The forgetting grid — only the rules this one stage needs. The paper, the
+   panels, the buttons, the knob and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals, and the heatmap is ink density only: no
+   colour ramp at all, so it survives being printed in grey.
+   -------------------------------------------------------------------------- */
 
-::: {.callout-note}
-Note that $\pi$ is **parallel** to but not necessarily equal to the left eigenvector of $P$, as $\pi$ is a probability whose sum is 1 while the left eigenvector has unit norm (i.e., the sum of the squared elements is 1).
+/* A 10x10 grid with labels on two sides, and a ten-group bar chart, both need
+   the whole column; the kit's 310px default is sized for a small diagram. */
+#rw-forget [data-rf-grid], #rw-forget [data-rf-prof] { --anim-svg-max: 100%; }
+
+#rw-forget .rf-cell { fill: var(--_ink); stroke: var(--_rule); stroke-width: 0.7; }
+#rw-forget .rf-num {
+  font-family: var(--_hand);
+  font-size: 9px;
+  fill: var(--_ink-soft);
+  text-anchor: middle;
+}
+#rw-forget .rf-end { text-anchor: end; }
+#rw-forget .rf-dim { fill: var(--_ink-faint); }
+#rw-forget .rf-side { font-family: var(--_hand); font-size: 8.5px; fill: var(--_ink-soft); }
+
+/* The two rows the side panel plots. Outlines only, so the ink inside them
+   still reads at its own density. */
+#rw-forget .rf-hl { fill: none; stroke-width: 1.8; }
+#rw-forget .rf-hl-a { stroke: var(--_accent); }
+#rw-forget .rf-hl-b { stroke: var(--_amber); }
+
+/* A bar that ran off the top of the 0.35 scale says so in words. */
+#rw-forget .rf-over { font-family: var(--_hand); font-size: 8.5px; text-anchor: middle; font-weight: 700; }
+</style>
+
+<figure class="anim-stage" id="rw-forget">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rf-grid></div>
+    <div>
+      <div data-anim-clear data-rf-prof></div>
+      <div data-anim-clear data-rf-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One matrix, eighteen powers. Markup above, scenes below, and nothing in
+   between: the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here multiplies a matrix or runs a graph algorithm at page load, so the
+     grid you see is exactly the arithmetic this page claims.
+
+     The network is @fig-m07-net, the one the whole module uses: 10 nodes,
+     13 edges, degrees (2,4,3,4,4,3,2,1,2,1), so 2m = 26. Reproduce with
+
+       import numpy as np
+       E = [(0,1),(0,3),(1,2),(1,3),(1,4),(2,4),(2,7),(3,4),(3,5),(4,5),
+            (5,6),(6,8),(8,9)]
+       A = np.zeros((10,10))
+       for i,j in E: A[i,j] = A[j,i] = 1
+       P = A / A.sum(1)[:,None]
+       for t in DET: np.rint(np.linalg.matrix_power(P,t)*1000).astype(int)
+
+     PT[d] is P raised to DET[d], in parts per thousand. Two facts to check
+     against it by eye: every row sums to 1000 give or take a unit of rounding,
+     and from t = 95 on every row is the identical row
+     (77,154,115,154,154,115,77,38,77,38) — which is 1000 * k/26, the
+     stationary distribution. At the t = 65 and t = 80 detents a couple of rows
+     are still one part in a thousand out; the SPREAD readout says so.
+
+     SPREAD[d] is the widest disagreement left between two rows: the largest,
+     over the ten columns, of (biggest entry in the column - smallest).
+     L2T[d] is 0.912^t, where 0.912 is the second largest eigenvalue of P in
+     magnitude. The two columns track each other, which is the whole content
+     of the mixing-time section below.
+     ------------------------------------------------------------------------ */
+  const PT = [
+    /* t=1 */ [[0,500,0,500,0,0,0,0,0,0],[250,0,250,250,250,0,0,0,0,0],[0,333,0,0,333,0,0,333,0,0],[250,250,0,0,250,250,0,0,0,0],[0,250,250,250,0,250,0,0,0,0],[0,0,0,333,333,0,333,0,0,0],[0,0,0,0,0,500,0,0,500,0],[0,0,1000,0,0,0,0,0,0,0],[0,0,0,0,0,0,500,0,0,500],[0,0,0,0,0,0,0,0,1000,0]],
+    /* t=2 */ [[250,125,125,125,250,125,0,0,0,0],[62,333,62,188,146,125,0,83,0,0],[83,83,500,167,83,83,0,0,0,0],[62,188,125,333,146,62,83,0,0,0],[125,146,62,146,292,62,83,83,0,0],[83,167,83,83,83,333,0,0,167,0],[0,0,0,167,167,0,417,0,0,250],[0,333,0,0,333,0,0,333,0,0],[0,0,0,0,0,250,0,0,750,0],[0,0,0,0,0,0,500,0,0,500]],
+    /* t=3 */ [[62,260,94,260,146,94,42,42,0,0],[130,135,203,193,193,83,42,21,0,0],[62,271,42,111,257,62,28,167,0,0],[130,193,83,135,193,161,21,42,42,0],[73,193,193,193,115,151,21,21,42,0],[62,111,62,215,201,42,194,28,0,83],[42,83,42,42,42,292,0,0,458,0],[83,83,500,167,83,83,0,0,0,0],[0,0,0,83,83,0,458,0,0,375],[0,0,0,0,0,250,0,0,750,0]],
+    /* t=4 */ [[130,164,143,164,193,122,31,31,21,0],[82,229,103,175,178,117,28,68,21,0],[95,137,299,184,130,106,21,14,14,0],[82,175,138,215,164,92,75,28,10,21],[96,178,98,164,211,87,71,64,10,21],[82,156,106,123,116,201,14,21,181,0],[31,56,31,149,142,21,326,14,0,229],[62,271,42,111,257,62,28,167,0,0],[21,42,21,21,21,271,0,0,604,0],[0,0,0,83,83,0,458,0,0,375]],
+    /* t=5 */ [[82,202,120,195,171,105,51,48,16,10],[101,163,169,182,174,102,49,34,14,10],[80,226,81,150,215,89,42,100,10,7],[98,182,112,156,174,132,36,46,58,5],[85,174,161,174,147,129,34,33,56,5],[70,136,89,176,172,67,157,35,7,90],[51,99,63,72,69,236,7,10,392,0],[95,137,299,184,130,106,21,14,14,0],[16,28,16,116,113,10,392,7,0,302],[21,42,21,21,21,271,0,0,604,0]],
+    /* t=6 */ [[99,173,141,169,174,117,43,40,36,8],[86,196,119,169,177,114,41,56,35,7],[94,158,210,180,150,112,35,27,28,5],[85,169,135,182,166,101,73,37,23,29],[87,177,113,166,184,97,71,54,22,28],[78,152,112,134,130,166,26,30,169,3],[43,82,52,146,143,39,275,21,3,196],[80,226,81,150,215,89,42,100,10,7],[36,70,42,46,45,253,3,5,498,0],[16,28,16,116,113,10,392,7,0,302]],
+    /* t=8 */ [[89,172,135,167,168,115,50,42,47,15],[86,181,124,166,171,113,49,50,45,14],[90,165,168,174,158,114,45,35,40,11],[83,166,130,170,165,104,74,40,34,33],[84,171,119,165,173,102,73,48,33,32],[77,151,114,139,136,152,34,33,154,8],[50,99,67,148,146,52,237,26,9,167],[85,200,104,162,192,100,51,70,23,14],[47,91,60,68,66,232,9,11,416,1],[29,55,34,131,128,25,334,14,2,249]],
+    /* t=10 */ [[85,169,131,164,164,115,56,42,54,20],[84,173,125,163,167,114,56,46,53,19],[87,167,147,168,161,115,52,39,49,17],[82,163,126,165,163,106,75,41,43,35],[82,167,121,163,167,105,75,45,42,34],[77,152,115,142,140,145,41,35,141,13],[56,111,78,150,149,62,207,29,15,143],[85,184,116,164,179,105,58,56,34,20],[54,106,73,86,84,212,15,17,351,3],[40,77,50,140,137,38,285,20,5,208]],
+    /* t=13 */ [[82,165,124,162,162,111,68,42,54,30],[82,164,126,162,162,111,67,41,54,29],[82,169,122,162,166,110,66,45,50,28],[81,162,122,157,158,119,61,41,74,25],[81,162,124,158,157,119,60,40,74,24],[74,148,110,159,159,95,111,38,40,65],[68,135,99,122,120,167,34,29,214,11],[85,166,135,164,161,115,57,40,56,21],[54,107,75,149,147,60,214,28,16,149],[60,117,84,100,98,195,22,21,298,5]],
+    /* t=16 */ [[80,161,122,158,158,115,67,41,67,30],[81,162,121,158,159,115,67,41,66,29],[81,162,125,160,159,115,65,40,65,28],[79,158,120,159,159,110,77,40,60,38],[79,159,119,159,159,110,77,41,59,38],[77,153,115,147,147,132,56,37,113,23],[67,133,98,155,154,84,147,34,34,94],[81,165,121,161,163,111,69,43,56,30],[67,133,97,120,118,169,34,28,222,11],[59,117,84,151,150,69,188,30,22,128]],
+    /* t=20 */ [[79,158,119,156,157,115,71,40,71,33],[79,158,119,157,157,115,71,40,71,33],[79,159,120,157,157,115,70,40,70,32],[78,157,118,157,157,112,78,40,66,38],[78,157,118,157,157,112,78,40,65,38],[77,154,115,149,149,127,62,38,101,28],[71,141,104,155,155,93,124,36,45,75],[80,160,120,158,159,113,72,41,64,34],[71,142,105,132,131,152,45,32,173,17],[66,132,96,154,153,83,151,34,34,97]],
+    /* t=25 */ [[78,156,117,156,156,114,75,39,72,37],[78,156,117,156,156,114,75,39,72,37],[78,156,118,156,156,114,75,39,71,37],[78,156,117,154,154,117,73,39,78,35],[78,156,117,154,154,117,72,39,78,35],[76,152,114,156,156,109,88,39,64,47],[75,151,113,145,145,132,60,36,117,26],[78,157,118,156,156,116,72,39,73,35],[72,143,106,155,155,96,117,37,48,70],[74,147,110,140,139,141,53,35,141,22]],
+    /* t=32 */ [[77,155,116,154,154,116,75,39,76,37],[77,155,116,154,154,115,75,39,76,37],[77,155,116,154,154,116,75,39,76,37],[77,154,116,155,155,114,78,39,74,39],[77,154,116,155,155,114,78,39,74,39],[77,154,116,152,152,119,72,38,85,35],[75,151,113,155,155,108,91,38,64,50],[77,155,116,155,155,115,76,39,74,38],[76,152,114,148,148,127,64,37,105,29],[74,149,111,155,155,104,99,38,59,56]],
+    /* t=40 */ [[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,77,39,76,39],[77,154,116,154,154,115,77,39,76,39],[77,154,115,153,153,117,74,38,81,37],[76,153,114,155,155,112,83,38,70,43],[77,154,116,154,154,115,77,39,76,38],[77,153,115,151,151,121,70,38,90,34],[76,152,114,155,155,110,87,38,67,46]],
+    /* t=50 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,76,39],[77,154,115,154,154,115,77,38,76,39],[77,154,115,154,154,116,76,38,78,38],[77,153,115,154,154,114,79,38,74,40],[77,154,115,154,154,115,77,39,77,38],[77,154,115,153,153,118,74,38,82,36],[77,153,115,154,154,113,81,38,73,41]],
+    /* t=65 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,39],[77,154,115,154,154,116,76,38,78,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,78,38,76,39],[77,154,115,154,154,116,76,38,78,38]],
+    /* t=80 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,39],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,116,77,38,77,38],[77,154,115,154,154,115,77,38,77,39]],
+    /* t=100 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38]]
+  ];
+
+  const DET = [1,2,3,4,5,6,8,10,13,16,20,25,32,40,50,65,80,100];
+  const SPREAD = [1.0000,0.7500,0.7500,0.6042,0.6042,0.4983,0.4142,0.3452,0.2820,0.2001,0.1390,0.0921,0.0465,0.0223,0.0089,0.0023,0.0006,0.0001];
+  const L2T = [0.91196,0.83167,0.75845,0.69168,0.63079,0.57525,0.47842,0.39789,0.30178,0.22889,0.15832,0.09987,0.05239,0.02506,0.00997,0.00250,0.00063,0.00010];
+
+  const DEG = [2,4,3,4,4,3,2,1,2,1];
+  const TWO_M = 26;
+  const PI = DEG.map((k) => k / TWO_M);
+  const NL = 10;
+
+  /* ------------------------------------------------------------- geometry --- */
+  const CELL = 13, GX0 = 30, GY0 = 26;    /* the heatmap */
+  const PX = (i) => 41 + 22 * i;          /* centre of column i's bar pair */
+  const PYB = 96, PPLOT = 74, PAXIS = 0.35;
+  const f3 = (x) => x.toFixed(3);
+  const f2 = (x) => x.toFixed(2);
+  /* Ink density. Straight opacity would draw the settled matrix — every entry
+     around 0.1 — as a blank sheet, so the square root is taken first. It is a
+     monotone re-inking, not a recolouring: darker still means likelier, and
+     the caption says so. */
+  const dens = (v) => Math.sqrt(v);
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "Each row is a starting node",
+      note: "The transition matrix drawn as ink: row i is a walker that started at node i, column j is where it might be one step later. Row 7 is a single black square — a walker on node 7 has nowhere to go but node 2. Row 1 is four grey squares of a quarter each.",
+      async run(ctx) {
+        ctx.build();
+        ctx.dial(0);
+        ctx.highlight(true);
+        const c = ctx.say("two rows, one step in");
+        [["row 7, the leaf", "node 2, certain"],
+         ["row 1, the hub", "four nodes, &frac14; each"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.8 + i * 0.6) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2400);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "nothing the two rows do is alike. The widest gap between them is a " +
+          "whole unit of probability, in column 2."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Two steps, then three",
+      note: "Take a second step, then a third. Every dark square bleeds into its neighbours' neighbours; the diagonal fills in, because two steps can bring the walker home. The widest disagreement between two rows drops from 1.000 to 0.750.",
+      async run(ctx) {
+        const c = ctx.say("what a second step does");
+        if (!ctx.fast()) await ctx.sleep(600);
+        ctx.dial(1);
+        if (!ctx.fast()) await ctx.sleep(1600);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>diagonal at t = 2</span><b>never zero</b>"));
+        if (!ctx.fast()) await ctx.sleep(1400);
+        ctx.dial(2);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>rows differ by</span><b>1.000 &rarr; 0.750</b>"));
+        if (!ctx.fast()) await ctx.sleep(1600);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "three steps in, the leaf-walker is still nothing like the " +
+          "hub-walker. But the black square is gone: certainty was the first " +
+          "thing to go."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Watch the rows fall together",
+      note: "Now run t up to a hundred. The scatter turns into vertical stripes: inside a column every row ends the same shade. The stripe darkness is k over 2m, and the dashed markers show the two profiles landing on it.",
+      async run(ctx) {
+        const c = ctx.say("t climbing to a hundred");
+        const big = ctx.el("div", "anim-big", "3");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        if (ctx.fast()) {
+          ctx.dial(DET.length - 1);
+          ctx.marks(true);
+          big.textContent = "100";
+          verdict.innerHTML = "<span>every row</span><b>the same row</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        for (let i = 3; i < DET.length; i++) {
+          ctx.dial(i);
+          big.textContent = String(DET[i]);
+          await ctx.sleep(i < 10 ? 620 : 480);
+        }
+        verdict.innerHTML = "<span>every row</span><b>the same row</b>";
+        verdict.style.visibility = "visible";
+        await ctx.sleep(1400);
+        ctx.marks(true);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the columns still differ &mdash; that is the degree sequence, " +
+          "k/2m. What went away is any difference <em>between rows</em>: the " +
+          "walker no longer carries where it came from."));
+        await ctx.sleep(3800);
+      }
+    },
+    {
+      label: "Now you turn it",
+      note: "Drag t yourself and watch the readout. At t = 20 two rows can still disagree by 0.139; by t = 65 the widest disagreement is down to 0.002, and by t = 100 every row is the identical row to three decimals. How far you must drag before that happens is the mixing time.",
+      async run(ctx) {
+        const c = ctx.say("you turn it");
+        ctx.marks(true);
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag: t runs from one step to a hundred"));
+
+        [["t = 3", "rows differ by 0.750"],
+         ["t = 20", "rows differ by 0.139"],
+         ["t = 65", "rows differ by 0.002"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.5 + i * 0.5) + "s";
+          c.appendChild(t);
+        });
+
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DET.length - 1, step: 1, value: DET.length - 1,
+          label: "Number of steps t",
+          format: (i) => "t = " + DET[i],
+          onGrab: () => ctx.pause(),
+          onInput: (i) => ctx.dial(i)
+        });
+
+        if (ctx.fast()) { dial.set(DET.length - 1); return; }
+
+        /* Park on the last detent, then sweep back to one and up again once,
+           so it is obvious the knob goes both ways before the reader takes it. */
+        dial.set(DET.length - 1);
+        await ctx.sleep(2600);
+        for (let i = DET.length - 2; i >= 0; i--) { dial.set(i); await ctx.sleep(150); }
+        await ctx.sleep(900);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "every extra step multiplies whatever disagreement is left by about " +
+          "0.912 &mdash; the second largest eigenvalue of <b>P</b>. That one " +
+          "number is the whole clock, and the next section is about nothing else."));
+        for (let i = 1; i < DET.length; i++) { dial.set(i); await ctx.sleep(150); }
+        await ctx.sleep(4200);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-forget"), scenes, {
+    stepsLabel: "Matrix powers",
+
+    /* The two things only this animation has: a 10x10 grid of ink and a pair
+       of row profiles beside it. Both are built once, in scene 1, and only
+       re-inked afterwards — so jumping to a step still lands on a drawing,
+       because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const gridBox = ctx.$("[data-rf-grid]");
+      const profBox = ctx.$("[data-rf-prof]");
+      const side = ctx.$("[data-rf-say]");
+      const S = { at: 0 };
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        gridBox.textContent = "";
+        profBox.textContent = "";
+        const slow = !ctx.fast();
+
+        /* ---- the heatmap ---- */
+        const svg = ctx.svgRoot("0 0 176 176");
+        const gCell = svg.appendChild(ctx.svgEl("g"));
+        const gHl = svg.appendChild(ctx.svgEl("g"));
+        const gLab = svg.appendChild(ctx.svgEl("g"));
+
+        S.cell = [];
+        for (let r = 0; r < NL; r++) {
+          const row = [];
+          for (let c = 0; c < NL; c++) {
+            const q = ctx.svgEl("rect", {
+              x: GX0 + c * CELL, y: GY0 + r * CELL,
+              width: CELL, height: CELL, "class": "rf-cell"
+            });
+            q.style.fillOpacity = 0;
+            if (slow) {
+              q.classList.add("anim-fade");
+              q.style.animationDelay = (0.05 + (r + c) * 0.03) + "s";
+            }
+            row.push(gCell.appendChild(q));
+          }
+          S.cell.push(row);
+        }
+
+        S.hl = [1, 7].map((r, j) => {
+          const q = ctx.svgEl("rect", {
+            x: GX0 - 1.5, y: GY0 + r * CELL - 1.5,
+            width: NL * CELL + 3, height: CELL + 3,
+            "class": "rf-hl " + (j === 0 ? "rf-hl-a" : "rf-hl-b")
+          });
+          q.style.opacity = 0;
+          return gHl.appendChild(q);
+        });
+
+        for (let i = 0; i < NL; i++) {
+          const ct = ctx.svgEl("text",
+            { x: GX0 + i * CELL + CELL / 2, y: GY0 - 5, "class": "rf-num" });
+          ct.textContent = String(i);
+          gLab.appendChild(ct);
+          const rt = ctx.svgEl("text",
+            { x: GX0 - 5, y: GY0 + i * CELL + CELL / 2 + 3.2, "class": "rf-num rf-end" });
+          rt.textContent = String(i);
+          gLab.appendChild(rt);
+        }
+        const to = ctx.svgEl("text", { x: GX0 + NL * CELL / 2, y: 12, "class": "rf-side" });
+        to.textContent = "to →";
+        to.setAttribute("text-anchor", "middle");
+        gLab.appendChild(to);
+        const from = ctx.svgEl("text", {
+          x: 11, y: GY0 + NL * CELL / 2, "class": "rf-side",
+          transform: "rotate(-90 11 " + (GY0 + NL * CELL / 2) + ")"
+        });
+        from.textContent = "started at ↓";
+        from.setAttribute("text-anchor", "middle");
+        gLab.appendChild(from);
+
+        gridBox.appendChild(svg);
+
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>t <b data-t>1</b></span>' +
+          '<span>rows differ by <b data-s>1.000</b></span>' +
+          '<span>&lambda;<sub>2</sub><sup>t</sup> <b data-l>0.912</b></span>');
+        gridBox.appendChild(S.read);
+        S.outT = S.read.querySelector("[data-t]");
+        S.outS = S.read.querySelector("[data-s]");
+        S.outL = S.read.querySelector("[data-l]");
+
+        gridBox.appendChild(ctx.el("div", "anim-caption",
+          "one square per entry of <b>P</b><sup>t</sup>; darker means likelier. " +
+          "Darkness is the square root of the probability, so the small entries " +
+          "are still visible &mdash; nothing but density, no colour scale."));
+
+        /* ---- the two row profiles ---- */
+        const psvg = ctx.svgRoot("0 0 260 124");
+        const gBar = psvg.appendChild(ctx.svgEl("g"));
+        const gMark = psvg.appendChild(ctx.svgEl("g"));
+        const gAx = psvg.appendChild(ctx.svgEl("g"));
+
+        S.b1 = []; S.b7 = []; S.over = [];
+        for (let i = 0; i < NL; i++) {
+          S.b1.push(gBar.appendChild(ctx.svgEl("rect", {
+            x: PX(i) - 9, y: PYB, width: 8, height: 0, "class": "anim-accent-fill"
+          })));
+          S.b7.push(gBar.appendChild(ctx.svgEl("rect", {
+            x: PX(i) + 1, y: PYB, width: 8, height: 0, "class": "anim-amber-fill"
+          })));
+          const o = ctx.svgEl("text",
+            { x: PX(i), y: PYB - PPLOT - 3, "class": "rf-over" });
+          S.over.push(gAx.appendChild(o));
+        }
+
+        S.mark = [];
+        for (let i = 0; i < NL; i++) {
+          const y = PYB - (Math.min(PI[i], PAXIS) / PAXIS) * PPLOT;
+          const l = ctx.svgEl("line", {
+            x1: PX(i) - 14, x2: PX(i) + 14, y1: y, y2: y,
+            "class": "anim-marker anim-marker--faint"
+          });
+          l.style.opacity = 0;
+          S.mark.push(gMark.appendChild(l));
+        }
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: 26, y1: PYB, x2: 256, y2: PYB, "class": "anim-axis" }));
+        const top = ctx.svgEl("text",
+          { x: 22, y: PYB - PPLOT + 4, "class": "rf-num rf-end" });
+        top.textContent = "0.35";
+        gAx.appendChild(top);
+        const zero = ctx.svgEl("text", { x: 22, y: PYB + 4, "class": "rf-num rf-end" });
+        zero.textContent = "0";
+        gAx.appendChild(zero);
+        for (let i = 0; i < NL; i++) {
+          const n = ctx.svgEl("text", { x: PX(i), y: PYB + 14, "class": "rf-num" });
+          n.textContent = String(i);
+          gAx.appendChild(n);
+          const d = ctx.svgEl("text", { x: PX(i), y: PYB + 25, "class": "rf-num rf-dim" });
+          d.textContent = "k=" + DEG[i];
+          gAx.appendChild(d);
+        }
+
+        profBox.appendChild(psvg);
+        profBox.appendChild(ctx.el("div", "anim-caption",
+          'the two outlined rows, side by side: ' +
+          '<span style="color:var(--_accent)">&#9632;</span> row 1 (started at the hub) ' +
+          'and <span style="color:var(--_amber)">&#9632;</span> row 7 (started at the leaf). ' +
+          'The dashed markers, once they appear, sit at k/2m.'));
+
+        paint(0);
+      }
+
+      /* Everything both drawings show at detent d. Pure lookup: no arithmetic
+         on the matrix, only on where to put the ink. */
+      function paint(d) {
+        S.at = d;
+        const M = PT[d];
+        for (let r = 0; r < NL; r++) {
+          for (let c = 0; c < NL; c++) {
+            S.cell[r][c].style.fillOpacity = dens(M[r][c] / 1000).toFixed(3);
+          }
+        }
+        const r1 = M[1], r7 = M[7];
+        for (let i = 0; i < NL; i++) {
+          const v1 = r1[i] / 1000, v7 = r7[i] / 1000;
+          const h1 = (Math.min(v1, PAXIS) / PAXIS) * PPLOT;
+          const h7 = (Math.min(v7, PAXIS) / PAXIS) * PPLOT;
+          ctx.attr(S.b1[i], { y: PYB - h1, height: h1 });
+          ctx.attr(S.b7[i], { y: PYB - h7, height: h7 });
+          const big = Math.max(v1, v7);
+          if (big > PAXIS) {
+            S.over[i].textContent = f2(big);
+            S.over[i].setAttribute("fill",
+              v7 >= v1 ? "var(--_amber)" : "var(--_accent)");
+          } else {
+            S.over[i].textContent = "";
+          }
+        }
+        S.outT.textContent = String(DET[d]);
+        S.outS.textContent = f3(SPREAD[d]);
+        S.outL.textContent = f3(L2T[d]);
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return {
+        build: build,
+        say: say,
+        dial: paint,
+        marks: function (on) {
+          S.mark.forEach((l) => { l.style.opacity = on ? 1 : 0; });
+        },
+        highlight: function (on) {
+          S.hl.forEach((q) => { q.style.opacity = on ? 1 : 0; });
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+The last frame of that widget, written out as numbers, is @fig-long-term-P.
+
+::: {#fig-long-term-P}
+
+![](../figs/long-term-P.svg){width=80%}
+
+$\mathbf{P}^{100}$ for the network in @fig-m07-net. Every row is identical: after a hundred steps it no longer matters where the walker started.
+
 :::
 
+Compare it with @fig-m07-P, where no two rows had anything in common. That is the whole phenomenon in one picture: after enough steps, the walker's position no longer carries any trace of where it began. Note what did *not* disappear. The columns of @fig-long-term-P are still unequal — column 1 is four times column 7 — and that surviving difference is the answer to the question the next section asks.
 
-The left-eigenvector associated with the stationary distribution $\pi$ is in fact associated with the largest eigenvalue of $P$, as per the Perron-Frobenius theorem.
-An intuition behind this is that the number of walkers in a graph remains invariant after a transition, which is evident from the fact $\sum_{j} P_{ij}=1$ (if it's greater than 1, the number of walkers increases and explodes to infinity).
-In language of spectra of matrices, this means that the eigenvalue is not rescaled by the transition matrix, which mathematically corresponds to having eigenvalue 1.
+Why does $\mathbf{P}^t$ have this peculiar property? Because of the spectral properties of $\mathbf{P}$. We can rewrite the balance condition as an eigenvalue equation:
 
+$$
+\pi = \pi \mathbf{P}
+$$
+
+where $\pi=\lim_{t\to\infty} x(t)$ is the stationary distribution. So $\pi$ is parallel to a left eigenvector of $\mathbf{P}$.
+
+::: {.column-margin}
+$\pi$ is *parallel* to that left eigenvector, not equal to it. An eigenvector has no canonical length — any multiple of it is still an eigenvector — and numerical libraries happen to hand you the one of unit Euclidean length. We want the multiple whose entries sum to 1, so rescale by dividing through by the sum.
+:::
+
+That left eigenvector is the one associated with the largest eigenvalue of $\mathbf{P}$, as per the Perron–Frobenius theorem. The intuition is conservation: the number of walkers in a graph is unchanged by a transition, which is evident from $\sum_{j} P_{ij}=1$ (if the row sum were greater than 1, walkers would multiply and explode to infinity). In the language of spectra, nothing is rescaled, and that corresponds to an eigenvalue of exactly 1 — visible as the topmost point in @fig-spectrum.
 
 ::: {.column-margin}
 
-
-![Spectrum of Transition Matrix $P$](../figs/spectrum.svg){#fig-spectrum}
-
+![Spectrum of the transition matrix $\mathbf{P}$ for @fig-m07-net. One eigenvalue sits at exactly 1; the rest are strictly smaller in magnitude.](../figs/spectrum.svg){#fig-spectrum}
 
 :::
 
-The other eigenvalues are less than one in magnitude and describes the short-term behavior of random walks, which we will discuss in the next section.
+The other eigenvalues are less than one in magnitude and describe the short-term behavior of the walk, which is the subject of the next section.
 
-### When does a stationary distribution exist?
+### The Answer Is the Degree Sequence
 
-We said "assuming a stationary distribution exists (which is always true for undirected networks)". That parenthetical hides two conditions worth stating, because both fail in networks you will actually meet.
+Calling $\boldsymbol{\pi}$ "the leading left eigenvector" describes it but does not tell you what it *is*. For an undirected network the answer is startlingly simple, and you can guess it before proving it.
+
+Feel it first. The walker never chooses a node — it chooses an **edge**. So a node with twice as many edges catches the walker roughly twice as often. That is the whole idea:
+
+$$
+\pi_i \propto k_i.
+$$
+
+To turn the proportionality into an equality, the probabilities must sum to one. Every edge contributes 2 to the total degree (one at each end), so $\sum_i k_i = 2m$ for a network with $m$ edges — the handshake count from Module 1. Dividing by that total gives
+
+::: {.callout-important title="The stationary distribution of a simple random walk"}
+$$
+\pi_i = \frac{k_i}{\sum_\ell k_\ell} = \frac{k_i}{2m}
+$$
+
+In the long run, the fraction of time the walker spends at a node is its share of the edge endpoints in the network. Nothing else about the structure survives.
+:::
+
+Put numbers on it with @fig-m07-net, which has $m = 13$ edges and therefore $2m = 26$ edge endpoints. Node 1, with $k_1 = 4$, gets $\pi_1 = 4/26 \approx 0.154$; node 7, with $k_7 = 1$, gets $\pi_7 = 1/26 \approx 0.038$. Rounded to two decimals, $0.15$ and $0.04$ are exactly the numbers printed in every row of @fig-long-term-P — and they are the two markers the walker's bars landed on at the top of this page.
+
+Checking the guess takes one line. Substitute it into the balance condition $\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}$:
+
+$$
+\left(\boldsymbol{\pi}\mathbf{P}\right)_j
+= \sum_i \pi_i P_{ij}
+= \sum_i \frac{k_i}{2m}\cdot\frac{A_{ij}}{k_i}
+= \frac{1}{2m}\sum_i A_{ij}
+= \frac{k_j}{2m}
+= \pi_j .
+$$
+
+The degrees cancel, which is the whole trick: the $k_i$ that makes a hub attractive is the same $k_i$ that thins out each of its outgoing steps.
+
+::: {.column-margin}
+Two consequences to carry forward. First, the stationary distribution of a simple walk on an undirected network *is* degree centrality, rescaled — which is why Module 6's walk-based measures needed teleportation to say anything new. Second, this holds only for undirected networks; on a directed network $\pi_i \propto k_i$ is false, and PageRank exists precisely to supply a well-behaved substitute.
+:::
+
+### When a Stationary Distribution Fails to Exist
+
+We assumed above that a stationary distribution exists. Two conditions make that assumption safe, and both fail in networks you will actually meet.
 
 **Irreducibility.** The walker must be able to reach every node from every node. If the network is disconnected, a walker starting in one component never visits the others, and there is no single stationary distribution — there is one per component. This is why we usually extract the giant component (Module 1) before doing anything.
 
 **Aperiodicity.** The walker must not be trapped in a rigid rhythm. Consider a **bipartite** network — nodes split into two sides, edges only between sides. A walker starting on the left is on the right after one step, back on the left after two, and so on forever. The distribution oscillates with period 2 and never settles, even though the network is perfectly connected.
 
-::: {.callout-note title="Ergodicity"}
-A random walk with both properties is called **ergodic**, and only then are we guaranteed a unique stationary distribution reached from *any* starting point.
-
-The fix for periodicity is easy: add a small chance of staying put (a "lazy" walk), or add teleportation as PageRank does. Either one destroys the rigid alternation.
-:::
+A random walk with both properties is called **ergodic**, and only then are we guaranteed a unique stationary distribution reached from *any* starting point. The fix for periodicity is easy: add a small chance of staying put (a "lazy" walk), or add teleportation as PageRank does. Either one destroys the rigid alternation.
 
 You can see both conditions in the spectrum. Disconnection shows up as eigenvalue 1 appearing more than once — one copy per component. Periodicity shows up as an eigenvalue at exactly $-1$, the mode that flips sign at every step and therefore never decays.
 
-### Reversibility
+### A Walk Looks the Same Played Backwards
 
 Undirected random walks have a symmetry that makes much of the theory work. In the stationary state, the probability of being at $i$ and stepping to $j$ equals the probability of being at $j$ and stepping to $i$:
 
@@ -248,132 +1470,48 @@ This is called **detailed balance**, and a walk satisfying it is **reversible**:
 
 Reversibility is what lets us symmetrize $\mathbf{P}$ in the next section — the trick that makes the spectral analysis possible at all. Random walks on *directed* networks are generally not reversible, which is exactly why they are harder.
 
-## Spectral Analysis and Mixing Time
+## How Long Until the Walker Forgets Where It Started?
 
-Now, let's turn our attention to the short-term dynamics of random walks. These are governed by the non-dominant (non-principal) eigenvectors of the transition probability matrix $P$. To analyze this behavior, we'll need to use some concepts from linear algebra.
+The stationary distribution says where the walker ends up. It says nothing about *when*. Drop a walker on a ring of 1000 nodes and it takes on the order of a million steps before its position is anywhere close to uniform. Drop it on the karate club and a dozen steps will do. Same kind of destination, wildly different waiting time.
 
-The short-term behavior of random walks is described as:
+Feel it first. Start one walker at node 1 and another at node 7. At $t = 1$ their distributions are completely different — one is spread over four neighbors, the other sits on node 2 with certainty. At every step the difference shrinks a little. **Mixing time** is how long you must wait before that difference drops below a tolerance $\epsilon$ you are willing to accept: the moment when knowing the starting node tells you essentially nothing about where the walker is now.
 
 $$
-x(t) = P^t  x(0)
-$$
-
-Thus, it is determined by the initial distribution $x(0)$ and the power of the transition probability matrix $P^t$. In long term, $P^t$ approaches to that for the stationary distribution $\pi$. Here we focus on the ehavior before the equilibrium is reached.
-
-To understand the short-term behavior, we represent $P$ as:
-$$
-P = \mathbf{D}^{-\frac{1}{2}} \overline{\mathbf{A}} \mathbf{D}^{\frac{1}{2}}
+t_{\text{mix}} = \min\left\{t : \max_{x(0)} \|x(t) - \boldsymbol{\pi}\|_{1} \leq \epsilon\right\}
 $$
 
-where $\overline{\mathbf{A}}$ is a symmetric matrix and $\mathbf{D}^{-\frac{1}{2}}$ is a diagonal matrix. These are defined respectively as follows.
+The picture that explains the answer is @fig-long-term-P again: mixing time is how many powers of $\mathbf{P}$ you must take before the rows become indistinguishable.
 
-- **Diagonal degree matrix, $\mathbf{D}$**: we define a diagonal matrix whose diagonal elements are the degrees of the nodes, i.e.,
-$$
-\mathbf{D} = \begin{pmatrix}
-d_1 & 0 & \cdots & 0 \\
-0 & d_2 & \cdots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \cdots & d_N
-\end{pmatrix}
-$$
-where $d_i$ is the degree of node $i$.
+One number controls it. The gap between the walker's distribution and $\boldsymbol{\pi}$ can be split into modes, one per eigenvalue of $\mathbf{P}$, and each step multiplies mode $\ell$ by its eigenvalue $\lambda_\ell$. The largest eigenvalue is $\lambda_1 = 1$: that mode *is* $\boldsymbol{\pi}$, and it never decays. Every other mode shrinks, and the slowest of them is the second largest, $\lambda_2$. After $t$ steps the leftover error is of size $\lambda_2^{\,t}$, so the whole clock is set by how far $\lambda_2$ sits below 1. (Strictly it is the largest eigenvalue in *magnitude* other than 1 that matters: a mode at $-1$ flips sign instead of decaying, which is the periodicity problem from the previous section.)
 
-- **Normalized adjacency matrix, $\overline{\mathbf{A}}$**: we define a normalized adjacency matrix whose elements are the normalized adjacency matrix, i.e.,
-$$
-\overline{\mathbf{A}} = \mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}
-$$
-where $\mathbf{A}$ is the adjacency matrix. It is normalized in the sense that each entry is normalized by the squared root of the degree of the nodes.
+That distance has a name. The **spectral gap** is $1 - \lambda_2$, and its reciprocal
 
-The key property we will leverage is that the normalized adjacency matrix is diagonalizable, i.e.,
 $$
-\overline{\mathbf{A}} = \mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^T
+\tau = \frac{1}{1 - \lambda_2}
 $$
 
-where $\mathbf{Q}$ is an orthogonal matrix and $\mathbf{\Lambda}$ is a diagonal matrix.
-The transition matrix $\mathbf{P}$ can be written as:
+is the **relaxation time** — the number of steps in which the slowest mode shrinks by a factor of $e$. Mixing time is the relaxation time multiplied by a logarithmic factor that pays for how small a tolerance $\epsilon$ you demanded and how rare the rarest node is:
+
 $$
-\mathbf{P} = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T
+t_{\text{mix}} < \frac{1}{1-\lambda_2} \log \left( \frac{1}{\epsilon \, \min_{i} \pi_i} \right)
+= \tau \log \left( \frac{1}{\epsilon \, \min_{i} \pi_i} \right)
 $$
+
+Read that carefully: $\tau$ on its own is *not* a bound on $t_{\text{mix}}$. It is a time *scale* — mixing takes a few $\tau$'s, and the logarithm says how many. Demand a tighter $\epsilon$, or add a node so rare that $\pi_i$ is tiny, and you pay for it inside the logarithm.
 
 ::: {.column-margin}
-
-::: {#fig-diagonalizable}
-
-![](../figs/diagonalizable.jpg)
-
-A visual representation of diagonalizable matrix.
+The same quantity is often written with the normalized Laplacian, whose second smallest eigenvalue is $\mu = 1 - \lambda_2$, giving $\tau = 1/\mu$. That is the same $\mu$ Module 5's spectral clustering minimises, which is why "good cut" and "slow mixing" turn out to be the same statement.
 :::
 
+A worked number. Take two 5-cliques joined by a single edge — ten nodes, one obvious bottleneck. Its transition matrix has $\lambda_2 = 0.927$, so the spectral gap is $0.073$ and $\tau \approx 14$ steps. Now merge the two cliques into one 10-clique, keeping the same ten nodes: $\lambda_2 = -1/9$, the gap is $1.11$, and $\tau \approx 0.9$ steps — a single step essentially finishes the job. Same node count, a fifteen-fold difference in mixing, and the only thing that changed is a bottleneck. Hold on to this: it is the reason random walks can find communities at all.
 
-Symmetric matrices are diagonalizable. And $\overline{\mathbf{A}}$ is symmetric as far as the undirected network is considered.
-:::
+Why the eigenvalues of $\mathbf{P}$ govern $\mathbf{P}^t$ at all — and the trick that makes a non-symmetric $\mathbf{P}$ behave like a symmetric one — is worked out in the [appendix](04-appendix.qmd), which also shows the leading mode reproducing $\pi_i = k_i/2m$ on its own.
 
-
-where
-$$
-\mathbf{Q}_L = \mathbf{D}^{-\frac{1}{2}} \mathbf{Q}, \quad \mathbf{Q}_R = \mathbf{D}^{\frac{1}{2}} \mathbf{Q}.
-$$
-Importantly, $\mathbf{Q}$ is an orthogonal matrix, i.e., $\mathbf{Q} \mathbf{Q}^T = \mathbf{I}$.
-Putting all together, we can compute $\mathbf{P}^t$ as:
-
-$$
-\mathbf{P}^t = \mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^T
-$$
-
-::: {.column-margin}
-This could be understood by thinking of $\mathbf{P}^2$, i.e.,
-
-$$
-\begin{aligned}
-\mathbf{P}^2 & = \mathbf{Q}_L \mathbf{\Lambda} \underbrace{\mathbf{Q}_R^T \mathbf{Q}_L}_{= \mathbf{I}} \mathbf{\Lambda} \mathbf{Q}_R^T \\
-& = \mathbf{Q}_L \mathbf{\Lambda}^2 \mathbf{Q}_R^T \\
-\end{aligned}
-$$
-:::
-
-
-::: {#fig-diagonalizable-sum}
-
-![](../figs/diagonalizable-sum.jpg)
-
-A visual representation of the short term behavior of random walks.
-We can see that $x(t)$ can be edcomposed into the row of $\mathbf{Q}_R$ scaled by a dot-product of the initial distribution $x(0)$ and the column of $\mathbf{Q}_L$, along with the eigenvalues of the normalized adjacency matrix $\overline{\mathbf{A}}$.
-In this view, the short term distribution $x(t)$ is more strongly influenced by the second largest eigenvalue $\lambda_2$ followed by the other remaining eigenvalues.
-
-
-:::
-
-Armed with this result, let us understand the short-term behavior of random walks.
-A key property is the *mixing time*, which is the time it takes for the random walk to reach the stationary distribution.
-Formally, the **mixing time** $t_{\text{mix}}$ is defined as
-$$
-t_{\text{mix}} = \min\{t : \max_{\mathbf{x}(0)} \|\mathbf{x}(t) - \boldsymbol{\pi}\|_{1} \leq \epsilon\}
-$$
-
-It is not trivial to connect with this definition to the spectral properties of $\overline{\mathbf{A}}$.
-But, since the transition matrix $\mathbf{P}$ is determined by the eigenvalues and eigenvectors of the normalizsed adjacency matrix $\overline{\mathbf{A}}$, the mixing time is determined by the eigenvalues of $\overline{\mathbf{A}}$, in particular the second largest eigenvalue $\lambda_2$, which dominates in $\mathbf{P}^t$ following the principal eigenvector $\pi$. In fact, the mixing time is bounded by the second largest eigenvalue.
-
-
-$$
-t_{\text{mix}} < \frac{1}{1-\lambda_2} \log \left( \frac{1}{\epsilon \min_{i} \pi_i} \right)
-$$
-
-::: {.column-margin}
-An alternative represention is to use the second smallest eigenvalue $\mu$ of the normalized Laplacian matrix:
-
-$$
-t_{\text{mix}} \leq \frac{1}{\mu}
-$$
-
-where $\mu = 1-\lambda_2$.
-:::
-
-
-## How long does it take to get somewhere?
+## Return, Hit, Commute, Cover: Four Clocks on a Walk
 
 The stationary distribution answers "where does the walker end up in the long run?" and mixing time answers "how long until we can stop caring where it started?". A third family of questions is about *specific* trips, and it gives us a set of distance-like quantities that are often more useful than shortest paths.
 
-### Return time
+### Return Time
 
 Start at node $i$ and walk until you come back. How long does that take on average?
 
@@ -383,9 +1521,9 @@ $$
 \mathbb{E}[\text{return time to } i] = \frac{1}{\pi_i} = \frac{2m}{k_i}
 $$
 
-A hub with $k_i = 100$ in a network with $m = 1000$ edges is revisited every 20 steps; a leaf with $k_i = 1$ waits 2000 steps.
+In @fig-m07-net, node 1 is revisited every $26/4 = 6.5$ steps on average, while node 7 waits $26/1 = 26$ steps. At larger scale: a hub with $k_i = 100$ in a network with $m = 1000$ edges is revisited every 20 steps; a leaf with $k_i = 1$ waits 2000 steps.
 
-### Hitting time and commute time
+### Hitting Time and Commute Time
 
 The **hitting time** $h_{ij}$ is the expected number of steps to reach $j$ for the first time, starting from $i$.
 
@@ -399,21 +1537,13 @@ $$
 
 which *is* symmetric and behaves much more like a distance. Two nodes have small commute time when they are connected by *many* short routes, not merely one — so unlike shortest-path distance, commute time rewards redundancy of connection.
 
-::: {.callout-note title="Random walks are electrical circuits"}
-Replace every edge with a 1-ohm resistor and the analogy is exact: commute time is proportional to the **effective resistance** between the two nodes,
+Replace every edge with a 1-ohm resistor and the analogy becomes exact: commute time is proportional to the **effective resistance** $R_{ij}$ between the two nodes, $C_{ij} = 2m \cdot R_{ij}$. Resistors in parallel reduce resistance, which is the electrical statement of "many routes make nodes close". This correspondence lets you import a century of circuit theory into network analysis, and it explains why commute time is a better similarity measure than shortest path for recommendation and link prediction.
 
-$$
-C_{ij} = 2m \cdot R_{ij}.
-$$
-
-Resistors in parallel reduce resistance, which is the electrical statement of "many routes make nodes close". This correspondence lets you import a century of circuit theory into network analysis, and it explains why commute time is a better similarity measure than shortest path for recommendation and link prediction.
-:::
-
-### Cover time
+### Cover Time
 
 The **cover time** is the expected number of steps to visit *every* node at least once. It matters whenever a walk is being used to explore or sample an unknown network — crawling the web, sampling users of a social platform — because it bounds how long you must run before you can hope to have seen everything. Cover time grows roughly like $N \log N$ on well-connected networks and much worse on networks with bottlenecks.
 
-## Variants of the walk
+## Five Ways to Change the Rules
 
 The simple random walk — uniform choice among neighbors — is a starting point, not the only option. Each variant below changes the transition probabilities and therefore changes what the walk reveals.
 
@@ -421,13 +1551,13 @@ The simple random walk — uniform choice among neighbors — is a starting poin
 
 **Random walk with restart (teleportation).** At each step, with probability $\alpha$ jump back to the starting node instead of following an edge. This keeps the walk near its origin, and its stationary distribution is a measure of proximity to that origin. You have already seen this: it is personalized PageRank from Module 6, viewed as a process rather than an equation.
 
-**Second-order walks.** Let the next step depend on the *previous* node as well as the current one, so the walker can be discouraged from backtracking or encouraged to stay local. This breaks the Markov property in the node state, and it is exactly the machinery node2vec uses in Module 8.
+**Second-order walks.** Let the next step depend on the *previous* node as well as the current one, so the walker can be discouraged from backtracking or encouraged to stay local. This breaks the Markov property in the node state — the next step now depends on history, not only on the current position — and it is exactly the machinery node2vec uses in Module 8.
 
 **Self-avoiding walks.** Forbid revisiting any node. This sounds like a small change but is a much harder object: the walker can get stuck with nowhere to go, and the process is not Markovian at all. Self-avoiding walks are important in polymer physics and in certain sampling algorithms.
 
 **Walks on directed networks.** Transition probabilities become asymmetric, $\pi_i \propto k_i$ no longer holds, and the walk can reach a **dead end** — a node with no outgoing edges — where it simply stops. Teleportation is the standard remedy, which is precisely why PageRank needs it.
 
-## Centrality from random walks
+## When Nobody Knows the Shortest Path
 
 If the stationary distribution ranks nodes by how often a walker visits them, it is already a centrality — and for undirected networks it is just degree centrality in disguise, since $\pi_i \propto k_i$. Walk-based thinking becomes genuinely new when we look at *trajectories* rather than the endpoint.
 
@@ -439,11 +1569,588 @@ If the stationary distribution ranks nodes by how often a walker visits them, it
 The pattern is general and worth remembering: for almost every shortest-path-based quantity there is a random-walk counterpart. The shortest-path version asks "what is the best route?"; the random-walk version asks "what happens if nobody knows the best route?" Which one you want depends entirely on what is flowing.
 :::
 
-## Community Detection through Random Walks
+## Communities Are Where the Walker Gets Stuck
 
-Random walks can reveal community structure in networks. Before reaching the steady state, walkers tend to remain within their starting community, then gradually diffuse to other communities. This temporal behavior provides insights into the network's modular structure.
+Random walks reveal community structure because of the worked number above. Before reaching the steady state, a walker tends to remain within its starting community and only gradually leaks into the others.
 
-### Random Walk Interpretation of Modularity
+Take that literally and watch it happen. Below are the two joined cliques from
+the mixing-time section, with seven nodes on each side instead of five — which
+only deepens the trap, $\tau = 27$ steps rather than 14. Follow one walker step
+by step, and at the same time watch a crowd of a hundred walkers released with
+it drain out of the room they all started in. Then open more doors and see what
+changes.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The trapped walker — only the rules this one stage needs. The paper, the
+   panels, the buttons, the knob and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals. Room A is the accent, room B is the contrast,
+   and that pairing holds in the rooms, the strip and the curve alike.
+   -------------------------------------------------------------------------- */
+
+/* A fourteen-node drawing and a chart with an axis and a timeline under it both
+   want the whole column; the kit's 310px default is sized for something smaller. */
+#rw-trap [data-rt-net], #rw-trap [data-rt-plot] { --anim-svg-max: 100%; }
+
+#rw-trap .rt-room-a { fill: var(--_accent); fill-opacity: 0.13; stroke: none; }
+#rw-trap .rt-room-b { fill: var(--_amber); fill-opacity: 0.13; stroke: none; }
+/* Room B's nodes take the contrast colour, so a node, its room's shading, its
+   room's name and its ticks in the timeline are all one colour. */
+#rw-trap .rt-node-b { fill: var(--_amber); }
+#rw-trap .rt-in { stroke: var(--_ink-faint); stroke-width: 1.2; fill: none; }
+#rw-trap .rt-door { stroke: var(--_ink); stroke-width: 3; fill: none; stroke-linecap: round; }
+#rw-trap .rt-door-hot { stroke: var(--_amber); stroke-width: 4.6; }
+
+/* The walker: paper knocked out of whatever it is standing on, with a heavy
+   outline, so it reads at a glance on a drawing this dense. */
+#rw-trap .rt-halo { fill: var(--_ink); fill-opacity: 0.12; stroke: none; }
+#rw-trap .rt-tok { fill: var(--_paper); stroke: var(--_ink); stroke-width: 3.2; }
+
+#rw-trap .rt-name { font-family: var(--_hand); font-size: 11px; font-weight: 700; text-anchor: middle; }
+#rw-trap .rt-a { fill: var(--_accent); }
+#rw-trap .rt-b { fill: var(--_amber); }
+#rw-trap .rt-num { font-family: var(--_hand); font-size: 9px; fill: var(--_ink-soft); text-anchor: middle; }
+#rw-trap .rt-end { text-anchor: end; }
+
+#rw-trap .rt-curve { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+#rw-trap .rt-cursor { stroke: var(--_ink-faint); stroke-width: 1.2; }
+#rw-trap .rt-tick-a { fill: var(--_accent); }
+#rw-trap .rt-tick-b { fill: var(--_amber); }
+</style>
+
+<figure class="anim-stage" id="rw-trap">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rt-net></div>
+    <div>
+      <div data-anim-clear data-rt-plot></div>
+      <div data-anim-clear data-rt-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Two rooms and a door. Markup above, scenes below, and nothing in between:
+   the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here draws a random number or multiplies a matrix at page load.
+
+     THE NETWORK. Two 7-cliques — nodes 0-6 and 7-13 — joined by up to four
+     doors, door i being the edge (i, 7+i). It is the two-joined-cliques of
+     the mixing-time section above with slightly roomier rooms, and the same
+     bottleneck. Reproduce with
+
+       import numpy as np, itertools
+       def build(b):
+           A = np.zeros((14,14))
+           for a,c in itertools.combinations(range(7),2):   A[a,c]=A[c,a]=1
+           for a,c in itertools.combinations(range(7,14),2): A[a,c]=A[c,a]=1
+           for i in range(b): A[i,7+i]=A[7+i,i]=1
+           return A
+       P = A / A.sum(1)[:,None]
+
+     WALK[b] is one recorded walk on that network, 120 steps, started at node
+     6 (which is never a door) with numpy's default_rng(121) — a seed picked
+     out of the first 300 for being unremarkable: its first crossing, its
+     100-step tally and its average stay all sit at the median of the 300.
+     One character is one node, 0-9 then a-d for nodes 10-13.
+
+     CURVE[b][t] is not a simulation at all: it is exactly 1000 * (the
+     probability that a walker started at node 6 is in room A after t steps),
+     i.e. the first seven entries of x(0)P^t summed. Read as a crowd: release
+     a hundred walkers together and CURVE[b][t]/10 of them are still in room A
+     at step t, on average.
+
+     LAM2[b] is the second largest eigenvalue of P, TAU[b] = 1/(1-lam2) the
+     relaxation time, T55[b] the first step at which the curve reaches 0.55,
+     TWO_M[b] the sum of the degrees, and STAY[b] the average number of steps
+     the recorded walk spends in a room before changing rooms, measured over
+     20,000 steps. STAY is worth checking against 2m/(2 doors) — 43.0, 22.0,
+     15.0, 11.5 — which is what it should be, and is.
+     ------------------------------------------------------------------------ */
+const NODE = [[97.7,81.6],[97.7,118.4],[69.4,59.1],[69.4,140.9],[34.1,66.9],[34.1,133.1],[18,100],[142.3,81.6],[142.3,118.4],[170.6,59.1],[170.6,140.9],[205.9,66.9],[205.9,133.1],[222,100]];
+  const EDGE = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[1,4],[1,5],[1,6],[2,3],[2,4],[2,5],[2,6],[3,4],[3,5],[3,6],[4,5],[4,6],[5,6],[7,8],[7,9],[7,10],[7,11],[7,12],[7,13],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13]];
+  /* 42 intra-room edges */
+
+  const WALK = [
+    /* 0 */ "6142105632464136202012545063215243512043054316434343453143012436124304512652161240513640645601520261412024125101241520530",
+    /* 1 */ "614210653246413620201254507b98c9bac897ba7cba8dbabababca8ba7034361243045126521612406136407cbd70620261412024125101241520630",
+    /* 2 */ "615210653246414620201254507b98c9bac87053064318cabababca8ba7034361243045126521878a7c8adb7dbcd70620261413024125101241620630",
+    /* 3 */ "615230653256414620201264507b98c9bac87053064318cabababca8ba7034361243045129d98d87a7c8adb7dbcd70620298a89215126101251621630",
+    /* 4 */ "61523065343ac8ad92101264507b98c9bac87053064329ca9a9baca7ba30353a87ab7ac87dc98d87a36146407cbd70620298a79215126101251621630",
+  ];
+
+  const CURVE = [
+    /* 0 */ [1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000],
+    /* 1 */ [1000,1000,976,960,942,926,910,894,880,865,852,839,826,814,802,791,780,769,759,750,740,731,723,714,706,698,691,684,677,670,664,658,652,646,641,636,630,626,621,616,612,608,604,600,596,593,589,586,583,579,576,574,571,568,566,563,561,559,556,554,552,550,548,547,545,543,542,540,538,537,536,534,533,532,531,529,528,527,526,525,524,523,523,522,521,520,519,519,518,517,517,516,515,515,514,514,513,513,512,512,511,511,511,510,510,509,509,509,508,508,508,507,507,507,507,506,506,506,506,505,505],
+    /* 2 */ [1000,1000,952,921,888,859,832,807,783,762,742,724,707,691,677,663,651,639,629,619,610,602,594,587,580,574,569,563,559,554,550,546,543,540,537,534,531,529,527,525,523,521,519,518,517,515,514,513,512,511,510,510,509,508,508,507,506,506,506,505,505,504,504,504,503,503,503,503,503,502,502,502,502,502,502,501,501,501,501,501,501,501,501,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+    /* 3 */ [1000,1000,929,883,838,799,765,734,707,683,662,644,627,613,600,588,578,569,561,554,548,542,537,533,529,526,523,520,518,516,514,512,511,510,509,508,507,506,505,505,504,504,503,503,503,502,502,502,502,501,501,501,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+    /* 4 */ [1000,1000,905,846,791,746,708,676,648,625,606,589,575,564,554,545,538,532,527,523,520,516,514,512,510,508,507,506,505,504,504,503,503,502,502,502,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+  ];
+
+  const LAM2 = [1.0000,0.9626,0.9243,0.8850,0.8446];
+  const TAU  = [Infinity,26.7,13.2,8.7,6.4];
+  const T55  = [-1,62,31,20,15];
+  const TWO_M = [84,86,88,90,92];
+  const STAY = [Infinity,42.3,21.6,14.5,11.4];
+  /* theory 2m/(2 doors) = inf, 43.0, 22.0, 15.0, 11.5 */
+  /* b=1 first 120 steps come in blocks of [26, 33, 29, 5, 28] */
+  /* step 26: room A 25, room B 1 */
+  /* step 40: room A 25, room B 15 */
+  /* step 60: room A 27, room B 33 */
+  /* step 120: room A 82, room B 38 */
+
+  const DOORS = 4;
+  /* Doors 2 and 3 join nodes that do not face each other across the gap, so
+     they are bowed clear of both rooms instead of drawn straight through
+     them. [from, to, control point or null]. */
+  const DOOR = [[0, 7, null], [1, 8, null], [2, 9, [120, 20]], [3, 10, [120, 180]]];
+  const TSHOW = 120;             /* steps of WALK on screen */
+  const NW = 100;                /* size of the crowd */
+
+  /* ------------------------------------------------------------- geometry --- */
+  const PX0 = 34, PX1 = 252, PYT = 18, PYB = 112;
+  const PLO = 0.4;                                   /* bottom of the y axis */
+  const tx = (t) => PX0 + (t / TSHOW) * (PX1 - PX0);
+  const ty = (p) => PYB - ((p - PLO) / (1 - PLO)) * (PYB - PYT);
+  const TW = (PX1 - PX0) / TSHOW;                    /* width of one tick */
+  const SY = 134, SH = 14;                           /* the strip band */
+  const DIG = "0123456789abcd";
+  const room = (ch) => (DIG.indexOf(ch) < 7 ? 0 : 1);
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "Two rooms, one door",
+      note: "Fourteen nodes in two dense rooms, joined by a single edge. Each room holds exactly half the network's edge endpoints, so in the long run the walker has to split its time evenly between them. The whole question is how long the long run is.",
+      async run(ctx) {
+        ctx.build();
+        ctx.setDoors(1);
+        const c = ctx.say("the two rooms");
+        [["nodes", "7 + 7"], ["edges inside a room", "21 each"],
+         ["doors between them", "1"],
+         ["each room's share of 2m", "43 of 86"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.9 + i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2800);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "equal shares of 2m, so &pi; says the walker spends half its life " +
+          "in each room. Nothing in that sentence says when."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Watch one walker rattle",
+      note: "Release the walker in room A and take forty steps one at a time. It stands on the doorway node at steps 5, 17, 19 and 25, turning back inside on the first three; on the fourth it goes through, landing in room B at step 26. Behind it the crowd of a hundred drains out at the same crawl.",
+      async run(ctx) {
+        const c = ctx.say("one walker, one step at a time");
+        const big = ctx.el("div", "anim-big", String(NW));
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "of the hundred released with it, still in room A"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        if (ctx.fast()) {
+          ctx.upto(40);
+          big.textContent = String(ctx.crowd(40));
+          verdict.innerHTML = "<span>first crossing</span><b>step 26</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        ctx.upto(0);
+        await ctx.sleep(800);
+        for (let t = 1; t <= 40; t++) {
+          ctx.step(t);
+          big.textContent = String(ctx.crowd(t));
+          if (t === 26) {
+            verdict.innerHTML = "<span>first crossing</span><b>step 26</b>";
+            verdict.style.visibility = "visible";
+            await ctx.sleep(1500);
+          } else {
+            await ctx.sleep(t < 8 ? 340 : 165);
+          }
+        }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the door was never more than two steps away. But standing in the " +
+          "doorway, six of the walker's seven choices lead back inside &mdash; " +
+          "which is why a room this size holds it for about forty steps at a " +
+          "stretch."));
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "It moves in blocks",
+      note: "Run it out to a hundred and twenty steps. The strip is that one walker's whole history, and it is not a mixture — it is blocks: 26 steps in A, 33 in B, 29 in A, 5, then 28. Averaged over 20,000 steps a block is 42 steps long.",
+      async run(ctx) {
+        const c = ctx.say("a hundred and twenty steps");
+        const big = ctx.el("div", "anim-big", "—");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "of the hundred released with it, still in room A"));
+
+        if (!ctx.fast()) {
+          for (let t = 41; t <= TSHOW; t++) {
+            ctx.step(t);
+            big.textContent = String(ctx.crowd(t));
+            await ctx.sleep(38);
+          }
+        } else {
+          ctx.upto(TSHOW);
+        }
+        big.textContent = String(ctx.crowd(TSHOW));
+
+        [["blocks in those 120 steps", "26, 33, 29, 5, 28"],
+         ["average block, over 20,000", "42 steps"],
+         ["2m / 2 doors", "86 / 2 = 43"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2400);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the crowd has evened out; the single walker has not. Its own tally " +
+          "over those 120 steps is 82 in room A against 38 in room B, and it " +
+          "will stay lopsided for thousands of steps. That is what a community " +
+          "<em>is</em>, to a walker."));
+        await ctx.sleep(3800);
+      }
+    },
+    {
+      label: "Now open more doors",
+      note: "Drag the number of doors. With none the walker never leaves and there is no single long-run answer at all. With one it takes 62 steps before the room it started in stops telling you where it is; with four, fifteen. Same fourteen nodes each time.",
+      async run(ctx) {
+        const c = ctx.say("you set the number of doors");
+        ctx.labels("doors", "&lambda;<sub>2</sub>", "&tau;");
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag: nought to four doors between the two rooms"));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DOORS, step: 1, value: 1,
+          label: "Doors between the two rooms",
+          format: (b) => b + (b === 1 ? " door" : " doors"),
+          onGrab: () => ctx.pause(),
+          onInput: (b) => {
+            ctx.setDoors(b);
+            ctx.upto(TSHOW);
+            verdict.innerHTML = (b === 0)
+              ? "<span>0 doors</span><b>it never leaves</b>"
+              : "<span>" + b + (b === 1 ? " door" : " doors") +
+                "</span><b>" + T55[b] + " steps to 55%</b>";
+            verdict.style.visibility = "visible";
+          }
+        });
+
+        if (ctx.fast()) { dial.set(DOORS); return; }
+
+        dial.set(1);
+        await ctx.sleep(2200);
+        dial.set(0);
+        await ctx.sleep(2600);
+        for (let b = 1; b <= DOORS; b++) { dial.set(b); await ctx.sleep(2000); }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "&tau; falls from 27 steps to 6 as the doors open, and the blocks in " +
+          "the strip shorten with it. &ldquo;Slow to mix&rdquo; and &ldquo;has " +
+          "communities&rdquo; are not two facts about a network. They are one."));
+        await ctx.sleep(4600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-trap"), scenes, {
+    stepsLabel: "Trapped-walker steps",
+
+    /* The two things only this animation has: a fourteen-node drawing whose
+       doors open and close, and a chart that carries the crowd's curve above
+       one walker's timeline. Both are built once, in scene 1, and only
+       mutated afterwards — so jumping to a step still lands on a drawing,
+       because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const netBox = ctx.$("[data-rt-net]");
+      const plotBox = ctx.$("[data-rt-plot]");
+      const side = ctx.$("[data-rt-say]");
+      const S = { b: 1, t: 0 };
+
+      const at = (n) => NODE[n][0] + " " + NODE[n][1];
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        S.mode = null;
+        S.hot = null;
+        netBox.textContent = "";
+        plotBox.textContent = "";
+        const slow = !ctx.fast();
+
+        /* ---- the two rooms ---- */
+        const svg = ctx.svgRoot("0 0 240 200");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gShade = g(), gIn = g(), gDoor = g(), gNode = g(), gTok = g(), gName = g();
+
+        gShade.appendChild(ctx.svgEl("circle",
+          { cx: 60, cy: 100, r: 54, "class": "rt-room-a" }));
+        gShade.appendChild(ctx.svgEl("circle",
+          { cx: 180, cy: 100, r: 54, "class": "rt-room-b" }));
+
+        EDGE.forEach((e) => {
+          gIn.appendChild(ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1], "class": "rt-in"
+          }));
+        });
+
+        S.door = DOOR.map((d) => {
+          const p = ctx.svgEl("path", {
+            d: d[2] ? "M " + at(d[0]) + " Q " + d[2][0] + " " + d[2][1] + " " + at(d[1])
+                    : "M " + at(d[0]) + " L " + at(d[1]),
+            "class": "rt-door"
+          });
+          p.style.opacity = 0;
+          return gDoor.appendChild(p);
+        });
+
+        NODE.forEach((q, i) => {
+          const n = ctx.svgEl("circle",
+            { cx: q[0], cy: q[1], r: 8.5,
+              "class": "anim-node" + (i >= 7 ? " rt-node-b" : "") });
+          if (slow) {
+            n.classList.add("anim-fade");
+            n.style.animationDelay = (0.1 + i * 0.05) + "s";
+          }
+          gNode.appendChild(n);
+        });
+
+        const tok = ctx.svgEl("g", { "class": "anim-glide" });
+        tok.appendChild(ctx.svgEl("circle", { r: 16, "class": "rt-halo" }));
+        tok.appendChild(ctx.svgEl("circle", { r: 10.5, "class": "rt-tok" }));
+        tok.style.opacity = 0;
+        gTok.appendChild(tok);
+        S.tok = tok;
+
+        [[60, "room A", "rt-a"], [180, "room B", "rt-b"]].forEach((r) => {
+          const t = ctx.svgEl("text", { x: r[0], y: 192, "class": "rt-name " + r[2] });
+          t.textContent = r[1];
+          gName.appendChild(t);
+        });
+
+        netBox.appendChild(svg);
+
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span><i data-la>step</i> <b data-va>0</b></span>' +
+          '<span><i data-lb>in A</i> <b data-vb>100</b></span>' +
+          '<span><i data-lc>in B</i> <b data-vc>0</b></span>');
+        netBox.appendChild(S.read);
+        S.la = S.read.querySelector("[data-la]"); S.va = S.read.querySelector("[data-va]");
+        S.lb = S.read.querySelector("[data-lb]"); S.vb = S.read.querySelector("[data-vb]");
+        S.lc = S.read.querySelector("[data-lc]"); S.vc = S.read.querySelector("[data-vc]");
+        [S.la, S.lb, S.lc].forEach((n) => { n.style.fontStyle = "normal"; });
+
+        netBox.appendChild(ctx.el("div", "anim-caption",
+          "two 7-cliques and the doors between them &mdash; the two joined " +
+          "cliques of the mixing-time section, with two more nodes in each room."));
+
+        /* ---- the crowd's curve, and one walker's timeline under it ---- */
+        const psvg = ctx.svgRoot("0 0 260 176");
+        const pg = () => psvg.appendChild(ctx.svgEl("g"));
+        const gAx = pg(), gCur = pg(), gStrip = pg(), gCursor = pg();
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: PX0, y1: PYB, x2: PX1, y2: PYB, "class": "anim-axis" }));
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: PX0, y1: PYT - 4, x2: PX0, y2: PYB, "class": "anim-axis" }));
+        gAx.appendChild(ctx.svgEl("line", {
+          x1: PX0, y1: ty(0.5), x2: PX1, y2: ty(0.5),
+          "class": "anim-marker anim-marker--faint"
+        }));
+        const lab = (x, y, txt, cls) => {
+          const t = ctx.svgEl("text", { x: x, y: y, "class": "rt-num " + (cls || "") });
+          t.textContent = txt;
+          gAx.appendChild(t);
+        };
+        lab(PX0 - 5, PYT + 4, "100", "rt-end");
+        lab(PX0 - 5, ty(0.5) + 3, "50", "rt-end");
+        lab(PX0, PYB + 12, "0");
+        lab(tx(60), PYB + 12, "60");
+        lab(PX1, PYB + 12, "120 steps", "rt-end");
+        lab(PX0 - 5, SY + 10, "walk", "rt-end");
+
+        S.curve = gCur.appendChild(ctx.svgEl("polyline", { points: "", "class": "rt-curve" }));
+
+        S.tick = [];
+        for (let i = 1; i <= TSHOW; i++) {
+          const r = ctx.svgEl("rect", {
+            x: (tx(i - 1) + 0.15).toFixed(2), y: SY,
+            width: Math.max(0.9, TW - 0.3).toFixed(2), height: SH
+          });
+          r.style.opacity = 0;
+          S.tick.push(gStrip.appendChild(r));
+        }
+
+        S.cursor = gCursor.appendChild(ctx.svgEl("line", {
+          x1: PX0, y1: PYT - 6, x2: PX0, y2: SY + SH + 3, "class": "rt-cursor"
+        }));
+        S.cursor.style.opacity = 0;
+
+        plotBox.appendChild(psvg);
+        plotBox.appendChild(ctx.el("div", "anim-caption",
+          "line: how many of a hundred walkers released together in room A are " +
+          "still there after t steps &mdash; exact, from <b>P</b><sup>t</sup>, " +
+          "not a simulation. Band: the one recorded walk on the left, one tick " +
+          "per step, coloured by the room it is in."));
+
+        setDoors(1);
+        upto(0);
+      }
+
+      /* How many doors are open. Everything downstream — the drawing, the
+         curve, the strip — is a lookup on b. */
+      function setDoors(b) {
+        S.b = b;
+        S.door.forEach((p, i) => { p.style.opacity = i < b ? 1 : 0; });
+        if (S.mode === "doors") {
+          S.va.textContent = String(b);
+          S.vb.textContent = b === 0 ? "1.000" : LAM2[b].toFixed(3);
+          S.vc.textContent = b === 0 ? "∞" : TAU[b].toFixed(1);
+        }
+      }
+
+      function crowd(t) { return Math.round(CURVE[S.b][t] / 10); }
+
+      function place(n, glide) {
+        S.tok.style.opacity = 1;
+        if (!glide) S.tok.classList.remove("anim-glide");
+        S.tok.style.transform = "translate(" + NODE[n][0] + "px," + NODE[n][1] + "px)";
+        if (!glide) {
+          S.tok.getBoundingClientRect();          /* commit before re-arming */
+          S.tok.classList.add("anim-glide");
+        }
+      }
+
+      /* The curve drawn as far as step t, and the readouts that go with it. */
+      function paint(t) {
+        S.t = t;
+        const pts = [];
+        for (let i = 0; i <= t; i++) pts.push(tx(i).toFixed(1) + "," + ty(CURVE[S.b][i] / 1000).toFixed(1));
+        S.curve.setAttribute("points", pts.join(" "));
+        S.cursor.style.opacity = t > 0 ? 1 : 0;
+        S.cursor.setAttribute("x1", tx(t));
+        S.cursor.setAttribute("x2", tx(t));
+        if (S.mode !== "doors") {
+          S.va.textContent = String(t);
+          S.vb.textContent = String(crowd(t));
+          S.vc.textContent = String(NW - crowd(t));
+        }
+      }
+
+      /* One step of the recorded walk: the token moves, its tick is inked, and
+         the door it used flashes if it changed rooms. */
+      function step(t) {
+        const w = WALK[S.b];
+        const now = w[t], was = t > 0 ? w[t - 1] : null;
+        place(DIG.indexOf(now), t > 0 && t < 8);
+        if (t > 0) {
+          const q = S.tick[t - 1];
+          q.style.opacity = 1;
+          q.setAttribute("class", room(now) === 0 ? "rt-tick-a" : "rt-tick-b");
+          if (was !== null && room(now) !== room(was)) flash(DIG.indexOf(was), DIG.indexOf(now));
+          else cool();
+        }
+        paint(t);
+      }
+
+      /* Lay the walk down to step t with no animation — the fast-forward path,
+         and the way the knob scene repaints a whole strip at once. */
+      function upto(t) {
+        const w = WALK[S.b];
+        cool();
+        for (let i = 0; i < TSHOW; i++) {
+          const q = S.tick[i];
+          if (i < t) {
+            q.style.opacity = 1;
+            q.setAttribute("class", room(w[i + 1]) === 0 ? "rt-tick-a" : "rt-tick-b");
+          } else {
+            q.style.opacity = 0;
+          }
+        }
+        if (t > 0) place(DIG.indexOf(w[t]), false); else S.tok.style.opacity = 0;
+        paint(t);
+      }
+
+      function flash(from, to) {
+        cool();
+        const i = DOOR.findIndex((d) =>
+          (d[0] === from && d[1] === to) || (d[1] === from && d[0] === to));
+        if (i >= 0) {
+          S.hot = i;
+          S.door[i].setAttribute("class", "rt-door rt-door-hot");
+        }
+      }
+      function cool() {
+        if (S.hot != null) S.door[S.hot].setAttribute("class", "rt-door");
+        S.hot = null;
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return {
+        build: build, say: say, setDoors: setDoors, step: step, upto: upto,
+        crowd: crowd,
+        /* The third scene hands the readout row over to the knob, so the row
+           can carry doors / lambda2 / tau instead of steps and counts. */
+        labels: function (a, b, c) {
+          S.mode = "doors";
+          S.la.innerHTML = a; S.lb.innerHTML = b; S.lc.innerHTML = c;
+          setDoors(S.b);
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+Every method in this section is a different way of charging for that delay.
+
+### Modularity Is a Short Walk Minus a Long One
 
 Modularity can be interpreted through random walks [@delvenne2010stability]:
 
@@ -451,43 +2158,56 @@ $$
 Q = \sum_{ij} \left(\pi_i P_{ij} - \pi_i \pi_j \right) \delta(c_i, c_j)
 $$
 
+::: {.callout-note collapse="true" title="Where this comes from — three lines of algebra"}
+Modularity as it is defined in Module 5 makes no mention of walks at all:
+
+$$
+Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{d_i d_j}{2m} \right) \delta(c_i, c_j)
+$$
+
+Push the constant $1/2m$ inside the bracket, then split each term so that a factor of $d_i/2m$ appears in front:
+
+$$
+\frac{A_{ij}}{2m} = \underbrace{\frac{d_i}{2m}}_{\pi_i} \cdot \underbrace{\frac{A_{ij}}{d_i}}_{P_{ij}} = \pi_i P_{ij},
+\qquad
+\frac{d_i d_j}{(2m)^2} = \underbrace{\frac{d_i}{2m}}_{\pi_i} \cdot \underbrace{\frac{d_j}{2m}}_{\pi_j} = \pi_i \pi_j .
+$$
+
+Substituting both gives the random-walk form. Nothing was assumed — modularity was a statement about random walks all along; we simply had not yet met $\pi_i = d_i/2m$ and $P_{ij} = A_{ij}/d_i$ to recognise it.
+:::
+
 where:
+
 - $\pi_i = \frac{d_i}{2m}$ is the stationary distribution of the random walk
 - $P_{ij}$ is the transition probability between nodes $i$ and $j$
 - $\delta(c_i, c_j)$ is 1 if nodes $i$ and $j$ are in the same community, 0 otherwise
 
-The expression suggests that:
-1. The first term, $\pi_i P_{ij} \delta(c_i, c_j)$, represents the probability that a walker is at node $i$ and moves to node $j$ within the same community **by one step**.
-2. The second term, $\pi_i \pi_j$, represents the probability that a walker is at node $i$ and moves to another node $j$ within the same community **after long steps**.
+Read the two terms as two clocks on the same pair of nodes:
 
-High modularity indicates walkers are more likely to stay within communities in the short term than in the long term.
+1. $\pi_i P_{ij}$ is the probability that a walker in the stationary state is at $i$ and is at $j$ **one step later**.
+2. $\pi_i \pi_j$ is the probability that it is at $i$ now and at $j$ **after so many steps that it has forgotten $i$** — equivalently, the chance of finding two independent long-run walkers at $i$ and at $j$.
 
+The $\delta(c_i, c_j)$ keeps only pairs inside the same community. So modularity is: how much more often a short walk stays inside a community than a long walk would by chance. High modularity means walkers linger.
 
 ::: {.column-margin}
-[@delvenne2010stability] extends the modularity to the case of multi-step random walks, which can identify communities across different resolution scales.
+@delvenne2010stability extends modularity to multi-step random walks, replacing "one step later" with "$t$ steps later", which identifies communities at different resolution scales.
 :::
 
-### Infomap: Information-Theoretic Community Detection
+### Infomap Compresses the Trajectory
 
 While modularity provides one approach to community detection through random walks, **Infomap** offers an information-theoretic perspective [@rosvall2008maps; @rosvall2009map].
 
-Infomap asks: *How can we most efficiently describe the path of a random walker through a network?* The key insight is that if a network has strong community structure, a random walker will spend most of its time within communities, making short jumps between communities. This pattern can be *compressed efficiently* using a two-level code:
+Infomap asks: *how can we most efficiently describe the path of a random walker through a network?* The key insight is that if a network has strong community structure, a walker spends most of its time within communities and makes only occasional jumps between them. Such a trajectory can be *compressed* using a two-level code:
 
-1. **Module code**: A unique identifier for each community
-2. **Exit code**: A special symbol indicating when the walker leaves a community
-3. **Node code**: Identifiers for nodes within each community
+1. **Module code**: a unique identifier for each community
+2. **Exit code**: a special symbol indicating that the walker leaves a community
+3. **Node code**: identifiers for nodes within each community
 
-By compressing the trajectory of random walks, Infomap can find a community structure that minimizes the average bits needed to describe the random walk.
+Node names can then be reused across communities — like street names that repeat in different cities — so the description gets shorter exactly when walks stay put. Infomap searches for the partition that minimizes the average number of bits needed to describe the walk.
 
-::: {#fig-infomap}
+<!-- TODO(anim): A3 — a walker on a two-community network emitting codewords, with a running bit counter comparing a flat code against a two-level code. -->
 
-![](https://www.mapequation.org/assets/img/metadatamapequation.svg)
-
-Infomap finds community detection by compressing the trajectory of random walks. (a) shows a random walker's trajectory through a network, while (d) demonstrates the hierarchical encoding scheme that minimizes description length by assigning short, reusable codewords to nodes within modules (colored regions) and special transition codes (pentagons/triangles) for movements between modules, with the optimal community structure being the partition that minimizes the average bits needed to describe the random walk
-
-:::
-
-### Walktrap
+### Walktrap Turns the Trap Into a Distance
 
 Infomap compresses a trajectory. **Walktrap** [@pons2005computing] uses the same trapping intuition more directly, as a similarity measure.
 
@@ -495,23 +2215,27 @@ The idea: run short random walks of a fixed length $t$ from every node. If two n
 
 The choice of $t$ matters, and it sets the scale. Small $t$ sees only local structure; large $t$ washes everything out toward the stationary distribution, which knows nothing about communities. Somewhere in between the walk is long enough to explore a community but too short to escape it — and that is where communities become visible.
 
-## Structure shapes how a walk behaves
+## Structure Shapes How a Walk Behaves
 
 Everything above depends on the network the walker is placed on. Four cases are worth having in mind:
 
 - **Regular networks** (a lattice, a ring): the stationary distribution is uniform, since all degrees are equal. Mixing is slow, because the walker can only diffuse outward one step at a time — it takes on the order of $N^2$ steps to cross a ring of $N$ nodes.
 - **Small-world networks**: the shortcuts from Module 2 dramatically speed up mixing. A few long-range edges let the walker jump across the network instead of crawling around it, which is the dynamical counterpart of the short path lengths we measured there.
 - **Scale-free networks**: hubs dominate the stationary distribution, since $\pi_i \propto k_i$. Mixing is fast — almost every walk passes through a hub within a couple of steps, and from a hub anywhere is reachable. Hitting times are strongly asymmetric, as discussed above.
-- **Networks with community structure**: mixing is slow, and slow for an informative reason. The walker is trapped inside its community for a long time before escaping, which shows up as a small spectral gap. This is the property Infomap and Walktrap exploit — the "defect" *is* the signal.
+- **Networks with community structure**: mixing is slow, and slow for an informative reason. The walker is trapped inside its community for a long time before escaping, which shows up as a small spectral gap — the $0.073$ we computed for the two joined cliques. This is the property Infomap and Walktrap exploit; the "defect" *is* the signal.
 
-## Why this module is the hinge of the course
+## What You Can Now Do
 
-Random walks are worth this much attention because they unify things we developed separately:
+You started with a drunkard who understood nothing about the city. You can now say precisely what the drunkard measures:
 
-- **Centrality** (Module 6). PageRank *is* a random walk with teleportation; its stationary distribution is the ranking. Eigenvector centrality is what power iteration converges to, and power iteration is a walk. Degree centrality is the stationary distribution of the simple walk.
-- **Community structure** (Module 5). Modularity is the difference between one-step and long-run co-location probabilities. Infomap and Walktrap define communities purely as regions where walks linger.
-- **Distance**. Commute time and effective resistance give a notion of proximity that counts *all* routes rather than the shortest, often working better than shortest-path distance in practice.
-- **Embedding** (Module 8). DeepWalk and node2vec turn walks into "sentences" and feed them to a language model. The embedding you get is determined by what the walk explores.
-- **Spreading processes**. Diffusion and epidemic models are random walks with extra rules, so mixing time and spectral gap govern how fast a contagion spreads.
+- Write down the transition matrix $\mathbf{P} = \mathbf{D}^{-1}\mathbf{A}$ of any network and say what one step, two steps and $t$ steps mean.
+- State and check the stationary distribution $\pi_i = k_i/2m$, and say when it fails to exist.
+- Read a spectral gap as a mixing time, and a small gap as a bottleneck.
+- Compute return times from $\pi$, and explain why hitting time is asymmetric while commute time is not.
+- Explain, in one sentence each, how PageRank, modularity, Infomap, Walktrap and node2vec are all the same walk with different rules.
 
-One process, five chapters. That is the payoff.
+Next:
+
+- [Hands-on: Walking Randomly, on Purpose](02-coding.qmd) — build $\mathbf{P}$, iterate it, and watch the rows collapse onto the degree sequence.
+- [Exercises and Assignments](03-exercises.qmd) — the pen-and-paper sheet, the interactive demos, and the module assignments.
+- [Appendix: Why the Second Eigenvalue Sets the Clock](04-appendix.qmd) — the spectral derivation behind the mixing-time result.

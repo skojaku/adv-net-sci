@@ -1,10 +1,18 @@
 project:
   type: website
   output-dir: _site
+  # `*.qmd` / `*.md` match at every depth, so anything not excluded here becomes
+  # a live page. The exclusions are load-bearing, not tidiness.
   render:
     - "*.qmd"
     - "*.md"
-    - "!figs/src/"  # figure generators, not pages
+    - "!figs/src/"            # figure generators, not pages
+    - "!assets/**"            # a legacy revealjs deck lives under assets/slides
+    - "!**/pen-and-paper/**"  # LaTeX worksheet sources; the PDFs ship as resources
+    - "!_*.qmd"               # include partials, e.g. _pair-notebook-walkthrough
+    - "!_*.md"
+    - "!**/_*.qmd"
+    - "!**/_*.md"
 
 title: "Advanced Topics in Network Science"
 author: Sadamori Kojaku
@@ -28,67 +36,77 @@ website:
 
   sidebar:
     style: "docked"
-    search: true
+    # No `search:` here — the navbar already carries one, and setting both
+    # renders two search boxes on every page.
     collapse-level: 1
     border: false
     background: "white"
+    # Entries are bare file paths on purpose: the label is then inherited from
+    # the page's own YAML `title`, so a retitled page can never drift out of
+    # sync with the nav that points at it.
     contents:
+      - index.qmd
       - section: "Course Information"
         contents:
           - course/welcome.md
           - course/about.md
+          - course/activities.md
           - course/discord.md
-          - course/minidora-usage.qmd
           - course/setup.qmd
           - course/pair-notebook.qmd
-          - course/how-to-submit-assignment.md
+          - course/mini-project.qmd
       - section: "Introduction"
         contents:
           - intro/why-networks.qmd
-      - section: "M01: Euler Path"
+      - section: "M01: Euler Tour"
         contents:
           - m01-euler_tour/01-concepts.qmd
+          - m01-euler_tour/01b-vocabulary.qmd
           - m01-euler_tour/02-coding.qmd
           - m01-euler_tour/03-exercises.qmd
-          - m01-euler_tour/04-advanced.qmd
+          - m01-euler_tour/04-appendix.qmd
       - section: "M02: Small World"
         contents:
           - m02-small-world/01-concepts.qmd
           - m02-small-world/02-coding.qmd
-          - m02-small-world/03-exercises.md
+          - m02-small-world/03-exercises.qmd
           - m02-small-world/04-appendix.qmd
       - section: "M03: Robustness"
         contents:
           - m03-robustness/01-concepts.qmd
           - m03-robustness/02-coding.qmd
           - m03-robustness/03-exercises.qmd
-          - m03-robustness/04-appendix.md
+          - m03-robustness/04-appendix.qmd
       - section: "M04: Friendship Paradox"
         contents:
           - m04-node-degree/01-concepts.qmd
           - m04-node-degree/02-coding.qmd
-          - m04-node-degree/03-exercises.md
+          - m04-node-degree/03-exercises.qmd
+          - m04-node-degree/04-appendix.qmd
       - section: "M05: Clustering"
         contents:
           - m05-clustering/01-concepts.qmd
           - m05-clustering/02-coding.qmd
           - m05-clustering/03-exercises.qmd
+          - m05-clustering/04-appendix.qmd
       - section: "M06: Centrality"
         contents:
           - m06-centrality/01-concepts.qmd
           - m06-centrality/02-coding.qmd
-          - m06-centrality/03-exercises.md
+          - m06-centrality/03-exercises.qmd
+          - m06-centrality/04-appendix.qmd
       - section: "M07: Random Walks"
         contents:
           - m07-random-walks/01-concepts.qmd
           - m07-random-walks/02-coding.qmd
           - m07-random-walks/03-exercises.qmd
+          - m07-random-walks/04-appendix.qmd
       - section: "M08: Embedding"
         contents:
           - m08-embedding/01-concepts.qmd
           - m08-embedding/02-coding.qmd
-          - m08-embedding/03-exercises.md
-          - m08-embedding/04-appendix.md
+          - m08-embedding/03-exercises.qmd
+          - m08-embedding/04-appendix.qmd
       - section: "M09: Graph Neural Networks"
         contents:
           - m09-graph-neural-networks/00-preparation.qmd
@@ -98,109 +116,39 @@ website:
           - m09-graph-neural-networks/04-appendix.qmd
 
   navbar:
-    logo: logo.jpg
-    background: primary
+    # logo.jpg is a 4.6 MB 10156x4449 original; this is the same mark resampled
+    # to 200px for the 34px slot it actually occupies.
+    logo: assets/logo.png
+    # No `background:` — a solid #593196 bar puts white-at-70% labels at ~2.6:1,
+    # below WCAG AA. The navbar is white with a hairline (see scss/minimal.scss).
     search: true
+    # Three entries only. The sidebar is the map of the course; the navbar is
+    # the way back to the top of it. Menu items carry no `text:` override, so
+    # every label comes from the target page's own title.
     left:
       - text: "Home"
         file: index.qmd
       - text: "Course"
         menu:
-          - text: "Welcome"
-            file: course/welcome.md
-          - text: "About"
-            file: course/about.md
-          - text: "Discord"
-            file: course/discord.md
-          - text: "Minidora"
-            file: course/minidora-usage.qmd
-          - text: "Setup"
-            file: course/setup.qmd
-          - text: "Pair Notebook"
-            file: course/pair-notebook.qmd
-      - text: "Intro"
+          - course/welcome.md
+          - course/about.md
+          - course/activities.md
+          - course/setup.qmd
+          - course/pair-notebook.qmd
+          - course/mini-project.qmd
+          - course/discord.md
+      - text: "Modules"
         menu:
-          - text: "Why Networks?"
-            file: intro/why-networks.qmd
-      - text: "Foundations"
-        menu:
-          - text: "─── M01: Euler Path ───"
-          - text: "Concepts"
-            file: m01-euler_tour/01-concepts.qmd
-          - text: "Hands-on"
-            file: m01-euler_tour/02-coding.qmd
-          - text: "Exercises"
-            file: m01-euler_tour/03-exercises.qmd
-          - text: "Hands-on: Sparse matrices"
-            file: m01-euler_tour/04-advanced.qmd
-          - text: "─── M02: Small World ───"
-          - text: "Concepts"
-            file: m02-small-world/01-concepts.qmd
-          - text: "Hands-on"
-            file: m02-small-world/02-coding.qmd
-          - text: "Exercises"
-            file: m02-small-world/03-exercises.md
-          - text: "Appendix"
-            file: m02-small-world/04-appendix.qmd
-          - text: "─── M03: Robustness ───"
-          - text: "Concepts"
-            file: m03-robustness/01-concepts.qmd
-          - text: "Hands-on"
-            file: m03-robustness/02-coding.qmd
-          - text: "Exercises"
-            file: m03-robustness/03-exercises.qmd
-          - text: "Appendix"
-            file: m03-robustness/04-appendix.md
-      - text: "Core Topics"
-        menu:
-          - text: "─── M04: Friendship Paradox ───"
-          - text: "Concepts"
-            file: m04-node-degree/01-concepts.qmd
-          - text: "Hands-on"
-            file: m04-node-degree/02-coding.qmd
-          - text: "Exercises"
-            file: m04-node-degree/03-exercises.md
-          - text: "─── M05: Clustering ───"
-          - text: "Concepts"
-            file: m05-clustering/01-concepts.qmd
-          - text: "Hands-on"
-            file: m05-clustering/02-coding.qmd
-          - text: "Exercises"
-            file: m05-clustering/03-exercises.qmd
-          - text: "─── M06: Centrality ───"
-          - text: "Concepts"
-            file: m06-centrality/01-concepts.qmd
-          - text: "Hands-on"
-            file: m06-centrality/02-coding.qmd
-          - text: "Exercises"
-            file: m06-centrality/03-exercises.md
-      - text: "Advanced Topics"
-        menu:
-          - text: "─── M07: Random Walks ───"
-          - text: "Concepts"
-            file: m07-random-walks/01-concepts.qmd
-          - text: "Hands-on"
-            file: m07-random-walks/02-coding.qmd
-          - text: "Exercises"
-            file: m07-random-walks/03-exercises.qmd
-          - text: "─── M08: Embedding ───"
-          - text: "Concepts"
-            file: m08-embedding/01-concepts.qmd
-          - text: "Hands-on"
-            file: m08-embedding/02-coding.qmd
-          - text: "Exercises"
-            file: m08-embedding/03-exercises.md
-          - text: "Appendix"
-            file: m08-embedding/04-appendix.md
-          - text: "─── M09: Graph Neural Networks ───"
-          - text: "Concepts"
-            file: m09-graph-neural-networks/01-concepts.qmd
-          - text: "Hands-on"
-            file: m09-graph-neural-networks/02-coding.qmd
-          - text: "Exercises"
-            file: m09-graph-neural-networks/03-exercises.qmd
-          - text: "Appendix"
-            file: m09-graph-neural-networks/04-appendix.qmd
+          - intro/why-networks.qmd
+          - m01-euler_tour/01-concepts.qmd
+          - m02-small-world/01-concepts.qmd
+          - m03-robustness/01-concepts.qmd
+          - m04-node-degree/01-concepts.qmd
+          - m05-clustering/01-concepts.qmd
+          - m06-centrality/01-concepts.qmd
+          - m07-random-walks/01-concepts.qmd
+          - m08-embedding/01-concepts.qmd
+          - m09-graph-neural-networks/01-concepts.qmd
 
 # The lecture note is prose, mathematics and static figures only. Nothing here
 # executes, so a render is fast and needs no Python environment.
@@ -215,33 +163,58 @@ execute:
   enabled: false
   freeze: true
 
+# Code folding.
+#
+# `code-fold: true` alone does nothing on this site. Quarto's own filter
+# (share/filters/main.lua, render_folded_block) opens with
+#   `if (not block.attr.classes:includes("cell-code") ...) then return block end`
+# and only an execution engine adds `cell-code`. With `execute: enabled: false`
+# every fence is a plain fence, so Quarto walks past it. The flag is kept for
+# the day a cell does execute; filters/fold-static-code.lua does the real work
+# for plain fences. Both flavours are styled identically in scss/minimal.scss.
+filters:
+  - at: post-quarto
+    path: filters/fold-static-code.lua
+
 format:
   html:
     theme:
-      - pulse
-      - scss/style.scss
-    toc: false
+      - scss/minimal.scss
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    toc-title: "On this page"
     page-layout: article
-    toc-depth: 2
-    number-sections: true
-    number-depth: 2
-    html-math-method: katex
-    code-fold: false
+    # Off: it numbered prose pages, e.g. index.qmd rendered as
+    # "1 List of Exercises and Assignments".
+    number-sections: false
+    # KaTeX is served from this repo, not a CDN. Thirty-four pages carry
+    # mathematics, and the default `katex@latest` on jsdelivr both floats
+    # (a breaking release upstream silently breaks the note) and fails often
+    # enough to matter — a reader on a plane or a blocked network gets raw TeX
+    # on every one of those pages. Vendored copy is 0.16.22, woff2 only.
+    html-math-method:
+      method: katex
+      url: /assets/katex/
+    code-fold: true
+    code-summary: "Show the code"
     code-copy: hover
-    code-tools: true
-    highlight-style: github-dark
-    #code-block-bg: true
-    code-block-border-left: "#22c55e"
-    #fontsize: 24px
-    #grid:
-      #body-width: 1200px
-      #sidebar-width: 200px
-      #margin-width: 200px
+    # Off: it injects a "</> Code" dropdown into the header of every page,
+    # including the many with no code at all.
+    code-tools: false
+    highlight-style: monochrome
+    code-block-bg: "#fbfbfa"
+    code-block-border-left: "#e0ded9"
     css:
-      - assets/custom.css
+      - assets/anim.css
+    include-after-body:
+      - _includes/anim.html
 
 resources:
   - "assets/**"
+  # PDF copying otherwise depends on link-discovery heuristics, and the M02
+  # worksheets 404 in production even though the files are on disk.
+  - "m0*/pen-and-paper/*.pdf"
 
 # Add a bibtex file so that we can create citations
 bibliography: references.bib

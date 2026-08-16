@@ -2,16 +2,16 @@
 title: "Hands-on: Walking Randomly, on Purpose"
 ---
 
-Simulate the walk, then verify that the theory predicted what you observed.
+The theory says a blind walker settles onto the degree sequence, and that a bottleneck makes it take much longer to get there. Here you watch both happen.
 
 ::: {.callout-note title="Where the code lives"}
 This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m07 >}})
-
-It runs in your browser — nothing to install, nothing to sign into. The first load takes a few seconds while Python itself is downloaded.
+**[Run this notebook]({{< var molab.m07 >}})** — it runs in your browser, with
+nothing to install and nothing to sign into. The first load takes a few seconds
+while Python itself is downloaded.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m07-randomwalks/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m07-randomwalks/coding.py).
@@ -20,14 +20,16 @@ Run it with `marimo edit notebooks/m07-randomwalks/coding.py`.
 
 ## What you will build
 
-1. Simulate a random walk and record visit frequencies.
-2. Compare the empirical visit distribution against the theoretical pi_i = k_i / 2m.
-3. Implement PageRank from the transition matrix and check it against the library.
-4. Compute random walk betweenness and compare it with shortest-path betweenness.
-5. Detect communities with Walktrap.
-6. Visualize a single trajectory over the network.
+1. Build the transition matrix $\mathbf{P} = \mathbf{D}^{-1}\mathbf{A}$ from an adjacency matrix, and check that every row sums to 1.
+2. Push a distribution forward one step at a time with `x = x @ P`, and confirm it against $\mathbf{P}^t$ computed directly.
+3. Plot how far $x(t)$ is from converged, step by step, on a network with two clear communities.
+4. Compare the converged distribution against the theoretical $\pi_i = k_i / 2m$.
+5. Draw the walker's distribution on the network at $t = 0, 1, 3, 5, 10, 299$ and watch it leak out of its starting community.
+6. Take the eigenvalues of the normalized adjacency matrix $\overline{\mathbf{A}}$, read off $\lambda_2$, and turn it into a relaxation time $\tau = 1/(1-\lambda_2)$.
+7. Reconstruct $x(t)$ from the spectral decomposition $x(0)\mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^\top$ and check it against plain power iteration — the [appendix](04-appendix.qmd) explains what those matrices are.
 
 ## What to watch for
 
-- Watch how many steps convergence takes on a network with two clear communities versus one without. That difference is the spectral gap made visible.
-- Where random walk betweenness and shortest-path betweenness disagree, ask which one describes what is actually flowing through your network.
+- How many steps convergence takes on a network with two clear communities, versus one without. That difference is the spectral gap made visible.
+- Whether your converged vector really equals $k_i/2m$, entry by entry. If it does not, check whether your network is connected and non-bipartite — those are the two conditions from the concepts page.
+- Whether $1/(1-\lambda_2)$ predicts the number of steps you actually measured in step 3. It should land within a small factor.

@@ -9,25 +9,25 @@ This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m08 >}})
+**Hosted notebook: coming soon.** This one uses a compiled package that the
+browser runtime cannot load, so it needs molab or a local environment. The
+hosted link is not up yet.
 
-This one uses a compiled package that the browser runtime cannot load, so it runs on molab instead. You will need to sign in.
-
-Prefer to work locally? The notebook is in the repository at
+In the meantime, the notebook is in the repository at
 [`notebooks/m08-network-embedding/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m08-network-embedding/coding.py).
 Run it with `marimo edit notebooks/m08-network-embedding/coding.py`.
 :::
 
 ## What you will build
 
-1. Implement Laplacian eigenmap and PCA on the adjacency matrix, and plot both.
-2. Generate biased random walks with node2vec's p and q parameters.
-3. Train a skip-gram model on those walks.
-4. Factorize network matrices directly and compare with the neural embeddings.
-5. Evaluate everything by link prediction.
-6. Visualize higher-dimensional embeddings with t-SNE.
+1. Three spectral embeddings of Zachary's karate club — from the adjacency matrix, the modularity matrix, and the Laplacian — each one a single `numpy.linalg.eig` call plus a sort.
+2. The word2vec analogies on a pre-trained model: *king* $-$ *man* $+$ *woman*, and the parallel arrows joining countries to their capitals.
+3. A random-walk sampler, and then DeepWalk: hand the walks to `gensim`'s `Word2Vec` as if they were sentences.
+4. node2vec's biased walk, with $p$ and $q$ written out step by step rather than called from a library.
+5. UMAP projections of both neural embeddings down to two dimensions, and $k$-means clusters checked against the club's real two factions.
 
 ## What to watch for
 
-- Sweep q from below 1 to above 1 and watch which nodes end up near each other. Low q should recover communities, high q should group nodes by role.
-- Train the same model twice. The coordinates will differ completely while the link prediction score barely moves — embeddings are only defined up to rotation.
+- Put the three spectral plots side by side. Same 34 people, three matrices, three different pictures. Decide which one you would hand to a clustering algorithm and be able to say why.
+- Sweep $q$ from below 1 to above 1 and watch which nodes end up near each other. Low $q$ should recover communities, high $q$ should group nodes by role.
+- Train DeepWalk twice with different random seeds and plot both. The coordinates will be completely different while the clusters stay put — an embedding is only defined up to rotation, so a single coordinate never means anything on its own.

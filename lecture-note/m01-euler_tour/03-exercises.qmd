@@ -1,11 +1,33 @@
 ---
-title: Exercises
-filters:
-  - marimo-team/marimo
+title: "Exercises and Assignments"
 ---
 
-[![Open in molab](https://molab.marimo.io/molab-shield.png)](https://molab.marimo.io/notebooks/nb_G8bhHcHxi6um9CbHKwcq2d)
+## Exercise: decide whether a network has an Eulerian trail
 
+Two problems, both ending in the same question Euler asked. Expect about an hour.
 
-[Exercise Notebook](https://molab.marimo.io/notebooks/nb_G8bhHcHxi6um9CbHKwcq2d)
+1. **Binghamton, not Königsberg.** Turn the rivers and bridges of Binghamton, NY into a graph of landmasses and bridges, build its adjacency matrix, and decide whether you can cross every bridge exactly once.
+2. **A network you did not draw.** Pick any network under 5,000 nodes from [Netzschleuder](https://networks.skewed.de/), load its edge list with `pandas`, build the adjacency matrix from it, draw it, and run the same test.
 
+The second one is the point of the exercise: your Euler test has to work on data you have never looked at, which means it has to be written in terms of degrees rather than in terms of a picture.
+
+**[Open the exercise notebook]({{< var molab.m01_exercises >}})** — it runs in your
+browser, with nothing to install and nothing to sign into.
+
+Prefer to work locally? The notebook is in the repository at
+[`notebooks/m01-euler-tour/03-exercises.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/03-exercises.py).
+Run it with `marimo edit notebooks/m01-euler-tour/03-exercises.py`.
+
+## Assignments
+
+### Pair Notebook
+
+Work through this module with the AI tutor and hand in the notebook that the session builds. What is graded is your reasoning, not your code — see [the Pair Notebook guide](../course/pair-notebook.qmd) for the setup and a walkthrough of a full session.
+
+- Repository for M01: coming soon. Your invitation link arrives through Classroom 50.
+
+### Group Mini-Project
+
+Module 1 has none. The first group mini-project arrives with Module 2.
+
+Readers who are not enrolled in SSIE 641 cannot open the assignment repositories. The exercise notebook above and the [hands-on notebook](02-coding.qmd) cover the same material and need no enrollment.

@@ -1,0 +1,156 @@
+---
+title: "Appendix: Where the Gap, the CCDF Slope and r Come From"
+---
+
+Three results in [the concepts page](01-concepts.qmd) were stated without their algebra: that friends have $\text{Var}(k)/\langle k \rangle$ more friends than people do, that the CCDF of a power law has slope $1 - \gamma$ rather than $-\gamma$, and that the degree assortativity of those three twelve-node wirings is $+0.5$, $0$ and $-1$. All three derivations are short. None is needed to use the result.
+
+Throughout, $p(k)$ is the degree distribution — the fraction of nodes with degree exactly $k$ — and $\langle \cdot \rangle$ denotes an average over nodes, so that
+
+$$
+\langle k \rangle = \sum_k k\, p(k), \qquad \langle k^2 \rangle = \sum_k k^2 p(k).
+$$
+
+The second quantity, $\langle k^2 \rangle$, is the average of the *squared* degree. It is the one place where a single hub can dominate a whole network: squaring turns one node of degree 100 into a contribution of 10,000.
+
+## Sampling a Friend Is Sampling an Edge Endpoint
+
+Pick a person at random and you draw a node: every node is equally likely, so degree $k$ shows up with probability $p(k)$.
+
+Pick a *friend* at random and you are doing something else. A friend is somebody's friend, so what you are really drawing is one end of an edge. There are $2M$ edge endpoints in the network, and a node of degree $k$ owns exactly $k$ of them. So a node of degree $k$ is $k$ times as likely to be drawn as a node of degree 1.
+
+There are $N p(k)$ nodes of degree $k$, and together they own $k \cdot N p(k)$ endpoints out of $2M = N \langle k \rangle$. The probability that a randomly chosen endpoint belongs to a node of degree $k$ is therefore
+
+$$
+q(k) = \frac{k\, N p(k)}{N \langle k \rangle} = \frac{k\, p(k)}{\langle k \rangle}.
+$$
+
+This $q(k)$ is the *edge-biased* degree distribution — the distribution you get by sampling neighbors rather than nodes. It appears again in [Module 3](../m03-robustness/01-concepts.qmd), where it is the step the Molloy-Reed criterion turns on, and in [Module 7](../m07-random-walks/01-concepts.qmd), where it is the stationary distribution of a random walk.
+
+## The Gap Is Exactly Var(k)/⟨k⟩
+
+The average degree of a randomly chosen friend is the average of $k$ under $q$:
+
+$$
+\langle k \rangle_{\text{friend}} = \sum_k k\, q(k) = \sum_k k \cdot \frac{k\, p(k)}{\langle k \rangle} = \frac{1}{\langle k \rangle}\sum_k k^2 p(k) = \frac{\langle k^2 \rangle}{\langle k \rangle}.
+$$
+
+Now use the definition of variance, $\text{Var}(k) = \langle k^2 \rangle - \langle k \rangle^2$, to substitute $\langle k^2 \rangle = \langle k \rangle^2 + \text{Var}(k)$:
+
+$$
+\langle k \rangle_{\text{friend}} = \frac{\langle k \rangle^2 + \text{Var}(k)}{\langle k \rangle} = \underbrace{\langle k \rangle}_{\text{the average person}} + \underbrace{\frac{\text{Var}(k)}{\langle k \rangle}}_{\text{the paradox}}.
+$$
+
+A variance is never negative, so the second term is never negative: the average friend is at least as connected as the average person, in *every* network. It is zero only when $\text{Var}(k) = 0$, i.e. when every node has identical degree.
+
+### Check it on the four-node star
+
+Degrees $3, 1, 1, 1$ give $p(1) = 3/4$, $p(3) = 1/4$, and $\langle k \rangle = 1.5$.
+
+The edge-biased distribution is $q(1) = 1 \cdot (3/4) / 1.5 = 1/2$ and $q(3) = 3 \cdot (1/4) / 1.5 = 1/2$. One node in four is a hub, but *half* the friendships lead to it.
+
+Then $\langle k \rangle_{\text{friend}} = 1 \cdot \tfrac12 + 3 \cdot \tfrac12 = 2$, matching the count done by hand on the concepts page. And $\langle k^2 \rangle = (9 + 1 + 1 + 1)/4 = 3$, so $\text{Var}(k) = 3 - 1.5^2 = 0.75$ and the gap is $0.75/1.5 = 0.5 = 2 - 1.5$.
+
+## Why the CCDF Slope Is 1 − γ
+
+Degree is discrete, but for the tail of a power law the sum over degrees is well approximated by an integral, and the integral is easier to read. So treat the degree as continuous and write the power law as a probability density,
+
+$$
+p(k) = C k^{-\gamma},
+$$
+
+where $C$ is the normalization constant that makes the total probability 1.
+
+The CCDF, written $P(k)$, is the probability that a node's degree exceeds $k$. Integrate the density from $k$ to infinity:
+
+$$
+P(k) = \int_{k}^{\infty} p(k')\, dk' = \int_{k}^{\infty} C k'^{-\gamma} dk' = C \left[ \frac{k'^{-\gamma+1}}{-\gamma+1} \right]_{k}^{\infty}.
+$$
+
+Assuming $\gamma > 1$, which is typical for real-world networks, $k'^{-\gamma+1} \to 0$ as $k' \to \infty$, so the upper limit contributes nothing and
+
+$$
+P(k) = -C \left( \frac{k^{-\gamma+1}}{-\gamma+1} \right) = \frac{C}{\gamma-1} k^{-(\gamma-1)}.
+$$
+
+The CCDF is itself a power law, $P(k) \propto k^{-(\gamma-1)}$ — same family, exponent smaller by one. Taking logarithms:
+
+$$
+\log P(k) = \log\left(\frac{C}{\gamma-1}\right) - (\gamma-1)\log(k)
+$$
+
+which is a straight line $y = b + mx$ with $y = \log P(k)$, $x = \log k$, intercept $b = \log\left(\frac{C}{\gamma-1}\right)$, and slope
+
+$$
+m = -(\gamma-1) = 1-\gamma.
+$$
+
+So a measured CCDF slope of $-1.3$ means $\gamma = 2.3$, not $1.3$. The integral is where the $-1$ comes from, and it is why the exponent you read off a CCDF is never the exponent you want to report.
+
+## Computing Degree Assortativity by Hand
+
+The three drawings on the concepts page share a degree sequence: twelve nodes, four of degree 4 and eight of degree 2, joined by $M = 16$ edges. Only the wiring differs. Here is where their $r$ values come from.
+
+### The list r is computed on
+
+Walk over every edge and write it down **twice**, once looked at from each end, as a pair
+
+$$
+(x, y) = (\text{degree at this end},\ \text{degree at the other end}).
+$$
+
+Writing each edge both ways is what makes the list symmetric — an edge has no direction, so it should not matter which end you call $x$. That gives $n = 2M = 32$ pairs, and $r$ is the ordinary Pearson correlation of those 32 pairs:
+
+$$
+r = \frac{\overline{xy} - \bar{x}\,\bar{y}}{\sqrt{\overline{x^2} - \bar{x}^2}\sqrt{\overline{y^2} - \bar{y}^2}},
+$$
+
+where a bar denotes an average over the 32 pairs. Because the list is symmetric, $\bar{x} = \bar{y}$ and $\overline{x^2} = \overline{y^2}$, and the whole thing collapses to
+
+$$
+r = \frac{\overline{xy} - \bar{x}^2}{\overline{x^2} - \bar{x}^2}.
+$$
+
+### Two of the three averages never move
+
+Here is the useful part. The $x$ column contains each node's degree written once per edge touching it — so a node of degree $k$ contributes $k$ copies of $k$. Therefore
+
+$$
+\sum x = \sum_i k_i \cdot k_i = \sum_i k_i^2,
+\qquad
+\sum x^2 = \sum_i k_i^3,
+$$
+
+and neither sum knows anything about the wiring. For our degree sequence,
+
+$$
+\sum x = 4(4^2) + 8(2^2) = 64 + 32 = 96, \qquad \bar{x} = 96/32 = 3,
+$$
+$$
+\sum x^2 = 4(4^3) + 8(2^3) = 256 + 64 = 320, \qquad \overline{x^2} = 320/32 = 10.
+$$
+
+So the denominator is $10 - 3^2 = 1$ for all three wirings, and
+
+$$
+r = \overline{xy} - 9.
+$$
+
+Only $\overline{xy}$ can move. And since each edge appears twice, $\sum xy = 2\sum_{\text{edges}} j\,k$, which gives the pocket formula quoted on the concepts page:
+
+$$
+r = \frac{1}{16}\sum_{\text{edges}} j\,k \; - \; 9.
+$$
+
+### The three answers
+
+Each wiring has 16 edges, and every edge is one of three kinds, so the sum is a three-term tally.
+
+| wiring | $(4,4)$ | $(4,2)$ | $(2,2)$ | $\sum_{\text{edges}} j\,k$ | $\overline{xy}$ | $r$ |
+|---|---|---|---|---|---|---|
+| assortative | 6 | 4 | 6 | $6(16)+4(8)+6(4) = 152$ | $9.5$ | $+0.5$ |
+| neutral | 4 | 8 | 4 | $4(16)+8(8)+4(4) = 144$ | $9.0$ | $0$ |
+| disassortative | 0 | 16 | 0 | $16(8) = 128$ | $8.0$ | $-1$ |
+
+The bottom row is worth a second look. Every pair in that list is either $(4,2)$ or $(2,4)$, so the points sit exactly on the line $y = 6 - x$: a perfect straight-line relationship with a negative slope, which is precisely what $r = -1$ means. You cannot make a degree correlation more negative than that.
+
+The hub stubs also cap the top row. Four nodes of degree 4 have 16 stubs between them, and a $(4,4)$ edge uses two of them; with only four such nodes available, at most $\binom{4}{2} = 6$ distinct $(4,4)$ edges exist. The assortative wiring already uses all six, so $r = +0.5$ is the largest value this degree sequence can reach in a simple graph.

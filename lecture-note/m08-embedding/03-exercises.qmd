@@ -1,0 +1,116 @@
+---
+title: "Exercises and Assignments"
+---
+
+## Pen and Paper: Build the Decomposition by Hand Before the Lecture
+
+Do this *before* the lecture. You multiply out a few outer products, watch a
+matrix come apart into rank-one layers, and see for yourself that dropping the
+light layers barely changes the picture — which is the whole argument for
+spectral embedding, discovered with a pencil instead of taken on trust.
+
+- [From Matrix to Map](pen-and-paper/exercise.pdf): outer products, decomposing a
+  small matrix into layers, and a first look at neural embeddings.
+
+## Assignments
+
+Neither graded assignment runs in this module. The [Pair Notebook](../course/pair-notebook.qmd) covers Modules 1 through 6, and the [Group Mini-Project](../course/mini-project.qmd) covers Modules 2 through 6. The worksheet and the notebook above are practice, not submissions.
+
+## Practice Exercises
+
+Everything below runs on top of the [hands-on notebook](02-coding.qmd), which
+already contains the spectral embeddings, the walk sampler, and the DeepWalk and
+node2vec training loops. Each exercise says what result to expect, so you can
+tell whether your code worked without an answer key.
+
+### Exercise 01: Three matrices, three maps
+
+Embed Zachary's karate club (`networkx.karate_club_graph()`, 34 nodes) into two
+dimensions three times: from the adjacency matrix, from the modularity matrix,
+and with a Laplacian eigenmap. Plot all three, coloring nodes by the true
+`club` attribute.
+
+*Expected*: the modularity and Laplacian plots separate the two factions
+cleanly; the adjacency plot spreads nodes mainly by degree, with the two
+instructors at the extremes. Then check the failure mode: keep the *smallest*
+eigenvector of the Laplacian instead of discarding it and confirm that the first
+coordinate is the same number for every node.
+
+### Exercise 02: How many dimensions do you need?
+
+For $d = 1, 2, 4, 8, 16, 32$, compute the adjacency spectral embedding of the
+karate club and record the reconstruction error $\|\mathbf{A} - \mathbf{U}\mathbf{U}^\top\|_F^2$.
+Plot error against $d$.
+
+*Expected*: a curve that drops steeply and then flattens. Locate the elbow, and
+compare it against the eigenvalue spectrum plotted on its own — the elbow should
+sit where the eigenvalues stop being large. Then run $k$-means on the embedding
+at each $d$ and score it against the true factions with NMI. The best $d$ for
+clustering is not the largest $d$; say why.
+
+### Exercise 03: What $p$ and $q$ actually do
+
+Take the node2vec walk sampler from the notebook and run it on the Les
+Misérables co-appearance network (`networkx.les_miserables_graph()`, 77 nodes).
+Fix $p = 1$ and train embeddings at $q = 0.25$, $q = 1$ and $q = 4$.
+
+For each, list the five nearest neighbors of *Valjean* in the embedding.
+
+*Expected*: the three lists should differ. The theory predicts that $q = 0.25$
+pulls in characters from the same part of the story (community) while $q = 4$
+pulls in characters with a similar *role* — other well-connected hubs — even
+when they never share a scene. Report whether the run actually shows that; on a
+77-node network the effect can be weak, and saying so is a result. If the three
+lists come out *identical*, that is a bug, not a weak effect: print the
+transition weights for a single step and check them against the formula on the
+[concepts page](01-concepts.qmd).
+
+### Exercise 04: Judge an embedding by link prediction
+
+Hide 10% of the edges of the karate club at random. Embed the remaining
+network with (a) the Laplacian eigenmap and (b) DeepWalk, both at $d = 16$.
+Score every hidden edge and an equal number of randomly chosen non-edges by the
+dot product of their endpoint vectors, and compute the AUC with
+`sklearn.metrics.roc_auc_score`.
+
+*Expected*: both should land well above 0.5. Repeat the whole experiment five
+times with different hidden sets and report the spread, not a single number —
+on a 34-node network the run-to-run variation is large enough to reverse the
+ranking of the two methods.
+
+### Exercise 05: The rotation trap
+
+Train DeepWalk twice on the same network with different random seeds. Plot the
+two embeddings side by side, then plot coordinate 1 of run A against
+coordinate 1 of run B for every node.
+
+*Expected*: the scatter is a formless cloud — individual coordinates carry no
+meaning across runs. Now compute the full matrix of pairwise cosine
+similarities for each run and correlate the two matrices entrywise. That
+correlation should be high. This is the concrete meaning of "an embedding is
+defined only up to rotation."
+
+## Check Yourself
+
+1. **Concepts**
+   - What is the main difference between spectral and neural embedding methods?
+   - How do random walks bridge the gap between word2vec and graph data?
+   - What does the eigenvalue $\lambda_i$ tell you about the $i$-th dimension of a spectral embedding?
+2. **Mechanics**
+   - Why is the smallest eigenvector discarded in the Laplacian eigenmap?
+   - Why does the adjacency spectral embedding scale each eigenvector by $\sqrt{\lambda_i}$?
+   - How does the window size in word2vec change the resulting node embeddings?
+3. **Judgment**
+   - When would you choose a spectral method over a neural one?
+   - Which of $p$ and $q$ would you tune first, and to answer what question?
+   - What goes wrong if you compare a node's coordinates across two separately trained embeddings?
+
+## Additional Resources
+
+- **Background**: eigenvectors and eigenvalues are introduced from scratch in
+  [What an eigenvector is](01-concepts.qmd#what-an-eigenvector-is); random walks
+  are Module 7.
+- **Software**: [What to actually use](01-concepts.qmd#sec-in-practice) lists the
+  packages worth reaching for.
+- **Mathematical details**: [the appendix](04-appendix.qmd) has the derivations,
+  including why the top eigenvectors minimize the reconstruction error.

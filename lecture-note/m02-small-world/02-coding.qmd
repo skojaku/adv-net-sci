@@ -2,16 +2,18 @@
 title: "Hands-on: Measuring How Small the World Is"
 ---
 
-You now know what average path length and clustering mean. Here you measure them, on generated networks where you know the answer and on a real one where you do not.
+You now know what average path length and clustering mean. Here you measure
+them, on networks whose answers you can check by hand and on networks large
+enough that you cannot.
 
 ::: {.callout-note title="Where the code lives"}
 This course keeps its lecture note free of runnable code. Everything you
 execute lives in a marimo notebook, so it stays interactive and reactive
 instead of being a wall of output frozen into a web page.
 
-### [▶ Run this notebook]({{< var molab.m02 >}})
-
-It runs in your browser — nothing to install, nothing to sign into. The first load takes a few seconds while Python itself is downloaded.
+**[Run this notebook]({{< var molab.m02 >}})** — it runs in your browser, with
+nothing to install and nothing to sign into. The first load takes a few seconds
+while Python itself is downloaded.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m02-small-world/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/coding.py).
@@ -20,13 +22,11 @@ Run it with `marimo edit notebooks/m02-small-world/coding.py`.
 
 ## What you will build
 
-1. Get comfortable with igraph: build graphs, compute shortest paths, extract components.
-2. Compute local, average-local and global clustering, and reconcile them by hand on a small graph.
-3. Generate lattices, random graphs and Watts-Strogatz networks, and compare them.
-4. Compute the small-world index sigma against a random baseline.
-5. Estimate path length by sampling when the network is too large for all-pairs.
+1. Build a graph in [igraph](https://python.igraph.org/en/stable/) from an edge list, then compute shortest paths and pull out connected components. The library is new; the concepts are the ones from Module 1 and from the previous page.
+2. Compute local, average-local and global clustering, and reconcile the three by hand on the small graph before trusting the function.
+3. Generate ring lattices, Erdős-Rényi random graphs and Watts-Strogatz networks, and compare their clustering and path length side by side.
 
 ## What to watch for
 
-- Average local clustering and global clustering will disagree. Work out which nodes cause the gap before reading on.
-- Sweep the rewiring probability p and plot clustering and path length together. The band where both are favourable is wider than most people guess.
+- Average local clustering and global clustering will disagree. Work out which nodes cause the gap before reading on — the six-node example on the [concepts page](01-concepts.qmd) gives 0.70 and 0.43 for the same network.
+- The ring lattice and the random graph sit at opposite extremes. Note how far each is from the network you would actually want to live in.

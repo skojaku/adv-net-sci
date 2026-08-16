@@ -1,31 +1,75 @@
 ---
-title: "Learning activities"
+title: "How this course works"
 ---
 
-## In class activities
+Six things are graded. Everything else on this page exists to get you ready for
+them.
 
-- **Quiz**: Each lecture begins with a short paper‑based quiz reviewing the previous week’s material, graded immediately when possible, followed by a discussion of common mistakes at the end of the lecture.
-- **Pen‑and‑Paper Exercise**: Before the lecture, students complete a brief exercise to practice key concepts, then discuss solutions in class while the instructor synthesizes the answers.
-- **Lecture**: In class lectures are delivered by the instructor.
-- **Network of the Week**: Weekly, a student or group presents a 10‑minute paper on a network‑related topic of their choice.
-- **Coding**: Each module includes a Python coding exercise (using Marimo notebooks) to apply the concepts to real data.
+## Every week
 
-## Homework
+**Pen-and-paper exercise.** Before the lecture you work through a short
+worksheet with your own hands — cross the bridges, count the handshakes, break
+the network. We compare answers in class and build the concept out of what you
+found. It is not one of the six graded items, but the lecture starts from it and
+the quiz assumes you did it.
 
-- **Coding assignment**: Every module comes with a coding assignment. The assignment will be distributed via [GitHub Classroom](https://classroom.github.com/).
-Students will submit their solutions to the assignment via GitHub and get automatic grading.
+**Quiz.** Each class opens with a short written quiz on the previous week. You
+work it out on paper, then submit through the course quiz form: the
+multiple-choice part goes in directly, and you photograph your handwritten
+working into the same form. Sign in with your Binghamton account — that is how
+the answer reaches your name. **You may retake it, and your best attempt is the
+one that counts.** Online students submit through Brightspace.
 
-- **LLM Quiz Challenge**: Every assignment also includes a task of formulating two quiz questions and correct answers. These quiz questions will be taken by a large language model that learns the course content without seeing the correct answers. The students pass the test if they can generate questions that LLM fails to answer correctly.
+**Lecture.** Delivered by the instructor, starting from the worksheet.
+
+**Student Lecture.** Once in the semester you teach. Pick a topic from the list
+the instructor publishes and build a **15 to 20 minute** lecture on it. **An
+interactive part is required** — a worksheet, an exercise the room works
+through, live coding. A slide presentation on its own does not count.
+
+## Assignments
+
+**[Pair Notebook](pair-notebook.qmd)** — individual, one per module for modules
+1 through 6. A module taught as a one-on-one session with an AI tutor that runs
+in your terminal. A marimo notebook fills up beside it as you go, and that
+notebook, together with the log of the conversation, is what you hand in.
+**What is read is how you reasoned, not whether your code ran.** Needing hints
+is not penalized.
+
+**[Group Mini-Project](mini-project.qmd)** — in class, in teams of up to three,
+for modules 2 through 6. You apply the module's ideas to real data in a shared
+repository. It is autograded once, in your team's repository, and every member
+of the team receives that score.
+
+Both are handed out and collected through **Classroom 50**, which gives you a
+private GitHub repository for each one. Nothing is emailed and nothing is
+uploaded by hand.
 
 ## Project
 
-- **Project Proposal**: The students will submit a project proposal on the course content.
-- **Project Paper**: The students will submit a project paper on the course content.
-- **Project Presentation**: The students will present their project.
+A **proposal**, a **presentation**, and a **final paper** on a network topic of
+your choosing. Deadlines are in the syllabus.
 
 ## Exam
 
-A final exam will be given at the end of the course during the exam period. This exam will be a take-home exam, and will be distributed via Brightspace.
+One take-home final exam covering every module, multiple choice, submitted
+through Brightspace during exam week.
+
+## Grading
+
+| Component | Weight |
+|---|---|
+| Quiz | 10 |
+| Student Lecture | 10 |
+| Pair Notebook | 10 |
+| Group Mini-Project | 10 |
+| Exam | 30 |
+| Project | 30 |
+
+There are no bonus points: the hundred points in that table are the whole grade.
+
+Discord is for questions, announcements and community. **Nothing on Discord is
+graded.**
 
 ## Resources
 
