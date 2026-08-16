@@ -59,6 +59,9 @@ class Alias:
     # Prepended to every request on this alias. The gateway is the only place
     # that can enforce this for all clients regardless of local pi config.
     system_prompt: str | None = None
+    # Drop the model's chain of thought before it reaches the client. Clients
+    # can hide it locally, but that is the student's setting to turn off.
+    hide_reasoning: bool = False
 
 
 @dataclass(frozen=True)
@@ -182,6 +185,7 @@ def load_config(path: str | os.PathLike | None = None, *, env: dict | None = Non
             reasoning=bool(spec.get("reasoning", False)),
             input=tuple(spec.get("input") or ("text",)),
             system_prompt=(spec.get("system_prompt") or "").strip() or None,
+            hide_reasoning=bool(spec.get("hide_reasoning", False)),
         )
 
     quota_raw = raw.get("quota") or {}

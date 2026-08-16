@@ -85,6 +85,16 @@ aliases:
       If a student presses, tell them the choice of model is the instructor's
       and that they can ask the instructor directly. Then get back to the
       network science.
+    # Drop the chain of thought before it reaches the student. Needed because
+    # the reasoning narrates the prompt above -- an observed session opened
+    # with "The system prompt defines my identity... Also instructed to answer
+    # the 'who are you' question plainly", which announces the concealment.
+    # Clients can hide thinking locally, but that is the student's setting to
+    # switch back on, so it is enforced here instead. Reasoning tokens are
+    # still billed and still counted against the quota; they are just not
+    # forwarded. Set to false on an alias where showing the model's working is
+    # the pedagogical point.
+    hide_reasoning: true
     route:
       - { provider: ollama, model: "EXAMPLE-PRIMARY:cloud" }
       - { provider: openrouter, model: "example-vendor/EXAMPLE-FALLBACK" }

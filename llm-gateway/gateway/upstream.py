@@ -165,7 +165,9 @@ def estimate_tokens(text: str) -> int:
     return max(1, len(text) // 4)
 
 
-def mask_body(obj: dict, alias_id: str, request_id: str) -> dict:
+def mask_body(
+    obj: dict, alias_id: str, request_id: str, *, hide_reasoning: bool = False
+) -> dict:
     """Rewrite a response object so it describes the alias, not the model."""
     obj = dict(obj)
     obj["model"] = alias_id
@@ -186,14 +188,29 @@ def mask_body(obj: dict, alias_id: str, request_id: str) -> dict:
     # and so on). Normalise rather than delete: clients round-trip the field's
     # shape, and "unknown" is a value the API already produces.
     if obj.get("choices"):
-        obj["choices"] = [_mask_choice(c) for c in obj["choices"]]
+        obj["choices"] = [_mask_choice(c, hide_reasoning) for c in obj["choices"]]
     return obj
 
 
-def _mask_choice(choice: dict) -> dict:
+def _mask_choice(choice: dict, hide_reasoning: bool) -> dict:
     for key in ("message", "delta"):
         part = choice.get(key)
-        details = part.get("reasoning_details") if isinstance(part, dict) else None
+        if not isinstance(part, dict):
+            continue
+
+        if hide_reasoning:
+            if "reasoning" not in part and "reasoning_details" not in part:
+                continue
+            # The chain of thought narrates the injected system prompt -- it
+            # says things like "the system prompt defines my identity" -- which
+            # announces the concealment the prompt exists to perform.
+            choice = dict(choice)
+            part = {k: v for k, v in part.items()
+                    if k not in ("reasoning", "reasoning_details")}
+            choice[key] = part
+            continue
+
+        details = part.get("reasoning_details")
         if not isinstance(details, list):
             continue
         choice = dict(choice)
@@ -216,6 +233,24 @@ def extract_usage(obj: dict) -> tuple[int, int, int] | None:
     if total == 0:
         return None
     return prompt, completion, total
+
+
+def _is_empty_delta_chunk(obj: dict) -> bool:
+    """True for a streamed chunk that carries no content, usage or finish."""
+    if obj.get("usage"):
+        return False
+    choices = obj.get("choices")
+    if not choices:
+        return False  # usage-only or keepalive shapes are handled elsewhere
+    for choice in choices:
+        if choice.get("finish_reason"):
+            return False
+        delta = choice.get("delta")
+        if not isinstance(delta, dict):
+            return False
+        if any(v not in (None, "", [], {}) for k, v in delta.items() if k != "role"):
+            return False
+    return True
 
 
 def cost_for(cfg: Config, target: Target, prompt: int, completion: int) -> float:
@@ -269,7 +304,9 @@ async def call_json(
             usage = (prompt, completion, prompt + completion)
         att.prompt_tokens, att.completion_tokens, att.total_tokens = usage
         att.cost_usd = cost_for(cfg, target, usage[0], usage[1])
-        return mask_body(obj, alias.id, att.request_id)
+        return mask_body(
+            obj, alias.id, att.request_id, hide_reasoning=alias.hide_reasoning
+        )
 
     raise last or UpstreamError("no upstream configured", retryable=False)
 
@@ -378,7 +415,14 @@ async def _replay(
             delta = choice.get("delta") or {}
             if isinstance(delta.get("content"), str):
                 text_seen.append(delta["content"])
-        masked = mask_body(obj, alias.id, att.request_id)
+        masked = mask_body(
+            obj, alias.id, att.request_id, hide_reasoning=alias.hide_reasoning
+        )
+        # With reasoning stripped a chunk can end up carrying nothing at all.
+        # Forwarding those is wasteful and makes some clients render an empty
+        # thinking block, so drop the ones that turned out to be empty.
+        if alias.hide_reasoning and _is_empty_delta_chunk(masked):
+            return None
         # A usage-only final chunk has no choices; forwarding it is harmless
         # and some clients read the token counts from it.
         return b"data: " + json.dumps(masked, separators=(",", ":")).encode() + b"\n\n"
