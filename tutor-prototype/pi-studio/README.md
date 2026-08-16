@@ -17,7 +17,7 @@ for a complete module.
 ## Install
 
 ```bash
-pi install git:github.com/sk-classroom/pi-studio@v0.1.0
+pi install git:github.com/sk-classroom/pi-studio@v0.1.1
 pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0   # required companion
 ```
 
@@ -27,7 +27,7 @@ installs them itself on startup — students run nothing by hand:
 ```json
 {
   "packages": [
-    "git:github.com/sk-classroom/pi-studio@v0.1.0",
+    "git:github.com/sk-classroom/pi-studio@v0.1.1",
     "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
   ]
 }

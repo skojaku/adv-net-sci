@@ -28,7 +28,7 @@ tools/publish_studio.sh all
 ```
 
 The module pins the toolkit **by tag** in `.pi/settings.json`
-(`git:github.com/sk-classroom/pi-studio@v0.1.0`) — a module and its toolkit are
+(`git:github.com/sk-classroom/pi-studio@v0.1.1`) — a module and its toolkit are
 reviewed together, so nothing a student runs floats on `main`. Releasing a
 toolkit change is therefore three steps: publish the package, tag it, bump the
 tag in every module that should take it.
