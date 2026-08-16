@@ -45,6 +45,11 @@ publish() { # publish <subdir> <owner/repo>
     # Wipe and re-export, so deletions here become deletions there.
     find "$work/repo" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
     git archive "HEAD:$src" | tar -x -C "$work/repo"
+    # Authoring-only, and the golden is a FINISHED session — an answer key in
+    # the repo the student clones. Neither is read at runtime.
+    if [ "$src" != "tutor-prototype/pi-studio" ]; then
+      rm -f "$work/repo/notebook.golden.py" "$work/repo/review_golden_sync.py"
+    fi
     git -C "$work/repo" add -A
     if git -C "$work/repo" diff --cached --quiet; then
       echo "  already up to date"

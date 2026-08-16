@@ -20,6 +20,10 @@ to GitHub, where students get them from:
 **Edit here, publish from here.** The GitHub copies are exports, not forks —
 committing to them directly means the next publish overwrites it.
 
+Two files stay behind: `notebook.golden.py` (a *finished* session — an answer
+key in the repo the student clones) and `review_golden_sync.py`, which checks
+it. Nothing reads either at runtime, so the export drops them.
+
 ```bash
 git commit -am "..."                 # publishing exports HEAD, not the working tree
 tools/publish_studio.sh package      # -> sk-classroom/pi-studio

@@ -83,7 +83,7 @@ elif re.sub(r"\s+", " ", m.group(0)) not in GOLDEN:
 # The toolkit is the pi-studio package, so it is not in this folder: look where
 # pi installs it, then where the authoring repo keeps its working tree, and let
 # $STUDIO_EXTENSION override both. Not found -> say so and skip this check
-# rather than fail; a student who cloned only the module has nothing to sync.
+# rather than fail: the cells/ and netviz halves are still worth running.
 toolkit = next(
     (
         p

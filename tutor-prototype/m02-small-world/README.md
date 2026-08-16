@@ -128,7 +128,6 @@ detours counts in your favor — it's the whole point.
 | `reset_session.sh` | Continue-or-fresh, decided **before anything loads**. `run_tutor.sh` asks at startup when a session exists; answering `f` runs this. It archives the notebook, the log, the summary and any uploads into `session_artifacts/` with a timestamp and drops in a clean notebook — nothing is ever deleted. Run it directly, or `./run_tutor.sh --fresh`, to skip the prompt. A file-level reset cannot half-succeed, which the in-session one can: `nb_fresh_start` deletes cells one at a time through a live kernel, and one failure there left a "clean slate" session opening on chapter 3. `nb_fresh_start` remains for a student who changes their mind mid-lesson. |
 | `run_tutor.sh` | Launcher: asks continue-or-fresh, starts marimo (`--no-token`), starts pi (bash disabled). `--fresh` resets without asking. Model aliases (`netsci/tutor`, `netsci/vision`, `netsci/referee`) are overridable with `TUTOR_MODEL`, `TUTOR_VISION_MODEL`, `TUTOR_REFEREE_MODEL`. |
 | `.pi/settings.json` | Thinking level, compaction budget, and the two packages pi installs on startup: the toolkit and the dialog extension. **Pinned by tag** — a module and its toolkit are tested together. |
-| `notebook.golden.py` + `review_golden_sync.py` | A finished-notebook reference and the check that keeps its wording in step with `cells/` and the toolkit's emitted prose. |
 
 The `nb_*` toolkit itself — tools, chapter orchestration, the checkpoint
 ceremony, the verbatim capture, the referee, the improvised-cell review — lives
