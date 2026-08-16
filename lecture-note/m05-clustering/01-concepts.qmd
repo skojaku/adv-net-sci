@@ -274,7 +274,7 @@ Now, the community detection problem is translated into **an optimization proble
 ::: {.callout-note title="Try it, then read on"}
 The description of this problem is not complete. Can you say what is missing? Without it, the best cut is trivial.
 
-[Graph cut, hands on](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+[Graph cut, hands on](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json) --- ten nodes in two colours; click a node to move it to the other side, and the panel counts the edges you have cut. Get the count as low as you can.
 :::
 
 ::: {.callout-note collapse="true" title="Click to reveal the answer" appearance="simple"}
@@ -1201,7 +1201,7 @@ Notice also what moving a single node did: five strings broken, and $Q$ fell fro
 
 Now take the same move to larger networks. Three rounds, each with a point:
 
-**Round 1 — two cliques, two colors.** Drag nodes until $Q$ stops rising. You should land on the obvious answer. [Two cliques, two colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+**Round 1 — two cliques, two colors.** Click nodes to repaint them, and keep going until $Q$ stops rising. You should land on the obvious answer. [Two cliques, two colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
 
 **Round 2 — the same network, four colors.** Unlike ratio and normalized cut, modularity's objective does not take the number of communities as an input: hand it four colors and the highest-scoring partition is free to leave two of them unused. Check whether it does. [Two cliques, four colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json)
 

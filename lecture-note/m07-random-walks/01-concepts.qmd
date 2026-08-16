@@ -757,14 +757,12 @@ Ladder Lottery is a fun East Asian game, also known as "鬼腳圖" (Guijiaotu) i
 4. The player wins if the player can hit a marked line at the bottom of the board.
 5. You cannot see the horizontal lines in advance!
 
-Play the [Ladder Lottery game](../assets/vis/amida-kuji.html) and try to answer:
+Play the [Ladder Lottery game](../assets/vis/amida-kuji.html). It draws one board for you to trace, and behind it draws two thousand more with the same number of rungs, so the histogram underneath is where your chosen line actually comes out. One knob sets the rungs; **Gap from even** is how far that histogram is from flat. Try to answer:
 
-1. Is there a strategy to maximize the probability of winning?
-2. How does the probability of winning change as the number of horizontal lines increases?
+1. Suppose you knew you wanted to finish on line 7. With only four rungs on the board, is choosing where to start worth anything? Start at [four rungs](../assets/vis/amida-kuji.html?rungs=4) and look at the histogram.
+2. Now drag the rungs up, and watch **Gap from even** fall: about 0.6 at four rungs, 0.3 at twenty, [0.08 at sixty](../assets/vis/amida-kuji.html?rungs=60). At what point does your choice of starting line stop being worth anything at all?
 
 :::
-
-<!-- TODO(anim): A4 — an amida board drawing itself rung by rung, with the induced start-to-end mapping shown alongside, so the reader watches a fixed permutation become unpredictable as rungs accumulate. -->
 
 The ladder is the smallest honest picture of what is coming. The vertical lines are the **states** the walker can occupy; the horizontal rungs are the **transitions** that move it from one state to the next. Where you land is decided by a rule you cannot see.
 
@@ -777,12 +775,13 @@ When we study random walks, four questions recur:
 - **Structural insight**: what does the walker's behavior tell us about the network?
 - **Applications**: how do we turn this into centrality and community detection?
 
-Before going further, get the walk under your fingers. Open the [random walk simulator](../assets/vis/random-walks/index.html) and answer these, first on the karate club network it loads by default, then on a [network with two obvious communities](../assets/vis/random-walks/index.html?dataFile=two-cliques.json):
+Before going further, get the walk under your fingers. Open the [random walk simulator](../assets/vis/random-walks/index.html). **Walk** takes one step; **Run 5,000 steps** takes five thousand. The bar chart is the share of steps spent on each node, and the short mark across every bar is that node's $k/2m$ — the number this module is about to derive. **Distance to $k/2m$** is how far the whole chart still is from those marks. Answer these, first on the karate club network it loads by default, then on a [network with two obvious communities](../assets/vis/random-walks/index.html?dataFile=two-cliques.json):
 
-1. When the walker makes many steps, where does it tend to visit most frequently?
-2. When the walker makes only a few steps, where does it tend to visit?
+1. Click **Walk** twenty times. Does the chart look like anything yet?
+2. Now run five thousand steps, then five thousand more. Where does the walker spend most of its time, and how close do the bars get to their marks?
 3. Does the behavior of the walker inform us about the centrality of the nodes?
-4. Does the behavior of the walker inform us about communities in the network?
+4. On the two-community network, count how many consecutive steps the walker spends on one side before it crosses. Does the behavior of the walker inform us about communities?
+5. Turn the teleport knob up to 0.3 and run it again. The distance stops falling and settles well above zero. What has the teleport done to the answer? (This is the same knob that turns a random walk into PageRank, in the centrality section below.)
 
 ## Why This Module Is the Hinge of the Course
 
@@ -894,6 +893,488 @@ $$
 
 So the question becomes: what does $\mathbf{P}^t$ look like for large $t$?
 
+Take the matrix apart before doing any algebra. Row $i$ of $\mathbf{P}^t$ is
+one walker's whole future: it lists where a walker that started at node $i$
+might be $t$ steps later. Below, every entry is drawn as a square of ink —
+darker for likelier — so a row is a stripe you can read at a glance. Step
+through the first three powers one at a time, then drag $t$ and watch what
+becomes of the rows.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The forgetting grid — only the rules this one stage needs. The paper, the
+   panels, the buttons, the knob and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals, and the heatmap is ink density only: no
+   colour ramp at all, so it survives being printed in grey.
+   -------------------------------------------------------------------------- */
+
+/* A 10x10 grid with labels on two sides, and a ten-group bar chart, both need
+   the whole column; the kit's 310px default is sized for a small diagram. */
+#rw-forget [data-rf-grid], #rw-forget [data-rf-prof] { --anim-svg-max: 100%; }
+
+#rw-forget .rf-cell { fill: var(--_ink); stroke: var(--_rule); stroke-width: 0.7; }
+#rw-forget .rf-num {
+  font-family: var(--_hand);
+  font-size: 9px;
+  fill: var(--_ink-soft);
+  text-anchor: middle;
+}
+#rw-forget .rf-end { text-anchor: end; }
+#rw-forget .rf-dim { fill: var(--_ink-faint); }
+#rw-forget .rf-side { font-family: var(--_hand); font-size: 8.5px; fill: var(--_ink-soft); }
+
+/* The two rows the side panel plots. Outlines only, so the ink inside them
+   still reads at its own density. */
+#rw-forget .rf-hl { fill: none; stroke-width: 1.8; }
+#rw-forget .rf-hl-a { stroke: var(--_accent); }
+#rw-forget .rf-hl-b { stroke: var(--_amber); }
+
+/* A bar that ran off the top of the 0.35 scale says so in words. */
+#rw-forget .rf-over { font-family: var(--_hand); font-size: 8.5px; text-anchor: middle; font-weight: 700; }
+</style>
+
+<figure class="anim-stage" id="rw-forget">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rf-grid></div>
+    <div>
+      <div data-anim-clear data-rf-prof></div>
+      <div data-anim-clear data-rf-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One matrix, eighteen powers. Markup above, scenes below, and nothing in
+   between: the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here multiplies a matrix or runs a graph algorithm at page load, so the
+     grid you see is exactly the arithmetic this page claims.
+
+     The network is @fig-m07-net, the one the whole module uses: 10 nodes,
+     13 edges, degrees (2,4,3,4,4,3,2,1,2,1), so 2m = 26. Reproduce with
+
+       import numpy as np
+       E = [(0,1),(0,3),(1,2),(1,3),(1,4),(2,4),(2,7),(3,4),(3,5),(4,5),
+            (5,6),(6,8),(8,9)]
+       A = np.zeros((10,10))
+       for i,j in E: A[i,j] = A[j,i] = 1
+       P = A / A.sum(1)[:,None]
+       for t in DET: np.rint(np.linalg.matrix_power(P,t)*1000).astype(int)
+
+     PT[d] is P raised to DET[d], in parts per thousand. Two facts to check
+     against it by eye: every row sums to 1000 give or take a unit of rounding,
+     and from t = 95 on every row is the identical row
+     (77,154,115,154,154,115,77,38,77,38) — which is 1000 * k/26, the
+     stationary distribution. At the t = 65 and t = 80 detents a couple of rows
+     are still one part in a thousand out; the SPREAD readout says so.
+
+     SPREAD[d] is the widest disagreement left between two rows: the largest,
+     over the ten columns, of (biggest entry in the column - smallest).
+     L2T[d] is 0.912^t, where 0.912 is the second largest eigenvalue of P in
+     magnitude. The two columns track each other, which is the whole content
+     of the mixing-time section below.
+     ------------------------------------------------------------------------ */
+  const PT = [
+    /* t=1 */ [[0,500,0,500,0,0,0,0,0,0],[250,0,250,250,250,0,0,0,0,0],[0,333,0,0,333,0,0,333,0,0],[250,250,0,0,250,250,0,0,0,0],[0,250,250,250,0,250,0,0,0,0],[0,0,0,333,333,0,333,0,0,0],[0,0,0,0,0,500,0,0,500,0],[0,0,1000,0,0,0,0,0,0,0],[0,0,0,0,0,0,500,0,0,500],[0,0,0,0,0,0,0,0,1000,0]],
+    /* t=2 */ [[250,125,125,125,250,125,0,0,0,0],[62,333,62,188,146,125,0,83,0,0],[83,83,500,167,83,83,0,0,0,0],[62,188,125,333,146,62,83,0,0,0],[125,146,62,146,292,62,83,83,0,0],[83,167,83,83,83,333,0,0,167,0],[0,0,0,167,167,0,417,0,0,250],[0,333,0,0,333,0,0,333,0,0],[0,0,0,0,0,250,0,0,750,0],[0,0,0,0,0,0,500,0,0,500]],
+    /* t=3 */ [[62,260,94,260,146,94,42,42,0,0],[130,135,203,193,193,83,42,21,0,0],[62,271,42,111,257,62,28,167,0,0],[130,193,83,135,193,161,21,42,42,0],[73,193,193,193,115,151,21,21,42,0],[62,111,62,215,201,42,194,28,0,83],[42,83,42,42,42,292,0,0,458,0],[83,83,500,167,83,83,0,0,0,0],[0,0,0,83,83,0,458,0,0,375],[0,0,0,0,0,250,0,0,750,0]],
+    /* t=4 */ [[130,164,143,164,193,122,31,31,21,0],[82,229,103,175,178,117,28,68,21,0],[95,137,299,184,130,106,21,14,14,0],[82,175,138,215,164,92,75,28,10,21],[96,178,98,164,211,87,71,64,10,21],[82,156,106,123,116,201,14,21,181,0],[31,56,31,149,142,21,326,14,0,229],[62,271,42,111,257,62,28,167,0,0],[21,42,21,21,21,271,0,0,604,0],[0,0,0,83,83,0,458,0,0,375]],
+    /* t=5 */ [[82,202,120,195,171,105,51,48,16,10],[101,163,169,182,174,102,49,34,14,10],[80,226,81,150,215,89,42,100,10,7],[98,182,112,156,174,132,36,46,58,5],[85,174,161,174,147,129,34,33,56,5],[70,136,89,176,172,67,157,35,7,90],[51,99,63,72,69,236,7,10,392,0],[95,137,299,184,130,106,21,14,14,0],[16,28,16,116,113,10,392,7,0,302],[21,42,21,21,21,271,0,0,604,0]],
+    /* t=6 */ [[99,173,141,169,174,117,43,40,36,8],[86,196,119,169,177,114,41,56,35,7],[94,158,210,180,150,112,35,27,28,5],[85,169,135,182,166,101,73,37,23,29],[87,177,113,166,184,97,71,54,22,28],[78,152,112,134,130,166,26,30,169,3],[43,82,52,146,143,39,275,21,3,196],[80,226,81,150,215,89,42,100,10,7],[36,70,42,46,45,253,3,5,498,0],[16,28,16,116,113,10,392,7,0,302]],
+    /* t=8 */ [[89,172,135,167,168,115,50,42,47,15],[86,181,124,166,171,113,49,50,45,14],[90,165,168,174,158,114,45,35,40,11],[83,166,130,170,165,104,74,40,34,33],[84,171,119,165,173,102,73,48,33,32],[77,151,114,139,136,152,34,33,154,8],[50,99,67,148,146,52,237,26,9,167],[85,200,104,162,192,100,51,70,23,14],[47,91,60,68,66,232,9,11,416,1],[29,55,34,131,128,25,334,14,2,249]],
+    /* t=10 */ [[85,169,131,164,164,115,56,42,54,20],[84,173,125,163,167,114,56,46,53,19],[87,167,147,168,161,115,52,39,49,17],[82,163,126,165,163,106,75,41,43,35],[82,167,121,163,167,105,75,45,42,34],[77,152,115,142,140,145,41,35,141,13],[56,111,78,150,149,62,207,29,15,143],[85,184,116,164,179,105,58,56,34,20],[54,106,73,86,84,212,15,17,351,3],[40,77,50,140,137,38,285,20,5,208]],
+    /* t=13 */ [[82,165,124,162,162,111,68,42,54,30],[82,164,126,162,162,111,67,41,54,29],[82,169,122,162,166,110,66,45,50,28],[81,162,122,157,158,119,61,41,74,25],[81,162,124,158,157,119,60,40,74,24],[74,148,110,159,159,95,111,38,40,65],[68,135,99,122,120,167,34,29,214,11],[85,166,135,164,161,115,57,40,56,21],[54,107,75,149,147,60,214,28,16,149],[60,117,84,100,98,195,22,21,298,5]],
+    /* t=16 */ [[80,161,122,158,158,115,67,41,67,30],[81,162,121,158,159,115,67,41,66,29],[81,162,125,160,159,115,65,40,65,28],[79,158,120,159,159,110,77,40,60,38],[79,159,119,159,159,110,77,41,59,38],[77,153,115,147,147,132,56,37,113,23],[67,133,98,155,154,84,147,34,34,94],[81,165,121,161,163,111,69,43,56,30],[67,133,97,120,118,169,34,28,222,11],[59,117,84,151,150,69,188,30,22,128]],
+    /* t=20 */ [[79,158,119,156,157,115,71,40,71,33],[79,158,119,157,157,115,71,40,71,33],[79,159,120,157,157,115,70,40,70,32],[78,157,118,157,157,112,78,40,66,38],[78,157,118,157,157,112,78,40,65,38],[77,154,115,149,149,127,62,38,101,28],[71,141,104,155,155,93,124,36,45,75],[80,160,120,158,159,113,72,41,64,34],[71,142,105,132,131,152,45,32,173,17],[66,132,96,154,153,83,151,34,34,97]],
+    /* t=25 */ [[78,156,117,156,156,114,75,39,72,37],[78,156,117,156,156,114,75,39,72,37],[78,156,118,156,156,114,75,39,71,37],[78,156,117,154,154,117,73,39,78,35],[78,156,117,154,154,117,72,39,78,35],[76,152,114,156,156,109,88,39,64,47],[75,151,113,145,145,132,60,36,117,26],[78,157,118,156,156,116,72,39,73,35],[72,143,106,155,155,96,117,37,48,70],[74,147,110,140,139,141,53,35,141,22]],
+    /* t=32 */ [[77,155,116,154,154,116,75,39,76,37],[77,155,116,154,154,115,75,39,76,37],[77,155,116,154,154,116,75,39,76,37],[77,154,116,155,155,114,78,39,74,39],[77,154,116,155,155,114,78,39,74,39],[77,154,116,152,152,119,72,38,85,35],[75,151,113,155,155,108,91,38,64,50],[77,155,116,155,155,115,76,39,74,38],[76,152,114,148,148,127,64,37,105,29],[74,149,111,155,155,104,99,38,59,56]],
+    /* t=40 */ [[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,76,39,77,38],[77,154,116,154,154,115,77,39,76,39],[77,154,116,154,154,115,77,39,76,39],[77,154,115,153,153,117,74,38,81,37],[76,153,114,155,155,112,83,38,70,43],[77,154,116,154,154,115,77,39,76,38],[77,153,115,151,151,121,70,38,90,34],[76,152,114,155,155,110,87,38,67,46]],
+    /* t=50 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,76,39],[77,154,115,154,154,115,77,38,76,39],[77,154,115,154,154,116,76,38,78,38],[77,153,115,154,154,114,79,38,74,40],[77,154,115,154,154,115,77,39,77,38],[77,154,115,153,153,118,74,38,82,36],[77,153,115,154,154,113,81,38,73,41]],
+    /* t=65 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,39],[77,154,115,154,154,116,76,38,78,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,78,38,76,39],[77,154,115,154,154,116,76,38,78,38]],
+    /* t=80 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,39],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,116,77,38,77,38],[77,154,115,154,154,115,77,38,77,39]],
+    /* t=100 */ [[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38],[77,154,115,154,154,115,77,38,77,38]]
+  ];
+
+  const DET = [1,2,3,4,5,6,8,10,13,16,20,25,32,40,50,65,80,100];
+  const SPREAD = [1.0000,0.7500,0.7500,0.6042,0.6042,0.4983,0.4142,0.3452,0.2820,0.2001,0.1390,0.0921,0.0465,0.0223,0.0089,0.0023,0.0006,0.0001];
+  const L2T = [0.91196,0.83167,0.75845,0.69168,0.63079,0.57525,0.47842,0.39789,0.30178,0.22889,0.15832,0.09987,0.05239,0.02506,0.00997,0.00250,0.00063,0.00010];
+
+  const DEG = [2,4,3,4,4,3,2,1,2,1];
+  const TWO_M = 26;
+  const PI = DEG.map((k) => k / TWO_M);
+  const NL = 10;
+
+  /* ------------------------------------------------------------- geometry --- */
+  const CELL = 13, GX0 = 30, GY0 = 26;    /* the heatmap */
+  const PX = (i) => 41 + 22 * i;          /* centre of column i's bar pair */
+  const PYB = 96, PPLOT = 74, PAXIS = 0.35;
+  const f3 = (x) => x.toFixed(3);
+  const f2 = (x) => x.toFixed(2);
+  /* Ink density. Straight opacity would draw the settled matrix — every entry
+     around 0.1 — as a blank sheet, so the square root is taken first. It is a
+     monotone re-inking, not a recolouring: darker still means likelier, and
+     the caption says so. */
+  const dens = (v) => Math.sqrt(v);
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "Each row is a starting node",
+      note: "The transition matrix drawn as ink: row i is a walker that started at node i, column j is where it might be one step later. Row 7 is a single black square — a walker on node 7 has nowhere to go but node 2. Row 1 is four grey squares of a quarter each.",
+      async run(ctx) {
+        ctx.build();
+        ctx.dial(0);
+        ctx.highlight(true);
+        const c = ctx.say("two rows, one step in");
+        [["row 7, the leaf", "node 2, certain"],
+         ["row 1, the hub", "four nodes, &frac14; each"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.8 + i * 0.6) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2400);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "nothing the two rows do is alike. The widest gap between them is a " +
+          "whole unit of probability, in column 2."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Two steps, then three",
+      note: "Take a second step, then a third. Every dark square bleeds into its neighbours' neighbours; the diagonal fills in, because two steps can bring the walker home. The widest disagreement between two rows drops from 1.000 to 0.750.",
+      async run(ctx) {
+        const c = ctx.say("what a second step does");
+        if (!ctx.fast()) await ctx.sleep(600);
+        ctx.dial(1);
+        if (!ctx.fast()) await ctx.sleep(1600);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>diagonal at t = 2</span><b>never zero</b>"));
+        if (!ctx.fast()) await ctx.sleep(1400);
+        ctx.dial(2);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>rows differ by</span><b>1.000 &rarr; 0.750</b>"));
+        if (!ctx.fast()) await ctx.sleep(1600);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "three steps in, the leaf-walker is still nothing like the " +
+          "hub-walker. But the black square is gone: certainty was the first " +
+          "thing to go."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Watch the rows fall together",
+      note: "Now run t up to a hundred. The scatter turns into vertical stripes: inside a column every row ends the same shade. The stripe darkness is k over 2m, and the dashed markers show the two profiles landing on it.",
+      async run(ctx) {
+        const c = ctx.say("t climbing to a hundred");
+        const big = ctx.el("div", "anim-big", "3");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        if (ctx.fast()) {
+          ctx.dial(DET.length - 1);
+          ctx.marks(true);
+          big.textContent = "100";
+          verdict.innerHTML = "<span>every row</span><b>the same row</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        for (let i = 3; i < DET.length; i++) {
+          ctx.dial(i);
+          big.textContent = String(DET[i]);
+          await ctx.sleep(i < 10 ? 620 : 480);
+        }
+        verdict.innerHTML = "<span>every row</span><b>the same row</b>";
+        verdict.style.visibility = "visible";
+        await ctx.sleep(1400);
+        ctx.marks(true);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the columns still differ &mdash; that is the degree sequence, " +
+          "k/2m. What went away is any difference <em>between rows</em>: the " +
+          "walker no longer carries where it came from."));
+        await ctx.sleep(3800);
+      }
+    },
+    {
+      label: "Now you turn it",
+      note: "Drag t yourself and watch the readout. At t = 20 two rows can still disagree by 0.139; by t = 65 the widest disagreement is down to 0.002, and by t = 100 every row is the identical row to three decimals. How far you must drag before that happens is the mixing time.",
+      async run(ctx) {
+        const c = ctx.say("you turn it");
+        ctx.marks(true);
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag: t runs from one step to a hundred"));
+
+        [["t = 3", "rows differ by 0.750"],
+         ["t = 20", "rows differ by 0.139"],
+         ["t = 65", "rows differ by 0.002"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.5 + i * 0.5) + "s";
+          c.appendChild(t);
+        });
+
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DET.length - 1, step: 1, value: DET.length - 1,
+          label: "Number of steps t",
+          format: (i) => "t = " + DET[i],
+          onGrab: () => ctx.pause(),
+          onInput: (i) => ctx.dial(i)
+        });
+
+        if (ctx.fast()) { dial.set(DET.length - 1); return; }
+
+        /* Park on the last detent, then sweep back to one and up again once,
+           so it is obvious the knob goes both ways before the reader takes it. */
+        dial.set(DET.length - 1);
+        await ctx.sleep(2600);
+        for (let i = DET.length - 2; i >= 0; i--) { dial.set(i); await ctx.sleep(150); }
+        await ctx.sleep(900);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "every extra step multiplies whatever disagreement is left by about " +
+          "0.912 &mdash; the second largest eigenvalue of <b>P</b>. That one " +
+          "number is the whole clock, and the next section is about nothing else."));
+        for (let i = 1; i < DET.length; i++) { dial.set(i); await ctx.sleep(150); }
+        await ctx.sleep(4200);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-forget"), scenes, {
+    stepsLabel: "Matrix powers",
+
+    /* The two things only this animation has: a 10x10 grid of ink and a pair
+       of row profiles beside it. Both are built once, in scene 1, and only
+       re-inked afterwards — so jumping to a step still lands on a drawing,
+       because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const gridBox = ctx.$("[data-rf-grid]");
+      const profBox = ctx.$("[data-rf-prof]");
+      const side = ctx.$("[data-rf-say]");
+      const S = { at: 0 };
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        gridBox.textContent = "";
+        profBox.textContent = "";
+        const slow = !ctx.fast();
+
+        /* ---- the heatmap ---- */
+        const svg = ctx.svgRoot("0 0 176 176");
+        const gCell = svg.appendChild(ctx.svgEl("g"));
+        const gHl = svg.appendChild(ctx.svgEl("g"));
+        const gLab = svg.appendChild(ctx.svgEl("g"));
+
+        S.cell = [];
+        for (let r = 0; r < NL; r++) {
+          const row = [];
+          for (let c = 0; c < NL; c++) {
+            const q = ctx.svgEl("rect", {
+              x: GX0 + c * CELL, y: GY0 + r * CELL,
+              width: CELL, height: CELL, "class": "rf-cell"
+            });
+            q.style.fillOpacity = 0;
+            if (slow) {
+              q.classList.add("anim-fade");
+              q.style.animationDelay = (0.05 + (r + c) * 0.03) + "s";
+            }
+            row.push(gCell.appendChild(q));
+          }
+          S.cell.push(row);
+        }
+
+        S.hl = [1, 7].map((r, j) => {
+          const q = ctx.svgEl("rect", {
+            x: GX0 - 1.5, y: GY0 + r * CELL - 1.5,
+            width: NL * CELL + 3, height: CELL + 3,
+            "class": "rf-hl " + (j === 0 ? "rf-hl-a" : "rf-hl-b")
+          });
+          q.style.opacity = 0;
+          return gHl.appendChild(q);
+        });
+
+        for (let i = 0; i < NL; i++) {
+          const ct = ctx.svgEl("text",
+            { x: GX0 + i * CELL + CELL / 2, y: GY0 - 5, "class": "rf-num" });
+          ct.textContent = String(i);
+          gLab.appendChild(ct);
+          const rt = ctx.svgEl("text",
+            { x: GX0 - 5, y: GY0 + i * CELL + CELL / 2 + 3.2, "class": "rf-num rf-end" });
+          rt.textContent = String(i);
+          gLab.appendChild(rt);
+        }
+        const to = ctx.svgEl("text", { x: GX0 + NL * CELL / 2, y: 12, "class": "rf-side" });
+        to.textContent = "to →";
+        to.setAttribute("text-anchor", "middle");
+        gLab.appendChild(to);
+        const from = ctx.svgEl("text", {
+          x: 11, y: GY0 + NL * CELL / 2, "class": "rf-side",
+          transform: "rotate(-90 11 " + (GY0 + NL * CELL / 2) + ")"
+        });
+        from.textContent = "started at ↓";
+        from.setAttribute("text-anchor", "middle");
+        gLab.appendChild(from);
+
+        gridBox.appendChild(svg);
+
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>t <b data-t>1</b></span>' +
+          '<span>rows differ by <b data-s>1.000</b></span>' +
+          '<span>&lambda;<sub>2</sub><sup>t</sup> <b data-l>0.912</b></span>');
+        gridBox.appendChild(S.read);
+        S.outT = S.read.querySelector("[data-t]");
+        S.outS = S.read.querySelector("[data-s]");
+        S.outL = S.read.querySelector("[data-l]");
+
+        gridBox.appendChild(ctx.el("div", "anim-caption",
+          "one square per entry of <b>P</b><sup>t</sup>; darker means likelier. " +
+          "Darkness is the square root of the probability, so the small entries " +
+          "are still visible &mdash; nothing but density, no colour scale."));
+
+        /* ---- the two row profiles ---- */
+        const psvg = ctx.svgRoot("0 0 260 124");
+        const gBar = psvg.appendChild(ctx.svgEl("g"));
+        const gMark = psvg.appendChild(ctx.svgEl("g"));
+        const gAx = psvg.appendChild(ctx.svgEl("g"));
+
+        S.b1 = []; S.b7 = []; S.over = [];
+        for (let i = 0; i < NL; i++) {
+          S.b1.push(gBar.appendChild(ctx.svgEl("rect", {
+            x: PX(i) - 9, y: PYB, width: 8, height: 0, "class": "anim-accent-fill"
+          })));
+          S.b7.push(gBar.appendChild(ctx.svgEl("rect", {
+            x: PX(i) + 1, y: PYB, width: 8, height: 0, "class": "anim-amber-fill"
+          })));
+          const o = ctx.svgEl("text",
+            { x: PX(i), y: PYB - PPLOT - 3, "class": "rf-over" });
+          S.over.push(gAx.appendChild(o));
+        }
+
+        S.mark = [];
+        for (let i = 0; i < NL; i++) {
+          const y = PYB - (Math.min(PI[i], PAXIS) / PAXIS) * PPLOT;
+          const l = ctx.svgEl("line", {
+            x1: PX(i) - 14, x2: PX(i) + 14, y1: y, y2: y,
+            "class": "anim-marker anim-marker--faint"
+          });
+          l.style.opacity = 0;
+          S.mark.push(gMark.appendChild(l));
+        }
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: 26, y1: PYB, x2: 256, y2: PYB, "class": "anim-axis" }));
+        const top = ctx.svgEl("text",
+          { x: 22, y: PYB - PPLOT + 4, "class": "rf-num rf-end" });
+        top.textContent = "0.35";
+        gAx.appendChild(top);
+        const zero = ctx.svgEl("text", { x: 22, y: PYB + 4, "class": "rf-num rf-end" });
+        zero.textContent = "0";
+        gAx.appendChild(zero);
+        for (let i = 0; i < NL; i++) {
+          const n = ctx.svgEl("text", { x: PX(i), y: PYB + 14, "class": "rf-num" });
+          n.textContent = String(i);
+          gAx.appendChild(n);
+          const d = ctx.svgEl("text", { x: PX(i), y: PYB + 25, "class": "rf-num rf-dim" });
+          d.textContent = "k=" + DEG[i];
+          gAx.appendChild(d);
+        }
+
+        profBox.appendChild(psvg);
+        profBox.appendChild(ctx.el("div", "anim-caption",
+          'the two outlined rows, side by side: ' +
+          '<span style="color:var(--_accent)">&#9632;</span> row 1 (started at the hub) ' +
+          'and <span style="color:var(--_amber)">&#9632;</span> row 7 (started at the leaf). ' +
+          'The dashed markers, once they appear, sit at k/2m.'));
+
+        paint(0);
+      }
+
+      /* Everything both drawings show at detent d. Pure lookup: no arithmetic
+         on the matrix, only on where to put the ink. */
+      function paint(d) {
+        S.at = d;
+        const M = PT[d];
+        for (let r = 0; r < NL; r++) {
+          for (let c = 0; c < NL; c++) {
+            S.cell[r][c].style.fillOpacity = dens(M[r][c] / 1000).toFixed(3);
+          }
+        }
+        const r1 = M[1], r7 = M[7];
+        for (let i = 0; i < NL; i++) {
+          const v1 = r1[i] / 1000, v7 = r7[i] / 1000;
+          const h1 = (Math.min(v1, PAXIS) / PAXIS) * PPLOT;
+          const h7 = (Math.min(v7, PAXIS) / PAXIS) * PPLOT;
+          ctx.attr(S.b1[i], { y: PYB - h1, height: h1 });
+          ctx.attr(S.b7[i], { y: PYB - h7, height: h7 });
+          const big = Math.max(v1, v7);
+          if (big > PAXIS) {
+            S.over[i].textContent = f2(big);
+            S.over[i].setAttribute("fill",
+              v7 >= v1 ? "var(--_amber)" : "var(--_accent)");
+          } else {
+            S.over[i].textContent = "";
+          }
+        }
+        S.outT.textContent = String(DET[d]);
+        S.outS.textContent = f3(SPREAD[d]);
+        S.outL.textContent = f3(L2T[d]);
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return {
+        build: build,
+        say: say,
+        dial: paint,
+        marks: function (on) {
+          S.mark.forEach((l) => { l.style.opacity = on ? 1 : 0; });
+        },
+        highlight: function (on) {
+          S.hl.forEach((q) => { q.style.opacity = on ? 1 : 0; });
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+The last frame of that widget, written out as numbers, is @fig-long-term-P.
+
 ::: {#fig-long-term-P}
 
 ![](../figs/long-term-P.svg){width=80%}
@@ -902,9 +1383,7 @@ $\mathbf{P}^{100}$ for the network in @fig-m07-net. Every row is identical: afte
 
 :::
 
-<!-- TODO(anim): A6 — the same heatmap animating through t = 1, 2, 3, 5, 10, 100 so the reader watches the rows collapse onto one another. -->
-
-Look at @fig-long-term-P and compare it with @fig-m07-P. Recall that $P_{ij}$ is the probability of stepping from node $i$ (row) to node $j$ (column), so row $i$ of $\mathbf{P}^t$ is the distribution of a walker that started at $i$. In $\mathbf{P}^{100}$ all the rows are the same. That is the whole phenomenon in one picture: after enough steps, the walker's position no longer carries any trace of where it began.
+Compare it with @fig-m07-P, where no two rows had anything in common. That is the whole phenomenon in one picture: after enough steps, the walker's position no longer carries any trace of where it began. Note what did *not* disappear. The columns of @fig-long-term-P are still unequal — column 1 is four times column 7 — and that surviving difference is the answer to the question the next section asks.
 
 Why does $\mathbf{P}^t$ have this peculiar property? Because of the spectral properties of $\mathbf{P}$. We can rewrite the balance condition as an eigenvalue equation:
 
@@ -1092,9 +1571,584 @@ The pattern is general and worth remembering: for almost every shortest-path-bas
 
 ## Communities Are Where the Walker Gets Stuck
 
-Random walks reveal community structure because of the worked number above. Before reaching the steady state, a walker tends to remain within its starting community and only gradually leaks into the others. Every method below is a different way of cashing in that delay.
+Random walks reveal community structure because of the worked number above. Before reaching the steady state, a walker tends to remain within its starting community and only gradually leaks into the others.
 
-<!-- TODO(anim): A2 — two walkers on a two-community network, one panel counting visits per community over time, so the reader sees the walk stay trapped for tens of steps before the counts equalise. -->
+Take that literally and watch it happen. Below are the two joined cliques from
+the mixing-time section, with seven nodes on each side instead of five — which
+only deepens the trap, $\tau = 27$ steps rather than 14. Follow one walker step
+by step, and at the same time watch a crowd of a hundred walkers released with
+it drain out of the room they all started in. Then open more doors and see what
+changes.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The trapped walker — only the rules this one stage needs. The paper, the
+   panels, the buttons, the knob and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals. Room A is the accent, room B is the contrast,
+   and that pairing holds in the rooms, the strip and the curve alike.
+   -------------------------------------------------------------------------- */
+
+/* A fourteen-node drawing and a chart with an axis and a timeline under it both
+   want the whole column; the kit's 310px default is sized for something smaller. */
+#rw-trap [data-rt-net], #rw-trap [data-rt-plot] { --anim-svg-max: 100%; }
+
+#rw-trap .rt-room-a { fill: var(--_accent); fill-opacity: 0.13; stroke: none; }
+#rw-trap .rt-room-b { fill: var(--_amber); fill-opacity: 0.13; stroke: none; }
+/* Room B's nodes take the contrast colour, so a node, its room's shading, its
+   room's name and its ticks in the timeline are all one colour. */
+#rw-trap .rt-node-b { fill: var(--_amber); }
+#rw-trap .rt-in { stroke: var(--_ink-faint); stroke-width: 1.2; fill: none; }
+#rw-trap .rt-door { stroke: var(--_ink); stroke-width: 3; fill: none; stroke-linecap: round; }
+#rw-trap .rt-door-hot { stroke: var(--_amber); stroke-width: 4.6; }
+
+/* The walker: paper knocked out of whatever it is standing on, with a heavy
+   outline, so it reads at a glance on a drawing this dense. */
+#rw-trap .rt-halo { fill: var(--_ink); fill-opacity: 0.12; stroke: none; }
+#rw-trap .rt-tok { fill: var(--_paper); stroke: var(--_ink); stroke-width: 3.2; }
+
+#rw-trap .rt-name { font-family: var(--_hand); font-size: 11px; font-weight: 700; text-anchor: middle; }
+#rw-trap .rt-a { fill: var(--_accent); }
+#rw-trap .rt-b { fill: var(--_amber); }
+#rw-trap .rt-num { font-family: var(--_hand); font-size: 9px; fill: var(--_ink-soft); text-anchor: middle; }
+#rw-trap .rt-end { text-anchor: end; }
+
+#rw-trap .rt-curve { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+#rw-trap .rt-cursor { stroke: var(--_ink-faint); stroke-width: 1.2; }
+#rw-trap .rt-tick-a { fill: var(--_accent); }
+#rw-trap .rt-tick-b { fill: var(--_amber); }
+</style>
+
+<figure class="anim-stage" id="rw-trap">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rt-net></div>
+    <div>
+      <div data-anim-clear data-rt-plot></div>
+      <div data-anim-clear data-rt-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Two rooms and a door. Markup above, scenes below, and nothing in between:
+   the paper, the pen, the motion and the sequencer all come from
+   assets/anim.css + assets/anim.js, and everything a scene calls arrives on
+   `ctx`. The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here draws a random number or multiplies a matrix at page load.
+
+     THE NETWORK. Two 7-cliques — nodes 0-6 and 7-13 — joined by up to four
+     doors, door i being the edge (i, 7+i). It is the two-joined-cliques of
+     the mixing-time section above with slightly roomier rooms, and the same
+     bottleneck. Reproduce with
+
+       import numpy as np, itertools
+       def build(b):
+           A = np.zeros((14,14))
+           for a,c in itertools.combinations(range(7),2):   A[a,c]=A[c,a]=1
+           for a,c in itertools.combinations(range(7,14),2): A[a,c]=A[c,a]=1
+           for i in range(b): A[i,7+i]=A[7+i,i]=1
+           return A
+       P = A / A.sum(1)[:,None]
+
+     WALK[b] is one recorded walk on that network, 120 steps, started at node
+     6 (which is never a door) with numpy's default_rng(121) — a seed picked
+     out of the first 300 for being unremarkable: its first crossing, its
+     100-step tally and its average stay all sit at the median of the 300.
+     One character is one node, 0-9 then a-d for nodes 10-13.
+
+     CURVE[b][t] is not a simulation at all: it is exactly 1000 * (the
+     probability that a walker started at node 6 is in room A after t steps),
+     i.e. the first seven entries of x(0)P^t summed. Read as a crowd: release
+     a hundred walkers together and CURVE[b][t]/10 of them are still in room A
+     at step t, on average.
+
+     LAM2[b] is the second largest eigenvalue of P, TAU[b] = 1/(1-lam2) the
+     relaxation time, T55[b] the first step at which the curve reaches 0.55,
+     TWO_M[b] the sum of the degrees, and STAY[b] the average number of steps
+     the recorded walk spends in a room before changing rooms, measured over
+     20,000 steps. STAY is worth checking against 2m/(2 doors) — 43.0, 22.0,
+     15.0, 11.5 — which is what it should be, and is.
+     ------------------------------------------------------------------------ */
+const NODE = [[97.7,81.6],[97.7,118.4],[69.4,59.1],[69.4,140.9],[34.1,66.9],[34.1,133.1],[18,100],[142.3,81.6],[142.3,118.4],[170.6,59.1],[170.6,140.9],[205.9,66.9],[205.9,133.1],[222,100]];
+  const EDGE = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[1,4],[1,5],[1,6],[2,3],[2,4],[2,5],[2,6],[3,4],[3,5],[3,6],[4,5],[4,6],[5,6],[7,8],[7,9],[7,10],[7,11],[7,12],[7,13],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13]];
+  /* 42 intra-room edges */
+
+  const WALK = [
+    /* 0 */ "6142105632464136202012545063215243512043054316434343453143012436124304512652161240513640645601520261412024125101241520530",
+    /* 1 */ "614210653246413620201254507b98c9bac897ba7cba8dbabababca8ba7034361243045126521612406136407cbd70620261412024125101241520630",
+    /* 2 */ "615210653246414620201254507b98c9bac87053064318cabababca8ba7034361243045126521878a7c8adb7dbcd70620261413024125101241620630",
+    /* 3 */ "615230653256414620201264507b98c9bac87053064318cabababca8ba7034361243045129d98d87a7c8adb7dbcd70620298a89215126101251621630",
+    /* 4 */ "61523065343ac8ad92101264507b98c9bac87053064329ca9a9baca7ba30353a87ab7ac87dc98d87a36146407cbd70620298a79215126101251621630",
+  ];
+
+  const CURVE = [
+    /* 0 */ [1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000],
+    /* 1 */ [1000,1000,976,960,942,926,910,894,880,865,852,839,826,814,802,791,780,769,759,750,740,731,723,714,706,698,691,684,677,670,664,658,652,646,641,636,630,626,621,616,612,608,604,600,596,593,589,586,583,579,576,574,571,568,566,563,561,559,556,554,552,550,548,547,545,543,542,540,538,537,536,534,533,532,531,529,528,527,526,525,524,523,523,522,521,520,519,519,518,517,517,516,515,515,514,514,513,513,512,512,511,511,511,510,510,509,509,509,508,508,508,507,507,507,507,506,506,506,506,505,505],
+    /* 2 */ [1000,1000,952,921,888,859,832,807,783,762,742,724,707,691,677,663,651,639,629,619,610,602,594,587,580,574,569,563,559,554,550,546,543,540,537,534,531,529,527,525,523,521,519,518,517,515,514,513,512,511,510,510,509,508,508,507,506,506,506,505,505,504,504,504,503,503,503,503,503,502,502,502,502,502,502,501,501,501,501,501,501,501,501,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+    /* 3 */ [1000,1000,929,883,838,799,765,734,707,683,662,644,627,613,600,588,578,569,561,554,548,542,537,533,529,526,523,520,518,516,514,512,511,510,509,508,507,506,505,505,504,504,503,503,503,502,502,502,502,501,501,501,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+    /* 4 */ [1000,1000,905,846,791,746,708,676,648,625,606,589,575,564,554,545,538,532,527,523,520,516,514,512,510,508,507,506,505,504,504,503,503,502,502,502,501,501,501,501,501,501,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],
+  ];
+
+  const LAM2 = [1.0000,0.9626,0.9243,0.8850,0.8446];
+  const TAU  = [Infinity,26.7,13.2,8.7,6.4];
+  const T55  = [-1,62,31,20,15];
+  const TWO_M = [84,86,88,90,92];
+  const STAY = [Infinity,42.3,21.6,14.5,11.4];
+  /* theory 2m/(2 doors) = inf, 43.0, 22.0, 15.0, 11.5 */
+  /* b=1 first 120 steps come in blocks of [26, 33, 29, 5, 28] */
+  /* step 26: room A 25, room B 1 */
+  /* step 40: room A 25, room B 15 */
+  /* step 60: room A 27, room B 33 */
+  /* step 120: room A 82, room B 38 */
+
+  const DOORS = 4;
+  /* Doors 2 and 3 join nodes that do not face each other across the gap, so
+     they are bowed clear of both rooms instead of drawn straight through
+     them. [from, to, control point or null]. */
+  const DOOR = [[0, 7, null], [1, 8, null], [2, 9, [120, 20]], [3, 10, [120, 180]]];
+  const TSHOW = 120;             /* steps of WALK on screen */
+  const NW = 100;                /* size of the crowd */
+
+  /* ------------------------------------------------------------- geometry --- */
+  const PX0 = 34, PX1 = 252, PYT = 18, PYB = 112;
+  const PLO = 0.4;                                   /* bottom of the y axis */
+  const tx = (t) => PX0 + (t / TSHOW) * (PX1 - PX0);
+  const ty = (p) => PYB - ((p - PLO) / (1 - PLO)) * (PYB - PYT);
+  const TW = (PX1 - PX0) / TSHOW;                    /* width of one tick */
+  const SY = 134, SH = 14;                           /* the strip band */
+  const DIG = "0123456789abcd";
+  const room = (ch) => (DIG.indexOf(ch) < 7 ? 0 : 1);
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "Two rooms, one door",
+      note: "Fourteen nodes in two dense rooms, joined by a single edge. Each room holds exactly half the network's edge endpoints, so in the long run the walker has to split its time evenly between them. The whole question is how long the long run is.",
+      async run(ctx) {
+        ctx.build();
+        ctx.setDoors(1);
+        const c = ctx.say("the two rooms");
+        [["nodes", "7 + 7"], ["edges inside a room", "21 each"],
+         ["doors between them", "1"],
+         ["each room's share of 2m", "43 of 86"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.9 + i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2800);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "equal shares of 2m, so &pi; says the walker spends half its life " +
+          "in each room. Nothing in that sentence says when."));
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Watch one walker rattle",
+      note: "Release the walker in room A and take forty steps one at a time. It stands on the doorway node at steps 5, 17, 19 and 25, turning back inside on the first three; on the fourth it goes through, landing in room B at step 26. Behind it the crowd of a hundred drains out at the same crawl.",
+      async run(ctx) {
+        const c = ctx.say("one walker, one step at a time");
+        const big = ctx.el("div", "anim-big", String(NW));
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "of the hundred released with it, still in room A"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        if (ctx.fast()) {
+          ctx.upto(40);
+          big.textContent = String(ctx.crowd(40));
+          verdict.innerHTML = "<span>first crossing</span><b>step 26</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        ctx.upto(0);
+        await ctx.sleep(800);
+        for (let t = 1; t <= 40; t++) {
+          ctx.step(t);
+          big.textContent = String(ctx.crowd(t));
+          if (t === 26) {
+            verdict.innerHTML = "<span>first crossing</span><b>step 26</b>";
+            verdict.style.visibility = "visible";
+            await ctx.sleep(1500);
+          } else {
+            await ctx.sleep(t < 8 ? 340 : 165);
+          }
+        }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the door was never more than two steps away. But standing in the " +
+          "doorway, six of the walker's seven choices lead back inside &mdash; " +
+          "which is why a room this size holds it for about forty steps at a " +
+          "stretch."));
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "It moves in blocks",
+      note: "Run it out to a hundred and twenty steps. The strip is that one walker's whole history, and it is not a mixture — it is blocks: 26 steps in A, 33 in B, 29 in A, 5, then 28. Averaged over 20,000 steps a block is 42 steps long.",
+      async run(ctx) {
+        const c = ctx.say("a hundred and twenty steps");
+        const big = ctx.el("div", "anim-big", "—");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "of the hundred released with it, still in room A"));
+
+        if (!ctx.fast()) {
+          for (let t = 41; t <= TSHOW; t++) {
+            ctx.step(t);
+            big.textContent = String(ctx.crowd(t));
+            await ctx.sleep(38);
+          }
+        } else {
+          ctx.upto(TSHOW);
+        }
+        big.textContent = String(ctx.crowd(TSHOW));
+
+        [["blocks in those 120 steps", "26, 33, 29, 5, 28"],
+         ["average block, over 20,000", "42 steps"],
+         ["2m / 2 doors", "86 / 2 = 43"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        if (!ctx.fast()) await ctx.sleep(2400);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "the crowd has evened out; the single walker has not. Its own tally " +
+          "over those 120 steps is 82 in room A against 38 in room B, and it " +
+          "will stay lopsided for thousands of steps. That is what a community " +
+          "<em>is</em>, to a walker."));
+        await ctx.sleep(3800);
+      }
+    },
+    {
+      label: "Now open more doors",
+      note: "Drag the number of doors. With none the walker never leaves and there is no single long-run answer at all. With one it takes 62 steps before the room it started in stops telling you where it is; with four, fifteen. Same fourteen nodes each time.",
+      async run(ctx) {
+        const c = ctx.say("you set the number of doors");
+        ctx.labels("doors", "&lambda;<sub>2</sub>", "&tau;");
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag: nought to four doors between the two rooms"));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DOORS, step: 1, value: 1,
+          label: "Doors between the two rooms",
+          format: (b) => b + (b === 1 ? " door" : " doors"),
+          onGrab: () => ctx.pause(),
+          onInput: (b) => {
+            ctx.setDoors(b);
+            ctx.upto(TSHOW);
+            verdict.innerHTML = (b === 0)
+              ? "<span>0 doors</span><b>it never leaves</b>"
+              : "<span>" + b + (b === 1 ? " door" : " doors") +
+                "</span><b>" + T55[b] + " steps to 55%</b>";
+            verdict.style.visibility = "visible";
+          }
+        });
+
+        if (ctx.fast()) { dial.set(DOORS); return; }
+
+        dial.set(1);
+        await ctx.sleep(2200);
+        dial.set(0);
+        await ctx.sleep(2600);
+        for (let b = 1; b <= DOORS; b++) { dial.set(b); await ctx.sleep(2000); }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "&tau; falls from 27 steps to 6 as the doors open, and the blocks in " +
+          "the strip shorten with it. &ldquo;Slow to mix&rdquo; and &ldquo;has " +
+          "communities&rdquo; are not two facts about a network. They are one."));
+        await ctx.sleep(4600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-trap"), scenes, {
+    stepsLabel: "Trapped-walker steps",
+
+    /* The two things only this animation has: a fourteen-node drawing whose
+       doors open and close, and a chart that carries the crowd's curve above
+       one walker's timeline. Both are built once, in scene 1, and only
+       mutated afterwards — so jumping to a step still lands on a drawing,
+       because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const netBox = ctx.$("[data-rt-net]");
+      const plotBox = ctx.$("[data-rt-plot]");
+      const side = ctx.$("[data-rt-say]");
+      const S = { b: 1, t: 0 };
+
+      const at = (n) => NODE[n][0] + " " + NODE[n][1];
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        S.mode = null;
+        S.hot = null;
+        netBox.textContent = "";
+        plotBox.textContent = "";
+        const slow = !ctx.fast();
+
+        /* ---- the two rooms ---- */
+        const svg = ctx.svgRoot("0 0 240 200");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gShade = g(), gIn = g(), gDoor = g(), gNode = g(), gTok = g(), gName = g();
+
+        gShade.appendChild(ctx.svgEl("circle",
+          { cx: 60, cy: 100, r: 54, "class": "rt-room-a" }));
+        gShade.appendChild(ctx.svgEl("circle",
+          { cx: 180, cy: 100, r: 54, "class": "rt-room-b" }));
+
+        EDGE.forEach((e) => {
+          gIn.appendChild(ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1], "class": "rt-in"
+          }));
+        });
+
+        S.door = DOOR.map((d) => {
+          const p = ctx.svgEl("path", {
+            d: d[2] ? "M " + at(d[0]) + " Q " + d[2][0] + " " + d[2][1] + " " + at(d[1])
+                    : "M " + at(d[0]) + " L " + at(d[1]),
+            "class": "rt-door"
+          });
+          p.style.opacity = 0;
+          return gDoor.appendChild(p);
+        });
+
+        NODE.forEach((q, i) => {
+          const n = ctx.svgEl("circle",
+            { cx: q[0], cy: q[1], r: 8.5,
+              "class": "anim-node" + (i >= 7 ? " rt-node-b" : "") });
+          if (slow) {
+            n.classList.add("anim-fade");
+            n.style.animationDelay = (0.1 + i * 0.05) + "s";
+          }
+          gNode.appendChild(n);
+        });
+
+        const tok = ctx.svgEl("g", { "class": "anim-glide" });
+        tok.appendChild(ctx.svgEl("circle", { r: 16, "class": "rt-halo" }));
+        tok.appendChild(ctx.svgEl("circle", { r: 10.5, "class": "rt-tok" }));
+        tok.style.opacity = 0;
+        gTok.appendChild(tok);
+        S.tok = tok;
+
+        [[60, "room A", "rt-a"], [180, "room B", "rt-b"]].forEach((r) => {
+          const t = ctx.svgEl("text", { x: r[0], y: 192, "class": "rt-name " + r[2] });
+          t.textContent = r[1];
+          gName.appendChild(t);
+        });
+
+        netBox.appendChild(svg);
+
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span><i data-la>step</i> <b data-va>0</b></span>' +
+          '<span><i data-lb>in A</i> <b data-vb>100</b></span>' +
+          '<span><i data-lc>in B</i> <b data-vc>0</b></span>');
+        netBox.appendChild(S.read);
+        S.la = S.read.querySelector("[data-la]"); S.va = S.read.querySelector("[data-va]");
+        S.lb = S.read.querySelector("[data-lb]"); S.vb = S.read.querySelector("[data-vb]");
+        S.lc = S.read.querySelector("[data-lc]"); S.vc = S.read.querySelector("[data-vc]");
+        [S.la, S.lb, S.lc].forEach((n) => { n.style.fontStyle = "normal"; });
+
+        netBox.appendChild(ctx.el("div", "anim-caption",
+          "two 7-cliques and the doors between them &mdash; the two joined " +
+          "cliques of the mixing-time section, with two more nodes in each room."));
+
+        /* ---- the crowd's curve, and one walker's timeline under it ---- */
+        const psvg = ctx.svgRoot("0 0 260 176");
+        const pg = () => psvg.appendChild(ctx.svgEl("g"));
+        const gAx = pg(), gCur = pg(), gStrip = pg(), gCursor = pg();
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: PX0, y1: PYB, x2: PX1, y2: PYB, "class": "anim-axis" }));
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: PX0, y1: PYT - 4, x2: PX0, y2: PYB, "class": "anim-axis" }));
+        gAx.appendChild(ctx.svgEl("line", {
+          x1: PX0, y1: ty(0.5), x2: PX1, y2: ty(0.5),
+          "class": "anim-marker anim-marker--faint"
+        }));
+        const lab = (x, y, txt, cls) => {
+          const t = ctx.svgEl("text", { x: x, y: y, "class": "rt-num " + (cls || "") });
+          t.textContent = txt;
+          gAx.appendChild(t);
+        };
+        lab(PX0 - 5, PYT + 4, "100", "rt-end");
+        lab(PX0 - 5, ty(0.5) + 3, "50", "rt-end");
+        lab(PX0, PYB + 12, "0");
+        lab(tx(60), PYB + 12, "60");
+        lab(PX1, PYB + 12, "120 steps", "rt-end");
+        lab(PX0 - 5, SY + 10, "walk", "rt-end");
+
+        S.curve = gCur.appendChild(ctx.svgEl("polyline", { points: "", "class": "rt-curve" }));
+
+        S.tick = [];
+        for (let i = 1; i <= TSHOW; i++) {
+          const r = ctx.svgEl("rect", {
+            x: (tx(i - 1) + 0.15).toFixed(2), y: SY,
+            width: Math.max(0.9, TW - 0.3).toFixed(2), height: SH
+          });
+          r.style.opacity = 0;
+          S.tick.push(gStrip.appendChild(r));
+        }
+
+        S.cursor = gCursor.appendChild(ctx.svgEl("line", {
+          x1: PX0, y1: PYT - 6, x2: PX0, y2: SY + SH + 3, "class": "rt-cursor"
+        }));
+        S.cursor.style.opacity = 0;
+
+        plotBox.appendChild(psvg);
+        plotBox.appendChild(ctx.el("div", "anim-caption",
+          "line: how many of a hundred walkers released together in room A are " +
+          "still there after t steps &mdash; exact, from <b>P</b><sup>t</sup>, " +
+          "not a simulation. Band: the one recorded walk on the left, one tick " +
+          "per step, coloured by the room it is in."));
+
+        setDoors(1);
+        upto(0);
+      }
+
+      /* How many doors are open. Everything downstream — the drawing, the
+         curve, the strip — is a lookup on b. */
+      function setDoors(b) {
+        S.b = b;
+        S.door.forEach((p, i) => { p.style.opacity = i < b ? 1 : 0; });
+        if (S.mode === "doors") {
+          S.va.textContent = String(b);
+          S.vb.textContent = b === 0 ? "1.000" : LAM2[b].toFixed(3);
+          S.vc.textContent = b === 0 ? "∞" : TAU[b].toFixed(1);
+        }
+      }
+
+      function crowd(t) { return Math.round(CURVE[S.b][t] / 10); }
+
+      function place(n, glide) {
+        S.tok.style.opacity = 1;
+        if (!glide) S.tok.classList.remove("anim-glide");
+        S.tok.style.transform = "translate(" + NODE[n][0] + "px," + NODE[n][1] + "px)";
+        if (!glide) {
+          S.tok.getBoundingClientRect();          /* commit before re-arming */
+          S.tok.classList.add("anim-glide");
+        }
+      }
+
+      /* The curve drawn as far as step t, and the readouts that go with it. */
+      function paint(t) {
+        S.t = t;
+        const pts = [];
+        for (let i = 0; i <= t; i++) pts.push(tx(i).toFixed(1) + "," + ty(CURVE[S.b][i] / 1000).toFixed(1));
+        S.curve.setAttribute("points", pts.join(" "));
+        S.cursor.style.opacity = t > 0 ? 1 : 0;
+        S.cursor.setAttribute("x1", tx(t));
+        S.cursor.setAttribute("x2", tx(t));
+        if (S.mode !== "doors") {
+          S.va.textContent = String(t);
+          S.vb.textContent = String(crowd(t));
+          S.vc.textContent = String(NW - crowd(t));
+        }
+      }
+
+      /* One step of the recorded walk: the token moves, its tick is inked, and
+         the door it used flashes if it changed rooms. */
+      function step(t) {
+        const w = WALK[S.b];
+        const now = w[t], was = t > 0 ? w[t - 1] : null;
+        place(DIG.indexOf(now), t > 0 && t < 8);
+        if (t > 0) {
+          const q = S.tick[t - 1];
+          q.style.opacity = 1;
+          q.setAttribute("class", room(now) === 0 ? "rt-tick-a" : "rt-tick-b");
+          if (was !== null && room(now) !== room(was)) flash(DIG.indexOf(was), DIG.indexOf(now));
+          else cool();
+        }
+        paint(t);
+      }
+
+      /* Lay the walk down to step t with no animation — the fast-forward path,
+         and the way the knob scene repaints a whole strip at once. */
+      function upto(t) {
+        const w = WALK[S.b];
+        cool();
+        for (let i = 0; i < TSHOW; i++) {
+          const q = S.tick[i];
+          if (i < t) {
+            q.style.opacity = 1;
+            q.setAttribute("class", room(w[i + 1]) === 0 ? "rt-tick-a" : "rt-tick-b");
+          } else {
+            q.style.opacity = 0;
+          }
+        }
+        if (t > 0) place(DIG.indexOf(w[t]), false); else S.tok.style.opacity = 0;
+        paint(t);
+      }
+
+      function flash(from, to) {
+        cool();
+        const i = DOOR.findIndex((d) =>
+          (d[0] === from && d[1] === to) || (d[1] === from && d[0] === to));
+        if (i >= 0) {
+          S.hot = i;
+          S.door[i].setAttribute("class", "rt-door rt-door-hot");
+        }
+      }
+      function cool() {
+        if (S.hot != null) S.door[S.hot].setAttribute("class", "rt-door");
+        S.hot = null;
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return {
+        build: build, say: say, setDoors: setDoors, step: step, upto: upto,
+        crowd: crowd,
+        /* The third scene hands the readout row over to the knob, so the row
+           can carry doors / lambda2 / tau instead of steps and counts. */
+        labels: function (a, b, c) {
+          S.mode = "doors";
+          S.la.innerHTML = a; S.lb.innerHTML = b; S.lc.innerHTML = c;
+          setDoors(S.b);
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+Every method in this section is a different way of charging for that delay.
 
 ### Modularity Is a Short Walk Minus a Long One
 

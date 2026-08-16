@@ -1,390 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaccination Game</title>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: #000;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-size: 18px;
-        }
-        #game-container {
-            text-align: center;
-            width: 800px;
-        }
-        #network {
-            width: 600px;
-            height: 600px;
-            margin: 0px auto;
-            position: relative;
-            border-radius: 50%;
-        }
-        .node {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            position: absolute;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            z-index: 2;
-            background-color: #3498db;
-            border: 2px solid white;
-        }
-        .edge {
-            position: absolute;
-            background-color: #fff;
-            transform-origin: 0 100%;
-            height: 1px;
-            display: none;
-            z-index: 1;
-        }
-        #info {
-            margin-top: 20px;
-        }
-        #result {
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
-        }
-        #progress-bar {
-            width: 50%;
-            height: 20px;
-            background-color: #333;
-            margin-left: 0;
-        }
-        #total-success-bar {
-            width: 50%;
-            height: 20px;
-            background-color: #333;
-            margin-left: 0;
-        }
-        #progress {
-            width: 0;
-            height: 100%;
-            background-color: #4CAF50;
-            transition: width 0.3s;
-        }
-        #reset-btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        #end-game-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 3;
-            display: none;
-        }
-        #game-over-message {
-            font-size: 36px;
-            color: red;
-            margin-top: 20px;
-        }
-        #congrat-message {
-            font-size: 36px;
-            color: #0f0;
-            margin-top: 20px;
-        }
-        #reset-progress-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-top: 20px;
-        }
-        #certificate {
-            font-size: 24px;
-            margin-top: 10px;
-            margin-left: 20px;
-        }
-        #total-success {
-            width: 0;
-            height: 100%;
-            background-color: #FFD700;
-            transition: width 0.3s;
-        }
-        #game-plays {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who do you vaccinate?</title>
+<style>
+    /* ----------------------------------------------------------------------
+       House style for the standalone demos. Same tokens as the lecture note
+       (scss/minimal.scss and assets/anim.css): white paper, one ink, ONE
+       accent (#593196) and ONE contrast (#c2410c). No green, no webfont, no
+       external request of any kind.
+       ---------------------------------------------------------------------- */
+    :root {
+      --paper: #ffffff;
+      --panel: #fbfaf8;
+      --ink: #22212b;
+      --ink-soft: #6b6880;
+      --ink-faint: #9c95b5;
+      --rule: #e6e4e0;
+      --accent: #593196;
+      --accent-soft: #f0e9fb;
+      --contrast: #c2410c;
+      --contrast-soft: #fdeadf;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 22px 14px 56px; }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 600; line-height: 1.25;
+      margin: 0 0 .3em;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.02rem; font-weight: 600;
+      margin: 1.6em 0 .4em;
+    }
+    p { margin: 0 0 .9em; }
+    .lede { color: var(--ink-soft); margin-bottom: 1.1em; }
+    ul.how {
+      margin: 0 0 1.2em; padding: .7em .9em .7em 2.1em;
+      background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+      font-size: .93rem; color: var(--ink-soft);
+    }
+    ul.how li { margin: .18em 0; }
+    ul.how b { color: var(--ink); font-weight: 600; }
+
+    /* readouts ------------------------------------------------------------ */
+    .readouts {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+    }
+    .ro {
+      flex: 1 1 120px; min-width: 104px;
+      border: 1px solid var(--rule); border-radius: 6px;
+      padding: 7px 10px; background: var(--panel);
+    }
+    .ro .k {
+      display: block; font-size: .7rem; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--ink-faint);
+    }
+    .ro .v {
+      display: block; font-family: var(--mono);
+      font-size: 1.1rem; font-variant-numeric: tabular-nums; color: var(--ink);
+    }
+    .ro.hot .v { color: var(--contrast); }
+    .ro.key .v { color: var(--accent); }
+
+    /* controls ------------------------------------------------------------ */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px;
+    }
+    button {
+      font-family: inherit; font-size: .9rem;
+      padding: 7px 13px; border-radius: 6px; cursor: pointer;
+      background: var(--paper); color: var(--accent);
+      border: 1px solid var(--accent);
+      transition: background .15s, color .15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-soft); }
+    button.primary { background: var(--accent); color: #fff; }
+    button.primary:hover:not(:disabled) { background: #47267a; }
+    button.warm { color: var(--contrast); border-color: var(--contrast); }
+    button.warm:hover:not(:disabled) { background: var(--contrast-soft); }
+    button:disabled { opacity: .38; cursor: not-allowed; }
+    label.knob {
+      display: flex; align-items: center; gap: 8px; flex: 1 1 240px;
+      font-size: .9rem; color: var(--ink-soft);
+    }
+    label.knob input[type=range] { flex: 1; min-width: 90px; accent-color: var(--accent); }
+    label.knob .n {
+      font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums;
+      min-width: 3.2em; text-align: right;
+    }
+
+    /* figures ------------------------------------------------------------- */
+    figure { margin: 0 0 14px; }
+    svg.fig {
+      display: block; width: 100%; height: auto;
+      border: 1px solid var(--rule); border-radius: 6px; background: var(--paper);
+      touch-action: manipulation;
+    }
+    figcaption { font-size: .84rem; color: var(--ink-faint); margin-top: .4em; }
+    .msg {
+      min-height: 1.5em; font-size: .93rem; margin: 0 0 12px;
+      color: var(--contrast); font-weight: 600;
+    }
+    .msg.calm { color: var(--ink-soft); font-weight: 400; }
+
+    /* local ---------------------------------------------------------------- */
+    .edge { stroke: var(--ink-faint); stroke-opacity: .3; stroke-width: .8; }
+    .nd { fill: var(--accent); fill-opacity: .22; stroke: var(--accent);
+          stroke-opacity: .45; stroke-width: 1; }
+    .nd.vax { fill: var(--contrast); fill-opacity: 1; stroke: #fff; stroke-width: 1.5; }
+    .strat { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+    .strat button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .note { font-size: .9rem; color: var(--ink-soft); }
+    .note b { color: var(--ink); font-family: var(--mono); font-weight: 400; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .84rem;
+              color: var(--ink-soft); margin: 0 0 14px; }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend i { width: 22px; border-top-width: 2.5px; border-top-style: solid; }
+</style>
 </head>
 <body>
-    <div id="game-container">
-        <h1>
-            <span style="color: #FF6347;">V</span><span style="color: #FFA500;">a</span><span style="color: #FFD700;">c</span><span style="color: #32CD32;">c</span><span style="color: #1E90FF;">i</span><span style="color: #9370DB;">n</span><span style="color: #EE82EE;">a</span><span style="color: #FF6347;">t</span><span style="color: #FFA500;">i</span><span style="color: #FFD700;">o</span><span style="color: #32CD32;">n</span> 💉🦠
-            Game
-        </h1>
-        <div style="display: inline-block; border: 1px solid white; padding: 10px;">
-            <div style="text-align: left; font-size: 18px; padding: 10px;">
-                You are an epidemiologist tasked with immunizing the population! 🧑‍⚕️💉<br>
-                The network structure is unknown but you learn connections of vaccinated individuals 🕵️‍♂️🔍<br>
-                The vaccines are limited to three doses. <br>
-                Target the most connected nodes to control the spread 🦠💉<br>
-                Earn certificates as you play. Aim to become an Epidemiologist! 🏆
-            </div>
-        </div>
-        <div id="info">Game Plays: <span id="plays-count">0</span> | Sum of degrees: <span id="sum">0</span> | Threshold: <span id="threshold">0</span></div>
-        <div id="result"></div>
-        <div style="font-size: 22px;">Level:<span id="certificate">Amateur</span></div>
-        <div style="display: flex; align-items: center; justify-content: center; margin-top: 20px;">
-            <div id="total-success-bar" style="margin-right: 20px;">
-                <div id="total-success"></div>
-            </div>
-            <div id="progress-bar"><div id="progress"></div></div>
-        </div>
-        <button id="reset-btn" style="margin-top: 20px;">Reset Game</button>
-        <div id="network">
-            <div id="end-game-overlay">
-                <div id="game-over-message">Game Over! You have selected three nodes.</div>
-                <div id="congrat-message"></div>
-            </div>
-        </div>
-    </div>
+<div class="wrap">
 
-    <script>
-        const nodeCount = 60;
-        const minEdges = 3;
-        const maxEdges = 6;
-        const specialNodeCount = 6;
-        const specialNodeMinEdges = 10;
-        let trans_prob = 0;
+<h1>Who do you vaccinate?</h1>
+<p class="lede">A hundred and twenty people, a disease that spreads along
+friendships, and a limited number of doses. Vaccinated people cannot catch it
+and cannot pass it on. The question is not how many doses you have. It is who
+you give them to.</p>
 
-        let nodes = [];
-        let edges = [];
-        let selectedNodes = [];
-        let threshold;
-        let successCount = 0;
-        let gamePlays = 0;
+<ul class="how">
+  <li><b>Random</b> picks people out of the phone book. It needs to know
+      nothing at all.</li>
+  <li><b>Nominate a friend</b> picks a person at random and then vaccinates
+      <em>one of their friends</em>, chosen at random. It still needs no map of
+      the network &mdash; only a question you can ask at the door.</li>
+  <li><b>Biggest hubs</b> vaccinates the most connected people. It is the best
+      you can do, and it needs the whole network mapped, which in an outbreak
+      nobody has.</li>
+</ul>
 
-        function createNetwork() {
-            const networkElement = document.getElementById('network');
-            networkElement.innerHTML = '<div id="end-game-overlay"><div id="game-over-message">Game Over! Run out of vaccines!</div><div id="congrat-message"></div></div>';
-            nodes = [];
-            edges = [];
-            selectedNodes = [];
+<div class="strat" id="strat">
+  <button data-k="random" class="on">Random</button>
+  <button data-k="acq">Nominate a friend</button>
+  <button data-k="hub">Biggest hubs</button>
+</div>
 
-            // Create nodes in a circular layout
-            const centerX = 300;
-            const centerY = 300;
-            const radius = 250;
-            for (let i = 0; i < nodeCount; i++) {
-                const angle = (i / nodeCount) * 2 * Math.PI;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                const node = document.createElement('div');
-                node.className = 'node';
-                node.style.left = `${x}px`;
-                node.style.top = `${y}px`;
-                node.style.backgroundColor = '#3498db';
-                node.style.border = '2px solid white';
-                node.dataset.id = i;
-                node.onclick = () => selectNode(i);
-                networkElement.appendChild(node);
-                nodes.push({ id: i, edges: [] });
-            }
+<div class="controls">
+  <label class="knob">
+    Doses
+    <input type="range" id="doses" min="0" max="30" step="1" value="12"
+           aria-label="number of doses available">
+    <span class="n" id="doses-n">12</span>
+  </label>
+</div>
 
-            // Create edges
-            // Randomly select special nodes
-            let specialNodes = [];
-            while (specialNodes.length < specialNodeCount) {
-                const randomNode = Math.floor(Math.random() * nodeCount);
-                if (!specialNodes.includes(randomNode)) {
-                    specialNodes.push(randomNode);
-                }
-            }
+<div class="readouts">
+  <div class="ro"><span class="k">Doses</span><span class="v" id="ro-d">12</span></div>
+  <div class="ro key"><span class="k">Friends each</span><span class="v" id="ro-deg">0.0</span></div>
+  <div class="ro hot"><span class="k">Caught the disease</span><span class="v" id="ro-out">0%</span></div>
+</div>
 
-            for (let i = 0; i < nodeCount; i++) {
-                const edgeCount = specialNodes.includes(i) ? specialNodeMinEdges : Math.floor(Math.random() * (maxEdges - minEdges + 1)) + minEdges;
-                while (nodes[i].edges.length < edgeCount) {
-                    const target = Math.floor(Math.random() * nodeCount);
-                    if (target !== i && !nodes[i].edges.includes(target)) {
-                        nodes[i].edges.push(target);
-                        nodes[target].edges.push(i);
-                        createEdge(i, target);
-                    }
-                }
-            }
+<figure>
+  <svg class="fig" id="net" viewBox="0 0 640 420" role="img"
+       aria-label="The friendship network, with the vaccinated people marked."></svg>
+  <figcaption>Node size is that person's number of friends. Orange means
+  vaccinated &mdash; one fresh draw of the strategy every time you move the
+  slider.</figcaption>
+</figure>
 
-            // Set threshold
-            const nodeDegrees = nodes.map(node => node.edges.length);
-            const sumOfDegrees = nodeDegrees.reduce((sum, degree) => sum + degree, 0);
-            const averageDegree = sumOfDegrees / nodeCount;
+<figure>
+  <svg class="fig" id="chart" viewBox="0 0 640 280" role="img"
+       aria-label="Share of the population that catches the disease, against the number of doses."></svg>
+  <figcaption>Share of the population that catches the disease, averaged over
+  600 outbreaks per point.</figcaption>
+</figure>
 
-            const averageEdges = edges.length / nodeCount;
-            const sumOfDegreesSquared = nodeDegrees.reduce((sum, degree) => sum + degree * degree, 0);
-            threshold = Math.floor(2 * sumOfDegreesSquared / sumOfDegrees + averageDegree);
-            document.getElementById('threshold').textContent = threshold;
+<div class="legend">
+  <span><i style="border-color:#9c95b5;border-top-style:dotted"></i>Random</span>
+  <span><i style="border-color:#593196"></i>Nominate a friend</span>
+  <span><i style="border-color:#c2410c;border-top-style:dashed"></i>Biggest hubs</span>
+</div>
 
-            updateInfo();
-            updateProgressBar(0);
-        }
+<p class="note" id="note"></p>
 
-        function createEdge(source, target) {
-            const edge = document.createElement('div');
-            edge.className = 'edge';
-            const sourceNode = document.querySelector(`.node[data-id="${source}"]`);
-            const targetNode = document.querySelector(`.node[data-id="${target}"]`);
-            const dx = targetNode.offsetLeft - sourceNode.offsetLeft;
-            const dy = targetNode.offsetTop - sourceNode.offsetTop;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+</div>
 
-            edge.style.width = `${length}px`;
-            edge.style.left = `${sourceNode.offsetLeft + 7.5}px`;
-            edge.style.top = `${sourceNode.offsetTop + 7.5}px`;
-            edge.style.transform = `rotate(${angle}deg)`;
+<script>
+"use strict";
+/* ===========================================================================
+   Who do you vaccinate?
 
-            document.getElementById('network').appendChild(edge);
-            edges.push({ source, target, element: edge });
-        }
+   No library, no network request, no external asset.
 
-        function getRandomColor() {
-            const hue = Math.random() * 360;
-            return `hsl(${hue}, 70%, 80%)`;
-        }
+   THE NETWORK is a literal, generated offline and pasted in:
 
-        function selectNode(id) {
-            if (!selectedNodes.includes(id)) {
-                selectedNodes.push(id);
-                document.querySelector(`.node[data-id="${id}"]`).style.backgroundColor = '#ff0';
+     .venv-figs/bin/python, numpy default_rng(11) + igraph
+       degrees ~ 2 * (Pareto(a=1.4) + 1), rounded, clipped to [2, 32]
+       igraph.Graph.Degree_Sequence(method="configuration"), then simplify()
+       kept only if connected, 2.2 < <k> < 5.0 and max degree >= 18
+     layout: layout_fruchterman_reingold(niter=2000, seed=<uniform(7)>),
+       rescaled to [0, 1]
 
-                // Reveal edges
-                nodes[id].edges.forEach(targetId => {
-                    const edge = edges.find(edge =>
-                        (edge.source === id && edge.target === targetId) ||
-                        (edge.source === targetId && edge.target === id)
-                    );
-                    if (edge) {
-                        edge.element.style.display = 'block';
-                    }
-                });
-            }
+   igraph's internal RNG is not seeded there, so re-running the recipe gives a
+   different draw with the same statistics, not this exact one. This one has
+   N = 120, m = 298, <k> = 4.97, largest degree 25, and <k^2>/<k> = 9.57 --
+   that last number is the one to keep an eye on below.
 
-            updateInfo();
-            checkWinCondition();
-        }
+   THE DISEASE is bond percolation, which is what an SIR outbreak comes to
+   when you only care about who is eventually infected: seed one unvaccinated
+   person, and pass the infection along each friendship independently with
+   probability p = 0.40. Vaccinated people neither catch it nor pass it on.
 
-        function updateInfo() {
-            const sumOfDegrees = selectedNodes.reduce((sum, id) => sum + nodes[id].edges.length, 0);
-            document.getElementById('sum').textContent = sumOfDegrees;
-            updateProgressBar(sumOfDegrees);
-        }
+   The three curves are computed here, at load, from 600 outbreaks per point:
+   31 dose levels x 3 strategies. About 56,000 outbreaks, a few tenths of a
+   second, and then the slider is only reading off an array.
+   =========================================================================== */
 
-        function updateProgressBar(sumOfDegrees) {
-            const progressPercentage = Math.min((sumOfDegrees / threshold) * 100, 100);
-            document.getElementById('progress').style.width = `${progressPercentage}%`;
-        }
+/* N = 120, m = 298, <k> = 4.97, max k = 25, <k^2>/<k> = 9.57 */
+const N = 120;
+const LINKS = [[0,12],[0,101],[1,5],[1,74],[2,67],[2,90],[2,103],[2,118],[3,5],[3,109],
+    [4,11],[4,40],[5,6],[5,15],[5,16],[5,17],[5,19],[5,20],[5,24],[5,26],[5,27],[5,43],
+    [5,52],[5,53],[5,66],[5,67],[5,68],[5,74],[5,80],[5,90],[5,94],[5,96],[5,105],[5,115],
+    [5,118],[6,54],[7,61],[7,76],[8,20],[8,84],[9,48],[9,74],[9,99],[10,27],[10,101],
+    [11,61],[11,62],[11,95],[12,19],[12,32],[12,100],[13,37],[13,89],[14,27],[14,41],
+    [14,52],[14,74],[14,83],[14,100],[15,17],[15,25],[15,74],[15,101],[16,26],[16,32],
+    [16,39],[16,61],[16,65],[16,67],[16,68],[16,74],[16,90],[16,98],[16,114],[17,27],
+    [17,52],[17,66],[17,73],[17,75],[17,78],[17,90],[17,94],[17,98],[17,101],[17,109],
+    [18,21],[18,54],[18,67],[18,77],[18,85],[18,98],[18,115],[19,67],[19,97],[19,100],
+    [20,87],[21,24],[21,61],[22,27],[22,35],[22,92],[23,32],[23,52],[23,89],[23,104],
+    [24,39],[24,52],[24,59],[24,90],[24,101],[24,111],[25,45],[25,65],[25,67],[26,52],
+    [26,67],[26,88],[27,32],[27,33],[27,42],[27,43],[27,44],[27,60],[27,69],[27,73],[27,74],
+    [27,81],[27,83],[27,91],[27,92],[27,94],[27,98],[27,101],[27,102],[27,108],[27,118],
+    [28,72],[28,92],[29,35],[29,74],[29,101],[30,32],[30,64],[30,71],[30,75],[31,43],
+    [31,112],[31,119],[32,42],[32,44],[32,52],[32,72],[32,80],[32,83],[32,101],[32,104],
+    [32,114],[33,47],[33,109],[34,67],[34,74],[34,101],[35,45],[35,109],[35,119],[36,104],
+    [36,109],[37,67],[37,95],[38,51],[38,89],[40,83],[40,86],[41,74],[41,105],[42,83],
+    [42,94],[42,107],[43,51],[44,52],[44,67],[44,72],[44,74],[44,83],[44,88],[44,100],
+    [44,101],[44,111],[44,112],[44,114],[45,115],[46,52],[46,83],[47,74],[47,119],[48,88],
+    [49,67],[49,83],[50,52],[50,74],[52,59],[52,67],[52,70],[52,74],[52,81],[52,84],[52,92],
+    [53,99],[53,109],[54,91],[54,109],[55,73],[55,96],[56,116],[56,117],[57,67],[57,97],
+    [58,74],[58,101],[58,112],[59,74],[60,83],[60,112],[61,78],[62,90],[63,74],[63,105],
+    [64,67],[64,94],[65,72],[65,88],[65,97],[65,98],[65,110],[65,115],[67,70],[67,102],
+    [67,109],[68,114],[69,83],[71,88],[72,74],[73,117],[74,77],[74,79],[74,83],[74,85],
+    [74,101],[74,116],[76,77],[76,118],[77,109],[78,94],[79,91],[79,103],[79,111],[81,96],
+    [82,83],[82,95],[83,98],[83,101],[83,105],[83,112],[83,114],[83,118],[83,119],[86,88],
+    [86,90],[86,112],[86,113],[87,118],[88,109],[89,98],[89,100],[90,101],[90,105],[90,106],
+    [90,109],[91,110],[91,118],[93,103],[93,114],[94,103],[94,107],[94,112],[96,112],
+    [98,109],[99,108],[99,109],[101,103],[101,109],[101,118],[106,114],[106,118],[107,118],
+    [109,118],[110,114],[113,118]];
+const XY = [[0.6974,0.5979],[0.3806,0.6254],[0.7444,0.4126],[0.4334,0.6887],
+    [0.9665,0.2195],[0.5238,0.512],[0.5174,0.7659],[0.9783,0.5348],[0.5615,0],
+    [0.2021,0.5335],[0.3824,0.3446],[1,0.3658],[0.7072,0.6833],[0.8415,0.8429],
+    [0.4858,0.5525],[0.452,0.5282],[0.6577,0.5216],[0.5082,0.3823],[0.6179,0.7136],
+    [0.6649,0.6902],[0.5751,0.1914],[0.7864,0.6284],[0.2628,0.4722],[0.5809,0.662],
+    [0.6358,0.5216],[0.4921,0.687],[0.5896,0.4467],[0.4464,0.4311],[0.2329,0.363],
+    [0.3446,0.5635],[0.5641,0.2504],[0.3154,0.4812],[0.5793,0.5098],[0.3081,0.5423],
+    [0.5125,0.6099],[0.2996,0.6335],[0.4777,0.8187],[0.8803,0.6563],[0.5562,1],
+    [0.7973,0.5728],[0.7681,0.2464],[0.3669,0.6636],[0.5561,0.3227],[0.4008,0.6546],
+    [0.5398,0.4927],[0.3632,0.7907],[0.52,0.2501],[0.2349,0.5719],[0.2396,0.4038],
+    [0.7462,0.4594],[0.3398,0.4165],[0.4251,0.9174],[0.51,0.4193],[0.3534,0.6111],
+    [0.5529,0.7231],[0.2225,0.1612],[0,0.3104],[0.7839,0.7448],[0.3837,0.4071],
+    [0.4835,0.4838],[0.4377,0.2868],[0.8664,0.4722],[0.8796,0.3647],[0.3127,0.6795],
+    [0.6719,0.3172],[0.5653,0.6232],[0.4797,0.3132],[0.6497,0.5508],[0.7192,0.5265],
+    [0.4626,0.2591],[0.6791,0.4143],[0.4465,0.1788],[0.4157,0.4865],[0.2862,0.2701],
+    [0.4174,0.534],[0.4967,0.1589],[0.8082,0.5152],[0.6171,0.6088],[0.7206,0.3345],
+    [0.5824,0.4815],[0.652,0.6268],[0.388,0.2815],[0.8335,0.4173],[0.5636,0.4119],
+    [0.5257,0.13],[0.4513,0.7592],[0.617,0.2752],[0.6725,0.1496],[0.4668,0.4007],
+    [0.6492,0.8169],[0.6363,0.439],[0.6002,0.5486],[0.3187,0.3719],[0.8274,0.319],
+    [0.5847,0.3354],[0.9898,0.4941],[0.3508,0.2932],[0.7071,0.7921],[0.5614,0.5782],
+    [0.2576,0.6064],[0.6089,0.6869],[0.5208,0.4702],[0.593,0.3915],[0.6849,0.3656],
+    [0.5759,0.7632],[0.4532,0.5638],[0.7643,0.352],[0.6431,0.2201],[0.226,0.4847],
+    [0.477,0.5741],[0.725,0.6065],[0.5793,0.5973],[0.4583,0.35],[0.7156,0.1908],
+    [0.7043,0.4533],[0.4938,0.7308],[0.1474,0.4309],[0.081,0.2162],[0.6333,0.3827],
+    [0.3404,0.5081]];
 
-        function updateTotalSuccessBar() {
-            const totalSuccessPercentage = Math.min((successCount / 8) * 100, 100);
-            document.getElementById('total-success').style.width = `${totalSuccessPercentage}%`;
-            const certificateElement = document.getElementById('certificate').textContent;
-            if (certificateElement.includes('Amateur')) {
-                document.getElementById('total-success').style.backgroundColor = '#FFD700';
-            } else if (certificateElement.includes('Professional')) {
-                document.getElementById('total-success').style.backgroundColor = '#1E90FF';
-            } else if (certificateElement.includes('Experienced Player')) {
-                document.getElementById('total-success').style.backgroundColor = '#32CD32';
-            } else if (certificateElement.includes('Ph.D')) {
-                document.getElementById('total-success').style.backgroundColor = '#FF6347';
-            } else if (certificateElement.includes('Epidemiologist')) {
-                document.getElementById('total-success').style.backgroundColor = '#9370DB';
-            }
-        }
 
-        function checkWinCondition() {
-            const sumOfDegrees = selectedNodes.reduce((sum, id) => sum + nodes[id].edges.length, 0);
-            const resultElement = document.getElementById('result');
+const P = 0.40;         // per-friendship transmission probability
+const RUNS = 600;       // outbreaks averaged per point
+const MAXD = 30;
 
-            if (sumOfDegrees >= threshold) {
-                resultElement.textContent = '🎉 Threshold met! Population immunized!';
-                resultElement.style.color = '#0f0';
+const C = { ink: "#22212b", soft: "#6b6880", faint: "#9c95b5", rule: "#e6e4e0",
+            accent: "#593196", contrast: "#c2410c" };
 
-                const specialNodesFound = selectedNodes.filter(id => nodes[id].edges.length >= specialNodeMinEdges).length;
-                if (specialNodesFound === specialNodeCount) {
-                    resultElement.textContent += ' 🌟 You found the two most connected nodes!';
-                }
+/* neighbour lists and degrees */
+const ADJ = []; for (let i = 0; i < N; i++) ADJ.push([]);
+for (const [a, b] of LINKS) { ADJ[a].push(b); ADJ[b].push(a); }
+const DEG = ADJ.map(a => a.length);
+const BY_DEG = DEG.map((d, i) => i).sort((a, b) => DEG[b] - DEG[a]);
+const MEAN_K = DEG.reduce((a, b) => a + b, 0) / N;
+const MEAN_K2 = DEG.reduce((a, d) => a + d * d, 0) / N;
+const FRIEND_K = MEAN_K2 / MEAN_K;     // <k^2>/<k>, the average friend's degree
 
-                const overlay = document.getElementById('end-game-overlay');
-                overlay.style.display = 'flex';
-                document.getElementById('game-over-message').style.display = 'none';
-                document.getElementById('congrat-message').textContent = resultElement.textContent;
+/* --------------------------------------------------------------------------
+   The three strategies. Each returns a Uint8Array flag per person.
+   -------------------------------------------------------------------------- */
+function chooseRandom(d) {
+  const v = new Uint8Array(N);
+  const bag = [];
+  for (let i = 0; i < N; i++) bag.push(i);
+  for (let i = 0; i < d; i++) {
+    const j = i + Math.floor(Math.random() * (N - i));
+    const t = bag[i]; bag[i] = bag[j]; bag[j] = t;
+    v[bag[i]] = 1;
+  }
+  return v;
+}
+function chooseAcquaintance(d) {
+  const v = new Uint8Array(N);
+  let got = 0, guard = 0;
+  while (got < d && guard < 4000) {
+    guard++;
+    const person = Math.floor(Math.random() * N);
+    const nb = ADJ[person];
+    if (!nb.length) continue;
+    const friend = nb[Math.floor(Math.random() * nb.length)];
+    if (!v[friend]) { v[friend] = 1; got++; }
+  }
+  return v;
+}
+function chooseHub(d) {
+  const v = new Uint8Array(N);
+  for (let i = 0; i < d; i++) v[BY_DEG[i]] = 1;
+  return v;
+}
+const CHOOSE = { random: chooseRandom, acq: chooseAcquaintance, hub: chooseHub };
 
-                successCount++;
-                const successesElement = document.getElementById('successes');
-                if (successesElement) {
-                    successesElement.textContent = successCount;
-                }
+/* --------------------------------------------------------------------------
+   One outbreak. Bond percolation from a random unvaccinated seed.
+   -------------------------------------------------------------------------- */
+const seen = new Uint8Array(N);
+const stack = new Int32Array(N);
+function outbreak(v) {
+  let start = Math.floor(Math.random() * N);
+  if (v[start]) return 0;
+  seen.fill(0);
+  seen[start] = 1;
+  let top = 0, size = 1;
+  stack[top++] = start;
+  while (top) {
+    const x = stack[--top];
+    const nb = ADJ[x];
+    for (let i = 0; i < nb.length; i++) {
+      const w = nb[i];
+      if (v[w] || seen[w]) continue;
+      if (Math.random() < P) { seen[w] = 1; size++; stack[top++] = w; }
+    }
+  }
+  return size / N;
+}
 
-                updateCertificate();
-                updateTotalSuccessBar();
-            } else {
-                resultElement.textContent = '';
-            }
+/* --------------------------------------------------------------------------
+   The curves, computed once.
+   -------------------------------------------------------------------------- */
+const CURVE = { random: [], acq: [], hub: [] };
+const AVGDEG = { random: [], acq: [], hub: [] };
+for (const kind of ["random", "acq", "hub"]) {
+  for (let d = 0; d <= MAXD; d++) {
+    let sum = 0, degSum = 0;
+    for (let r = 0; r < RUNS; r++) {
+      const v = CHOOSE[kind](d);
+      sum += outbreak(v);
+      if (d > 0) {
+        let s = 0;
+        for (let i = 0; i < N; i++) if (v[i]) s += DEG[i];
+        degSum += s / d;
+      }
+    }
+    CURVE[kind].push(sum / RUNS);
+    AVGDEG[kind].push(d > 0 ? degSum / RUNS : 0);
+  }
+}
 
-            if (selectedNodes.length >= 3) {
-                const overlay = document.getElementById('end-game-overlay');
-                overlay.style.display = 'flex';
-                if (sumOfDegrees < threshold) {
-                    document.getElementById('game-over-message').style.display = 'block';
-                } else {
-                    document.getElementById('game-over-message').style.display = 'none';
-                }
-            }
-        }
+/* --------------------------------------------------------------------------
+   Elements and state.
+   -------------------------------------------------------------------------- */
+const nEl = document.getElementById("net");
+const cEl = document.getElementById("chart");
+const noteEl = document.getElementById("note");
+const knob = document.getElementById("doses");
+const knobN = document.getElementById("doses-n");
+const roD = document.getElementById("ro-d");
+const roDeg = document.getElementById("ro-deg");
+const roOut = document.getElementById("ro-out");
+const stratEl = document.getElementById("strat");
 
-        function updateCertificate() {
-            const certificateElement = document.getElementById('certificate');
-            console.log(successCount);
-            if (successCount >= 2 && successCount <= 4) {
-               certificateElement.innerHTML = '<span style="color: #87CEEB;">Experienced Player 🥉</span>';
-            } else if (successCount > 4 && successCount <= 6) {
-                certificateElement.innerHTML = '<span style="color: #FF6347;">Ph.D 🥈</span>';
-            } else if (successCount > 6 && successCount <= 8) {
-                certificateElement.innerHTML = '<span style="color: gold;">Professional 🥇</span>';
-            } else if (successCount > 8 && successCount <= 10) {
-                certificateElement.innerHTML = '<span style="color: #FF6347;">E</span><span style="color: #FFA500;">p</span><span style="color: #FFD700;">i</span><span style="color: #32CD32;">d</span><span style="color: #1E90FF;">e</span><span style="color: #9370DB;">m</span><span style="color: #EE82EE;">i</span><span style="color: #FF6347;">o</span><span style="color: #FFA500;">l</span><span style="color: #FFD700;">o</span><span style="color: #32CD32;">g</span><span style="color: #1E90FF;">i</span><span style="color: #9370DB;">s</span><span style="color: #EE82EE;">t</span> 👩‍🔬🏆';
-            } else {
-                certificateElement.innerHTML = '<span style="color: white;">Amateur</span>';
-            }
-        }
+let kind = "random";
+let doses = 12;
 
-        function resetGame() {
-            createNetwork();
-            document.getElementById('result').textContent = '';
-            document.getElementById('end-game-overlay').style.display = 'none';
-            document.getElementById('game-over-message').style.display = 'none';
-            document.getElementById('congrat-message').textContent = '';
-            // Update the number of plays
-            gamePlays++;
-            const playsElement = document.getElementById('plays-count');
-            playsElement.textContent = gamePlays;
-        }
+function svg(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('reset-btn').addEventListener('click', resetGame);
-            createNetwork();
-        });
-    </script>
+/* --------------------------------------------------------------------------
+   The map.
+   -------------------------------------------------------------------------- */
+const GW = 640, PAD = 22;
+const XRr = [Math.min.apply(null, XY.map(p => p[0])), Math.max.apply(null, XY.map(p => p[0]))];
+const YRr = [Math.min.apply(null, XY.map(p => p[1])), Math.max.apply(null, XY.map(p => p[1]))];
+const xSpan = XRr[1] - XRr[0], ySpan = YRr[1] - YRr[0];
+const inner = GW - 2 * PAD;
+const GH = Math.round(2 * PAD + inner * ySpan / xSpan);
+nEl.setAttribute("viewBox", "0 0 " + GW + " " + GH);
+const px = i => PAD + ((XY[i][0] - XRr[0]) / xSpan) * inner;
+const py = i => PAD + ((XY[i][1] - YRr[0]) / ySpan) * (GH - 2 * PAD);
+const MAXDEG = Math.max.apply(null, DEG);
+const rad = i => 3 + 7 * Math.sqrt(DEG[i] / MAXDEG);
+
+let edgeLayerDone = false;
+function paintNet(v) {
+  while (nEl.firstChild) nEl.removeChild(nEl.firstChild);
+  const layer = svg("g", {});
+  for (const [a, b] of LINKS) {
+    layer.appendChild(svg("line", { class: "edge",
+      x1: px(a), y1: py(a), x2: px(b), y2: py(b) }));
+  }
+  nEl.appendChild(layer);
+  for (let i = 0; i < N; i++) {
+    nEl.appendChild(svg("circle", { class: "nd" + (v[i] ? " vax" : ""),
+      cx: px(i), cy: py(i), r: rad(i) }));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The chart.
+   -------------------------------------------------------------------------- */
+const HW = 640, HH = 280, HM = { t: 18, r: 18, b: 46, l: 54 };
+const hw = HW - HM.l - HM.r, hh = HH - HM.t - HM.b;
+const TOP = Math.ceil(Math.max.apply(null, CURVE.random) * 20) / 20 + 0.05;
+
+function paintChart() {
+  while (cEl.firstChild) cEl.removeChild(cEl.firstChild);
+  const g = svg("g", { transform: "translate(" + HM.l + "," + HM.t + ")" });
+  cEl.appendChild(g);
+  const X = d => (d / MAXD) * hw;
+  const Y = v => hh - (v / TOP) * hh;
+
+  for (let k = 0; k <= 4; k++) {
+    const v = TOP * k / 4;
+    g.appendChild(svg("line", { x1: 0, y1: Y(v), x2: hw, y2: Y(v),
+      stroke: C.rule, "stroke-width": 1 }));
+    const t = svg("text", { x: -8, y: Y(v) + 3.5, "text-anchor": "end",
+      "font-size": 10, fill: C.faint });
+    t.textContent = (v * 100).toFixed(0) + "%";
+    g.appendChild(t);
+  }
+  for (let d = 0; d <= MAXD; d += 5) {
+    const t = svg("text", { x: X(d), y: hh + 18, "text-anchor": "middle",
+      "font-size": 10, fill: C.faint });
+    t.textContent = d;
+    g.appendChild(t);
+  }
+  const xl = svg("text", { x: hw / 2, y: hh + 38, "text-anchor": "middle",
+    "font-size": 11, fill: C.faint });
+  xl.textContent = "doses";
+  g.appendChild(xl);
+
+  /* Two hues have to carry three curves, so the dash pattern does the
+     identifying and the colour only reinforces it. The selected strategy is
+     drawn heavier; nothing is dimmed, because a dimmed accent and the faint
+     ink are the same grey-purple on paper. */
+  const style = { random: [C.faint, "2 3", 2.4], acq: [C.accent, "0", 2.4],
+                  hub: [C.contrast, "7 4", 2.4] };
+  for (const k of ["random", "acq", "hub"]) {
+    let d = "";
+    CURVE[k].forEach((v, i) => { d += (i ? "L" : "M") + X(i) + " " + Y(v); });
+    g.appendChild(svg("path", { d: d, fill: "none", stroke: style[k][0],
+      "stroke-dasharray": style[k][1],
+      "stroke-width": k === kind ? style[k][2] + 1.4 : style[k][2] }));
+  }
+
+  g.appendChild(svg("line", { x1: X(doses), y1: 0, x2: X(doses), y2: hh,
+    stroke: C.ink, "stroke-width": 1, "stroke-opacity": .25 }));
+  for (const k of ["random", "acq", "hub"]) {
+    g.appendChild(svg("circle", { cx: X(doses), cy: Y(CURVE[k][doses]), r: 4,
+      fill: style[k][0] }));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Wire up.
+   -------------------------------------------------------------------------- */
+const NAME = { random: "Random", acq: "Nominate a friend", hub: "Biggest hubs" };
+
+function update() {
+  paintNet(CHOOSE[kind](doses));
+  paintChart();
+  roD.textContent = String(doses);
+  roDeg.textContent = doses ? AVGDEG[kind][doses].toFixed(1) : "—";
+  roOut.textContent = (CURVE[kind][doses] * 100).toFixed(0) + "%";
+
+  const saved = Math.round((CURVE.random[doses] - CURVE.acq[doses]) * 100);
+  if (doses === 0) {
+    noteEl.innerHTML = "No doses at all: about <b>" +
+      (CURVE.random[0] * 100).toFixed(0) + "%</b> of the population catches it. " +
+      "Move the slider.";
+  } else if (kind === "random") {
+    noteEl.innerHTML = "Names out of the phone book reach people with <b>" +
+      AVGDEG.random[doses].toFixed(1) + "</b> friends on average &mdash; which " +
+      "is &#9001;k&#9002; = <b>" + MEAN_K.toFixed(1) + "</b>, the average person, " +
+      "and no surprise. Now press <em>Nominate a friend</em> and watch that " +
+      "number move.";
+  } else if (kind === "acq") {
+    noteEl.innerHTML = "Asking a stranger to name one friend reaches people with <b>" +
+      AVGDEG.acq[doses].toFixed(1) + "</b> friends on average. That is not " +
+      "&#9001;k&#9002; = <b>" + MEAN_K.toFixed(1) + "</b> but " +
+      "&#9001;k&#178;&#9002;/&#9001;k&#9002; = <b>" + FRIEND_K.toFixed(1) +
+      "</b> &mdash; the average <em>friend</em>. The friendship paradox is " +
+      "spending your doses for you. At " + doses + " doses that is worth <b>" +
+      saved + "</b> percentage points of the population against picking at " +
+      "random, and you never had to see the network.";
+  } else {
+    noteEl.innerHTML = "The " + doses + " most connected people have <b>" +
+      AVGDEG.hub[doses].toFixed(1) + "</b> friends each, and vaccinating them " +
+      "is the best any strategy can do. But to know who they are you must " +
+      "first map every friendship in the population, which in a real outbreak " +
+      "nobody has done. <em>Nominate a friend</em> gets a long way towards this " +
+      "curve knowing nothing at all.";
+  }
+}
+
+stratEl.addEventListener("click", ev => {
+  const b = ev.target.closest("button");
+  if (!b) return;
+  kind = b.dataset.k;
+  for (const other of stratEl.querySelectorAll("button")) {
+    other.classList.toggle("on", other === b);
+  }
+  update();
+});
+knob.addEventListener("input", () => {
+  doses = parseInt(knob.value, 10);
+  knobN.textContent = String(doses);
+  update();
+});
+
+update();
+</script>
 </body>
 </html>

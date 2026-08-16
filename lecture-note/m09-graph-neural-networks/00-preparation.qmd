@@ -12,8 +12,6 @@ Edge detection is a classical problem in image processing. The goal is to identi
 
 An image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image is a 2D matrix, where each element is the brightness of one pixel.
 
-<!-- TODO(anim): a grayscale photo with a hover-readout showing the brightness number under the cursor, so "an image is a matrix" becomes something the reader checks rather than reads. -->
-
 ### Six by six pixels with a bright stripe down the middle
 
 Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a *significant brightness change between adjacent pixels*. To be more concrete, let's consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.
@@ -178,7 +176,405 @@ Check out this awesome interactive demo to see how different kernels work: [Demo
 
 Convolution computes the new pixel values by sliding a kernel over an image. How is the resulting image related to the original image?
 
-<!-- TODO(anim): a kernel sliding along a row of pixels with the running dot product drawn underneath, so the reader watches the output being built one position at a time. -->
+Before answering that, watch the sliding itself. Below is one row of the picture above — six numbers, with the bright stripe at position 3 — and the three-weight kernel $[-1, 0, 1]$. Four positions, three multiplications each; that is the whole operation. Step it, then take the window yourself.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The sliding window (m09 preparation) — only the rules this one widget needs.
+   The paper, the panels, the buttons, the knob and the motion primitives all
+   come from assets/anim.css; the sequencer from assets/anim.js. Every colour
+   here is a kit token, and the pixel fills are interpolated between two of
+   them in JS.
+   -------------------------------------------------------------------------- */
+/* A six-cell strip with a label column needs the whole half-width; the kit's
+   310px default is sized for a dozen-node diagram. */
+#conv-slide [data-cs-strip] { --anim-svg-max: 100%; }
+
+#conv-slide .cs-cell { stroke: var(--_ink); stroke-width: 1.4; }
+#conv-slide .cs-num  { font-family: var(--_hand); font-size: 12px; text-anchor: middle;
+                       fill: var(--_ink); }
+#conv-slide .cs-tag  { font-family: var(--_hand); font-size: 8.5px; fill: var(--_ink-soft); }
+/* The window and the kernel are the operator; the output and the drop line
+   that ties one to the other are the answer. Accent for the operator, amber
+   for the answer, and nothing else gets a colour. */
+#conv-slide .cs-win   { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+#conv-slide .cs-kcell { fill: var(--_white); stroke: var(--_accent); stroke-width: 1.6; }
+#conv-slide .cs-knum  { font-family: var(--_hand); font-size: 12px; font-weight: 700;
+                        text-anchor: middle; fill: var(--_accent); }
+#conv-slide .cs-out   { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.4; }
+#conv-slide .cs-live  { stroke: var(--_amber); stroke-width: 2.4; }
+#conv-slide .cs-drop  { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+#conv-slide .cs-rule  { height: 0; margin: 0.35rem 0 0.3rem; border: 0;
+                        border-top: 1.6px solid var(--_rule); }
+</style>
+
+<figure class="anim-stage" id="conv-slide">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-cs-strip></div>
+    <div data-anim-clear data-cs-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One window, four positions. Markup above, scenes below, and nothing in
+   between: everything a scene calls arrives on `ctx` — see assets/anim.js.
+   The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Four numbers, and you can check every one of them in your head. The row
+     and the kernel are the ones the prose uses:
+
+       X = [10, 10, 80, 10, 10, 10]      K = [-1, 0, 1]
+
+     Convolution lays the kernel down REVERSED — [K3, K2, K1] = [1, 0, -1] —
+     which is the convention the margin note beside this figure explains. At
+     window position p the answer is
+
+       X[p]*1 + X[p+1]*0 + X[p+2]*(-1),
+
+     so   p=0: 10 - 80 = -70    p=1: 10 - 10 =  0
+          p=2: 80 - 10 =  70    p=3: 10 - 10 =  0
+
+     which is OUT below, and is exactly the four defined entries of one row of
+     the horizontal derivative computed by hand at the top of this page.
+     ------------------------------------------------------------------------ */
+  const X = [10, 10, 80, 10, 10, 10];
+  const KF = [1, 0, -1];                       /* the kernel, already flipped */
+  const OUT = [-70, 0, 70, 0];
+  const POSN = 4;                              /* the knob: window 0 … 3 */
+  const PARK = 1;                              /* where the auto-sweep stops */
+
+  /* the strip's geometry, in viewBox units */
+  const X0 = 44, W = 30;
+  const Y_PIX = 18, Y_KER = 62, Y_OUT = 116, H = 30;
+  const cx = (i) => X0 + i * W + W / 2;        /* centre of cell i */
+  const ox = (p) => X0 + (p + 1) * W;          /* output cell p, left edge */
+  const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v);
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "One row of the picture",
+      note: "Six numbers, taken from one row of the six-by-six picture above. Five of them are 10 and one is 80 — that single 80 is the bright stripe, drawn darker here because darker means larger.",
+      async run(ctx) {
+        ctx.draw();
+        await ctx.sleep(1800);
+        const c = ctx.card("one row, six numbers");
+        [["numbers in the row", "6"], ["the stripe", "80"],
+         ["everything else", "10"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "nothing has happened yet: this is the input"));
+        await ctx.sleep(2400);
+      }
+    },
+    {
+      label: "Flip the kernel, lay it down",
+      note: "The kernel is three weights, −1, 0 and +1. Convolution lays it down reversed, so the window reads +1, 0, −1 from left to right. Multiply each covered number by the weight under it and add the three up.",
+      async run(ctx) {
+        const c = ctx.card("the kernel");
+        c.appendChild(ctx.el("div", "anim-tally",
+          "<span>K, as written</span><b>&minus;1 &nbsp; 0 &nbsp; +1</b>"));
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>K, laid down</span><b>+1 &nbsp; 0 &nbsp; &minus;1</b>"));
+        c.appendChild(ctx.el("div", "anim-caption",
+          "reversed &mdash; the convention explained in the margin"));
+        await ctx.sleep(1400);
+
+        ctx.showKernel(true);
+        ctx.slideTo(0);
+        await ctx.sleep(1200);
+        await ctx.terms(c, 0);
+        ctx.fill(0);
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "Slide it along",
+      note: "Move the window one pixel to the right and do it again. Three more multiplications, one more number underneath. Four positions on a row of six, and the output is built one position at a time.",
+      async run(ctx) {
+        ctx.showKernel(true);
+        for (let p = 1; p < POSN; p++) {
+          const c = ctx.card("window at pixels " + (p + 1) + "–" + (p + 3));
+          ctx.slideTo(p);
+          await ctx.sleep(700);
+          await ctx.terms(c, p);
+          ctx.fill(p);
+          await ctx.sleep(p < POSN - 1 ? 1500 : 900);
+        }
+        const c = ctx.card("all four positions");
+        c.appendChild(ctx.el("div", "anim-tally",
+          "<span>output</span><b>&minus;70 &nbsp; 0 &nbsp; 70 &nbsp; 0</b>"));
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "six numbers in, four numbers out: the window needs three pixels " +
+          "under it, and only four places on a row of six give it three."));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Now you slide it",
+      note: "Take the window. Watch where the answer lands: the position sitting right on top of the 80 gives 0, because the kernel never looks at the middle pixel. The stripe shows up on its two shoulders, as −70 and +70.",
+      async run(ctx) {
+        const c = ctx.card("now you slide it");
+        ctx.showKernel(true);
+        ctx.fill(-1);                          /* all four, they are computed */
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          '<span style="color:var(--_accent)">pixels <b data-w>1&ndash;3</b></span>' +
+          '<span style="color:var(--_amber)">sum <b data-s>&minus;70</b></span>');
+        c.appendChild(read);
+
+        const rows = ctx.el("div");
+        c.appendChild(rows);
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outW = read.querySelector("[data-w]");
+        const outS = read.querySelector("[data-s]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the strip is yours
+           until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: POSN - 1, step: 1, value: 0,
+          label: "Window position",
+          format: (p) => "pixels " + (p + 1) + " to " + (p + 3),
+          onGrab: () => ctx.pause(),
+          onInput: (p) => {
+            outW.textContent = (p + 1) + "–" + (p + 3);
+            outS.innerHTML = sign(OUT[p]);
+            ctx.slideTo(p);
+            rows.textContent = "";
+            for (let j = 0; j < 3; j++) {
+              rows.appendChild(ctx.el("div", "anim-tally",
+                "<span>" + X[p + j] + " &times; " +
+                sign(KF[j]) + "</span><b>" +
+                sign(X[p + j] * KF[j]) + "</b>"));
+            }
+          }
+        });
+        dial.set(0);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipped to, or read with motion off: land on the position that makes
+           the point, because that position is what this figure is about. */
+        if (ctx.fast()) {
+          dial.set(PARK);
+          say("centred on the stripe, and the answer is <b>0</b>.");
+          return;
+        }
+
+        await ctx.sleep(900);
+        dial.set(PARK);
+        await ctx.sleep(1200);
+        say("centred on the stripe, and the answer is <b>0</b>: the kernel " +
+            "compares the two <em>neighbours</em>, and both of them are 10.");
+        await ctx.sleep(3400);
+
+        for (let p = PARK + 1; p < POSN; p++) { dial.set(p); await ctx.sleep(1100); }
+        say("so a bright line is not one big number. It is a matched pair, " +
+            "&minus;70 and +70, one on each shoulder.");
+        await ctx.sleep(3600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("conv-slide"), scenes, {
+    stepsLabel: "Convolution steps",
+
+    /* The two things only this animation has: a strip that persists across all
+       four scenes, and a card on the right that each scene rewrites. Built
+       once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const strip = ctx.$("[data-cs-strip]");
+      const side = ctx.$("[data-cs-side]");
+      const S = {};
+
+      /* ---- the colour of a number ----------------------------------------
+         Pale accent for 10, full accent for 80, both read off the stage so
+         the ramp follows the theme. The literals are the fallbacks
+         assets/anim.css declares, reached only if a browser hands back
+         something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (t) => "rgb(" +
+        LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+
+      /* ---- the drawing ---------------------------------------------------
+         Scene 1 builds it; scenes 2–4 only ever mutate it. Separate <g>s so
+         the window frame lands over the cells and the drop line under the
+         output, with no z fiddling. */
+      function draw() {
+        strip.textContent = "";
+        const svg = ctx.svgRoot("0 0 236 164");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gPix = g(), gOut = g(), gDrop = g(), gWin = g();
+        const slow = !ctx.fast();
+
+        const text = (x, y, s, cls, fill) => {
+          const t = ctx.svgEl("text", { x: x, y: y, "class": cls });
+          if (fill) t.style.fill = fill;
+          t.textContent = s;
+          return t;
+        };
+
+        [[Y_PIX + 20, "pixels"], [Y_KER + 20, "kernel"], [Y_OUT + 20, "output"]]
+          .forEach((r) => svg.appendChild(text(3, r[0], r[1], "cs-tag")));
+
+        X.forEach((v, i) => {
+          const t = v / 100;
+          const r = ctx.svgEl("rect", {
+            x: X0 + i * W, y: Y_PIX, width: W, height: H, rx: 3,
+            "class": "cs-cell" + (slow ? " anim-fade" : "")
+          });
+          r.style.fill = hue(t);
+          if (slow) r.style.animationDelay = (0.15 + i * 0.13) + "s";
+          gPix.appendChild(r);
+          const n = text(cx(i), Y_PIX + 20, String(v),
+            "cs-num" + (slow ? " anim-fade" : ""), t > 0.5 ? "#fff" : "");
+          if (slow) n.style.animationDelay = (0.15 + i * 0.13) + "s";
+          gPix.appendChild(n);
+        });
+
+        S.out = [];
+        S.outN = [];
+        for (let p = 0; p < POSN; p++) {
+          const r = ctx.svgEl("rect", {
+            x: ox(p), y: Y_OUT, width: W, height: H, rx: 3, "class": "cs-out"
+          });
+          gOut.appendChild(r);
+          const n = text(cx(p + 1), Y_OUT + 20, "", "cs-num");
+          gOut.appendChild(n);
+          S.out.push(r);
+          S.outN.push(n);
+        }
+
+        S.drop = ctx.svgEl("line", {
+          x1: cx(1), y1: Y_KER + H, x2: cx(1), y2: Y_OUT, "class": "cs-drop"
+        });
+        S.drop.style.opacity = 0;
+        gDrop.appendChild(S.drop);
+
+        /* Window frame and kernel cells ride in one group, so "the operator"
+           is a single thing that moves. Base coordinates are position 0; the
+           group is translated 30 units per step. */
+        const win = ctx.svgEl("g", { "class": "anim-glide" });
+        win.appendChild(ctx.svgEl("rect", {
+          x: X0 - 2, y: Y_PIX - 3, width: 3 * W + 4, height: H + 6, rx: 5,
+          "class": "cs-win"
+        }));
+        KF.forEach((w, j) => {
+          win.appendChild(ctx.svgEl("rect", {
+            x: X0 + j * W + 3, y: Y_KER, width: W - 6, height: H, rx: 3,
+            "class": "cs-kcell"
+          }));
+          const t = ctx.svgEl("text", {
+            x: X0 + j * W + W / 2, y: Y_KER + 20, "class": "cs-knum"
+          });
+          t.textContent = sign(w);
+          win.appendChild(t);
+        });
+        win.style.opacity = 0;
+        gWin.appendChild(win);
+        S.win = win;
+
+        strip.appendChild(svg);
+        strip.appendChild(ctx.el("div", "anim-caption",
+          "one row of the picture. Darker means a larger number, so the single " +
+          "dark cell is the bright stripe."));
+      }
+
+      const showKernel = (on) => {
+        S.win.style.opacity = on ? 1 : 0;
+        S.drop.style.opacity = on ? 1 : 0;
+      };
+
+      /* ---- put the operator at position p ---- */
+      function windowAt(p) {
+        S.win.style.transform = "translate(" + (p * W) + "px,0px)";
+        S.drop.setAttribute("x1", cx(p + 1));
+        S.drop.setAttribute("x2", cx(p + 1));
+        S.out.forEach((r, k) => {
+          r.setAttribute("class", "cs-out" + (k === p ? " cs-live" : ""));
+        });
+      }
+
+      /* ---- write the answer into output cell p; p < 0 writes all four ---- */
+      function fill(p) {
+        S.outN.forEach((n, k) => {
+          if (p < 0 || k <= p) n.textContent = sign(OUT[k]);
+        });
+      }
+
+      /* ---- the three multiplications, one line at a time ---- */
+      async function terms(c, p) {
+        const rule = ctx.el("hr", "cs-rule");
+        for (let j = 0; j < 3; j++) {
+          c.appendChild(ctx.el("div", "anim-tally anim-fade",
+            "<span>" + X[p + j] + " &times; " +
+            sign(KF[j]) + "</span><b>" +
+            sign(X[p + j] * KF[j]) + "</b>"));
+          await ctx.sleep(520);
+        }
+        c.appendChild(rule);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>sum</span><b>" + sign(OUT[p]) + "</b>"));
+        await ctx.sleep(400);
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by draw(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { draw, showKernel, slideTo: windowAt, fill, terms, card };
+    }
+  });
+});
+</script>
+```
 
 To answer this question, let us consider a row of an image and convolve it with a kernel $K$.
 
@@ -222,8 +618,6 @@ What does $\mathcal{F}$ actually do? It takes a signal — our row of six pixel 
 That is all you need to carry forward. The formula that computes those weights uses complex exponentials, and it is written out in the [appendix](04-appendix.qmd) for anyone who wants it; nothing on the next page depends on reading it. What does matter is the one-sentence version:
 
 > The Fourier transform re-describes a signal by *which waves it is made of*, and the convolution theorem says that convolving with a kernel simply *rescales each of those waves*.
-
-<!-- TODO(anim): add wave components one at a time with a slider and watch the six-pixel row assemble; alongside it, the same row's frequency weights as a bar chart. -->
 
 ::: {.column-margin}
 3Blue1Brown makes a beautiful video explaining the Fourier transform: [Video](https://www.youtube.com/watch?v=spUNpyF58BY). Here is a great interactive demo by Jez Swanson: [Demo](https://www.jezzamon.com/fourier/).

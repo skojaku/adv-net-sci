@@ -17,18 +17,24 @@ come from.
 Do this **before** the lecture. Everything the lecture formalizes, you will have
 already argued about with your own hands.
 
-## Push the Nodes Around Yourself
+## Be the Algorithm
 
-The community-detection game from the concepts page, with all four networks:
+The same tool as the concepts page, on all four networks. In each one you click
+a node to repaint it, the score updates on the spot, and the dashed line is the
+best score known for that network with that many colours.
 
-- [Two cliques, modularity](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
-- [Two cliques, graph cut](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json)
-- [Karate club](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
-- [Two cliques plus a big one — the resolution limit](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json)
+- [Two cliques, modularity](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json) — the warm-up. Reach the dashed line.
+- [Two cliques, graph cut](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json) — now you are *minimizing* the number of edges cut. Beat the dashed line, and then look at what you built.
+- [Karate club](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json) — a real network, four colours.
+- [Two cliques plus a big one — the resolution limit](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json) — three colours for what are obviously three groups. Try the obvious answer first, then find the one that scores higher.
 - [A random network with no communities at all](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json)
 
-Compare the last two against the first. If the random network scores higher than
-the one with real cliques, what does a modularity score actually tell you?
+Two things to take from the list. On the resolution-limit network, the partition
+that maximizes $Q$ is *not* the one your eye picks: it merges the two small
+cliques, and the dashed line is set where the merge is. On the random network,
+the best $Q$ you can reach is higher than the best $Q$ on the two honest
+cliques. If a random network outscores a real one, what does a modularity score
+on its own actually tell you?
 
 ## Assignments
 

@@ -188,7 +188,14 @@ format:
     # Off: it numbered prose pages, e.g. index.qmd rendered as
     # "1 List of Exercises and Assignments".
     number-sections: false
-    html-math-method: katex
+    # KaTeX is served from this repo, not a CDN. Thirty-four pages carry
+    # mathematics, and the default `katex@latest` on jsdelivr both floats
+    # (a breaking release upstream silently breaks the note) and fails often
+    # enough to matter — a reader on a plane or a blocked network gets raw TeX
+    # on every one of those pages. Vendored copy is 0.16.22, woff2 only.
+    html-math-method:
+      method: katex
+      url: /assets/katex/
     code-fold: true
     code-summary: "Show the code"
     code-copy: hover

@@ -1,685 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Defender: Protect Your Digital Realm! 🛡️🌐</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #000;
-            color: #fff;
-        }
-        #game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 800px;
-        }
-        #network {
-            width: 400px;
-            height: 400px;
-            background-color: #000;
-            border-radius: 10px;
-        }
-        .node {
-            cursor: pointer;
-            transition: fill 0.3s;
-        }
-        .edge {
-            stroke: #E0FFFF;
-            stroke-width: 2px;
-            transition: opacity 0.3s;
-        }
-        #controls {
-            margin-top: 20px;
-        }
-        #status {
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        button {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            margin: 5px;
-            padding: 10px 20px;
-            background-color: #8581ff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #738d00;
-        }
-        button:disabled {
-            background-color: #A9A9A9;
-            cursor: not-allowed;
-        }
-        #chart-container {
-            width: 500px;
-            height: 300px;
-            margin-top: 20px;
-            border: 1px solid #1E90FF;
-            border-radius: 5px;
-            position: relative;
-        }
-        #warning {
-            color: #FF6347;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 18px;
-        }
-        #instructions {
-            border: 1px solid #1E90FF;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: left;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-        #r-index-targeted {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 16px;
-            font-weight: bold;
-            color: #ff6348;
-        }
-        #r-index-random {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 16px;
-            font-weight: bold;
-            color: #00ced1;
-        }
-        #r-index-targeted {
-            top: 30px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twelve towns, twenty cables</title>
+<style>
+    /* ----------------------------------------------------------------------
+       House style for the standalone demos. Same tokens as the lecture note
+       (scss/minimal.scss and assets/anim.css): white paper, one ink, ONE
+       accent (#593196) and ONE contrast (#c2410c). No green, no webfont, no
+       external request of any kind.
+       ---------------------------------------------------------------------- */
+    :root {
+      --paper: #ffffff;
+      --panel: #fbfaf8;
+      --ink: #22212b;
+      --ink-soft: #6b6880;
+      --ink-faint: #9c95b5;
+      --rule: #e6e4e0;
+      --accent: #593196;
+      --accent-soft: #f0e9fb;
+      --contrast: #c2410c;
+      --contrast-soft: #fdeadf;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 22px 14px 56px; }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 600; line-height: 1.25;
+      margin: 0 0 .3em;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.02rem; font-weight: 600;
+      margin: 1.6em 0 .4em;
+    }
+    p { margin: 0 0 .9em; }
+    .lede { color: var(--ink-soft); margin-bottom: 1.1em; }
+    ul.how {
+      margin: 0 0 1.2em; padding: .7em .9em .7em 2.1em;
+      background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+      font-size: .93rem; color: var(--ink-soft);
+    }
+    ul.how li { margin: .18em 0; }
+    ul.how b { color: var(--ink); font-weight: 600; }
+
+    /* readouts ------------------------------------------------------------ */
+    .readouts {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+    }
+    .ro {
+      flex: 1 1 120px; min-width: 104px;
+      border: 1px solid var(--rule); border-radius: 6px;
+      padding: 7px 10px; background: var(--panel);
+    }
+    .ro .k {
+      display: block; font-size: .7rem; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--ink-faint);
+    }
+    .ro .v {
+      display: block; font-family: var(--mono);
+      font-size: 1.1rem; font-variant-numeric: tabular-nums; color: var(--ink);
+    }
+    .ro.hot .v { color: var(--contrast); }
+    .ro.key .v { color: var(--accent); }
+
+    /* controls ------------------------------------------------------------ */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px;
+    }
+    button {
+      font-family: inherit; font-size: .9rem;
+      padding: 7px 13px; border-radius: 6px; cursor: pointer;
+      background: var(--paper); color: var(--accent);
+      border: 1px solid var(--accent);
+      transition: background .15s, color .15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-soft); }
+    button.primary { background: var(--accent); color: #fff; }
+    button.primary:hover:not(:disabled) { background: #47267a; }
+    button.warm { color: var(--contrast); border-color: var(--contrast); }
+    button.warm:hover:not(:disabled) { background: var(--contrast-soft); }
+    button:disabled { opacity: .38; cursor: not-allowed; }
+    label.knob {
+      display: flex; align-items: center; gap: 8px; flex: 1 1 240px;
+      font-size: .9rem; color: var(--ink-soft);
+    }
+    label.knob input[type=range] { flex: 1; min-width: 90px; accent-color: var(--accent); }
+    label.knob .n {
+      font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums;
+      min-width: 3.2em; text-align: right;
+    }
+
+    /* figures ------------------------------------------------------------- */
+    figure { margin: 0 0 14px; }
+    svg.fig {
+      display: block; width: 100%; height: auto;
+      border: 1px solid var(--rule); border-radius: 6px; background: var(--paper);
+      touch-action: manipulation;
+    }
+    figcaption { font-size: .84rem; color: var(--ink-faint); margin-top: .4em; }
+    .msg {
+      min-height: 1.5em; font-size: .93rem; margin: 0 0 12px;
+      color: var(--contrast); font-weight: 600;
+    }
+    .msg.calm { color: var(--ink-soft); font-weight: 400; }
+
+    /* local ---------------------------------------------------------------- */
+    .town { cursor: pointer; }
+    .town circle { fill: var(--accent); stroke: #fff; stroke-width: 2;
+                   transition: fill .2s, opacity .2s; }
+    .town.sel circle { fill: var(--contrast); }
+    .town.dead circle { fill: #fff; stroke: var(--ink-faint);
+                        stroke-width: 1.5; stroke-dasharray: 3 2; }
+    .town text { font-family: var(--mono); font-size: 10px; fill: #fff;
+                 text-anchor: middle; dominant-baseline: central;
+                 pointer-events: none; user-select: none; }
+    .town.dead text { fill: var(--ink-faint); }
+    .cable { stroke: var(--accent); stroke-opacity: .45; stroke-width: 2; }
+    .hint { font-size: .86rem; color: var(--ink-faint); margin: -6px 0 14px; min-height: 1.3em; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .84rem;
+              color: var(--ink-soft); margin: 0 0 14px; }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend i { width: 22px; height: 0; border-top-width: 2.5px; border-top-style: solid; }
+</style>
 </head>
 <body>
-    <div id="game-container">
-        <h1 style="color: #1E90FF; text-shadow: 2px 2px #FF69B4;">Network Defense Game</h1>
-        <div id="instructions">
-            <p> Create a network with maximum resilience against various types of attacks!</p>
-            <ul>
-                <li>🔄 Reconstruct the network to improve resilience.</li>
-                <li>➕ Add new connections strategically to strengthen the network structure.</li>
-                <li>🖱️ Click two unconnected nodes to add an edge between them. Click two connected nodes to remove the edge.</li>
-                <li>📊 Each time you add an edge, your budget decreases by 1. Removing an edge increases your budget by 1.</li>
-                <li>⚠️ Once your budget reaches 0, you can't add more edges until you remove some.</li>
-            </ul>
-        </div>
-        <div id="controls">
-            <button id="remove-random">🎲 Random Attack</button>
-            <button id="remove-targeted">🎯 Targeted Attack</button>
-            <button id="reconstruct">🔨 Reconstruct Network</button>
-            <button id="add-random-edge">➕ Add Edge</button>
-        </div>
-        <div id="status">Nodes: 15 | Edges: 0 | Largest Component: 0 | Budget: 20</div>
-        <svg id="network"></svg>
-        <div id="chart-container">
-            <div id="r-index-random">R-index (Random): ---</div>
-            <div id="r-index-targeted">R-index (Targeted): ---</div>
-            <svg></svg>
-        </div>
-        <div id="warning"></div>
-    </div>
-
-    <script>
-        const networkSvg = d3.select("#network")
-            .attr("width", 400)
-            .attr("height", 400);
-
-        const chartSvg = d3.select("#chart-container svg")
-            .attr("width", 500)
-            .attr("height", 300);
-
-        let nodes = [];
-        let edges = [];
-        let selectedNodes = [];
-        let connectivityHistory = [];
-        let num_nodes = 12;
-        let initial_budget = 20;
-        let budget = initial_budget; // Initial budget for edges
-        let originalNetwork = { nodes: [], edges: [] };
-        let attackCount = 0; // Counter for attacks
-        let attackSeries = []; // Array to store multiple attack series
-
-        const removeRandomBtn = document.getElementById('remove-random');
-        const removeTargetedBtn = document.getElementById('remove-targeted');
-        const reconstructBtn = document.getElementById('reconstruct');
-        const addRandomEdgeBtn = document.getElementById('add-random-edge');
-        const statusDiv = document.getElementById('status');
-        const warningDiv = document.getElementById('warning');
-        const rIndexRandomDiv = document.getElementById('r-index-random');
-        const rIndexTargetedDiv = document.getElementById('r-index-targeted');
-        let nodeElements, edgeElements;
-
-        function updateStatus() {
-            const largestComponent = findLargestComponent();
-            statusDiv.textContent = `Nodes: ${nodes.length} | Edges: ${edges.length} | Largest Component: ${largestComponent} | Budget: ${budget}`;
-            const connectivity = nodes.length > 0 ? largestComponent / nodes.length : 0;
-            connectivityHistory.push(connectivity);
-            updateChart();
-        }
-
-        function updateChart() {
-            chartSvg.selectAll("*").remove();
-
-            const margin = {top: 20, right: 20, bottom: 30, left: 50};
-            const width = 500 - margin.left - margin.right;
-            const height = 300 - margin.top - margin.bottom;
-
-            const initialNodeCount = originalNetwork.nodes.length;
-            const x = d3.scaleLinear()
-                .domain([0, 1])
-                .range([0, width]);
-
-            const y = d3.scaleLinear()
-                .domain([0, 1])
-                .range([height, 0]);
-
-            const line = d3.line()
-                .x((d, i) => x(i / (initialNodeCount - 1)))
-                .y(d => y(d));
-
-            const g = chartSvg.append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
-
-            g.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")));
-
-            g.append("g")
-                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%")));
-
-            // Draw all attack series
-            attackSeries.forEach((series, index) => {
-                const isLatestRandom = attackSeries.findLastIndex(s => s.type === 'random') === index;
-                const isLatestTargeted = attackSeries.findLastIndex(s => s.type === 'targeted') === index;
-                const opacity = isLatestRandom || isLatestTargeted ? 1 : 0.6;
-                const color = series.type === 'random' ? '#00CED1' : '#FF6347';
-                const strokeDasharray = series.type === 'random' ? '0' : '5,5';
-                const strokeWidth = isLatestRandom || isLatestTargeted ? 2.5 : 1.5;
-                g.append("path")
-                    .datum(series.data)
-                    .attr("fill", "none")
-                    .attr("stroke", color)
-                    .attr("stroke-width", strokeWidth)
-                    .attr("stroke-dasharray", strokeDasharray)
-                    .attr("opacity", opacity)
-                    .attr("d", line);
-            });
-
-            // Add x-axis label
-            g.append("text")
-                .attr("transform", `translate(${width/2},${height + margin.top + 20})`)
-                .style("text-anchor", "middle")
-                .text("Fraction of Nodes Removed");
-
-            // Add y-axis label
-            g.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left)
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Connectivity");
-
-            // Add legend
-            const legend = g.append("g")
-                .attr("font-family", "sans-serif")
-                .attr("font-size", 10)
-                .attr("text-anchor", "end")
-                .attr("fill", "white")
-                .selectAll("g")
-                .data(["Random Attack", "Targeted Attack"])
-                .enter().append("g")
-                .attr("transform", (d, i) => `translate(${width},${i * 20})`);
-
-            legend.append("rect")
-                .attr("x", -19)
-                .attr("width", 19)
-                .attr("height", 19)
-                .attr("fill", (d, i) => i === 0 ? "#00CED1" : "#FF6347");
-
-            legend.append("text")
-                .attr("x", -24)
-                .attr("y", 9.5)
-                .attr("dy", "0.32em")
-                .text(d => d);
-
-            legend.append("line")
-                .attr("x1", -19)
-                .attr("y1", 9.5)
-                .attr("x2", 0)
-                .attr("y2", 9.5)
-                .attr("stroke", (d, i) => i === 0 ? "#00CED1" : "#FF6347")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", (d, i) => i === 0 ? "0" : "5,5");
-        }
-
-        function calculateRIndex(type) {
-            if (type === 'random') {
-                return calculateRIndexRandomFailure(type);
-            } else if (type === 'targeted') {
-                return calculateRIndexTargetedAttack(type);
-            }
-        }
-        function calculateRIndexRandomFailure(type) {
-            const lastRandomAttack = attackSeries.find(series => series.type === 'random');
-            if (!lastRandomAttack) {
-                return 0.0;
-            }
-
-            const connectivities = lastRandomAttack.data;
-            const totalConnectivity = connectivities.reduce((sum, connectivity) => sum + connectivity, 0);
-            const averageConnectivity = totalConnectivity / nodes.length;
-
-            return averageConnectivity;
-        }
-        function calculateRIndexTargetedAttack(type) {
-            const lastTargetedAttack = attackSeries.find(series => series.type === 'targeted');
-            if (!lastTargetedAttack) {
-                return 0.0;
-            }
-
-            const connectivities = lastTargetedAttack.data;
-            const totalConnectivity = connectivities.reduce((sum, connectivity) => sum + connectivity, 0);
-            const averageConnectivity = totalConnectivity / nodes.length;
-
-            return averageConnectivity;
-        }
-        function selectNode(id) {
-            if (selectedNodes.includes(id)) {
-                selectedNodes = selectedNodes.filter(i => i !== id);
-            } else if (selectedNodes.length < 2) {
-                selectedNodes.push(id);
-                if (selectedNodes.length === 2) {
-                    toggleEdge();
-                }
-            }
-            updateNetwork();
-        }
-
-        function toggleEdge() {
-            if (selectedNodes.length !== 2) {
-                warningDiv.textContent = "Please select two nodes to toggle an edge.";
-                return;
-            }
-
-            const [id1, id2] = selectedNodes;
-            const edgeIndex = edges.findIndex(e =>
-                (e.source === id1 && e.target === id2) || (e.source === id2 && e.target === id1)
-            );
-
-            if (edgeIndex === -1) {
-                if (budget <= 0) {
-                    warningDiv.textContent = "No budget to add edge!";
-                    return;
-                }
-                // Add edge if it doesn't exist
-                edges.push({source: id1, target: id2});
-                nodes[id1].connections.push(id2);
-                nodes[id2].connections.push(id1);
-                budget--;
-            } else {
-                // Remove edge if it exists
-                edges.splice(edgeIndex, 1);
-                nodes[id1].connections = nodes[id1].connections.filter(conn => conn !== id2);
-                nodes[id2].connections = nodes[id2].connections.filter(conn => conn !== id1);
-                budget++;
-            }
-
-            // Reset the R-index scores
-            rIndexRandomDiv.textContent = `R-index (Random): --`;
-            rIndexTargetedDiv.textContent = `R-index (Targeted): --`;
-
-            selectedNodes = [];
-            updateNetwork();
-            updateStatus();
-        }
-
-        function removeNode(id) {
-            edges = edges.filter(e => e.source !== id && e.target !== id);
-            nodes.forEach(node => {
-                node.connections = node.connections.filter(conn => conn !== id);
-            });
-
-            // Indicate the removed node by changing the color to red
-            nodes[id].fill = "red";
-
-            updateNetwork();
-            updateStatus();
-        }
-
-        async function removeRandomNode() {
-            if (edges.length === 0) {
-                return;
-            }
-
-            // Store the original network
-            originalNetwork.nodes = JSON.parse(JSON.stringify(nodes));
-            originalNetwork.edges = JSON.parse(JSON.stringify(edges));
-
-            // Check if there are any edges in the original network
-            if (originalNetwork.edges.length === 0) {
-                return;
-            }
-
-            const nodesToRemove = [...new Set(nodes.filter(node =>
-                edges.some(edge => edge.source === node.id || edge.target === node.id)
-            ))];
-            connectivityHistory = [1.0];
-            // Shuffle nodesToRemove
-            for (let i = nodesToRemove.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [nodesToRemove[i], nodesToRemove[j]] = [nodesToRemove[j], nodesToRemove[i]];
-            }
-
-            for (let node of nodesToRemove) {
-                // Compute the degree of each node based on edges
-                const nodeDegrees = nodes.map(_node => ({
-                    id: _node.id,
-                    degree: edges.filter(edge => edge.source === _node.id || edge.target === _node.id).length
-                }));
-
-                if (nodeDegrees[node.id].degree === 0) {
-                    continue;
-                }
-                await new Promise(resolve => setTimeout(resolve, 300));
-                removeNode(node.id);
-                if (edges.length === 0) break;
-            }
-            // Fill in zeros in connectivityHistory if it is shorter than the number of nodes
-            while (connectivityHistory.length < nodes.length) {
-                connectivityHistory.push(0);
-            }
-            attackSeries.push({type: 'random', data: [...connectivityHistory]});
-            // Calculate and display R-index
-            const rIndexRandom = calculateRIndex('random');
-            rIndexRandomDiv.textContent = `R-index (Random): ${rIndexRandom.toFixed(4)}`;
-
-            warningDiv.textContent = "All edges removed. Press 'Reconstruct Network' to continue.";
-            updateStatus();
-            disableButtons();
-        }
-
-        async function removeTargetedNode() {
-            if (edges.length === 0) {
-                return;
-            }
-            // Store the original network
-            originalNetwork.nodes = JSON.parse(JSON.stringify(nodes));
-            originalNetwork.edges = JSON.parse(JSON.stringify(edges));
-
-            // Check if there are any edges in the original network
-            if (originalNetwork.edges.length === 0) {
-                return;
-            }
-
-            connectivityHistory = [1.0];
-            while (edges.length > 0) {
-                if (nodes.length === 0) {
-                    warningDiv.textContent = "No more nodes to remove!";
-                    break;
-                }
-                // Compute the degree of each node based on edges
-                const nodeDegrees = nodes.map(node => ({
-                    id: node.id,
-                    degree: edges.filter(edge => edge.source === node.id || edge.target === node.id).length
-                }));
-
-                // Find the node with the highest degree
-                const targetNode = nodeDegrees.reduce((max, node) => node.degree > max.degree ? node : max);
-                const targetId = targetNode.id;
-                if (targetNode.degree === 0) {
-                    warningDiv.textContent = "No more nodes to remove!";
-                    break;
-                }
-
-                await new Promise(resolve => setTimeout(resolve, 300));
-                removeNode(targetId);
-            }
-            // Fill in zeros in connectivityHistory if it is shorter than the number of nodes
-            while (connectivityHistory.length < nodes.length) {
-                connectivityHistory.push(0);
-            }
-            attackSeries.push({type: 'targeted', data: [...connectivityHistory]});
-            // Calculate and display R-index
-            const rIndexTargeted = calculateRIndex('targeted');
-            rIndexTargetedDiv.textContent = `R-index (Targeted): ${rIndexTargeted.toFixed(4)}`;
-            warningDiv.textContent = "All edges removed. Press 'Reconstruct Network' to continue.";
-            updateStatus();
-            disableButtons();
-        }
-
-        function reconstructNetwork() {
-            // Reset nodes and edges to the original network state before attacks
-            nodes = JSON.parse(JSON.stringify(originalNetwork.nodes));
-            edges = JSON.parse(JSON.stringify(originalNetwork.edges));
-            //budget = 20;
-            connectivityHistory = []; // Reset connectivity history for the new attack series
-
-            updateNetwork();
-            updateStatus();
-            warningDiv.textContent = "Network reconstructed to its original state!";
-            enableButtons();
-        }
-
-        function findLargestComponent() {
-            if (nodes.length === 0) return 0;
-
-            const visited = new Set();
-            let largestSize = 0;
-
-            for (const node of nodes) {
-                if (!visited.has(node.id)) {
-                    let component = new Set([node.id]);
-                    let frontier = new Set([node.id]);
-
-                    while (frontier.size > 0) {
-                        let newFrontier = new Set();
-                        for (const id of frontier) {
-                            let neighbors = find_neighbors(id);
-                            for (const neighbor of neighbors) {
-                                if (!component.has(neighbor)) {
-                                    component.add(neighbor);
-                                    newFrontier.add(neighbor);
-                                }
-                            }
-                        }
-                        frontier = newFrontier;
-                    }
-
-                    const componentSize = component.size;
-                    largestSize = Math.max(largestSize, componentSize);
-
-                    for (const id of component) {
-                        visited.add(id);
-                    }
-                }
-            }
-
-            return largestSize;
-        }
-
-        function find_neighbors(node_id) {
-            focal_edges = edges.filter(edge => edge.source === node_id || edge.target === node_id);
-            neighbors = []
-            for (const edge of focal_edges) {
-                if (edge.source === node_id) {
-                    neighbors.push(edge.target);
-                } else {
-                    neighbors.push(edge.source);
-                }
-            }
-            return neighbors;
-        }
-
-        function dfs(nodeId, visited) {
-            visited.add(nodeId);
-            let size = 1;
-
-            const node = nodes.find(n => n.id === nodeId);
-            for (const neighborId of node.connections) {
-                if (!visited.has(neighborId)) {
-                    size += dfs(neighborId, visited);
-                }
-            }
-
-            return size;
-        }
-
-        function updateNetwork() {
-            networkSvg.selectAll("*").remove();
-
-            const radius = 180;
-            const centerX = 200;
-            const centerY = 200;
-
-            nodes.forEach((node, i) => {
-                const angle = (i / nodes.length) * 2 * Math.PI;
-                node.x = centerX + radius * Math.cos(angle);
-                node.y = centerY + radius * Math.sin(angle);
-            });
-
-            networkSvg.selectAll("line")
-                .data(edges)
-                .enter()
-                .append("line")
-                .attr("class", "edge")
-                .attr("x1", d => nodes.find(n => n.id === d.source).x)
-                .attr("y1", d => nodes.find(n => n.id === d.source).y)
-                .attr("x2", d => nodes.find(n => n.id === d.target).x)
-                .attr("y2", d => nodes.find(n => n.id === d.target).y);
-
-            nodeElements = networkSvg.selectAll("circle")
-                .data(nodes)
-                .enter()
-                .append("circle")
-                .attr("class", "node")
-                .attr("r", 10)
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y)
-                .attr("fill", d => d.fill || "black")
-                .attr("stroke", "white")
-                .on("click", (event, d) => selectNode(d.id));
-
-            nodeElements.attr("stroke", d => selectedNodes.includes(d.id) ? "#FF6347" : "white")
-                .attr("stroke-width", 2);
-        }
-
-        function findComponents() {
-            const visited = new Set();
-            const components = [];
-
-            for (const node of nodes) {
-                if (!visited.has(node.id)) {
-                    const component = [];
-                    dfs_findComponents(node.id, visited, component);
-                    components.push(component);
-                }
-            }
-
-            return components;
-        }
-
-        function dfs_findComponents(nodeId, visited, component) {
-            visited.add(nodeId);
-            component.push(nodeId);
-
-            const node = nodes.find(n => n.id === nodeId);
-            if (node && node.connections) {
-                for (const neighborId of node.connections) {
-                    if (!visited.has(neighborId)) {
-                        dfs_findComponents(neighborId, visited, component);
-                    }
-                }
-            }
-        }
-
-        function initializeNetwork() {
-            nodes = [];
-            edges = [];
-            budget = initial_budget;
-
-            // Initialize with 15 nodes
-            for (let i = 0; i < num_nodes; i++) {
-                nodes.push({
-                    id: i,
-                    connections: []
-                });
-            }
-
-            // Store the original network
-            originalNetwork.nodes = JSON.parse(JSON.stringify(nodes));
-            originalNetwork.edges = JSON.parse(JSON.stringify(edges));
-
-            updateNetwork();
-            updateStatus();
-        }
-
-        function addRandomEdge() {
-            if (nodes.length === 0) {
-                return;
-            }
-            const randomNode1 = Math.floor(Math.random() * nodes.length);
-            const randomNode2 = Math.floor(Math.random() * nodes.length);
-
-            // Reset the R-index scores
-            rIndexRandomDiv.textContent = `R-index (Random): ---`;
-            rIndexTargetedDiv.textContent = `R-index (Targeted): ---`;
-
-            if (randomNode1 !== randomNode2) {
-
-                if (edges.some(edge => (edge.source === randomNode1 && edge.target === randomNode2) || (edge.source === randomNode2 && edge.target === randomNode1))) {
-                    console.log('edge already exists');
-                } else if (budget > 0) {
-                    edges.push({ source: randomNode1, target: randomNode2 });
-                    nodes[randomNode1].connections.push(randomNode2);
-                nodes[randomNode2].connections.push(randomNode1);
-                    budget--;
-                    updateNetwork();
-                    updateStatus();
-                }
-            }
-        }
-
-        function disableButtons() {
-            removeRandomBtn.disabled = true;
-            removeTargetedBtn.disabled = true;
-            reconstructBtn.disabled = false;
-            addRandomEdgeBtn.disabled = true;
-        }
-
-        function enableButtons() {
-            removeRandomBtn.disabled = false;
-            removeTargetedBtn.disabled = false;
-            reconstructBtn.disabled = false;
-            addRandomEdgeBtn.disabled = false;
-        }
-
-        removeRandomBtn.addEventListener('click', removeRandomNode);
-        removeTargetedBtn.addEventListener('click', removeTargetedNode);
-        reconstructBtn.addEventListener('click', reconstructNetwork);
-        addRandomEdgeBtn.addEventListener('click', addRandomEdge);
-        // Initialize the network
-        initializeNetwork();
-    </script>
+<div class="wrap">
+
+<h1>Twelve towns, twenty cables</h1>
+<p class="lede">Twelve towns and nothing joining them. You have twenty cables.
+Lay them wherever you like, then knock towns out and watch what is left of the
+network. Spread the cables evenly, note what happens; pile them onto two or
+three towns, and note what happens then. Same budget, different survival.</p>
+
+<ul class="how">
+  <li><b>Click two towns</b> to lay a cable between them. Click the same two
+      again to take it back and get the cable returned to your budget.</li>
+  <li><b>Random failure</b> removes towns in a random order. <b>Targeted
+      attack</b> always removes whichever surviving town has the most cables.</li>
+  <li><b>Connectivity</b> is the share of towns still in one connected piece.
+      <b>R</b> is that share averaged over the whole removal &mdash; one number
+      for how well the wiring held.</li>
+</ul>
+
+<div class="controls">
+  <button id="btn-random">Random failure</button>
+  <button id="btn-target" class="warm">Targeted attack</button>
+  <button id="btn-rebuild">Rebuild</button>
+  <button id="btn-clear">Start over</button>
+</div>
+<p class="hint" id="hint">Click two towns to lay your first cable.</p>
+
+<div class="readouts">
+  <div class="ro key"><span class="k">Cables left</span><span class="v" id="ro-budget">20</span></div>
+  <div class="ro"><span class="k">Largest piece</span><span class="v" id="ro-lcc">1 / 12</span></div>
+  <div class="ro hot"><span class="k">R, last attack</span><span class="v" id="ro-r">—</span></div>
+</div>
+
+<figure>
+  <svg class="fig" id="net" viewBox="0 0 430 400" role="img"
+       aria-label="Twelve towns on a circle, with the cables you have laid."></svg>
+  <figcaption id="cap"></figcaption>
+</figure>
+
+<figure>
+  <svg class="fig" id="chart" viewBox="0 0 640 260" role="img"
+       aria-label="Connectivity against the fraction of towns removed."></svg>
+  <figcaption>Every attack you run stays on the chart. The most recent of each
+  kind is drawn heavy.</figcaption>
+</figure>
+
+<div class="legend">
+  <span><i style="border-color:#593196"></i>Random failure</span>
+  <span><i style="border-color:#c2410c;border-top-style:dashed"></i>Targeted attack</span>
+</div>
+
+</div>
+
+<script>
+"use strict";
+/* ===========================================================================
+   Twelve towns, twenty cables.
+
+   No library, no network request, no external asset. Nothing is precomputed
+   because there is nothing to precompute: the network is whatever the reader
+   builds, and the two attack curves are computed from it on the spot. Twelve
+   nodes, so the whole removal sequence is a few hundred operations.
+
+   Both attacks are computed to completion FIRST and then played back, so the
+   curve on the chart and the picture on the screen can never disagree.
+
+   R is the robustness index of Schneider et al. (2011): the size of the
+   largest connected component, as a share of the original town count,
+   averaged over every removal step q = 1 .. N. It runs from about 1/N (the
+   network falls apart on the first removal) to about 1/2 (it survives almost
+   to the end).
+   =========================================================================== */
+
+const N = 12, BUDGET = 20;
+const C = { ink: "#22212b", soft: "#6b6880", faint: "#9c95b5", rule: "#e6e4e0",
+            accent: "#593196", contrast: "#c2410c" };
+
+let cables = new Set();     // "i-j" with i < j
+let sel = [];
+let dead = new Set();       // towns removed by the attack currently on screen
+let series = [];            // {kind, curve}
+let saved = null;           // the wiring as it was before the running attack
+let timer = null;
+
+const key = (a, b) => Math.min(a, b) + "-" + Math.max(a, b);
+const pair = k => k.split("-").map(Number);
+
+/* --------------------------------------------------------------------------
+   Pure graph helpers. Nothing here touches the DOM.
+   -------------------------------------------------------------------------- */
+function degreesOf(edgeKeys, alive) {
+  const d = new Array(N).fill(0);
+  for (const k of edgeKeys) {
+    const [a, b] = pair(k);
+    if (alive.has(a) && alive.has(b)) { d[a]++; d[b]++; }
+  }
+  return d;
+}
+
+function largestComponent(edgeKeys, alive) {
+  if (alive.size === 0) return 0;
+  const adj = new Map();
+  for (const i of alive) adj.set(i, []);
+  for (const k of edgeKeys) {
+    const [a, b] = pair(k);
+    if (alive.has(a) && alive.has(b)) { adj.get(a).push(b); adj.get(b).push(a); }
+  }
+  const seen = new Set();
+  let best = 0;
+  for (const s of alive) {
+    if (seen.has(s)) continue;
+    let size = 0;
+    const stack = [s];
+    seen.add(s);
+    while (stack.length) {
+      const v = stack.pop();
+      size++;
+      for (const w of adj.get(v)) if (!seen.has(w)) { seen.add(w); stack.push(w); }
+    }
+    if (size > best) best = size;
+  }
+  return best;
+}
+
+/* The removal order, and the connectivity after each removal. */
+function plan(kind, edgeKeys) {
+  const alive = new Set();
+  for (let i = 0; i < N; i++) alive.add(i);
+
+  const order = [];
+  if (kind === "random") {
+    const bag = Array.from(alive);
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = bag[i]; bag[i] = bag[j]; bag[j] = t;
+    }
+    order.push.apply(order, bag);
+  } else {
+    const left = new Set(alive);
+    while (left.size) {
+      const d = degreesOf(edgeKeys, left);
+      let pick = -1, bestDeg = -1;
+      for (const i of left) if (d[i] > bestDeg) { bestDeg = d[i]; pick = i; }
+      order.push(pick);
+      left.delete(pick);
+    }
+  }
+
+  const curve = [largestComponent(edgeKeys, alive) / N];
+  for (const v of order) {
+    alive.delete(v);
+    curve.push(largestComponent(edgeKeys, alive) / N);
+  }
+  return { order: order, curve: curve };
+}
+
+/* R = mean connectivity over the N removal steps (curve[1..N]). */
+function rIndex(curve) {
+  let s = 0;
+  for (let q = 1; q < curve.length; q++) s += curve[q];
+  return s / (curve.length - 1);
+}
+
+/* --------------------------------------------------------------------------
+   Elements.
+   -------------------------------------------------------------------------- */
+const nEl = document.getElementById("net");
+const cEl = document.getElementById("chart");
+const hintEl = document.getElementById("hint");
+const capEl = document.getElementById("cap");
+const roBudget = document.getElementById("ro-budget");
+const roLcc = document.getElementById("ro-lcc");
+const roR = document.getElementById("ro-r");
+const btnRandom = document.getElementById("btn-random");
+const btnTarget = document.getElementById("btn-target");
+const btnRebuild = document.getElementById("btn-rebuild");
+const btnClear = document.getElementById("btn-clear");
+
+function svg(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+/* --------------------------------------------------------------------------
+   The map.
+   -------------------------------------------------------------------------- */
+const MW = 430, MH = 400, CXc = 215, CYc = 200, RAD = 172, TR = 19;
+const ang = i => -Math.PI / 2 + (i / N) * 2 * Math.PI;
+const px = i => CXc + RAD * Math.cos(ang(i));
+const py = i => CYc + RAD * Math.sin(ang(i));
+
+function paintNet() {
+  while (nEl.firstChild) nEl.removeChild(nEl.firstChild);
+  const layer = svg("g", {});
+  for (const k of cables) {
+    const [a, b] = pair(k);
+    if (dead.has(a) || dead.has(b)) continue;
+    layer.appendChild(svg("line", { class: "cable",
+      x1: px(a), y1: py(a), x2: px(b), y2: py(b) }));
+  }
+  nEl.appendChild(layer);
+
+  const alive = new Set();
+  for (let i = 0; i < N; i++) if (!dead.has(i)) alive.add(i);
+  const deg = degreesOf(cables, alive);
+
+  for (let i = 0; i < N; i++) {
+    const cls = "town" + (dead.has(i) ? " dead" : "") + (sel.includes(i) ? " sel" : "");
+    const g = svg("g", { class: cls, tabindex: "0", role: "button",
+      "aria-label": "town " + (i + 1) + (dead.has(i) ? ", removed" : ", " + deg[i] + " cables") });
+    g.appendChild(svg("circle", { cx: px(i), cy: py(i), r: TR }));
+    const t = svg("text", { x: px(i), y: py(i) });
+    t.textContent = dead.has(i) ? "" : deg[i];
+    g.appendChild(t);
+    g.addEventListener("click", () => pick(i));
+    g.addEventListener("keydown", ev => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(i); }
+    });
+    nEl.appendChild(g);
+  }
+
+  const lcc = largestComponent(cables, alive);
+  roBudget.textContent = String(BUDGET - cables.size);
+  roLcc.textContent = lcc + " / " + N;
+  capEl.textContent = "Each town is labelled with the number of cables it still has. " +
+    cables.size + " of " + BUDGET + " cables laid.";
+}
+
+/* --------------------------------------------------------------------------
+   Laying cable.
+   -------------------------------------------------------------------------- */
+function pick(i) {
+  if (timer) return;                       // an attack is playing
+  if (dead.size) { rebuild(); }            // wiring again means starting fresh
+  const at = sel.indexOf(i);
+  if (at >= 0) { sel.splice(at, 1); }
+  else {
+    sel.push(i);
+    if (sel.length === 2) {
+      const k = key(sel[0], sel[1]);
+      if (cables.has(k)) {
+        cables.delete(k);
+        hintEl.textContent = "Cable removed. One back in the budget.";
+      } else if (cables.size >= BUDGET) {
+        hintEl.textContent = "No cables left. Take one back before laying another.";
+      } else {
+        cables.add(k);
+        hintEl.textContent = "Cable laid between town " + (sel[0] + 1) +
+          " and town " + (sel[1] + 1) + ".";
+      }
+      sel = [];
+    } else {
+      hintEl.textContent = "Town " + (i + 1) + " selected. Click a second town.";
+    }
+  }
+  paintNet();
+  buttons();
+}
+
+/* --------------------------------------------------------------------------
+   Attacks.
+   -------------------------------------------------------------------------- */
+function attack(kind) {
+  if (timer || cables.size === 0) return;
+  saved = new Set(cables);
+  sel = [];
+  const p = plan(kind, cables);
+  series.push({ kind: kind, curve: p.curve });
+  roR.textContent = rIndex(p.curve).toFixed(3);
+  paintChart();
+
+  dead = new Set();
+  let step = 0;
+  buttons();
+  timer = setInterval(() => {
+    if (step >= p.order.length) {
+      clearInterval(timer); timer = null;
+      hintEl.textContent = "Every town is gone. Press Rebuild to put the same " +
+        "wiring back and try the other attack on it.";
+      buttons();
+      return;
+    }
+    dead.add(p.order[step]);
+    step++;
+    paintNet();
+  }, 260);
+}
+
+function rebuild() {
+  if (timer) { clearInterval(timer); timer = null; }
+  if (saved) cables = new Set(saved);
+  dead = new Set();
+  sel = [];
+  paintNet();
+  buttons();
+}
+
+function clearAll() {
+  if (timer) { clearInterval(timer); timer = null; }
+  cables = new Set();
+  saved = null;
+  dead = new Set();
+  sel = [];
+  series = [];
+  roR.textContent = "—";
+  hintEl.textContent = "Click two towns to lay your first cable.";
+  paintNet();
+  paintChart();
+  buttons();
+}
+
+function buttons() {
+  const busy = !!timer;
+  btnRandom.disabled = busy || cables.size === 0 || dead.size > 0;
+  btnTarget.disabled = busy || cables.size === 0 || dead.size > 0;
+  btnRebuild.disabled = busy || dead.size === 0;
+  btnClear.disabled = busy;
+}
+
+btnRandom.addEventListener("click", () => attack("random"));
+btnTarget.addEventListener("click", () => attack("targeted"));
+btnRebuild.addEventListener("click", rebuild);
+btnClear.addEventListener("click", clearAll);
+
+/* --------------------------------------------------------------------------
+   The chart.
+   -------------------------------------------------------------------------- */
+const HW = 640, HH = 260, HM = { t: 18, r: 20, b: 46, l: 56 };
+const hw = HW - HM.l - HM.r, hh = HH - HM.t - HM.b;
+
+function paintChart() {
+  while (cEl.firstChild) cEl.removeChild(cEl.firstChild);
+  const g = svg("g", { transform: "translate(" + HM.l + "," + HM.t + ")" });
+  cEl.appendChild(g);
+
+  const X = f => f * hw;
+  const Y = v => hh - v * hh;
+
+  for (let k = 0; k <= 4; k++) {
+    const v = k / 4;
+    g.appendChild(svg("line", { x1: 0, y1: Y(v), x2: hw, y2: Y(v),
+      stroke: C.rule, "stroke-width": 1 }));
+    const t = svg("text", { x: -9, y: Y(v) + 3.5, "text-anchor": "end",
+      "font-size": 10, fill: C.faint });
+    t.textContent = (v * 100).toFixed(0) + "%";
+    g.appendChild(t);
+  }
+  for (let k = 0; k <= 4; k++) {
+    const t = svg("text", { x: X(k / 4), y: hh + 18, "text-anchor": "middle",
+      "font-size": 10, fill: C.faint });
+    t.textContent = (k * 25) + "%";
+    g.appendChild(t);
+  }
+  const xl = svg("text", { x: hw / 2, y: hh + 38, "text-anchor": "middle",
+    "font-size": 11, fill: C.faint });
+  xl.textContent = "share of towns removed";
+  g.appendChild(xl);
+  const yl = svg("text", { x: -hh / 2, y: -40, transform: "rotate(-90)",
+    "text-anchor": "middle", "font-size": 11, fill: C.faint });
+  yl.textContent = "connectivity";
+  g.appendChild(yl);
+
+  let lastRandom = -1, lastTarget = -1;
+  series.forEach((s, i) => {
+    if (s.kind === "random") lastRandom = i; else lastTarget = i;
+  });
+
+  series.forEach((s, i) => {
+    const latest = i === lastRandom || i === lastTarget;
+    let d = "";
+    s.curve.forEach((v, q) => {
+      d += (q ? "L" : "M") + X(q / (s.curve.length - 1)) + " " + Y(v);
+    });
+    g.appendChild(svg("path", { d: d, fill: "none",
+      stroke: s.kind === "random" ? C.accent : C.contrast,
+      "stroke-width": latest ? 2.6 : 1.2,
+      "stroke-dasharray": s.kind === "random" ? "0" : "6 4",
+      opacity: latest ? 1 : 0.35 }));
+  });
+
+  if (!series.length) {
+    const t = svg("text", { x: hw / 2, y: hh / 2, "text-anchor": "middle",
+      "font-size": 12, fill: C.faint });
+    t.textContent = "Lay some cable, then run an attack.";
+    g.appendChild(t);
+  }
+}
+
+clearAll();
+</script>
 </body>
 </html>

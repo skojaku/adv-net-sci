@@ -485,12 +485,19 @@
    their finished state.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
+  /* `transition-property` defaults to `all`, so shortening the duration here
+   * does not remove the transition — it grants one. A stage that animates SVG
+   * geometry by writing cx/cy/r then gets a 1ms transition on every one of
+   * them, which is both unasked for and a source of half-drawn frames. Turn
+   * transitions off outright and let the shortened animation carry the
+   * end state. */
   .anim-stage *,
   .anim-stage *::before,
   .anim-stage *::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     animation-delay: 0ms !important;
+    transition-property: none !important;
     transition-duration: 1ms !important;
     transition-delay: 0ms !important;
   }

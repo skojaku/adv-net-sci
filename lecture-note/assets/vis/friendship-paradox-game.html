@@ -1,232 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friendship Paradox Game</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #000000;
-            color: #FFFFFF;
-        }
-        .container {
-            text-align: center;
-        }
-        svg {
-            background-color: #333333;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        #score {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #FFD700;
-        }
-        #averages {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #FFFFFF;
-        }
-        #instructions {
-            margin-bottom: 10px;
-            max-width: 800px; /* Increased max-width */
-            text-align: left;
-            color: #FFFFFF;
-            font-size: 20px; /* Decreased font size */
-            border: 2px solid #FFFFFF;
-            padding: 10px;
-            border-radius: 8px;
-        }
-        #celebration {
-            font-size: 48px;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            background-color: #000000; /* Added black background */
-            padding: 20px; /* Added padding for better appearance */
-            border-radius: 8px; /* Added border-radius for rounded corners */
-        }
-        #warning {
-            font-size: 24px;
-            color: #FF0000;
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The friendship paradox, built by hand</title>
+<style>
+    /* ----------------------------------------------------------------------
+       House style for the standalone demos. Same tokens as the lecture note
+       (scss/minimal.scss and assets/anim.css): white paper, one ink, ONE
+       accent (#593196) and ONE contrast (#c2410c). No green, no webfont, no
+       external request of any kind.
+       ---------------------------------------------------------------------- */
+    :root {
+      --paper: #ffffff;
+      --panel: #fbfaf8;
+      --ink: #22212b;
+      --ink-soft: #6b6880;
+      --ink-faint: #9c95b5;
+      --rule: #e6e4e0;
+      --accent: #593196;
+      --accent-soft: #f0e9fb;
+      --contrast: #c2410c;
+      --contrast-soft: #fdeadf;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 22px 14px 56px; }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 600; line-height: 1.25;
+      margin: 0 0 .3em;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.02rem; font-weight: 600;
+      margin: 1.6em 0 .4em;
+    }
+    p { margin: 0 0 .9em; }
+    .lede { color: var(--ink-soft); margin-bottom: 1.1em; }
+    ul.how {
+      margin: 0 0 1.2em; padding: .7em .9em .7em 2.1em;
+      background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+      font-size: .93rem; color: var(--ink-soft);
+    }
+    ul.how li { margin: .18em 0; }
+    ul.how b { color: var(--ink); font-weight: 600; }
+
+    /* readouts ------------------------------------------------------------ */
+    .readouts {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+    }
+    .ro {
+      flex: 1 1 120px; min-width: 104px;
+      border: 1px solid var(--rule); border-radius: 6px;
+      padding: 7px 10px; background: var(--panel);
+    }
+    .ro .k {
+      display: block; font-size: .7rem; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--ink-faint);
+    }
+    .ro .v {
+      display: block; font-family: var(--mono);
+      font-size: 1.1rem; font-variant-numeric: tabular-nums; color: var(--ink);
+    }
+    .ro.hot .v { color: var(--contrast); }
+    .ro.key .v { color: var(--accent); }
+
+    /* controls ------------------------------------------------------------ */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px;
+    }
+    button {
+      font-family: inherit; font-size: .9rem;
+      padding: 7px 13px; border-radius: 6px; cursor: pointer;
+      background: var(--paper); color: var(--accent);
+      border: 1px solid var(--accent);
+      transition: background .15s, color .15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-soft); }
+    button.primary { background: var(--accent); color: #fff; }
+    button.primary:hover:not(:disabled) { background: #47267a; }
+    button.warm { color: var(--contrast); border-color: var(--contrast); }
+    button.warm:hover:not(:disabled) { background: var(--contrast-soft); }
+    button:disabled { opacity: .38; cursor: not-allowed; }
+    label.knob {
+      display: flex; align-items: center; gap: 8px; flex: 1 1 240px;
+      font-size: .9rem; color: var(--ink-soft);
+    }
+    label.knob input[type=range] { flex: 1; min-width: 90px; accent-color: var(--accent); }
+    label.knob .n {
+      font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums;
+      min-width: 3.2em; text-align: right;
+    }
+
+    /* figures ------------------------------------------------------------- */
+    figure { margin: 0 0 14px; }
+    svg.fig {
+      display: block; width: 100%; height: auto;
+      border: 1px solid var(--rule); border-radius: 6px; background: var(--paper);
+      touch-action: manipulation;
+    }
+    figcaption { font-size: .84rem; color: var(--ink-faint); margin-top: .4em; }
+    .msg {
+      min-height: 1.5em; font-size: .93rem; margin: 0 0 12px;
+      color: var(--contrast); font-weight: 600;
+    }
+    .msg.calm { color: var(--ink-soft); font-weight: 400; }
+
+    /* local ---------------------------------------------------------------- */
+    .node { cursor: pointer; }
+    .node circle { fill: #fff; stroke: var(--accent); stroke-width: 2; transition: stroke-width .12s; }
+    .node.sel circle { stroke: var(--contrast); stroke-width: 4; }
+    .node text {
+      font-family: var(--mono); font-size: 11px; fill: var(--ink);
+      text-anchor: middle; dominant-baseline: central;
+      pointer-events: none; user-select: none;
+    }
+    .edge { stroke: var(--accent); stroke-opacity: .5; stroke-width: 2; }
+    .hint { font-size: .86rem; color: var(--ink-faint); margin: -6px 0 14px; }
+    .formula {
+      font-size: .93rem; color: var(--ink-soft);
+      background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+      padding: 9px 12px; margin: 0 0 14px;
+    }
+    .formula b { font-family: var(--mono); color: var(--ink); font-weight: 400; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>Friendship Paradox Game</h2>
-        <div id="score">Gap Score: 0.00</div>
-        <div id="averages"></div>
-        <div id="instructions">
-            <ul>
-                <li>🤝 <b>Goal:</b> Make your friends have more friends than you!</li>
-                <li>📈 <b>Task:</b> Maximize the gap between nodes' average friend count and their friends' average friend count.</li>
-                <li>🔗 Click two nodes to add/remove connections between them.</li>
-                <li>🔔 You will be notified when you achieve the goal.</li>
-            </ul>
-        </div>
-        <div id="visualization"></div>
-    </div>
-    <div id="celebration">Congratulations! You've reached the maximum score!</div>
-    <div id="warning">Warning: Each node must have at least one edge!</div>
+<div class="wrap">
 
-    <script>
-        const width = 600;
-        const height = 400;
-        const radius = Math.min(width, height) / 2 - 50;
+<h1>The friendship paradox, built by hand</h1>
+<p class="lede">Ten people, and you decide who knows whom. Two numbers are kept
+side by side: how many friends the average <em>person</em> has, and how many
+friends the average <em>friend</em> has. The second is never smaller. Your job
+is to find out when it is equal, and how far apart you can drive them.</p>
 
-        let nodes = d3.range(10).map(d => ({ id: d + 1, friends: 0 }));
-        let links = [];
+<ul class="how">
+  <li><b>Click one node, then another</b> to add a friendship. Click the same
+      pair again to remove it.</li>
+  <li>The <b>average person</b> counts every one of the ten, once each.</li>
+  <li>The <b>average friend</b> counts every person once <em>for each friend
+      they have</em> &mdash; which is exactly what happens when you ask people
+      about their friends.</li>
+</ul>
 
-        const svg = d3.select("#visualization")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+<div class="controls">
+  <button id="btn-clear">No friendships</button>
+  <button id="btn-ring">Ring</button>
+  <button id="btn-star">Star</button>
+</div>
+<p class="hint" id="hint">Selected: none.</p>
 
-        const g = svg.append("g")
-            .attr("transform", `translate(${width/2},${height/2})`);
+<div class="readouts">
+  <div class="ro key"><span class="k">Average person</span><span class="v" id="ro-k">0.00</span></div>
+  <div class="ro hot"><span class="k">Average friend</span><span class="v" id="ro-kf">0.00</span></div>
+  <div class="ro"><span class="k">Gap</span><span class="v" id="ro-gap">0.00</span></div>
+</div>
 
-        let link = g.append("g")
-            .selectAll("line");
+<figure>
+  <svg class="fig" id="graph" viewBox="0 0 640 380" role="img"
+       aria-label="Ten people on a circle. Each is labelled with its number of friends."></svg>
+  <figcaption>Each node is labelled with its own number of friends.</figcaption>
+</figure>
 
-        let node = g.append("g")
-            .selectAll("circle");
+<figure>
+  <svg class="fig" id="strip" viewBox="0 0 640 150" role="img"
+       aria-label="The two averages on one axis, with the gap between them shaded."></svg>
+  <figcaption>The same two numbers on one ruler. The shaded band is the gap.</figcaption>
+</figure>
 
-        let selectedNodes = [];
+<p class="formula" id="formula"></p>
 
-        function initializeLinks() {
-            const shuffled = d3.shuffle(nodes.slice());
-            for (let i = 0; i < shuffled.length; i++) {
-                const numLinks = Math.floor(Math.random() * 2) + 1; // Random number of links between 1 and 3 for each node
-                for (let j = 0; j < numLinks; j++) {
-                    const targetIndex = (i + j + 1) % shuffled.length;
-                    links.push({ source: shuffled[i], target: shuffled[targetIndex] });
-                }
-            }
-        }
+</div>
 
-        function updateVisualization() {
-            const angleStep = (2 * Math.PI) / nodes.length;
+<script>
+"use strict";
+/* ===========================================================================
+   The friendship paradox, built by hand.
 
-            nodes.forEach((d, i) => {
-                d.x = radius * Math.cos(i * angleStep);
-                d.y = radius * Math.sin(i * angleStep);
-            });
+   No library, no network request, no external asset. The ten nodes sit on a
+   circle at fixed angles; everything else the reader builds.
 
-            link = link.data(links, d => `${d.source.id}-${d.target.id}`);
-            link.exit().remove();
-            link = link.enter().append("line")
-                .attr("stroke", "#FFFFFF")
-                .attr("stroke-width", 2)
-                .merge(link);
+   The two averages, for a network with degrees k_1 ... k_N and m edges:
 
-            node = node.data(nodes, d => d.id);
-            node.exit().remove();
-            node = node.enter().append("circle")
-                .attr("r", 18)
-                .attr("fill", "#00FFFF") // Changed to cyan
-                .attr("stroke", "#FFFFFF")
-                .attr("stroke-width", 2)
-                .on("click", handleNodeClick)
-                .merge(node);
+     average person = <k>          = (1/N) * sum_i k_i
+     average friend = <k^2>/<k>    = (1/2m) * sum over edge endpoints of k
 
-            updatePositions();
-            updateFriendCounts();
-            updateAverages();
-        }
+   The second form is the one computed here: walk every edge, add the degree
+   of both of its endpoints, divide by 2m. That is literally "ask each person
+   about each of their friends, and average the answers", which is why it is
+   the number a survey returns.
 
-        function updatePositions() {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+     gap = <k^2>/<k> - <k> = Var(k)/<k>   >= 0, always.
 
-            node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        }
+   The page prints both sides of that identity so the reader can watch them
+   agree. Zero exactly when every degree is the same.
+   =========================================================================== */
 
-        function updateFriendCounts() {
-            nodes.forEach(node => {
-                node.friends = links.filter(link =>
-                    link.source.id === node.id || link.target.id === node.id
-                ).length;
-            });
-        }
+const N = 10;
+const C = { ink: "#22212b", soft: "#6b6880", faint: "#9c95b5", rule: "#e6e4e0",
+            accent: "#593196", contrast: "#c2410c", panel: "#fbfaf8" };
 
-        function updateAverages() {
-            const nodeAverage = d3.mean(nodes, d => d.friends);
-            const edgeAverage = d3.mean(links.flatMap(l => [l.source.friends, l.target.friends]));
-            const gap = edgeAverage - nodeAverage;
+/* state: a symmetric adjacency set of "i-j" keys with i < j */
+let edges = new Set();
+let sel = [];
 
-            d3.select("#score").text(`Gap Score: ${gap.toFixed(2)}`);
-            d3.select("#averages").html(`
-                Node-level average: ${nodeAverage.toFixed(2)}<br>
-                Edge-level average: ${edgeAverage.toFixed(2)}<br>
-                <b>Calculation:</b> ${edgeAverage.toFixed(2)} (Edge-level average) - ${nodeAverage.toFixed(2)} (Node-level average) = ${gap.toFixed(2)}
-            `);
+const key = (a, b) => Math.min(a, b) + "-" + Math.max(a, b);
 
-            if (gap >= 3.2) {
-                d3.select("#celebration").style("display", "block");
-                setTimeout(() => {
-                    d3.select("#celebration").style("display", "none");
-                }, 3000);
-            }
-        }
+function degrees() {
+  const d = new Array(N).fill(0);
+  for (const e of edges) {
+    const [a, b] = e.split("-").map(Number);
+    d[a]++; d[b]++;
+  }
+  return d;
+}
 
-        function handleNodeClick(event, d) {
-            if (selectedNodes.includes(d)) {
-                selectedNodes = selectedNodes.filter(node => node !== d);
-            } else {
-                selectedNodes.push(d);
-                if (selectedNodes.length === 2) {
-                    toggleLink(selectedNodes[0], selectedNodes[1]);
-                    selectedNodes = [];
-                }
-            }
+/* --------------------------------------------------------------------------
+   Elements.
+   -------------------------------------------------------------------------- */
+const gEl = document.getElementById("graph");
+const sEl = document.getElementById("strip");
+const hintEl = document.getElementById("hint");
+const roK = document.getElementById("ro-k");
+const roKf = document.getElementById("ro-kf");
+const roGap = document.getElementById("ro-gap");
+const fEl = document.getElementById("formula");
 
-            node.attr("stroke", d => selectedNodes.includes(d) ? "#FF0000" : "#FFFFFF")
-                .attr("stroke-width", d => selectedNodes.includes(d) ? 3 : 2);
+function svg(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
 
-            updateVisualization();
-        }
+/* --------------------------------------------------------------------------
+   Geometry: ten seats on a circle, starting at the top.
+   -------------------------------------------------------------------------- */
+const CX = 320, CY = 190, RAD = 148, NR = 20;
+const ang = i => -Math.PI / 2 + (i / N) * 2 * Math.PI;
+const px = i => CX + RAD * Math.cos(ang(i));
+const py = i => CY + RAD * Math.sin(ang(i));
 
-        function toggleLink(source, target) {
-            const linkIndex = links.findIndex(
-                l => (l.source === source && l.target === target) || (l.source === target && l.target === source)
-            );
+/* --------------------------------------------------------------------------
+   Draw.
+   -------------------------------------------------------------------------- */
+function draw() {
+  const d = degrees();
 
-            if (linkIndex > -1) {
-                if (source.friends > 1 && target.friends > 1) {
-                    links.splice(linkIndex, 1);
-                } else {
-                    d3.select("#warning").style("display", "block");
-                    setTimeout(() => {
-                        d3.select("#warning").style("display", "none");
-                    }, 3000);
-                }
-            } else {
-                links.push({ source, target });
-            }
-        }
+  while (gEl.firstChild) gEl.removeChild(gEl.firstChild);
+  const layer = svg("g", {});
+  for (const e of edges) {
+    const [a, b] = e.split("-").map(Number);
+    layer.appendChild(svg("line", { class: "edge",
+      x1: px(a), y1: py(a), x2: px(b), y2: py(b) }));
+  }
+  gEl.appendChild(layer);
 
-        initializeLinks();
-        updateVisualization();
-    </script>
+  for (let i = 0; i < N; i++) {
+    const g = svg("g", { class: "node" + (sel.includes(i) ? " sel" : ""),
+      tabindex: "0", role: "button",
+      "aria-label": "person " + i + ", " + d[i] + " friends" });
+    g.appendChild(svg("circle", { cx: px(i), cy: py(i), r: NR }));
+    const t = svg("text", { x: px(i), y: py(i) });
+    t.textContent = d[i];
+    g.appendChild(t);
+    g.addEventListener("click", () => pick(i));
+    g.addEventListener("keydown", ev => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(i); }
+    });
+    gEl.appendChild(g);
+  }
+
+  stats(d);
+}
+
+/* --------------------------------------------------------------------------
+   The move.
+   -------------------------------------------------------------------------- */
+function pick(i) {
+  const at = sel.indexOf(i);
+  if (at >= 0) { sel.splice(at, 1); }
+  else {
+    sel.push(i);
+    if (sel.length === 2) {
+      const k = key(sel[0], sel[1]);
+      if (edges.has(k)) edges.delete(k); else edges.add(k);
+      sel = [];
+    }
+  }
+  hintEl.textContent = sel.length
+    ? "Selected: person " + sel[0] + ". Click a second person to add or remove a friendship."
+    : "Selected: none.";
+  draw();
+}
+
+/* --------------------------------------------------------------------------
+   The two averages, and the strip that puts them on one ruler.
+   -------------------------------------------------------------------------- */
+function stats(d) {
+  const m = edges.size;
+  const kbar = d.reduce((a, b) => a + b, 0) / N;
+
+  let kfriend = null;
+  if (m > 0) {
+    let s = 0;
+    for (const e of edges) {
+      const [a, b] = e.split("-").map(Number);
+      s += d[a] + d[b];
+    }
+    kfriend = s / (2 * m);
+  }
+
+  const variance = d.reduce((a, x) => a + (x - kbar) * (x - kbar), 0) / N;
+  const gap = kfriend === null ? null : kfriend - kbar;
+
+  roK.textContent = kbar.toFixed(2);
+  roKf.textContent = kfriend === null ? "—" : kfriend.toFixed(2);
+  roGap.textContent = gap === null ? "—" : gap.toFixed(2);
+
+  if (m === 0) {
+    fEl.textContent = "No friendships yet, so there is no friend to ask. " +
+      "Add an edge.";
+  } else if (gap < 1e-9) {
+    fEl.innerHTML = "Gap <b>" + gap.toFixed(3) + "</b> = Var(k)/&#9001;k&#9002; = <b>" +
+      variance.toFixed(3) + "</b> / <b>" + kbar.toFixed(3) + "</b>. " +
+      "Every degree in this network is the same, so the variance is zero and " +
+      "the paradox vanishes. This is the only way it can.";
+  } else {
+    fEl.innerHTML = "Gap <b>" + gap.toFixed(3) + "</b> = Var(k)/&#9001;k&#9002; = <b>" +
+      variance.toFixed(3) + "</b> / <b>" + kbar.toFixed(3) + "</b> = <b>" +
+      (variance / kbar).toFixed(3) + "</b>. " +
+      "A variance is never negative, so the gap can never be. Spread the " +
+      "degrees further apart and it grows.";
+  }
+
+  drawStrip(kbar, kfriend, Math.max(2, Math.max.apply(null, d)));
+}
+
+/* The ruler. The person marker hangs above the axis and the friend marker
+   below it, so the two labels can never collide however close the numbers
+   come; the shaded band between them is the gap. */
+const SW = 640, SH = 150, SM = { l: 34, r: 34, t: 34 };
+const sw = SW - SM.l - SM.r;
+const AXIS = 44;               // axis height inside the translated group
+
+function drawStrip(kbar, kfriend, kmax) {
+  while (sEl.firstChild) sEl.removeChild(sEl.firstChild);
+  const g = svg("g", { transform: "translate(" + SM.l + "," + SM.t + ")" });
+  sEl.appendChild(g);
+  const X = v => (v / kmax) * sw;
+
+  if (kfriend !== null && kfriend > kbar) {
+    g.appendChild(svg("rect", { x: X(kbar), y: AXIS - 26,
+      width: X(kfriend) - X(kbar), height: 52,
+      fill: C.contrast, "fill-opacity": .12 }));
+  }
+  g.appendChild(svg("line", { x1: 0, y1: AXIS, x2: sw, y2: AXIS,
+    stroke: C.rule, "stroke-width": 2 }));
+  for (let k = 0; k <= kmax; k++) {
+    g.appendChild(svg("line", { x1: X(k), y1: AXIS - 4, x2: X(k), y2: AXIS + 4,
+      stroke: C.rule, "stroke-width": 1 }));
+  }
+  const lab = svg("text", { x: sw, y: AXIS - 34, "text-anchor": "end",
+    "font-size": 10, fill: C.faint });
+  lab.textContent = "friends per person, 0 to " + kmax;
+  g.appendChild(lab);
+
+  mark(g, X(kbar), C.accent, "average person " + kbar.toFixed(2), -1);
+  if (kfriend !== null)
+    mark(g, X(kfriend), C.contrast, "average friend " + kfriend.toFixed(2), 1);
+}
+
+/* side = -1 above the axis, +1 below it. */
+function mark(g, x, colour, label, side) {
+  const tip = AXIS + side * 2;
+  const base = AXIS + side * 15;
+  g.appendChild(svg("path", {
+    d: "M" + x + " " + tip + "L" + (x - 6) + " " + base +
+       "L" + (x + 6) + " " + base + "Z", fill: colour }));
+  g.appendChild(svg("line", { x1: x, y1: base, x2: x, y2: AXIS + side * 22,
+    stroke: colour, "stroke-width": 2 }));
+  const t = svg("text", { x: x, y: AXIS + side * 30 + (side > 0 ? 6 : 0),
+    "text-anchor": x > sw - 100 ? "end" : (x < 100 ? "start" : "middle"),
+    "font-size": 11, fill: colour, "font-weight": 600 });
+  t.textContent = label;
+  g.appendChild(t);
+}
+
+/* --------------------------------------------------------------------------
+   Three starting shapes. The ring is the one network where the paradox is
+   absent, and the star is where it is loudest; both are one click away so the
+   reader can feel the two ends before hunting in between.
+   -------------------------------------------------------------------------- */
+function setEdges(list) {
+  edges = new Set(list.map(([a, b]) => key(a, b)));
+  sel = [];
+  hintEl.textContent = "Selected: none.";
+  draw();
+}
+document.getElementById("btn-clear").addEventListener("click", () => setEdges([]));
+document.getElementById("btn-ring").addEventListener("click", () => {
+  const l = []; for (let i = 0; i < N; i++) l.push([i, (i + 1) % N]); setEdges(l);
+});
+document.getElementById("btn-star").addEventListener("click", () => {
+  const l = []; for (let i = 1; i < N; i++) l.push([0, i]); setEdges(l);
+});
+
+/* Open on something lopsided, so the first thing on screen is a gap. */
+setEdges([[0, 1], [0, 2], [0, 3], [0, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9]]);
+</script>
 </body>
 </html>

@@ -831,7 +831,7 @@ A variance is never negative, so the gap is **never negative**: in every network
 
 The average friend's degree, $\langle k \rangle + \text{Var}(k)/\langle k \rangle$, even has a name you have already met: it is the degree heterogeneity $\kappa$ that decides whether a network survives random failure in [Module 3](../m03-robustness/01-concepts.qmd). The friendship paradox and network robustness are the same piece of mathematics wearing different clothes.
 
-**Try it.** Can you build a network in which the paradox is *absent* — where your friends have exactly as many friends as you? And one where the gap is as large as you can make it? Test your ideas in the [Friendship Paradox Game](../assets/vis/friendship-paradox-game.html).
+**Try it.** Can you build a network in which the paradox is *absent* — where your friends have exactly as many friends as you? And one where the gap is as large as you can make it? Test your ideas in [The friendship paradox, built by hand](../assets/vis/friendship-paradox-game.html): ten people, and you click pairs to make and break friendships. It keeps the two averages side by side on one ruler and prints $\text{Var}(k)/\langle k \rangle$ underneath, so you can watch the identity above hold on every network you build.
 
 Beyond fun trivia, the friendship paradox has practical consequences. Most people find that their friends have more friends than they do, not because they are unpopular, but because of this counting bias. The same principle applies elsewhere: in scientific collaboration networks, the average coauthor has more collaborators than the average researcher; on the Web, a page you arrive at by following a random link has more incoming links than a page picked at random.
 
@@ -845,7 +845,7 @@ This observation has profound practical consequences, especially in public healt
 
 This works because when people nominate a friend, they're more likely to name someone with many social connections. By targeting these nominated friends, public health officials can reach the most connected individuals in a network without needing to map the entire social structure — which matters, because in exactly the settings where an epidemic must be slowed, nobody has that map.
 
-Can you beat random vaccination by choosing targets this way? Try to control an outbreak in the [Vaccination Game](../assets/vis/vaccination-game.html).
+Can you beat random vaccination by choosing targets this way? [Who do you vaccinate?](../assets/vis/vaccination-game.html) runs the three strategies against each other on the same population of a hundred and twenty: names picked at random, friends nominated by people picked at random, and — as the unreachable best case — the most connected people, which nobody in a real outbreak knows how to find. Slide the number of doses and read the average degree each strategy reaches. Random lands on $\langle k \rangle$. Nominating a friend lands on $\langle k^2 \rangle / \langle k \rangle$, the number from the previous section, without anyone ever seeing the network.
 
 ## Why the Obvious Histogram Lies
 

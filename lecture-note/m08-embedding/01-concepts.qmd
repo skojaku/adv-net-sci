@@ -768,7 +768,501 @@ Look at the denominator. It runs over $V$, the entire vocabulary — 100,000 wor
 
 **Negative Sampling**: Instead of normalizing over all words, sample a handful of "negative" (non-context) words and train the model only to tell the true context apart from those. Five to twenty negatives per pair is enough in practice.
 
-<!-- TODO(anim): the softmax bill — a vocabulary bar of 100k terms shrinking to a 17-step tree path (hierarchical softmax) and to 5 sampled bars (negative sampling). -->
+Three numbers carry that whole argument — 100,000 terms, 17 tree steps, and 6
+words (five negatives plus the true one) — and they are worth seeing rather than
+being told. Below, all three are drawn on the same ruler. Then you set the
+vocabulary size yourself and watch which of the bills grows with it.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The softmax bill — only the rules this one stage needs. Paper, panels,
+   buttons, knob and motion all come from assets/anim.css; the sequencer from
+   assets/anim.js. Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
+
+/* A three-row bar chart with an axis and its labels needs the whole column;
+   the kit's 310px default is sized for a dozen-node diagram. */
+#soft-bill { --anim-svg-max: 100%; }
+#soft-bill [data-sb-side] { max-width: 27rem; margin: 0.6rem auto 0; }
+
+/* One colour per bill, and only two colours in the box: the bill you cannot
+   pay is amber, the trick that replaces it is the accent, and the third is
+   plain ink because a constant does not need a colour of its own. */
+#soft-bill .sb-full { fill: var(--_amber); }
+#soft-bill .sb-tree { fill: var(--_accent); }
+#soft-bill .sb-neg  { fill: var(--_ink-soft); }
+#soft-bill .sb-tip-full { stroke: var(--_amber); }
+#soft-bill .sb-tip-tree { stroke: var(--_accent); }
+#soft-bill .sb-tip-neg  { stroke: var(--_ink-soft); }
+/* The tip is what saves the two short bars from being nothing at all: under
+   the linear ruler they are a twentieth of a pixel wide, and a hairline at
+   the very start of the axis is the honest picture of that. */
+#soft-bill .sb-tip { stroke-width: 1.3; }
+#soft-bill .sb-slot { fill: none; stroke: var(--_rule); stroke-width: 1; }
+
+#soft-bill .sb-row { font-family: var(--_hand); font-size: 10.5px; fill: var(--_ink-soft); text-anchor: end; }
+#soft-bill .sb-val { font-family: var(--_hand); font-size: 12.5px; font-weight: 700; fill: var(--_ink); }
+#soft-bill .sb-big { font-family: var(--_hand); font-size: 34px; font-weight: 700; fill: var(--_ink); text-anchor: middle; }
+#soft-bill .sb-tick { stroke: var(--_ink-faint); stroke-width: 1; }
+#soft-bill .sb-num { font-family: var(--_hand); font-size: 9px; fill: var(--_ink-soft); text-anchor: middle; }
+
+/* The seventeen questions, and the six words of the sampled version. */
+#soft-bill .sb-q { stroke: var(--_accent); stroke-width: 2; stroke-linecap: round; }
+#soft-bill .sb-q-off { stroke: var(--_ink-faint); stroke-width: 1.4; stroke-linecap: round; }
+#soft-bill .sb-box { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.5; }
+#soft-bill .sb-box-true { fill: var(--_accent); stroke: var(--_ink); }
+#soft-bill .sb-box-neg  { fill: var(--_amber-soft); stroke: var(--_amber); }
+#soft-bill .sb-word { font-family: var(--_hand); font-size: 10px; fill: var(--_ink); text-anchor: middle; }
+#soft-bill .sb-word-true { fill: var(--_white); font-weight: 700; }
+#soft-bill .sb-word-neg  { fill: var(--_amber); }
+</style>
+
+<figure class="anim-stage" id="soft-bill">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-sb-plot></div>
+    <div data-anim-clear data-sb-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Three bills on one ruler. Markup above, scenes below, nothing in between:
+   everything a scene calls arrives on `ctx`, from assets/anim.js. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     There is no dataset here. Every number is arithmetic you can redo on a
+     phone, and the recipe is written beside it.
+
+     V_STEPS  thirteen vocabulary sizes, 1-2-5 spaced from a thousand to ten
+              million — the detents of the dial in the last scene.
+     TREE     the depth of a balanced binary tree with that many leaves, i.e.
+              the number of yes/no questions that pin one word down:
+                  [math.ceil(math.log2(v)) for v in V_STEPS]
+              Check the one the prose quotes: 2^16 = 65,536 is short of
+              100,000 and 2^17 = 131,072 clears it, so 17 questions.
+     NEG      5 sampled negatives + the true context word = 6, at every
+              vocabulary size. Its being constant is the whole point of it,
+              so it is a number and not a table.
+     HALVE    100,000 halved seventeen times, rounding up:
+                  v = 100000; [v := -(-v // 2) for _ in range(17)]
+              The last entry is 1, which is what "17 questions is enough"
+              means. Eighteen entries: the start plus seventeen halvings.
+     ------------------------------------------------------------------------ */
+  const V_STEPS = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000];
+  const TREE    = [10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24];
+  const HALVE   = [100000, 50000, 25000, 12500, 6250, 3125, 1563, 782, 391, 196, 98, 49, 25, 13, 7, 4, 2, 1];
+  const NEG     = 6;
+  const PARK    = 6;                 /* V = 100,000, the size the prose quotes */
+  const VBASE   = V_STEPS[PARK];
+  const QN      = HALVE.length - 1;  /* 17 */
+
+  /* Five words nobody would ever find beside "quick brown ___". That is the
+     entire training signal of negative sampling: tell the real one from
+     these. */
+  const TRUE_W = "brown";
+  const NEG_W  = ["kettle", "Tuesday", "orbit", "salmon", "wrench"];
+
+  /* geometry: bars run from X0 to X0 + W, three rows, then the axis */
+  const X0 = 100, W = 256;
+  const ROW = [112, 148, 184], BH = 18;
+  const AXIS_Y = 224;
+  const DEC = 7;                     /* the log ruler spans 1 to 10^7 */
+
+  const comma = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  /* One ruling parameter for the whole chart. t = 0 is the ordinary ruler
+     (position proportional to the count); t = 1 is the log ruler (position
+     proportional to how many times you multiplied by ten). Scene 4 slides
+     t from one to the other, which is the only thing that changes. */
+  function len(v, t) {
+    if (!(v > 0)) return 0;
+    const lin = Math.min(v / VBASE, 1);
+    const lg = Math.min(Math.log(v) / Math.LN10 / DEC, 1);
+    return ((1 - t) * lin + t * lg) * W;
+  }
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "The bill",
+      note: "The denominator of the softmax runs over every word in the vocabulary. One hundred thousand exponentials, for one target word and one context word — and a corpus holds billions of such pairs.",
+      async run(ctx) {
+        ctx.build();
+        const c = ctx.card("what one training pair costs");
+        const big = ctx.big("0");
+        ctx.sub("terms in the denominator, for ONE target-context pair");
+
+        if (!ctx.fast()) {
+          for (let i = 1; i <= 50; i++) {
+            const v = (VBASE * i) / 50;
+            big.textContent = comma(v);
+            ctx.set("full", v);
+            await ctx.sleep(34);
+          }
+        }
+        big.textContent = comma(VBASE);
+        ctx.set("full", VBASE);
+
+        [["vocabulary", comma(VBASE)],
+         ["terms, per pair", comma(VBASE)],
+         ["pairs in a billion-word corpus", "~10 billion"],
+         ["exponentials, one pass", "a thousand trillion"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "Training as written is not slow. It is impossible.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.9s";
+        c.appendChild(q);
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Seventeen questions",
+      note: "Hierarchical softmax plays twenty questions instead. Is the word in this half of the vocabulary, or that half? Seventeen answers take 100,000 candidates down to one — and 17 is a bar you cannot see.",
+      async run(ctx) {
+        const c = ctx.card("guess the word in yes/no questions");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "put all 100,000 words at the leaves of a binary tree. Every " +
+          "question sends you down one branch and throws away half of what is left."));
+        const big = ctx.big(comma(HALVE[0]));
+        ctx.sub("candidates still standing");
+        const rungs = ctx.rungs(QN);
+
+        for (let i = 1; i <= QN; i++) {
+          rungs(i);
+          big.textContent = comma(HALVE[i]);
+          if (!ctx.fast()) await ctx.sleep(190);
+        }
+        ctx.sub("one word left, after 17 questions");
+        ctx.set("tree", QN);
+        await ctx.sleep(ctx.fast() ? 0 : 600);
+
+        [["questions", String(QN)],
+         ["2 to the 17th", comma(131072)],
+         ["terms, before", comma(VBASE)],
+         ["terms, now", String(QN)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "Its bar is drawn on the chart, in the accent colour, at the far " +
+          "left. On this ruler 17 out of 100,000 is 0.07 of a pixel wide.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.8s";
+        c.appendChild(q);
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "One right answer, five wrong",
+      note: "Negative sampling does not rank the vocabulary at all. It shows the model the true context word and five words drawn at random, and asks only which is which. Six words per pair, whatever the vocabulary size.",
+      async run(ctx) {
+        const c = ctx.card("tell the true one from five impostors");
+        const big = ctx.big("6");
+        ctx.sub("words looked at, per pair");
+        await ctx.words(TRUE_W, NEG_W);
+        ctx.set("neg", NEG);
+        await ctx.sleep(ctx.fast() ? 0 : 500);
+
+        [["true context word", "1"],
+         ["random impostors", "5"],
+         ["terms, before", comma(VBASE)],
+         ["terms, now", String(NEG)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "Its bar is the grey hairline under the other two. Three bars are " +
+          "now on this chart and you can see one of them.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.8s";
+        c.appendChild(q);
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Now you set the vocabulary",
+      note: "Re-rule the axis so all three fit, then turn the vocabulary up. Multiply it by ten and the full bill multiplies by ten, the tree bill gains three or four questions, and the sampled bill does not move at all.",
+      async run(ctx) {
+        ctx.hint("same three bills, same three numbers — only the ruler changes");
+        const c = ctx.card("re-rule the axis, then turn the dial");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "each mark on the new ruler is ten times the one before it — the " +
+          "only way to draw 6 and 100,000 on the same line"));
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>V = <b data-v>100,000</b></span>' +
+          '<span style="color:var(--_amber)">full <b data-f>100,000</b></span>' +
+          '<span style="color:var(--_accent)">tree <b data-t>17</b></span>');
+        c.appendChild(read);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "the third bill stays 6 at every setting, which is why it has no readout"));
+
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outV = read.querySelector("[data-v]");
+        const outF = read.querySelector("[data-f]");
+        const outT = read.querySelector("[data-t]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the dial is yours. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: V_STEPS.length - 1, step: 1, value: PARK,
+          label: "Vocabulary size",
+          format: (i) => "V = " + comma(V_STEPS[i]),
+          onGrab: () => ctx.pause(),
+          onInput: (i) => {
+            outV.textContent = comma(V_STEPS[i]);
+            outF.textContent = comma(V_STEPS[i]);
+            outT.textContent = String(TREE[i]);
+            ctx.set("full", V_STEPS[i]);
+            ctx.set("tree", TREE[i]);
+            ctx.set("neg", NEG);
+          }
+        });
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipping, or reading with motion turned off: build the end state —
+           log ruler, dial parked at the 100,000 the prose quotes. */
+        if (ctx.fast()) {
+          ctx.rule(1);
+          dial.set(PARK);
+          say("100,000 against 17 against 6, on a ruler that can hold all three.");
+          return;
+        }
+
+        ctx.set("neg", NEG);
+        await ctx.sleep(700);
+        for (let i = 1; i <= 14; i++) { ctx.rule(i / 14); await ctx.sleep(70); }
+        dial.set(PARK);
+        await ctx.sleep(900);
+        say("Two bars grew out of nothing. Nothing about them changed — the " +
+            "ruler did.");
+        await ctx.sleep(2800);
+
+        for (let i = PARK - 1; i >= 0; i--) { dial.set(i); await ctx.sleep(280); }
+        say("<span>a thousand-word vocabulary</span> full 1,000 &middot; tree 10 &middot; sampled 6");
+        await ctx.sleep(2000);
+
+        for (let i = 1; i < V_STEPS.length; i++) { dial.set(i); await ctx.sleep(280); }
+        say("&times;10,000 the vocabulary: the full bill &times;10,000, the " +
+            "tree bill +14 questions, the sampled bill unchanged at 6.");
+        await ctx.sleep(3600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("soft-bill"), scenes, {
+    stepsLabel: "Softmax steps",
+
+    /* One chart across all four scenes: three bars and one axis, built once
+       and only ever re-lengthened and re-ruled. The work area above it is the
+       only part a scene replaces. */
+    helpers(ctx) {
+      const plot = ctx.$("[data-sb-plot]");
+      const side = ctx.$("[data-sb-side]");
+      const S = { val: { full: 0, tree: 0, neg: 0 }, t: 0 };
+      const KEYS = ["full", "tree", "neg"];
+
+      function build() {
+        plot.textContent = "";
+        /* A replay re-enters scene 1 with the previous run's bars still in S,
+           so the state is reset here rather than at first mount. */
+        S.val = { full: 0, tree: 0, neg: 0 };
+        S.t = 0;
+        S.subEl = null;
+        const svg = ctx.svgRoot("0 0 440 264", "sb-canvas");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gWork = g(), gBar = g(), gAxis = g();
+
+        const text = (parent, x, y, t, cls) => {
+          const e = ctx.svgEl("text", { x: x, y: y, "class": cls });
+          e.textContent = t;
+          return parent.appendChild(e);
+        };
+
+        S.bar = {}; S.tip = {}; S.num = {};
+        [["full", "full softmax"], ["tree", "hierarchical"], ["neg", "negative sampling"]]
+          .forEach((row, i) => {
+            const k = row[0], y = ROW[i];
+            text(gBar, X0 - 6, y + 13, row[1], "sb-row");
+            gBar.appendChild(ctx.svgEl("rect", {
+              x: X0, y: y, width: W, height: BH, rx: 3, "class": "sb-slot"
+            }));
+            S.bar[k] = gBar.appendChild(ctx.svgEl("rect", {
+              x: X0, y: y, width: 0, height: BH, rx: 2, "class": "sb-" + k
+            }));
+            S.tip[k] = gBar.appendChild(ctx.svgEl("line", {
+              x1: X0, y1: y - 3, x2: X0, y2: y + BH + 3,
+              "class": "sb-tip sb-tip-" + k
+            }));
+            S.num[k] = text(gBar, X0 + W + 10, y + 14, "", "sb-val");
+          });
+
+        /* Two rulers under the same bars. Only their opacity changes. */
+        const ruler = (labels, at, cls) => {
+          const gr = gAxis.appendChild(ctx.svgEl("g", { "class": cls }));
+          gr.appendChild(ctx.svgEl("line", {
+            x1: X0, y1: AXIS_Y, x2: X0 + W, y2: AXIS_Y, "class": "anim-axis"
+          }));
+          labels.forEach((lb, i) => {
+            const x = X0 + at(i);
+            gr.appendChild(ctx.svgEl("line", {
+              x1: x, y1: AXIS_Y, x2: x, y2: AXIS_Y + 5, "class": "sb-tick"
+            }));
+            text(gr, x, AXIS_Y + 16, lb, "sb-num");
+          });
+          return gr;
+        };
+        S.lin = ruler(["0", "25k", "50k", "75k", "100k"], (i) => (i / 4) * W, "sb-lin");
+        S.log = ruler(["1", "10", "100", "1k", "10k", "100k", "1M", "10M"],
+          (i) => (i / DEC) * W, "sb-log");
+        S.log.style.opacity = 0;
+        S.linLab = text(gAxis, X0 + W / 2, AXIS_Y + 32,
+          "terms per training pair", "sb-num");
+
+        S.work = gWork;
+        S.svg = svg;
+        plot.appendChild(svg);
+        redraw();
+      }
+
+      function redraw() {
+        KEYS.forEach((k) => {
+          const L = len(S.val[k], S.t);
+          S.bar[k].setAttribute("width", L);
+          S.tip[k].setAttribute("x1", X0 + L);
+          S.tip[k].setAttribute("x2", X0 + L);
+          /* A bill that has not been introduced yet has no tip and no number,
+             or the reader sees three hairlines before there is anything to
+             compare. */
+          S.tip[k].style.opacity = S.val[k] ? 1 : 0;
+          S.num[k].textContent = S.val[k] ? comma(S.val[k]) : "";
+        });
+      }
+
+      const set = (k, v) => { S.val[k] = v; redraw(); };
+
+      /* Slide the whole chart from the ordinary ruler to the log one. */
+      function rule(t) {
+        S.t = t;
+        S.lin.style.opacity = 1 - t;
+        S.log.style.opacity = t;
+        S.linLab.textContent = t > 0.5
+          ? "terms per training pair, log ruler"
+          : "terms per training pair";
+        redraw();
+      }
+
+      /* The area above the bars. Each scene owns it and clears it. */
+      function work() {
+        S.work.textContent = "";
+        return S.work;
+      }
+      function big(t) {
+        const w = work();
+        const e = ctx.svgEl("text", { x: 220, y: 52, "class": "sb-big" });
+        e.textContent = t;
+        w.appendChild(e);
+        return e;
+      }
+      function sub(t) {
+        if (S.subEl) S.subEl.remove();
+        const e = ctx.svgEl("text", { x: 220, y: 72, "class": "sb-num" });
+        e.textContent = t;
+        S.subEl = S.work.appendChild(e);
+      }
+      /* One quiet line where the big number usually goes, for the scene that
+         has no number of its own. */
+      function hint(t) {
+        const w = work();
+        const e = ctx.svgEl("text", { x: 220, y: 60, "class": "sb-num" });
+        e.textContent = t;
+        w.appendChild(e);
+      }
+
+      /* Seventeen tick marks, lit one at a time: the questions, countable. */
+      function rungs(n) {
+        const gr = S.work.appendChild(ctx.svgEl("g"));
+        const x = (i) => 70 + (i / (n - 1)) * 300;
+        const lines = [];
+        for (let i = 0; i < n; i++) {
+          lines.push(gr.appendChild(ctx.svgEl("line", {
+            x1: x(i), y1: 84, x2: x(i), y2: 98, "class": "sb-q-off"
+          })));
+        }
+        return (k) => {
+          lines.forEach((ln, i) => {
+            ln.setAttribute("class", i < k ? "sb-q" : "sb-q-off");
+          });
+        };
+      }
+
+      /* Six word boxes: the true context word and five drawn at random. */
+      async function words(trueW, negW) {
+        const gr = S.work.appendChild(ctx.svgEl("g"));
+        const all = [[trueW, true]].concat(negW.map((w) => [w, false]));
+        for (let i = 0; i < all.length; i++) {
+          const x = 31 + i * 64;
+          const box = ctx.svgEl("g", { "class": ctx.fast() ? "" : "anim-fade" });
+          box.appendChild(ctx.svgEl("rect", {
+            x: x, y: 78, width: 58, height: 24, rx: 5,
+            "class": "sb-box " + (all[i][1] ? "sb-box-true" : "sb-box-neg")
+          }));
+          const t = ctx.svgEl("text", {
+            x: x + 29, y: 94,
+            "class": "sb-word " + (all[i][1] ? "sb-word-true" : "sb-word-neg")
+          });
+          t.textContent = all[i][0];
+          box.appendChild(t);
+          gr.appendChild(box);
+          if (!ctx.fast()) await ctx.sleep(260);
+        }
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { build, set, rule, big, sub, hint, rungs, words, card };
+    }
+  });
+});
+</script>
+```
 
 ### What word2vec bought us
 
@@ -794,6 +1288,539 @@ More specifically, the method contains the following steps:
 2. Treat the random walks as sentences and feed them to word2vec to learn the node embeddings.
 
 DeepWalk typically uses the skip-gram model with hierarchical softmax for efficient training.
+
+That is the entire trick, and it is worth watching happen once. Below, a walker
+crosses a twelve-person network and the ids it lands on stack up underneath as a
+sentence. Then the word2vec window from the last section slides along that
+sentence, unchanged — it has no idea it is looking at a network. At the end you
+set the window size yourself.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The DeepWalk pipeline — only the rules this one stage needs. Paper, panels,
+   buttons, knob and motion all come from assets/anim.css; the sequencer from
+   assets/anim.js. Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
+
+/* One wide canvas holds the network and the sentence, so an id can physically
+   fall from a node into a box. The kit caps .anim-svg at 310px, which is right
+   for a square figure and far too narrow for this one. */
+#dw-walk { --anim-svg-max: 100%; }
+#dw-walk [data-dw-side] { max-width: 27rem; margin: 0.6rem auto 0; }
+
+/* Nineteen edges on twelve nodes goes to mush at the kit's 2.2 stroke. */
+#dw-walk .dw-thin { stroke-width: 1.8; }
+
+/* A node is a circle plus its id, so both change colour together when the
+   walker arrives. Unvisited is the kit's "off" node. */
+#dw-walk .dw-circ { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.8; transition: fill 0.3s ease, stroke 0.3s ease; }
+#dw-walk .dw-off .dw-circ { fill: var(--_white); stroke: var(--_ink-faint); }
+#dw-walk .dw-id { font-family: var(--_hand); font-size: 10px; font-weight: 700; fill: var(--_white); text-anchor: middle; }
+#dw-walk .dw-off .dw-id { fill: var(--_ink-faint); }
+
+/* Flight time: the id takes half a second to fall from the node into its box. */
+#dw-walk .dw-tok { transition: transform 0.5s cubic-bezier(0.4, 0.05, 0.5, 1), opacity 0.3s ease; }
+#dw-walk .dw-box { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.6; }
+#dw-walk .dw-word { font-family: var(--_hand); font-size: 11.5px; fill: var(--_ink); text-anchor: middle; }
+/* The centre of the window is filled, its context is outlined: exactly the
+   two roles skip-gram has, and nothing else on the page is either colour. */
+#dw-walk .dw-centre .dw-box { fill: var(--_accent); stroke: var(--_ink); }
+#dw-walk .dw-centre .dw-word { fill: var(--_white); font-weight: 700; }
+#dw-walk .dw-ctx .dw-box { fill: var(--_amber-soft); stroke: var(--_amber); stroke-width: 2.2; }
+#dw-walk .dw-ctx .dw-word { fill: var(--_amber); }
+#dw-walk .dw-win { fill: none; stroke: var(--_ink); stroke-width: 1.8; stroke-dasharray: 5 4; }
+
+/* A pair the window produced, drawn back onto the network: accent where the
+   two are actually joined, amber where they are not. */
+#dw-walk .dw-chord-real { stroke: var(--_accent); stroke-width: 3.6; stroke-linecap: round; fill: none; }
+#dw-walk .dw-chord-new  { stroke: var(--_amber); stroke-width: 1.6; fill: none; }
+#dw-walk .dw-faded { opacity: 0.22; }
+
+#dw-walk .dw-mid { text-anchor: middle; }
+#dw-walk .dw-list { max-height: 7.6rem; overflow-y: auto; }
+#dw-walk .dw-list .anim-tally { font-size: 0.8rem; line-height: 1.42; }
+</style>
+
+<figure class="anim-stage" id="dw-walk">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-dw-plot></div>
+    <div data-anim-clear data-dw-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* A walk becomes a sentence. Markup above, scenes below, nothing in between:
+   everything a scene calls arrives on `ctx`, from assets/anim.js. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number here was computed once, offline, and pasted in. Nothing in
+     this file runs a graph algorithm.
+
+     THE NETWORK. Twelve nodes in three groups of four. Inside each group,
+     five of the six possible edges; then four bridges, 1-4, 3-6, 5-8 and
+     7-10. Nineteen edges, every degree between 2 and 4, connected. The
+     coordinates are hand-placed, not laid out: three clusters left to right,
+     so a walk that crosses the network reads as crossing the picture.
+
+     THE WALK. A uniform random walk of nine nodes, eight steps. Seeded search
+     for the first seed whose walk visits nine *distinct* nodes and touches all
+     three groups, so no id repeats in the sentence. Seed 49 is the first, and
+     gives 1, 3, 6, 4, 7, 5, 8, 9, 11. Reproduce exactly with
+
+       import random, networkx as nx
+       G = nx.Graph(); G.add_nodes_from(range(12))
+       G.add_edges_from(map(tuple, EDGE))          # EDGE as pasted below
+       for seed in range(200):
+           r = random.Random(seed)
+           w = [r.choice(range(12))]               # the start is drawn too
+           for _ in range(8):
+               w.append(r.choice(list(G.neighbors(w[-1]))))
+           if len(set(w)) == 9 and len({x // 4 for x in w}) == 3:
+               print(seed, w); break               # -> 49 [1,3,6,4,7,5,8,9,11]
+
+     (list(G.neighbors(v)) is insertion order, not sorted order; sorting the
+     neighbours changes the draw and no seed under 300 then qualifies.)
+
+     THE PAIRS. For window size w, skip-gram emits one (centre, context) pair
+     for every ordered pair of positions in the walk no more than w apart.
+     PAIRS[w-1] counts them; REALP[w-1] counts how many of those pairs happen
+     to be joined by an actual edge:
+
+         w                1     2     3     4
+         pairs           16    30    42    52
+         on a real edge  16    22    24    24
+
+     At w = 1 the pairs are the steps of the walk, so all sixteen are edges.
+     CHORD[w-1] is the same information as distinct unordered node pairs, each
+     tagged 1 if the network has that edge and 0 if it does not — 8 pairs at
+     w = 1, all real; 26 at w = 4, of which 12 are real.
+     ------------------------------------------------------------------------ */
+  const NODE = [[55,42],[110,34],[48,110],[108,104],[192,24],[250,40],[188,114],[248,120],[330,30],[392,44],[322,110],[386,104]];
+  const EDGE = [[0,1],[0,2],[0,3],[1,3],[2,3],[4,5],[4,6],[5,7],[6,7],[4,7],[8,9],[8,10],[9,11],[10,11],[8,11],[1,4],[3,6],[5,8],[7,10]];
+  const WALK = [1,3,6,4,7,5,8,9,11];
+  const PAIRS = [16,30,42,52];
+  const REALP = [16,22,24,24];
+  const CHORD = [
+    [[1,3,1],[3,6,1],[4,6,1],[4,7,1],[5,7,1],[5,8,1],[8,9,1],[9,11,1]],
+    [[1,3,1],[1,6,0],[3,4,0],[3,6,1],[4,5,1],[4,6,1],[4,7,1],[5,7,1],[5,8,1],[5,9,0],[6,7,1],[7,8,0],[8,9,1],[8,11,1],[9,11,1]],
+    [[1,3,1],[1,4,1],[1,6,0],[3,4,0],[3,6,1],[3,7,0],[4,5,1],[4,6,1],[4,7,1],[4,8,0],[5,6,0],[5,7,1],[5,8,1],[5,9,0],[5,11,0],[6,7,1],[7,8,0],[7,9,0],[8,9,1],[8,11,1],[9,11,1]],
+    [[1,3,1],[1,4,1],[1,6,0],[1,7,0],[3,4,0],[3,5,0],[3,6,1],[3,7,0],[4,5,1],[4,6,1],[4,7,1],[4,8,0],[4,9,0],[5,6,0],[5,7,1],[5,8,1],[5,9,0],[5,11,0],[6,7,1],[6,8,0],[7,8,0],[7,9,0],[7,11,0],[8,9,1],[8,11,1],[9,11,1]]
+  ];
+
+  /* The sentence from the prose two sections up, word for word, so the reader
+     recognises the row before its contents are swapped for node ids. */
+  const WORDS = ["The", "quick", "brown", "fox", "jumps", "over", "a", "lazy", "dog"];
+
+  const L = WALK.length;            /*  9 tokens                              */
+  const WDEF = 2;                   /*  the window size the prose uses        */
+  const WMAX = 4;
+  const PARK = 4;                   /*  the middle slot, where the dial parks */
+
+  /* geometry of the sentence row */
+  const BW = 40, BH = 34, GAP = 6, SX = 25, SY = 168;
+  const slot = (i) => SX + i * (BW + GAP);
+
+  /* the slots inside the window when it is centred on i with half-width w */
+  const lo = (i, w) => Math.max(0, i - w);
+  const hi = (i, w) => Math.min(L - 1, i + w);
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "What word2vec sees",
+      note: "Here is word2vec on the sentence from the last section. It reads a row of tokens, puts a window round one of them, and calls that one the centre and its neighbours the context. Nine boxes. That is the whole input.",
+      async run(ctx) {
+        ctx.build();
+        ctx.netNote("a network. word2vec has never seen one of these.");
+        await ctx.sleep(ctx.fast() ? 0 : 700);
+        await ctx.fill(WORDS);
+        await ctx.sleep(ctx.fast() ? 0 : 500);
+
+        ctx.window(3, WDEF);
+        const c = ctx.card("one window, one centre");
+        [["centre", "fox"],
+         ["context, window 2", "quick, brown, jumps, over"],
+         ["pairs from this centre", "4"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "Skip-gram is trained to guess the amber words from the purple one. " +
+          "It never asks what a word means, or where the row came from.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.5s";
+        c.appendChild(q);
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "A walk writes a sentence",
+      note: "So give it a row of tokens. Drop a walker on the network and let it step to a random neighbour, eight times. Every node it lands on falls into the next box — and the nine boxes are full again.",
+      async run(ctx) {
+        const c = ctx.card("eight steps, nine boxes");
+        ctx.window(-1, WDEF);
+        await ctx.empty();
+        ctx.netNote("one random walk, eight steps");
+        await ctx.sleep(ctx.fast() ? 0 : 400);
+        await ctx.run();
+
+        [["steps", String(L - 1)],
+         ["boxes filled", String(L)],
+         ["people the walk met", String(L)],
+         ["people it never met", String(NODE.length - L)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "1 3 6 4 7 5 8 9 11 &mdash; a sentence nine words long, in a " +
+          "language whose entire vocabulary is the twelve people.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.8s";
+        c.appendChild(q);
+        await ctx.sleep(3400);
+      }
+    },
+    {
+      label: "The same window, sliding",
+      note: "Now run word2vec on it, unchanged. The window slides along the row; each stop names one centre and the tokens beside it its context. Thirty pairs come out of one nine-token walk, and not one line of word2vec knew about the network.",
+      async run(ctx) {
+        const c = ctx.card("slide the window along the walk");
+        ctx.netNote("the walk is finished; from here on only the row matters");
+        ctx.dim(true);
+
+        const list = ctx.el("div", "dw-list");
+        c.appendChild(list);
+        const total = ctx.el("div", "anim-tally", "<span>pairs so far</span><b>0</b>");
+        c.appendChild(total);
+        const out = total.querySelector("b");
+
+        let n = 0;
+        for (let i = 0; i < L; i++) {
+          ctx.window(i, WDEF);
+          const ctxIds = [];
+          for (let j = lo(i, WDEF); j <= hi(i, WDEF); j++) {
+            if (j !== i) ctxIds.push(WALK[j]);
+          }
+          n += ctxIds.length;
+          const line = ctx.el("div", "anim-tally anim-fade",
+            "<span>centre <b>" + WALK[i] + "</b> &rarr; " + ctxIds.join(", ") +
+            "</span><b>+" + ctxIds.length + "</b>");
+          list.appendChild(line);
+          ctx.bottom(list);
+          out.textContent = String(n);
+          if (!ctx.fast()) await ctx.sleep(620);
+        }
+        /* 30 is PAIRS[1]; the loop above only re-derives it on screen. */
+        out.textContent = String(PAIRS[WDEF - 1]);
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "This is DeepWalk. Sample many walks, hand the pile to word2vec as " +
+          "if it were a book, keep the vectors it hands back.");
+        q.style.animationDelay = ctx.fast() ? "0s" : "0.3s";
+        c.appendChild(q);
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Now you set the window",
+      note: "Now you set the window. At 1 the pairs are exactly the steps of the walk and every one of them is an edge. Widen it and word2vec starts pairing people who never met but keep turning up near each other — which is the whole reason to take a walk instead of reading the edge list.",
+      async run(ctx) {
+        const c = ctx.card("how far should the window reach?");
+        ctx.netNote("every pair the window makes, drawn back on the network");
+        ctx.dim(false);
+        ctx.trail(false);
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>window = <b data-w>2</b></span>' +
+          '<span>pairs <b data-p>30</b></span>' +
+          '<span style="color:var(--_accent)">on a real edge <b data-r>22</b></span>');
+        c.appendChild(read);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "purple: the two are joined in the network. amber: they are not — " +
+          "the window paired them anyway, because the walk passed through both."));
+
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outW = read.querySelector("[data-w]");
+        const outP = read.querySelector("[data-p]");
+        const outR = read.querySelector("[data-r]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the dial is yours. */
+        const dial = ctx.mountKnob(knob, {
+          min: 1, max: WMAX, step: 1, value: WDEF,
+          label: "Window size",
+          format: (w) => "window " + w,
+          onGrab: () => ctx.pause(),
+          onInput: (w) => {
+            outW.textContent = String(w);
+            outP.textContent = String(PAIRS[w - 1]);
+            outR.textContent = String(REALP[w - 1]);
+            ctx.window(PARK, w);
+            ctx.chords(w);
+          }
+        });
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipping, or reading with motion turned off: land on the setting the
+           rest of the module assumes, with its chords already drawn. */
+        if (ctx.fast()) {
+          dial.set(WDEF);
+          say("Window 2: 30 pairs, 22 of them along an edge the network has.");
+          return;
+        }
+
+        dial.set(1);
+        await ctx.sleep(1500);
+        say("Window 1: the 16 pairs <em>are</em> the eight steps of the walk, " +
+            "taken both ways round. Every one lies on an edge. This setting " +
+            "has a name of its own &mdash; LINE.");
+        await ctx.sleep(3400);
+
+        for (let w = 2; w <= WMAX; w++) { dial.set(w); await ctx.sleep(1500); }
+        say("Window 4: " + PAIRS[WMAX - 1] + " pairs, and " +
+            (PAIRS[WMAX - 1] - REALP[WMAX - 1]) + " of them join two people " +
+            "with no edge between them. Those amber lines are what the " +
+            "embedding learns that the edge list never said.");
+        await ctx.sleep(4000);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("dw-walk"), scenes, {
+    stepsLabel: "Pipeline steps",
+
+    /* One canvas holds the network and the sentence, so an id can physically
+       fall from a node into a box. Built once in scene 1; scenes 2 to 4 only
+       ever mutate it. */
+    helpers(ctx) {
+      const plot = ctx.$("[data-dw-plot]");
+      const side = ctx.$("[data-dw-side]");
+      const S = {};
+
+      function build() {
+        plot.textContent = "";
+        const svg = ctx.svgRoot("0 0 440 240", "dw-canvas");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gEdge = g(), gTrail = g(), gChord = g(), gNode = g(),
+              gLab = g(), gWin = g(), gTok = g();
+        const slow = !ctx.fast();
+
+        EDGE.forEach((e, i) => {
+          const ln = ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge dw-thin" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            ln.style.setProperty("--dash",
+              Math.ceil(Math.hypot(NODE[e[0]][0] - NODE[e[1]][0],
+                                   NODE[e[0]][1] - NODE[e[1]][1])) + 2);
+            ln.style.animationDelay = (0.15 + i * 0.03) + "s";
+          }
+          gEdge.appendChild(ln);
+        });
+
+        S.nodes = NODE.map((p, i) => {
+          const gg = ctx.svgEl("g", { "class": "dw-node dw-off" });
+          gg.appendChild(ctx.svgEl("circle", { cx: p[0], cy: p[1], r: 10, "class": "dw-circ" }));
+          const t = ctx.svgEl("text", { x: p[0], y: p[1] + 3.6, "class": "dw-id" });
+          t.textContent = String(i);
+          gg.appendChild(t);
+          return gNode.appendChild(gg);
+        });
+
+        S.trail = gTrail.appendChild(ctx.svgEl("polyline",
+          { points: "", "class": "anim-trail" }));
+        S.token = gTrail.appendChild(ctx.svgEl("g", { "class": "anim-glide" }));
+        S.token.appendChild(ctx.svgEl("circle", { r: 7, "class": "anim-token" }));
+        S.token.style.opacity = 0;
+
+        S.netNote = ctx.svgEl("text", { x: 220, y: 150, "class": "anim-label dw-mid anim-faint" });
+        gLab.appendChild(S.netNote);
+        const cap = ctx.svgEl("text", { x: 220, y: 228, "class": "anim-label dw-mid anim-faint" });
+        cap.textContent = "one row of tokens — the whole of word2vec's input";
+        gLab.appendChild(cap);
+
+        /* The window frame lives in its own group so it can glide between
+           slots while its width changes instantly. */
+        S.winG = gWin.appendChild(ctx.svgEl("g", { "class": "anim-glide" }));
+        S.win = S.winG.appendChild(ctx.svgEl("rect",
+          { x: 0, y: SY - 8, width: 0, height: BH + 16, rx: 8, "class": "dw-win" }));
+        S.winG.style.opacity = 0;
+
+        S.tok = [];
+        for (let i = 0; i < L; i++) {
+          const gg = ctx.svgEl("g", { "class": "dw-tok" });
+          gg.appendChild(ctx.svgEl("rect",
+            { x: 0, y: 0, width: BW, height: BH, rx: 5, "class": "dw-box" }));
+          const t = ctx.svgEl("text", { x: BW / 2, y: 22, "class": "dw-word" });
+          gg.appendChild(t);
+          gg.style.transform = "translate(" + slot(i) + "px," + SY + "px)";
+          gg.style.opacity = 0;
+          S.tok.push(gTok.appendChild(gg));
+        }
+
+        S.gChord = gChord;
+        S.gEdge = gEdge;
+        S.svg = svg;
+        plot.appendChild(svg);
+      }
+
+      const label = (i) => S.tok[i].querySelector("text");
+      const netNote = (t) => { S.netNote.textContent = t; };
+
+      /* Put a row of words in the boxes, left to right. */
+      async function fill(list) {
+        for (let i = 0; i < L; i++) {
+          label(i).textContent = list[i];
+          S.tok[i].style.opacity = 1;
+          if (!ctx.fast()) await ctx.sleep(140);
+        }
+      }
+
+      async function empty() {
+        S.tok.forEach((g) => { g.style.opacity = 0; });
+        if (!ctx.fast()) await ctx.sleep(400);
+        S.tok.forEach((g, i) => { label(i).textContent = ""; });
+      }
+
+      /* Drop token i onto the network at its node, then let it fall into its
+         slot. The transition on .dw-tok does the falling. */
+      function drop(i, now) {
+        const g = S.tok[i], p = NODE[WALK[i]];
+        label(i).textContent = String(WALK[i]);
+        if (now) {
+          g.style.transform = "translate(" + slot(i) + "px," + SY + "px)";
+          g.style.opacity = 1;
+          return;
+        }
+        g.style.transition = "none";
+        g.style.transform =
+          "translate(" + (p[0] - BW / 2) + "px," + (p[1] - BH / 2) + "px)";
+        g.style.opacity = 1;
+        /* Force the browser to take the start position before the flight. */
+        void g.getBoundingClientRect();
+        g.style.transition = "";
+        g.style.transform = "translate(" + slot(i) + "px," + SY + "px)";
+      }
+
+      /* The walk itself: light each node as it is reached, extend the trail,
+         drop the id. */
+      async function run() {
+        const pts = [];
+        const move = (i) => {
+          const p = NODE[WALK[i]];
+          S.token.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+          S.nodes[WALK[i]].setAttribute("class", "dw-node");
+          pts.push(p[0] + "," + p[1]);
+          S.trail.setAttribute("points", pts.join(" "));
+        };
+        if (ctx.fast()) {
+          for (let i = 0; i < L; i++) { move(i); drop(i, true); }
+          S.token.style.opacity = 1;
+          return;
+        }
+        S.token.style.transition = "none";
+        move(0);
+        void S.token.getBoundingClientRect();
+        S.token.style.transition = "";
+        S.token.style.opacity = 1;
+        drop(0);
+        await ctx.sleep(700);
+        for (let i = 1; i < L; i++) {
+          move(i);
+          await ctx.sleep(340);
+          drop(i);
+          await ctx.sleep(420);
+        }
+      }
+
+      const trail = (on) => {
+        S.trail.style.opacity = on ? 1 : 0;
+        S.token.style.opacity = on ? 1 : 0;
+      };
+      const dim = (on) => {
+        S.gEdge.setAttribute("class", on ? "dw-faded" : "");
+        S.nodes.forEach((n) => { n.style.opacity = on ? 0.35 : 1; });
+        S.trail.style.opacity = on ? 0.3 : 1;
+        S.token.style.opacity = on ? 0.3 : 1;
+      };
+
+      /* Centre the window on slot i with half-width w. i < 0 hides it. */
+      function window_(i, w) {
+        S.tok.forEach((g) => {
+          g.setAttribute("class", "dw-tok");
+        });
+        if (i < 0) { S.winG.style.opacity = 0; return; }
+        const a = lo(i, w), b = hi(i, w);
+        S.win.setAttribute("width", (b - a + 1) * (BW + GAP) - GAP + 12);
+        S.winG.style.transform = "translate(" + (slot(a) - 6) + "px,0px)";
+        S.winG.style.opacity = 1;
+        for (let j = a; j <= b; j++) {
+          S.tok[j].setAttribute("class", "dw-tok " + (j === i ? "dw-centre" : "dw-ctx"));
+        }
+      }
+
+      /* Every distinct pair the window of size w produced, drawn on the
+         network. Pure lookup — CHORD was computed offline. */
+      function chords(w) {
+        S.gChord.textContent = "";
+        CHORD[w - 1].forEach((c, i) => {
+          const ln = ctx.svgEl("line", {
+            x1: NODE[c[0]][0], y1: NODE[c[0]][1],
+            x2: NODE[c[1]][0], y2: NODE[c[1]][1],
+            "class": c[2] ? "dw-chord-real" : "dw-chord-new"
+          });
+          if (!ctx.fast()) {
+            ln.classList.add("anim-fade");
+            ln.style.animationDelay = (i * 0.02) + "s";
+          }
+          S.gChord.appendChild(ln);
+        });
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { build, fill, empty, run, trail, dim, chords, card,
+               netNote: netNote, window: window_ };
+    }
+  });
+});
+</script>
+```
 
 ### node2vec
 
@@ -825,7 +1852,7 @@ Which walk you take decides what the embedding means:
 
 ### LINE
 
-LINE [@tang2015line] is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with $p=1$, $q=1$, and window size 1.
+LINE [@tang2015line] is another pioneering work to learn node embeddings by directly optimizing the graph structure. It is equivalent to node2vec with $p=1$, $q=1$, and window size 1 — the leftmost setting of the dial above, where every pair the window makes is an edge the walk actually crossed.
 
 ## Hyperbolic embeddings: beyond flat space
 
@@ -848,8 +1875,6 @@ The elegant part is that this trade-off *is* geometry. Put every node on a disk:
 
 This explains **why preferential attachment happens** rather than assuming it. Attachment probability comes out proportional to degree, exactly as in Module 3 — but now as a consequence of nodes optimizing a local geometric trade-off, not as a primitive rule. And it makes a sharper prediction: *which* popular node gets the link depends on similarity, which pure preferential attachment cannot say at all.
 
-<!-- TODO(anim): the popularity-similarity disk — nodes appearing one at a time on a disk, radius set by birth time and angle at random, each connecting to its m hyperbolically nearest predecessors, with the degree distribution filling in as a power law alongside. -->
-
 ### Why hyperbolic space?
 
 The study of hyperbolic geometry in complex networks emerged from foundational work showing that **networks with heterogeneous degree distributions and strong clustering have an effective hyperbolic geometry underneath** [@krioukov2010hyperbolic]. Because volume grows exponentially with radius, the geometry naturally produces:
@@ -860,8 +1885,6 @@ The study of hyperbolic geometry in complex networks emerged from foundational w
 - **Self-similarity and navigability**: arise from the underlying hyperbolic geometry [@serrano2008self; @boguna2009navigability]
 
 To actually compute in hyperbolic space you need coordinates for it, and there are two standard choices — the Poincaré ball [@nickel2017poincare] and the Lorentzian hyperboloid [@nickel2018learning]. They describe the same geometry and differ only in how painful the optimization is. The formulas are in the [appendix](./04-appendix.qmd); nothing later in this module or in Module 9 depends on them.
-
-<!-- TODO(anim): a Poincaré disk with a hierarchy embedded in it — dragging the disk's center shows that every tile is really the same size and the boundary is infinitely far away. -->
 
 ## Are spectral and neural embeddings really different?
 

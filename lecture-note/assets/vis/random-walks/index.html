@@ -1,332 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Walk Visualization</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            font-family: 'Comic Sans MS', cursive;
-        }
-        .node {
-            stroke: cyan;
-            stroke-width: 2px;
-        }
-        .link {
-            stroke: #555;
-            stroke-opacity: 0.6;
-        }
-        .walker {
-            fill: red;
-        }
-        .slider-container {
-            margin-top: 10px;
-        }
-        #walkLength, #teleportProb {
-            width: 300px;
-        }
-        .node-label {
-            font-size: 10px;
-            fill: white;
-        }
-        .bar {
-            fill: #56b4e9;
-        }
-        .axis text {
-            fill: white;
-        }
-        .axis line, .axis path {
-            stroke: white;
-        }
-        #network, #barChart {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A random walker, and where it spends its time</title>
+<style>
+    /* ----------------------------------------------------------------------
+       House style for the standalone demos. Same tokens as the lecture note
+       (scss/minimal.scss and assets/anim.css): white paper, one ink, ONE
+       accent (#593196) and ONE contrast (#c2410c). No green, no webfont, no
+       external request of any kind.
+       ---------------------------------------------------------------------- */
+    :root {
+      --paper: #ffffff;
+      --panel: #fbfaf8;
+      --ink: #22212b;
+      --ink-soft: #6b6880;
+      --ink-faint: #9c95b5;
+      --rule: #e6e4e0;
+      --accent: #593196;
+      --accent-soft: #f0e9fb;
+      --contrast: #c2410c;
+      --contrast-soft: #fdeadf;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 22px 14px 56px; }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 600; line-height: 1.25;
+      margin: 0 0 .3em;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.02rem; font-weight: 600;
+      margin: 1.6em 0 .4em;
+    }
+    p { margin: 0 0 .9em; }
+    .lede { color: var(--ink-soft); margin-bottom: 1.1em; }
+    ul.how {
+      margin: 0 0 1.2em; padding: .7em .9em .7em 2.1em;
+      background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+      font-size: .93rem; color: var(--ink-soft);
+    }
+    ul.how li { margin: .18em 0; }
+    ul.how b { color: var(--ink); font-weight: 600; }
+
+    /* readouts ------------------------------------------------------------ */
+    .readouts {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+    }
+    .ro {
+      flex: 1 1 120px; min-width: 104px;
+      border: 1px solid var(--rule); border-radius: 6px;
+      padding: 7px 10px; background: var(--panel);
+    }
+    .ro .k {
+      display: block; font-size: .7rem; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--ink-faint);
+    }
+    .ro .v {
+      display: block; font-family: var(--mono);
+      font-size: 1.1rem; font-variant-numeric: tabular-nums; color: var(--ink);
+    }
+    .ro.hot .v { color: var(--contrast); }
+    .ro.key .v { color: var(--accent); }
+
+    /* controls ------------------------------------------------------------ */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px;
+    }
+    button {
+      font-family: inherit; font-size: .9rem;
+      padding: 7px 13px; border-radius: 6px; cursor: pointer;
+      background: var(--paper); color: var(--accent);
+      border: 1px solid var(--accent);
+      transition: background .15s, color .15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-soft); }
+    button.primary { background: var(--accent); color: #fff; }
+    button.primary:hover:not(:disabled) { background: #47267a; }
+    button.warm { color: var(--contrast); border-color: var(--contrast); }
+    button.warm:hover:not(:disabled) { background: var(--contrast-soft); }
+    button:disabled { opacity: .38; cursor: not-allowed; }
+    label.knob {
+      display: flex; align-items: center; gap: 8px; flex: 1 1 240px;
+      font-size: .9rem; color: var(--ink-soft);
+    }
+    label.knob input[type=range] { flex: 1; min-width: 90px; accent-color: var(--accent); }
+    label.knob .n {
+      font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums;
+      min-width: 3.2em; text-align: right;
+    }
+
+    /* figures ------------------------------------------------------------- */
+    figure { margin: 0 0 14px; }
+    svg.fig {
+      display: block; width: 100%; height: auto;
+      border: 1px solid var(--rule); border-radius: 6px; background: var(--paper);
+      touch-action: manipulation;
+    }
+    figcaption { font-size: .84rem; color: var(--ink-faint); margin-top: .4em; }
+    .msg {
+      min-height: 1.5em; font-size: .93rem; margin: 0 0 12px;
+      color: var(--contrast); font-weight: 600;
+    }
+    .msg.calm { color: var(--ink-soft); font-weight: 400; }
+
+    /* local ---------------------------------------------------------------- */
+    .edge { stroke: var(--ink-faint); stroke-opacity: .35; stroke-width: 1; }
+    .nd { stroke: var(--accent); stroke-opacity: .5; stroke-width: 1.2; }
+    .walker { fill: var(--contrast); stroke: #fff; stroke-width: 2.5;
+              filter: drop-shadow(0 0 3px rgba(194,65,12,.55)); }
+    .bar { fill: var(--accent); }
+    .bar.now { fill: var(--contrast); }
+    .law { stroke: var(--contrast); stroke-width: 2; }
+    .note { font-size: .9rem; color: var(--ink-soft); }
+    .note b { color: var(--ink); font-family: var(--mono); font-weight: 400; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .84rem;
+              color: var(--ink-soft); margin: 0 0 14px; }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend i { width: 14px; height: 14px; display: inline-block; }
+</style>
 </head>
 <body>
-    <h1 style="font-family: 'Comic Sans MS', cursive; text-align: center;">🚶‍♂️ Random Walk Simulation 🎲</h1>
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-        <div class="slider-container" style="margin-right: 20px;">
-            <label for="walkLength">🏃‍♀️ Walk Length: <span id="walkLengthValue"></span> 🏃‍♂️</label>
-            <input type="range" id="walkLength" min="3" max="1000" style="display: block; margin: 10px auto;">
-        </div>
-        <div class="slider-container">
-            <label for="teleportProb">🌀 Teleportation Probability: <span id="teleportProbValue"></span> 🌀</label>
-            <input type="range" id="teleportProb" min="0" max="1" step="0.01" style="display: block; margin: 10px auto;">
-        </div>
-    </div>
-    <button id="startWalk" style="display: block; margin: 10px auto;">🚀 Start Random Walk 🚀</button>
-    <div id="network"></div>
-    <div id="barChart"></div>
-    <p style="margin-top: 10px; font-size: 18px; text-align: center;">
-        🎨 Color Guide: Nodes change from white to purple based on visit frequency. <br>
-        Brighter purple indicates more visits. The red dot represents the current walker position.
-    </p>
-    <script>
-        // Network setup
-        const width = 800;
-        const height = 500;
-        let barChartWidth, barChartHeight;
-        let dataFile = new URLSearchParams(window.location.search).get('dataFile') || "net_karate.json";
-        let walkLength = parseInt(new URLSearchParams(window.location.search).get('walkLength')) || 50;
-        let teleportProb = parseFloat(new URLSearchParams(window.location.search).get('teleportProb')) || 0.0;
+<div class="wrap">
 
-        // Update slider and display value
-        document.getElementById('walkLength').value = walkLength;
-        document.getElementById('walkLengthValue').textContent = walkLength;
-        document.getElementById('teleportProb').value = teleportProb;
-        document.getElementById('teleportProbValue').textContent = teleportProb;
+<h1>A random walker, and where it spends its time</h1>
+<p class="lede">One walker, dropped somewhere in the network. Every step it
+picks one of its current node's neighbours at random and moves there. It has no
+plan and no memory. Let it run and count how often it visits each node.</p>
 
-        const svg = d3.select("#network")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+<ul class="how">
+  <li><b>Walk</b> moves the walker one step at a time, slowly enough to
+      follow. <b>Run 5,000 steps</b> skips ahead.</li>
+  <li>Nodes darken with the share of visits they have collected.</li>
+  <li>The orange tick above each bar is <b>k / 2m</b>: that node's own number
+      of edges, divided by twice the number of edges in the network. Watch the
+      bars find it.</li>
+</ul>
 
-        // Add a clipping path to ensure nodes stay within the SVG
-        svg.append("defs").append("clipPath")
-            .attr("id", "clip")
-            .append("rect")
-            .attr("width", width)
-            .attr("height", height);
+<div class="controls">
+  <button id="btn-walk" class="primary">Walk</button>
+  <button id="btn-fast">Run 5,000 steps</button>
+  <button id="btn-reset" class="warm">Reset</button>
+</div>
+<div class="controls">
+  <label class="knob">
+    Teleport chance
+    <input type="range" id="tp" min="0" max="0.5" step="0.01" value="0"
+           aria-label="probability that the walker teleports instead of stepping">
+    <span class="n" id="tp-n">0.00</span>
+  </label>
+</div>
 
-        // Create a group for all the elements and apply the clipping path
-        const g = svg.append("g")
-            .attr("clip-path", "url(#clip)");
+<div class="readouts">
+  <div class="ro key"><span class="k">Steps</span><span class="v" id="ro-steps">0</span></div>
+  <div class="ro hot"><span class="k">Now at node</span><span class="v" id="ro-at">0</span></div>
+  <div class="ro"><span class="k">Distance to k/2m</span><span class="v" id="ro-tv">—</span></div>
+</div>
 
-        let nodes, links, simulation, walker, walkInterval;
-        // Color scale for nodes
-        const colorScale = d3.scaleSequential(d3.interpolatePlasma)
-            .domain([0, 1]);
+<figure>
+  <svg class="fig" id="net" viewBox="0 0 640 420" role="img"
+       aria-label="The network, with nodes shaded by how often the walker has visited them."></svg>
+  <figcaption id="cap"></figcaption>
+</figure>
 
-        // Load network data from JSON file
-        d3.json(dataFile).then(data => {
-            nodes = d3.range(data.initialAssignment.length).map(d => ({id: d, visits: 0}));
-            links = data.links;
+<figure>
+  <svg class="fig" id="hist" viewBox="0 0 640 240" role="img"
+       aria-label="Share of visits per node, against the degree law."></svg>
+  <figcaption>Share of all visits so far, node by node.</figcaption>
+</figure>
 
-            // Create force simulation
-            simulation = d3.forceSimulation(nodes)
-                .force("link", d3.forceLink(links).id(d => d.id))
-                .force("charge", d3.forceManyBody().strength(-300 / Math.sqrt(nodes.length)))
-                .force("link", d3.forceLink(links).id(d => d.id).strength(.1))
-                .force("center", d3.forceCenter(width / 2, height / 2));
+<div class="legend">
+  <span><i style="background:#593196"></i>visits collected</span>
+  <span><i style="background:#c2410c;height:3px;align-self:center"></i>k / 2m, the degree law</span>
+</div>
 
-            // Draw links
-            link = g.append("g")
-                .selectAll("line")
-                .data(links)
-                .join("line")
-                .attr("class", "link");
+<p class="note" id="note"></p>
 
-            // Draw nodes
-            node = g.append("g")
-                .selectAll("circle")
-                .data(nodes)
-                .join("circle")
-                .attr("class", "node")
-                .attr("fill", "white")
-                .attr("stroke", "red")
-                .attr("r", 10)
-                .call(drag(simulation));
+</div>
 
-            // Add node labels
-            nodeLabels = g.append("g")
-                .selectAll("text")
-                .data(nodes)
-                .join("text")
-                .attr("class", "node-label")
-                .text(d => d.id)
-                .attr("x", d => d.x)
-                .attr("y", d => d.y - 15);
+<script>
+"use strict";
+/* ===========================================================================
+   A random walker, and where it spends its time.
 
-            //  Create walker
-            walker = g.append("circle")
-                .attr("class", "walker")
-                .attr("r", 5)
-                .style("display", "none");
+   No library, no network request, no external asset.
 
-            // Update positions
-            simulation.on("tick", () => {
-                link
-                    .attr("x1", d => d.source.x)
-                    .attr("y1", d => d.source.y)
-                    .attr("x2", d => d.target.x)
-                    .attr("y2", d => d.target.y);
+   DATA. The networks and their layouts are literals, pasted in from the
+   offline computation described in
+   assets/vis/community-detection/index.html (same four datasets, same
+   de-duplication, same fixed Fruchterman-Reingold layouts). The two the
+   lecture links are net_karate.json and two-cliques.json.
 
-                node
-                    .attr("cx", d => Math.max(10, Math.min(width - 10, d.x)))
-                    .attr("cy", d => Math.max(10, Math.min(height - 10, d.y)));
+   WHAT IS COMPUTED LIVE. Only the walk itself, which is the point of the
+   page: one step is "pick a uniformly random neighbour", plus, with
+   probability t, "teleport to a uniformly random node instead".
 
-                nodeLabels
-                    .attr("x", d => Math.max(10, Math.min(width - 10, d.x)))
-                    .attr("y", d => Math.max(10, Math.min(height - 10, d.y)) - 15);
-            });
+   THE LAW ON THE CHART. With no teleportation, the share of time the walker
+   spends at node i converges to
 
-            // Create bar chart
-            const margin = {top: 20, right: 20, bottom: 30, left: 80};
-            barChartWidth = width - margin.left - margin.right;
-            barChartHeight = 200 - margin.top - margin.bottom;
+        pi_i = k_i / (2m)
 
-            const barSvg = d3.select("#barChart")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", 200)
-                .append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
+   -- its degree over twice the edge count. That is drawn as the orange tick
+   on every bar. Turn teleportation up and the walk stops obeying it: every
+   node gains a flat 1/N of the traffic regardless of its edges, which is
+   exactly the damping term in PageRank, so the bars pull away from the ticks
+   and towards each other.
+   =========================================================================== */
 
-            const x = d3.scaleBand()
-                .range([0, barChartWidth])
-                .padding(0.1);
+const NETS = {
+  "two-cliques.json": {
+    n: 10,
+    seed: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    best: { modularity: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], graphcut: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1] },
+    links: [[0,1],[0,2],[0,3],[0,4],[0,6],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4],[5,6],[5,7],
+      [5,8],[5,9],[6,7],[6,8],[6,9],[7,8],[7,9],[8,9]]
+  },
+  "net_karate.json": {
+    n: 34,
+    seed: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    best: { modularity: [0, 0, 0, 0, 1, 1, 1, 0, 2, 2, 1, 0, 0, 0, 2, 2, 1, 0, 2, 0, 2, 0, 2, 3, 3, 3, 2, 3, 3, 2, 2, 3, 2, 2], graphcut: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    links: [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,10],[0,11],[0,12],[0,13],
+      [0,17],[0,19],[0,21],[0,31],[1,2],[1,3],[1,7],[1,13],[1,17],[1,19],[1,21],[1,30],
+      [2,3],[2,7],[2,8],[2,9],[2,13],[2,27],[2,28],[2,32],[3,7],[3,12],[3,13],[4,6],[4,10],
+      [5,6],[5,10],[5,16],[6,16],[8,30],[8,32],[8,33],[9,33],[13,33],[14,32],[14,33],
+      [15,32],[15,33],[18,32],[18,33],[19,33],[20,32],[20,33],[22,32],[22,33],[23,25],
+      [23,27],[23,29],[23,32],[23,33],[24,25],[24,27],[24,31],[25,31],[26,29],[26,33],
+      [27,33],[28,31],[28,33],[29,32],[29,33],[30,32],[30,33],[31,32],[31,33],[32,33]]
+  },
+  "two-cliques-big-clique.json": {
+    n: 50,
+    seed: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    best: { modularity: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], graphcut: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    links: [[0,1],[0,2],[0,3],[0,4],[0,5],[0,10],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4],[5,6],
+      [5,7],[5,8],[5,9],[6,7],[6,8],[6,9],[7,8],[7,9],[8,9],[10,11],[10,12],[10,13],[10,14],
+      [10,15],[10,16],[10,17],[10,18],[10,19],[10,20],[10,21],[10,22],[10,23],[10,24],
+      [10,25],[10,26],[10,27],[10,28],[10,29],[10,30],[10,31],[10,32],[10,33],[10,34],
+      [10,35],[10,36],[10,37],[10,38],[10,39],[10,40],[10,41],[10,42],[10,43],[10,44],
+      [10,45],[10,46],[10,47],[10,48],[10,49],[11,12],[11,13],[11,14],[11,15],[11,16],
+      [11,17],[11,18],[11,19],[11,20],[11,21],[11,22],[11,23],[11,24],[11,25],[11,26],
+      [11,27],[11,28],[11,29],[11,30],[11,31],[11,32],[11,33],[11,34],[11,35],[11,36],
+      [11,37],[11,38],[11,39],[11,40],[11,41],[11,42],[11,43],[11,44],[11,45],[11,46],
+      [11,47],[11,48],[11,49],[12,13],[12,14],[12,15],[12,16],[12,17],[12,18],[12,19],
+      [12,20],[12,21],[12,22],[12,23],[12,24],[12,25],[12,26],[12,27],[12,28],[12,29],
+      [12,30],[12,31],[12,32],[12,33],[12,34],[12,35],[12,36],[12,37],[12,38],[12,39],
+      [12,40],[12,41],[12,42],[12,43],[12,44],[12,45],[12,46],[12,47],[12,48],[12,49],
+      [13,14],[13,15],[13,16],[13,17],[13,18],[13,19],[13,20],[13,21],[13,22],[13,23],
+      [13,24],[13,25],[13,26],[13,27],[13,28],[13,29],[13,30],[13,31],[13,32],[13,33],
+      [13,34],[13,35],[13,36],[13,37],[13,38],[13,39],[13,40],[13,41],[13,42],[13,43],
+      [13,44],[13,45],[13,46],[13,47],[13,48],[13,49],[14,15],[14,16],[14,17],[14,18],
+      [14,19],[14,20],[14,21],[14,22],[14,23],[14,24],[14,25],[14,26],[14,27],[14,28],
+      [14,29],[14,30],[14,31],[14,32],[14,33],[14,34],[14,35],[14,36],[14,37],[14,38],
+      [14,39],[14,40],[14,41],[14,42],[14,43],[14,44],[14,45],[14,46],[14,47],[14,48],
+      [14,49],[15,16],[15,17],[15,18],[15,19],[15,20],[15,21],[15,22],[15,23],[15,24],
+      [15,25],[15,26],[15,27],[15,28],[15,29],[15,30],[15,31],[15,32],[15,33],[15,34],
+      [15,35],[15,36],[15,37],[15,38],[15,39],[15,40],[15,41],[15,42],[15,43],[15,44],
+      [15,45],[15,46],[15,47],[15,48],[15,49],[16,17],[16,18],[16,19],[16,20],[16,21],
+      [16,22],[16,23],[16,24],[16,25],[16,26],[16,27],[16,28],[16,29],[16,30],[16,31],
+      [16,32],[16,33],[16,34],[16,35],[16,36],[16,37],[16,38],[16,39],[16,40],[16,41],
+      [16,42],[16,43],[16,44],[16,45],[16,46],[16,47],[16,48],[16,49]]
+  },
+  "random-net.json": {
+    n: 40,
+    seed: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    best: { modularity: [0, 1, 2, 0, 1, 0, 0, 2, 2, 0, 1, 2, 1, 1, 0, 2, 1, 1, 0, 2, 2, 0, 2, 0, 2, 1, 1, 2, 0, 1, 1, 0, 2, 1, 1, 2, 0, 0, 0, 2], graphcut: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+    links: [[0,3],[0,38],[1,25],[2,11],[2,39],[3,36],[4,17],[5,23],[6,31],[7,22],[8,27],
+      [9,14],[10,30],[11,35],[12,26],[13,33],[14,37],[15,20],[16,34],[17,29],[18,28],
+      [19,32],[20,24],[21,38],[22,39],[23,36],[24,35],[25,34],[26,33],[27,32],[28,31],
+      [29,30],[30,37],[31,36],[32,35],[33,34],[34,39],[35,38],[36,37],[37,38],[38,39]]
+  },
+};
 
-            const y = d3.scaleLinear()
-                .range([barChartHeight, 0]);
+const POS = {
+  "two-cliques.json": [[0.7164,0.4998],[1,0.145],[0.8863,0],[0.8863,1],[1,0.8544],
+    [0.1137,0.0001],[0.2836,0.4998],[0,0.8541],[0.1136,1],[0.0001,0.1447]],
+  "net_karate.json": [[0.3843,0.5873],[0.477,0.8156],[0.5872,0.6435],[0.4191,0.7629],
+    [0.2133,0.5402],[0.145,0.4525],[0.1404,0.5927],[0.4484,0.6167],[0.6331,0.6715],
+    [0.7095,0.9406],[0.2197,0.3709],[0.2949,0.1981],[0.2718,0.794],[0.545,0.7512],
+    [0.8414,0.9539],[0.9338,0.8093],[0,0.4936],[0.3719,1],[0.9381,0.6844],[0.5468,0.5579],
+    [0.9099,0.408],[0.3268,0.9093],[0.8944,0.8982],[0.8357,0.3256],[0.6986,0],
+    [0.7756,0.0373],[1,0.5357],[0.726,0.3056],[0.6917,0.4757],[0.9161,0.515],
+    [0.6705,0.8261],[0.651,0.3446],[0.8035,0.6499],[0.7756,0.6268]],
+  "two-cliques-big-clique.json": [[0.51,0.5],[0.5826,0.3621],[0.6999,0.4148],
+    [0.6999,0.5852],[0.5826,0.6379],[0.78,0.5],[0.8526,0.3621],[0.9699,0.4148],
+    [0.9699,0.5852],[0.8526,0.6379],[0.395,0.5],[0.2026,0.52],[0.1476,0.5021],
+    [0.2188,0.4545],[0.1824,0.5758],[0.1443,0.4342],[0.2545,0.5126],[0.1225,0.5587],
+    [0.2029,0.3924],[0.2282,0.6017],[0.0975,0.4624],[0.2725,0.4454],[0.1461,0.6257],
+    [0.1494,0.3664],[0.2817,0.5686],[0.0756,0.539],[0.2483,0.3671],[0.2055,0.6606],
+    [0.0867,0.3973],[0.3123,0.4857],[0.096,0.63],[0.1856,0.3185],[0.2775,0.6376],
+    [0.0448,0.4825],[0.2996,0.3825],[0.1587,0.6952],[0.1051,0.3288],[0.3324,0.5545],
+    [0.0466,0.596],[0.24,0.2994],[0.2458,0.7015],[0.0369,0.4053],[0.3441,0.4337],
+    [0.0995,0.697],[0.1489,0.2734],[0.3271,0.6362],[0.0096,0.5296],[0.3011,0.3157],
+    [0.1917,0.7451],[0.0558,0.3231]],
+  "random-net.json": [[0.4074,0.5213],[0.8034,0.2237],[0.6144,0.5546],[0.3272,0.5138],
+    [0.2296,0],[0.1601,0.606],[0.0943,0.5015],[0.7439,0.5268],[0.4745,1],[0.2636,0.3338],
+    [0.3311,0.2095],[0.5807,0.6278],[1,0.3158],[0.9016,0.3051],[0.3089,0.3724],
+    [0.6658,0.9282],[0.7987,0.386],[0.2543,0.0699],[0,0.4625],[0.5089,0.8785],
+    [0.6318,0.8629],[0.5023,0.4641],[0.6944,0.4973],[0.2013,0.5516],[0.5853,0.7777],
+    [0.7801,0.294],[0.9406,0.3324],[0.4865,0.9214],[0.0613,0.4668],[0.287,0.1638],
+    [0.3272,0.2777],[0.1456,0.48],[0.508,0.8142],[0.8577,0.3479],[0.7516,0.3853],
+    [0.5311,0.6802],[0.255,0.4845],[0.3604,0.423],[0.4903,0.5167],[0.631,0.4721]],
+};
 
-            x.domain(nodes.map(d => d.id));
-            y.domain([0, d3.max(nodes, d => d.visits)]);
+const qs = new URLSearchParams(location.search);
+const file = POS[qs.get("dataFile")] ? qs.get("dataFile") : "net_karate.json";
+const NET = NETS[file], XY = POS[file];
+const N = NET.n, LINKS = NET.links, M = LINKS.length;
 
-            barSvg.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", `translate(0,${barChartHeight})`)
-                .call(d3.axisBottom(x));
+const C = { ink: "#22212b", soft: "#6b6880", faint: "#9c95b5", rule: "#e6e4e0",
+            accent: "#593196", contrast: "#c2410c" };
 
-            barSvg.append("g")
-                .attr("class", "axis axis--y")
-                .call(d3.axisLeft(y).ticks(10));
+/* neighbour lists and the degree law */
+const ADJ = []; for (let i = 0; i < N; i++) ADJ.push([]);
+for (const [s, t] of LINKS) { ADJ[s].push(t); ADJ[t].push(s); }
+const LAW = ADJ.map(a => a.length / (2 * M));
 
-            // Add y-axis label
-            barSvg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left)
-                .attr("x", 0 - (barChartHeight / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Visits (%)")
-                .attr("fill", "white");
+/* --------------------------------------------------------------------------
+   State.
+   -------------------------------------------------------------------------- */
+let visits = new Array(N).fill(0);
+let steps = 0;
+let at = 0;
+let teleport = 0;
+let timer = null;
 
-            bars = barSvg.selectAll(".bar")
-                .data(nodes)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", d => x(d.id))
-                .attr("width", x.bandwidth())
-                .attr("y", d => y(d.visits))
-                .attr("height", d => barChartHeight - y(d.visits));
-        });
-                // Drag functions
-        function drag(simulation) {
-            function dragstarted(event, d) {
-                if (!event.active) simulation.alphaTarget(0.3).restart();
-                d.fx = d.x;
-                d.fy = d.y;
-            }
+/* One sentence that only makes sense on the two-group network, which is the
+   other dataset the lecture links. */
+const TRAP = file === "two-cliques.json"
+  ? " This network is two tight groups joined by a single edge. Watch the " +
+    "walker rather than the bars for a while: it stays on one side for long " +
+    "stretches, because only one of the many edges under its feet leads out."
+  : "";
 
-            function dragged(event, d) {
-                d.fx = Math.max(10, Math.min(width - 10, event.x));
-                d.fy = Math.max(10, Math.min(height - 10, event.y));
-            }
+/* --------------------------------------------------------------------------
+   Elements.
+   -------------------------------------------------------------------------- */
+const nEl = document.getElementById("net");
+const hEl = document.getElementById("hist");
+const noteEl = document.getElementById("note");
+const capEl = document.getElementById("cap");
+const knob = document.getElementById("tp");
+const knobN = document.getElementById("tp-n");
+const roSteps = document.getElementById("ro-steps");
+const roAt = document.getElementById("ro-at");
+const roTv = document.getElementById("ro-tv");
+const btnWalk = document.getElementById("btn-walk");
+const btnFast = document.getElementById("btn-fast");
+const btnReset = document.getElementById("btn-reset");
 
-            function dragended(event, d) {
-                if (!event.active) simulation.alphaTarget(0);
-                d.fx = null;
-                d.fy = null;
-            }
+function svg(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
 
-            return d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended);
-        }
+/* --------------------------------------------------------------------------
+   Geometry. Positions are fixed, so a reader can point at a node and mean it.
+   -------------------------------------------------------------------------- */
+const GW = 640, PAD = 26;
+const R = N > 40 ? 8 : (N > 20 ? 10 : 16);
+const XR = [Math.min.apply(null, XY.map(p => p[0])), Math.max.apply(null, XY.map(p => p[0]))];
+const YR = [Math.min.apply(null, XY.map(p => p[1])), Math.max.apply(null, XY.map(p => p[1]))];
+const xSpan = (XR[1] - XR[0]) || 1, ySpan = (YR[1] - YR[0]) || 1;
+const inner = GW - 2 * PAD;
+const GH = Math.round(2 * PAD + inner * ySpan / xSpan);
+nEl.setAttribute("viewBox", "0 0 " + GW + " " + GH);
+const px = i => PAD + ((XY[i][0] - XR[0]) / xSpan) * inner;
+const py = i => PAD + ((XY[i][1] - YR[0]) / ySpan) * (GH - 2 * PAD);
 
-        let currentNode;
+let nodeEls = [], walkerEl = null;
 
-        // Random walk functionality
-        function startRandomWalk() {
-            clearInterval(walkInterval);
-            nodes.forEach(n => n.visits = 0);
-            currentNode = nodes[Math.floor(Math.random() * nodes.length)];
-            walker
-                .attr("cx", currentNode.x)
-                .attr("cy", currentNode.y)
-                .style("display", "block");
-            const walkLength = parseInt(d3.select("#walkLength").property("value"));
-            const teleportProb = parseFloat(d3.select("#teleportProb").property("value"));
-            let steps = 0;
-            let duration = 5000 / (1 + walkLength)
-            duration = Math.min(duration, 450)
+function buildNet() {
+  while (nEl.firstChild) nEl.removeChild(nEl.firstChild);
+  const layer = svg("g", {});
+  for (const [s, t] of LINKS) {
+    layer.appendChild(svg("line", { class: "edge",
+      x1: px(s), y1: py(s), x2: px(t), y2: py(t) }));
+  }
+  nEl.appendChild(layer);
+  nodeEls = [];
+  for (let i = 0; i < N; i++) {
+    const c = svg("circle", { class: "nd", cx: px(i), cy: py(i), r: R,
+      fill: C.accent, "fill-opacity": 0.10 });
+    nEl.appendChild(c);
+    nodeEls.push(c);
+  }
+  walkerEl = svg("circle", { class: "walker", cx: px(at), cy: py(at),
+    r: Math.max(6, R * 0.75) });
+  nEl.appendChild(walkerEl);
+  capEl.textContent = N + " nodes, " + M + " edges. The orange dot is the walker.";
+}
 
-            walkInterval = setInterval(() => {
-                currentNode.visits++;
-                updateNodeColors();
-                updateBarChart();
+function paintNet() {
+  const maxV = Math.max(1, Math.max.apply(null, visits));
+  for (let i = 0; i < N; i++) {
+    nodeEls[i].setAttribute("fill-opacity",
+      (0.08 + 0.92 * Math.sqrt(visits[i] / maxV)).toFixed(3));
+  }
+  walkerEl.setAttribute("cx", px(at));
+  walkerEl.setAttribute("cy", py(at));
+}
 
-                // Random teleport with probability 0.1
-                if (Math.random() < teleportProb) {
-                    currentNode = nodes[Math.floor(Math.random() * nodes.length)];
-                    walker
-                        .transition()
-                        .duration(duration/5)
-                        .attr("cx", Math.max(10, Math.min(width - 10, currentNode.x)))
-                        .attr("cy", Math.max(10, Math.min(height - 10, currentNode.y)));
-                    return; // Skip the normal walk step
-                }
+/* --------------------------------------------------------------------------
+   The chart.
+   -------------------------------------------------------------------------- */
+const HW = 640, HH = 240, HM = { t: 20, r: 16, b: 44, l: 56 };
+const hw = HW - HM.l - HM.r, hh = HH - HM.t - HM.b;
 
-                const neighbors = links.filter(l => l.source.id === currentNode.id || l.target.id === currentNode.id);
-                if (neighbors.length > 0) {
-                    const nextLink = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    currentNode = nextLink.source.id === currentNode.id ? nextLink.target : nextLink.source;
-                    walker
-                        .transition()
-                        .duration(duration/5)
-                        .attr("cx", Math.max(10, Math.min(width - 10, currentNode.x)))
-                        .attr("cy", Math.max(10, Math.min(height - 10, currentNode.y)));
-                }
+function paintHist() {
+  while (hEl.firstChild) hEl.removeChild(hEl.firstChild);
+  const g = svg("g", { transform: "translate(" + HM.l + "," + HM.t + ")" });
+  hEl.appendChild(g);
 
-                steps++;
-                if (steps >= walkLength) {
-                    clearInterval(walkInterval);
-                    walker.style("display", "none");
-                }
-            }, duration);
-        }
+  const share = steps > 0 ? visits.map(v => v / steps) : visits.map(() => 0);
+  const top = Math.max(Math.max.apply(null, LAW), Math.max.apply(null, share)) * 1.15 || 0.1;
+  const Y = v => hh - (v / top) * hh;
+  const slot = hw / N;
+  const bw = Math.max(2, slot * 0.66);
 
-        function updateNodeColors() {
-            const walkLength = parseFloat(d3.select("#walkLength").property("value"));
-            const maxVisits = Math.max(...nodes.map(d => d.visits));
-            node.attr("fill", d => colorScale(Math.sqrt(d.visits /maxVisits) ));
-        }
+  for (let k = 0; k <= 4; k++) {
+    const v = top * k / 4;
+    g.appendChild(svg("line", { x1: 0, y1: Y(v), x2: hw, y2: Y(v),
+      stroke: C.rule, "stroke-width": 1 }));
+    const t = svg("text", { x: -8, y: Y(v) + 3.5, "text-anchor": "end",
+      "font-size": 10, fill: C.faint });
+    t.textContent = (v * 100).toFixed(1) + "%";
+    g.appendChild(t);
+  }
 
-        function updateBarChart() {
-            const totalVisits = d3.sum(nodes, d => d.visits);
-            const y = d3.scaleLinear()
-                .range([barChartHeight, 0])
-                .domain([0, d3.max(nodes, d => d.visits / totalVisits)]);
+  for (let i = 0; i < N; i++) {
+    const x = i * slot + (slot - bw) / 2;
+    g.appendChild(svg("rect", { class: "bar" + (i === at ? " now" : ""),
+      x: x, y: Y(share[i]), width: bw, height: hh - Y(share[i]) }));
+    g.appendChild(svg("line", { class: "law",
+      x1: x - 1, y1: Y(LAW[i]), x2: x + bw + 1, y2: Y(LAW[i]) }));
+  }
 
-            bars.transition()
-                .duration(0)
-                .attr("y", d => y(d.visits / totalVisits))
-                .attr("height", d => barChartHeight - y(d.visits / totalVisits));
+  g.appendChild(svg("line", { x1: 0, y1: hh, x2: hw, y2: hh,
+    stroke: C.rule, "stroke-width": 1.5 }));
+  const xl = svg("text", { x: hw / 2, y: hh + 32, "text-anchor": "middle",
+    "font-size": 11, fill: C.faint });
+  xl.textContent = "node";
+  g.appendChild(xl);
+}
 
-            d3.select(".axis--y")
-                .transition()
-                .duration(0)
-                .call(d3.axisLeft(y).ticks(5, ".1%"));
-        }
+/* --------------------------------------------------------------------------
+   The walk.
+   -------------------------------------------------------------------------- */
+function step() {
+  if (Math.random() < teleport) {
+    at = Math.floor(Math.random() * N);
+  } else {
+    const nb = ADJ[at];
+    if (nb.length) at = nb[Math.floor(Math.random() * nb.length)];
+  }
+  visits[at]++;
+  steps++;
+}
 
-        d3.select("#startWalk").on("click", startRandomWalk);
+function readouts() {
+  roSteps.textContent = steps.toLocaleString("en-US");
+  roAt.textContent = String(at);
+  if (steps < 20) { roTv.textContent = "—"; noteEl.textContent =
+    "Give it a few hundred steps before reading anything into the bars."; return; }
+  let tv = 0;
+  for (let i = 0; i < N; i++) tv += Math.abs(visits[i] / steps - LAW[i]);
+  tv /= 2;
+  roTv.textContent = tv.toFixed(3);
+  noteEl.innerHTML = (teleport > 0.02
+    ? "Teleport chance <b>" + teleport.toFixed(2) + "</b>: that share of every " +
+      "step ignores the edges completely and lands anywhere at all, so the walk " +
+      "no longer obeys k/2m. Run it long and the distance above stops shrinking " +
+      "and levels off &mdash; the more uneven the degrees, the higher it levels " +
+      "off. That gap is the price of damping, and it is what PageRank pays to " +
+      "stop walkers getting stuck."
+    : "With no teleportation the share of visits is heading for <b>k/2m</b>: " +
+      "the distance above keeps shrinking, however long you run it. Where the " +
+      "walker spends its time is decided by nothing but how many edges each " +
+      "node has.") + TRAP;
+}
 
-        // Walk length slider
-        d3.select("#walkLength").on("input", function() {
-            d3.select("#walkLengthValue").text(this.value);
-        });
+function frame() {
+  step();
+  paintNet();
+  paintHist();
+  readouts();
+}
 
-        // Teleport probability slider
-        d3.select("#teleportProb").on("input", function() {
-            d3.select("#teleportProbValue").text(this.value);
-        });
-    </script>
+function toggleWalk() {
+  if (timer) {
+    clearInterval(timer); timer = null;
+    btnWalk.textContent = "Walk";
+    btnWalk.classList.add("primary");
+  } else {
+    timer = setInterval(frame, 110);
+    btnWalk.textContent = "Pause";
+    btnWalk.classList.remove("primary");
+  }
+}
+
+btnWalk.addEventListener("click", toggleWalk);
+btnFast.addEventListener("click", () => {
+  for (let i = 0; i < 5000; i++) step();
+  paintNet(); paintHist(); readouts();
+});
+btnReset.addEventListener("click", () => {
+  if (timer) toggleWalk();
+  visits = new Array(N).fill(0);
+  steps = 0;
+  at = Math.floor(Math.random() * N);
+  paintNet(); paintHist(); readouts();
+});
+knob.addEventListener("input", () => {
+  teleport = parseFloat(knob.value);
+  knobN.textContent = teleport.toFixed(2);
+  readouts();
+});
+
+at = Math.floor(Math.random() * N);
+buildNet();
+paintNet();
+paintHist();
+readouts();
+</script>
 </body>
 </html>
