@@ -1,0 +1,49 @@
+{
+  "//": [
+    "Merge the 'netsci' block into ~/.pi/agent/models.json (keep any providers",
+    "you already have). The model ids below are the only names that exist as",
+    "far as this machine is concerned -- there is no real model name to find.",
+    "",
+    "Replace PASTE-YOUR-COURSE-KEY-HERE with the key the instructor issued you.",
+    "Alternatively leave it as-is and pass --api-key on the command line, which",
+    "keeps the key out of a config file: pi --api-key \"$NETSCI_API_KEY\" ..."
+  ],
+  "providers": {
+    "netsci": {
+      "baseUrl": "https://llm.example.edu/v1",
+      "api": "openai-completions",
+      "apiKey": "PASTE-YOUR-COURSE-KEY-HERE",
+      "compat": {
+        "supportsDeveloperRole": false
+      },
+      "models": [
+        {
+          "id": "tutor",
+          "name": "Course Tutor",
+          "reasoning": true,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
+          "id": "vision",
+          "name": "Course Vision",
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 1048576,
+          "maxTokens": 8192
+        },
+        {
+          "id": "referee",
+          "name": "Course Referee",
+          "reasoning": true,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 131072,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  }
+}

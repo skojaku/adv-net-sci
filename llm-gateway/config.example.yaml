@@ -1,0 +1,89 @@
+# Example gateway config.
+#
+# The real file lives at /etc/llm-gateway/config.yaml on the VM and is NOT in
+# this repository. The alias -> model mapping below is deliberately fake: this
+# repo is public, and publishing the true mapping would defeat the aliasing.
+
+server:
+  host: "127.0.0.1"          # Caddy terminates TLS and proxies to this
+  port: 8080
+  connect_timeout_s: 10
+  # How long to wait for the first token from an upstream before giving up on
+  # it and trying the next one in the route. Once the first token is out the
+  # door we are committed -- there is no way to switch mid-stream.
+  first_token_timeout_s: 45
+  # Total ceiling for one request, once an upstream has been committed to.
+  request_timeout_s: 600
+  # One student cannot hold more than this many upstream slots at once. Keep it
+  # low: the Ollama account is shared by the whole class, and one student
+  # looping requests would push everyone else onto the paid fallback.
+  max_concurrent_per_student: 2
+  # Clamp on the client's max_tokens, so a single request cannot eat a quota.
+  max_tokens_per_request: 8192
+
+quota:
+  # term | week | day. "term" counts from term_start; the others are calendar
+  # windows in the timezone below.
+  period: term
+  term_start: "2026-08-24"
+  timezone: "America/New_York"
+  default:
+    requests: 2000
+    total_tokens: 4000000
+  # Per-student exceptions, keyed by student id (the id used when issuing keys).
+  overrides:
+    demo-student:
+      requests: 200
+      total_tokens: 400000
+
+providers:
+  ollama:
+    base_url: "https://ollama.com/v1"
+    api_key_env: OLLAMA_API_KEY
+  openrouter:
+    base_url: "https://openrouter.ai/api/v1"
+    api_key_env: OPENROUTER_API_KEY
+    extra_headers:
+      HTTP-Referer: "https://github.com/skojaku/adv-net-sci"
+      X-Title: "adv-net-sci course gateway"
+
+# What students see. The `route` is tried in order; the gateway falls through to
+# the next entry on connection failure, timeout, 429 and 5xx -- but never on a
+# 4xx that the client caused, since retrying that just burns the fallback on the
+# same error.
+aliases:
+  tutor:
+    name: "Course Tutor"
+    context_window: 131072
+    max_tokens: 32768
+    reasoning: true
+    input: ["text"]
+    route:
+      - { provider: ollama, model: "EXAMPLE-PRIMARY:cloud" }
+      - { provider: openrouter, model: "example-vendor/EXAMPLE-FALLBACK" }
+
+  vision:
+    name: "Course Vision"
+    context_window: 1048576
+    max_tokens: 8192
+    input: ["text", "image"]
+    route:
+      - { provider: openrouter, model: "example-vendor/EXAMPLE-VISION" }
+
+  referee:
+    name: "Course Referee"
+    context_window: 131072
+    max_tokens: 8192
+    reasoning: true
+    input: ["text"]
+    route:
+      - { provider: ollama, model: "EXAMPLE-PRIMARY:cloud" }
+      - { provider: openrouter, model: "example-vendor/EXAMPLE-FALLBACK" }
+
+# USD per 1M tokens. Recorded in the ledger so the instructor can see the real
+# spend; NOT enforced -- the quota above is what students are actually limited
+# by. Key is "<provider>:<model>". Anything missing is recorded as cost 0.
+pricing:
+  "openrouter:example-vendor/EXAMPLE-FALLBACK": { input: 0.40, output: 1.60 }
+  "openrouter:example-vendor/EXAMPLE-VISION": { input: 0.10, output: 0.40 }
+  "ollama:EXAMPLE-PRIMARY:cloud": { input: 0.0, output: 0.0 }
